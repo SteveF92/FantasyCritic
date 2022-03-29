@@ -3,7 +3,7 @@ namespace FantasyCritic.Lib.Domain;
 public class PublisherGame
 {
     public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
-        decimal? fantasyPoints, Maybe<MasterGameYear> masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID)
+        decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID)
     {
         PublisherID = publisherID;
         PublisherGameID = publisherGameID;
@@ -29,7 +29,7 @@ public class PublisherGame
     public decimal? ManualCriticScore { get; }
     public bool ManualWillNotRelease { get; }
     public decimal? FantasyPoints { get; }
-    public Maybe<MasterGameYear> MasterGame { get; }
+    public MasterGameYear? MasterGame { get; }
     public int SlotNumber { get; }
     public int? DraftPosition { get; }
     public int? OverallDraftPosition { get; }
@@ -43,23 +43,23 @@ public class PublisherGame
             return false;
         }
 
-        if (MasterGame.HasNoValueTempoTemp)
+        if (MasterGame is null)
         {
             return false;
         }
 
-        return MasterGame.ValueTempoTemp.WillRelease();
+        return MasterGame.WillRelease();
     }
 
     public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
-    public Maybe<MasterGameYearWithCounterPick> GetMasterGameYearWithCounterPick()
+    public MasterGameYearWithCounterPick? GetMasterGameYearWithCounterPick()
     {
-        if (!MasterGame.HasValueTempoTemp)
+        if (MasterGame is null)
         {
-            return Maybe<MasterGameYearWithCounterPick>.None;
+            return null;
         }
 
-        return new MasterGameYearWithCounterPick(MasterGame.ValueTempoTemp, CounterPick);
+        return new MasterGameYearWithCounterPick(MasterGame, CounterPick);
     }
 
     public override string ToString() => GameName;

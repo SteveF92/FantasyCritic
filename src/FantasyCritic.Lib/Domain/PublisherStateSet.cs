@@ -34,17 +34,17 @@ public class PublisherStateSet
 
     public void AcquireGameForPublisher(Publisher publisherToEdit, PublisherGame game, uint bidAmount)
     {
-        UpdatePublisher(publisherToEdit, game, Maybe<PublisherGame>.None, (int)bidAmount * -1, null);
+        UpdatePublisher(publisherToEdit, game, null, (int)bidAmount * -1, null);
     }
 
     public void SpendBudgetForPublisher(Publisher publisherToEdit, uint budget)
     {
-        UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, Maybe<PublisherGame>.None, (int)budget * -1, null);
+        UpdatePublisher(publisherToEdit, null, null, (int)budget * -1, null);
     }
 
     public void ObtainBudgetForPublisher(Publisher publisherToEdit, uint budget)
     {
-        UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, Maybe<PublisherGame>.None, (int)budget, null);
+        UpdatePublisher(publisherToEdit, null, null, (int)budget, null);
     }
 
     public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions)
@@ -53,12 +53,12 @@ public class PublisherStateSet
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > publisherToEdit.WillReleaseGamesDropped)
             {
-                UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.WillRelease);
+                UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.WillRelease);
                 return;
             }
             if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > publisherToEdit.FreeGamesDropped)
             {
-                UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.Free);
+                UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.Free);
                 return;
             }
             throw new Exception("Publisher cannot drop any more 'Will Release' games");
@@ -66,34 +66,34 @@ public class PublisherStateSet
 
         if (leagueOptions.WillNotReleaseDroppableGames == -1 || leagueOptions.WillNotReleaseDroppableGames > publisherToEdit.WillNotReleaseGamesDropped)
         {
-            UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.WillNotRelease);
+            UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.WillNotRelease);
             return;
         }
         if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > publisherToEdit.FreeGamesDropped)
         {
-            UpdatePublisher(publisherToEdit, Maybe<PublisherGame>.None, publisherGame, 0, DropType.Free);
+            UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.Free);
             return;
         }
         throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
     }
 
-    private void UpdatePublisher(Publisher publisherToEdit, Maybe<PublisherGame> addGame, Maybe<PublisherGame> removeGame, int budgetChange, DropType? dropType)
+    private void UpdatePublisher(Publisher publisherToEdit, PublisherGame? addGame, PublisherGame? removeGame, int budgetChange, DropType? dropType)
     {
         var updatedPublisher = GetUpdatedPublisher(publisherToEdit, addGame, removeGame, budgetChange, dropType);
         _publisherDictionary[updatedPublisher.PublisherID] = updatedPublisher;
         _leagueLookup = _publisherDictionary.Values.ToLookup(x => x.LeagueYearKey);
     }
 
-    private static Publisher GetUpdatedPublisher(Publisher publisherToEdit, Maybe<PublisherGame> addGame, Maybe<PublisherGame> removeGame, int budgetChange, DropType? dropType)
+    private static Publisher GetUpdatedPublisher(Publisher publisherToEdit, PublisherGame? addGame, PublisherGame? removeGame, int budgetChange, DropType? dropType)
     {
         var newPublisherGames = publisherToEdit.PublisherGames.ToList();
-        if (addGame.HasValueTempoTemp)
+        if (addGame is not null)
         {
-            newPublisherGames = newPublisherGames.Concat(new[] { addGame.ValueTempoTemp }).ToList();
+            newPublisherGames = newPublisherGames.Concat(new[] { addGame }).ToList();
         }
-        if (removeGame.HasValueTempoTemp)
+        if (removeGame is not null)
         {
-            newPublisherGames = newPublisherGames.Where(x => x.PublisherGameID != removeGame.ValueTempoTemp.PublisherGameID).ToList();
+            newPublisherGames = newPublisherGames.Where(x => x.PublisherGameID != removeGame.PublisherGameID).ToList();
         }
 
         uint newBudget = (uint)(publisherToEdit.Budget + budgetChange);

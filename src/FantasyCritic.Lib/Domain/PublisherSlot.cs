@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Domain;
 
 public class PublisherSlot
 {
-    public PublisherSlot(int slotNumber, int overallSlotNumber, bool counterPick, Maybe<SpecialGameSlot> specialGameSlot, Maybe<PublisherGame> publisherGame)
+    public PublisherSlot(int slotNumber, int overallSlotNumber, bool counterPick, SpecialGameSlot? specialGameSlot, PublisherGame? publisherGame)
     {
         SlotNumber = slotNumber;
         OverallSlotNumber = overallSlotNumber;
@@ -14,17 +14,17 @@ public class PublisherSlot
         SpecialGameSlot = specialGameSlot;
         PublisherGame = publisherGame;
 
-        if (publisherGame.HasValueTempoTemp && publisherGame.ValueTempoTemp.CounterPick != CounterPick)
+        if (publisherGame is not null && publisherGame.CounterPick != CounterPick)
         {
-            throw new Exception($"Something has gone horribly wrong with publisher game: {publisherGame.ValueTempoTemp.PublisherGameID}");
+            throw new Exception($"Something has gone horribly wrong with publisher game: {publisherGame.PublisherGameID}");
         }
     }
 
     public int SlotNumber { get; }
     public int OverallSlotNumber { get; }
     public bool CounterPick { get; }
-    public Maybe<SpecialGameSlot> SpecialGameSlot { get; }
-    public Maybe<PublisherGame> PublisherGame { get; }
+    public SpecialGameSlot? SpecialGameSlot { get; }
+    public PublisherGame? PublisherGame { get; }
 
     public bool SlotIsValid(LeagueYear leagueYear)
     {
@@ -34,27 +34,27 @@ public class PublisherSlot
     public IReadOnlyList<ClaimError> GetClaimErrorsForSlot(LeagueYear leagueYear)
     {
         var eligibilityFactors = leagueYear.GetEligibilityFactorsForSlot(this);
-        if (eligibilityFactors.HasNoValueTempoTemp)
+        if (eligibilityFactors is null)
         {
             return new List<ClaimError>();
         }
 
-        return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors.ValueTempoTemp);
+        return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors);
     }
 
     public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues, LocalDate currentDate,
         int standardGamesTaken, int numberOfStandardGames)
     {
-        if (PublisherGame.HasNoValueTempoTemp)
+        if (PublisherGame is null)
         {
             return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
         }
 
-        if (PublisherGame.ValueTempoTemp.MasterGame.HasNoValueTempoTemp)
+        if (PublisherGame.MasterGame is null)
         {
-            if (PublisherGame.ValueTempoTemp.ManualCriticScore.HasValue)
+            if (PublisherGame.ManualCriticScore.HasValue)
             {
-                return PublisherGame.ValueTempoTemp.ManualCriticScore.Value;
+                return PublisherGame.ManualCriticScore.Value;
             }
 
             return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
@@ -66,25 +66,25 @@ public class PublisherSlot
             return fantasyPoints.Value;
         }
 
-        return PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);
+        return PublisherGame.MasterGame.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);
     }
 
     public decimal? CalculateFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
     {
-        if (PublisherGame.HasNoValueTempoTemp)
+        if (PublisherGame is null)
         {
             return null;
         }
-        if (PublisherGame.ValueTempoTemp.ManualCriticScore.HasValue)
+        if (PublisherGame.ManualCriticScore.HasValue)
         {
-            return scoringSystem.GetPointsForScore(PublisherGame.ValueTempoTemp.ManualCriticScore.Value, CounterPick);
+            return scoringSystem.GetPointsForScore(PublisherGame.ManualCriticScore.Value, CounterPick);
         }
-        if (PublisherGame.ValueTempoTemp.MasterGame.HasNoValueTempoTemp)
+        if (PublisherGame.MasterGame is null)
         {
             return null;
         }
 
-        var calculatedScore = PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
+        var calculatedScore = PublisherGame.MasterGame.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
         if (gameIsValidInSlot)
         {
             return calculatedScore;
@@ -106,25 +106,25 @@ public class PublisherSlot
             cp = "CP-";
         }
         var slotType = "REG";
-        if (SpecialGameSlot.HasValueTempoTemp)
+        if (SpecialGameSlot is not null)
         {
-            if (SpecialGameSlot.ValueTempoTemp.Tags.Count > 1)
+            if (SpecialGameSlot.Tags.Count > 1)
             {
                 slotType = "FLX";
             }
             else
             {
-                slotType = SpecialGameSlot.ValueTempoTemp.Tags[0].ShortName;
+                slotType = SpecialGameSlot.Tags[0].ShortName;
             }
         }
 
         var gameName = "Empty";
-        if (PublisherGame.HasValueTempoTemp)
+        if (PublisherGame is not null)
         {
-            gameName = PublisherGame.ValueTempoTemp.GameName;
-            if (PublisherGame.ValueTempoTemp.MasterGame.HasValueTempoTemp)
+            gameName = PublisherGame.GameName;
+            if (PublisherGame.MasterGame is not null)
             {
-                gameName = PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame.GameName;
+                gameName = PublisherGame.MasterGame.MasterGame.GameName;
             }
         }
 

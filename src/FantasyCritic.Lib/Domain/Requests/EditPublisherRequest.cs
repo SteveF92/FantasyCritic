@@ -30,7 +30,7 @@ public class EditPublisherRequest
 
     public LeagueYear LeagueYear { get; }
     public Publisher Publisher { get; }
-    public Maybe<string> NewPublisherName { get; }
+    public string? NewPublisherName { get; }
     public int? Budget { get; }
     public int? FreeGamesDropped { get; }
     public int? WillNotReleaseGamesDropped { get; }
@@ -38,7 +38,7 @@ public class EditPublisherRequest
 
     public bool SomethingChanged()
     {
-        return NewPublisherName.HasValueTempoTemp ||
+        return NewPublisherName is not null ||
                Budget.HasValue ||
                FreeGamesDropped.HasValue ||
                WillNotReleaseGamesDropped.HasValue ||
@@ -48,9 +48,9 @@ public class EditPublisherRequest
     public string GetActionString()
     {
         List<string> changes = new List<string>();
-        if (NewPublisherName.HasValueTempoTemp)
+        if (NewPublisherName is not null)
         {
-            changes.Add($"Changed publisher name to {NewPublisherName.ValueTempoTemp}");
+            changes.Add($"Changed publisher name to {NewPublisherName}");
         }
         if (Budget.HasValue)
         {

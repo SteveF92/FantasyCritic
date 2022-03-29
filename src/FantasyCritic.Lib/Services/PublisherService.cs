@@ -38,7 +38,7 @@ public class PublisherService
         return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
     }
 
-    public Task ChangePublisherIcon(Publisher publisher, Maybe<string> publisherIcon)
+    public Task ChangePublisherIcon(Publisher publisher, string? publisherIcon)
     {
         return _fantasyCriticRepo.ChangePublisherIcon(publisher, publisherIcon);
     }

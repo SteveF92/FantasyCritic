@@ -42,7 +42,7 @@ public class Trade
     public IReadOnlyList<TradeVote> TradeVotes { get; }
     public TradeStatus Status { get; }
 
-    public Maybe<string> GetTradeError()
+    public string? GetTradeError()
     {
         if (Proposer.PublisherID == Guid.Empty || CounterParty.PublisherID == Guid.Empty)
         {
@@ -64,8 +64,8 @@ public class Trade
             return $"{CounterParty.PublisherName} does not have enough budget for this trade.";
         }
 
-        var proposerPublisherGamesWithMasterGames = Proposer.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValueTempoTemp).Select(x => x.ValueTempoTemp).ToList();
-        var counterPartyPublisherGamesWithMasterGames = CounterParty.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValueTempoTemp).Select(x => x.ValueTempoTemp).ToList();
+        var proposerPublisherGamesWithMasterGames = Proposer.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x is not null).Select(x => x).ToList();
+        var counterPartyPublisherGamesWithMasterGames = CounterParty.PublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x is not null).Select(x => x).ToList();
 
         bool proposerGamesValid = proposerPublisherGamesWithMasterGames.ContainsAllItems(ProposerMasterGames);
         bool counterPartyGamesValid = counterPartyPublisherGamesWithMasterGames.ContainsAllItems(CounterPartyMasterGames);
@@ -104,7 +104,7 @@ public class Trade
             return $"{CounterParty.PublisherName} does not have enough counter pick slots available to complete this trade.";
         }
 
-        return Maybe<string>.None;
+        return null;
     }
 
     private static int GetResultingGameCount(Publisher publisher, IEnumerable<MasterGameYearWithCounterPick> gamesTradingAway, IEnumerable<MasterGameYearWithCounterPick> gamesAcquiring, bool counterPick)
@@ -171,11 +171,11 @@ public class Trade
         foreach (var proposerGame in Proposer.PublisherGames)
         {
             var masterGameWithCounterPick = proposerGame.GetMasterGameYearWithCounterPick();
-            if (masterGameWithCounterPick.HasNoValueTempoTemp)
+            if (masterGameWithCounterPick is null)
             {
                 continue;
             }
-            if (ProposerMasterGames.Contains(masterGameWithCounterPick.ValueTempoTemp))
+            if (ProposerMasterGames.Contains(masterGameWithCounterPick))
             {
                 formerGames.Add(proposerGame.GetFormerPublisherGame(completionTime, $"Traded to {CounterParty.PublisherName}"));
             }
@@ -183,11 +183,11 @@ public class Trade
         foreach (var counterPartyGame in CounterParty.PublisherGames)
         {
             var masterGameWithCounterPick = counterPartyGame.GetMasterGameYearWithCounterPick();
-            if (masterGameWithCounterPick.HasNoValueTempoTemp)
+            if (masterGameWithCounterPick is null)
             {
                 continue;
             }
-            if (CounterPartyMasterGames.Contains(masterGameWithCounterPick.ValueTempoTemp))
+            if (CounterPartyMasterGames.Contains(masterGameWithCounterPick))
             {
                 formerGames.Add(counterPartyGame.GetFormerPublisherGame(completionTime, $"Traded to {Proposer.PublisherName}"));
             }
@@ -199,8 +199,8 @@ public class Trade
     public Result<IReadOnlyList<PublisherGame>> GetNewPublisherGamesFromTrade(Instant completionTime)
     {
         var dateOfAcquisition = completionTime.ToEasternDate();
-        var proposerGameDictionary = Proposer.PublisherGames.Where(x => x.MasterGame.HasValueTempoTemp).ToDictionary(x => x.GetMasterGameYearWithCounterPick().ValueTempoTemp);
-        var counterPartyGameDictionary = CounterParty.PublisherGames.Where(x => x.MasterGame.HasValueTempoTemp).ToDictionary(x => x.GetMasterGameYearWithCounterPick().ValueTempoTemp);
+        var proposerGameDictionary = Proposer.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick());
+        var counterPartyGameDictionary = CounterParty.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick());
 
         List<PotentialPublisherSlot> newlyOpenProposerSlotNumbers = new List<PotentialPublisherSlot>();
         foreach (var game in ProposerMasterGames)
@@ -215,8 +215,8 @@ public class Trade
             newlyOpenCounterPartySlotNumbers.Add(new PotentialPublisherSlot(existingPublisherGame.SlotNumber, game.CounterPick));
         }
 
-        var alreadyOpenProposerSlotNumbers = Proposer.GetPublisherSlots(LeagueYear.Options).Where(x => x.PublisherGame.HasNoValueTempoTemp).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
-        var alreadyOpenCounterPartySlotNumbers = CounterParty.GetPublisherSlots(LeagueYear.Options).Where(x => x.PublisherGame.HasNoValueTempoTemp).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
+        var alreadyOpenProposerSlotNumbers = Proposer.GetPublisherSlots(LeagueYear.Options).Where(x => x.PublisherGame is null).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
+        var alreadyOpenCounterPartySlotNumbers = CounterParty.GetPublisherSlots(LeagueYear.Options).Where(x => x.PublisherGame is null).Select(x => new PotentialPublisherSlot(x.SlotNumber, x.CounterPick));
         var allOpenProposerSlotNumbers = alreadyOpenProposerSlotNumbers.Concat(newlyOpenProposerSlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
         var allOpenCounterPartySlotNumbers = alreadyOpenCounterPartySlotNumbers.Concat(newlyOpenCounterPartySlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
 

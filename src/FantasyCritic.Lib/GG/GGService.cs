@@ -17,7 +17,7 @@ public class GGService : IGGService
         _logger = logger;
     }
 
-    public async Task<Maybe<GGGame>> GetGGGame(string ggToken)
+    public async Task<GGGame?> GetGGGame(string ggToken)
     {
         try
         {
@@ -56,21 +56,21 @@ public class GGService : IGGService
             var dataSectionToken = parsedGameResponse.GetValue("data");
             if (dataSectionToken is not JObject dataSection)
             {
-                return Maybe<GGGame>.None;
+                return null;
             }
             var internalSectionToken = dataSection.GetValue("getGameByToken");
             if (internalSectionToken is not JObject internalSection)
             {
-                return Maybe<GGGame>.None;
+                return null;
             }
 
             var typedData = internalSection.ToObject<GGGameResponse>();
             if (typedData is null)
             {
-                return Maybe<GGGame>.None;
+                return null;
             }
 
-            Maybe<string> coverPath = Maybe<string>.None;
+            string? coverPath = null;
             if (!string.IsNullOrWhiteSpace(typedData.CoverPath))
             {
                 var split = typedData.CoverPath.Split("/");
@@ -83,7 +83,7 @@ public class GGService : IGGService
         {
             if (httpEx.Message == "Response status code does not indicate success: 404 (Not Found).")
             {
-                return Maybe<GGGame>.None;
+                return null;
             }
             _logger.LogError(httpEx, $"Getting an GG| game failed: {ggToken}");
             throw;

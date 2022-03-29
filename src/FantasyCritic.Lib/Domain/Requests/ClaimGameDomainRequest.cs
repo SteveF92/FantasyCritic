@@ -3,7 +3,7 @@ namespace FantasyCritic.Lib.Domain.Requests;
 public class ClaimGameDomainRequest
 {
     public ClaimGameDomainRequest(LeagueYear leagueYear, Publisher publisher, string gameName, bool counterPick, bool counterPickedGameIsManualWillNotRelease,
-        bool managerOverride, bool autoDraft, Maybe<MasterGame> masterGame, int? draftPosition, int? overallDraftPosition)
+        bool managerOverride, bool autoDraft, MasterGame? masterGame, int? draftPosition, int? overallDraftPosition)
     {
         LeagueYear = leagueYear;
         Publisher = publisher;
@@ -24,7 +24,7 @@ public class ClaimGameDomainRequest
     public bool CounterPickedGameIsManualWillNotRelease { get; }
     public bool ManagerOverride { get; }
     public bool AutoDraft { get; }
-    public Maybe<MasterGame> MasterGame { get; }
+    public MasterGame? MasterGame { get; }
     public int? DraftPosition { get; }
     public int? OverallDraftPosition { get; }
 }

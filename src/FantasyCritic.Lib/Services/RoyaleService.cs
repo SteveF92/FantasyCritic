@@ -34,7 +34,7 @@ public class RoyaleService
         return activeQuarter;
     }
 
-    public async Task<Maybe<RoyaleYearQuarter>> GetYearQuarter(int year, int quarter)
+    public async Task<RoyaleYearQuarter?> GetYearQuarter(int year, int quarter)
     {
         IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await GetYearQuarters();
         var requestedQuarter = supportedQuarters.SingleOrDefault(x => x.YearQuarter.Year == year && x.YearQuarter.Quarter == quarter);
@@ -43,7 +43,7 @@ public class RoyaleService
 
     public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)
     {
-        RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, Maybe<string>.None, new List<RoyalePublisherGame>(), 100m);
+        RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, null, new List<RoyalePublisherGame>(), 100m);
         await _royaleRepo.CreatePublisher(publisher);
         return publisher;
     }
@@ -53,17 +53,17 @@ public class RoyaleService
         return _royaleRepo.ChangePublisherName(publisher, publisherName);
     }
 
-    public Task ChangePublisherIcon(RoyalePublisher publisher, Maybe<string> publisherIcon)
+    public Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon)
     {
         return _royaleRepo.ChangePublisherIcon(publisher, publisherIcon);
     }
 
-    public Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
+    public Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
     {
         return _royaleRepo.GetPublisher(yearQuarter, user);
     }
 
-    public Task<Maybe<RoyalePublisher>> GetPublisher(Guid publisherID)
+    public Task<RoyalePublisher?> GetPublisher(Guid publisherID)
     {
         return _royaleRepo.GetPublisher(publisherID);
     }

@@ -6,9 +6,9 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IRoyaleRepo
 {
     Task CreatePublisher(RoyalePublisher publisher);
-    Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user);
+    Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user);
     Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters();
-    Task<Maybe<RoyalePublisher>> GetPublisher(Guid publisherID);
+    Task<RoyalePublisher?> GetPublisher(Guid publisherID);
     Task PurchaseGame(RoyalePublisherGame game);
     Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund);
     Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney);
@@ -19,5 +19,5 @@ public interface IRoyaleRepo
     Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners();
     Task StartNewQuarter(YearQuarter nextQuarter);
     Task FinishQuarter(RoyaleYearQuarter supportedQuarter);
-    Task ChangePublisherIcon(RoyalePublisher publisher, Maybe<string> publisherIcon);
+    Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon);
 }

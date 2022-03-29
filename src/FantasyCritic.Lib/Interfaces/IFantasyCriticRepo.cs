@@ -8,9 +8,9 @@ namespace FantasyCritic.Lib.Interfaces;
 
 public interface IFantasyCriticRepo
 {
-    Task<Maybe<League>> GetLeagueByID(Guid id);
+    Task<League?> GetLeagueByID(Guid id);
     Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear);
-    Task<Maybe<LeagueYearKey>> GetLeagueYearKeyForPublisherID(Guid publisherID);
+    Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
     Task AddNewLeagueYear(League league, int year, LeagueOptions options);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction);
@@ -28,7 +28,7 @@ public interface IFantasyCriticRepo
     Task FollowLeague(League league, FantasyCriticUser user);
     Task UnfollowLeague(League league, FantasyCriticUser user);
 
-    Task<Maybe<LeagueInvite>> GetInvite(Guid inviteID);
+    Task<LeagueInvite?> GetInvite(Guid inviteID);
     Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser);
     Task SetAutoDraft(Publisher publisher, bool autoDraft);
     Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league);
@@ -39,7 +39,7 @@ public interface IFantasyCriticRepo
     Task SaveInviteLink(LeagueInviteLink inviteLink);
     Task DeactivateInviteLink(LeagueInviteLink inviteID);
     Task<IReadOnlyList<LeagueInviteLink>> GetInviteLinks(League league);
-    Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode);
+    Task<LeagueInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode);
     Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
     Task FullyRemovePublisher(LeagueYear leagueYear, Publisher deletePublisher);
@@ -74,7 +74,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<PickupBid>> GetActivePickupBids(LeagueYear leagueYear);
     Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<IReadOnlyList<PickupBid>> GetProcessedPickupBids(LeagueYear leagueYear);
-    Task<Maybe<PickupBid>> GetPickupBid(Guid bidID);
+    Task<PickupBid?> GetPickupBid(Guid bidID);
     Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities);
 
     Task CreateDropRequest(DropRequest currentDropRequest);
@@ -82,7 +82,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(LeagueYear leagueYear, Publisher publisher);
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear);
-    Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequestID);
+    Task<DropRequest?> GetDropRequest(Guid dropRequestID);
 
     Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher);
     Task QueueGame(QueuedGame queuedGame);
@@ -92,7 +92,7 @@ public interface IFantasyCriticRepo
     Task AddLeagueAction(LeagueAction action);
     Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
     Task ChangePublisherName(Publisher publisher, string publisherName);
-    Task ChangePublisherIcon(Publisher publisher, Maybe<string> publisherIcon);
+    Task ChangePublisherIcon(Publisher publisher, string? publisherIcon);
     Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague);
     Task StartDraft(LeagueYear leagueYear);
     Task CompleteDraft(LeagueYear leagueYear);
@@ -127,11 +127,11 @@ public interface IFantasyCriticRepo
     Task<Result> DeleteManagerMessage(LeagueYear leagueYear, Guid messageID);
     Task<Result> DismissManagerMessage(Guid messageId, Guid userId);
     Task FinishYear(SupportedYear supportedYear);
-    Task EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount);
-    Task<Maybe<FantasyCriticUser>> GetLeagueYearWinner(Guid leagueID, int year);
+    Task EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount);
+    Task<FantasyCriticUser?> GetLeagueYearWinner(Guid leagueID, int year);
     Task CreateTrade(Trade trade);
     Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear);
-    Task<Maybe<Trade>> GetTrade(Guid tradeID);
+    Task<Trade?> GetTrade(Guid tradeID);
     Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp);
     Task AddTradeVote(TradeVote tradeVote);
     Task DeleteTradeVote(Trade trade, FantasyCriticUser user);

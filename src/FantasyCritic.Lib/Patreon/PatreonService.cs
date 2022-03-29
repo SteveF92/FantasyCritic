@@ -55,7 +55,7 @@ public class PatreonService
 
                     bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
                     bool isDonorUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Donor");
-                    Maybe<string> donorName = Maybe<string>.None;
+                    string? donorName = null;
                     if (isDonorUser)
                     {
                         isPlusUser = true;

@@ -19,13 +19,13 @@ public class ManagerMessage
     public Instant Timestamp { get; }
     public IReadOnlyList<Guid> DismissedByUserIDs { get; }
 
-    public bool IsDismissed(Maybe<FantasyCriticUser> accessingUser)
+    public bool IsDismissed(FantasyCriticUser? accessingUser)
     {
-        if (accessingUser.HasNoValueTempoTemp)
+        if (accessingUser is null)
         {
             return false;
         }
 
-        return DismissedByUserIDs.Contains(accessingUser.ValueTempoTemp.Id);
+        return DismissedByUserIDs.Contains(accessingUser.Id);
     }
 }

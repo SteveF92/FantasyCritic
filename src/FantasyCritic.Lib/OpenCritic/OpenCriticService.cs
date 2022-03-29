@@ -16,14 +16,14 @@ public class OpenCriticService : IOpenCriticService
         _logger = logger;
     }
 
-    public async Task<Maybe<OpenCriticGame>> GetOpenCriticGame(int openCriticGameID)
+    public async Task<OpenCriticGame?> GetOpenCriticGame(int openCriticGameID)
     {
         try
         {
             var gameResponse = await _client.GetStringAsync($"game/{openCriticGameID}");
             if (string.IsNullOrWhiteSpace(gameResponse))
             {
-                return Maybe<OpenCriticGame>.None;
+                return null;
             }
             JObject parsedGameResponse = JObject.Parse(gameResponse);
 
@@ -62,7 +62,7 @@ public class OpenCriticService : IOpenCriticService
         {
             if (httpEx.Message == "Response status code does not indicate success: 404 (Not Found).")
             {
-                return Maybe<OpenCriticGame>.None;
+                return null;
             }
             _logger.LogError(httpEx, $"Getting an open critic game failed: {openCriticGameID}");
             throw;

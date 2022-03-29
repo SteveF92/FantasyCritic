@@ -101,12 +101,12 @@ public class LeagueOptions
 
     public bool HasSpecialSlots() => SpecialGameSlots.Any();
 
-    public Maybe<SpecialGameSlot> GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
+    public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
     {
         var hasSpecialSlot = _specialSlotDictionary.TryGetValue(slotNumber, out var specialSlot);
         if (!hasSpecialSlot)
         {
-            return Maybe<SpecialGameSlot>.None;
+            return null;
         }
 
         return specialSlot;
@@ -174,7 +174,7 @@ public class LeagueOptions
         return Result.Success();
     }
 
-    public Maybe<string> GetDifferenceString(LeagueOptions existingOptions)
+    public string? GetDifferenceString(LeagueOptions existingOptions)
     {
         List<string> differences = new List<string>();
 
@@ -269,7 +269,7 @@ public class LeagueOptions
 
         if (!differences.Any())
         {
-            return Maybe<string>.None;
+            return null;
         }
 
         string finalString = string.Join("\n", differences.Select(x => $"• {x}"));

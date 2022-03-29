@@ -4,7 +4,7 @@ namespace FantasyCritic.Lib.Domain;
 
 public class Publisher : IEquatable<Publisher>
 {
-    public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, Maybe<string> publisherIcon, int draftPosition,
+    public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, int draftPosition,
         IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
         bool autoDraft)
     {
@@ -27,7 +27,7 @@ public class Publisher : IEquatable<Publisher>
     public LeagueYearKey LeagueYearKey { get; }
     public FantasyCriticUser User { get; }
     public string PublisherName { get; }
-    public Maybe<string> PublisherIcon { get; }
+    public string? PublisherIcon { get; }
     public int DraftPosition { get; }
     public IReadOnlyList<PublisherGame> PublisherGames { get; }
     public IReadOnlyList<FormerPublisherGame> FormerPublisherGames { get; }
@@ -43,9 +43,9 @@ public class Publisher : IEquatable<Publisher>
         {
             List<decimal> gamesWithCriticScores = PublisherGames
                 .Where(x => !x.CounterPick)
-                .Where(x => x.MasterGame.HasValueTempoTemp)
-                .Where(x => x.MasterGame.ValueTempoTemp.MasterGame.CriticScore.HasValue)
-                .Select(x => x.MasterGame.ValueTempoTemp.MasterGame.CriticScore.Value)
+                .Where(x => x.MasterGame is not null)
+                .Where(x => x.MasterGame.MasterGame.CriticScore.HasValue)
+                .Select(x => x.MasterGame.MasterGame.CriticScore.Value)
                 .ToList();
 
             if (gamesWithCriticScores.Count == 0)
@@ -114,12 +114,12 @@ public class Publisher : IEquatable<Publisher>
         var standardGamesBySlot = PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
         for (int standardGameIndex = 0; standardGameIndex < leagueOptions.StandardGames; standardGameIndex++)
         {
-            Maybe<PublisherGame> standardGame = Maybe<PublisherGame>.None;
+            PublisherGame? standardGame = null;
             if (standardGamesBySlot.TryGetValue(standardGameIndex, out var foundGame))
             {
                 standardGame = foundGame;
             }
-            Maybe<SpecialGameSlot> specialSlot = leagueOptions.GetSpecialGameSlotByOverallSlotNumber(standardGameIndex);
+            SpecialGameSlot? specialSlot = leagueOptions.GetSpecialGameSlotByOverallSlotNumber(standardGameIndex);
 
             publisherSlots.Add(new PublisherSlot(standardGameIndex, overallSlotNumber, false, specialSlot, standardGame));
             overallSlotNumber++;
@@ -128,34 +128,34 @@ public class Publisher : IEquatable<Publisher>
         var counterPicksBySlot = PublisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
         for (int counterPickIndex = 0; counterPickIndex < leagueOptions.CounterPicks; counterPickIndex++)
         {
-            Maybe<PublisherGame> counterPick = Maybe<PublisherGame>.None;
+            PublisherGame? counterPick = null;
             if (counterPicksBySlot.TryGetValue(counterPickIndex, out var foundGame))
             {
                 counterPick = foundGame;
             }
 
-            publisherSlots.Add(new PublisherSlot(counterPickIndex, overallSlotNumber, true, Maybe<SpecialGameSlot>.None, counterPick));
+            publisherSlots.Add(new PublisherSlot(counterPickIndex, overallSlotNumber, true, null, counterPick));
             overallSlotNumber++;
         }
 
         return publisherSlots;
     }
 
-    public Maybe<PublisherGame> GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);
+    public PublisherGame? GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);
 
-    public Maybe<PublisherGame> GetPublisherGameByMasterGameID(Guid masterGameID)
+    public PublisherGame? GetPublisherGameByMasterGameID(Guid masterGameID)
     {
-        return PublisherGames.SingleOrDefault(x => x.MasterGame.HasValueTempoTemp && x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID == masterGameID);
+        return PublisherGames.SingleOrDefault(x => x.MasterGame is not null && x.MasterGame.MasterGame.MasterGameID == masterGameID);
     }
 
-    public Maybe<PublisherGame> GetPublisherGameByPublisherGameID(Guid publisherGameID)
+    public PublisherGame? GetPublisherGameByPublisherGameID(Guid publisherGameID)
     {
         return PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
     }
 
     public HashSet<MasterGame> MyMasterGames => PublisherGames
-        .Where(x => x.MasterGame.HasValueTempoTemp)
-        .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
+        .Where(x => x.MasterGame is not null)
+        .Select(x => x.MasterGame.MasterGame)
         .Distinct()
         .ToHashSet();
 
@@ -210,7 +210,7 @@ public class Publisher : IEquatable<Publisher>
     public static Publisher GetFakePublisher(LeagueYearKey leagueYearKey)
     {
         return new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
-            Maybe<string>.None, 0, new List<PublisherGame>(),
+            null, 0, new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, false);
     }
 }

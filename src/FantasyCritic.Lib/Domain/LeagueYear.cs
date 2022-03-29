@@ -10,11 +10,11 @@ public class LeagueYear : IEquatable<LeagueYear>
     private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
     private readonly IReadOnlyDictionary<Guid, Publisher> _publisherDictionary;
 
-    private readonly Maybe<Publisher> _managerPublisher;
+    private readonly Publisher? _managerPublisher;
 
     public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
         IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
-        Instant? draftStartedTimestamp, Maybe<FantasyCriticUser> winningUser, IEnumerable<Publisher> publishers)
+        Instant? draftStartedTimestamp, FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers)
     {
         League = league;
         SupportedYear = year;
@@ -28,7 +28,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         WinningUser = winningUser;
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
-        _managerPublisher = Maybe.From(Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id));
+        _managerPublisher = Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id);
         StandardGamesTaken = _publisherDictionary.Values.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
     }
 
@@ -40,7 +40,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverride> TagOverrides { get; }
     public Instant? DraftStartedTimestamp { get; }
-    public Maybe<FantasyCriticUser> WinningUser { get; }
+    public FantasyCriticUser? WinningUser { get; }
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
     public int StandardGamesTaken { get; }
     public int TotalNumberOfStandardGames => Options.StandardGames * Publishers.Count;
@@ -56,18 +56,18 @@ public class LeagueYear : IEquatable<LeagueYear>
         return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides, dateOfPotentialAcquisition);
     }
 
-    public Maybe<MasterGameWithEligibilityFactors> GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
+    public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
     {
-        if (publisherSlot.PublisherGame.HasNoValueTempoTemp || publisherSlot.PublisherGame.ValueTempoTemp.MasterGame.HasNoValueTempoTemp)
+        if (publisherSlot.PublisherGame is null || publisherSlot.PublisherGame.MasterGame is null)
         {
-            return Maybe<MasterGameWithEligibilityFactors>.None;
+            return null;
         }
 
-        var masterGame = publisherSlot.PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame;
+        var masterGame = publisherSlot.PublisherGame.MasterGame.MasterGame;
         bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
         IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-        var acquisitionDate = publisherSlot.PublisherGame.ValueTempoTemp.Timestamp.ToEasternDate();
-        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame, Options, eligibilityOverride, tagOverrides, acquisitionDate);
+        var acquisitionDate = publisherSlot.PublisherGame.Timestamp.ToEasternDate();
+        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.MasterGame.MasterGame, Options, eligibilityOverride, tagOverrides, acquisitionDate);
     }
 
     public bool GameIsEligibleInAnySlot(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
@@ -98,15 +98,14 @@ public class LeagueYear : IEquatable<LeagueYear>
         return tagOverride.Tags;
     }
 
-    public Maybe<Publisher> GetManagerPublisher()
+    public Publisher? GetManagerPublisher()
     {
         return _managerPublisher;
     }
 
-    public Maybe<Publisher> GetUserPublisher(FantasyCriticUser user)
+    public Publisher? GetUserPublisher(FantasyCriticUser user)
     {
-        var userPublisher = Publishers.SingleOrDefault(x => x.User.Id == user.Id);
-        return Maybe<Publisher>.From(userPublisher);
+        return Publishers.SingleOrDefault(x => x.User.Id == user.Id);
     }
 
     public IReadOnlyList<Publisher> GetAllPublishersExcept(Publisher publisher)
@@ -114,12 +113,12 @@ public class LeagueYear : IEquatable<LeagueYear>
         return Publishers.Where(x => x.PublisherID != publisher.PublisherID).ToList();
     }
 
-    public Maybe<Publisher> GetPublisherByID(Guid publisherID)
+    public Publisher? GetPublisherByID(Guid publisherID)
     {
         bool hasPublisher = _publisherDictionary.TryGetValue(publisherID, out var publisher);
         if (!hasPublisher)
         {
-            return Maybe<Publisher>.None;
+            return null;
         }
 
         return publisher;

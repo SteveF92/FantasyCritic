@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Royale;
 public class RoyalePublisher
 {
     public RoyalePublisher(Guid publisherID, RoyaleYearQuarter yearQuarter, FantasyCriticUser user,
-        string publisherName, Maybe<string> publisherIcon, IEnumerable<RoyalePublisherGame> publisherGames, decimal budget)
+        string publisherName, string? publisherIcon, IEnumerable<RoyalePublisherGame> publisherGames, decimal budget)
     {
         PublisherID = publisherID;
         YearQuarter = yearQuarter;
@@ -20,7 +20,7 @@ public class RoyalePublisher
     public RoyaleYearQuarter YearQuarter { get; }
     public FantasyCriticUser User { get; }
     public string PublisherName { get; }
-    public Maybe<string> PublisherIcon { get; }
+    public string? PublisherIcon { get; }
     public IReadOnlyList<RoyalePublisherGame> PublisherGames { get; }
     public decimal Budget { get; }
 

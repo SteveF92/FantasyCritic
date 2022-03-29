@@ -5,8 +5,8 @@ namespace FantasyCritic.Lib.Domain;
 public class MasterGameRequest
 {
     public MasterGameRequest(Guid requestID, FantasyCriticUser user, Instant requestTimestamp, string requestNote,
-        string gameName, int? steamID, int? openCriticID, Maybe<string> ggToken, LocalDate? releaseDate, string estimatedReleaseDate,
-        bool answered, Instant? responseTimestamp, string responseNote, Maybe<MasterGame> masterGame, bool hidden)
+        string gameName, int? steamID, int? openCriticID, string? ggToken, LocalDate? releaseDate, string estimatedReleaseDate,
+        bool answered, Instant? responseTimestamp, string responseNote, MasterGame? masterGame, bool hidden)
     {
         RequestID = requestID;
         User = user;
@@ -35,7 +35,7 @@ public class MasterGameRequest
     public string GameName { get; }
     public int? SteamID { get; }
     public int? OpenCriticID { get; }
-    public Maybe<string> GGToken { get; }
+    public string? GGToken { get; }
     public LocalDate? ReleaseDate { get; }
     public string EstimatedReleaseDate { get; }
 
@@ -43,7 +43,7 @@ public class MasterGameRequest
     public bool Answered { get; }
     public Instant? ResponseTimestamp { get; }
     public string ResponseNote { get; }
-    public Maybe<MasterGame> MasterGame { get; }
+    public MasterGame? MasterGame { get; }
 
     public bool Hidden { get; }
 }

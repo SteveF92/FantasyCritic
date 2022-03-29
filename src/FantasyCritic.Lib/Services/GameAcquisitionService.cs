@@ -37,9 +37,9 @@ public class GameAcquisitionService
         var basicErrors = GetBasicErrors(leagueYear.League, request.Publisher);
         claimErrors.AddRange(basicErrors);
 
-        if (request.MasterGame.HasValueTempoTemp)
+        if (request.MasterGame is not null)
         {
-            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame.ValueTempoTemp, leagueYear.Year, false, currentDate,
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate,
                 dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease, drafting);
             claimErrors.AddRange(masterGameErrors);
         }
@@ -80,10 +80,10 @@ public class GameAcquisitionService
             }
         }
 
-        Maybe<MasterGameWithEligibilityFactors> eligibilityFactors = Maybe<MasterGameWithEligibilityFactors>.None;
-        if (request.MasterGame.HasValueTempoTemp)
+        MasterGameWithEligibilityFactors? eligibilityFactors = null;
+        if (request.MasterGame is not null)
         {
-            eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame.ValueTempoTemp, dateOfPotentialAcquisition);
+            eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame, dateOfPotentialAcquisition);
         }
 
         var slotResult = SlotEligibilityService.GetPublisherSlotAcquisitionResult(request.Publisher, leagueYear.Options, eligibilityFactors, request.CounterPick, validDropSlot, acquiringNow);
@@ -115,7 +115,7 @@ public class GameAcquisitionService
 
         //Drop limits
         var publisherGame = publisher.GetPublisherGame(request.MasterGame);
-        if (publisherGame.HasNoValueTempoTemp)
+        if (publisherGame is null)
         {
             return new DropResult(Result.Failure("Cannot drop a game that you do not have"));
         }
@@ -123,7 +123,7 @@ public class GameAcquisitionService
         {
             return new DropResult(Result.Failure("Game is no longer eligible for dropping."));
         }
-        bool gameWasDrafted = publisherGame.ValueTempoTemp.OverallDraftPosition.HasValue;
+        bool gameWasDrafted = publisherGame.OverallDraftPosition.HasValue;
         if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
         {
             return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));
@@ -139,7 +139,7 @@ public class GameAcquisitionService
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        bool gameWillRelease = publisherGame.ValueTempoTemp.WillRelease();
+        bool gameWillRelease = publisherGame.WillRelease();
         var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options);
         return new DropResult(dropResult);
     }
@@ -158,13 +158,13 @@ public class GameAcquisitionService
             dateOfPotentialAcquisition = nextBidTime.Value.ToEasternDate();
         }
 
-        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame, leagueYear.Year,
+        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.MasterGame.MasterGame, leagueYear.Year,
             true, currentDate, dateOfPotentialAcquisition, false, false, false);
         dropErrors.AddRange(masterGameErrors);
 
         //Drop limits
-        var publisherGame = publisher.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGame.ValueTempoTemp.PublisherGameID);
-        if (publisherGame.HasNoValueTempoTemp)
+        var publisherGame = publisher.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGame.PublisherGameID);
+        if (publisherGame is null)
         {
             return new DropResult(Result.Failure("Cannot drop a game that you do not have"));
         }
@@ -172,7 +172,7 @@ public class GameAcquisitionService
         {
             return new DropResult(Result.Failure("Game is no longer eligible for dropping."));
         }
-        bool gameWasDrafted = publisherGame.ValueTempoTemp.OverallDraftPosition.HasValue;
+        bool gameWasDrafted = publisherGame.OverallDraftPosition.HasValue;
         if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
         {
             return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));
@@ -182,13 +182,13 @@ public class GameAcquisitionService
         bool gameWasCounterPicked = otherPublishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.CounterPick)
-            .ContainsGame(request.ConditionalDropPublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame);
+            .ContainsGame(request.ConditionalDropPublisherGame.MasterGame.MasterGame);
         if (gameWasCounterPicked && leagueYear.Options.CounterPicksBlockDrops)
         {
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        bool gameWillRelease = publisherGame.ValueTempoTemp.WillRelease();
+        bool gameWillRelease = publisherGame.WillRelease();
         var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options);
         return new DropResult(dropResult);
     }
@@ -327,10 +327,10 @@ public class GameAcquisitionService
 
     public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, bool drafting)
     {
-        Maybe<MasterGameYear> masterGameYear = Maybe<MasterGameYear>.None;
-        if (request.MasterGame.HasValueTempoTemp)
+        MasterGameYear? masterGameYear = null;
+        if (request.MasterGame is not null)
         {
-            masterGameYear = new MasterGameYear(request.MasterGame.ValueTempoTemp, request.LeagueYear.Year);
+            masterGameYear = new MasterGameYear(request.MasterGame, request.LeagueYear.Year);
         }
 
         ClaimResult claimResult = CanClaimGame(request, null, null, true, drafting);
@@ -365,7 +365,7 @@ public class GameAcquisitionService
         return claimResult;
     }
 
-    public async Task<ClaimResult> MakePickupBid(LeagueYear leagueYear, Publisher publisher, MasterGame masterGame, Maybe<PublisherGame> conditionalDropPublisherGame, bool counterPick, uint bidAmount)
+    public async Task<ClaimResult> MakePickupBid(LeagueYear leagueYear, Publisher publisher, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame, bool counterPick, uint bidAmount)
     {
         if (bidAmount < leagueYear.Options.MinimumBidAmount)
         {
@@ -388,14 +388,14 @@ public class GameAcquisitionService
         if (counterPick)
         {
             var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame))
-                .Where(x => x.HasValueTempoTemp && !x.ValueTempoTemp.CounterPick).ToList();
+                .Where(x => x is not null && !x.CounterPick).ToList();
 
             if (gameBeingCounterPickedOptions.Count != 1)
             {
                 throw new Exception($"Something very strange has happened with bid processing for publisher: {publisher.PublisherID}");
             }
 
-            counterPickedGameIsManualWillNotRelease = gameBeingCounterPickedOptions.Single().ValueTempoTemp.ManualWillNotRelease;
+            counterPickedGameIsManualWillNotRelease = gameBeingCounterPickedOptions.Single().ManualWillNotRelease;
         }
 
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, counterPick,
@@ -404,20 +404,20 @@ public class GameAcquisitionService
         Instant nextBidTime = _clock.GetNextBidTime();
 
         int? validDropSlot = null;
-        if (conditionalDropPublisherGame.HasValueTempoTemp)
+        if (conditionalDropPublisherGame is not null)
         {
             if (counterPick)
             {
                 return new ClaimResult("Cannot make a counter pick bid with a conditional drop.", null);
             }
 
-            var dropResult = await MakeDropRequest(leagueYear, publisher, conditionalDropPublisherGame.ValueTempoTemp, true);
+            var dropResult = await MakeDropRequest(leagueYear, publisher, conditionalDropPublisherGame, true);
             if (dropResult.Result.IsFailure)
             {
                 return new ClaimResult(dropResult.Result.Error, null);
             }
 
-            validDropSlot = conditionalDropPublisherGame.ValueTempoTemp.SlotNumber;
+            validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
         var claimResult = CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false);
@@ -428,7 +428,7 @@ public class GameAcquisitionService
 
         var nextPriority = pickupBids.Count + 1;
         PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick,
-            bidAmount, nextPriority, _clock.GetCurrentInstant(), null, null, Maybe<string>.None, null);
+            bidAmount, nextPriority, _clock.GetCurrentInstant(), null, null, null, null);
         await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
         return claimResult;
@@ -469,12 +469,12 @@ public class GameAcquisitionService
             return new DropResult(Result.Failure("You can't drop a counter pick."));
         }
 
-        if (publisherGame.MasterGame.HasNoValueTempoTemp)
+        if (publisherGame.MasterGame is null)
         {
             return new DropResult(Result.Failure("You can't drop a game that is not linked to a master game. Please see the FAQ section on dropping games."));
         }
 
-        MasterGame masterGame = publisherGame.MasterGame.ValueTempoTemp.MasterGame;
+        MasterGame masterGame = publisherGame.MasterGame.MasterGame;
         IReadOnlyList<DropRequest> dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(leagueYear, publisher);
         bool alreadyDropping = dropRequests.Select(x => x.MasterGame.MasterGameID).Contains(masterGame.MasterGameID);
         if (alreadyDropping)
@@ -517,17 +517,17 @@ public class GameAcquisitionService
         return _fantasyCriticRepo.GetActiveDropRequests(supportedYear.Year, allLeagueYears);
     }
 
-    public Task<Maybe<PickupBid>> GetPickupBid(Guid bidID)
+    public Task<PickupBid?> GetPickupBid(Guid bidID)
     {
         return _fantasyCriticRepo.GetPickupBid(bidID);
     }
 
-    public Task<Maybe<DropRequest>> GetDropRequest(Guid dropRequest)
+    public Task<DropRequest?> GetDropRequest(Guid dropRequest)
     {
         return _fantasyCriticRepo.GetDropRequest(dropRequest);
     }
 
-    public async Task<ClaimResult> EditPickupBid(PickupBid bid, Maybe<PublisherGame> conditionalDropPublisherGame, uint bidAmount)
+    public async Task<ClaimResult> EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount)
     {
         if (bid.Successful != null)
         {
@@ -545,20 +545,20 @@ public class GameAcquisitionService
         }
 
         int? validDropSlot = null;
-        if (conditionalDropPublisherGame.HasValueTempoTemp)
+        if (conditionalDropPublisherGame is not null)
         {
             if (bid.CounterPick)
             {
                 return new ClaimResult("Cannot make a counter pick bid with a conditional drop.", null);
             }
 
-            var dropResult = await MakeDropRequest(bid.LeagueYear, bid.Publisher, conditionalDropPublisherGame.ValueTempoTemp, true);
+            var dropResult = await MakeDropRequest(bid.LeagueYear, bid.Publisher, conditionalDropPublisherGame, true);
             if (dropResult.Result.IsFailure)
             {
                 return new ClaimResult(dropResult.Result.Error, null);
             }
 
-            validDropSlot = conditionalDropPublisherGame.ValueTempoTemp.SlotNumber;
+            validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
         await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
@@ -621,15 +621,15 @@ public class GameAcquisitionService
         {
             var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, leagueYear.Year);
             var claimResult = GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false);
-            masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.ValueTempoTemp, bid.CounterPick, claimResult));
+            masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
         }
 
         return masterGameYears;
     }
 
-    public bool PublicBidIsValid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingMasterGames)
+    public bool PublicBidIsValid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, IReadOnlyList<PublicBiddingMasterGame>? publicBiddingMasterGames)
     {
-        if (publicBiddingMasterGames.HasNoValueTempoTemp)
+        if (publicBiddingMasterGames is null)
         {
             return true;
         }
@@ -639,7 +639,7 @@ public class GameAcquisitionService
             return true;
         }
 
-        return publicBiddingMasterGames.ValueTempoTemp.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame);
+        return publicBiddingMasterGames.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame);
     }
 
     public bool CanCancelBid(LeagueYear leagueYear, bool counterPick)
@@ -691,7 +691,7 @@ public class GameAcquisitionService
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYear(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
                 var claimResult = GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false);
-                masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear.ValueTempoTemp, bid.CounterPick, claimResult));
+                masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
             }
 
             publicBiddingSets.Add(new PublicBiddingSet(activeBidsForLeague.Key, masterGameYears));

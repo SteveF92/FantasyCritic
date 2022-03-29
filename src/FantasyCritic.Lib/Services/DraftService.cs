@@ -144,11 +144,11 @@ public class DraftService
         return Result.Success();
     }
 
-    public Maybe<Publisher> GetNextDraftPublisher(LeagueYear leagueYear)
+    public Publisher? GetNextDraftPublisher(LeagueYear leagueYear)
     {
         if (!leagueYear.PlayStatus.DraftIsActive)
         {
-            return Maybe<Publisher>.None;
+            return null;
         }
 
         var phase = GetDraftPhase(leagueYear);
@@ -200,7 +200,7 @@ public class DraftService
             return firstPublisherEven;
         }
 
-        return Maybe<Publisher>.None;
+        return null;
     }
 
     public async Task<(ClaimResult Result, bool DraftComplete)> DraftGame(ClaimGameDomainRequest request, bool managerAction)
@@ -235,11 +235,11 @@ public class DraftService
         var today = _clock.GetToday();
         var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
         var nextPublisher = GetNextDraftPublisher(leagueYear);
-        if (nextPublisher.HasNoValueTempoTemp)
+        if (nextPublisher is null)
         {
             return (standardGamesAdded, counterPicksAdded);
         }
-        if (!nextPublisher.ValueTempoTemp.AutoDraft)
+        if (!nextPublisher.AutoDraft)
         {
             return (standardGamesAdded, counterPicksAdded);
         }
@@ -252,10 +252,10 @@ public class DraftService
         }
         if (draftPhase.Equals(DraftPhase.StandardGames))
         {
-            var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher.ValueTempoTemp);
-            var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher.ValueTempoTemp);
+            var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher);
+            var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher);
             var availableGamesEligibleInRemainingSlots = new List<PossibleMasterGameYear>();
-            var openSlots = nextPublisher.ValueTempoTemp.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame.HasNoValueTempoTemp).ToList();
+            var openSlots = nextPublisher.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame is null).ToList();
             foreach (var availableGame in availableGames)
             {
                 foreach (var slot in openSlots)
@@ -275,7 +275,7 @@ public class DraftService
 
             foreach (var possibleGame in gamesToTake)
             {
-                var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher.ValueTempoTemp, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
                 var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
                 if (autoDraftResult.Success)
                 {
@@ -286,17 +286,17 @@ public class DraftService
         }
         else if (draftPhase.Equals(DraftPhase.CounterPicks))
         {
-            var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher.ValueTempoTemp)
+            var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher)
                 .SelectMany(x => x.PublisherGames)
                 .Where(x => !x.CounterPick)
-                .Where(x => x.MasterGame.HasValueTempoTemp);
+                .Where(x => x.MasterGame is not null);
             var possibleGames = otherPublisherGames
-                .Select(x => x.MasterGame.ValueTempoTemp)
+                .Select(x => x.MasterGame)
                 .Where(x => x.AdjustedPercentCounterPick.HasValue)
                 .OrderByDescending(x => x.AdjustedPercentCounterPick);
             foreach (var possibleGame in possibleGames)
             {
-                var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher.ValueTempoTemp, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame,
+                var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame,
                     draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
                 var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
                 if (autoDraftResult.Success)
@@ -337,20 +337,20 @@ public class DraftService
     public (int? DraftPosition, int? OverallDraftPosition) GetDraftStatus(DraftPhase draftPhase, LeagueYear leagueYear)
     {
         var nextPublisher = GetNextDraftPublisher(leagueYear);
-        if (nextPublisher.HasNoValueTempoTemp)
+        if (nextPublisher is null)
         {
             return (null, null);
         }
 
         if (draftPhase.Equals(DraftPhase.StandardGames))
         {
-            var publisherPosition = nextPublisher.ValueTempoTemp.PublisherGames.Count(x => !x.CounterPick) + 1;
+            var publisherPosition = nextPublisher.PublisherGames.Count(x => !x.CounterPick) + 1;
             var overallPosition = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
             return (publisherPosition, overallPosition);
         }
         if (draftPhase.Equals(DraftPhase.CounterPicks))
         {
-            var publisherPosition = nextPublisher.ValueTempoTemp.PublisherGames.Count(x => x.CounterPick) + 1;
+            var publisherPosition = nextPublisher.PublisherGames.Count(x => x.CounterPick) + 1;
             var overallPosition = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick) + 1;
             return (publisherPosition, overallPosition);
         }

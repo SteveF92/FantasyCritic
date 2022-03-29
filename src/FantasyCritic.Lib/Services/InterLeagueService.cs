@@ -62,12 +62,12 @@ public class InterLeagueService
         return _masterGameRepo.GetMasterGameYears(year);
     }
 
-    public Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
+    public Task<MasterGame?> GetMasterGame(Guid masterGameID)
     {
         return _masterGameRepo.GetMasterGame(masterGameID);
     }
 
-    public Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
+    public Task<MasterGameYear?> GetMasterGameYear(Guid masterGameID, int year)
     {
         return _masterGameRepo.GetMasterGameYear(masterGameID, year);
     }
@@ -132,12 +132,12 @@ public class InterLeagueService
         return _masterGameRepo.GetMasterGameChangeRequestsForUser(user);
     }
 
-    public Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)
+    public Task<MasterGameRequest?> GetMasterGameRequest(Guid requestID)
     {
         return _masterGameRepo.GetMasterGameRequest(requestID);
     }
 
-    public Task<Maybe<MasterGameChangeRequest>> GetMasterGameChangeRequest(Guid requestID)
+    public Task<MasterGameChangeRequest?> GetMasterGameChangeRequest(Guid requestID)
     {
         return _masterGameRepo.GetMasterGameChangeRequest(requestID);
     }
@@ -153,7 +153,7 @@ public class InterLeagueService
     }
 
     public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime,
-        string responseNote, Maybe<MasterGame> masterGame)
+        string responseNote, MasterGame? masterGame)
     {
         return _masterGameRepo.CompleteMasterGameRequest(masterGameRequest, responseTime, responseNote, masterGame);
     }

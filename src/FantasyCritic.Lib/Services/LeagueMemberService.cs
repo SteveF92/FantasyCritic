@@ -115,7 +115,7 @@ public class LeagueMemberService
     public async Task<Result> InviteUserByEmail(League league, string inviteEmail)
     {
         var existingInvite = await GetMatchingInvite(league, inviteEmail);
-        if (existingInvite.HasValueTempoTemp)
+        if (existingInvite is not null)
         {
             return Result.Failure("User is already invited to this league.");
         }
@@ -140,7 +140,7 @@ public class LeagueMemberService
     public async Task<Result> InviteUserByUserID(League league, FantasyCriticUser inviteUser)
     {
         var existingInvite = await GetMatchingInvite(league, inviteUser);
-        if (existingInvite.HasValueTempoTemp)
+        if (existingInvite is not null)
         {
             return Result.Failure("User is already invited to this league.");
         }
@@ -167,12 +167,12 @@ public class LeagueMemberService
         }
 
         var invite = await GetMatchingInvite(league, inviteUser.Email);
-        if (invite.HasNoValueTempoTemp)
+        if (invite is null)
         {
             return Result.Failure("User is not invited to this league.");
         }
 
-        await _fantasyCriticRepo.AcceptInvite(invite.ValueTempoTemp, inviteUser);
+        await _fantasyCriticRepo.AcceptInvite(invite, inviteUser);
 
         return Result.Success();
     }
@@ -210,7 +210,7 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetLeagueInvites(user);
     }
 
-    public Task<Maybe<LeagueInvite>> GetInvite(Guid inviteID)
+    public Task<LeagueInvite?> GetInvite(Guid inviteID)
     {
         return _fantasyCriticRepo.GetInvite(inviteID);
     }
@@ -243,14 +243,14 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league, year);
     }
 
-    private async Task<Maybe<LeagueInvite>> GetMatchingInvite(League league, string emailAddress)
+    private async Task<LeagueInvite?> GetMatchingInvite(League league, string emailAddress)
     {
         IReadOnlyList<LeagueInvite> playersInvited = await GetOutstandingInvitees(league);
         var invite = playersInvited.GetMatchingInvite(emailAddress);
         return invite;
     }
 
-    private async Task<Maybe<LeagueInvite>> GetMatchingInvite(League league, FantasyCriticUser user)
+    private async Task<LeagueInvite?> GetMatchingInvite(League league, FantasyCriticUser user)
     {
         IReadOnlyList<LeagueInvite> playersInvited = await GetOutstandingInvitees(league);
         var invite = playersInvited.GetMatchingInvite(user);
@@ -274,7 +274,7 @@ public class LeagueMemberService
         return _fantasyCriticRepo.DeactivateInviteLink(inviteLink);
     }
 
-    public Task<Maybe<LeagueInviteLink>> GetInviteLinkByInviteCode(Guid inviteCode)
+    public Task<LeagueInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode)
     {
         return _fantasyCriticRepo.GetInviteLinkByInviteCode(inviteCode);
     }

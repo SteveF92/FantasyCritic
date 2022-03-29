@@ -9,7 +9,7 @@ public class LeagueInvite
         InviteID = inviteID;
         League = league;
         EmailAddress = emailAddress;
-        User = Maybe<FantasyCriticUser>.None;
+        User = null;
     }
 
     public LeagueInvite(Guid inviteID, League league, FantasyCriticUser user)
@@ -23,5 +23,5 @@ public class LeagueInvite
     public Guid InviteID { get; }
     public League League { get; }
     public string EmailAddress { get; }
-    public Maybe<FantasyCriticUser> User { get; }
+    public FantasyCriticUser? User { get; }
 }
