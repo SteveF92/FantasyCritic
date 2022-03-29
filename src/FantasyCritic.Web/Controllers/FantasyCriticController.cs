@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers;
@@ -29,5 +30,5 @@ public abstract class FantasyCriticController : ControllerBase
         return Result.Success(currentUser);
     }
 
-    protected static (T? ValidRecord, IActionResult? FailedResult) GetFailedResult<T>(IActionResult failedResult) where T : class => (null, failedResult);
+    protected static GenericResultRecord<T> GetFailedResult<T>(IActionResult failedResult) where T : class => new GenericResultRecord<T>(null, failedResult);
 }
