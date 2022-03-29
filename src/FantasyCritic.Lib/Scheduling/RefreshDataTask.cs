@@ -20,6 +20,7 @@ public class RefreshDataTask : IScheduledTask
         Console.WriteLine("Not refreshing stats - DEBUG version");
         return;
 #endif
+#pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using (var scope = serviceScopeFactory.CreateScope())
@@ -27,5 +28,6 @@ public class RefreshDataTask : IScheduledTask
             var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
             await adminService.FullDataRefresh();
         }
+#pragma warning restore CS0162
     }
 }

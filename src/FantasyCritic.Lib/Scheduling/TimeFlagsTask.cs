@@ -20,6 +20,7 @@ public class TimeFlagsTask : IScheduledTask
         Console.WriteLine("Not setting time flags - DEBUG version");
         return;
 #endif
+#pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using (var scope = serviceScopeFactory.CreateScope())
@@ -27,5 +28,6 @@ public class TimeFlagsTask : IScheduledTask
             var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
             await adminService.SetTimeFlags();
         }
+#pragma warning restore CS0162
     }
 }

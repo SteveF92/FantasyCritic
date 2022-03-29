@@ -4,7 +4,7 @@ namespace FantasyCritic.Lib.Scheduling.Lib;
 
 public class SchedulerHostedService : HostedService
 {
-    public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
+    public event EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskException;
 
     private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
 
@@ -14,12 +14,7 @@ public class SchedulerHostedService : HostedService
 
         foreach (var scheduledTask in scheduledTasks)
         {
-            _scheduledTasks.Add(new SchedulerTaskWrapper
-            {
-                Schedule = CrontabSchedule.Parse(scheduledTask.Schedule),
-                Task = scheduledTask,
-                NextRunTime = referenceTime
-            });
+            _scheduledTasks.Add(new SchedulerTaskWrapper(CrontabSchedule.Parse(scheduledTask.Schedule), scheduledTask, referenceTime));
         }
     }
 
@@ -70,11 +65,18 @@ public class SchedulerHostedService : HostedService
 
     private class SchedulerTaskWrapper
     {
-        public CrontabSchedule Schedule { get; set; }
-        public IScheduledTask Task { get; set; }
+        public SchedulerTaskWrapper(CrontabSchedule schedule, IScheduledTask task, DateTime nextRunTime)
+        {
+            Schedule = schedule;
+            Task = task;
+            NextRunTime = nextRunTime;
+        }
 
-        public DateTime LastRunTime { get; set; }
-        public DateTime NextRunTime { get; set; }
+        public CrontabSchedule Schedule { get; }
+        public IScheduledTask Task { get; }
+
+        public DateTime LastRunTime { get; private set; }
+        public DateTime NextRunTime { get; private set; }
 
         public void Increment()
         {

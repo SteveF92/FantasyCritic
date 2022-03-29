@@ -250,7 +250,7 @@ public sealed class CrontabField
         return ToString(null);
     }
 
-    public string ToString(string format)
+    public string ToString(string? format)
     {
         var writer = new StringWriter(CultureInfo.InvariantCulture);
 

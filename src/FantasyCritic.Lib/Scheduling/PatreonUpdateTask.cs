@@ -20,6 +20,7 @@ public class PatreonUpdateTask : IScheduledTask
         Console.WriteLine("Not updating Patreon - DEBUG version");
         return;
 #endif
+#pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using (var scope = serviceScopeFactory.CreateScope())
@@ -27,5 +28,6 @@ public class PatreonUpdateTask : IScheduledTask
             var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
             await adminService.UpdatePatreonRoles();
         }
+#pragma warning restore CS0162
     }
 }
