@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
@@ -30,7 +29,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(14.8095m, fantasyPoints);
@@ -50,7 +49,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(13.8095m, fantasyPoints);
@@ -70,7 +69,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(29.625m, fantasyPoints);
@@ -90,7 +89,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-4.1441m, fantasyPoints);
@@ -110,7 +109,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-14.1441m, fantasyPoints);
@@ -130,7 +129,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-24.1441m, fantasyPoints);
@@ -150,7 +149,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-34.1441m, fantasyPoints);
@@ -170,7 +169,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-44.1441m, fantasyPoints);
@@ -190,7 +189,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-54.1441m, fantasyPoints);
@@ -210,7 +209,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-64.1441m, fantasyPoints);
@@ -230,7 +229,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(null, fantasyPoints);
@@ -250,7 +249,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, false, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(0m, fantasyPoints);
@@ -270,7 +269,7 @@ public class StandardScoringTests
             fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
-        PublisherSlot testSlot = new PublisherSlot(1, 1, true, Maybe<SpecialGameSlot>.None, testGame);
+        PublisherSlot testSlot = new PublisherSlot(1, 1, true, null, testGame);
         decimal? fantasyPoints = testSlot.CalculateFantasyPoints(true, _scoringSystem, fakeToday);
 
         Assert.AreEqual(4.1441m, fantasyPoints);

@@ -37,9 +37,9 @@ public sealed class CrontabFieldImpl : IObjectReference
     private readonly CrontabFieldKind _kind;
     private readonly int _maxValue;
     private readonly int _minValue;
-    private readonly string[] _names;
+    private readonly string[]? _names;
 
-    private CrontabFieldImpl(CrontabFieldKind kind, int minValue, int maxValue, string[] names)
+    private CrontabFieldImpl(CrontabFieldKind kind, int minValue, int maxValue, string[]? names)
     {
         Debug.Assert(Enum.IsDefined(typeof(CrontabFieldKind), kind));
         Debug.Assert(minValue >= 0);

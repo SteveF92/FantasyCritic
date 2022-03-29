@@ -67,6 +67,11 @@ public class LambdaHypeFactorService : IHypeFactorService
         var stringReader = new StreamReader(response.Payload);
         var responseString = stringReader.ReadToEnd().Trim('"').Replace("\\", "");
         var entity = JsonConvert.DeserializeObject<HypeConstantsEntity>(responseString);
+        if (entity is null)
+        {
+            throw new Exception("Invalid hype constants.");
+        }
+
         return entity.ToDomain();
     }
 
