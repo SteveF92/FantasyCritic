@@ -99,7 +99,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             }
 
             var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
-            var yearQuarter = await GetYearQuarter(entity.Year, entity.Quarter);
+            var yearQuarter = await GetYearQuarterOrThrow(entity.Year, entity.Quarter);
             var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
             var domain = entity.ToDomain(yearQuarter, user, publisherGames);
             return domain;
@@ -175,7 +175,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
             foreach (var entity in entities)
             {
-                var masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
+                var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(entity.MasterGameID, yearQuarter.YearQuarter.Year);
                 var domain = entity.ToDomain(yearQuarter, masterGame);
                 domains.Add(domain);
             }
@@ -230,6 +230,17 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         }
     }
 
+    private async Task<RoyaleYearQuarter> GetYearQuarterOrThrow(int year, int quarter)
+    {
+        var yearQuarter = await GetYearQuarter(year, quarter);
+        if (yearQuarter is null)
+        {
+            throw new Exception($"Royale Year Quarter not found: {year} | {quarter}");
+        }
+
+        return yearQuarter;
+    }
+
     private async Task<IReadOnlyList<RoyalePublisherGame>> GetGamesForPublisher(Guid publisherID, RoyaleYearQuarter yearQuarter)
     {
         string sql = "select * from tbl_royale_publishergame where PublisherID = @publisherID;";
@@ -243,7 +254,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
             foreach (var entity in entities)
             {
-                var masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
+                var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(entity.MasterGameID, yearQuarter.YearQuarter.Year);
                 var domain = entity.ToDomain(yearQuarter, masterGame);
                 domains.Add(domain);
             }
@@ -326,7 +337,17 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 }
 
                 var topPublisher = group.MaxBy(x => x.TotalFantasyPoints);
+                if (topPublisher is null)
+                {
+                    throw new Exception("Error finding royale winners (Can't find which publisher has highest total fantasy points).");
+                }
+
                 var topDomainPublisher = await GetPublisher(topPublisher.PublisherID);
+                if (topDomainPublisher is null)
+                {
+                    throw new Exception("Error finding royale winners (Can't find the publisher that has highest total fantasy points).");
+                }
+
                 if (!winners.ContainsKey(topDomainPublisher.User))
                 {
                     winners.Add(topDomainPublisher.User, new List<RoyaleYearQuarter>());

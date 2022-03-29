@@ -14,8 +14,8 @@ public static class BulkInserter
         }
 
         List<TInsertType> objectList = objects.ToList();
-        Type objectType = objectList.First().GetType();
-        bool allSameType = objectList.All(x => x.GetType() == objectType);
+        Type objectType = objectList.First()!.GetType();
+        bool allSameType = objectList.All(x => x!.GetType() == objectType);
         if (!allSameType)
         {
             throw new Exception("All objects must be of the same type.");

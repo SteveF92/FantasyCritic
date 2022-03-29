@@ -100,12 +100,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             await GetMasterGames();
         }
 
-        _masterGamesCache.TryGetValue(masterGameID, out MasterGame foundMasterGame);
-        if (foundMasterGame is null)
-        {
-            return null;
-        }
-
+        _masterGamesCache.TryGetValue(masterGameID, out MasterGame? foundMasterGame);
         return foundMasterGame;
     }
 
@@ -117,12 +112,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var yearCache = _masterGameYearsCache[year];
-        yearCache.TryGetValue(masterGameID, out MasterGameYear foundMasterGame);
-        if (foundMasterGame is null)
-        {
-            return null;
-        }
-
+        yearCache.TryGetValue(masterGameID, out MasterGameYear? foundMasterGame);
         return foundMasterGame;
     }
 

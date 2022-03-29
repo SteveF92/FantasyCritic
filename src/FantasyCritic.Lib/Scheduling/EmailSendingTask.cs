@@ -20,6 +20,7 @@ public class EmailSendingTask : IScheduledTask
         Console.WriteLine("Not sending emails - DEBUG version");
         return;
 #endif
+#pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using (var scope = serviceScopeFactory.CreateScope())
@@ -27,5 +28,6 @@ public class EmailSendingTask : IScheduledTask
             var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
             await emailSendingService.SendScheduledEmails();
         }
+#pragma warning restore CS0162
     }
 }

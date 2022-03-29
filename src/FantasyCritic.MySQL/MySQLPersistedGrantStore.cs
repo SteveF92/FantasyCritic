@@ -26,7 +26,8 @@ public class MySQLPersistedGrantStore : IPersistedGrantStore
                 key
             });
             var model = result?.ToDomain();
-            return model;
+            //TODO Identity Server Update?
+            return model!;
         }
     }
 

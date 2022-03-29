@@ -12,7 +12,7 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly string _connectionString;
     private readonly IClock _clock;
-    private List<FantasyCriticUser> _userCache = null;
+    private List<FantasyCriticUser>? _userCache = null;
 
     public MySQLFantasyCriticUserStore(string connectionString, IClock clock)
     {
@@ -100,7 +100,8 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                 @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmail",
                 new { normalizedEmail });
             var entity = userResult.SingleOrDefault();
-            return entity?.ToDomain();
+            //TODO .NET 7 Nullable
+            return entity?.ToDomain()!;
         }
     }
 
@@ -108,8 +109,7 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        Guid parseduserid;
-        if (!Guid.TryParse(userId, out parseduserid))
+        if (!Guid.TryParse(userId, out var parsedUserID))
         {
             throw new ArgumentOutOfRangeException("userId", $"'{new { userId }}' is not a valid GUID.");
         }
@@ -120,9 +120,10 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
             var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
                 @"select * from tbl_user WHERE UserID = @userID",
-                new { userID = parseduserid });
+                new { userID = parsedUserID });
             var entity = userResult.SingleOrDefault();
-            return entity?.ToDomain();
+            //TODO .NET 7 Nullable
+            return entity?.ToDomain()!;
         }
     }
 
@@ -137,7 +138,8 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                 @"select * from tbl_user WHERE UPPER(DisplayName) = @normalizedDisplayName and DisplayNumber = @displayNumber;",
                 new { normalizedDisplayName, displayNumber });
             var entity = userResult.SingleOrDefault();
-            return entity?.ToDomain();
+            //TODO .NET 7 Nullable
+            return entity?.ToDomain()!;
         }
     }
 
@@ -191,7 +193,8 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                 @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmailAddress",
                 new { normalizedEmailAddress });
             var entity = userResult.SingleOrDefault();
-            return entity?.ToDomain();
+            //TODO .NET 7 Nullable
+            return entity?.ToDomain()!;
         }
     }
 
@@ -453,7 +456,8 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public Task<string> GetAuthenticatorKeyAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(user.AuthenticatorKey);
+        //TODO .NET 7 Nullable
+        return Task.FromResult(user.AuthenticatorKey)!;
     }
 
     public Task SetTwoFactorEnabledAsync(FantasyCriticUser user, bool enabled, CancellationToken cancellationToken)
@@ -499,14 +503,14 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         var sql = "DELETE from tbl_user_recoverycode where UserID = @UserID and Code = @RecoveryCode";
 
+        _userCache = null;
+
         RecoveryCodeEntity entity = new RecoveryCodeEntity(user.Id, code);
         using (var connection = new MySqlConnection(_connectionString))
         {
             int count = await connection.ExecuteAsync(sql, entity);
             return count == 1;
         }
-
-        _userCache = null;
     }
 
     public async Task<int> CountCodesAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -608,7 +612,8 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
             var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(sql, queryObject);
             var entity = userResult.SingleOrDefault();
-            return entity?.ToDomain();
+            //TODO .NET 7 Nullable
+            return entity?.ToDomain()!;
         }
     }
 
@@ -720,7 +725,7 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         List<FantasyCriticUserDonorEntity> donorEntities = patronInfo
             .Where(x => x.DonorName is not null)
-            .Select(x => new FantasyCriticUserDonorEntity(x.User, x.DonorName))
+            .Select(x => new FantasyCriticUserDonorEntity(x.User, x.DonorName!))
             .ToList();
 
         using (var connection = new MySqlConnection(_connectionString))
@@ -757,7 +762,8 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public Task<string> GetPhoneNumberAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult<string>(null);
+        //TODO .NET 7 Nullable
+        return Task.FromResult<string>(null!);
     }
 
     public Task<bool> GetPhoneNumberConfirmedAsync(FantasyCriticUser user, CancellationToken cancellationToken)

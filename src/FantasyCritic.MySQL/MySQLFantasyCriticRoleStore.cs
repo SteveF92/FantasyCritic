@@ -41,7 +41,8 @@ public class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
                 @"select * from tbl_user_role WHERE NormalizedName = @normalizedRoleName",
                 new { normalizedRoleName });
             var entity = userResult.SingleOrDefault();
-            return entity?.ToDomain();
+            //TODO .NET 7 Nullable
+            return entity?.ToDomain()!;
         }
     }
 

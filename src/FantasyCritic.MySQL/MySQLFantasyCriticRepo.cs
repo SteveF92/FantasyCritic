@@ -10,7 +10,6 @@ using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using NLog;
 using FantasyCritic.MySQL.Entities.Trades;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FantasyCritic.MySQL;
 
@@ -105,8 +104,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var leagueYearKey = new LeagueYearKey(requestLeague.LeagueID, requestYear);
             var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
             var domainSpecialGameSlots = ConvertSpecialGameSlotEntities(specialGameSlots, tagDictionary);
-            bool hasSpecialRosterSlots = domainSpecialGameSlots.TryGetValue(leagueYearKey, out var specialGameSlotsForLeagueYear);
-            if (!hasSpecialRosterSlots)
+            if (!domainSpecialGameSlots.TryGetValue(leagueYearKey, out var specialGameSlotsForLeagueYear))
             {
                 specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
             }
@@ -165,29 +163,25 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
             foreach (var entity in yearEntities)
             {
-                var success = leaguesDictionary.TryGetValue(entity.LeagueID, out League league);
-                if (!success)
+                if (!leaguesDictionary.TryGetValue(entity.LeagueID, out var league))
                 {
                     _logger.Warn($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                     continue;
                 }
 
-                bool hasEligibilityOverrides = allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides);
-                if (!hasEligibilityOverrides)
+                if (!allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides))
                 {
                     eligibilityOverrides = new List<EligibilityOverride>();
                 }
 
-                bool hasTagOverrides = allTagOverrides.TryGetValue(entity.LeagueID, out var tagOverrides);
-                if (!hasTagOverrides)
+                if (!allTagOverrides.TryGetValue(entity.LeagueID, out var tagOverrides))
                 {
                     tagOverrides = new List<TagOverride>();
                 }
 
                 var leagueYearKey = new LeagueYearKey(entity.LeagueID, entity.Year);
                 var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-                bool hasSpecialRosterSlots = domainSpecialGameSlots.TryGetValue(leagueYearKey, out var specialGameSlotsForLeagueYear);
-                if (!hasSpecialRosterSlots)
+                if (!domainSpecialGameSlots.TryGetValue(leagueYearKey, out var specialGameSlotsForLeagueYear))
                 {
                     specialGameSlotsForLeagueYear = new List<SpecialGameSlot>();
                 }
@@ -376,11 +370,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         var publisherGameDictionary = publisher.PublisherGames
             .Where(x => x.MasterGame is not null)
-            .ToLookup(x => (x.PublisherID, x.MasterGame.MasterGame.MasterGameID));
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         var formerPublisherGameDictionary = publisher.FormerPublisherGames
             .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame.MasterGame.MasterGameID));
+            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
 
         string sql = "select * from vw_league_pickupbid where PublisherID = @publisherID and Successful is NULL";
         var queryObject = new
@@ -393,7 +387,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             List<PickupBid> domainBids = new List<PickupBid>();
             foreach (var bidEntity in bidEntities)
             {
-                var masterGame = await _masterGameRepo.GetMasterGame(bidEntity.MasterGameID);
+                var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
                 PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
                 PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
                 domainBids.Add(domain);
@@ -410,12 +404,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var publisherGameDictionary = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.MasterGame is not null)
-            .ToLookup(x => (x.PublisherID, x.MasterGame.MasterGame.MasterGameID));
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         var formerPublisherGameDictionary = leagueYear.Publishers
             .SelectMany(x => x.FormerPublisherGames)
             .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame.MasterGame.MasterGameID));
+            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
 
         string sql = "select * from vw_league_pickupbid where LeagueID = @leagueID and Year = @year and Successful is NULL";
         var queryObject = new
@@ -1558,7 +1552,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
     }
 
-    private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year, bool includeDeleted = false, MySqlConnection connection = null, MySqlTransaction transaction = null)
+    private async Task<IReadOnlyList<PublisherGame>> GetAllPublisherGamesForYear(int year, bool includeDeleted = false, MySqlConnection? connection = null, MySqlTransaction? transaction = null)
     {
         var query = new
         {
@@ -1607,7 +1601,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainGames;
     }
 
-    private async Task<IReadOnlyList<FormerPublisherGame>> GetAllFormerPublisherGamesForYear(int year, bool includeDeleted = false, MySqlConnection connection = null, MySqlTransaction transaction = null)
+    private async Task<IReadOnlyList<FormerPublisherGame>> GetAllFormerPublisherGamesForYear(int year, bool includeDeleted = false, MySqlConnection? connection = null, MySqlTransaction? transaction = null)
     {
         var query = new
         {
