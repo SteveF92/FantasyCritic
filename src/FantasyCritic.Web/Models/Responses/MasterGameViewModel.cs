@@ -25,7 +25,7 @@ public class MasterGameViewModel
         AveragedScore = masterGame.AveragedScore;
         Notes = masterGame.Notes;
         OpenCriticID = masterGame.OpenCriticID;
-        GGToken = masterGame.GGToken.GetValueOrDefault();
+        GGToken = masterGame.GGToken;
         SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
         Tags = masterGame.Tags.Select(x => x.Name).ToList();
         BoxartFileName = masterGame.BoxartFileName;
@@ -68,7 +68,7 @@ public class MasterGameViewModel
     public decimal? CriticScore { get; }
     public bool AveragedScore { get; }
     public int? OpenCriticID { get; }
-    public string GGToken { get; }
+    public string? GGToken { get; }
     public IReadOnlyList<MasterGameViewModel> SubGames { get; }
     public IReadOnlyList<string> Tags { get; }
     public string Notes { get; }

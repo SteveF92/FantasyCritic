@@ -8,7 +8,7 @@ public class MinimalPublisherViewModel
         LeagueID = leagueYear.League.LeagueID;
         UserID = publisher.User.Id;
         PublisherName = publisher.PublisherName;
-        PublisherIcon = publisher.PublisherIcon.GetValueOrDefault();
+        PublisherIcon = publisher.PublisherIcon;
         LeagueName = leagueYear.League.LeagueName;
         PlayerName = publisher.User.UserName;
         Year = leagueYear.Year;
@@ -32,11 +32,11 @@ public class MinimalPublisherViewModel
 
         GamesReleased = publisher.PublisherGames
             .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame.HasValueTempoTemp)
-            .Count(x => x.MasterGame.ValueTempoTemp.MasterGame.IsReleased(dateToCheck));
+            .Where(x => x.MasterGame is not null)
+            .Count(x => x.MasterGame.MasterGame.IsReleased(dateToCheck));
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame.HasValueTempoTemp)
+            .Where(x => x.MasterGame is not null)
             .Count(x => x.WillRelease());
         GamesWillRelease = allWillRelease - GamesReleased;
 
@@ -52,7 +52,7 @@ public class MinimalPublisherViewModel
     public Guid LeagueID { get; }
     public Guid UserID { get; }
     public string PublisherName { get; }
-    public string PublisherIcon { get; }
+    public string? PublisherIcon { get; }
     public string LeagueName { get; }
     public string PlayerName { get; }
     public int Year { get; }

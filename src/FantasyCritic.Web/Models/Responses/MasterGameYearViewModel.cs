@@ -22,7 +22,7 @@ public class MasterGameYearViewModel
         CriticScore = masterGame.MasterGame.CriticScore;
         AveragedScore = masterGame.MasterGame.AveragedScore;
         OpenCriticID = masterGame.MasterGame.OpenCriticID;
-        GGToken = masterGame.MasterGame.GGToken.GetValueOrDefault();
+        GGToken = masterGame.MasterGame.GGToken;
         SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, currentDate)).ToList();
         Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
         ReadableTags = masterGame.MasterGame.Tags.Select(x => x.ReadableName).ToList();
@@ -104,7 +104,7 @@ public class MasterGameYearViewModel
     public decimal? CriticScore { get; }
     public bool AveragedScore { get; }
     public int? OpenCriticID { get; }
-    public string GGToken { get; }
+    public string? GGToken { get; }
     public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
     public IReadOnlyList<string> Tags { get; }
     public IReadOnlyList<string> ReadableTags { get; }

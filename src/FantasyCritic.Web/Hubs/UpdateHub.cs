@@ -38,17 +38,17 @@ public class UpdateHub : Hub
             Guid leagueGUID = Guid.Parse(leagueID);
             int yearInt = int.Parse(year);
             var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueGUID, yearInt);
-            if (leagueYear.HasNoValueTempoTemp)
+            if (leagueYear is null)
             {
                 return;
             }
 
-            if (!leagueYear.ValueTempoTemp.PlayStatus.DraftIsActive)
+            if (!leagueYear.PlayStatus.DraftIsActive)
             {
                 return;
             }
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, leagueYear.ValueTempoTemp.GetGroupName);
+            await Groups.AddToGroupAsync(Context.ConnectionId, leagueYear.GetGroupName);
         }
         catch (Exception e)
         {

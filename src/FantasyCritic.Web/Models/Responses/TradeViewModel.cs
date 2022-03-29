@@ -26,7 +26,7 @@ public class TradeViewModel
         AcceptedTimestamp = domain.AcceptedTimestamp;
         CompletedTimestamp = domain.CompletedTimestamp;
         Status = domain.Status.Value;
-        Error = domain.GetTradeError().GetValueOrDefault();
+        Error = domain.GetTradeError();
         Votes = domain.TradeVotes.Select(x => new TradeVoteViewModel(x)).ToList();
     }
 
@@ -48,6 +48,6 @@ public class TradeViewModel
     public Instant? AcceptedTimestamp { get; }
     public Instant? CompletedTimestamp { get; }
     public string Status { get; }
-    public string Error { get; }
+    public string? Error { get; }
     public IReadOnlyList<TradeVoteViewModel> Votes { get; }
 }

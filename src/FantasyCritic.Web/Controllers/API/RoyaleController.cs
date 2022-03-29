@@ -52,12 +52,12 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> RoyaleQuarter(int year, int quarter)
     {
         var requestedQuarter = await _royaleService.GetYearQuarter(year, quarter);
-        if (requestedQuarter.HasNoValueTempoTemp)
+        if (requestedQuarter is null)
         {
             return NotFound();
         }
 
-        var viewModel = new RoyaleYearQuarterViewModel(requestedQuarter.ValueTempoTemp);
+        var viewModel = new RoyaleYearQuarterViewModel(requestedQuarter);
         return Ok(viewModel);
     }
 
@@ -84,7 +84,7 @@ public class RoyaleController : FantasyCriticController
         }
 
         var existingPublisher = await _royaleService.GetPublisher(selectedQuarter, currentUser);
-        if (existingPublisher.HasValueTempoTemp)
+        if (existingPublisher is not null)
         {
             return BadRequest();
         }
@@ -108,18 +108,18 @@ public class RoyaleController : FantasyCriticController
             return BadRequest("You cannot have a blank name.");
         }
 
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        if (!publisher.ValueTempoTemp.User.Equals(currentUser))
+        if (!publisher.User.Equals(currentUser))
         {
             return Forbid();
         }
 
-        await _royaleService.ChangePublisherName(publisher.ValueTempoTemp, request.PublisherName);
+        await _royaleService.ChangePublisherName(publisher, request.PublisherName);
         return Ok();
     }
 
@@ -138,18 +138,18 @@ public class RoyaleController : FantasyCriticController
             return BadRequest("You cannot have a blank name.");
         }
 
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        if (!publisher.ValueTempoTemp.User.Equals(currentUser))
+        if (!publisher.User.Equals(currentUser))
         {
             return Forbid();
         }
 
-        await _royaleService.ChangePublisherIcon(publisher.ValueTempoTemp, request.PublisherIcon.ToMaybe());
+        await _royaleService.ChangePublisherIcon(publisher, request.PublisherIcon);
         return Ok();
     }
 
@@ -165,21 +165,21 @@ public class RoyaleController : FantasyCriticController
         var currentUser = currentUserResult.Value;
 
         var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
-        if (yearQuarter.HasNoValueTempoTemp)
+        if (yearQuarter is null)
         {
             return BadRequest();
         }
 
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(yearQuarter.ValueTempoTemp, currentUser);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(yearQuarter, currentUser);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.ValueTempoTemp.User);
+        IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
         var currentDate = _clock.GetToday();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var viewModel = new RoyalePublisherViewModel(publisher.ValueTempoTemp, currentDate, null, quartersWon, masterGameTags);
+        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags);
         return Ok(viewModel);
     }
 
@@ -187,16 +187,16 @@ public class RoyaleController : FantasyCriticController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRoyalePublisher(Guid id)
     {
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(id);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(id);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.ValueTempoTemp.User);
+        IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
         var currentDate = _clock.GetToday();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var viewModel = new RoyalePublisherViewModel(publisher.ValueTempoTemp, currentDate, null, quartersWon, masterGameTags);
+        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags);
         return Ok(viewModel);
     }
 
@@ -243,19 +243,19 @@ public class RoyaleController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        if (!publisher.ValueTempoTemp.User.Equals(currentUser))
+        if (!publisher.User.Equals(currentUser))
         {
             return Forbid();
         }
 
-        var masterGame = await _interLeagueService.GetMasterGameYear(request.MasterGameID, publisher.ValueTempoTemp.YearQuarter.YearQuarter.Year);
-        if (masterGame.HasNoValueTempoTemp)
+        var masterGame = await _interLeagueService.GetMasterGameYear(request.MasterGameID, publisher.YearQuarter.YearQuarter.Year);
+        if (masterGame is null)
         {
             return NotFound();
         }
@@ -263,7 +263,7 @@ public class RoyaleController : FantasyCriticController
         await _royaleSemaphore.WaitAsync();
         try
         {
-            var purchaseResult = await _royaleService.PurchaseGame(publisher.ValueTempoTemp, masterGame.ValueTempoTemp);
+            var purchaseResult = await _royaleService.PurchaseGame(publisher, masterGame);
             var viewModel = new PlayerClaimResultViewModel(purchaseResult);
             return Ok(viewModel);
         }
@@ -283,13 +283,13 @@ public class RoyaleController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        if (!publisher.ValueTempoTemp.User.Equals(currentUser))
+        if (!publisher.User.Equals(currentUser))
         {
             return Forbid();
         }
@@ -297,13 +297,13 @@ public class RoyaleController : FantasyCriticController
         await _royaleSemaphore.WaitAsync();
         try
         {
-            var publisherGame = publisher.ValueTempoTemp.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+            var publisherGame = publisher.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
             if (publisherGame is null)
             {
                 return BadRequest();
             }
 
-            var sellResult = await _royaleService.SellGame(publisher.ValueTempoTemp, publisherGame);
+            var sellResult = await _royaleService.SellGame(publisher, publisherGame);
             if (sellResult.IsFailure)
             {
                 return BadRequest(sellResult.Error);
@@ -327,13 +327,13 @@ public class RoyaleController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(request.PublisherID);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        if (!publisher.ValueTempoTemp.User.Equals(currentUser))
+        if (!publisher.User.Equals(currentUser))
         {
             return Forbid();
         }
@@ -341,14 +341,14 @@ public class RoyaleController : FantasyCriticController
         await _royaleSemaphore.WaitAsync();
         try
         {
-            var publisherGame = publisher.ValueTempoTemp.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
+            var publisherGame = publisher.PublisherGames.SingleOrDefault(x => x.MasterGame.MasterGame.MasterGameID == request.MasterGameID);
             if (publisherGame is null)
             {
                 return BadRequest();
             }
 
             var truncatedRequest = request.AdvertisingMoney.TruncateToPrecision(2);
-            var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher.ValueTempoTemp, publisherGame, truncatedRequest);
+            var setAdvertisingMoneyResult = await _royaleService.SetAdvertisingMoney(publisher, publisherGame, truncatedRequest);
             if (setAdvertisingMoneyResult.IsFailure)
             {
                 return BadRequest(setAdvertisingMoneyResult.Error);
@@ -364,21 +364,21 @@ public class RoyaleController : FantasyCriticController
 
     public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string gameName, Guid publisherID)
     {
-        Maybe<RoyalePublisher> publisher = await _royaleService.GetPublisher(publisherID);
-        if (publisher.HasNoValueTempoTemp)
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(publisherID);
+        if (publisher is null)
         {
             return NotFound();
         }
 
-        var yearQuarter = await _royaleService.GetYearQuarter(publisher.ValueTempoTemp.YearQuarter.YearQuarter.Year, publisher.ValueTempoTemp.YearQuarter.YearQuarter.Quarter);
-        if (yearQuarter.HasNoValueTempoTemp)
+        var yearQuarter = await _royaleService.GetYearQuarter(publisher.YearQuarter.YearQuarter.Year, publisher.YearQuarter.YearQuarter.Quarter);
+        if (yearQuarter is null)
         {
             return BadRequest();
         }
 
         var currentDate = _clock.GetToday();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.ValueTempoTemp.YearQuarter);
+        var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.YearQuarter);
         if (!string.IsNullOrWhiteSpace(gameName))
         {
             masterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
@@ -386,7 +386,7 @@ public class RoyaleController : FantasyCriticController
         else
         {
             masterGames = masterGames
-                .Where(x => x.WillReleaseInQuarter(yearQuarter.ValueTempoTemp.YearQuarter))
+                .Where(x => x.WillReleaseInQuarter(yearQuarter.YearQuarter))
                 .Where(x => !x.MasterGame.IsReleased(currentDate))
                 .Where(x => !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, x.MasterGame, currentDate).Any())
                 .Take(1000)
@@ -394,7 +394,7 @@ public class RoyaleController : FantasyCriticController
         }
 
         var viewModels = masterGames.Select(masterGame =>
-            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, yearQuarter.ValueTempoTemp, publisher.ValueTempoTemp.PublisherGames.Any(y =>
+            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, yearQuarter, publisher.PublisherGames.Any(y =>
                 y.MasterGame.MasterGame.Equals(masterGame.MasterGame)), masterGameTags)).ToList();
         return viewModels;
     }

@@ -10,7 +10,7 @@ public class MasterGameChangeRequestViewModel
 
         RequestNote = domain.RequestNote;
         OpenCriticID = domain.OpenCriticID;
-        GGToken = domain.GGToken.GetValueOrDefault();
+        GGToken = domain.GGToken;
 
         Answered = domain.Answered;
         ResponseNote = domain.ResponseNote;
@@ -22,7 +22,7 @@ public class MasterGameChangeRequestViewModel
     public string RequesterDisplayName { get; }
     public string RequestNote { get; }
     public int? OpenCriticID { get; }
-    public string GGToken { get; }
+    public string? GGToken { get; }
     public MasterGameViewModel MasterGame { get; }
 
     //Response

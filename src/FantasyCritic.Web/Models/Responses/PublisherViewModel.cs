@@ -4,19 +4,19 @@ public class PublisherViewModel
 {
     public PublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, bool userIsInLeague,
         bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
-        : this(leagueYear, publisher, currentDate, Maybe<Publisher>.None, userIsInLeague, outstandingInvite, systemWideValues, counterPickedPublisherGameIDs)
+        : this(leagueYear, publisher, currentDate, null, userIsInLeague, outstandingInvite, systemWideValues, counterPickedPublisherGameIDs)
     {
 
     }
 
-    public PublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, Maybe<Publisher> nextDraftPublisher,
+    public PublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, Publisher? nextDraftPublisher,
         bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
     {
         PublisherID = publisher.PublisherID;
         LeagueID = leagueYear.League.LeagueID;
         UserID = publisher.User.Id;
         PublisherName = publisher.PublisherName;
-        PublisherIcon = publisher.PublisherIcon.GetValueOrDefault();
+        PublisherIcon = publisher.PublisherIcon;
         LeagueName = leagueYear.League.LeagueName;
         PlayerName = publisher.User.UserName;
         Year = leagueYear.Year;
@@ -40,7 +40,7 @@ public class PublisherViewModel
         TotalProjectedPoints = publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate);
         Budget = publisher.Budget;
 
-        if (nextDraftPublisher.HasValueTempoTemp && nextDraftPublisher.ValueTempoTemp.PublisherID == publisher.PublisherID)
+        if (nextDraftPublisher is not null && nextDraftPublisher.PublisherID == publisher.PublisherID)
         {
             NextToDraft = true;
         }
@@ -57,11 +57,11 @@ public class PublisherViewModel
 
         GamesReleased = publisher.PublisherGames
             .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame.HasValueTempoTemp)
-            .Count(x => x.MasterGame.ValueTempoTemp.MasterGame.IsReleased(dateToCheck));
+            .Where(x => x.MasterGame is not null)
+            .Count(x => x.MasterGame.MasterGame.IsReleased(dateToCheck));
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame.HasValueTempoTemp)
+            .Where(x => x.MasterGame is not null)
             .Count(x => x.WillRelease());
         GamesWillRelease = allWillRelease - GamesReleased;
 
@@ -77,7 +77,7 @@ public class PublisherViewModel
     public Guid LeagueID { get; }
     public Guid UserID { get; }
     public string PublisherName { get; }
-    public string PublisherIcon { get; }
+    public string? PublisherIcon { get; }
     public string LeagueName { get; }
     public string PlayerName { get; }
     public int Year { get; }

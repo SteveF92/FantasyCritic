@@ -1,7 +1,7 @@
 namespace FantasyCritic.Web.Helpers;
 public class LeagueUserRelationship
 {
-    public LeagueUserRelationship(Maybe<LeagueInvite> leagueInvite, bool inLeague, bool leagueManager, bool isAdmin)
+    public LeagueUserRelationship(LeagueInvite? leagueInvite, bool inLeague, bool leagueManager, bool isAdmin)
     {
         LeagueInvite = leagueInvite;
         InLeague = inLeague;
@@ -9,8 +9,8 @@ public class LeagueUserRelationship
         IsAdmin = isAdmin;
     }
 
-    public Maybe<LeagueInvite> LeagueInvite { get; }
-    public bool InvitedToLeague => LeagueInvite.HasValueTempoTemp;
+    public LeagueInvite? LeagueInvite { get; }
+    public bool InvitedToLeague => LeagueInvite is not null;
     public bool InLeague { get; }
     public bool InOrInvitedToLeague => InvitedToLeague || InLeague;
     public bool LeagueManager { get; }
@@ -20,7 +20,7 @@ public class LeagueUserRelationship
 
 public class LeagueYearUserRelationship
 {
-    public LeagueYearUserRelationship(Maybe<LeagueInvite> leagueInvite, bool inLeague, bool activeInYear, bool leagueManager, bool isAdmin)
+    public LeagueYearUserRelationship(LeagueInvite? leagueInvite, bool inLeague, bool activeInYear, bool leagueManager, bool isAdmin)
     {
         LeagueInvite = leagueInvite;
         InLeague = inLeague;
@@ -29,8 +29,8 @@ public class LeagueYearUserRelationship
         IsAdmin = isAdmin;
     }
 
-    public Maybe<LeagueInvite> LeagueInvite { get; }
-    public bool InvitedToLeague => LeagueInvite.HasValueTempoTemp;
+    public LeagueInvite? LeagueInvite { get; }
+    public bool InvitedToLeague => LeagueInvite is not null;
     public bool InLeague { get; }
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }

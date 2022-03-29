@@ -6,6 +6,5 @@ public class ChangeRoyalePublisherIconRequest
 {
     [Required]
     public Guid PublisherID { get; set; }
-    [Required]
-    public string PublisherIcon { get; set; }
+    public string? PublisherIcon { get; set; }
 }

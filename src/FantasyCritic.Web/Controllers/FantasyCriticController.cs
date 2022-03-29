@@ -29,5 +29,5 @@ public abstract class FantasyCriticController : ControllerBase
         return Result.Success(currentUser);
     }
 
-    protected static (Maybe<T> ValidRecord, Maybe<IActionResult> FailedResult) GetFailedResult<T>(IActionResult failedResult) => (Maybe<T>.None, Maybe<IActionResult>.From(failedResult));
+    protected static (T? ValidRecord, IActionResult? FailedResult) GetFailedResult<T>(IActionResult failedResult) where T : class => (null, failedResult);
 }

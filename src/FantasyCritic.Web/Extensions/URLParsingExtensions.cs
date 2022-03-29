@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Extensions;
 
 public static class URLParsingExtensions
 {
-    public static int? GetOpenCriticIDFromURL(string openCriticLink)
+    public static int? GetOpenCriticIDFromURL(string? openCriticLink)
     {
         if (string.IsNullOrWhiteSpace(openCriticLink))
         {
@@ -25,21 +25,22 @@ public static class URLParsingExtensions
         return openCriticID;
     }
 
-    public static Maybe<string> GetGGTokenFromURL(string ggLink)
+    public static string? GetGGTokenFromURL(string? ggLink)
     {
         if (string.IsNullOrWhiteSpace(ggLink))
         {
-            return Maybe<string>.None;
+            return null;
         }
+
         var result = SubstringSearching.GetBetween(ggLink, "/games/", "/");
         if (result.IsFailure)
         {
-            return Maybe<string>.None;
+            return null;
         }
 
         if (result.Value.Length != 6)
         {
-            return Maybe<string>.None;
+            return null;
         }
 
         return result.Value;

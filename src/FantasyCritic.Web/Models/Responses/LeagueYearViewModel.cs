@@ -7,12 +7,12 @@ namespace FantasyCritic.Web.Models.Responses;
 public class LeagueYearViewModel
 {
     public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear,
-        LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Maybe<Publisher> nextDraftPublisher,
+        LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Publisher? nextDraftPublisher,
         DraftPhase draftPhase, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
-        Maybe<FantasyCriticUser> accessingUser, IEnumerable<ManagerMessage> managerMessages, Maybe<FantasyCriticUser> previousYearWinner,
-        Maybe<IReadOnlyList<PublicBiddingMasterGame>> publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
-        IEnumerable<Trade> activeTrades, Maybe<PrivatePublisherDataViewModel> privatePublisherData, GameNewsViewModel gameNews)
+        FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
+        IReadOnlyList<PublicBiddingMasterGame>? publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
+        IEnumerable<Trade> activeTrades, PrivatePublisherDataViewModel? privatePublisherData, GameNewsViewModel gameNews)
     {
         League = leagueViewModel;
         LeagueID = leagueYear.League.LeagueID;
@@ -26,8 +26,13 @@ public class LeagueYearViewModel
         TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
         ScoringSystem = leagueYear.Options.ScoringSystem.Name;
         TradingSystem = leagueYear.Options.TradingSystem.Value;
-        UnlinkedGameExists = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame.HasNoValueTempoTemp);
-        UserIsActive = activeUsers.Any(x => x.Id == accessingUser.GetValueOrDefault(y => y.Id));
+        UnlinkedGameExists = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame is null);
+
+        if (accessingUser is not null)
+        {
+            UserIsActive = activeUsers.Any(x => x.Id == accessingUser.Id);
+        }
+        
         HasSpecialSlots = leagueYear.Options.HasSpecialSlots();
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
@@ -39,15 +44,15 @@ public class LeagueYearViewModel
         foreach (var user in activeUsers)
         {
             var publisher = leagueYear.GetUserPublisher(user);
-            if (publisher.HasNoValueTempoTemp)
+            if (publisher is null)
             {
                 playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, false));
                 allPublishersMade = false;
             }
             else
             {
-                bool isPreviousYearWinner = previousYearWinner.HasValueTempoTemp && previousYearWinner.ValueTempoTemp.Id == user.Id;
-                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher.ValueTempoTemp, currentDate, systemWideValues,
+                bool isPreviousYearWinner = previousYearWinner is not null && previousYearWinner.Id == user.Id;
+                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
                     userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner));
             }
         }
@@ -56,15 +61,15 @@ public class LeagueYearViewModel
         {
             allPublishersMade = false;
 
-            if (invitedPlayer.User.HasValueTempoTemp)
+            if (invitedPlayer.User is not null)
             {
-                playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.ValueTempoTemp.UserName));
+                playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.UserName));
             }
             else
             {
-                if (accessingUser.HasValueTempoTemp)
+                if (accessingUser is not null)
                 {
-                    if (userIsManager || string.Equals(invitedPlayer.EmailAddress, accessingUser.ValueTempoTemp.Email, StringComparison.OrdinalIgnoreCase))
+                    if (userIsManager || string.Equals(invitedPlayer.EmailAddress, accessingUser.Email, StringComparison.OrdinalIgnoreCase))
                     {
                         playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.EmailAddress));
                     }
@@ -102,13 +107,13 @@ public class LeagueYearViewModel
             ManagerMessages = ManagerMessages.Where(x => x.IsPublic).ToList();
         }
 
-        if (publicBiddingGames.HasValueTempoTemp)
+        if (publicBiddingGames is not null)
         {
-            PublicBiddingGames = publicBiddingGames.ValueTempoTemp.Select(x => new PublicBiddingMasterGameViewModel(x, currentDate)).ToList();
+            PublicBiddingGames = publicBiddingGames.Select(x => new PublicBiddingMasterGameViewModel(x, currentDate)).ToList();
         }
 
         ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
-        PrivatePublisherData = privatePublisherData.GetValueOrDefault();
+        PrivatePublisherData = privatePublisherData;
         GameNews = gameNews;
     }
 
@@ -136,6 +141,6 @@ public class LeagueYearViewModel
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
     public IReadOnlyList<PublicBiddingMasterGameViewModel> PublicBiddingGames { get; }
     public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
-    public PrivatePublisherDataViewModel PrivatePublisherData { get; }
+    public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
     public GameNewsViewModel GameNews { get; }
 }

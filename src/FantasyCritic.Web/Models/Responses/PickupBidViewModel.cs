@@ -14,9 +14,14 @@ public class PickupBidViewModel
         Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
         Successful = pickupBid.Successful;
         MasterGame = new MasterGameViewModel(pickupBid.MasterGame, currentDate);
-        ConditionalDropPublisherGame = pickupBid.ConditionalDropPublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, false, false));
+
+        if (pickupBid.ConditionalDropPublisherGame is not null)
+        {
+            ConditionalDropPublisherGame = new PublisherGameViewModel(pickupBid.ConditionalDropPublisherGame, currentDate, false, false);
+        }
+
         CounterPick = pickupBid.CounterPick;
-        Outcome = pickupBid.Outcome.GetValueOrDefault();
+        Outcome = pickupBid.Outcome;
         ProjectedPointsAtTimeOfBid = pickupBid.ProjectedPointsAtTimeOfBid;
     }
 
@@ -28,8 +33,8 @@ public class PickupBidViewModel
     public DateTime Timestamp { get; }
     public bool? Successful { get; }
     public MasterGameViewModel MasterGame { get; }
-    public PublisherGameViewModel ConditionalDropPublisherGame { get; }
+    public PublisherGameViewModel? ConditionalDropPublisherGame { get; }
     public bool CounterPick { get; }
-    public string Outcome { get; }
+    public string? Outcome { get; }
     public decimal? ProjectedPointsAtTimeOfBid { get; }
 }

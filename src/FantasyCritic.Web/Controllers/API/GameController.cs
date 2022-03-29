@@ -32,29 +32,29 @@ public class GameController : FantasyCriticController
     public async Task<ActionResult<MasterGameViewModel>> MasterGame(Guid id)
     {
         var masterGame = await _interLeagueService.GetMasterGame(id);
-        if (masterGame.HasNoValueTempoTemp)
+        if (masterGame is null)
         {
             return NotFound();
         }
 
-        var numberOutstandingCorrections = await _interLeagueService.GetNumberOutstandingCorrections(masterGame.ValueTempoTemp);
+        var numberOutstandingCorrections = await _interLeagueService.GetNumberOutstandingCorrections(masterGame);
 
         var currentDate = _clock.GetToday();
-        var viewModel = new MasterGameViewModel(masterGame.ValueTempoTemp, currentDate, numberOutstandingCorrections: numberOutstandingCorrections);
+        var viewModel = new MasterGameViewModel(masterGame, currentDate, numberOutstandingCorrections: numberOutstandingCorrections);
         return viewModel;
     }
 
     [HttpGet("{id}/{year}")]
     public async Task<ActionResult<MasterGameYearViewModel>> MasterGameYear(Guid id, int year)
     {
-        Maybe<MasterGameYear> masterGame = await _interLeagueService.GetMasterGameYear(id, year);
-        if (masterGame.HasNoValueTempoTemp)
+        MasterGameYear? masterGame = await _interLeagueService.GetMasterGameYear(id, year);
+        if (masterGame is null)
         {
             return NotFound();
         }
 
         var currentDate = _clock.GetToday();
-        var viewModel = new MasterGameYearViewModel(masterGame.ValueTempoTemp, currentDate);
+        var viewModel = new MasterGameYearViewModel(masterGame, currentDate);
         return viewModel;
     }
 
@@ -65,18 +65,18 @@ public class GameController : FantasyCriticController
         var supportedYears = await _interLeagueService.GetSupportedYears();
         foreach (var supportedYear in supportedYears)
         {
-            Maybe<MasterGameYear> masterGameYear = await _interLeagueService.GetMasterGameYear(id, supportedYear.Year);
-            if (masterGameYear.HasNoValueTempoTemp)
+            MasterGameYear? masterGameYear = await _interLeagueService.GetMasterGameYear(id, supportedYear.Year);
+            if (masterGameYear is null)
             {
                 continue;
             }
 
-            if (masterGameYear.ValueTempoTemp.PercentStandardGame == 0)
+            if (masterGameYear.PercentStandardGame == 0)
             {
                 continue;
             }
 
-            masterGameYears.Add(masterGameYear.ValueTempoTemp);
+            masterGameYears.Add(masterGameYear);
         }
 
         var currentDate = _clock.GetToday();
@@ -116,19 +116,19 @@ public class GameController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<LeagueYear> leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear.HasNoValueTempoTemp)
+        LeagueYear? leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
+        if (leagueYear is null)
         {
             return BadRequest();
         }
 
-        var userPublisher = leagueYear.ValueTempoTemp.GetUserPublisher(currentUser);
-        if (userPublisher.HasNoValueTempoTemp)
+        var userPublisher = leagueYear.GetUserPublisher(currentUser);
+        if (userPublisher is null)
         {
             return BadRequest();
         }
 
-        var possibleMasterGames = await _gameSearchingService.GetAllPossibleMasterGameYearsForLeagueYear(leagueYear.ValueTempoTemp, userPublisher.ValueTempoTemp, year);
+        var possibleMasterGames = await _gameSearchingService.GetAllPossibleMasterGameYearsForLeagueYear(leagueYear, userPublisher, year);
         var currentDate = _clock.GetToday();
         var viewModels = possibleMasterGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).ToList();
         return viewModels;
@@ -163,13 +163,13 @@ public class GameController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
-        if (masterGame.HasNoValueTempoTemp)
+        MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+        if (masterGame is null)
         {
             return NotFound();
         }
 
-        MasterGameChangeRequest domainRequest = request.ToDomain(currentUser, _clock.GetCurrentInstant(), masterGame.ValueTempoTemp);
+        MasterGameChangeRequest domainRequest = request.ToDomain(currentUser, _clock.GetCurrentInstant(), masterGame);
         await _interLeagueService.CreateMasterGameChangeRequest(domainRequest);
         return Ok();
     }
@@ -185,13 +185,13 @@ public class GameController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
-        if (maybeRequest.HasNoValueTempoTemp)
+        MasterGameRequest? maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
+        if (maybeRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest.ValueTempoTemp;
+        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();
@@ -212,13 +212,13 @@ public class GameController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
-        if (maybeRequest.HasNoValueTempoTemp)
+        MasterGameChangeRequest? maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
+        if (maybeRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest.ValueTempoTemp;
+        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();
@@ -239,13 +239,13 @@ public class GameController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
-        if (maybeRequest.HasNoValueTempoTemp)
+        MasterGameRequest? maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
+        if (maybeRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest.ValueTempoTemp;
+        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();
@@ -266,13 +266,13 @@ public class GameController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
-        if (maybeRequest.HasNoValueTempoTemp)
+        MasterGameChangeRequest? maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
+        if (maybeRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest.ValueTempoTemp;
+        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();

@@ -11,14 +11,14 @@ public class MasterGameRequestViewModel
         EstimatedReleaseDate = domain.EstimatedReleaseDate;
         SteamID = domain.SteamID;
         OpenCriticID = domain.OpenCriticID;
-        GGToken = domain.GGToken.GetValueOrDefault();
+        GGToken = domain.GGToken;
 
         Answered = domain.Answered;
         ResponseNote = domain.ResponseNote;
         ResponseTimestamp = domain.ResponseTimestamp;
-        if (domain.MasterGame.HasValueTempoTemp)
+        if (domain.MasterGame is not null)
         {
-            MasterGame = new MasterGameViewModel(domain.MasterGame.ValueTempoTemp, currentDate);
+            MasterGame = new MasterGameViewModel(domain.MasterGame, currentDate);
         }
         Hidden = domain.Hidden;
         RequestNote = domain.RequestNote;
@@ -31,7 +31,7 @@ public class MasterGameRequestViewModel
     public string EstimatedReleaseDate { get; }
     public int? SteamID { get; }
     public int? OpenCriticID { get; }
-    public string GGToken { get; }
+    public string? GGToken { get; }
     public string RequestNote { get; }
 
     //Response

@@ -10,8 +10,16 @@ public class PublisherSlotViewModel
         SlotNumber = slot.SlotNumber;
         OverallSlotNumber = slot.OverallSlotNumber;
         CounterPick = slot.CounterPick;
-        SpecialSlot = slot.SpecialGameSlot.GetValueOrDefault(x => new SpecialGameSlotViewModel(x));
-        PublisherGame = slot.PublisherGame.GetValueOrDefault(x => new PublisherGameViewModel(x, currentDate, counterPickedPublisherGameIDs.Contains(x.PublisherGameID), leagueYear.Options.CounterPicksBlockDrops));
+
+        if (slot.SpecialGameSlot is not null)
+        {
+            SpecialSlot = new SpecialGameSlotViewModel(slot.SpecialGameSlot);
+        }
+
+        if (slot.PublisherGame is not null)
+        {
+            PublisherGame = new PublisherGameViewModel(slot.PublisherGame, currentDate, counterPickedPublisherGameIDs.Contains(slot.PublisherGame.PublisherGameID), leagueYear.Options.CounterPicksBlockDrops);
+        }
 
         EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();
         GameMeetsSlotCriteria = !EligibilityErrors.Any();

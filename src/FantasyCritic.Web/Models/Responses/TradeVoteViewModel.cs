@@ -9,11 +9,11 @@ public class TradeVoteViewModel
         UserID = domain.User.Id;
         DisplayName = domain.User.UserName;
         Approved = domain.Approved;
-        Comment = domain.Comment.GetValueOrDefault();
+        Comment = domain.Comment;
     }
 
     public Guid UserID { get; }
     public string DisplayName { get; }
     public bool Approved { get; }
-    public string Comment { get; }
+    public string? Comment { get; }
 }

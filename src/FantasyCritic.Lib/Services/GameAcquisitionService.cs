@@ -601,12 +601,12 @@ public class GameAcquisitionService
         return Result.Success();
     }
 
-    public async Task<Maybe<IReadOnlyList<PublicBiddingMasterGame>>> GetPublicBiddingGames(LeagueYear leagueYear)
+    public async Task<IReadOnlyList<PublicBiddingMasterGame>?> GetPublicBiddingGames(LeagueYear leagueYear)
     {
         var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
         if (!isInPublicWindow)
         {
-            return Maybe<IReadOnlyList<PublicBiddingMasterGame>>.None;
+            return null;
         }
 
         var currentDate = _clock.GetToday();

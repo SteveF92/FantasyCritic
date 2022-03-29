@@ -88,12 +88,12 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> AvailableYears(Guid id)
     {
         var leagueRecord = await GetExistingLeague(id, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.ValueTempoTemp.CurrentUser.ValueTempoTemp;
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var currentUser = leagueRecord.ValidResult.CurrentUser;
+        var league = leagueRecord.ValidResult.League;
 
         IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
         var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
@@ -113,12 +113,12 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> AddNewLeagueYear([FromBody] NewLeagueYearRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.ValueTempoTemp.CurrentUser.ValueTempoTemp;
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var currentUser = leagueRecord.ValidResult.CurrentUser;
+        var league = leagueRecord.ValidResult.League;
 
         if (league.Years.Contains(request.Year))
         {
@@ -146,13 +146,13 @@ public class LeagueManagerController : BaseLeagueController
 
         var mostRecentYear = league.Years.Max();
         var mostRecentLeagueYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, mostRecentYear);
-        if (mostRecentLeagueYear.HasNoValueTempoTemp)
+        if (mostRecentLeagueYear is null)
         {
             throw new Exception("Most recent league year could not be found");
         }
 
-        var updatedOptions = mostRecentLeagueYear.ValueTempoTemp.Options.UpdateOptionsForYear(request.Year);
-        await _fantasyCriticService.AddNewLeagueYear(league, request.Year, updatedOptions, mostRecentLeagueYear.ValueTempoTemp);
+        var updatedOptions = mostRecentLeagueYear.Options.UpdateOptionsForYear(request.Year);
+        await _fantasyCriticService.AddNewLeagueYear(league, request.Year, updatedOptions, mostRecentLeagueYear);
 
         return Ok();
     }
@@ -161,11 +161,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> ChangeLeagueOptions([FromBody] ChangeLeagueOptionsRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var league = leagueRecord.ValidResult.League;
 
         if (string.IsNullOrWhiteSpace(request.LeagueName))
         {
@@ -186,12 +186,12 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> EditLeagueYearSettings([FromBody] LeagueYearSettingsViewModel request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var currentUser = leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser.ValueTempoTemp;
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         if (request.Tags.Required.Any())
         {
@@ -215,11 +215,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> InvitePlayer([FromBody] CreateInviteRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var league = leagueRecord.ValidResult.League;
 
         string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
         FantasyCriticUser inviteUser;
@@ -263,11 +263,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> CreateInviteLink([FromBody] CreateInviteLinkRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var league = leagueRecord.ValidResult.League;
 
         IReadOnlyList<LeagueInviteLink> activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
         if (activeLinks.Count >= 2)
@@ -284,11 +284,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteInviteLinkRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var league = leagueRecord.ValidResult.League;
 
         var activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
         var thisLink = activeLinks.SingleOrDefault(x => x.InviteID == request.InviteID);
@@ -306,11 +306,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> InviteLinks(Guid leagueID)
     {
         var leagueRecord = await GetExistingLeague(leagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var league = leagueRecord.ValidResult.League;
 
         int currentYear = league.Years.Max();
         string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
@@ -323,23 +323,23 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> RescindInvite([FromBody] DeleteInviteRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
 
-        Maybe<LeagueInvite> invite = await _leagueMemberService.GetInvite(request.InviteID);
-        if (invite.HasNoValueTempoTemp)
+        LeagueInvite? invite = await _leagueMemberService.GetInvite(request.InviteID);
+        if (invite is null)
         {
             return BadRequest();
         }
 
-        if (invite.ValueTempoTemp.League.LeagueID != leagueRecord.ValidResult.ValueTempoTemp.League.LeagueID)
+        if (invite.League.LeagueID != leagueRecord.ValidResult.League.LeagueID)
         {
             return Forbid();
         }
 
-        await _leagueMemberService.DeleteInvite(invite.ValueTempoTemp);
+        await _leagueMemberService.DeleteInvite(invite);
         return Ok();
     }
 
@@ -347,11 +347,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> RemovePlayer([FromBody] PlayerRemoveRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var league = leagueRecord.ValidResult.League;
 
         if (league.LeagueManager.Id == request.UserID)
         {
@@ -380,11 +380,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> CreatePublisherForUser([FromBody] CreatePublisherForUserRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
         {
@@ -404,7 +404,7 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var publisherForUser = leagueYear.GetUserPublisher(userToCreate);
-        if (publisherForUser.HasValueTempoTemp)
+        if (publisherForUser is not null)
         {
             return BadRequest("That player already has a publisher for this this league/year.");
         }
@@ -417,12 +417,12 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> EditPublisher([FromBody] PublisherEditRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
-        if (leagueYearPublisherRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherRecord.FailedResult is not null)
         {
-            return leagueYearPublisherRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher;
+        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
+        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
 
         var editValues = request.ToDomain(leagueYear, publisher);
         Result result = await _publisherService.EditPublisher(editValues);
@@ -438,12 +438,12 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> RemovePublisher([FromBody] PublisherRemoveRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
-        if (leagueYearPublisherRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherRecord.FailedResult is not null)
         {
-            return leagueYearPublisherRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher;
+        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
+        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
 
         await _publisherService.FullyRemovePublisher(leagueYear, publisher);
 
@@ -454,11 +454,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> SetPlayerActiveStatus([FromBody] LeaguePlayerActiveRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         Dictionary<FantasyCriticUser, bool> userActiveStatus = new Dictionary<FantasyCriticUser, bool>();
         foreach (var userKeyValue in request.ActiveStatus)
@@ -470,7 +470,7 @@ public class LeagueManagerController : BaseLeagueController
             }
 
             var publisherForUser = leagueYear.GetUserPublisher(domainUser);
-            if (publisherForUser.HasValueTempoTemp && !userKeyValue.Value)
+            if (publisherForUser is not null && !userKeyValue.Value)
             {
                 return BadRequest("You must remove a player's publisher before you can set them as inactive.");
             }
@@ -491,21 +491,21 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> SetAutoDraft([FromBody] ManagerSetAutoDraftRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotFinished);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         foreach (var requestPublisher in request.PublisherAutoDraft)
         {
             var publisher = leagueYear.GetPublisherByID(requestPublisher.Key);
-            if (publisher.HasNoValueTempoTemp)
+            if (publisher is null)
             {
                 return Forbid();
             }
 
-            await _publisherService.SetAutoDraft(publisher.ValueTempoTemp, requestPublisher.Value);
+            await _publisherService.SetAutoDraft(publisher, requestPublisher.Value);
         }
 
         var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear);
@@ -521,14 +521,14 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> ManagerClaimGame([FromBody] ClaimGameRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
-        if (leagueYearPublisherRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherRecord.FailedResult is not null)
         {
-            return leagueYearPublisherRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher;
+        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
+        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
 
-        Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+        MasterGame? masterGame = null;
         if (request.MasterGameID.HasValue)
         {
             masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
@@ -547,21 +547,21 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> ManagerAssociateGame([FromBody] AssociateGameRequest request)
     {
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
-        if (leagueYearPublisherGameRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
-            return leagueYearPublisherGameRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisher = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.Publisher;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.PublisherGame;
+        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
+        var publisher = leagueYearPublisherGameRecord.ValidResult.Publisher;
+        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
 
-        Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
-        if (masterGame.HasNoValueTempoTemp)
+        MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+        if (masterGame is null)
         {
             return BadRequest();
         }
 
-        AssociateGameDomainRequest domainRequest = new AssociateGameDomainRequest(leagueYear, publisher, publisherGame, masterGame.ValueTempoTemp, request.ManagerOverride);
+        AssociateGameDomainRequest domainRequest = new AssociateGameDomainRequest(leagueYear, publisher, publisherGame, masterGame, request.ManagerOverride);
 
         ClaimResult result = await _gameAcquisitionService.AssociateGame(domainRequest);
         var viewModel = new ManagerClaimResultViewModel(result);
@@ -575,13 +575,13 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> RemovePublisherGame([FromBody] GameRemoveRequest request)
     {
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
-        if (leagueYearPublisherGameRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
-            return leagueYearPublisherGameRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisher = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.Publisher;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.PublisherGame;
+        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
+        var publisher = leagueYearPublisherGameRecord.ValidResult.Publisher;
+        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
 
         Result result = await _publisherService.RemovePublisherGame(leagueYear, publisher, publisherGame);
         if (result.IsFailure)
@@ -609,12 +609,12 @@ public class LeagueManagerController : BaseLeagueController
     private async Task<IActionResult> UpdateManualCriticScore(Guid publisherID, Guid publisherGameID, decimal? manualCriticScore)
     {
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(publisherID, publisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
-        if (leagueYearPublisherGameRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
-            return leagueYearPublisherGameRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.PublisherGame;
+        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
+        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
 
         await _fantasyCriticService.ManuallyScoreGame(publisherGame, manualCriticScore);
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
@@ -626,12 +626,12 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> ManuallySetWillNotRelease([FromBody] ManualPublisherGameWillNotReleaseRequest request)
     {
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
-        if (leagueYearPublisherGameRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
-            return leagueYearPublisherGameRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.ValueTempoTemp.PublisherGame;
+        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
+        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
 
         await _fantasyCriticService.ManuallySetWillNotRelease(leagueYear, publisherGame, request.WillNotRelease);
 
@@ -642,11 +642,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> StartDraft([FromBody] StartDraftRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.PlayOpenDraftNotStarted);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
 
         bool readyToPlay = _draftService.LeagueIsReadyToPlay(leagueYear.SupportedYear, leagueYear.Publishers, activeUsers);
@@ -670,11 +670,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> ResetDraft([FromBody] ResetDraftRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.DuringDraft);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         await _draftService.ResetDraft(leagueYear);
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
@@ -686,11 +686,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> SetDraftOrder([FromBody] DraftOrderRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
         var readyToSetDraftOrder = _draftService.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers);
@@ -704,12 +704,12 @@ public class LeagueManagerController : BaseLeagueController
         {
             var requestPublisher = request.PublisherDraftPositions[index];
             var publisher = leagueYear.GetPublisherByID(requestPublisher);
-            if (publisher.HasNoValueTempoTemp)
+            if (publisher is null)
             {
                 return BadRequest();
             }
 
-            draftPositions.Add(new KeyValuePair<Publisher, int>(publisher.ValueTempoTemp, index + 1));
+            draftPositions.Add(new KeyValuePair<Publisher, int>(publisher, index + 1));
         }
 
         var result = await _draftService.SetDraftOrder(leagueYear, draftPositions);
@@ -725,25 +725,25 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> ManagerDraftGame([FromBody] ManagerDraftGameRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.ActiveDraft);
-        if (leagueYearPublisherRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearPublisherRecord.FailedResult is not null)
         {
-            return leagueYearPublisherRecord.FailedResult.ValueTempoTemp;
+            return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher;
+        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
+        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
 
         var nextPublisher = _draftService.GetNextDraftPublisher(leagueYear);
-        if (nextPublisher.HasNoValueTempoTemp)
+        if (nextPublisher is null)
         {
             return BadRequest("There are no spots open to draft.");
         }
 
-        if (!nextPublisher.ValueTempoTemp.Equals(publisher))
+        if (!nextPublisher.Equals(publisher))
         {
             return BadRequest("That publisher is not next up for drafting.");
         }
 
-        Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+        MasterGame? masterGame = null;
         if (request.MasterGameID.HasValue)
         {
             masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
@@ -787,11 +787,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> SetDraftPause([FromBody] DraftPauseRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.DuringDraft);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         await _draftService.SetDraftPause(leagueYear, request.Pause);
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
@@ -803,11 +803,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> UndoLastDraftAction([FromBody] UndoLastDraftActionRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.DraftPaused);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         bool hasGames = leagueYear.Publishers.Any(x => x.PublisherGames.Any());
         if (!hasGames)
@@ -825,25 +825,25 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligiblityOverrideRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
-        Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
-        if (masterGame.HasNoValueTempoTemp)
+        MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+        if (masterGame is null)
         {
             return BadRequest();
         }
 
-        if (masterGame.ValueTempoTemp.ReleaseDate.HasValue && masterGame.ValueTempoTemp.ReleaseDate.Value.Year < leagueYear.Year)
+        if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year < leagueYear.Year)
         {
             return BadRequest("You can't change the override setting of a game that came out in a previous year.");
         }
 
         var currentDate = _clock.GetToday();
-        var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.ValueTempoTemp, currentDate);
+        var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, currentDate);
         bool alreadyEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
         bool isAllowing = request.Eligible.HasValue && request.Eligible.Value;
         bool isBanning = request.Eligible.HasValue && !request.Eligible.Value;
@@ -858,13 +858,13 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("That game is already ineligible in your league.");
         }
 
-        await _fantasyCriticService.SetEligibilityOverride(leagueYear, masterGame.ValueTempoTemp, request.Eligible);
+        await _fantasyCriticService.SetEligibilityOverride(leagueYear, masterGame, request.Eligible);
         var refreshedLeagueYear = await _fantasyCriticService.GetLeagueYear(leagueYear.League.LeagueID, request.Year);
-        if (refreshedLeagueYear.HasNoValueTempoTemp)
+        if (refreshedLeagueYear is null)
         {
             return BadRequest();
         }
-        await _fantasyCriticService.UpdatePublisherGameCalculatedStats(refreshedLeagueYear.ValueTempoTemp);
+        await _fantasyCriticService.UpdatePublisherGameCalculatedStats(refreshedLeagueYear);
 
         return Ok();
     }
@@ -873,28 +873,28 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> SetGameTagOverride([FromBody] TagOverrideRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
-        Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
-        if (masterGame.HasNoValueTempoTemp)
+        MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+        if (masterGame is null)
         {
             return BadRequest();
         }
 
-        if (masterGame.ValueTempoTemp.ReleaseDate.HasValue && masterGame.ValueTempoTemp.ReleaseDate.Value.Year < leagueYear.Year)
+        if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year < leagueYear.Year)
         {
             return BadRequest("You can't override the tags of a game that came out in a previous year.");
         }
 
-        IReadOnlyList<MasterGameTag> currentOverrideTags = await _fantasyCriticService.GetTagOverridesForGame(leagueYear.League, leagueYear.Year, masterGame.ValueTempoTemp);
+        IReadOnlyList<MasterGameTag> currentOverrideTags = await _fantasyCriticService.GetTagOverridesForGame(leagueYear.League, leagueYear.Year, masterGame);
 
         var allTags = await _interLeagueService.GetMasterGameTags();
         var requestedTags = allTags.Where(x => request.Tags.Contains(x.Name)).ToList();
-        if (ListExtensions.SequencesContainSameElements(masterGame.ValueTempoTemp.Tags, requestedTags))
+        if (ListExtensions.SequencesContainSameElements(masterGame.Tags, requestedTags))
         {
             return BadRequest("That game already has those exact tags.");
         }
@@ -904,13 +904,13 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("That game is already overriden to have those exact tags.");
         }
 
-        await _fantasyCriticService.SetTagOverride(leagueYear, masterGame.ValueTempoTemp, requestedTags);
+        await _fantasyCriticService.SetTagOverride(leagueYear, masterGame, requestedTags);
         var refreshedLeagueYear = await _fantasyCriticService.GetLeagueYear(leagueYear.League.LeagueID, request.Year);
-        if (refreshedLeagueYear.HasNoValueTempoTemp)
+        if (refreshedLeagueYear is null)
         {
             return BadRequest();
         }
-        await _fantasyCriticService.UpdatePublisherGameCalculatedStats(refreshedLeagueYear.ValueTempoTemp);
+        await _fantasyCriticService.UpdatePublisherGameCalculatedStats(refreshedLeagueYear);
 
         return Ok();
     }
@@ -919,11 +919,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> PromoteNewLeagueManager([FromBody] PromoteNewLeagueManagerRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult.HasValueTempoTemp)
+        if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult.ValueTempoTemp;
+            return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.ValueTempoTemp.League;
+        var league = leagueRecord.ValidResult.League;
 
         var newManager = await _userManager.FindByIdAsync(request.NewManagerUserID.ToString());
         var usersInLeague = await _leagueMemberService.GetUsersInLeague(league);
@@ -941,11 +941,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> PostNewManagerMessage([FromBody] PostNewManagerMessageRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         await _fantasyCriticService.PostNewManagerMessage(leagueYear, request.Message, request.IsPublic);
 
@@ -956,11 +956,11 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> DeleteManagerMessage([FromBody] DeleteManagerMessageRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear;
+        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
 
         Result result = await _fantasyCriticService.DeleteManagerMessage(leagueYear, request.MessageID);
         if (result.IsFailure)
@@ -975,18 +975,18 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
-        if (trade.HasNoValueTempoTemp)
+        if (trade is null)
         {
             return BadRequest();
         }
 
-        Result result = await _fantasyCriticService.RejectTradeByManager(trade.ValueTempoTemp);
+        Result result = await _fantasyCriticService.RejectTradeByManager(trade);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -999,18 +999,18 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> ExecuteTrade([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
-        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return leagueYearRecord.FailedResult.ValueTempoTemp;
+            return leagueYearRecord.FailedResult;
         }
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
-        if (trade.HasNoValueTempoTemp)
+        if (trade is null)
         {
             return BadRequest();
         }
 
-        Result result = await _fantasyCriticService.ExecuteTrade(trade.ValueTempoTemp);
+        Result result = await _fantasyCriticService.ExecuteTrade(trade);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
