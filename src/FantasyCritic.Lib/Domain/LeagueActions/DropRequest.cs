@@ -22,14 +22,14 @@ public class DropRequest : IEquatable<DropRequest>
     public bool? Successful { get; }
     public Guid? ProcessSetID { get; }
 
-    public bool Equals(DropRequest other)
+    public bool Equals(DropRequest? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return DropRequestID.Equals(other.DropRequestID);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

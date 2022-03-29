@@ -26,21 +26,21 @@ public class SupportedYear : IComparable<SupportedYear>, IEquatable<SupportedYea
         return Year.ToString();
     }
 
-    public int CompareTo(SupportedYear other)
+    public int CompareTo(SupportedYear? other)
     {
         if (ReferenceEquals(this, other)) return 0;
         if (ReferenceEquals(null, other)) return 1;
         return Year.CompareTo(other.Year);
     }
 
-    public bool Equals(SupportedYear other)
+    public bool Equals(SupportedYear? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Year == other.Year;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

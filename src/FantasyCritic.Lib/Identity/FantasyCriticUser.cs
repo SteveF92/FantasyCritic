@@ -38,14 +38,14 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
         LastChangedCredentials = currentInstant;
     }
 
-    public bool Equals(FantasyCriticUser other)
+    public bool Equals(FantasyCriticUser? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Id.Equals(other.Id);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

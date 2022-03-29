@@ -15,13 +15,13 @@ public static class ListExtensions
         return !b.Except(a).Any();
     }
 
-    public static IEnumerable<TSource> WhereMin<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+    public static IEnumerable<TSource> WhereMin<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector) where TKey : notnull
     {
         var minValue = source.Select(selector).Min();
         return source.Where(item => selector.Invoke(item).Equals(minValue));
     }
 
-    public static IEnumerable<TSource> WhereMax<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+    public static IEnumerable<TSource> WhereMax<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector) where TKey : notnull
     {
         var minValue = source.Select(selector).Max();
         return source.Where(item => selector.Invoke(item).Equals(minValue));

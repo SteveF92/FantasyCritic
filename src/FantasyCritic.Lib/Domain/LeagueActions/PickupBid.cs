@@ -53,14 +53,14 @@ public class PickupBid : IEquatable<PickupBid>
             conditionalDropResult);
     }
 
-    public bool Equals(PickupBid other)
+    public bool Equals(PickupBid? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return BidID.Equals(other.BidID);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

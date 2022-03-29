@@ -128,14 +128,14 @@ public class MasterGame : IEquatable<MasterGame>
 
     public override string ToString() => GameName;
 
-    public bool Equals(MasterGame other)
+    public bool Equals(MasterGame? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return MasterGameID.Equals(other.MasterGameID);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

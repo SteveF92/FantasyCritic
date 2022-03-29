@@ -135,14 +135,14 @@ public class LeagueTagStatus : IEquatable<LeagueTagStatus>
         throw new NotImplementedException($"Invalid tag status: {Status}");
     }
 
-    public bool Equals(LeagueTagStatus other)
+    public bool Equals(LeagueTagStatus? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Equals(Tag, other.Tag) && Equals(Status, other.Status);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

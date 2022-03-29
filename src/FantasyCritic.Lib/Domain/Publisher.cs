@@ -142,6 +142,16 @@ public class Publisher : IEquatable<Publisher>
     }
 
     public PublisherGame? GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);
+    public PublisherGame GetPublisherGameOrThrow(MasterGame masterGame)
+    {
+        var publisherGame = GetPublisherGameByMasterGameID(masterGame.MasterGameID);
+        if (publisherGame is null)
+        {
+            throw new Exception($"Publisher: {PublisherID} does not have master game: {masterGame.GameName}");
+        }
+
+        return publisherGame;
+    }
 
     public PublisherGame? GetPublisherGameByMasterGameID(Guid masterGameID)
     {
@@ -155,18 +165,18 @@ public class Publisher : IEquatable<Publisher>
 
     public HashSet<MasterGame> MyMasterGames => PublisherGames
         .Where(x => x.MasterGame is not null)
-        .Select(x => x.MasterGame.MasterGame)
+        .Select(x => x.MasterGame!.MasterGame)
         .Distinct()
         .ToHashSet();
 
-    public bool Equals(Publisher other)
+    public bool Equals(Publisher? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return PublisherID.Equals(other.PublisherID);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

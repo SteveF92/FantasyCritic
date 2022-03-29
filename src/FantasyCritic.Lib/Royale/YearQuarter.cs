@@ -44,14 +44,14 @@ public class YearQuarter : IEquatable<YearQuarter>, IComparable<YearQuarter>
         }
     }
 
-    public bool Equals(YearQuarter other)
+    public bool Equals(YearQuarter? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Year == other.Year && Quarter == other.Quarter;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
@@ -67,7 +67,7 @@ public class YearQuarter : IEquatable<YearQuarter>, IComparable<YearQuarter>
         }
     }
 
-    public int CompareTo(YearQuarter other)
+    public int CompareTo(YearQuarter? other)
     {
         if (ReferenceEquals(this, other)) return 0;
         if (ReferenceEquals(null, other)) return 1;

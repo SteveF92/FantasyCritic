@@ -129,7 +129,7 @@ public class AdminService
                 continue;
             }
 
-            var ggGame = await _ggService.GetGGGame(masterGame.GGToken);
+            var ggGame = await _ggService.GetGGGame(masterGame.GGToken!);
             if (ggGame is not null)
             {
                 await _interLeagueService.UpdateGGStats(masterGame, ggGame);

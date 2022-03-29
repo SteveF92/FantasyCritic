@@ -13,14 +13,14 @@ public class SpecialGameSlot : IEquatable<SpecialGameSlot>
 
     public override string ToString() => $"{SpecialSlotPosition}: {string.Join("|", Tags.Select(x => x.ReadableName))}";
 
-    public bool Equals(SpecialGameSlot other)
+    public bool Equals(SpecialGameSlot? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return SpecialSlotPosition == other.SpecialSlotPosition && Tags.OrderBy(x => x.Name).SequenceEqual(other.Tags.OrderBy(x => x.Name));
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

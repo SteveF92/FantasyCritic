@@ -78,19 +78,13 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     private bool? GetOverriddenEligibility(MasterGame masterGame)
     {
-        bool found = _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
-        if (!found)
-        {
-            return null;
-        }
-
-        return eligibilityOverride.Eligible;
+        _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
+        return eligibilityOverride?.Eligible;
     }
 
     private IReadOnlyList<MasterGameTag> GetOverriddenTags(MasterGame masterGame)
     {
-        bool found = _tagOverridesDictionary.TryGetValue(masterGame, out var tagOverride);
-        if (!found)
+        if (!_tagOverridesDictionary.TryGetValue(masterGame, out var tagOverride))
         {
             return new List<MasterGameTag>();
         }

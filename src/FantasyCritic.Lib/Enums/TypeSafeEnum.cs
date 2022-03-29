@@ -17,7 +17,7 @@ public abstract class TypeSafeEnum<TEnum> : IEquatable<TypeSafeEnum<TEnum>> wher
         var fields = enumType.GetFields(BindingFlags.Public | BindingFlags.Static);
         var readonlyFields = fields.Where(x => x.IsInitOnly);
         var returnsEnumType = readonlyFields.Where(x => x.FieldType == enumType);
-        List<TEnum> enumValues = returnsEnumType.Select(enumField => (TEnum)enumField.GetValue(null)).ToList();
+        List<TEnum> enumValues = returnsEnumType.Select(enumField => (TEnum)enumField.GetValue(null)!).ToList();
         return enumValues;
     }
 
@@ -40,14 +40,14 @@ public abstract class TypeSafeEnum<TEnum> : IEquatable<TypeSafeEnum<TEnum>> wher
     }
     public abstract override string ToString();
 
-    public bool Equals(TypeSafeEnum<TEnum> other)
+    public bool Equals(TypeSafeEnum<TEnum>? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return string.Equals(Value, other.Value);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
@@ -57,6 +57,6 @@ public abstract class TypeSafeEnum<TEnum> : IEquatable<TypeSafeEnum<TEnum>> wher
 
     public override int GetHashCode()
     {
-        return (Value != null ? Value.GetHashCode() : 0);
+        return Value.GetHashCode();
     }
 }

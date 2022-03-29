@@ -291,7 +291,7 @@ public class DraftService
                 .Where(x => !x.CounterPick)
                 .Where(x => x.MasterGame is not null);
             var possibleGames = otherPublisherGames
-                .Select(x => x.MasterGame)
+                .Select(x => x.MasterGame!)
                 .Where(x => x.AdjustedPercentCounterPick.HasValue)
                 .OrderByDescending(x => x.AdjustedPercentCounterPick);
             foreach (var possibleGame in possibleGames)

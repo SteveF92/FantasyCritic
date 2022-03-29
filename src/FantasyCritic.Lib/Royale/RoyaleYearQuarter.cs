@@ -20,14 +20,14 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
         return YearQuarter.ToString();
     }
 
-    public bool Equals(RoyaleYearQuarter other)
+    public bool Equals(RoyaleYearQuarter? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Equals(YearQuarter, other.YearQuarter);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
@@ -37,10 +37,10 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
 
     public override int GetHashCode()
     {
-        return (YearQuarter != null ? YearQuarter.GetHashCode() : 0);
+        return YearQuarter.GetHashCode();
     }
 
-    public int CompareTo(RoyaleYearQuarter other)
+    public int CompareTo(RoyaleYearQuarter? other)
     {
         if (ReferenceEquals(this, other)) return 0;
         if (ReferenceEquals(null, other)) return 1;

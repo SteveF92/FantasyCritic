@@ -642,8 +642,8 @@ public class FantasyCriticService
             return Result.Failure("Some of the counter party publisher games are invalid or duplicates.");
         }
 
-        var proposerPublisherGamesWithMasterGames = proposerPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x is not null).Select(x => x).ToList();
-        var counterPartyPublisherGamesWithMasterGames = counterPartyPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x is not null).Select(x => x).ToList();
+        var proposerPublisherGamesWithMasterGames = proposerPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x is not null).Select(x => x!).ToList();
+        var counterPartyPublisherGamesWithMasterGames = counterPartyPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x is not null).Select(x => x!).ToList();
         if (proposerPublisherGamesWithMasterGames.Count != proposerPublisherGameIDs.Count)
         {
             return Result.Failure("All games in a trade must be linked to a master game.");

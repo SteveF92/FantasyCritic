@@ -148,14 +148,14 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public override string ToString() => MasterGame.MasterGame.GameName;
 
-    public bool Equals(RoyalePublisherGame other)
+    public bool Equals(RoyalePublisherGame? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return PublisherID.Equals(other.PublisherID) && Equals(MasterGame, other.MasterGame);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

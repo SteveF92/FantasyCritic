@@ -48,7 +48,7 @@ public static class PlayerGameExtensions
         }
 
         var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame))
-            .Where(x => x is not null && !x.CounterPick).ToList();
+            .Where(x => x is not null && !x.CounterPick).Select(x => x!).ToList();
 
         if (gameBeingCounterPickedOptions.Count != 1)
         {

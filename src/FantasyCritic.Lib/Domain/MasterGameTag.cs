@@ -26,14 +26,14 @@ public class MasterGameTag : IEquatable<MasterGameTag>
     public IReadOnlyList<string> Examples { get; }
     public string BadgeColor { get; }
 
-    public bool Equals(MasterGameTag other)
+    public bool Equals(MasterGameTag? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Name == other.Name;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

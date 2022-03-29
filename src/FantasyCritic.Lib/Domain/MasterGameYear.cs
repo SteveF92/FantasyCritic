@@ -149,14 +149,14 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return null;
     }
 
-    public bool Equals(MasterGameYear other)
+    public bool Equals(MasterGameYear? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Equals(MasterGame, other.MasterGame) && Year == other.Year;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

@@ -25,14 +25,14 @@ public class League : IEquatable<League>
     public bool Archived { get; }
     public int NumberOfFollowers { get; }
 
-    public bool Equals(League other)
+    public bool Equals(League? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return LeagueID.Equals(other.LeagueID);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;

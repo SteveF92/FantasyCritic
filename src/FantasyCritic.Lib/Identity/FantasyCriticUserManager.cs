@@ -97,7 +97,12 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
     public async Task RefreshExternalLoginFeatures(FantasyCriticUser user)
     {
         var externalLogins = await _userStore.GetLoginsAsync(user, CancellationToken.None);
-        var patreonProviderID = externalLogins.SingleOrDefault(x => x.LoginProvider == "Patreon").ProviderKey;
+        var patreonProviderID = externalLogins.SingleOrDefault(x => x.LoginProvider == "Patreon")?.ProviderKey;
+        if (patreonProviderID is null)
+        {
+            return;
+        }
+
         var isPlusUser = await _patreonService.UserIsPlusUser(patreonProviderID);
         if (isPlusUser)
         {
