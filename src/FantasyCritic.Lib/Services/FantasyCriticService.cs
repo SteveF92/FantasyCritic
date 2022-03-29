@@ -40,12 +40,12 @@ public class FantasyCriticService
     public async Task<Maybe<LeagueYear>> GetLeagueYear(Guid id, int year)
     {
         var league = await GetLeagueByID(id);
-        if (league.HasNoValue)
+        if (league.HasNoValueTempoTemp)
         {
             return Maybe<LeagueYear>.None;
         }
 
-        var options = await _fantasyCriticRepo.GetLeagueYear(league.Value, year);
+        var options = await _fantasyCriticRepo.GetLeagueYear(league.ValueTempoTemp, year);
         return options;
     }
 
@@ -164,11 +164,11 @@ public class FantasyCriticService
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides,
             tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
 
-        var managerPublisher = leagueYear.GetManagerPublisher().Value;
+        var managerPublisher = leagueYear.GetManagerPublisher().ValueTempoTemp;
         var differenceString = options.GetDifferenceString(leagueYear.Options);
-        if (differenceString.HasValue)
+        if (differenceString.HasValueTempoTemp)
         {
-            LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString.Value, true);
+            LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString.ValueTempoTemp, true);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
         }
 
@@ -188,20 +188,20 @@ public class FantasyCriticService
         {
             Dictionary<Guid, int> slotAssignmentsForPublisher = new Dictionary<Guid, int>();
             var slots = publisher.GetPublisherSlots(leagueYear.Options);
-            var filledNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasValue).ToList();
+            var filledNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasValueTempoTemp).ToList();
 
             int normalSlotNumber = 0;
-            var normalSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot.HasNoValue);
+            var normalSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot.HasNoValueTempoTemp);
             foreach (var normalSlot in normalSlots)
             {
-                slotAssignmentsForPublisher[normalSlot.PublisherGame.Value.PublisherGameID] = normalSlotNumber;
+                slotAssignmentsForPublisher[normalSlot.PublisherGame.ValueTempoTemp.PublisherGameID] = normalSlotNumber;
                 normalSlotNumber++;
             }
 
-            var specialSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot.HasValue);
+            var specialSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot.HasValueTempoTemp);
             foreach (var specialSlot in specialSlots)
             {
-                slotAssignmentsForPublisher[specialSlot.PublisherGame.Value.PublisherGameID] =
+                slotAssignmentsForPublisher[specialSlot.PublisherGame.ValueTempoTemp.PublisherGameID] =
                     specialSlot.SlotNumber + slotCountShift;
             }
 
@@ -213,7 +213,7 @@ public class FantasyCriticService
                 int allSlotNumber = 0;
                 foreach (var slot in filledNonCounterPickSlots)
                 {
-                    slotAssignmentsForPublisher[slot.PublisherGame.Value.PublisherGameID] = allSlotNumber;
+                    slotAssignmentsForPublisher[slot.PublisherGame.ValueTempoTemp.PublisherGameID] = allSlotNumber;
                     allSlotNumber++;
                 }
             }
@@ -256,7 +256,7 @@ public class FantasyCriticService
             {
                 var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
                 decimal totalPointsForPublisher = 0m;
-                var slots = publisher.GetPublisherSlots(leagueYear.Options).Where(x => x.PublisherGame.HasValue).ToList();
+                var slots = publisher.GetPublisherSlots(leagueYear.Options).Where(x => x.PublisherGame.HasValueTempoTemp).ToList();
                 foreach (var publisherSlot in slots)
                 {
                     //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
@@ -266,14 +266,14 @@ public class FantasyCriticService
 
                     decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
-                    publisherGameCalculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
+                    publisherGameCalculatedStats.Add(publisherSlot.PublisherGame.ValueTempoTemp.PublisherGameID, stats);
                     if (fantasyPoints.HasValue)
                     {
                         totalPointsForPublisher += fantasyPoints.Value;
                     }
                 }
 
-                if (totalPointsForPublisher > highestPoints && leagueYear.WinningUser.HasNoValue)
+                if (totalPointsForPublisher > highestPoints && leagueYear.WinningUser.HasNoValueTempoTemp)
                 {
                     highestPoints = totalPointsForPublisher;
                     winningUsers[publisher.LeagueYearKey] = publisher.User;
@@ -292,7 +292,7 @@ public class FantasyCriticService
         foreach (var publisher in leagueYear.Publishers)
         {
             var slots = publisher.GetPublisherSlots(leagueYear.Options);
-            var slotsThatHaveGames = slots.Where(x => x.PublisherGame.HasValue).ToList();
+            var slotsThatHaveGames = slots.Where(x => x.PublisherGame.HasValueTempoTemp).ToList();
             foreach (var publisherSlot in slotsThatHaveGames)
             {
                 //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
@@ -302,7 +302,7 @@ public class FantasyCriticService
 
                 decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                 var stats = new PublisherGameCalculatedStats(fantasyPoints);
-                calculatedStats.Add(publisherSlot.PublisherGame.Value.PublisherGameID, stats);
+                calculatedStats.Add(publisherSlot.PublisherGame.ValueTempoTemp.PublisherGameID, stats);
             }
         }
 
@@ -317,7 +317,7 @@ public class FantasyCriticService
     public async Task ManuallySetWillNotRelease(LeagueYear leagueYear, PublisherGame publisherGame, bool willNotRelease)
     {
         await _fantasyCriticRepo.ManuallySetWillNotRelease(publisherGame, willNotRelease);
-        var managerPublisher = leagueYear.GetManagerPublisher().Value;
+        var managerPublisher = leagueYear.GetManagerPublisher().ValueTempoTemp;
 
         string description;
         if (willNotRelease)
@@ -505,7 +505,7 @@ public class FantasyCriticService
             await _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
         }
 
-        var managerPublisher = leagueYear.GetManagerPublisher().Value;
+        var managerPublisher = leagueYear.GetManagerPublisher().ValueTempoTemp;
         string description;
         if (!eligible.HasValue)
         {
@@ -537,7 +537,7 @@ public class FantasyCriticService
     public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
     {
         await _fantasyCriticRepo.SetTagOverride(leagueYear, masterGame, requestedTags);
-        var managerPublisher = leagueYear.GetManagerPublisher().Value;
+        var managerPublisher = leagueYear.GetManagerPublisher().ValueTempoTemp;
         if (requestedTags.Any())
         {
             var tagNames = string.Join(", ", requestedTags.Select(x => x.ReadableName));
@@ -609,11 +609,11 @@ public class FantasyCriticService
         }
 
         var counterPartyResult = leagueYear.GetPublisherByID(counterPartyPublisherID);
-        if (counterPartyResult.HasNoValue)
+        if (counterPartyResult.HasNoValueTempoTemp)
         {
             return Result.Failure("That publisher does not exist");
         }
-        var counterParty = counterPartyResult.Value;
+        var counterParty = counterPartyResult.ValueTempoTemp;
 
         if (!leagueYear.Key.Equals(counterParty.LeagueYearKey))
         {
@@ -642,8 +642,8 @@ public class FantasyCriticService
             return Result.Failure("Some of the counter party publisher games are invalid or duplicates.");
         }
 
-        var proposerPublisherGamesWithMasterGames = proposerPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
-        var counterPartyPublisherGamesWithMasterGames = counterPartyPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValue).Select(x => x.Value).ToList();
+        var proposerPublisherGamesWithMasterGames = proposerPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValueTempoTemp).Select(x => x.ValueTempoTemp).ToList();
+        var counterPartyPublisherGamesWithMasterGames = counterPartyPublisherGames.Select(x => x.GetMasterGameYearWithCounterPick()).Where(x => x.HasValueTempoTemp).Select(x => x.ValueTempoTemp).ToList();
         if (proposerPublisherGamesWithMasterGames.Count != proposerPublisherGameIDs.Count)
         {
             return Result.Failure("All games in a trade must be linked to a master game.");
@@ -660,9 +660,9 @@ public class FantasyCriticService
             new List<TradeVote>(), TradeStatus.Proposed);
 
         var tradeError = trade.GetTradeError();
-        if (tradeError.HasValue)
+        if (tradeError.HasValueTempoTemp)
         {
-            return Result.Failure(tradeError.Value);
+            return Result.Failure(tradeError.ValueTempoTemp);
         }
 
         await _fantasyCriticRepo.CreateTrade(trade);
@@ -769,9 +769,9 @@ public class FantasyCriticService
         }
 
         var tradeError = trade.GetTradeError();
-        if (tradeError.HasValue)
+        if (tradeError.HasValueTempoTemp)
         {
-            return Result.Failure(tradeError.Value);
+            return Result.Failure(tradeError.ValueTempoTemp);
         }
 
         var completionTime = _clock.GetCurrentInstant();

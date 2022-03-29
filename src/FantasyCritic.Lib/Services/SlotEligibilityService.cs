@@ -34,8 +34,8 @@ public static class SlotEligibilityService
         }
 
         var slots = publisher.GetPublisherSlots(leagueOptions);
-        var openSlots = slots.Where(x => x.CounterPick == counterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
-        if (eligibilityFactors.HasNoValue)
+        var openSlots = slots.Where(x => x.CounterPick == counterPick && x.PublisherGame.HasNoValueTempoTemp).OrderBy(x => x.SlotNumber).ToList();
+        if (eligibilityFactors.HasNoValueTempoTemp)
         {
             //This is an unlinked master game
             if (openSlots.Any())
@@ -57,7 +57,7 @@ public static class SlotEligibilityService
             return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
         }
 
-        var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors.Value);
+        var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors.ValueTempoTemp);
         if (leagueYearClaimErrors.Any())
         {
             //This game is not eligible in this league at all
@@ -83,11 +83,11 @@ public static class SlotEligibilityService
         //At this point, the game is eligible in at least one currently open slot. Which one is best?
         //We want to check the special slots first, then the regular slots.
         var openSpotsToCheckOrder = openSlots
-            .OrderByDescending(x => x.SpecialGameSlot.HasValue)
+            .OrderByDescending(x => x.SpecialGameSlot.HasValueTempoTemp)
             .ThenBy(x => x.SlotNumber).ToList();
         foreach (var openSlot in openSpotsToCheckOrder)
         {
-            var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors.Value);
+            var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors.ValueTempoTemp);
             if (!claimErrorsForSlot.Any())
             {
                 return new PublisherSlotAcquisitionResult(openSlot.SlotNumber);
@@ -111,7 +111,7 @@ public static class SlotEligibilityService
         //At this point, there is an open slot. Which one is best?
         //We want to check the special slots first, then the regular slots.
         var openSpotsToCheckOrder = openSlots
-            .OrderByDescending(x => x.SpecialGameSlot.HasValue)
+            .OrderByDescending(x => x.SpecialGameSlot.HasValueTempoTemp)
             .ThenBy(x => x.SlotNumber).ToList();
         foreach (var openSlot in openSpotsToCheckOrder)
         {
@@ -179,14 +179,14 @@ public static class SlotEligibilityService
             return new List<ClaimError>() { new ClaimError("That game has been specifically banned by your league.", false) };
         }
 
-        if (publisherSlot.SpecialGameSlot.HasNoValue)
+        if (publisherSlot.SpecialGameSlot.HasNoValueTempoTemp)
         {
             var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, new List<LeagueTagStatus>());
             return baseEligibilityResult;
         }
 
         //This is a special slot
-        var tagsForSlot = publisherSlot.SpecialGameSlot.Value.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
+        var tagsForSlot = publisherSlot.SpecialGameSlot.ValueTempoTemp.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
         var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, tagsForSlot);
         return specialEligibilityResult;
     }

@@ -10,7 +10,7 @@ public class LeagueUserRelationship
     }
 
     public Maybe<LeagueInvite> LeagueInvite { get; }
-    public bool InvitedToLeague => LeagueInvite.HasValue;
+    public bool InvitedToLeague => LeagueInvite.HasValueTempoTemp;
     public bool InLeague { get; }
     public bool InOrInvitedToLeague => InvitedToLeague || InLeague;
     public bool LeagueManager { get; }
@@ -30,7 +30,7 @@ public class LeagueYearUserRelationship
     }
 
     public Maybe<LeagueInvite> LeagueInvite { get; }
-    public bool InvitedToLeague => LeagueInvite.HasValue;
+    public bool InvitedToLeague => LeagueInvite.HasValueTempoTemp;
     public bool InLeague { get; }
     public bool ActiveInYear { get; }
     public bool LeagueManager { get; }

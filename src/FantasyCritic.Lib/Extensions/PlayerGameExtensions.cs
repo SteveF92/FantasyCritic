@@ -6,16 +6,16 @@ public static class PlayerGameExtensions
 {
     public static bool ContainsGame(this IEnumerable<PublisherGame> games, MasterGame game)
     {
-        bool containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGameID == x.MasterGame.Value.MasterGame.MasterGameID);
+        bool containsGame = games.Any(x => x.MasterGame.HasValueTempoTemp && game.MasterGameID == x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID);
         return containsGame;
     }
 
     public static bool ContainsGame(this IEnumerable<PublisherGame> games, PublisherGame game)
     {
         bool containsGame;
-        if (game.MasterGame.HasValue)
+        if (game.MasterGame.HasValueTempoTemp)
         {
-            containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGame.Value.MasterGame.MasterGameID == x.MasterGame.Value.MasterGame.MasterGameID);
+            containsGame = games.Any(x => x.MasterGame.HasValueTempoTemp && game.MasterGame.ValueTempoTemp.MasterGame.MasterGameID == x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID);
         }
         else
         {
@@ -28,9 +28,9 @@ public static class PlayerGameExtensions
     public static bool ContainsGame(this IEnumerable<PublisherGame> games, ClaimGameDomainRequest game)
     {
         bool containsGame;
-        if (game.MasterGame.HasValue)
+        if (game.MasterGame.HasValueTempoTemp)
         {
-            containsGame = games.Any(x => x.MasterGame.HasValue && game.MasterGame.Value.MasterGameID == x.MasterGame.Value.MasterGame.MasterGameID);
+            containsGame = games.Any(x => x.MasterGame.HasValueTempoTemp && game.MasterGame.ValueTempoTemp.MasterGameID == x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID);
         }
         else
         {
@@ -42,13 +42,13 @@ public static class PlayerGameExtensions
 
     public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, bool counterPick, Maybe<MasterGame> masterGame, bool gameCouldBeDropped)
     {
-        if (!counterPick || masterGame.HasNoValue)
+        if (!counterPick || masterGame.HasNoValueTempoTemp)
         {
             return false;
         }
 
-        var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame.Value))
-            .Where(x => x.HasValue && !x.Value.CounterPick).ToList();
+        var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame.ValueTempoTemp))
+            .Where(x => x.HasValueTempoTemp && !x.ValueTempoTemp.CounterPick).ToList();
 
         if (gameBeingCounterPickedOptions.Count != 1)
         {
@@ -60,6 +60,6 @@ public static class PlayerGameExtensions
             throw new Exception($"Something very strange has happened with bid processing for league year: {leagueYear.Key}");
         }
 
-        return gameBeingCounterPickedOptions.Single().Value.ManualWillNotRelease;
+        return gameBeingCounterPickedOptions.Single().ValueTempoTemp.ManualWillNotRelease;
     }
 }

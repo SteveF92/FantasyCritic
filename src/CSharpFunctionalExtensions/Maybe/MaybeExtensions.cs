@@ -9,7 +9,7 @@ namespace CSharpFunctionalExtensions
     {
         public static Result<T> ToResult<T>(this Maybe<T> maybe, string errorMessage)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return Result.Failure<T>(errorMessage);
 
             return Result.Success(maybe.GetValueOrThrow());
@@ -17,7 +17,7 @@ namespace CSharpFunctionalExtensions
 
         public static Result<T, E> ToResult<T, E>(this Maybe<T> maybe, E error)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return Result.Failure<T, E>(error);
 
             return Result.Success<T, E>(maybe.GetValueOrThrow());
@@ -25,7 +25,7 @@ namespace CSharpFunctionalExtensions
 
         public static T GetValueOrDefault<T>(this Maybe<T> maybe, Func<T> defaultValue)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return defaultValue();
 
             return maybe.GetValueOrThrow();
@@ -33,7 +33,7 @@ namespace CSharpFunctionalExtensions
 
         public static K GetValueOrDefault<T, K>(this Maybe<T> maybe, Func<T, K> selector, K defaultValue = default)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return defaultValue;
 
             return selector(maybe.GetValueOrThrow());
@@ -41,7 +41,7 @@ namespace CSharpFunctionalExtensions
 
         public static K GetValueOrDefault<T, K>(this Maybe<T> maybe, Func<T, K> selector, Func<K> defaultValue)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return defaultValue();
 
             return selector(maybe.GetValueOrThrow());
@@ -66,7 +66,7 @@ namespace CSharpFunctionalExtensions
 
         public static Maybe<T> Where<T>(this Maybe<T> maybe, Func<T, bool> predicate)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return Maybe<T>.None;
 
             if (predicate(maybe.GetValueOrThrow()))
@@ -102,7 +102,7 @@ namespace CSharpFunctionalExtensions
 
         public static Maybe<K> Map<T, K>(this Maybe<T> maybe, Func<T, K> selector)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return Maybe<K>.None;
 
             return selector(maybe.GetValueOrThrow());
@@ -110,7 +110,7 @@ namespace CSharpFunctionalExtensions
 
         public static Maybe<K> Bind<T, K>(this Maybe<T> maybe, Func<T, Maybe<K>> selector)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return Maybe<K>.None;
 
             return selector(maybe.GetValueOrThrow());
@@ -124,7 +124,7 @@ namespace CSharpFunctionalExtensions
         /// <typeparam name="T"></typeparam>
         public static void Execute<T>(this Maybe<T> maybe, Action<T> action)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return;
 
             action(maybe.GetValueOrThrow());
@@ -138,7 +138,7 @@ namespace CSharpFunctionalExtensions
         /// <typeparam name="T"></typeparam>
         public static void ExecuteNoValue<T>(this Maybe<T> maybe, Action action)
         {
-            if (maybe.HasValue)
+            if (maybe.HasValueTempoTemp)
                 return;
 
             action();
@@ -152,7 +152,7 @@ namespace CSharpFunctionalExtensions
         /// <typeparam name="T"></typeparam>
         public static async Task Execute<T>(this Maybe<T> maybe, Func<T, Task> action)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return;
 
             await action(maybe.GetValueOrThrow()).DefaultAwait();
@@ -166,7 +166,7 @@ namespace CSharpFunctionalExtensions
         /// <typeparam name="T"></typeparam>
         public static async Task ExecuteNoValue<T>(this Maybe<T> maybe, Func<Task> action)
         {
-            if (maybe.HasValue)
+            if (maybe.HasValueTempoTemp)
                 return;
 
             await action().DefaultAwait();
@@ -181,7 +181,7 @@ namespace CSharpFunctionalExtensions
         /// <returns></returns>
         public static Maybe<T> Or<T>(this Maybe<T> maybe, Func<T> fallbackOperation)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return fallbackOperation();
 
             return maybe;
@@ -196,7 +196,7 @@ namespace CSharpFunctionalExtensions
         /// <returns></returns>
         public static async Task<Maybe<T>> Or<T>(this Maybe<T> maybe, Func<Task<T>> fallbackOperation)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return await fallbackOperation().DefaultAwait();
 
             return maybe;
@@ -211,7 +211,7 @@ namespace CSharpFunctionalExtensions
         /// <returns></returns>
         public static Maybe<T> Or<T>(this Maybe<T> maybe, Maybe<T> fallback)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return fallback;
 
             return maybe;
@@ -226,7 +226,7 @@ namespace CSharpFunctionalExtensions
         /// <returns></returns>
         public static async Task<Maybe<T>> Or<T>(this Maybe<T> maybe, Task<Maybe<T>> fallback)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return await fallback.DefaultAwait();
 
             return maybe;
@@ -241,7 +241,7 @@ namespace CSharpFunctionalExtensions
         /// <returns></returns>
         public static Maybe<T> Or<T>(this Maybe<T> maybe, Func<Maybe<T>> fallbackOperation)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return fallbackOperation();
 
             return maybe;
@@ -256,7 +256,7 @@ namespace CSharpFunctionalExtensions
         /// <returns></returns>
         public static async Task<Maybe<T>> Or<T>(this Maybe<T> maybe, Func<Task<Maybe<T>>> fallbackOperation)
         {
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return await fallbackOperation().DefaultAwait();
 
             return maybe;
@@ -264,14 +264,14 @@ namespace CSharpFunctionalExtensions
 
         public static TE Match<TE, T>(this Maybe<T> maybe, Func<T, TE> Some, Func<TE> None)
         {
-            return maybe.HasValue
+            return maybe.HasValueTempoTemp
                 ? Some(maybe.GetValueOrThrow())
                 : None();
         }
 
         public static void Match<T>(this Maybe<T> maybe, Action<T> Some, Action None)
         {
-            if (maybe.HasValue)
+            if (maybe.HasValueTempoTemp)
             {
                 Some(maybe.GetValueOrThrow());
             }
@@ -282,11 +282,11 @@ namespace CSharpFunctionalExtensions
         }
 
         public static TE Match<TE, TKey, TValue>(this Maybe<KeyValuePair<TKey, TValue>> maybe, Func<TKey, TValue, TE> Some, Func<TE> None) =>
-            maybe.HasValue ? Some.Invoke(maybe.GetValueOrThrow().Key, maybe.GetValueOrThrow().Value) : None.Invoke();
+            maybe.HasValueTempoTemp ? Some.Invoke(maybe.GetValueOrThrow().Key, maybe.GetValueOrThrow().Value) : None.Invoke();
 
         public static void Match<TKey, TValue>(this Maybe<KeyValuePair<TKey, TValue>> maybe, Action<TKey, TValue> Some, Action None)
         {
-            if (maybe.HasValue)
+            if (maybe.HasValueTempoTemp)
             {
                 Some.Invoke(maybe.GetValueOrThrow().Key, maybe.GetValueOrThrow().Value);
             }
@@ -304,7 +304,7 @@ namespace CSharpFunctionalExtensions
                 while (enumerator.MoveNext())
                 {
                     var item = enumerator.Current;
-                    if (item.HasValue)
+                    if (item.HasValueTempoTemp)
                     {
                         yield return selector(item.GetValueOrThrow());
                     }
@@ -319,7 +319,7 @@ namespace CSharpFunctionalExtensions
                 while (enumerator.MoveNext())
                 {
                     var item = enumerator.Current;
-                    if (item.HasValue)
+                    if (item.HasValueTempoTemp)
                     {
                         yield return item.GetValueOrThrow();
                     }
@@ -392,7 +392,7 @@ namespace CSharpFunctionalExtensions
 
         public static void Deconstruct<T>(this Maybe<T> result, out bool hasValue, out T value)
         {
-            hasValue = result.HasValue;
+            hasValue = result.HasValueTempoTemp;
             value = result.GetValueOrDefault();
         }
     }

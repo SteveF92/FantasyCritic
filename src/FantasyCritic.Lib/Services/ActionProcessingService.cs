@@ -19,7 +19,7 @@ public class ActionProcessingService
     {
         var publisherStateSet = new PublisherStateSet(publishers);
         var flatBids = allActiveBids.SelectMany(x => x.Value);
-        var invalidBids = flatBids.Where(x => x.CounterPick && x.ConditionalDropPublisherGame.HasValue);
+        var invalidBids = flatBids.Where(x => x.CounterPick && x.ConditionalDropPublisherGame.HasValueTempoTemp);
         if (invalidBids.Any())
         {
             throw new Exception("There are counter pick bids with conditional drops.");
@@ -60,10 +60,10 @@ public class ActionProcessingService
                 {
                     successDrops.Add(dropRequest);
                     var publisherGame = dropRequest.Publisher.GetPublisherGame(dropRequest.MasterGame);
-                    var formerPublisherGame = publisherGame.Value.GetFormerPublisherGame(processingTime, "Dropped by player");
+                    var formerPublisherGame = publisherGame.ValueTempoTemp.GetFormerPublisherGame(processingTime, "Dropped by player");
                     gamesToDelete.Add(formerPublisherGame);
                     LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, processingTime);
-                    publisherStateSet.DropGameForPublisher(affectedPublisher, publisherGame.Value, leagueYearGroup.Key.Options);
+                    publisherStateSet.DropGameForPublisher(affectedPublisher, publisherGame.ValueTempoTemp, leagueYearGroup.Key.Options);
 
                     leagueActions.Add(leagueAction);
                 }
@@ -144,13 +144,13 @@ public class ActionProcessingService
 
             PickupBid pickupBidWithConditionalDropResult = activeBid;
             int? validConditionalDropSlot = null;
-            if (activeBid.ConditionalDropPublisherGame.HasValue)
+            if (activeBid.ConditionalDropPublisherGame.HasValueTempoTemp)
             {
                 var conditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(activeBid, updatedLeagueYear, bidPublisher, processingTime);
                 pickupBidWithConditionalDropResult = activeBid.WithConditionalDropResult(conditionalDropResult);
                 if (conditionalDropResult.Result.IsSuccess)
                 {
-                    validConditionalDropSlot = activeBid.ConditionalDropPublisherGame.Value.SlotNumber;
+                    validConditionalDropSlot = activeBid.ConditionalDropPublisherGame.ValueTempoTemp.SlotNumber;
                 }
             }
 
@@ -204,11 +204,11 @@ public class ActionProcessingService
         foreach (var noSpaceLeftBid in noSpaceLeftBids)
         {
             FailedPickupBid failedBid;
-            if (noSpaceLeftBid.ConditionalDropPublisherGame.HasValue && noSpaceLeftBid.ConditionalDropResult.Value.Result.IsFailure)
+            if (noSpaceLeftBid.ConditionalDropPublisherGame.HasValueTempoTemp && noSpaceLeftBid.ConditionalDropResult.ValueTempoTemp.Result.IsFailure)
             {
                 failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available. Attempted to conditionally drop game: " +
-                                                                $"{noSpaceLeftBid.ConditionalDropPublisherGame.Value.MasterGame.Value.MasterGame.GameName} " +
-                                                                $"but failed because: {noSpaceLeftBid.ConditionalDropResult.Value.Result.Error}", systemWideValues, currentDate);
+                                                                $"{noSpaceLeftBid.ConditionalDropPublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame.GameName} " +
+                                                                $"but failed because: {noSpaceLeftBid.ConditionalDropResult.ValueTempoTemp.Result.Error}", systemWideValues, currentDate);
             }
             else
             {
@@ -346,12 +346,12 @@ public class ActionProcessingService
         }
 
         List<FormerPublisherGame> conditionalDroppedGames = new List<FormerPublisherGame>();
-        var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame.HasValue && x.PickupBid.ConditionalDropResult.Value.Result.IsSuccess);
+        var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame.HasValueTempoTemp && x.PickupBid.ConditionalDropResult.ValueTempoTemp.Result.IsSuccess);
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {
             var affectedPublisher = publisherStateSet.GetPublisher(successfulConditionalDrop.PickupBid.Publisher.PublisherID);
-            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value, successfulConditionalDrop.PickupBid.LeagueYear.Options);
-            var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.Value.GetFormerPublisherGame(processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
+            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.ValueTempoTemp, successfulConditionalDrop.PickupBid.LeagueYear.Options);
+            var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame.ValueTempoTemp.GetFormerPublisherGame(processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
             conditionalDroppedGames.Add(formerPublisherGame);
         }
 

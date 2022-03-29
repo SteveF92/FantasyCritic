@@ -87,13 +87,13 @@ public class PublisherStateSet
     private static Publisher GetUpdatedPublisher(Publisher publisherToEdit, Maybe<PublisherGame> addGame, Maybe<PublisherGame> removeGame, int budgetChange, DropType? dropType)
     {
         var newPublisherGames = publisherToEdit.PublisherGames.ToList();
-        if (addGame.HasValue)
+        if (addGame.HasValueTempoTemp)
         {
-            newPublisherGames = newPublisherGames.Concat(new[] { addGame.Value }).ToList();
+            newPublisherGames = newPublisherGames.Concat(new[] { addGame.ValueTempoTemp }).ToList();
         }
-        if (removeGame.HasValue)
+        if (removeGame.HasValueTempoTemp)
         {
-            newPublisherGames = newPublisherGames.Where(x => x.PublisherGameID != removeGame.Value.PublisherGameID).ToList();
+            newPublisherGames = newPublisherGames.Where(x => x.PublisherGameID != removeGame.ValueTempoTemp.PublisherGameID).ToList();
         }
 
         uint newBudget = (uint)(publisherToEdit.Budget + budgetChange);

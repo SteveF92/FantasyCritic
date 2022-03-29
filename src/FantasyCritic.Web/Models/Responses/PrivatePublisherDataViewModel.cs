@@ -12,8 +12,8 @@ public class PrivatePublisherDataViewModel
 
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame.HasValue)
-            .Select(x => x.MasterGame.Value.MasterGame)
+            .Where(x => !x.CounterPick && x.MasterGame.HasValueTempoTemp)
+            .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
             .ToHashSet();
 
         HashSet<MasterGame> myPublisherMasterGames = userPublisher.MyMasterGames;

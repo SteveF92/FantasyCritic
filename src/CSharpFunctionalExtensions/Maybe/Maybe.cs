@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace CSharpFunctionalExtensions
 {
@@ -15,7 +15,7 @@ namespace CSharpFunctionalExtensions
         /// <exception cref="InvalidOperationException">Maybe has no value.</exception>
         public T GetValueOrThrow(string errorMessage = null)
         {
-            if (HasNoValue)
+            if (HasNoValueTempoTemp)
                 throw new InvalidOperationException(errorMessage ?? Result.DefaultNoValueExceptionMessage);
 
             return _value;
@@ -23,7 +23,7 @@ namespace CSharpFunctionalExtensions
 
         public T GetValueOrDefault(T defaultValue = default)
         {
-            if (HasNoValue)
+            if (HasNoValueTempoTemp)
                 return defaultValue;
 
             return _value;
@@ -32,12 +32,12 @@ namespace CSharpFunctionalExtensions
         /// <summary>
         /// Try to use GetValueOrThrow() or GetValueOrDefault() instead for better explicitness.
         /// </summary>
-        public T Value => GetValueOrThrow();
+        public T ValueTempoTemp => GetValueOrThrow();
 
         public static Maybe<T> None => new Maybe<T>();
 
-        public bool HasValue => _isValueSet;
-        public bool HasNoValue => !HasValue;
+        public bool HasValueTempoTemp => _isValueSet;
+        public bool HasNoValueTempoTemp => !HasValueTempoTemp;
 
         private Maybe(T value)
         {
@@ -74,7 +74,7 @@ namespace CSharpFunctionalExtensions
             if (value is Maybe<T>)
                 return maybe.Equals(value);
 
-            if (maybe.HasNoValue)
+            if (maybe.HasNoValueTempoTemp)
                 return value is null;
 
             return maybe._value.Equals(value);
@@ -117,10 +117,10 @@ namespace CSharpFunctionalExtensions
 
         public bool Equals(Maybe<T> other)
         {
-            if (HasNoValue && other.HasNoValue)
+            if (HasNoValueTempoTemp && other.HasNoValueTempoTemp)
                 return true;
 
-            if (HasNoValue || other.HasNoValue)
+            if (HasNoValueTempoTemp || other.HasNoValueTempoTemp)
                 return false;
 
             return _value.Equals(other._value);
@@ -128,7 +128,7 @@ namespace CSharpFunctionalExtensions
 
         public override int GetHashCode()
         {
-            if (HasNoValue)
+            if (HasNoValueTempoTemp)
                 return 0;
 
             return _value.GetHashCode();
@@ -136,7 +136,7 @@ namespace CSharpFunctionalExtensions
 
         public override string ToString()
         {
-            if (HasNoValue)
+            if (HasNoValueTempoTemp)
                 return "No value";
 
             return _value.ToString();

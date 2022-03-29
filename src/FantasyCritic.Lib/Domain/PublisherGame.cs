@@ -43,23 +43,23 @@ public class PublisherGame
             return false;
         }
 
-        if (MasterGame.HasNoValue)
+        if (MasterGame.HasNoValueTempoTemp)
         {
             return false;
         }
 
-        return MasterGame.Value.WillRelease();
+        return MasterGame.ValueTempoTemp.WillRelease();
     }
 
     public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
     public Maybe<MasterGameYearWithCounterPick> GetMasterGameYearWithCounterPick()
     {
-        if (!MasterGame.HasValue)
+        if (!MasterGame.HasValueTempoTemp)
         {
             return Maybe<MasterGameYearWithCounterPick>.None;
         }
 
-        return new MasterGameYearWithCounterPick(MasterGame.Value, CounterPick);
+        return new MasterGameYearWithCounterPick(MasterGame.ValueTempoTemp, CounterPick);
     }
 
     public override string ToString() => GameName;

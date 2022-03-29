@@ -43,9 +43,9 @@ public class Publisher : IEquatable<Publisher>
         {
             List<decimal> gamesWithCriticScores = PublisherGames
                 .Where(x => !x.CounterPick)
-                .Where(x => x.MasterGame.HasValue)
-                .Where(x => x.MasterGame.Value.MasterGame.CriticScore.HasValue)
-                .Select(x => x.MasterGame.Value.MasterGame.CriticScore.Value)
+                .Where(x => x.MasterGame.HasValueTempoTemp)
+                .Where(x => x.MasterGame.ValueTempoTemp.MasterGame.CriticScore.HasValue)
+                .Select(x => x.MasterGame.ValueTempoTemp.MasterGame.CriticScore.Value)
                 .ToList();
 
             if (gamesWithCriticScores.Count == 0)
@@ -145,7 +145,7 @@ public class Publisher : IEquatable<Publisher>
 
     public Maybe<PublisherGame> GetPublisherGameByMasterGameID(Guid masterGameID)
     {
-        return PublisherGames.SingleOrDefault(x => x.MasterGame.HasValue && x.MasterGame.Value.MasterGame.MasterGameID == masterGameID);
+        return PublisherGames.SingleOrDefault(x => x.MasterGame.HasValueTempoTemp && x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID == masterGameID);
     }
 
     public Maybe<PublisherGame> GetPublisherGameByPublisherGameID(Guid publisherGameID)
@@ -154,8 +154,8 @@ public class Publisher : IEquatable<Publisher>
     }
 
     public HashSet<MasterGame> MyMasterGames => PublisherGames
-        .Where(x => x.MasterGame.HasValue)
-        .Select(x => x.MasterGame.Value.MasterGame)
+        .Where(x => x.MasterGame.HasValueTempoTemp)
+        .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
         .Distinct()
         .ToHashSet();
 

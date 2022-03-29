@@ -14,9 +14,9 @@ public class PublisherSlot
         SpecialGameSlot = specialGameSlot;
         PublisherGame = publisherGame;
 
-        if (publisherGame.HasValue && publisherGame.Value.CounterPick != CounterPick)
+        if (publisherGame.HasValueTempoTemp && publisherGame.ValueTempoTemp.CounterPick != CounterPick)
         {
-            throw new Exception($"Something has gone horribly wrong with publisher game: {publisherGame.Value.PublisherGameID}");
+            throw new Exception($"Something has gone horribly wrong with publisher game: {publisherGame.ValueTempoTemp.PublisherGameID}");
         }
     }
 
@@ -34,27 +34,27 @@ public class PublisherSlot
     public IReadOnlyList<ClaimError> GetClaimErrorsForSlot(LeagueYear leagueYear)
     {
         var eligibilityFactors = leagueYear.GetEligibilityFactorsForSlot(this);
-        if (eligibilityFactors.HasNoValue)
+        if (eligibilityFactors.HasNoValueTempoTemp)
         {
             return new List<ClaimError>();
         }
 
-        return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors.Value);
+        return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors.ValueTempoTemp);
     }
 
     public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues, LocalDate currentDate,
         int standardGamesTaken, int numberOfStandardGames)
     {
-        if (PublisherGame.HasNoValue)
+        if (PublisherGame.HasNoValueTempoTemp)
         {
             return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
         }
 
-        if (PublisherGame.Value.MasterGame.HasNoValue)
+        if (PublisherGame.ValueTempoTemp.MasterGame.HasNoValueTempoTemp)
         {
-            if (PublisherGame.Value.ManualCriticScore.HasValue)
+            if (PublisherGame.ValueTempoTemp.ManualCriticScore.HasValue)
             {
-                return PublisherGame.Value.ManualCriticScore.Value;
+                return PublisherGame.ValueTempoTemp.ManualCriticScore.Value;
             }
 
             return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
@@ -66,25 +66,25 @@ public class PublisherSlot
             return fantasyPoints.Value;
         }
 
-        return PublisherGame.Value.MasterGame.Value.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);
+        return PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);
     }
 
     public decimal? CalculateFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
     {
-        if (PublisherGame.HasNoValue)
+        if (PublisherGame.HasNoValueTempoTemp)
         {
             return null;
         }
-        if (PublisherGame.Value.ManualCriticScore.HasValue)
+        if (PublisherGame.ValueTempoTemp.ManualCriticScore.HasValue)
         {
-            return scoringSystem.GetPointsForScore(PublisherGame.Value.ManualCriticScore.Value, CounterPick);
+            return scoringSystem.GetPointsForScore(PublisherGame.ValueTempoTemp.ManualCriticScore.Value, CounterPick);
         }
-        if (PublisherGame.Value.MasterGame.HasNoValue)
+        if (PublisherGame.ValueTempoTemp.MasterGame.HasNoValueTempoTemp)
         {
             return null;
         }
 
-        var calculatedScore = PublisherGame.Value.MasterGame.Value.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
+        var calculatedScore = PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
         if (gameIsValidInSlot)
         {
             return calculatedScore;
@@ -106,25 +106,25 @@ public class PublisherSlot
             cp = "CP-";
         }
         var slotType = "REG";
-        if (SpecialGameSlot.HasValue)
+        if (SpecialGameSlot.HasValueTempoTemp)
         {
-            if (SpecialGameSlot.Value.Tags.Count > 1)
+            if (SpecialGameSlot.ValueTempoTemp.Tags.Count > 1)
             {
                 slotType = "FLX";
             }
             else
             {
-                slotType = SpecialGameSlot.Value.Tags[0].ShortName;
+                slotType = SpecialGameSlot.ValueTempoTemp.Tags[0].ShortName;
             }
         }
 
         var gameName = "Empty";
-        if (PublisherGame.HasValue)
+        if (PublisherGame.HasValueTempoTemp)
         {
-            gameName = PublisherGame.Value.GameName;
-            if (PublisherGame.Value.MasterGame.HasValue)
+            gameName = PublisherGame.ValueTempoTemp.GameName;
+            if (PublisherGame.ValueTempoTemp.MasterGame.HasValueTempoTemp)
             {
-                gameName = PublisherGame.Value.MasterGame.Value.MasterGame.GameName;
+                gameName = PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame.GameName;
             }
         }
 

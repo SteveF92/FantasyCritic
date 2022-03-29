@@ -32,11 +32,11 @@ public class MinimalPublisherViewModel
 
         GamesReleased = publisher.PublisherGames
             .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame.HasValue)
-            .Count(x => x.MasterGame.Value.MasterGame.IsReleased(dateToCheck));
+            .Where(x => x.MasterGame.HasValueTempoTemp)
+            .Count(x => x.MasterGame.ValueTempoTemp.MasterGame.IsReleased(dateToCheck));
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame.HasValue)
+            .Where(x => x.MasterGame.HasValueTempoTemp)
             .Count(x => x.WillRelease());
         GamesWillRelease = allWillRelease - GamesReleased;
 

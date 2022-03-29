@@ -41,7 +41,7 @@ public class SingleGameNewsViewModel
             }
             else if (publishersPairsThatHaveGame.Count() == 2)
             {
-                var standardPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValue).Any(x => x.MasterGame.Value.MasterGame.MasterGameID == masterGame.MasterGame.MasterGameID));
+                var standardPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherGames.Where(x => !x.CounterPick).Where(x => x.MasterGame.HasValueTempoTemp).Any(x => x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID == masterGame.MasterGame.MasterGameID));
                 var counterPickPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherID != standardPublisherPair.Publisher.PublisherID);
                 LeagueID = standardPublisherPair.LeagueYear.League.LeagueID;
                 Year = standardPublisherPair.LeagueYear.Year;

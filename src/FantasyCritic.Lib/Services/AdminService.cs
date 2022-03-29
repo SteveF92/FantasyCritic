@@ -90,9 +90,9 @@ public class AdminService
             }
 
             var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID.Value);
-            if (openCriticGame.HasValue)
+            if (openCriticGame.HasValueTempoTemp)
             {
-                await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame.Value);
+                await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame.ValueTempoTemp);
             }
             else
             {
@@ -108,9 +108,9 @@ public class AdminService
 
                 var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value);
 
-                if (subGameOpenCriticGame.HasValue)
+                if (subGameOpenCriticGame.HasValueTempoTemp)
                 {
-                    await _interLeagueService.UpdateCriticStats(subGame, subGameOpenCriticGame.Value);
+                    await _interLeagueService.UpdateCriticStats(subGame, subGameOpenCriticGame.ValueTempoTemp);
                 }
             }
         }
@@ -122,7 +122,7 @@ public class AdminService
     {
         var masterGames = await _interLeagueService.GetMasterGames();
 
-        var masterGamesToUpdate = masterGames.Where(x => x.GGToken.HasValue && !x.DoNotRefreshAnything).ToList();
+        var masterGamesToUpdate = masterGames.Where(x => x.GGToken.HasValueTempoTemp && !x.DoNotRefreshAnything).ToList();
         foreach (var masterGame in masterGamesToUpdate)
         {
             if (!string.IsNullOrWhiteSpace(masterGame.GGCoverArtFileName))
@@ -130,14 +130,14 @@ public class AdminService
                 continue;
             }
 
-            var ggGame = await _ggService.GetGGGame(masterGame.GGToken.Value);
-            if (ggGame.HasValue)
+            var ggGame = await _ggService.GetGGGame(masterGame.GGToken.ValueTempoTemp);
+            if (ggGame.HasValueTempoTemp)
             {
-                await _interLeagueService.UpdateGGStats(masterGame, ggGame.Value);
+                await _interLeagueService.UpdateGGStats(masterGame, ggGame.ValueTempoTemp);
             }
             else
             {
-                _logger.Warn($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken.Value}]");
+                _logger.Warn($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken.ValueTempoTemp}]");
             }
         }
     }
@@ -384,13 +384,13 @@ public class AdminService
             }
 
             var leagueYearsToCount = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
-            IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValue).ToList();
+            IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame.HasValueTempoTemp).ToList();
             IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears);
             var bidsToCount = processedBids.Where(x => leagueYearsToCount.Contains(x.LeagueYear.Key)).ToList();
             ILookup<MasterGame, PickupBid> bidsByGame = bidsToCount.ToLookup(x => x.MasterGame);
             IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
 
-            var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.Value.MasterGame.MasterGameID);
+            var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID);
             Dictionary<LeagueYearKey, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
             Dictionary<LeagueYearKey, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
             foreach (var publisher in publishersInCompleteLeagues)
@@ -407,18 +407,18 @@ public class AdminService
 
                 foreach (var game in publisher.PublisherGames)
                 {
-                    if (game.MasterGame.HasNoValue)
+                    if (game.MasterGame.HasNoValueTempoTemp)
                     {
                         continue;
                     }
 
                     if (game.CounterPick)
                     {
-                        counterPicksByLeague[publisher.LeagueYearKey].Add(game.MasterGame.Value.MasterGame);
+                        counterPicksByLeague[publisher.LeagueYearKey].Add(game.MasterGame.ValueTempoTemp.MasterGame);
                     }
                     else
                     {
-                        standardGamesByLeague[publisher.LeagueYearKey].Add(game.MasterGame.Value.MasterGame);
+                        standardGamesByLeague[publisher.LeagueYearKey].Add(game.MasterGame.ValueTempoTemp.MasterGame);
                     }
                 }
             }

@@ -58,16 +58,16 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public Maybe<MasterGameWithEligibilityFactors> GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
     {
-        if (publisherSlot.PublisherGame.HasNoValue || publisherSlot.PublisherGame.Value.MasterGame.HasNoValue)
+        if (publisherSlot.PublisherGame.HasNoValueTempoTemp || publisherSlot.PublisherGame.ValueTempoTemp.MasterGame.HasNoValueTempoTemp)
         {
             return Maybe<MasterGameWithEligibilityFactors>.None;
         }
 
-        var masterGame = publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame;
+        var masterGame = publisherSlot.PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame;
         bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
         IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
-        var acquisitionDate = publisherSlot.PublisherGame.Value.Timestamp.ToEasternDate();
-        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.Value.MasterGame.Value.MasterGame, Options, eligibilityOverride, tagOverrides, acquisitionDate);
+        var acquisitionDate = publisherSlot.PublisherGame.ValueTempoTemp.Timestamp.ToEasternDate();
+        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.ValueTempoTemp.MasterGame.ValueTempoTemp.MasterGame, Options, eligibilityOverride, tagOverrides, acquisitionDate);
     }
 
     public bool GameIsEligibleInAnySlot(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)

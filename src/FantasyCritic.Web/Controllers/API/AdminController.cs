@@ -79,12 +79,12 @@ public class AdminController : FantasyCriticController
             .ToList();
 
         var existingMasterGame = await _interLeagueService.GetMasterGame(viewModel.MasterGameID);
-        if (existingMasterGame.HasNoValue)
+        if (existingMasterGame.HasNoValueTempoTemp)
         {
             return BadRequest();
         }
 
-        MasterGame masterGame = viewModel.ToDomain(existingMasterGame.Value, instant, tags);
+        MasterGame masterGame = viewModel.ToDomain(existingMasterGame.ValueTempoTemp, instant, tags);
         await _interLeagueService.EditMasterGame(masterGame);
         var currentDate = _clock.GetToday();
         var vm = new MasterGameViewModel(masterGame, currentDate);
@@ -97,7 +97,7 @@ public class AdminController : FantasyCriticController
     public async Task<IActionResult> CompleteMasterGameRequest([FromBody] CompleteMasterGameRequestRequest request)
     {
         Maybe<MasterGameRequest> maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
-        if (maybeRequest.HasNoValue)
+        if (maybeRequest.HasNoValueTempoTemp)
         {
             return BadRequest("That request does not exist.");
         }
@@ -106,14 +106,14 @@ public class AdminController : FantasyCriticController
         if (request.MasterGameID.HasValue)
         {
             masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
-            if (masterGame.HasNoValue)
+            if (masterGame.HasNoValueTempoTemp)
             {
                 return BadRequest("Bad master game");
             }
         }
 
         Instant instant = _clock.GetCurrentInstant();
-        await _interLeagueService.CompleteMasterGameRequest(maybeRequest.Value, instant, request.ResponseNote, masterGame);
+        await _interLeagueService.CompleteMasterGameRequest(maybeRequest.ValueTempoTemp, instant, request.ResponseNote, masterGame);
 
         return Ok();
     }
@@ -122,13 +122,13 @@ public class AdminController : FantasyCriticController
     public async Task<IActionResult> CompleteMasterGameChangeRequest([FromBody] CompleteMasterGameChangeRequestRequest request)
     {
         Maybe<MasterGameChangeRequest> maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
-        if (maybeRequest.HasNoValue)
+        if (maybeRequest.HasNoValueTempoTemp)
         {
             return BadRequest("That request does not exist.");
         }
 
         Instant instant = _clock.GetCurrentInstant();
-        await _interLeagueService.CompleteMasterGameChangeRequest(maybeRequest.Value, instant, request.ResponseNote);
+        await _interLeagueService.CompleteMasterGameChangeRequest(maybeRequest.ValueTempoTemp, instant, request.ResponseNote);
 
         return Ok();
     }
@@ -137,12 +137,12 @@ public class AdminController : FantasyCriticController
     public async Task<IActionResult> LinkGameToOpenCritic([FromBody] LinkGameToOpenCriticRequest request)
     {
         Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
-        if (masterGame.HasNoValue)
+        if (masterGame.HasNoValueTempoTemp)
         {
             return BadRequest("Bad master game");
         }
 
-        await _interLeagueService.LinkToOpenCritic(masterGame.Value, request.OpenCriticID);
+        await _interLeagueService.LinkToOpenCritic(masterGame.ValueTempoTemp, request.OpenCriticID);
 
         return Ok();
     }
@@ -151,12 +151,12 @@ public class AdminController : FantasyCriticController
     public async Task<IActionResult> LinkGameToGG([FromBody] LinkGameToGGRequest request)
     {
         Maybe<MasterGame> masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
-        if (masterGame.HasNoValue)
+        if (masterGame.HasNoValueTempoTemp)
         {
             return BadRequest("Bad master game");
         }
 
-        await _interLeagueService.LinkToGG(masterGame.Value, request.GGToken);
+        await _interLeagueService.LinkToGG(masterGame.ValueTempoTemp, request.GGToken);
 
         return Ok();
     }
@@ -166,12 +166,12 @@ public class AdminController : FantasyCriticController
     {
         Maybe<MasterGame> removeMasterGame = await _interLeagueService.GetMasterGame(request.RemoveMasterGameID);
         Maybe<MasterGame> mergeIntoMasterGame = await _interLeagueService.GetMasterGame(request.MergeIntoMasterGameID);
-        if (removeMasterGame.HasNoValue || mergeIntoMasterGame.HasNoValue)
+        if (removeMasterGame.HasNoValueTempoTemp || mergeIntoMasterGame.HasNoValueTempoTemp)
         {
             return BadRequest("Bad master game");
         }
 
-        await _interLeagueService.MergeMasterGame(removeMasterGame.Value, mergeIntoMasterGame.Value);
+        await _interLeagueService.MergeMasterGame(removeMasterGame.ValueTempoTemp, mergeIntoMasterGame.ValueTempoTemp);
 
         return Ok();
     }
@@ -320,17 +320,17 @@ public class AdminController : FantasyCriticController
     public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
     {
         Maybe<League> league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
-        if (league.HasNoValue)
+        if (league.HasNoValueTempoTemp)
         {
             return BadRequest();
         }
 
-        if (!league.Value.TestLeague)
+        if (!league.ValueTempoTemp.TestLeague)
         {
             return BadRequest();
         }
 
-        await _fantasyCriticService.DeleteLeague(league.Value);
+        await _fantasyCriticService.DeleteLeague(league.ValueTempoTemp);
         return Ok();
     }
 

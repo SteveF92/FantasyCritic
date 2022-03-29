@@ -32,12 +32,12 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         var league = await _fantasyCriticService.GetLeagueByID(leagueID);
-        if (league.HasNoValue)
+        if (league.HasNoValueTempoTemp)
         {
             return GetFailedResult<LeagueRecord>(BadRequest("League does not exist."));
         }
 
-        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league.Value);
+        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league.ValueTempoTemp);
         bool isInLeague = false;
         Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
         bool isLeagueManager = false;
@@ -45,7 +45,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         if (currentUserRecord.IsSuccess)
         {
             userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-            isLeagueManager = league.Value.LeagueManager.Id == currentUserRecord.Value.Id;
+            isLeagueManager = league.ValueTempoTemp.LeagueManager.Id == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
                 return GetFailedResult<LeagueRecord>(Forbid());
@@ -60,19 +60,19 @@ public abstract class BaseLeagueController : FantasyCriticController
                 isInLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
                 if (!isInLeague)
                 {
-                    var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league.Value);
+                    var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league.ValueTempoTemp);
                     leagueInvite = inviteesToLeague.GetMatchingInvite(currentUserRecord.Value.Email);
                 }
             }
         }
 
-        if (!isInLeague && leagueInvite.HasNoValue && requiredRelationship.MustBeInOrInvitedToLeague)
+        if (!isInLeague && leagueInvite.HasNoValueTempoTemp && requiredRelationship.MustBeInOrInvitedToLeague)
         {
             return GetFailedResult<LeagueRecord>(Forbid());
         }
 
         LeagueUserRelationship relationship = new LeagueUserRelationship(leagueInvite, isInLeague, isLeagueManager, userIsAdmin);
-        return (new LeagueRecord(currentUserRecord.ToMaybe(), league.Value, playersInLeague, relationship), Maybe<IActionResult>.None);
+        return (new LeagueRecord(currentUserRecord.ToMaybe(), league.ValueTempoTemp, playersInLeague, relationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYear(Guid leagueID, int year,
@@ -99,20 +99,20 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear.HasNoValue)
+        if (leagueYear.HasNoValueTempoTemp)
         {
             return GetFailedResult<LeagueYearRecord>(BadRequest("League year does not exist."));
         }
 
-        var yearStatusValid = requiredYearStatus.StateIsValid(leagueYear.Value);
+        var yearStatusValid = requiredYearStatus.StateIsValid(leagueYear.ValueTempoTemp);
         if (yearStatusValid.IsFailure)
         {
             return GetFailedResult<LeagueYearRecord>(BadRequest(yearStatusValid.Error));
         }
 
-        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(leagueYear.Value.League);
-        var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.Value.League);
-        var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.Value.League, year);
+        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(leagueYear.ValueTempoTemp.League);
+        var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(leagueYear.ValueTempoTemp.League);
+        var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.ValueTempoTemp.League, year);
         bool isInLeague = false;
         Maybe<LeagueInvite> leagueInvite = Maybe<LeagueInvite>.None;
         bool isActiveInYear = false;
@@ -121,7 +121,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         if (currentUserRecord.IsSuccess)
         {
             userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-            isLeagueManager = leagueYear.Value.League.LeagueManager.Id == currentUserRecord.Value.Id;
+            isLeagueManager = leagueYear.ValueTempoTemp.League.LeagueManager.Id == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
                 return GetFailedResult<LeagueYearRecord>(Forbid());
@@ -143,7 +143,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
         }
 
-        if (!isInLeague && leagueInvite.HasNoValue && requiredRelationship.MustBeInOrInvitedToLeague)
+        if (!isInLeague && leagueInvite.HasNoValueTempoTemp && requiredRelationship.MustBeInOrInvitedToLeague)
         {
             return GetFailedResult<LeagueYearRecord>(Forbid());
         }
@@ -154,137 +154,137 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(leagueInvite, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
-        return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.Value, playersInLeague, activeUsers, inviteesToLeague, relationship), Maybe<IActionResult>.None);
+        return (new LeagueYearRecord(currentUserRecord.ToMaybe(), leagueYear.ValueTempoTemp, playersInLeague, activeUsers, inviteesToLeague, relationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID,
         ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
-        if (leagueYearRecord.FailedResult.HasValue)
+        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
         }
 
-        var publisher = leagueYearRecord.ValidResult.Value.LeagueYear.GetPublisherByID(publisherID);
-        if (publisher.HasNoValue)
+        var publisher = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear.GetPublisherByID(publisherID);
+        if (publisher.HasNoValueTempoTemp)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist in that league."));
         }
 
-        bool userIsPublisher = leagueYearRecord.ValidResult.Value.CurrentUser.HasValue &&
-                               leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
+        bool userIsPublisher = leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser.HasValueTempoTemp &&
+                               leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser.ValueTempoTemp.Id == publisher.ValueTempoTemp.User.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(Forbid());
         }
 
-        var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.Value.Relationship, userIsPublisher);
+        var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.ValueTempoTemp.Relationship, userIsPublisher);
 
-        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value, publisherRelationship), Maybe<IActionResult>.None);
+        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser, leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear, publisher.ValueTempoTemp, publisherRelationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid publisherID,
         ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         Maybe<LeagueYearKey> leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
-        if (leagueYearKey.HasNoValue)
+        if (leagueYearKey.HasNoValueTempoTemp)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist."));
         }
 
-        var leagueYearRecord = await GetExistingLeagueYear(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
-        if (leagueYearRecord.FailedResult.HasValue)
+        var leagueYearRecord = await GetExistingLeagueYear(leagueYearKey.ValueTempoTemp.LeagueID, leagueYearKey.ValueTempoTemp.Year, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
+        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
         }
 
-        var publisher = leagueYearRecord.ValidResult.Value.LeagueYear.GetPublisherByID(publisherID);
-        if (publisher.HasNoValue)
+        var publisher = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear.GetPublisherByID(publisherID);
+        if (publisher.HasNoValueTempoTemp)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("Publisher does not exist in that league."));
         }
 
-        bool userIsPublisher = leagueYearRecord.ValidResult.Value.CurrentUser.HasValue &&
-                               leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
+        bool userIsPublisher = leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser.HasValueTempoTemp &&
+                               leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser.ValueTempoTemp.Id == publisher.ValueTempoTemp.User.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(Forbid());
         }
 
-        var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.Value.Relationship, userIsPublisher);
+        var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.ValueTempoTemp.Relationship, userIsPublisher);
 
-        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value, publisherRelationship), Maybe<IActionResult>.None);
+        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser, leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear, publisher.ValueTempoTemp, publisherRelationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearPublisherRecord> LeagueYearPublisherRecord, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, FantasyCriticUser userForPublisher,
         ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
-        if (leagueYearRecord.FailedResult.HasValue)
+        if (leagueYearRecord.FailedResult.HasValueTempoTemp)
         {
             return (Maybe<LeagueYearPublisherRecord>.None, leagueYearRecord.FailedResult);
         }
 
-        var publisher = leagueYearRecord.ValidResult.Value.LeagueYear.GetUserPublisher(userForPublisher);
-        if (publisher.HasNoValue)
+        var publisher = leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear.GetUserPublisher(userForPublisher);
+        if (publisher.HasNoValueTempoTemp)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(BadRequest("That user does not have a publisher in that league."));
         }
 
-        bool userIsPublisher = leagueYearRecord.ValidResult.Value.CurrentUser.HasValue &&
-                               leagueYearRecord.ValidResult.Value.CurrentUser.Value.Id == publisher.Value.User.Id;
+        bool userIsPublisher = leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser.HasValueTempoTemp &&
+                               leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser.ValueTempoTemp.Id == publisher.ValueTempoTemp.User.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(Forbid());
         }
 
-        var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.Value.Relationship, userIsPublisher);
+        var publisherRelationship = new PublisherUserRelationship(leagueYearRecord.ValidResult.ValueTempoTemp.Relationship, userIsPublisher);
 
-        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.Value.CurrentUser, leagueYearRecord.ValidResult.Value.LeagueYear, publisher.Value, publisherRelationship), Maybe<IActionResult>.None);
+        return (new LeagueYearPublisherRecord(leagueYearRecord.ValidResult.ValueTempoTemp.CurrentUser, leagueYearRecord.ValidResult.ValueTempoTemp.LeagueYear, publisher.ValueTempoTemp, publisherRelationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearPublisherGameRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisherGame(Guid leagueID, int year, Guid publisherID, Guid publisherGameID,
         ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueID, year, publisherID, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
-        if (leagueYearPublisherRecord.FailedResult.HasValue)
+        if (leagueYearPublisherRecord.FailedResult.HasValueTempoTemp)
         {
             return (Maybe<LeagueYearPublisherGameRecord>.None, leagueYearPublisherRecord.FailedResult);
         }
 
-        var publisherGame = leagueYearPublisherRecord.ValidResult.Value.Publisher.PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
+        var publisherGame = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher.PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
         if (publisherGame is null)
         {
             return GetFailedResult<LeagueYearPublisherGameRecord>(BadRequest("That publisher game does not exist."));
         }
 
-        return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.ValidResult.Value.CurrentUser, leagueYearPublisherRecord.ValidResult.Value.LeagueYear,
-            leagueYearPublisherRecord.ValidResult.Value.Publisher, publisherGame, leagueYearPublisherRecord.ValidResult.Value.Relationship), Maybe<IActionResult>.None);
+        return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.ValidResult.ValueTempoTemp.CurrentUser, leagueYearPublisherRecord.ValidResult.ValueTempoTemp.LeagueYear,
+            leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher, publisherGame, leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Relationship), Maybe<IActionResult>.None);
     }
 
     protected async Task<(Maybe<LeagueYearPublisherGameRecord> ValidResult, Maybe<IActionResult> FailedResult)> GetExistingLeagueYearAndPublisherGame(Guid publisherID, Guid publisherGameID,
         ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
         Maybe<LeagueYearKey> leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
-        if (leagueYearKey.HasNoValue)
+        if (leagueYearKey.HasNoValueTempoTemp)
         {
             return GetFailedResult<LeagueYearPublisherGameRecord>(BadRequest("Publisher does not exist."));
         }
 
-        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueYearKey.Value.LeagueID, leagueYearKey.Value.Year, publisherID, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
-        if (leagueYearPublisherRecord.FailedResult.HasValue)
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(leagueYearKey.ValueTempoTemp.LeagueID, leagueYearKey.ValueTempoTemp.Year, publisherID, actionProcessingModeBehavior, requiredRelationship, requiredYearStatus);
+        if (leagueYearPublisherRecord.FailedResult.HasValueTempoTemp)
         {
             return (Maybe<LeagueYearPublisherGameRecord>.None, leagueYearPublisherRecord.FailedResult);
         }
 
-        var publisherGame = leagueYearPublisherRecord.ValidResult.Value.Publisher.PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
+        var publisherGame = leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher.PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
         if (publisherGame is null)
         {
             return GetFailedResult<LeagueYearPublisherGameRecord>(BadRequest("That publisher game does not exist."));
         }
 
-        return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.ValidResult.Value.CurrentUser, leagueYearPublisherRecord.ValidResult.Value.LeagueYear,
-            leagueYearPublisherRecord.ValidResult.Value.Publisher, publisherGame, leagueYearPublisherRecord.ValidResult.Value.Relationship), Maybe<IActionResult>.None);
+        return (new LeagueYearPublisherGameRecord(leagueYearPublisherRecord.ValidResult.ValueTempoTemp.CurrentUser, leagueYearPublisherRecord.ValidResult.ValueTempoTemp.LeagueYear,
+            leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Publisher, publisherGame, leagueYearPublisherRecord.ValidResult.ValueTempoTemp.Relationship), Maybe<IActionResult>.None);
     }
 }

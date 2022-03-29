@@ -21,11 +21,11 @@ public class ManagerMessage
 
     public bool IsDismissed(Maybe<FantasyCriticUser> accessingUser)
     {
-        if (accessingUser.HasNoValue)
+        if (accessingUser.HasNoValueTempoTemp)
         {
             return false;
         }
 
-        return DismissedByUserIDs.Contains(accessingUser.Value.Id);
+        return DismissedByUserIDs.Contains(accessingUser.ValueTempoTemp.Id);
     }
 }

@@ -15,7 +15,7 @@ public class PickupBidEntity
         BidID = domain.BidID;
         PublisherID = domain.Publisher.PublisherID;
         MasterGameID = domain.MasterGame.MasterGameID;
-        ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
+        ConditionalDropMasterGameID = domain.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID);
         CounterPick = domain.CounterPick;
         Timestamp = domain.Timestamp;
         Priority = domain.Priority;
@@ -31,7 +31,7 @@ public class PickupBidEntity
         BidID = domain.PickupBid.BidID;
         PublisherID = domain.PickupBid.Publisher.PublisherID;
         MasterGameID = domain.PickupBid.MasterGame.MasterGameID;
-        ConditionalDropMasterGameID = domain.PickupBid.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
+        ConditionalDropMasterGameID = domain.PickupBid.ConditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID);
         CounterPick = domain.PickupBid.CounterPick;
         Timestamp = domain.PickupBid.Timestamp;
         Priority = domain.PickupBid.Priority;
@@ -47,7 +47,7 @@ public class PickupBidEntity
         BidID = domain.BidID;
         PublisherID = domain.Publisher.PublisherID;
         MasterGameID = domain.MasterGame.MasterGameID;
-        ConditionalDropMasterGameID = conditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.Value.MasterGame.MasterGameID);
+        ConditionalDropMasterGameID = conditionalDropPublisherGame.GetValueOrDefault<PublisherGame, Guid?>(x => x.MasterGame.ValueTempoTemp.MasterGame.MasterGameID);
         CounterPick = domain.CounterPick;
         Timestamp = domain.Timestamp;
         Priority = domain.Priority;

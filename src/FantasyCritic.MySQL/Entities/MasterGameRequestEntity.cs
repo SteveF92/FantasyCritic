@@ -28,9 +28,9 @@ internal class MasterGameRequestEntity
         ResponseTimestamp = domain.ResponseTimestamp;
         ResponseNote = domain.ResponseNote;
 
-        if (domain.MasterGame.HasValue)
+        if (domain.MasterGame.HasValueTempoTemp)
         {
-            MasterGameID = domain.MasterGame.Value.MasterGameID;
+            MasterGameID = domain.MasterGame.ValueTempoTemp.MasterGameID;
         }
 
         Hidden = domain.Hidden;

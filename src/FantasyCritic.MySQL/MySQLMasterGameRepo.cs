@@ -149,7 +149,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateGGStats(MasterGame masterGame, GGGame ggGame)
     {
-        if (ggGame.CoverArtFileName.HasNoValue)
+        if (ggGame.CoverArtFileName.HasNoValueTempoTemp)
         {
             return;
         }
@@ -162,7 +162,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 new
                 {
                     masterGameID = masterGame.MasterGameID,
-                    ggCoverArtFileName = ggGame.CoverArtFileName.Value
+                    ggCoverArtFileName = ggGame.CoverArtFileName.ValueTempoTemp
                 });
         }
     }
@@ -336,9 +336,9 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
     {
         Guid? masterGameID = null;
-        if (masterGame.HasValue)
+        if (masterGame.HasValueTempoTemp)
         {
-            masterGameID = masterGame.Value.MasterGameID;
+            masterGameID = masterGame.ValueTempoTemp.MasterGameID;
         }
         string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, " +
                      "ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
@@ -466,14 +466,14 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
             var masterGame = await GetMasterGame(entity.MasterGameID);
 
-            if (masterGame.HasNoValue)
+            if (masterGame.HasNoValueTempoTemp)
             {
                 throw new Exception($"Something has gone horribly wrong with master game change requests. ID: {requestID}");
             }
 
             var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
 
-            return entity.ToDomain(user, masterGame.Value);
+            return entity.ToDomain(user, masterGame.ValueTempoTemp);
         }
     }
 

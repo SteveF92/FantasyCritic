@@ -21,9 +21,9 @@ internal class PublisherGameEntity
         SlotNumber = publisherGame.SlotNumber;
         DraftPosition = publisherGame.DraftPosition;
         OverallDraftPosition = publisherGame.OverallDraftPosition;
-        if (publisherGame.MasterGame.HasValue)
+        if (publisherGame.MasterGame.HasValueTempoTemp)
         {
-            MasterGameID = publisherGame.MasterGame.Value.MasterGame.MasterGameID;
+            MasterGameID = publisherGame.MasterGame.ValueTempoTemp.MasterGame.MasterGameID;
         }
 
         BidAmount = publisherGame.BidAmount;

@@ -100,8 +100,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
             var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
             var yearQuarter = await GetYearQuarter(entity.Year, entity.Quarter);
-            var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter.Value);
-            var domain = entity.ToDomain(yearQuarter.Value, user, publisherGames);
+            var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter.ValueTempoTemp);
+            var domain = entity.ToDomain(yearQuarter.ValueTempoTemp, user, publisherGames);
             return domain;
         }
     }
@@ -109,13 +109,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
     {
         var yearQuarter = await GetYearQuarter(year, quarter);
-        if (yearQuarter.HasNoValue)
+        if (yearQuarter.HasNoValueTempoTemp)
         {
             return new List<RoyalePublisher>();
         }
 
         var users = await _userStore.GetAllUsers();
-        var publisherGames = await GetAllPublisherGames(yearQuarter.Value);
+        var publisherGames = await GetAllPublisherGames(yearQuarter.ValueTempoTemp);
         var publisherGameLookup = publisherGames.ToLookup(x => x.PublisherID);
 
         string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
@@ -134,7 +134,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
                 var gamesForPublisher = publisherGameLookup[entity.PublisherID];
 
-                var domain = entity.ToDomain(yearQuarter.Value, user, gamesForPublisher);
+                var domain = entity.ToDomain(yearQuarter.ValueTempoTemp, user, gamesForPublisher);
                 domainPublishers.Add(domain);
             }
 
@@ -176,7 +176,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             foreach (var entity in entities)
             {
                 var masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
-                var domain = entity.ToDomain(yearQuarter, masterGame.Value);
+                var domain = entity.ToDomain(yearQuarter, masterGame.ValueTempoTemp);
                 domains.Add(domain);
             }
             return domains;
@@ -244,7 +244,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             foreach (var entity in entities)
             {
                 var masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
-                var domain = entity.ToDomain(yearQuarter, masterGame.Value);
+                var domain = entity.ToDomain(yearQuarter, masterGame.ValueTempoTemp);
                 domains.Add(domain);
             }
             return domains;
@@ -327,12 +327,12 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
                 var topPublisher = group.MaxBy(x => x.TotalFantasyPoints);
                 var topDomainPublisher = await GetPublisher(topPublisher.PublisherID);
-                if (!winners.ContainsKey(topDomainPublisher.Value.User))
+                if (!winners.ContainsKey(topDomainPublisher.ValueTempoTemp.User))
                 {
-                    winners.Add(topDomainPublisher.Value.User, new List<RoyaleYearQuarter>());
+                    winners.Add(topDomainPublisher.ValueTempoTemp.User, new List<RoyaleYearQuarter>());
                 }
 
-                winners[topDomainPublisher.Value.User].Add(quarter);
+                winners[topDomainPublisher.ValueTempoTemp.User].Add(quarter);
             }
         }
 

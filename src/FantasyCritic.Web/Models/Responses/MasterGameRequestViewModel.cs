@@ -16,9 +16,9 @@ public class MasterGameRequestViewModel
         Answered = domain.Answered;
         ResponseNote = domain.ResponseNote;
         ResponseTimestamp = domain.ResponseTimestamp;
-        if (domain.MasterGame.HasValue)
+        if (domain.MasterGame.HasValueTempoTemp)
         {
-            MasterGame = new MasterGameViewModel(domain.MasterGame.Value, currentDate);
+            MasterGame = new MasterGameViewModel(domain.MasterGame.ValueTempoTemp, currentDate);
         }
         Hidden = domain.Hidden;
         RequestNote = domain.RequestNote;

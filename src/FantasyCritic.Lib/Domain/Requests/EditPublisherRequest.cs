@@ -38,7 +38,7 @@ public class EditPublisherRequest
 
     public bool SomethingChanged()
     {
-        return NewPublisherName.HasValue ||
+        return NewPublisherName.HasValueTempoTemp ||
                Budget.HasValue ||
                FreeGamesDropped.HasValue ||
                WillNotReleaseGamesDropped.HasValue ||
@@ -48,9 +48,9 @@ public class EditPublisherRequest
     public string GetActionString()
     {
         List<string> changes = new List<string>();
-        if (NewPublisherName.HasValue)
+        if (NewPublisherName.HasValueTempoTemp)
         {
-            changes.Add($"Changed publisher name to {NewPublisherName.Value}");
+            changes.Add($"Changed publisher name to {NewPublisherName.ValueTempoTemp}");
         }
         if (Budget.HasValue)
         {

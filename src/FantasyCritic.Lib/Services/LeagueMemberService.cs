@@ -115,7 +115,7 @@ public class LeagueMemberService
     public async Task<Result> InviteUserByEmail(League league, string inviteEmail)
     {
         var existingInvite = await GetMatchingInvite(league, inviteEmail);
-        if (existingInvite.HasValue)
+        if (existingInvite.HasValueTempoTemp)
         {
             return Result.Failure("User is already invited to this league.");
         }
@@ -140,7 +140,7 @@ public class LeagueMemberService
     public async Task<Result> InviteUserByUserID(League league, FantasyCriticUser inviteUser)
     {
         var existingInvite = await GetMatchingInvite(league, inviteUser);
-        if (existingInvite.HasValue)
+        if (existingInvite.HasValueTempoTemp)
         {
             return Result.Failure("User is already invited to this league.");
         }
@@ -167,12 +167,12 @@ public class LeagueMemberService
         }
 
         var invite = await GetMatchingInvite(league, inviteUser.Email);
-        if (invite.HasNoValue)
+        if (invite.HasNoValueTempoTemp)
         {
             return Result.Failure("User is not invited to this league.");
         }
 
-        await _fantasyCriticRepo.AcceptInvite(invite.Value, inviteUser);
+        await _fantasyCriticRepo.AcceptInvite(invite.ValueTempoTemp, inviteUser);
 
         return Result.Success();
     }

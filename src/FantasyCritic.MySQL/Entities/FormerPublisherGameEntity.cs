@@ -41,9 +41,9 @@ public class FormerPublisherGameEntity
 
         DraftPosition = publisherGame.PublisherGame.DraftPosition;
         OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
-        if (publisherGame.PublisherGame.MasterGame.HasValue)
+        if (publisherGame.PublisherGame.MasterGame.HasValueTempoTemp)
         {
-            MasterGameID = publisherGame.PublisherGame.MasterGame.Value.MasterGame.MasterGameID;
+            MasterGameID = publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.MasterGameID;
         }
 
         BidAmount = publisherGame.PublisherGame.BidAmount;

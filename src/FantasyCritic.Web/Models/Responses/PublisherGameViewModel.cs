@@ -11,21 +11,21 @@ public class PublisherGameViewModel
         CounterPick = publisherGame.CounterPick;
         FantasyPoints = publisherGame.FantasyPoints;
 
-        Linked = publisherGame.MasterGame.HasValue;
+        Linked = publisherGame.MasterGame.HasValueTempoTemp;
         if (Linked)
         {
-            GameName = publisherGame.MasterGame.Value.MasterGame.GameName;
-            EstimatedReleaseDate = publisherGame.MasterGame.Value.MasterGame.EstimatedReleaseDate;
-            if (publisherGame.MasterGame.Value.MasterGame.ReleaseDate.HasValue)
+            GameName = publisherGame.MasterGame.ValueTempoTemp.MasterGame.GameName;
+            EstimatedReleaseDate = publisherGame.MasterGame.ValueTempoTemp.MasterGame.EstimatedReleaseDate;
+            if (publisherGame.MasterGame.ValueTempoTemp.MasterGame.ReleaseDate.HasValue)
             {
-                ReleaseDate = publisherGame.MasterGame.Value.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
+                ReleaseDate = publisherGame.MasterGame.ValueTempoTemp.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
             }
 
-            CriticScore = publisherGame.MasterGame.Value.MasterGame.CriticScore;
-            Released = publisherGame.MasterGame.Value.MasterGame.IsReleased(currentDate);
-            if (publisherGame.MasterGame.HasValue)
+            CriticScore = publisherGame.MasterGame.ValueTempoTemp.MasterGame.CriticScore;
+            Released = publisherGame.MasterGame.ValueTempoTemp.MasterGame.IsReleased(currentDate);
+            if (publisherGame.MasterGame.HasValueTempoTemp)
             {
-                MasterGame = new MasterGameYearViewModel(publisherGame.MasterGame.Value, currentDate);
+                MasterGame = new MasterGameYearViewModel(publisherGame.MasterGame.ValueTempoTemp, currentDate);
             }
         }
 
@@ -54,21 +54,21 @@ public class PublisherGameViewModel
         CounterPick = publisherGame.PublisherGame.CounterPick;
         FantasyPoints = publisherGame.PublisherGame.FantasyPoints;
 
-        Linked = publisherGame.PublisherGame.MasterGame.HasValue;
+        Linked = publisherGame.PublisherGame.MasterGame.HasValueTempoTemp;
         if (Linked)
         {
-            GameName = publisherGame.PublisherGame.MasterGame.Value.MasterGame.GameName;
-            EstimatedReleaseDate = publisherGame.PublisherGame.MasterGame.Value.MasterGame.EstimatedReleaseDate;
-            if (publisherGame.PublisherGame.MasterGame.Value.MasterGame.ReleaseDate.HasValue)
+            GameName = publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.GameName;
+            EstimatedReleaseDate = publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.EstimatedReleaseDate;
+            if (publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.ReleaseDate.HasValue)
             {
-                ReleaseDate = publisherGame.PublisherGame.MasterGame.Value.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
+                ReleaseDate = publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
             }
 
-            CriticScore = publisherGame.PublisherGame.MasterGame.Value.MasterGame.CriticScore;
-            Released = publisherGame.PublisherGame.MasterGame.Value.MasterGame.IsReleased(currentDate);
-            if (publisherGame.PublisherGame.MasterGame.HasValue)
+            CriticScore = publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.CriticScore;
+            Released = publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.IsReleased(currentDate);
+            if (publisherGame.PublisherGame.MasterGame.HasValueTempoTemp)
             {
-                MasterGame = new MasterGameYearViewModel(publisherGame.PublisherGame.MasterGame.Value, currentDate);
+                MasterGame = new MasterGameYearViewModel(publisherGame.PublisherGame.MasterGame.ValueTempoTemp, currentDate);
             }
         }
 

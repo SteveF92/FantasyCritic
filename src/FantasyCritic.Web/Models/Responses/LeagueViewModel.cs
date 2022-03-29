@@ -31,9 +31,9 @@ public class LeagueViewModel
         Years = league.Years;
         ActiveYear = Years.Max();
 
-        if (outstandingInvite.HasValue && currentUser.HasValue)
+        if (outstandingInvite.HasValueTempoTemp && currentUser.HasValueTempoTemp)
         {
-            OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite.Value, currentUser.Value);
+            OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite.ValueTempoTemp, currentUser.ValueTempoTemp);
         }
 
         Players = players.Select(x => new PlayerViewModel(league, x.User, x.Removable)).ToList();

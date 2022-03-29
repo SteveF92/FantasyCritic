@@ -18,7 +18,7 @@ public static class LeagueInviteExtensions
 
     public static Maybe<LeagueInvite> GetMatchingInvite(this IEnumerable<LeagueInvite> invites, FantasyCriticUser user)
     {
-        var matchingInvite = invites.SingleOrDefault(x => x.User.HasValue && x.User.Value.Id == user.Id);
+        var matchingInvite = invites.SingleOrDefault(x => x.User.HasValueTempoTemp && x.User.ValueTempoTemp.Id == user.Id);
         return matchingInvite;
     }
 }

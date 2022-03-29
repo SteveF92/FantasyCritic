@@ -16,9 +16,9 @@ internal class LeagueInviteEntity
 
         EmailAddress = domain.EmailAddress;
 
-        if (domain.User.HasValue)
+        if (domain.User.HasValueTempoTemp)
         {
-            UserID = domain.User.Value.Id;
+            UserID = domain.User.ValueTempoTemp.Id;
         }
     }
 

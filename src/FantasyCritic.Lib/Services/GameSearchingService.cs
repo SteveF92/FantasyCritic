@@ -18,8 +18,8 @@ public class GameSearchingService
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame.HasValue)
-            .Select(x => x.MasterGame.Value.MasterGame)
+            .Where(x => !x.CounterPick && x.MasterGame.HasValueTempoTemp)
+            .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
             .ToHashSet();
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -27,7 +27,7 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
-        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
+        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValueTempoTemp).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in masterGames)
@@ -45,8 +45,8 @@ public class GameSearchingService
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame.HasValue)
-            .Select(x => x.MasterGame.Value.MasterGame)
+            .Where(x => !x.CounterPick && x.MasterGame.HasValueTempoTemp)
+            .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
             .ToHashSet();
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -55,7 +55,7 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
-        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
+        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValueTempoTemp).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in matchingMasterGames)
@@ -73,8 +73,8 @@ public class GameSearchingService
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame.HasValue)
-            .Select(x => x.MasterGame.Value.MasterGame)
+            .Where(x => !x.CounterPick && x.MasterGame.HasValueTempoTemp)
+            .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
             .ToHashSet();
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -83,7 +83,7 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
-        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
+        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValueTempoTemp).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in matchingMasterGames)
@@ -107,8 +107,8 @@ public class GameSearchingService
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame.HasValue)
-            .Select(x => x.MasterGame.Value.MasterGame)
+            .Where(x => !x.CounterPick && x.MasterGame.HasValueTempoTemp)
+            .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
             .ToHashSet();
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -117,7 +117,7 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
-        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
+        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValueTempoTemp).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in matchingMasterGames)
@@ -141,8 +141,8 @@ public class GameSearchingService
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame.HasValue)
-            .Select(x => x.MasterGame.Value.MasterGame)
+            .Where(x => !x.CounterPick && x.MasterGame.HasValueTempoTemp)
+            .Select(x => x.MasterGame.ValueTempoTemp.MasterGame)
             .ToHashSet();
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
@@ -151,7 +151,7 @@ public class GameSearchingService
         var masterGamesForThisYear = masterGameYears.Where(x => x.Year == leagueYear.Year);
         var masterGameYearDictionary = masterGamesForThisYear.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
-        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValue).OrderBy(x => x.SlotNumber).ToList();
+        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame.HasNoValueTempoTemp).OrderBy(x => x.SlotNumber).ToList();
 
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         LocalDate currentDate = _clock.GetToday();
