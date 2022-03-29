@@ -8,7 +8,8 @@ namespace FantasyCritic.Lib.Interfaces;
 
 public interface IFantasyCriticRepo
 {
-    Task<League?> GetLeagueByID(Guid id);
+    Task<League?> GetLeague(Guid id);
+    Task<League> GetLeagueOrThrow(Guid id);
     Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);

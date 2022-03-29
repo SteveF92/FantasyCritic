@@ -34,7 +34,7 @@ public class FantasyCriticService
 
     public Task<League?> GetLeagueByID(Guid id)
     {
-        return _fantasyCriticRepo.GetLeagueByID(id);
+        return _fantasyCriticRepo.GetLeague(id);
     }
 
     public async Task<LeagueYear?> GetLeagueYear(Guid id, int year)
