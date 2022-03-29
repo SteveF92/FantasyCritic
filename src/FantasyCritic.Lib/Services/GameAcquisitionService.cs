@@ -158,6 +158,11 @@ public class GameAcquisitionService
             dateOfPotentialAcquisition = nextBidTime.Value.ToEasternDate();
         }
 
+        if (request.ConditionalDropPublisherGame?.MasterGame is null)
+        {
+            throw new Exception($"Invalid conditional drop for bid: {request.BidID}");
+        }
+
         var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.MasterGame.MasterGame, leagueYear.Year,
             true, currentDate, dateOfPotentialAcquisition, false, false, false);
         dropErrors.AddRange(masterGameErrors);
@@ -388,7 +393,7 @@ public class GameAcquisitionService
         if (counterPick)
         {
             var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame))
-                .Where(x => x is not null && !x.CounterPick).ToList();
+                .Where(x => x is not null && !x.CounterPick).SelectNotNull().ToList();
 
             if (gameBeingCounterPickedOptions.Count != 1)
             {

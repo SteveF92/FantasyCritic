@@ -204,10 +204,10 @@ public class ActionProcessingService
         foreach (var noSpaceLeftBid in noSpaceLeftBids)
         {
             FailedPickupBid failedBid;
-            if (noSpaceLeftBid.ConditionalDropPublisherGame is not null && noSpaceLeftBid.ConditionalDropResult.Result.IsFailure)
+            if (noSpaceLeftBid.ConditionalDropPublisherGame is not null && noSpaceLeftBid.ConditionalDropResult!.Result.IsFailure)
             {
                 failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available. Attempted to conditionally drop game: " +
-                                                                $"{noSpaceLeftBid.ConditionalDropPublisherGame.MasterGame.MasterGame.GameName} " +
+                                                                $"{noSpaceLeftBid.ConditionalDropPublisherGame.MasterGame!.MasterGame.GameName} " +
                                                                 $"but failed because: {noSpaceLeftBid.ConditionalDropResult.Result.Error}", systemWideValues, currentDate);
             }
             else

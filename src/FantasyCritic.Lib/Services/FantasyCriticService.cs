@@ -194,14 +194,14 @@ public class FantasyCriticService
             var normalSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot is null);
             foreach (var normalSlot in normalSlots)
             {
-                slotAssignmentsForPublisher[normalSlot.PublisherGame.PublisherGameID] = normalSlotNumber;
+                slotAssignmentsForPublisher[normalSlot.PublisherGame!.PublisherGameID] = normalSlotNumber;
                 normalSlotNumber++;
             }
 
             var specialSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot is not null);
             foreach (var specialSlot in specialSlots)
             {
-                slotAssignmentsForPublisher[specialSlot.PublisherGame.PublisherGameID] =
+                slotAssignmentsForPublisher[specialSlot.PublisherGame!.PublisherGameID] =
                     specialSlot.SlotNumber + slotCountShift;
             }
 
@@ -213,7 +213,7 @@ public class FantasyCriticService
                 int allSlotNumber = 0;
                 foreach (var slot in filledNonCounterPickSlots)
                 {
-                    slotAssignmentsForPublisher[slot.PublisherGame.PublisherGameID] = allSlotNumber;
+                    slotAssignmentsForPublisher[slot.PublisherGame!.PublisherGameID] = allSlotNumber;
                     allSlotNumber++;
                 }
             }
@@ -266,7 +266,7 @@ public class FantasyCriticService
 
                     decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
-                    publisherGameCalculatedStats.Add(publisherSlot.PublisherGame.PublisherGameID, stats);
+                    publisherGameCalculatedStats.Add(publisherSlot.PublisherGame!.PublisherGameID, stats);
                     if (fantasyPoints.HasValue)
                     {
                         totalPointsForPublisher += fantasyPoints.Value;
@@ -302,7 +302,7 @@ public class FantasyCriticService
 
                 decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                 var stats = new PublisherGameCalculatedStats(fantasyPoints);
-                calculatedStats.Add(publisherSlot.PublisherGame.PublisherGameID, stats);
+                calculatedStats.Add(publisherSlot.PublisherGame!.PublisherGameID, stats);
             }
         }
 

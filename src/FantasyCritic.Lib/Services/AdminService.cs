@@ -389,7 +389,7 @@ public class AdminService
             ILookup<MasterGame, PickupBid> bidsByGame = bidsToCount.ToLookup(x => x.MasterGame);
             IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
 
-            var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame.MasterGame.MasterGameID);
+            var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame!.MasterGame.MasterGameID);
             Dictionary<LeagueYearKey, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
             Dictionary<LeagueYearKey, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
             foreach (var publisher in publishersInCompleteLeagues)
@@ -429,7 +429,6 @@ public class AdminService
 
             foreach (var masterGame in cleanMasterGames)
             {
-                var gameIsCached = masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame);
                 if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year < supportedYear.Year)
                 {
                     continue;
@@ -503,7 +502,7 @@ public class AdminService
                 dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
                 double peakHypeFactor = hypeFactor;
 
-                if (gameIsCached)
+                if (masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame))
                 {
                     if (cachedMasterGame.PeakHypeFactor > peakHypeFactor)
                     {

@@ -26,4 +26,9 @@ public static class ListExtensions
         var minValue = source.Select(selector).Max();
         return source.Where(item => selector.Invoke(item).Equals(minValue));
     }
+
+    public static IEnumerable<TSource> SelectNotNull<TSource>(this IEnumerable<TSource?> source)
+    {
+        return source.Select(x => x!);
+    }
 }
