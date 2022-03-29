@@ -93,7 +93,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
     }
 
-    public async Task<Maybe<MasterGame>> GetMasterGame(Guid masterGameID)
+    public async Task<MasterGame?> GetMasterGame(Guid masterGameID)
     {
         if (!_masterGamesCache.Any())
         {
@@ -103,13 +103,13 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         _masterGamesCache.TryGetValue(masterGameID, out MasterGame foundMasterGame);
         if (foundMasterGame is null)
         {
-            return Maybe<MasterGame>.None;
+            return null;
         }
 
         return foundMasterGame;
     }
 
-    public async Task<Maybe<MasterGameYear>> GetMasterGameYear(Guid masterGameID, int year)
+    public async Task<MasterGameYear?> GetMasterGameYear(Guid masterGameID, int year)
     {
         if (!_masterGameYearsCache.ContainsKey(year))
         {
@@ -120,7 +120,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         yearCache.TryGetValue(masterGameID, out MasterGameYear foundMasterGame);
         if (foundMasterGame is null)
         {
-            return Maybe<MasterGameYear>.None;
+            return null;
         }
 
         return foundMasterGame;
@@ -149,7 +149,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateGGStats(MasterGame masterGame, GGGame ggGame)
     {
-        if (ggGame.CoverArtFileName.HasNoValueTempoTemp)
+        if (ggGame.CoverArtFileName is null)
         {
             return;
         }
@@ -162,7 +162,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 new
                 {
                     masterGameID = masterGame.MasterGameID,
-                    ggCoverArtFileName = ggGame.CoverArtFileName.ValueTempoTemp
+                    ggCoverArtFileName = ggGame.CoverArtFileName
                 });
         }
     }
@@ -333,12 +333,12 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
     }
 
-    public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, Maybe<MasterGame> masterGame)
+    public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, MasterGame? masterGame)
     {
         Guid? masterGameID = null;
-        if (masterGame.HasValueTempoTemp)
+        if (masterGame is not null)
         {
-            masterGameID = masterGame.ValueTempoTemp.MasterGameID;
+            masterGameID = masterGame.MasterGameID;
         }
         string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, " +
                      "ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
@@ -400,7 +400,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
         foreach (var entity in entities)
         {
-            Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+            MasterGame? masterGame = null;
             if (entity.MasterGameID.HasValue)
             {
                 masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID.Value);
@@ -428,7 +428,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return domainRequests;
     }
 
-    public async Task<Maybe<MasterGameRequest>> GetMasterGameRequest(Guid requestID)
+    public async Task<MasterGameRequest?> GetMasterGameRequest(Guid requestID)
     {
         var sql = "select * from tbl_mastergame_request where RequestID = @requestID";
 
@@ -437,10 +437,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             MasterGameRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameRequestEntity>(sql, new { requestID });
             if (entity == null)
             {
-                return Maybe<MasterGameRequest>.None;
+                return null;
             }
 
-            Maybe<MasterGame> masterGame = Maybe<MasterGame>.None;
+            MasterGame? masterGame = null;
             if (entity.MasterGameID.HasValue)
             {
                 masterGame = await GetMasterGame(entity.MasterGameID.Value);
@@ -452,7 +452,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
     }
 
-    public async Task<Maybe<MasterGameChangeRequest>> GetMasterGameChangeRequest(Guid requestID)
+    public async Task<MasterGameChangeRequest?> GetMasterGameChangeRequest(Guid requestID)
     {
         var sql = "select * from tbl_mastergame_changerequest where RequestID = @requestID";
 
@@ -461,19 +461,19 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             MasterGameChangeRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameChangeRequestEntity>(sql, new { requestID });
             if (entity == null)
             {
-                return Maybe<MasterGameChangeRequest>.None;
+                return null;
             }
 
             var masterGame = await GetMasterGame(entity.MasterGameID);
 
-            if (masterGame.HasNoValueTempoTemp)
+            if (masterGame is null)
             {
                 throw new Exception($"Something has gone horribly wrong with master game change requests. ID: {requestID}");
             }
 
             var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
 
-            return entity.ToDomain(user, masterGame.ValueTempoTemp);
+            return entity.ToDomain(user, masterGame);
         }
     }
 

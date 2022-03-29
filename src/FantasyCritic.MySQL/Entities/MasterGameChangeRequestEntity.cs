@@ -17,7 +17,7 @@ internal class MasterGameChangeRequestEntity
         RequestNote = domain.RequestNote;
         MasterGameID = domain.MasterGame.MasterGameID;
         OpenCriticID = domain.OpenCriticID;
-        GGToken = domain.GGToken.GetValueOrDefault();
+        GGToken = domain.GGToken;
 
         Answered = domain.Answered;
         ResponseTimestamp = domain.ResponseTimestamp;
@@ -33,7 +33,7 @@ internal class MasterGameChangeRequestEntity
     public string RequestNote { get; set; }
     public Guid MasterGameID { get; set; }
     public int? OpenCriticID { get; set; }
-    public string GGToken { get; set; }
+    public string? GGToken { get; set; }
 
     //Response
     public bool Answered { get; set; }

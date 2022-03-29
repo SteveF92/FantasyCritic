@@ -57,7 +57,7 @@ internal class LeagueYearEntity
 
     public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides,
         IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        Maybe<FantasyCriticUser> winningUser, IEnumerable<Publisher> publishersInLeague)
+        FantasyCriticUser? winningUser, IEnumerable<Publisher> publishersInLeague)
     {
         DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);

@@ -41,9 +41,9 @@ public class FormerPublisherGameEntity
 
         DraftPosition = publisherGame.PublisherGame.DraftPosition;
         OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
-        if (publisherGame.PublisherGame.MasterGame.HasValueTempoTemp)
+        if (publisherGame.PublisherGame.MasterGame is not null)
         {
-            MasterGameID = publisherGame.PublisherGame.MasterGame.ValueTempoTemp.MasterGame.MasterGameID;
+            MasterGameID = publisherGame.PublisherGame.MasterGame.MasterGame.MasterGameID;
         }
 
         BidAmount = publisherGame.PublisherGame.BidAmount;
@@ -67,7 +67,7 @@ public class FormerPublisherGameEntity
     public Instant RemovedTimestamp { get; set; }
     public string RemovedNote { get; set; }
 
-    public FormerPublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
+    public FormerPublisherGame ToDomain(MasterGameYear? masterGame)
     {
         PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
             ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, 0, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID);

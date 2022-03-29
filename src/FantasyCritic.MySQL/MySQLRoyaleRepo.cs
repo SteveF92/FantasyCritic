@@ -47,7 +47,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         }
     }
 
-    public async Task ChangePublisherIcon(RoyalePublisher publisher, Maybe<string> publisherIcon)
+    public async Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon)
     {
         string sql = "UPDATE tbl_royale_publisher SET PublisherIcon = @publisherIcon WHERE PublisherID = @publisherID;";
         using (var connection = new MySqlConnection(_connectionString))
@@ -55,12 +55,12 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             await connection.ExecuteAsync(sql, new
             {
                 publisherID = publisher.PublisherID,
-                publisherIcon = publisherIcon.GetValueOrDefault()
+                publisherIcon
             });
         }
     }
 
-    public async Task<Maybe<RoyalePublisher>> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
+    public async Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
     {
         string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
         using (var connection = new MySqlConnection(_connectionString))
@@ -74,7 +74,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 });
             if (entity is null)
             {
-                return Maybe<RoyalePublisher>.None;
+                return null;
             }
 
             var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
@@ -83,7 +83,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         }
     }
 
-    public async Task<Maybe<RoyalePublisher>> GetPublisher(Guid publisherID)
+    public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
     {
         string sql = "select * from tbl_royale_publisher where PublisherID = @publisherID;";
         using (var connection = new MySqlConnection(_connectionString))
@@ -95,13 +95,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 });
             if (entity is null)
             {
-                return Maybe<RoyalePublisher>.None;
+                return null;
             }
 
             var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
             var yearQuarter = await GetYearQuarter(entity.Year, entity.Quarter);
-            var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter.ValueTempoTemp);
-            var domain = entity.ToDomain(yearQuarter.ValueTempoTemp, user, publisherGames);
+            var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
+            var domain = entity.ToDomain(yearQuarter, user, publisherGames);
             return domain;
         }
     }
@@ -109,13 +109,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
     {
         var yearQuarter = await GetYearQuarter(year, quarter);
-        if (yearQuarter.HasNoValueTempoTemp)
+        if (yearQuarter is null)
         {
             return new List<RoyalePublisher>();
         }
 
         var users = await _userStore.GetAllUsers();
-        var publisherGames = await GetAllPublisherGames(yearQuarter.ValueTempoTemp);
+        var publisherGames = await GetAllPublisherGames(yearQuarter);
         var publisherGameLookup = publisherGames.ToLookup(x => x.PublisherID);
 
         string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
@@ -134,7 +134,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
                 var gamesForPublisher = publisherGameLookup[entity.PublisherID];
 
-                var domain = entity.ToDomain(yearQuarter.ValueTempoTemp, user, gamesForPublisher);
+                var domain = entity.ToDomain(yearQuarter, user, gamesForPublisher);
                 domainPublishers.Add(domain);
             }
 
@@ -176,7 +176,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             foreach (var entity in entities)
             {
                 var masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
-                var domain = entity.ToDomain(yearQuarter, masterGame.ValueTempoTemp);
+                var domain = entity.ToDomain(yearQuarter, masterGame);
                 domains.Add(domain);
             }
             return domains;
@@ -213,7 +213,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         }
     }
 
-    private async Task<Maybe<RoyaleYearQuarter>> GetYearQuarter(int year, int quarter)
+    private async Task<RoyaleYearQuarter?> GetYearQuarter(int year, int quarter)
     {
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         string sql = "select * from tbl_royale_supportedquarter where Year = @year and Quarter = @quarter;";
@@ -222,7 +222,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             var entity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(sql, new { year, quarter });
             if (entity is null)
             {
-                return Maybe<RoyaleYearQuarter>.None;
+                return null;
             }
 
             var domain = entity.ToDomain(supportedYears.Single(x => x.Year == entity.Year));
@@ -244,7 +244,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             foreach (var entity in entities)
             {
                 var masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
-                var domain = entity.ToDomain(yearQuarter, masterGame.ValueTempoTemp);
+                var domain = entity.ToDomain(yearQuarter, masterGame);
                 domains.Add(domain);
             }
             return domains;
@@ -327,12 +327,12 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
                 var topPublisher = group.MaxBy(x => x.TotalFantasyPoints);
                 var topDomainPublisher = await GetPublisher(topPublisher.PublisherID);
-                if (!winners.ContainsKey(topDomainPublisher.ValueTempoTemp.User))
+                if (!winners.ContainsKey(topDomainPublisher.User))
                 {
-                    winners.Add(topDomainPublisher.ValueTempoTemp.User, new List<RoyaleYearQuarter>());
+                    winners.Add(topDomainPublisher.User, new List<RoyaleYearQuarter>());
                 }
 
-                winners[topDomainPublisher.ValueTempoTemp.User].Add(quarter);
+                winners[topDomainPublisher.User].Add(quarter);
             }
         }
 

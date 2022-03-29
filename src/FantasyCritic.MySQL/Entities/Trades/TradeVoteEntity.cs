@@ -14,13 +14,13 @@ public class TradeVoteEntity
         TradeID = domain.TradeID;
         UserID = domain.User.Id;
         Approved = domain.Approved;
-        Comment = domain.Comment.GetValueOrDefault();
+        Comment = domain.Comment;
         Timestamp = domain.Timestamp;
     }
 
     public Guid TradeID { get; set; }
     public Guid UserID { get; set; }
     public bool Approved { get; set; }
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
     public Instant Timestamp { get; set; }
 }

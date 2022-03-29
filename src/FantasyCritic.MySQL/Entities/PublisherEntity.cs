@@ -14,7 +14,7 @@ internal class PublisherEntity
     {
         PublisherID = publisher.PublisherID;
         PublisherName = publisher.PublisherName;
-        PublisherIcon = publisher.PublisherIcon.GetValueOrDefault();
+        PublisherIcon = publisher.PublisherIcon;
         LeagueID = publisher.LeagueYearKey.LeagueID;
         Year = publisher.LeagueYearKey.Year;
         UserID = publisher.User.Id;
@@ -28,7 +28,7 @@ internal class PublisherEntity
 
     public Guid PublisherID { get; set; }
     public string PublisherName { get; set; }
-    public string PublisherIcon { get; }
+    public string? PublisherIcon { get; }
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
     public Guid UserID { get; set; }
@@ -41,7 +41,7 @@ internal class PublisherEntity
 
     public Publisher ToDomain(LeagueYearKey leagueYearKey, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
     {
-        return new Publisher(PublisherID, leagueYearKey, user, PublisherName, PublisherIcon.ToMaybe(), DraftPosition,
+        return new Publisher(PublisherID, leagueYearKey, user, PublisherName, PublisherIcon, DraftPosition,
             publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, AutoDraft);
     }
 }

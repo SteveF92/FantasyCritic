@@ -23,7 +23,7 @@ internal class MasterGameEntity
         AnnouncementDate = masterGame.AnnouncementDate;
         ReleaseDate = masterGame.ReleaseDate;
         OpenCriticID = masterGame.OpenCriticID;
-        GGToken = masterGame.GGToken.GetValueOrDefault();
+        GGToken = masterGame.GGToken;
         CriticScore = masterGame.CriticScore;
         Notes = masterGame.Notes;
         BoxartFileName = masterGame.BoxartFileName;
@@ -47,11 +47,11 @@ internal class MasterGameEntity
     public LocalDate? AnnouncementDate { get; set; }
     public LocalDate? ReleaseDate { get; set; }
     public int? OpenCriticID { get; set; }
-    public string GGToken { get; set; }
+    public string? GGToken { get; set; }
     public decimal? CriticScore { get; set; }
-    public string Notes { get; set; }
-    public string BoxartFileName { get; set; }
-    public string GGCoverArtFileName { get; set; }
+    public string? Notes { get; set; }
+    public string? BoxartFileName { get; set; }
+    public string? GGCoverArtFileName { get; set; }
     public Instant? FirstCriticScoreTimestamp { get; set; }
     public bool DoNotRefreshDate { get; set; }
     public bool DoNotRefreshAnything { get; set; }
@@ -62,7 +62,7 @@ internal class MasterGameEntity
     public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
-            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken.ToMaybe(), CriticScore, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
+            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
             DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, subGames, tags);
     }
 }

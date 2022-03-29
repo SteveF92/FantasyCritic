@@ -21,9 +21,9 @@ internal class PublisherGameEntity
         SlotNumber = publisherGame.SlotNumber;
         DraftPosition = publisherGame.DraftPosition;
         OverallDraftPosition = publisherGame.OverallDraftPosition;
-        if (publisherGame.MasterGame.HasValueTempoTemp)
+        if (publisherGame.MasterGame is not null)
         {
-            MasterGameID = publisherGame.MasterGame.ValueTempoTemp.MasterGame.MasterGameID;
+            MasterGameID = publisherGame.MasterGame.MasterGame.MasterGameID;
         }
 
         BidAmount = publisherGame.BidAmount;
@@ -45,7 +45,7 @@ internal class PublisherGameEntity
     public uint? BidAmount { get; set; }
     public Guid? AcquiredInTradeID { get; set; }
 
-    public PublisherGame ToDomain(Maybe<MasterGameYear> masterGame)
+    public PublisherGame ToDomain(MasterGameYear? masterGame)
     {
         PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
             ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID);

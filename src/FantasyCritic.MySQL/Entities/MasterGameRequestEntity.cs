@@ -20,7 +20,7 @@ internal class MasterGameRequestEntity
         GameName = domain.GameName;
         SteamID = domain.SteamID;
         OpenCriticID = domain.OpenCriticID;
-        GGToken = domain.GGToken.GetValueOrDefault();
+        GGToken = domain.GGToken;
         ReleaseDate = domain.ReleaseDate;
         EstimatedReleaseDate = domain.EstimatedReleaseDate;
 
@@ -28,9 +28,9 @@ internal class MasterGameRequestEntity
         ResponseTimestamp = domain.ResponseTimestamp;
         ResponseNote = domain.ResponseNote;
 
-        if (domain.MasterGame.HasValueTempoTemp)
+        if (domain.MasterGame is not null)
         {
-            MasterGameID = domain.MasterGame.ValueTempoTemp.MasterGameID;
+            MasterGameID = domain.MasterGame.MasterGameID;
         }
 
         Hidden = domain.Hidden;
@@ -46,7 +46,7 @@ internal class MasterGameRequestEntity
     public string GameName { get; set; }
     public int? SteamID { get; set; }
     public int? OpenCriticID { get; set; }
-    public string GGToken { get; set; }
+    public string? GGToken { get; set; }
     public LocalDate? ReleaseDate { get; set; }
     public string EstimatedReleaseDate { get; set; }
 
@@ -58,9 +58,9 @@ internal class MasterGameRequestEntity
 
     public bool Hidden { get; set; }
 
-    public MasterGameRequest ToDomain(FantasyCriticUser user, Maybe<MasterGame> masterGame)
+    public MasterGameRequest ToDomain(FantasyCriticUser user, MasterGame? masterGame)
     {
-        return new MasterGameRequest(RequestID, user, RequestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, GGToken.ToMaybe(), ReleaseDate, EstimatedReleaseDate,
+        return new MasterGameRequest(RequestID, user, RequestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, GGToken, ReleaseDate, EstimatedReleaseDate,
             Answered, ResponseTimestamp, ResponseNote, masterGame, Hidden);
     }
 }

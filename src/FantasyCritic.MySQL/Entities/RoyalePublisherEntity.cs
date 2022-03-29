@@ -18,7 +18,7 @@ internal class RoyalePublisherEntity
         Year = domainRoyalePublisher.YearQuarter.YearQuarter.Year;
         Quarter = domainRoyalePublisher.YearQuarter.YearQuarter.Quarter;
         PublisherName = domainRoyalePublisher.PublisherName;
-        PublisherIcon = domainRoyalePublisher.PublisherIcon.GetValueOrDefault();
+        PublisherIcon = domainRoyalePublisher.PublisherIcon;
         Budget = domainRoyalePublisher.Budget;
     }
 
@@ -27,11 +27,11 @@ internal class RoyalePublisherEntity
     public int Year { get; set; }
     public int Quarter { get; set; }
     public string PublisherName { get; set; }
-    public string PublisherIcon { get; set; }
+    public string? PublisherIcon { get; set; }
     public decimal Budget { get; set; }
 
     public RoyalePublisher ToDomain(RoyaleYearQuarter royaleYearQuarter, FantasyCriticUser user, IEnumerable<RoyalePublisherGame> publisherGames)
     {
-        return new RoyalePublisher(PublisherID, royaleYearQuarter, user, PublisherName, PublisherIcon.ToMaybe(), publisherGames, Budget);
+        return new RoyalePublisher(PublisherID, royaleYearQuarter, user, PublisherName, PublisherIcon, publisherGames, Budget);
     }
 }

@@ -6,7 +6,7 @@ namespace FantasyCritic.MySQL;
 
 public static class BulkInserter
 {
-    public static Task BulkInsertAsync<TInsertType>(this DbConnection conn, IEnumerable<TInsertType> objects, string tableName, int batchSize = 0, DbTransaction transaction = null, IEnumerable<string> excludedFields = null, bool insertIgnore = false)
+    public static Task BulkInsertAsync<TInsertType>(this DbConnection conn, IEnumerable<TInsertType> objects, string tableName, int batchSize = 0, DbTransaction? transaction = null, IEnumerable<string>? excludedFields = null, bool insertIgnore = false)
     {
         if (!objects.Any())
         {

@@ -719,8 +719,8 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             .ToList();
 
         List<FantasyCriticUserDonorEntity> donorEntities = patronInfo
-            .Where(x => x.DonorName.HasValueTempoTemp)
-            .Select(x => new FantasyCriticUserDonorEntity(x.User, x.DonorName.ValueTempoTemp))
+            .Where(x => x.DonorName is not null)
+            .Select(x => new FantasyCriticUserDonorEntity(x.User, x.DonorName))
             .ToList();
 
         using (var connection = new MySqlConnection(_connectionString))
