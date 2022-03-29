@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="6.0.3" />
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.28.3" />
     <PackageReference Include="FuzzyString.NETStandard" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.3" />
@@ -52,6 +51,10 @@
     <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="Patreon.Net" Version="1.0.1" />
 	<PackageReference Include="RazorLight" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpFunctionalExtensions\CSharpFunctionalExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
