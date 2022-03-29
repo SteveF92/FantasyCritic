@@ -27,24 +27,27 @@ public class OpenCriticService : IOpenCriticService
             }
             JObject parsedGameResponse = JObject.Parse(gameResponse);
 
-            var gameName = parsedGameResponse.GetValue("name").Value<string>();
+            var gameName = parsedGameResponse.GetValue("name")?.Value<string>() ?? "Unknown Open Critic Game";
             LocalDate? earliestReleaseDate = null;
             var releaseDateToken = parsedGameResponse.GetValue("firstReleaseDate");
-            var firstReleaseDateString = releaseDateToken.Value<string>();
+            var firstReleaseDateString = releaseDateToken?.Value<string>();
             if (!string.IsNullOrWhiteSpace(firstReleaseDateString))
             {
-                var earliestDateTime = releaseDateToken.Value<DateTime>();
-                earliestReleaseDate = LocalDate.FromDateTime(earliestDateTime);
-                if (earliestReleaseDate == DefaultOpenCriticReleaseDate)
+                var earliestDateTime = releaseDateToken?.Value<DateTime>();
+                if (earliestDateTime.HasValue)
                 {
-                    earliestReleaseDate = null;
+                    earliestReleaseDate = LocalDate.FromDateTime(earliestDateTime.Value);
+                    if (earliestReleaseDate == DefaultOpenCriticReleaseDate)
+                    {
+                        earliestReleaseDate = null;
+                    }
                 }
             }
 
-            var score = parsedGameResponse.GetValue("topCriticScore").Value<decimal?>();
+            var score = parsedGameResponse.GetValue("topCriticScore")?.Value<decimal?>();
             if (score == -1m)
             {
-                score = parsedGameResponse.GetValue("averageScore").Value<decimal?>();
+                score = parsedGameResponse.GetValue("averageScore")?.Value<decimal?>();
                 if (score != -1m)
                 {
                     _logger.LogWarning($"Using averageScore for game: {openCriticGameID}");

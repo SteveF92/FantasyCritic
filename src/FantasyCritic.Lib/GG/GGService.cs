@@ -77,6 +77,11 @@ public class GGService : IGGService
                 coverPath = split.Last();
             }
 
+            if (typedData.Token is null)
+            {
+                return null;
+            }
+
             return new GGGame(typedData.Token, coverPath);
         }
         catch (HttpRequestException httpEx)
