@@ -54,7 +54,12 @@ public class RDSRefresher
             Console.WriteLine($"{index}: {snapshot.DBInstanceIdentifier}|{snapshot.DBSnapshotIdentifier}");
         }
 
-        string snapshotSelection = Console.ReadLine();
+        string? snapshotSelection = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(snapshotSelection))
+        {
+            throw new Exception("Invalid selection.");
+        }
+
         DBSnapshot snapshotChosen = snapshotsForInstance[Convert.ToInt32(snapshotSelection)];
         _logger.Info($"Selected snapshot: {snapshotChosen.DBSnapshotIdentifier}");
         return snapshotChosen;
@@ -124,7 +129,12 @@ public class RDSRefresher
     {
         var instanceResponse = await _rdsClient.DescribeDBInstancesAsync();
 
-        DBInstance instanceChosen = instanceResponse.DBInstances.SingleOrDefault(x => x.DBInstanceIdentifier == identifier);
+        DBInstance? instanceChosen = instanceResponse.DBInstances.SingleOrDefault(x => x.DBInstanceIdentifier == identifier);
+        if (instanceChosen is null)
+        {
+            throw new Exception($"RDS instance not found: {identifier}");
+        }
+
         return instanceChosen;
     }
 
@@ -134,7 +144,7 @@ public class RDSRefresher
         {
             var instances = await _rdsClient.DescribeDBInstancesAsync();
             var instance = instances.DBInstances.SingleOrDefault(x => x.DbiResourceId == id);
-            if (instance.DBInstanceIdentifier == name)
+            if (instance?.DBInstanceIdentifier == name)
             {
                 break;
             }
@@ -148,7 +158,7 @@ public class RDSRefresher
         {
             var instances = await _rdsClient.DescribeDBInstancesAsync();
             var instance = instances.DBInstances.SingleOrDefault(x => x.DbiResourceId == id);
-            if (instance.DBInstanceStatus == "available")
+            if (instance?.DBInstanceStatus == "available")
             {
                 break;
             }
@@ -163,7 +173,7 @@ public class RDSRefresher
         {
             var instances = await _rdsClient.DescribeDBInstancesAsync();
             var instance = instances.DBInstances.SingleOrDefault(x => x.DbiResourceId == id);
-            if (instance.DBInstanceStatus == "available")
+            if (instance?.DBInstanceStatus == "available")
             {
                 break;
             }
