@@ -71,8 +71,7 @@ public static class Arguments
         Regex remover = new Regex(@"^['""]?(.*?)['""]?$",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        string parameter = null;
-        string[] parts;
+        string? parameter = null;
 
         // Valid parameters forms:
         // {-,/,--}param{ ,=,:}((",')value(",'))
@@ -83,7 +82,7 @@ public static class Arguments
         {
             // Look for new parameters (-,/ or --) and a
             // possible enclosed value (=,:)
-            parts = splitter.Split(txt, 3);
+            var parts = splitter.Split(txt, 3);
 
             switch (parts.Length)
             {

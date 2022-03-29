@@ -199,6 +199,11 @@ public class AdminController : FantasyCriticController
         IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
 
         var request = requests.SingleOrDefault(x => x.RequestID == requestID);
+        if (request is null)
+        {
+            return NotFound();
+        }
+
         var currentDate = _clock.GetToday();
         var vm = new MasterGameRequestViewModel(request, currentDate);
         return vm;
@@ -210,6 +215,11 @@ public class AdminController : FantasyCriticController
 
         var currentDate = _clock.GetToday();
         var request = requests.SingleOrDefault(x => x.RequestID == changeRequestID);
+        if (request is null)
+        {
+            return NotFound();
+        }
+
         var vm = new MasterGameChangeRequestViewModel(request, currentDate);
         return vm;
     }

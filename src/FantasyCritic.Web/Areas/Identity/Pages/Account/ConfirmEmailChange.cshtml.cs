@@ -1,3 +1,6 @@
+#nullable disable
+
+
 using Microsoft.AspNetCore.Authorization;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Identity;

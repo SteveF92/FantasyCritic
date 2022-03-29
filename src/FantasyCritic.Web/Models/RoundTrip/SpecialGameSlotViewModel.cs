@@ -21,8 +21,7 @@ public class SpecialGameSlotViewModel
         List<MasterGameTag> tags = new List<MasterGameTag>();
         foreach (var tag in RequiredTags)
         {
-            bool hasTag = tagDictionary.TryGetValue(tag, out var foundTag);
-            if (!hasTag)
+            if (!tagDictionary.TryGetValue(tag, out var foundTag))
             {
                 continue;
             }

@@ -9,10 +9,10 @@ public static class GameUtilities
             .ToList();
         var counterPicks = gamesWithMasterGame
             .Where(x => x.CounterPick)
-            .Select(x => x.MasterGame.MasterGame.MasterGameID)
+            .Select(x => x.MasterGame!.MasterGame.MasterGameID)
             .ToHashSet();
         HashSet<Guid> counterPickedPublisherGameIDs = gamesWithMasterGame
-            .Where(x => !x.CounterPick && counterPicks.Contains(x.MasterGame.MasterGame.MasterGameID))
+            .Where(x => !x.CounterPick && counterPicks.Contains(x.MasterGame!.MasterGame.MasterGameID))
             .Select(x => x.PublisherGameID)
             .ToHashSet();
 

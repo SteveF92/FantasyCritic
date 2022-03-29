@@ -58,7 +58,7 @@ public class PublisherViewModel
         GamesReleased = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)
-            .Count(x => x.MasterGame.MasterGame.IsReleased(dateToCheck));
+            .Count(x => x.MasterGame!.MasterGame.IsReleased(dateToCheck));
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)

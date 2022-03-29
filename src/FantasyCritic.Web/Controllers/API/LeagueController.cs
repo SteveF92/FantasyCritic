@@ -165,9 +165,11 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
-        var relationship = leagueRecord.ValidResult.Relationship;
+
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser;
+        var league = validResult.League;
+        var relationship = validResult.Relationship;
 
         bool inviteCodeIsValid = false;
         if (inviteCode.HasValue)
@@ -188,7 +190,7 @@ public class LeagueController : BaseLeagueController
             userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Id);
         }
 
-        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, leagueRecord.ValidResult.PlayersInLeague,
+        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
         return Ok(leagueViewModel);
     }
@@ -201,10 +203,11 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
-        var relationship = leagueYearRecord.ValidResult.Relationship;
+        var currentUser = validResult.CurrentUser;
+        var relationship = validResult.Relationship;
 
         bool inviteCodeIsValid = false;
         if (inviteCode.HasValue)
@@ -218,7 +221,7 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear, leagueYearRecord.ValidResult.ActiveUsers);
+        StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear, validResult.ActiveUsers);
         Publisher? nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear);
         var draftPhase = _draftService.GetDraftPhase(leagueYear);
 
@@ -254,12 +257,12 @@ public class LeagueController : BaseLeagueController
         var recentGames = GetGameNewsViewModel(leagueYear, false, true).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
 
-        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, leagueYearRecord.ValidResult.PlayersInLeague,
+        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentDate,
-            startDraftResult, leagueYearRecord.ValidResult.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
-            leagueYearRecord.ValidResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
+            startDraftResult, validResult.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
+            validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades, privatePublisherData, gameNewsViewModel);
         return Ok(leagueYearViewModel);
     }
@@ -272,9 +275,11 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
-        var relationship = leagueYearRecord.ValidResult.Relationship;
+        var relationship = validResult.Relationship;
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
@@ -296,9 +301,10 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
-        var relationship = leagueYearRecord.ValidResult.Relationship;
+        var relationship = validResult.Relationship;
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
@@ -322,10 +328,11 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
+        var validResult = publisherRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
-        var relationship = publisherRecord.ValidResult.Relationship;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var relationship = validResult.Relationship;
+        var publisher = validResult.Publisher;
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
@@ -349,9 +356,10 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
-        var relationship = leagueYearRecord.ValidResult.Relationship;
+        var relationship = validResult.Relationship;
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
@@ -370,8 +378,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
+        var league = validResult.League;
 
         if (!currentUser.EmailConfirmed)
         {
@@ -395,8 +404,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser;
+        var league = validResult.League;
 
         var inviteLink = await _leagueMemberService.GetInviteLinkByInviteCode(request.InviteCode);
         if (inviteLink is null)
@@ -438,8 +448,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var currentUser = validResult.CurrentUser;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
         {
@@ -469,7 +480,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var publisher = validResult.Publisher;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
         {
@@ -503,8 +514,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         await _publisherService.SetAutoDraft(publisher, request.AutoDraft);
 
@@ -555,8 +566,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
         if (masterGame is null)
@@ -591,7 +602,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var publisher = validResult.Publisher;
 
         var maybeBid = await _gameAcquisitionService.GetPickupBid(request.BidID);
         if (maybeBid is null)
@@ -624,8 +635,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var maybeBid = await _gameAcquisitionService.GetPickupBid(request.BidID);
         if (maybeBid is null)
@@ -662,8 +673,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var activeBids = await _gameAcquisitionService.GetActiveAcquisitionBids(leagueYear, publisher);
         if (activeBids.Count != request.BidPriorities.Count)
@@ -701,8 +712,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var nextPublisher = _draftService.GetNextDraftPublisher(leagueYear);
         if (nextPublisher is null)
@@ -762,8 +773,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
+        var currentUser = validResult.CurrentUser;
+        var league = validResult.League;
 
         Result result = await _fantasyCriticService.FollowLeague(league, currentUser);
         if (result.IsFailure)
@@ -782,8 +793,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
+        var currentUser = validResult.CurrentUser;
+        var league = validResult.League;
 
         Result result = await _fantasyCriticService.UnfollowLeague(league, currentUser);
         if (result.IsFailure)
@@ -879,9 +890,10 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
-        var relationship = leagueYearRecord.ValidResult.Relationship;
+        var relationship = validResult.Relationship;
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
@@ -899,8 +911,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var currentUser = validResult.CurrentUser;
 
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
         if (userPublisher is null)
@@ -922,8 +935,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var currentUser = validResult.CurrentUser;
 
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
         if (userPublisher is null)
@@ -958,8 +972,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher);
         var currentDate = _clock.GetToday();
@@ -978,9 +992,9 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
-        var publisherGame = publisherRecord.ValidResult.PublisherGame;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
+        var publisherGame = validResult.PublisherGame;
 
         DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(leagueYear, publisher, publisherGame, false);
         var viewModel = new DropGameResultViewModel(dropResult);
@@ -996,7 +1010,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var validResult = publisherRecord.ValidResult;
+        var publisher = validResult.Publisher;
 
         var dropRequest = await _gameAcquisitionService.GetDropRequest(request.DropRequestID);
         if (dropRequest is null)
@@ -1028,8 +1043,9 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var validResult = publisherRecord.ValidResult;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var queuedGames = await _publisherService.GetQueuedGames(publisher);
 
@@ -1048,8 +1064,9 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var validResult = publisherRecord.ValidResult;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
         if (masterGame is null)
@@ -1071,7 +1088,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var validResult = publisherRecord.ValidResult;
+        var publisher = validResult.Publisher;
 
         var queuedGames = await _publisherService.GetQueuedGames(publisher);
         var thisQueuedGame = queuedGames.SingleOrDefault(x => x.MasterGame.MasterGameID == request.MasterGameID);
@@ -1093,7 +1111,8 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var validResult = publisherRecord.ValidResult;
+        var publisher = validResult.Publisher;
 
         var queuedGames = await _publisherService.GetQueuedGames(publisher);
         if (queuedGames.Count != request.QueueRanks.Count)
@@ -1131,8 +1150,9 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var validResult = publisherRecord.ValidResult;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var publisherGameIDsBeingEdited = request.SlotStates.Where(x => x.Value.HasValue).Select(x => x.Value.Value);
         var publisherGameIDs = publisher.PublisherGames.Select(x => x.PublisherGameID);
@@ -1161,8 +1181,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
+        var currentUser = validResult.CurrentUser;
+        var league = validResult.League;
 
         await _leagueMemberService.SetArchiveStatusForUser(league, request.Archive, currentUser);
 
@@ -1201,8 +1221,9 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var leagueYear = publisherRecord.ValidResult.LeagueYear;
-        var publisher = publisherRecord.ValidResult.Publisher;
+        var validResult = publisherRecord.ValidResult;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         Result result = await _fantasyCriticService.ProposeTrade(leagueYear, publisher, request.CounterPartyPublisherID, request.ProposerPublisherGameIDs,
             request.CounterPartyPublisherGameIDs, request.ProposerBudgetSendAmount, request.CounterPartyBudgetSendAmount, request.Message);
@@ -1222,7 +1243,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1253,8 +1275,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var currentUser = validResult.CurrentUser;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1285,8 +1308,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var currentUser = validResult.CurrentUser;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1317,8 +1341,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var currentUser = validResult.CurrentUser;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1351,8 +1376,9 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var currentUser = validResult.CurrentUser;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1385,9 +1411,10 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
-        var relationship = leagueYearRecord.ValidResult.Relationship;
+        var relationship = validResult.Relationship;
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
@@ -1419,18 +1446,18 @@ public class LeagueController : BaseLeagueController
         {
             orderedByReleaseDate = publisherGames
                 .Distinct()
-                .Where(x => x.MasterGame.MasterGame.GetDefiniteMaximumReleaseDate() < tomorrow)
-                .OrderByDescending(x => x.MasterGame.MasterGame.GetDefiniteMaximumReleaseDate())
-                .GroupBy(x => x.MasterGame)
+                .Where(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate() < tomorrow)
+                .OrderByDescending(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate())
+                .GroupBy(x => x.MasterGame!)
                 .Take(10);
         }
         else
         {
             orderedByReleaseDate = publisherGames
                 .Distinct()
-                .Where(x => x.MasterGame.MasterGame.GetDefiniteMaximumReleaseDate() > yesterday)
-                .OrderBy(x => x.MasterGame.MasterGame.GetDefiniteMaximumReleaseDate())
-                .GroupBy(x => x.MasterGame)
+                .Where(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate() > yesterday)
+                .OrderBy(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate())
+                .GroupBy(x => x.MasterGame!)
                 .Take(10);
         }
 

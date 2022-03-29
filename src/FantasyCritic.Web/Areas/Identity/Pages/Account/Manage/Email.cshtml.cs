@@ -1,3 +1,5 @@
+#nullable disable
+
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Utilities;
