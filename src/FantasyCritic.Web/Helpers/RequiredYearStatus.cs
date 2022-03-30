@@ -44,6 +44,20 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                     return Result.Failure("That action can only be taken before the draft starts.");
                 }
                 break;
+            case { } status when PlayOpenDraftNotStarted.Equals(status):
+                if (leagueYear.SupportedYear.Finished)
+                {
+                    return Result.Failure("That year is finished.");
+                }
+                if (!leagueYear.SupportedYear.OpenForPlay)
+                {
+                    return Result.Failure("That year is not open for drafting yet.");
+                }
+                if (leagueYear.PlayStatus.PlayStarted)
+                {
+                    return Result.Failure("That action can only be taken before the draft starts.");
+                }
+                break;
             case { } status when YearNotFinishedDraftNotFinished.Equals(status):
                 if (leagueYear.SupportedYear.Finished)
                 {

@@ -2,12 +2,14 @@ using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Identity;
+using Newtonsoft.Json;
 
 namespace FantasyCritic.Web.Models.RoundTrip;
 
 public class LeagueYearSettingsViewModel
 {
-    public LeagueYearSettingsViewModel(Guid leagueID, int year, string leagueName, int standardGames, int gamesToDraft, int counterPicks,
+    [JsonConstructor]
+    public LeagueYearSettingsViewModel(Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks,
         int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedFreeDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops,
         int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem,
@@ -15,7 +17,6 @@ public class LeagueYearSettingsViewModel
     {
         LeagueID = leagueID;
         Year = year;
-        LeagueName = leagueName;
         StandardGames = standardGames;
         GamesToDraft = gamesToDraft;
         CounterPicks = counterPicks;
@@ -42,7 +43,6 @@ public class LeagueYearSettingsViewModel
     {
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
-        LeagueName = leagueYear.League.LeagueName;
         StandardGames = leagueYear.Options.StandardGames;
         GamesToDraft = leagueYear.Options.GamesToDraft;
         CounterPicks = leagueYear.Options.CounterPicks;
@@ -92,7 +92,6 @@ public class LeagueYearSettingsViewModel
 
     public Guid LeagueID { get; }
     public int Year { get; }
-    public string LeagueName { get; }
     [Range(1, 50)]
     public int StandardGames { get; }
     [Range(1, 50)]

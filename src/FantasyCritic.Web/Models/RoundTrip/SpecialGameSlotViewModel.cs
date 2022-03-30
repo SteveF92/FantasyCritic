@@ -1,7 +1,10 @@
+using Newtonsoft.Json;
+
 namespace FantasyCritic.Web.Models.RoundTrip;
 
 public class SpecialGameSlotViewModel
 {
+    [JsonConstructor]
     public SpecialGameSlotViewModel(int specialSlotPosition, List<string> requiredTags)
     {
         SpecialSlotPosition = specialSlotPosition;
