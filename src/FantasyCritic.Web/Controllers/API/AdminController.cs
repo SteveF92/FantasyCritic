@@ -44,8 +44,6 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
     {
-        Instant instant = _clock.GetCurrentInstant();
-
         var possibleTags = await _interLeagueService.GetMasterGameTags();
         IReadOnlyList<MasterGameTag> tags = possibleTags
             .Where(x => viewModel.Tags.Contains(x.Name))
@@ -59,7 +57,7 @@ public class AdminController : FantasyCriticController
             };
         }
 
-        MasterGame masterGame = viewModel.ToDomain(instant, tags);
+        MasterGame masterGame = viewModel.ToDomain(_clock, tags);
         await _interLeagueService.CreateMasterGame(masterGame);
         var currentDate = _clock.GetToday();
         var vm = new MasterGameViewModel(masterGame, currentDate);

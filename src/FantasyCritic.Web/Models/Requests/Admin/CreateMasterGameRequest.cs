@@ -1,17 +1,17 @@
+using FantasyCritic.Lib.Extensions;
+
 namespace FantasyCritic.Web.Models.Requests.Admin;
 
 public class CreateMasterGameRequest
 {
-    public CreateMasterGameRequest(string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate)
+    public CreateMasterGameRequest(string gameName, string estimatedReleaseDate)
     {
         GameName = gameName;
         EstimatedReleaseDate = estimatedReleaseDate;
-        MinimumReleaseDate = minimumReleaseDate;
     }
 
     public string GameName { get; }
     public string EstimatedReleaseDate { get; }
-    public LocalDate MinimumReleaseDate { get; }
 
     public List<string> Tags { get; init; } = new List<string>();
     public bool DoNotRefreshDate { get; init; } = false;
@@ -19,6 +19,7 @@ public class CreateMasterGameRequest
     public bool EligibilityChanged { get; init; } = false;
     public bool DelayContention { get; init; } = false;
 
+    public LocalDate? MinimumReleaseDate { get; init; }
     public LocalDate? MaximumReleaseDate { get; init; }
     public LocalDate? EarlyAccessReleaseDate { get; init; }
     public LocalDate? InternationalReleaseDate { get; init; }
@@ -28,11 +29,17 @@ public class CreateMasterGameRequest
     public string? GGToken { get; init; }
     public string? Notes { get; init; }
     
-    public Lib.Domain.MasterGame ToDomain(Instant timestamp, IEnumerable<MasterGameTag> tags)
+    public Lib.Domain.MasterGame ToDomain(IClock clock, IEnumerable<MasterGameTag> tags)
     {
-        Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
+        var now = clock.GetCurrentInstant();
+        LocalDate minimumReleaseDate = now.ToEasternDate().PlusDays(1);
+        if (MinimumReleaseDate.HasValue)
+        {
+            minimumReleaseDate = MinimumReleaseDate.Value;
+        }
+        Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, minimumReleaseDate, MaximumReleaseDate,
             EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, Notes, null, null, null,
-            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, timestamp, new List<MasterSubGame>(), tags);
+            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, now, new List<MasterSubGame>(), tags);
         return masterGame;
     }
 }
