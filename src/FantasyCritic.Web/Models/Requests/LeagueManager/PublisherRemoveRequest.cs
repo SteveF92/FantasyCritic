@@ -1,9 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace FantasyCritic.Web.Models.Requests.LeagueManager;
 
-public class PublisherRemoveRequest
-{
-    [Required]
-    public Guid PublisherID { get; set; }
-}
+public record PublisherRemoveRequest(Guid PublisherID);

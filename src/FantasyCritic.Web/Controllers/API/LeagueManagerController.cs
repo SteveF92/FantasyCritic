@@ -174,13 +174,14 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("You cannot have a blank league name.");
         }
 
+        bool testLeague = request.TestLeague;
         if (league.TestLeague)
         {
             //Users can't change a test league to a non test.
-            request.TestLeague = true;
+            testLeague = true;
         }
 
-        await _fantasyCriticService.ChangeLeagueOptions(league, request.LeagueName, request.PublicLeague, request.TestLeague);
+        await _fantasyCriticService.ChangeLeagueOptions(league, request.LeagueName, request.PublicLeague, testLeague);
         return Ok();
     }
 
@@ -852,7 +853,7 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligiblityOverrideRequest request)
+    public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligibilityOverrideRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
         if (leagueYearRecord.FailedResult is not null)
