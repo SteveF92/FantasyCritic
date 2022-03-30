@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Extensions;
 
@@ -6,12 +5,17 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame;
 
 public class MasterGameChangeRequestRequest
 {
-    [Required]
-    public Guid MasterGameID { get; set; }
-    [Required]
-    public string RequestNote { get; set; }
-    public string OpenCriticLink { get; set; }
-    public string GGLink { get; set; }
+    public MasterGameChangeRequestRequest(Guid masterGameID, string requestNote)
+    {
+        MasterGameID = masterGameID;
+        RequestNote = requestNote;
+    }
+
+    public Guid MasterGameID { get; }
+    public string RequestNote { get; }
+
+    public string? OpenCriticLink { get; init; }
+    public string? GGLink { get; init; }
 
     public MasterGameChangeRequest ToDomain(FantasyCriticUser user, Instant requestTimestamp, Lib.Domain.MasterGame masterGame)
     {

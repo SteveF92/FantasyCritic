@@ -80,7 +80,7 @@
 
             <div class="form-group">
               <div class="right-button">
-                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validDate" />
               </div>
             </div>
           </form>
@@ -155,6 +155,9 @@ export default {
   computed: {
     validReason() {
       return this.wantToPickup || this.nearCertainInterested;
+    },
+    validDate() {
+      return !!this.estimatedReleaseDate || !!this.releaseDate;
     }
   },
   mounted() {
@@ -179,8 +182,12 @@ export default {
         estimatedReleaseDate: this.estimatedReleaseDate
       };
 
-      if (this.hasReleaseDate) {
+      if (this.estimatedReleaseDate) {
+        request.estimatedReleaseDate = this.estimatedReleaseDate;
+      }
+      if (this.releaseDate) {
         request.releaseDate = this.releaseDate;
+        request.estimatedReleaseDate = this.releaseDate;
       }
 
       axios

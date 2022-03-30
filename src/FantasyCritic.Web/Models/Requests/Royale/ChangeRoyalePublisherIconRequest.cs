@@ -1,10 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace FantasyCritic.Web.Models.Requests.Royale;
 
-public class ChangeRoyalePublisherIconRequest
-{
-    [Required]
-    public Guid PublisherID { get; set; }
-    public string? PublisherIcon { get; set; }
-}
+public record ChangeRoyalePublisherIconRequest(Guid PublisherID, string? PublisherIcon);

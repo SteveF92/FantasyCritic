@@ -6,7 +6,7 @@ public class MasterGameRequest
 {
     public MasterGameRequest(Guid requestID, FantasyCriticUser user, Instant requestTimestamp, string requestNote,
         string gameName, int? steamID, int? openCriticID, string? ggToken, LocalDate? releaseDate, string estimatedReleaseDate,
-        bool answered, Instant? responseTimestamp, string responseNote, MasterGame? masterGame, bool hidden)
+        bool answered, Instant? responseTimestamp, string? responseNote, MasterGame? masterGame, bool hidden)
     {
         RequestID = requestID;
         User = user;
@@ -42,7 +42,7 @@ public class MasterGameRequest
     //Answer
     public bool Answered { get; }
     public Instant? ResponseTimestamp { get; }
-    public string ResponseNote { get; }
+    public string? ResponseNote { get; }
     public MasterGame? MasterGame { get; }
 
     public bool Hidden { get; }

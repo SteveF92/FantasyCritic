@@ -59,5 +59,10 @@ export default {
   },
   formatLongDate(dateTime) {
     return moment(String(dateTime)).local().format('MMMM Do, YYYY, h:mm:ss a');
+  },
+  toISODateString(date) {
+    const fullString = date.toISOString();
+    const dateString = fullString.substring(0, 10);
+    return dateString;
   }
 };

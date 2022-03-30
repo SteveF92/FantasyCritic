@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Extensions;
@@ -7,16 +6,21 @@ namespace FantasyCritic.Web.Models.Requests.MasterGame;
 
 public class MasterGameRequestRequest
 {
-    [Required]
-    public string GameName { get; set; }
+    public MasterGameRequestRequest(string gameName, string estimatedReleaseDate, string requestNote)
+    {
+        GameName = gameName;
+        EstimatedReleaseDate = estimatedReleaseDate;
+        RequestNote = requestNote;
+    }
 
-    public string? SteamLink { get; set; }
-    public string? OpenCriticLink { get; set; }
-    public string? GGLink { get; set; }
-    public LocalDate? ReleaseDate { get; set; }
-    public string EstimatedReleaseDate { get; set; }
+    public string GameName { get; }
+    public string EstimatedReleaseDate { get; }
+    public string RequestNote { get; }
 
-    public string RequestNote { get; set; }
+    public string? SteamLink { get; init; }
+    public string? OpenCriticLink { get; init; }
+    public string? GGLink { get; init; }
+    public LocalDate? ReleaseDate { get; init; }
 
     public MasterGameRequest ToDomain(FantasyCriticUser user, Instant requestTimestamp)
     {
