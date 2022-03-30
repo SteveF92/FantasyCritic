@@ -4,25 +4,28 @@ namespace FantasyCritic.Web.Models.Requests.Admin;
 
 public class CreateMasterGameRequest
 {
-    [Required]
-    public string GameName { get; set; }
-    public string EstimatedReleaseDate { get; set; }
-    [Required]
-    public LocalDate MinimumReleaseDate { get; set; }
-    public LocalDate? MaximumReleaseDate { get; set; }
-    public LocalDate? EarlyAccessReleaseDate { get; set; }
-    public LocalDate? InternationalReleaseDate { get; set; }
-    public LocalDate? AnnouncementDate { get; set; }
-    public LocalDate? ReleaseDate { get; set; }
-    public int? OpenCriticID { get; set; }
-    public string GGToken { get; set; }
-    [Required]
-    public string Notes { get; set; }
-    [Required]
-    public List<string> Tags { get; set; }
+    public CreateMasterGameRequest(string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate)
+    {
+        GameName = gameName;
+        EstimatedReleaseDate = estimatedReleaseDate;
+        MinimumReleaseDate = minimumReleaseDate;
+        Tags = new List<string>();
+    }
 
-    public List<string> GetRequestedTags() => Tags ?? new List<string>();
+    public string GameName { get; }
+    public string EstimatedReleaseDate { get; }
+    public LocalDate MinimumReleaseDate { get; }
+    public List<string> Tags { get; init; }
 
+    public LocalDate? MaximumReleaseDate { get; init; }
+    public LocalDate? EarlyAccessReleaseDate { get; init; }
+    public LocalDate? InternationalReleaseDate { get; init; }
+    public LocalDate? AnnouncementDate { get; init; }
+    public LocalDate? ReleaseDate { get; init; }
+    public int? OpenCriticID { get; init; }
+    public string? GGToken { get; init; }
+    public string? Notes { get; init; }
+    
     public Lib.Domain.MasterGame ToDomain(Instant timestamp, IEnumerable<MasterGameTag> tags)
     {
         Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
