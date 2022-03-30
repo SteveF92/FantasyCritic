@@ -9,7 +9,6 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IFantasyCriticRepo
 {
     Task<League?> GetLeague(Guid id);
-    Task<League> GetLeagueOrThrow(Guid id);
     Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
@@ -137,4 +136,15 @@ public interface IFantasyCriticRepo
     Task AddTradeVote(TradeVote tradeVote);
     Task DeleteTradeVote(Trade trade, FantasyCriticUser user);
     Task ExecuteTrade(ExecutedTrade executedTrade);
+
+    async Task<League> GetLeagueOrThrow(Guid id)
+    {
+        var result = await GetLeague(id);
+        if (result is null)
+        {
+            throw new Exception($"League not found: {id}");
+        }
+
+        return result;
+    }
 }
