@@ -2,8 +2,14 @@ namespace FantasyCritic.Web.Models.RoundTrip;
 
 public class LeagueTagOptionsViewModel
 {
-    public List<string> Banned { get; set; }
-    public List<string> Required { get; set; }
+    public LeagueTagOptionsViewModel(List<string> banned, List<string> required)
+    {
+        Banned = banned;
+        Required = required;
+    }
+
+    public List<string> Banned { get; }
+    public List<string> Required { get; }
 
     public IReadOnlyList<LeagueTagStatus> ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {

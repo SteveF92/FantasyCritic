@@ -7,9 +7,35 @@ namespace FantasyCritic.Web.Models.RoundTrip;
 
 public class LeagueYearSettingsViewModel
 {
-    public LeagueYearSettingsViewModel()
+    public LeagueYearSettingsViewModel(Guid leagueID, int year, string leagueName, int standardGames, int gamesToDraft, int counterPicks,
+        int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedFreeDroppableGames,
+        bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops,
+        int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem,
+        LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
     {
-
+        LeagueID = leagueID;
+        Year = year;
+        LeagueName = leagueName;
+        StandardGames = standardGames;
+        GamesToDraft = gamesToDraft;
+        CounterPicks = counterPicks;
+        CounterPicksToDraft = counterPicksToDraft;
+        FreeDroppableGames = freeDroppableGames;
+        WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
+        WillReleaseDroppableGames = willReleaseDroppableGames;
+        UnlimitedFreeDroppableGames = unlimitedFreeDroppableGames;
+        UnlimitedWillNotReleaseDroppableGames = unlimitedWillNotReleaseDroppableGames;
+        UnlimitedWillReleaseDroppableGames = unlimitedWillReleaseDroppableGames;
+        DropOnlyDraftGames = dropOnlyDraftGames;
+        CounterPicksBlockDrops = counterPicksBlockDrops;
+        MinimumBidAmount = minimumBidAmount;
+        DraftSystem = draftSystem;
+        PickupSystem = pickupSystem;
+        ScoringSystem = scoringSystem;
+        TradingSystem = tradingSystem;
+        TiebreakSystem = tiebreakSystem;
+        Tags = tags;
+        SpecialGameSlots = specialGameSlots;
     }
 
     public LeagueYearSettingsViewModel(LeagueYear leagueYear)
@@ -60,71 +86,43 @@ public class LeagueYearSettingsViewModel
             .Select(x => x.Tag.Name)
             .ToList();
 
-        Tags = new LeagueTagOptionsViewModel()
-        {
-            Banned = bannedTags,
-            Required = requiredTags
-        };
-
+        Tags = new LeagueTagOptionsViewModel(bannedTags, requiredTags);
         SpecialGameSlots = leagueYear.Options.SpecialGameSlots.Select(x => new SpecialGameSlotViewModel(x)).ToList();
     }
 
-    [Required]
-    public Guid LeagueID { get; set; }
-    [Required]
-    public int Year { get; set; }
-    [Required]
-    public string LeagueName { get; set; }
-    [Required]
+    public Guid LeagueID { get; }
+    public int Year { get; }
+    public string LeagueName { get; }
     [Range(1, 50)]
-    public int StandardGames { get; set; }
-    [Required]
+    public int StandardGames { get; }
     [Range(1, 50)]
-    public int GamesToDraft { get; set; }
-    [Required]
+    public int GamesToDraft { get; }
     [Range(0, 50)]
-    public int CounterPicks { get; set; }
-    [Required]
+    public int CounterPicks { get; }
     [Range(0, 50)]
-    public int CounterPicksToDraft { get; set; }
+    public int CounterPicksToDraft { get; }
 
-    [Required]
     [Range(0, 100)]
-    public int FreeDroppableGames { get; set; }
-    [Required]
+    public int FreeDroppableGames { get; }
     [Range(0, 100)]
-    public int WillNotReleaseDroppableGames { get; set; }
-    [Required]
+    public int WillNotReleaseDroppableGames { get; }
     [Range(0, 100)]
-    public int WillReleaseDroppableGames { get; set; }
-    [Required]
-    public bool UnlimitedFreeDroppableGames { get; set; }
-    [Required]
-    public bool UnlimitedWillNotReleaseDroppableGames { get; set; }
-    [Required]
-    public bool UnlimitedWillReleaseDroppableGames { get; set; }
-    [Required]
-    public bool DropOnlyDraftGames { get; set; }
-    [Required]
-    public bool CounterPicksBlockDrops { get; set; }
-    [Required]
-    public int MinimumBidAmount { get; set; }
+    public int WillReleaseDroppableGames { get; }
+    public bool UnlimitedFreeDroppableGames { get; }
+    public bool UnlimitedWillNotReleaseDroppableGames { get; }
+    public bool UnlimitedWillReleaseDroppableGames { get; }
+    public bool DropOnlyDraftGames { get; }
+    public bool CounterPicksBlockDrops { get; }
 
-    [Required]
-    public string DraftSystem { get; set; }
-    [Required]
-    public string PickupSystem { get; set; }
-    [Required]
-    public string ScoringSystem { get; set; }
-    [Required]
-    public string TradingSystem { get; set; }
-    [Required]
-    public string TiebreakSystem { get; set; }
+    public int MinimumBidAmount { get; }
+    public string DraftSystem { get; }
+    public string PickupSystem { get; }
+    public string ScoringSystem { get; }
+    public string TradingSystem { get; }
+    public string TiebreakSystem { get; }
 
-    [Required]
-    public LeagueTagOptionsViewModel Tags { get; set; }
-    [Required]
-    public List<SpecialGameSlotViewModel> SpecialGameSlots { get; set; }
+    public LeagueTagOptionsViewModel Tags { get; }
+    public List<SpecialGameSlotViewModel> SpecialGameSlots { get; }
 
     public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
