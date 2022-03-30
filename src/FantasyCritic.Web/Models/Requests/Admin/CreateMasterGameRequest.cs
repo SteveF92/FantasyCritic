@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace FantasyCritic.Web.Models.Requests.Admin;
 
 public class CreateMasterGameRequest
@@ -9,13 +7,17 @@ public class CreateMasterGameRequest
         GameName = gameName;
         EstimatedReleaseDate = estimatedReleaseDate;
         MinimumReleaseDate = minimumReleaseDate;
-        Tags = new List<string>();
     }
 
     public string GameName { get; }
     public string EstimatedReleaseDate { get; }
     public LocalDate MinimumReleaseDate { get; }
-    public List<string> Tags { get; init; }
+
+    public List<string> Tags { get; init; } = new List<string>();
+    public bool DoNotRefreshDate { get; init; } = false;
+    public bool DoNotRefreshAnything { get; init; } = false;
+    public bool EligibilityChanged { get; init; } = false;
+    public bool DelayContention { get; init; } = false;
 
     public LocalDate? MaximumReleaseDate { get; init; }
     public LocalDate? EarlyAccessReleaseDate { get; init; }
@@ -29,8 +31,8 @@ public class CreateMasterGameRequest
     public Lib.Domain.MasterGame ToDomain(Instant timestamp, IEnumerable<MasterGameTag> tags)
     {
         Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
-            EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, Notes, "", "",
-            null, false, false, false, false, timestamp, new List<MasterSubGame>(), tags);
+            EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, Notes, null, null, null,
+            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, timestamp, new List<MasterSubGame>(), tags);
         return masterGame;
     }
 }

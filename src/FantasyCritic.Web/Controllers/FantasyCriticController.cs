@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers;
 
+[ApiController]
 public abstract class FantasyCriticController : ControllerBase
 {
     protected readonly FantasyCriticUserManager _userManager;

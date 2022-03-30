@@ -533,11 +533,6 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> DeclineInvite([FromBody] DeleteInviteRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsFailure)
         {
@@ -1208,11 +1203,6 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> DismissManagerMessage([FromBody] DismissManagerMessageRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsFailure)
         {

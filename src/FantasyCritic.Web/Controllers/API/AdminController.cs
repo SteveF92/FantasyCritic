@@ -44,11 +44,6 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         Instant instant = _clock.GetCurrentInstant();
 
         var possibleTags = await _interLeagueService.GetMasterGameTags();
@@ -80,7 +75,7 @@ public class AdminController : FantasyCriticController
 
         var possibleTags = await _interLeagueService.GetMasterGameTags();
         IReadOnlyList<MasterGameTag> tags = possibleTags
-            .Where(x => viewModel.GetRequestedTags().Contains(x.Name))
+            .Where(x => viewModel.Tags.Contains(x.Name))
             .ToList();
 
         var existingMasterGame = await _interLeagueService.GetMasterGame(viewModel.MasterGameID);
@@ -403,11 +398,6 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> ResendConfirmationEmail([FromBody] AdminResendConfirmationEmail request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
         var user = await _userManager.FindByIdAsync(request.UserID.ToString());
         if (user is null)
         {
