@@ -405,7 +405,7 @@ public class LeagueController : BaseLeagueController
             return leagueRecord.FailedResult;
         }
         var validResult = leagueRecord.ValidResult!;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
         var league = validResult.League;
 
         var inviteLink = await _leagueMemberService.GetInviteLinkByInviteCode(request.InviteCode);
@@ -450,7 +450,7 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
         {
@@ -480,6 +480,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var publisher = validResult.Publisher;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
@@ -514,6 +515,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -566,6 +568,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -602,6 +605,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var publisher = validResult.Publisher;
 
         var maybeBid = await _gameAcquisitionService.GetPickupBid(request.BidID);
@@ -635,6 +639,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -673,6 +678,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -712,6 +718,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -773,7 +780,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = validResult.CurrentUser;
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
         var league = validResult.League;
 
         Result result = await _fantasyCriticService.FollowLeague(league, currentUser);
@@ -793,7 +801,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = validResult.CurrentUser;
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
         var league = validResult.League;
 
         Result result = await _fantasyCriticService.UnfollowLeague(league, currentUser);
@@ -913,7 +922,7 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
         if (userPublisher is null)
@@ -928,7 +937,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
-    public async Task<IActionResult> TopAvailableGames(int year, Guid leagueID, string slotInfo)
+    public async Task<IActionResult> TopAvailableGames(int year, Guid leagueID, string? slotInfo)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
@@ -937,7 +946,7 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
         if (userPublisher is null)
@@ -949,7 +958,11 @@ public class LeagueController : BaseLeagueController
         if (slotInfo is not null)
         {
             string slotInfoJSON = Encoding.UTF8.GetString(Convert.FromBase64String(slotInfo));
-            PublisherSingleSlotRequirementsViewModel slotInfoObject = JsonConvert.DeserializeObject<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON);
+            PublisherSingleSlotRequirementsViewModel? slotInfoObject = JsonConvert.DeserializeObject<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON);
+            if (slotInfoObject is null)
+            {
+                return BadRequest();
+            }
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
             var leagueTagRequirements = slotInfoObject.GetLeagueTagStatus(tagDictionary);
             topAvailableGames = await _gameSearchingService.GetTopAvailableGamesForSlot(leagueYear, userPublisher, leagueTagRequirements);
@@ -972,6 +985,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -992,6 +1006,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
         var publisherGame = validResult.PublisherGame;
@@ -1010,7 +1025,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var validResult = publisherRecord.ValidResult;
+        var validResult = publisherRecord.ValidResult!;
         var publisher = validResult.Publisher;
 
         var dropRequest = await _gameAcquisitionService.GetDropRequest(request.DropRequestID);
@@ -1043,7 +1058,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var validResult = publisherRecord.ValidResult;
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -1064,7 +1079,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var validResult = publisherRecord.ValidResult;
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -1088,7 +1103,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var validResult = publisherRecord.ValidResult;
+        var validResult = publisherRecord.ValidResult!;
         var publisher = validResult.Publisher;
 
         var queuedGames = await _publisherService.GetQueuedGames(publisher);
@@ -1111,7 +1126,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var validResult = publisherRecord.ValidResult;
+        var validResult = publisherRecord.ValidResult!;
         var publisher = validResult.Publisher;
 
         var queuedGames = await _publisherService.GetQueuedGames(publisher);
@@ -1150,11 +1165,11 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var validResult = publisherRecord.ValidResult;
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var publisherGameIDsBeingEdited = request.SlotStates.Where(x => x.Value.HasValue).Select(x => x.Value.Value);
+        var publisherGameIDsBeingEdited = request.SlotStates.Where(x => x.Value.HasValue).Select(x => x.Value!.Value);
         var publisherGameIDs = publisher.PublisherGames.Select(x => x.PublisherGameID);
         var gamesNotForPublisher = publisherGameIDsBeingEdited.Except(publisherGameIDs);
         if (gamesNotForPublisher.Any())
@@ -1181,7 +1196,8 @@ public class LeagueController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = validResult.CurrentUser;
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
         var league = validResult.League;
 
         await _leagueMemberService.SetArchiveStatusForUser(league, request.Archive, currentUser);
@@ -1221,7 +1237,7 @@ public class LeagueController : BaseLeagueController
         {
             return publisherRecord.FailedResult;
         }
-        var validResult = publisherRecord.ValidResult;
+        var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
@@ -1244,7 +1260,7 @@ public class LeagueController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
         var validResult = leagueYearRecord.ValidResult!;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1277,7 +1293,7 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1310,7 +1326,7 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1343,7 +1359,7 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
@@ -1378,7 +1394,7 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser;
+        var currentUser = validResult.CurrentUser!;
 
         var trade = await _fantasyCriticService.GetTrade(request.TradeID);
         if (trade is null)
