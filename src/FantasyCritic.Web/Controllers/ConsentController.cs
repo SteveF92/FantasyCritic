@@ -61,7 +61,7 @@ public class ConsentController : Controller
     {
         var result = await ProcessConsent(model);
 
-        if (result.IsRedirect)
+        if (result.RedirectUri is not null)
         {
             var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
             if (context?.IsNativeClient() == true)
@@ -74,12 +74,12 @@ public class ConsentController : Controller
             return Redirect(result.RedirectUri);
         }
 
-        if (result.HasValidationError)
+        if (result.ValidationError is not null)
         {
-            ModelState.AddModelError(string.Empty, result.ValidationError!);
+            ModelState.AddModelError(string.Empty, result.ValidationError);
         }
 
-        if (result.ShowView)
+        if (result.ViewModel is not null)
         {
             return View("Index", result.ViewModel);
         }
@@ -106,7 +106,7 @@ public class ConsentController : Controller
         ConsentResponse? grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
-        if (model?.Button == "no")
+        if (model.Button == "no")
         {
             grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
@@ -114,7 +114,7 @@ public class ConsentController : Controller
             await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
         }
         // user clicked 'yes' - validate the data
-        else if (model?.Button == "yes")
+        else if (model.Button == "yes")
         {
             // if the user consented to some scope, build the response model
             if (model.ScopesConsented != null && model.ScopesConsented.Any())
@@ -178,13 +178,11 @@ public class ConsentController : Controller
 
     private ConsentViewModel CreateConsentViewModel(ConsentInputModel? model, string returnUrl, AuthorizationRequest request)
     {
-        var vm = new ConsentViewModel
+        var vm = new ConsentViewModel(returnUrl)
         {
             RememberConsent = model?.RememberConsent ?? true,
             ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),
             Description = model?.Description,
-
-            ReturnUrl = returnUrl,
 
             ClientName = request.Client.ClientName ?? request.Client.ClientId,
             ClientUrl = request.Client.ClientUri,

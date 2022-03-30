@@ -5,9 +5,14 @@ namespace FantasyCritic.Web.Models.Identity;
 
 public class ConsentInputModel
 {
-    public string Button { get; set; }
-    public IEnumerable<string> ScopesConsented { get; set; }
+    public ConsentInputModel(string returnUrl)
+    {
+        ReturnUrl = returnUrl;
+    }
+
+    public string? Button { get; set; }
+    public IEnumerable<string>? ScopesConsented { get; set; }
     public bool RememberConsent { get; set; }
-    public string ReturnUrl { get; set; }
-    public string Description { get; set; }
+    public string ReturnUrl { get; }
+    public string? Description { get; set; }
 }
