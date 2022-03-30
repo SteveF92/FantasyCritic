@@ -219,8 +219,7 @@ public class RoyaleController : FantasyCriticController
                 ranking++;
             }
 
-            bool hasWinningQuarters = previousWinners.TryGetValue(publisher.User, out var winningQuarters);
-            if (!hasWinningQuarters)
+            if (!previousWinners.TryGetValue(publisher.User, out var winningQuarters))
             {
                 winningQuarters = new List<RoyaleYearQuarter>();
             }

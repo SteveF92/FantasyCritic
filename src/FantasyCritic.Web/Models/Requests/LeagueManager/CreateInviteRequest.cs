@@ -6,8 +6,8 @@ public class CreateInviteRequest
 {
     [Required]
     public Guid LeagueID { get; set; }
-    public string InviteEmail { get; set; }
-    public string InviteDisplayName { get; set; }
+    public string? InviteEmail { get; set; }
+    public string? InviteDisplayName { get; set; }
     public int? InviteDisplayNumber { get; set; }
 
     public bool IsDisplayNameInvite()

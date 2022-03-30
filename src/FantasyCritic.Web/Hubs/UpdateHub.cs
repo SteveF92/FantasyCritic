@@ -20,7 +20,7 @@ public class UpdateHub : Hub
         await base.OnConnectedAsync();
     }
 
-    public override async Task OnDisconnectedAsync(Exception ex)
+    public override async Task OnDisconnectedAsync(Exception? ex)
     {
         if (ex is not null)
         {

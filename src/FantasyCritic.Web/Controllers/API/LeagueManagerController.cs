@@ -48,7 +48,6 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest(currentUserResult.Error);
         }
         var currentUser = currentUserResult.Value;
-
         if (string.IsNullOrWhiteSpace(request.LeagueName))
         {
             return BadRequest("You cannot have a blank league name.");
@@ -92,8 +91,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
+        var league = validResult.League;
 
         IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
         var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
@@ -117,8 +117,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var currentUser = leagueRecord.ValidResult.CurrentUser;
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
+        var league = validResult.League;
 
         if (league.Years.Contains(request.Year))
         {
@@ -165,7 +166,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
 
         if (string.IsNullOrWhiteSpace(request.LeagueName))
         {
@@ -190,8 +192,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var currentUser = leagueYearRecord.ValidResult.CurrentUser;
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
+        var leagueYear = validResult.LeagueYear;
 
         if (request.Tags.Required.Any())
         {
@@ -219,12 +222,18 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
 
         string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
         FantasyCriticUser inviteUser;
         if (!request.IsDisplayNameInvite())
         {
+            if (request.InviteEmail is null)
+            {
+                return BadRequest();
+            }
+
             string inviteEmail = request.InviteEmail.ToLower();
             inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
             if (inviteUser is null)
@@ -241,7 +250,7 @@ public class LeagueManagerController : BaseLeagueController
         }
         else
         {
-            inviteUser = await _userManager.FindByDisplayName(request.InviteDisplayName, request.InviteDisplayNumber.Value);
+            inviteUser = await _userManager.FindByDisplayName(request.InviteDisplayName!, request.InviteDisplayNumber!.Value);
         }
 
         if (inviteUser is null)
@@ -267,7 +276,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
 
         IReadOnlyList<LeagueInviteLink> activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
         if (activeLinks.Count >= 2)
@@ -288,7 +298,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
 
         var activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
         var thisLink = activeLinks.SingleOrDefault(x => x.InviteID == request.InviteID);
@@ -310,7 +321,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
 
         int currentYear = league.Years.Max();
         string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
@@ -327,6 +339,7 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
+        var validResult = leagueRecord.ValidResult!;
 
         LeagueInvite? invite = await _leagueMemberService.GetInvite(request.InviteID);
         if (invite is null)
@@ -334,7 +347,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
-        if (invite.League.LeagueID != leagueRecord.ValidResult.League.LeagueID)
+        if (invite.League.LeagueID != validResult.League.LeagueID)
         {
             return Forbid();
         }
@@ -351,7 +364,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
 
         if (league.LeagueManager.Id == request.UserID)
         {
@@ -384,7 +398,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         if (string.IsNullOrWhiteSpace(request.PublisherName))
         {
@@ -421,8 +436,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
+        var validResult = leagueYearPublisherRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var editValues = request.ToDomain(leagueYear, publisher);
         Result result = await _publisherService.EditPublisher(editValues);
@@ -442,8 +458,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
+        var validResult = leagueYearPublisherRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         await _publisherService.FullyRemovePublisher(leagueYear, publisher);
 
@@ -458,7 +475,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         Dictionary<FantasyCriticUser, bool> userActiveStatus = new Dictionary<FantasyCriticUser, bool>();
         foreach (var userKeyValue in request.ActiveStatus)
@@ -495,7 +513,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         foreach (var requestPublisher in request.PublisherAutoDraft)
         {
@@ -525,8 +544,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
+        var validResult = leagueYearPublisherRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         MasterGame? masterGame = null;
         if (request.MasterGameID.HasValue)
@@ -551,9 +571,10 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
-        var publisher = leagueYearPublisherGameRecord.ValidResult.Publisher;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
+        var validResult = leagueYearPublisherGameRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
+        var publisherGame = validResult.PublisherGame;
 
         MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
         if (masterGame is null)
@@ -579,9 +600,10 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
-        var publisher = leagueYearPublisherGameRecord.ValidResult.Publisher;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
+        var validResult = leagueYearPublisherGameRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
+        var publisherGame = validResult.PublisherGame;
 
         Result result = await _publisherService.RemovePublisherGame(leagueYear, publisher, publisherGame);
         if (result.IsFailure)
@@ -613,8 +635,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
+        var validResult = leagueYearPublisherGameRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisherGame = validResult.PublisherGame;
 
         await _fantasyCriticService.ManuallyScoreGame(publisherGame, manualCriticScore);
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
@@ -630,8 +653,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherGameRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherGameRecord.ValidResult.LeagueYear;
-        var publisherGame = leagueYearPublisherGameRecord.ValidResult.PublisherGame;
+        var validResult = leagueYearPublisherGameRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisherGame = validResult.PublisherGame;
 
         await _fantasyCriticService.ManuallySetWillNotRelease(leagueYear, publisherGame, request.WillNotRelease);
 
@@ -646,7 +670,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
 
         bool readyToPlay = _draftService.LeagueIsReadyToPlay(leagueYear.SupportedYear, leagueYear.Publishers, activeUsers);
@@ -674,7 +699,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         await _draftService.ResetDraft(leagueYear);
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
@@ -690,7 +716,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
         var readyToSetDraftOrder = _draftService.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers);
@@ -729,8 +756,9 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearPublisherRecord.FailedResult;
         }
-        var leagueYear = leagueYearPublisherRecord.ValidResult.LeagueYear;
-        var publisher = leagueYearPublisherRecord.ValidResult.Publisher;
+        var validResult = leagueYearPublisherRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
 
         var nextPublisher = _draftService.GetNextDraftPublisher(leagueYear);
         if (nextPublisher is null)
@@ -791,7 +819,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         await _draftService.SetDraftPause(leagueYear, request.Pause);
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
@@ -807,7 +836,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         bool hasGames = leagueYear.Publishers.Any(x => x.PublisherGames.Any());
         if (!hasGames)
@@ -829,7 +859,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
         if (masterGame is null)
@@ -877,7 +908,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         MasterGame? masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
         if (masterGame is null)
@@ -923,7 +955,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueRecord.FailedResult;
         }
-        var league = leagueRecord.ValidResult.League;
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
 
         var newManager = await _userManager.FindByIdAsync(request.NewManagerUserID.ToString());
         var usersInLeague = await _leagueMemberService.GetUsersInLeague(league);
@@ -945,7 +978,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         await _fantasyCriticService.PostNewManagerMessage(leagueYear, request.Message, request.IsPublic);
 
@@ -960,7 +994,8 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
-        var leagueYear = leagueYearRecord.ValidResult.LeagueYear;
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
 
         Result result = await _fantasyCriticService.DeleteManagerMessage(leagueYear, request.MessageID);
         if (result.IsFailure)

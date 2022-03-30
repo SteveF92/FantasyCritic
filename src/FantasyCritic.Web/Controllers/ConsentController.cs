@@ -76,7 +76,7 @@ public class ConsentController : Controller
 
         if (result.HasValidationError)
         {
-            ModelState.AddModelError(string.Empty, result.ValidationError);
+            ModelState.AddModelError(string.Empty, result.ValidationError!);
         }
 
         if (result.ShowView)
@@ -90,15 +90,20 @@ public class ConsentController : Controller
     /*****************************************/
     /* helper APIs for the ConsentController */
     /*****************************************/
-    private async Task<ProcessConsentResult> ProcessConsent(ConsentInputModel model)
+    private async Task<ProcessConsentResult> ProcessConsent(ConsentInputModel? model)
     {
         var result = new ProcessConsentResult();
+
+        if (model is null)
+        {
+            return result;
+        }
 
         // validate return url is still valid
         var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
         if (request == null) return result;
 
-        ConsentResponse grantedConsent = null;
+        ConsentResponse? grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
         if (model?.Button == "no")
@@ -158,24 +163,20 @@ public class ConsentController : Controller
         return result;
     }
 
-    private async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
+    private async Task<ConsentViewModel?> BuildViewModelAsync(string returnUrl, ConsentInputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
         if (request != null)
         {
             return CreateConsentViewModel(model, returnUrl, request);
         }
-        else
-        {
-            _logger.LogError("No consent request matching request: {0}", returnUrl);
-        }
+
+        _logger.LogError("No consent request matching request: {0}", returnUrl);
 
         return null;
     }
 
-    private ConsentViewModel CreateConsentViewModel(
-        ConsentInputModel model, string returnUrl,
-        AuthorizationRequest request)
+    private ConsentViewModel CreateConsentViewModel(ConsentInputModel? model, string returnUrl, AuthorizationRequest request)
     {
         var vm = new ConsentViewModel
         {
