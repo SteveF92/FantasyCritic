@@ -36,8 +36,8 @@ public class MasterGameRequestViewModel
 
     //Response
     public bool Answered { get; }
-    public string ResponseNote { get; }
+    public string? ResponseNote { get; }
     public Instant? ResponseTimestamp { get; }
-    public MasterGameViewModel MasterGame { get; }
+    public MasterGameViewModel? MasterGame { get; }
     public bool Hidden { get; }
 }

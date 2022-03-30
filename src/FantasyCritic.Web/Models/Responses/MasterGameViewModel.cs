@@ -49,6 +49,7 @@ public class MasterGameViewModel
         AveragedScore = false;
         OpenCriticID = masterSubGame.OpenCriticID;
         SubGames = null;
+        Tags = new List<string>();
     }
 
     public Guid MasterGameID { get; }
@@ -69,11 +70,11 @@ public class MasterGameViewModel
     public bool AveragedScore { get; }
     public int? OpenCriticID { get; }
     public string? GGToken { get; }
-    public IReadOnlyList<MasterGameViewModel> SubGames { get; }
+    public IReadOnlyList<MasterGameViewModel>? SubGames { get; }
     public IReadOnlyList<string> Tags { get; }
-    public string Notes { get; }
-    public string BoxartFileName { get; }
-    public string GGCoverArtFileName { get; }
+    public string? Notes { get; }
+    public string? BoxartFileName { get; }
+    public string? GGCoverArtFileName { get; }
     public Instant AddedTimestamp { get; }
     public bool Error { get; }
     public int NumberOutstandingCorrections { get; }

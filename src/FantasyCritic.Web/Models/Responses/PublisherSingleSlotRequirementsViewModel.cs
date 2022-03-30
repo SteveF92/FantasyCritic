@@ -35,8 +35,7 @@ public class PublisherSingleSlotRequirementsViewModel
         var bannedTagsWithoutRequiredTags = BannedTags.Except(RequiredTags);
         foreach (var bannedTag in bannedTagsWithoutRequiredTags)
         {
-            bool hasTag = tagDictionary.TryGetValue(bannedTag, out var foundTag);
-            if (!hasTag)
+            if (!tagDictionary.TryGetValue(bannedTag, out var foundTag))
             {
                 continue;
             }
@@ -46,8 +45,7 @@ public class PublisherSingleSlotRequirementsViewModel
 
         foreach (var requiredTag in RequiredTags)
         {
-            bool hasTag = tagDictionary.TryGetValue(requiredTag, out var foundTag);
-            if (!hasTag)
+            if (!tagDictionary.TryGetValue(requiredTag, out var foundTag))
             {
                 continue;
             }

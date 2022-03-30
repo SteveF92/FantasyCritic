@@ -27,7 +27,7 @@ public class MasterGameChangeRequestViewModel
 
     //Response
     public bool Answered { get; }
-    public string ResponseNote { get; }
+    public string? ResponseNote { get; }
     public Instant? ResponseTimestamp { get; }
     public bool Hidden { get; }
 }

@@ -65,6 +65,8 @@ public class MasterGameYearViewModel
         AveragedScore = false;
         OpenCriticID = masterSubGame.OpenCriticID;
         SubGames = null;
+        Tags = new List<string>();
+        ReadableTags = new List<string>();
 
         PercentStandardGame = masterGame.PercentStandardGame;
         PercentCounterPick = masterGame.PercentCounterPick;
@@ -105,11 +107,11 @@ public class MasterGameYearViewModel
     public bool AveragedScore { get; }
     public int? OpenCriticID { get; }
     public string? GGToken { get; }
-    public IReadOnlyList<MasterGameYearViewModel> SubGames { get; }
+    public IReadOnlyList<MasterGameYearViewModel>? SubGames { get; }
     public IReadOnlyList<string> Tags { get; }
     public IReadOnlyList<string> ReadableTags { get; }
-    public string BoxartFileName { get; }
-    public string GGCoverArtFileName { get; }
+    public string? BoxartFileName { get; }
+    public string? GGCoverArtFileName { get; }
     public Instant AddedTimestamp { get; }
 
     public double PercentStandardGame { get; }

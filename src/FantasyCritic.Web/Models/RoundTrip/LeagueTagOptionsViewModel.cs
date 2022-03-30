@@ -16,8 +16,7 @@ public class LeagueTagOptionsViewModel
         List<LeagueTagStatus> leagueTags = new List<LeagueTagStatus>();
         foreach (var bannedTag in Banned)
         {
-            bool hasTag = tagDictionary.TryGetValue(bannedTag, out var foundTag);
-            if (!hasTag)
+            if (!tagDictionary.TryGetValue(bannedTag, out var foundTag))
             {
                 continue;
             }
@@ -26,8 +25,7 @@ public class LeagueTagOptionsViewModel
         }
         foreach (var requiredTag in Required)
         {
-            bool hasTag = tagDictionary.TryGetValue(requiredTag, out var foundTag);
-            if (!hasTag)
+            if (!tagDictionary.TryGetValue(requiredTag, out var foundTag))
             {
                 continue;
             }
