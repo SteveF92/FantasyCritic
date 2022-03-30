@@ -4,7 +4,8 @@ public class PublisherSingleSlotRequirementsViewModel
 {
     public PublisherSingleSlotRequirementsViewModel()
     {
-
+        BannedTags = new List<string>();
+        RequiredTags = new List<string>();
     }
 
     public PublisherSingleSlotRequirementsViewModel(IEnumerable<LeagueTagStatus> tags)
@@ -21,12 +22,14 @@ public class PublisherSingleSlotRequirementsViewModel
 
     public PublisherSingleSlotRequirementsViewModel(bool counterPick)
     {
+        BannedTags = new List<string>();
+        RequiredTags = new List<string>();
         CounterPick = counterPick;
     }
 
-    public IReadOnlyList<string> BannedTags { get; set; }
-    public IReadOnlyList<string> RequiredTags { get; set; }
-    public bool CounterPick { get; set; }
+    public IReadOnlyList<string> BannedTags { get; init; }
+    public IReadOnlyList<string> RequiredTags { get; init; }
+    public bool CounterPick { get; init; }
 
     public IReadOnlyList<LeagueTagStatus> GetLeagueTagStatus(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {

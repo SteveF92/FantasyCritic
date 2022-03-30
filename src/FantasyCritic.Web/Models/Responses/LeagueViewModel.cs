@@ -48,8 +48,8 @@ public class LeagueViewModel
     public string LeagueName { get; }
     public PlayerViewModel LeagueManager { get; }
     public bool IsManager { get; }
-    public IReadOnlyList<PlayerViewModel> Players { get; }
-    public LeagueInviteViewModel OutstandingInvite { get; }
+    public IReadOnlyList<PlayerViewModel>? Players { get; }
+    public LeagueInviteViewModel? OutstandingInvite { get; }
     public IReadOnlyList<int> Years { get; }
     public int ActiveYear { get; }
     public bool PublicLeague { get; }

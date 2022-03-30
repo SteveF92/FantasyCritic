@@ -32,8 +32,8 @@ public class PublisherSlotViewModel
     public int SlotNumber { get; }
     public int OverallSlotNumber { get; }
     public bool CounterPick { get; }
-    public SpecialGameSlotViewModel SpecialSlot { get; }
-    public PublisherGameViewModel PublisherGame { get; }
+    public SpecialGameSlotViewModel? SpecialSlot { get; }
+    public PublisherGameViewModel? PublisherGame { get; }
     public IReadOnlyList<string> EligibilityErrors { get; }
     public bool GameMeetsSlotCriteria { get; }
     public decimal? ProjectedFantasyPoints { get; }

@@ -28,16 +28,9 @@ public class PublisherSlotRequirementsViewModel
 
             SpecialSlots = specialSlots;
         }
-
-        if (options.CounterPicks > 0)
-        {
-            CounterPickSlot = new PublisherSingleSlotRequirementsViewModel(true);
-        }
     }
 
     public PublisherSingleSlotRequirementsViewModel OverallSlot { get; }
     public PublisherSingleSlotRequirementsViewModel RegularSlot { get; }
     public IReadOnlyList<PublisherSingleSlotRequirementsViewModel> SpecialSlots { get; }
-    public PublisherSingleSlotRequirementsViewModel CounterPickSlot { get; }
-
 }

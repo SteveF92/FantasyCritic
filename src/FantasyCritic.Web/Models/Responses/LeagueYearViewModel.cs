@@ -88,7 +88,7 @@ public class LeagueYearViewModel
         bool readyToSetDraftOrder = false;
         if (allPublishersMade)
         {
-            Players = playerVMs.OrderBy(x => x.Publisher.DraftPosition).ToList();
+            Players = playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList();
             readyToSetDraftOrder = true;
         }
         else
@@ -139,7 +139,7 @@ public class LeagueYearViewModel
     public PublisherSlotRequirementsViewModel SlotInfo { get; }
     public PlayStatusViewModel PlayStatus { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
-    public IReadOnlyList<PublicBiddingMasterGameViewModel> PublicBiddingGames { get; }
+    public IReadOnlyList<PublicBiddingMasterGameViewModel>? PublicBiddingGames { get; }
     public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
     public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
     public GameNewsViewModel GameNews { get; }

@@ -14,5 +14,5 @@ public class DropGameResultViewModel
     }
 
     public bool Success { get; }
-    public IReadOnlyList<string> Errors { get; }
+    public IReadOnlyList<string>? Errors { get; }
 }

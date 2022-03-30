@@ -27,10 +27,10 @@ public class PlayerWithPublisherViewModel
     }
 
     public Guid? InviteID { get; }
-    public string InviteName { get; }
-    public PlayerViewModel User { get; }
-    public MinimalPublisherViewModel Publisher { get; }
-    public decimal TotalFantasyPoints { get; }
-    public decimal ProjectedFantasyPoints { get; }
-    public bool PreviousYearWinner { get; }
+    public string? InviteName { get; }
+    public PlayerViewModel? User { get; }
+    public MinimalPublisherViewModel? Publisher { get; }
+    public decimal? TotalFantasyPoints { get; }
+    public decimal? ProjectedFantasyPoints { get; }
+    public bool? PreviousYearWinner { get; }
 }

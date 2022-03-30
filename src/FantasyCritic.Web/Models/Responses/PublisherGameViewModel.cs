@@ -14,7 +14,7 @@ public class PublisherGameViewModel
         Linked = publisherGame.MasterGame is not null;
         if (Linked)
         {
-            GameName = publisherGame.MasterGame.MasterGame.GameName;
+            GameName = publisherGame.MasterGame!.MasterGame.GameName;
             EstimatedReleaseDate = publisherGame.MasterGame.MasterGame.EstimatedReleaseDate;
             if (publisherGame.MasterGame.MasterGame.ReleaseDate.HasValue)
             {
@@ -57,7 +57,7 @@ public class PublisherGameViewModel
         Linked = publisherGame.PublisherGame.MasterGame is not null;
         if (Linked)
         {
-            GameName = publisherGame.PublisherGame.MasterGame.MasterGame.GameName;
+            GameName = publisherGame.PublisherGame.MasterGame!.MasterGame.GameName;
             EstimatedReleaseDate = publisherGame.PublisherGame.MasterGame.MasterGame.EstimatedReleaseDate;
             if (publisherGame.PublisherGame.MasterGame.MasterGame.ReleaseDate.HasValue)
             {
@@ -92,12 +92,12 @@ public class PublisherGameViewModel
     public string GameName { get; }
     public DateTime Timestamp { get; }
     public bool CounterPick { get; }
-    public string EstimatedReleaseDate { get; }
+    public string? EstimatedReleaseDate { get; }
     public DateTime? ReleaseDate { get; }
     public decimal? FantasyPoints { get; }
     public decimal? CriticScore { get; }
 
-    public MasterGameYearViewModel MasterGame { get; }
+    public MasterGameYearViewModel? MasterGame { get; }
     public int? OverallDraftPosition { get; }
     public uint? BidAmount { get; }
     public Guid? AcquiredInTradeID { get; }
@@ -111,5 +111,5 @@ public class PublisherGameViewModel
     public bool CounterPicked { get; }
     public bool DropBlocked { get; }
     public Instant? RemovedTimestamp { get; }
-    public string RemovedNote { get; }
+    public string? RemovedNote { get; }
 }
