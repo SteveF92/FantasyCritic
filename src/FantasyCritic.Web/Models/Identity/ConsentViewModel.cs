@@ -7,7 +7,8 @@ public class ConsentViewModel : ConsentInputModel
 {
     public ConsentViewModel(string returnUrl) : base(returnUrl)
     {
-
+        IdentityScopes = new List<ScopeViewModel>();
+        ApiScopes = new List<ScopeViewModel>();
     }
 
     public string? ClientName { get; set; }
@@ -15,6 +16,6 @@ public class ConsentViewModel : ConsentInputModel
     public string? ClientLogoUrl { get; set; }
     public bool AllowRememberConsent { get; set; }
 
-    public IEnumerable<ScopeViewModel>? IdentityScopes { get; set; }
-    public IEnumerable<ScopeViewModel>? ApiScopes { get; set; }
+    public IEnumerable<ScopeViewModel> IdentityScopes { get; set; }
+    public IEnumerable<ScopeViewModel> ApiScopes { get; set; }
 }
