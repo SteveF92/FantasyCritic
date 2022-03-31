@@ -31,7 +31,7 @@ public class MySQLBetaCleaner
         {
             var fakedEmailAddress = Guid.NewGuid() + "@example.com";
             var fakedNormalizedEmailAddress = fakedEmailAddress.ToUpper();
-            string sql = $"UPDATE tbl_user SET EmailAddress = '{fakedEmailAddress}', NormalizedEmailAddress = '{fakedNormalizedEmailAddress}', PasswordHash = '', IsDeleted = 1 WHERE UserID = '{nonBetaUser.Id}';";
+            string sql = $"UPDATE tbl_user SET EmailAddress = '{fakedEmailAddress}', NormalizedEmailAddress = '{fakedNormalizedEmailAddress}', PasswordHash = null, AuthenticatorKey = null, IsDeleted = 1 WHERE UserID = '{nonBetaUser.Id}';";
             updateStatements.Add(sql);
         }
 
