@@ -16,5 +16,5 @@ public class FantasyCriticUserDonorEntity
     }
 
     public Guid UserID { get; set; }
-    public string DonorName { get; set; }
+    public string DonorName { get; set; } = null!;
 }

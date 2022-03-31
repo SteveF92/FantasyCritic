@@ -14,5 +14,5 @@ internal class RecoveryCodeEntity
     }
 
     public Guid UserID { get; set; }
-    public string RecoveryCode { get; set; }
+    public string RecoveryCode { get; set; } = null!;
 }

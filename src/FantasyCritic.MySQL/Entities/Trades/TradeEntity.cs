@@ -32,11 +32,11 @@ public class TradeEntity
     public Guid CounterPartyPublisherID { get; set; }
     public uint ProposerBudgetSendAmount { get; set; }
     public uint CounterPartyBudgetSendAmount { get; set; }
-    public string Message { get; set; }
+    public string Message { get; set; } = null!;
     public Instant ProposedTimestamp { get; set; }
     public Instant? AcceptedTimestamp { get; set; }
     public Instant? CompletedTimestamp { get; set; }
-    public string Status { get; set; }
+    public string Status { get; set; } = null!;
 
     public Trade ToDomain(LeagueYear leagueYear, Publisher proposer, Publisher counterParty, IEnumerable<MasterGameYearWithCounterPick> proposerMasterGames,
         IEnumerable<MasterGameYearWithCounterPick> counterPartyMasterGames, IEnumerable<TradeVote> votes)

@@ -16,5 +16,5 @@ public class FantasyCriticUserEmailSettingEntity
     }
 
     public Guid UserID { get; set; }
-    public string EmailType { get; set; }
+    public string EmailType { get; set; } = null!;
 }

@@ -17,6 +17,6 @@ internal class MasterGameHasTagEntity
     }
 
     public Guid MasterGameID { get; set; }
-    public string TagName { get; set; }
+    public string TagName { get; set; } = null!;
     public Instant TimeAdded { get; set; }
 }

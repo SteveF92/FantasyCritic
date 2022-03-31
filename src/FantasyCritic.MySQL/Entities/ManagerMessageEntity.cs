@@ -20,7 +20,7 @@ internal class ManagerMessageEntity
     public Guid MessageID { get; set; }
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
-    public string MessageText { get; set; }
+    public string MessageText { get; set; } = null!;
     public bool IsPublic { get; set; }
     public Instant Timestamp { get; set; }
 

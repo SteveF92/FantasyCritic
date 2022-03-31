@@ -24,15 +24,15 @@ internal class MasterGameTagEntity
         BadgeColor = domain.BadgeColor;
     }
 
-    public string Name { get; set; }
-    public string ReadableName { get; set; }
-    public string ShortName { get; set; }
-    public string TagType { get; set; }
+    public string Name { get; set; } = null!;
+    public string ReadableName { get; set; } = null!;
+    public string ShortName { get; set; } = null!;
+    public string TagType { get; set; } = null!;
     public bool HasCustomCode { get; set; }
     public bool SystemTagOnly { get; set; }
-    public string Description { get; set; }
-    public string Examples { get; set; }
-    public string BadgeColor { get; set; }
+    public string Description { get; set; } = null!;
+    public string Examples { get; set; } = null!;
+    public string BadgeColor { get; set; } = null!;
 
     public MasterGameTag ToDomain()
     {

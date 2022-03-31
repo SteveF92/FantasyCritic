@@ -18,7 +18,7 @@ public class ActionProcessingSetEntity
 
     public Guid ProcessSetID { get; set; }
     public Instant ProcessTime { get; set; }
-    public string ProcessName { get; set; }
+    public string ProcessName { get; set; } = null!;
 
     public ActionProcessingSetMetadata ToDomain()
     {

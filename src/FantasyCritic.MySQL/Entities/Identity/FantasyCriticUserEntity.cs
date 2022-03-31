@@ -27,16 +27,16 @@ internal class FantasyCriticUserEntity
     }
 
     public Guid UserID { get; set; }
-    public string DisplayName { get; set; }
-    public string PatreonDonorNameOverride { get; set; }
+    public string DisplayName { get; set; } = null!;
+    public string? PatreonDonorNameOverride { get; set; }
     public int DisplayNumber { get; set; }
-    public string EmailAddress { get; set; }
-    public string NormalizedEmailAddress { get; set; }
+    public string EmailAddress { get; set; } = null!;
+    public string NormalizedEmailAddress { get; set; } = null!;
     public bool EmailConfirmed { get; set; }
-    public string SecurityStamp { get; set; }
-    public string PasswordHash { get; set; }
+    public string SecurityStamp { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
     public bool TwoFactorEnabled { get; set; }
-    public string AuthenticatorKey { get; set; }
+    public string? AuthenticatorKey { get; set; }
     public Instant LastChangedCredentials { get; set; }
     public bool IsDeleted { get; set; }
 

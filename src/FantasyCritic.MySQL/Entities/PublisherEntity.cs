@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities;
@@ -27,7 +26,7 @@ internal class PublisherEntity
     }
 
     public Guid PublisherID { get; set; }
-    public string PublisherName { get; set; }
+    public string PublisherName { get; set; } = null!;
     public string? PublisherIcon { get; }
     public Guid LeagueID { get; set; }
     public int Year { get; set; }

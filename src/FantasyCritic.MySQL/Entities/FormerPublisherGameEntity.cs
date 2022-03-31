@@ -53,7 +53,7 @@ public class FormerPublisherGameEntity
 
     public Guid PublisherGameID { get; set; }
     public Guid PublisherID { get; set; }
-    public string GameName { get; set; }
+    public string GameName { get; set; } = null!;
     public Instant Timestamp { get; set; }
     public bool CounterPick { get; set; }
     public decimal? ManualCriticScore { get; set; }
@@ -65,7 +65,7 @@ public class FormerPublisherGameEntity
     public uint? BidAmount { get; set; }
     public Guid? AcquiredInTradeID { get; set; }
     public Instant RemovedTimestamp { get; set; }
-    public string RemovedNote { get; set; }
+    public string RemovedNote { get; set; } = null!;
 
     public FormerPublisherGame ToDomain(MasterGameYear? masterGame)
     {

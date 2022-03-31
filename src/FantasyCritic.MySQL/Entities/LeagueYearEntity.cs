@@ -46,12 +46,12 @@ internal class LeagueYearEntity
     public bool DropOnlyDraftGames { get; set; }
     public bool CounterPicksBlockDrops { get; set; }
     public int MinimumBidAmount { get; set; }
-    public string DraftSystem { get; set; }
-    public string PickupSystem { get; set; }
-    public string TiebreakSystem { get; set; }
-    public string ScoringSystem { get; set; }
-    public string TradingSystem { get; set; }
-    public string PlayStatus { get; set; }
+    public string DraftSystem { get; set; } = null!;
+    public string PickupSystem { get; set; } = null!;
+    public string TiebreakSystem { get; set; } = null!;
+    public string ScoringSystem { get; set; } = null!;
+    public string TradingSystem { get; set; } = null!;
+    public string PlayStatus { get; set; } = null!;
     public Instant? DraftStartedTimestamp { get; set; }
     public Guid? WinningUserID { get; set; }
 

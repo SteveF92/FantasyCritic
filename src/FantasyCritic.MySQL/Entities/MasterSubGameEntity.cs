@@ -25,8 +25,8 @@ internal class MasterSubGameEntity
 
     public Guid MasterSubGameID { get; set; }
     public Guid MasterGameID { get; set; }
-    public string GameName { get; set; }
-    public string EstimatedReleaseDate { get; set; }
+    public string GameName { get; set; } = null!;
+    public string EstimatedReleaseDate { get; set; } = null!;
     public LocalDate MinimumReleaseDate { get; set; }
     public LocalDate? MaximumReleaseDate { get; set; }
     public LocalDate? ReleaseDate { get; set; }

@@ -16,7 +16,7 @@ public class TradeComponentEntity
     }
 
     public Guid TradeID { get; set; }
-    public string CurrentParty { get; set; }
+    public string CurrentParty { get; set; } = null!;
     public Guid MasterGameID { get; set; }
     public bool CounterPick { get; set; }
 }

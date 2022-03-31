@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities;
@@ -40,20 +39,20 @@ internal class MasterGameRequestEntity
     public Guid RequestID { get; set; }
     public Guid UserID { get; set; }
     public Instant RequestTimestamp { get; set; }
-    public string RequestNote { get; set; }
+    public string RequestNote { get; set; } = null!;
 
     //Game Details
-    public string GameName { get; set; }
+    public string GameName { get; set; } = null!;
     public int? SteamID { get; set; }
     public int? OpenCriticID { get; set; }
     public string? GGToken { get; set; }
     public LocalDate? ReleaseDate { get; set; }
-    public string EstimatedReleaseDate { get; set; }
+    public string EstimatedReleaseDate { get; set; } = null!;
 
     //Response
     public bool Answered { get; set; }
     public Instant? ResponseTimestamp { get; set; }
-    public string ResponseNote { get; set; }
+    public string? ResponseNote { get; set; } = null!;
     public Guid? MasterGameID { get; set; }
 
     public bool Hidden { get; set; }

@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.MySQL.Entities;
 

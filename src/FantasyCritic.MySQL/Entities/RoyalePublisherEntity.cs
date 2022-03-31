@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 
@@ -26,7 +25,7 @@ internal class RoyalePublisherEntity
     public Guid UserID { get; set; }
     public int Year { get; set; }
     public int Quarter { get; set; }
-    public string PublisherName { get; set; }
+    public string PublisherName { get; set; } = null!;
     public string? PublisherIcon { get; set; }
     public decimal Budget { get; set; }
 

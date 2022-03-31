@@ -20,8 +20,8 @@ internal class LeagueActionEntity
 
     public Guid PublisherID { get; set; }
     public Instant Timestamp { get; set; }
-    public string ActionType { get; set; }
-    public string Description { get; set; }
+    public string ActionType { get; set; } = null!;
+    public string Description { get; set; } = null!;
     public bool ManagerAction { get; set; }
 
     public LeagueAction ToDomain(Publisher publisher)

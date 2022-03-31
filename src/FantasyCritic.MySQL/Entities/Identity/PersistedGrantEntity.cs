@@ -23,16 +23,16 @@ internal class PersistedGrantEntity
         SessionId = domain.SessionId;
     }
 
-    public string Key { get; set; }
-    public string Type { get; set; }
-    public string SubjectId { get; set; }
-    public string ClientId { get; set; }
+    public string Key { get; set; } = null!;
+    public string Type { get; set; } = null!;
+    public string SubjectId { get; set; } = null!;
+    public string ClientId { get; set; } = null!;
     public DateTime CreationTime { get; set; }
     public DateTime? ConsumedTime { get; set; }
     public DateTime? Expiration { get; set; }
-    public string Data { get; set; }
-    public string Description { get; set; }
-    public string SessionId { get; set; }
+    public string Data { get; set; } = null!;
+    public string Description { get; set; } = null!;
+    public string SessionId { get; set; } = null!;
 
     public PersistedGrant ToDomain()
     {

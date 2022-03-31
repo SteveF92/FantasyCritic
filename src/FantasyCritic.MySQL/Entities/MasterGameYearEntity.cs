@@ -1,5 +1,3 @@
-using FantasyCritic.Lib.Extensions;
-
 namespace FantasyCritic.MySQL.Entities;
 
 internal class MasterGameYearEntity
@@ -49,8 +47,8 @@ internal class MasterGameYearEntity
 
     public Guid MasterGameID { get; set; }
     public int Year { get; set; }
-    public string GameName { get; set; }
-    public string EstimatedReleaseDate { get; set; }
+    public string GameName { get; set; } = null!;
+    public string EstimatedReleaseDate { get; set; } = null!;
     public DateTime MinimumReleaseDate { get; set; }
     public DateTime? MaximumReleaseDate { get; set; }
     public DateTime? EarlyAccessReleaseDate { get; set; }

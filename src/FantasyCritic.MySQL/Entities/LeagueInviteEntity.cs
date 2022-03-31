@@ -24,7 +24,7 @@ internal class LeagueInviteEntity
 
     public Guid InviteID { get; set; }
     public Guid LeagueID { get; set; }
-    public string EmailAddress { get; set; }
+    public string EmailAddress { get; set; } = null!;
     public Guid? UserID { get; set; }
 
     public LeagueInvite ToDomain(League league)

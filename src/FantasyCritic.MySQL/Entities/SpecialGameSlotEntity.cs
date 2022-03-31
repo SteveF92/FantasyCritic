@@ -20,5 +20,5 @@ public class SpecialGameSlotEntity
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
     public int SpecialSlotPosition { get; set; }
-    public string Tag { get; set; }
+    public string Tag { get; set; } = null!;
 }

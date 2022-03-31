@@ -17,8 +17,8 @@ internal class LeagueYearTagEntity
 
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
-    public string Tag { get; set; }
-    public string Status { get; set; }
+    public string Tag { get; set; } = null!;
+    public string Status { get; set; } = null!;
 
     public LeagueTagStatus ToDomain(MasterGameTag tag)
     {

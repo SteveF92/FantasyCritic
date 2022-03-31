@@ -30,7 +30,7 @@ internal class MasterGameChangeRequestEntity
     public Guid RequestID { get; set; }
     public Guid UserID { get; set; }
     public Instant RequestTimestamp { get; set; }
-    public string RequestNote { get; set; }
+    public string RequestNote { get; set; } = null!;
     public Guid MasterGameID { get; set; }
     public int? OpenCriticID { get; set; }
     public string? GGToken { get; set; }
@@ -38,7 +38,7 @@ internal class MasterGameChangeRequestEntity
     //Response
     public bool Answered { get; set; }
     public Instant? ResponseTimestamp { get; set; }
-    public string ResponseNote { get; set; }
+    public string? ResponseNote { get; set; } = null!;
 
     public bool Hidden { get; set; }
 

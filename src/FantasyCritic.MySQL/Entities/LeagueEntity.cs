@@ -20,7 +20,7 @@ internal class LeagueEntity
     }
 
     public Guid LeagueID { get; set; }
-    public string LeagueName { get; set; }
+    public string LeagueName { get; set; } = null!;
     public Guid LeagueManager { get; set; }
     public bool PublicLeague { get; set; }
     public bool TestLeague { get; set; }

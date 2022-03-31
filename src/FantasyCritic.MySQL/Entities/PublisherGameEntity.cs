@@ -32,7 +32,7 @@ internal class PublisherGameEntity
 
     public Guid PublisherGameID { get; set; }
     public Guid PublisherID { get; set; }
-    public string GameName { get; set; }
+    public string GameName { get; set; } = null!;
     public Instant Timestamp { get; set; }
     public bool CounterPick { get; set; }
     public decimal? ManualCriticScore { get; set; }

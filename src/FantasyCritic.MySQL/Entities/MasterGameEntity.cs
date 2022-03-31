@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using FantasyCritic.Lib.Extensions;
 
 [assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]
 namespace FantasyCritic.MySQL.Entities;
@@ -38,8 +37,8 @@ internal class MasterGameEntity
     }
 
     public Guid MasterGameID { get; set; }
-    public string GameName { get; set; }
-    public string EstimatedReleaseDate { get; set; }
+    public string GameName { get; set; } = null!;
+    public string EstimatedReleaseDate { get; set; } = null!;
     public LocalDate MinimumReleaseDate { get; set; }
     public LocalDate? MaximumReleaseDate { get; set; }
     public LocalDate? EarlyAccessReleaseDate { get; set; }
