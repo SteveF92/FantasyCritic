@@ -140,8 +140,8 @@ export default {
   },
   mixins: [BasicMixin],
   props: {
-    year: { type: Number, required: true },
-    quarter: { type: Number, required: true }
+    year: { type: Number, default: null },
+    quarter: { type: Number, default: null }
   },
   data() {
     return {
