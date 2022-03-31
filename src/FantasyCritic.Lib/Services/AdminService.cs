@@ -292,7 +292,7 @@ public class AdminService
             allLeagueYears.AddRange(leaguesToCount);
             var publishers = leaguesToCount.SelectMany(x => x.Publishers).ToList();
             var publisherGames = publishers.SelectMany(x => x.PublisherGames);
-            var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue).ToList();
+            var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).ToList();
             allGamesWithPoints.AddRange(gamesWithPoints);
         }
 
@@ -307,7 +307,7 @@ public class AdminService
         foreach (var leagueYear in allLeagueYears)
         {
             var publishers = leagueYear.Publishers;
-            var orderedGames = publishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick & x.FantasyPoints.HasValue).OrderBy(x => x.Timestamp).ToList();
+            var orderedGames = publishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick & x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).OrderBy(x => x.Timestamp).ToList();
             for (var index = 0; index < orderedGames.Count; index++)
             {
                 var game = orderedGames[index];
