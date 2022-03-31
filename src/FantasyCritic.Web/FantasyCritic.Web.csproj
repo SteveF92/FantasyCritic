@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
@@ -8,6 +8,11 @@
         <Company>Fantasy Critic</Company>
         <Description>Fantasy football for video games</Description>
       <UserSecretsId>785d062a-8464-48af-81ba-ab28edd03b1d</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <WarningLevel>5</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>

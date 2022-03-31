@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <WarningLevel>5</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Email\EmailTemplates\ChangeEmail.cshtml" />
     <None Remove="Email\EmailTemplates\ConfirmEmail.cshtml" />
