@@ -27,7 +27,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         _masterGameRepo = masterGameRepo;
     }
 
-    private IFantasyCriticRepo AsInterface => (IFantasyCriticRepo) this;
+    private IFantasyCriticRepo AsInterface => (IFantasyCriticRepo)this;
 
     public async Task<League?> GetLeague(Guid id)
     {
@@ -618,7 +618,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             tempPosition++;
         }
 
-                
+
         foreach (var queuedGame in queueRanks)
         {
             var realParams = new
@@ -734,7 +734,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(gameDeleteSQL, paramsObject, transaction);
         await connection.ExecuteAsync(draftResetSQL, paramsObject, transaction);
-        await AddLeagueActions(new List<LeagueAction>() {resetDraftAction}, connection, transaction);
+        await AddLeagueActions(new List<LeagueAction>() { resetDraftAction }, connection, transaction);
         await transaction.CommitAsync();
     }
 

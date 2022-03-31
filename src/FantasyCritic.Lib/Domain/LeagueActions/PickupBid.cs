@@ -25,7 +25,7 @@ public class PickupBid : IEquatable<PickupBid>
 
     public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame,
         bool counterPick, uint bidAmount, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome, decimal? projectedPointsAtTimeOfBid, DropResult conditionalDropResult)
-    :this(bidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, bidAmount, priority, timestamp, successful, processSetID, outcome, projectedPointsAtTimeOfBid)
+    : this(bidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, bidAmount, priority, timestamp, successful, processSetID, outcome, projectedPointsAtTimeOfBid)
     {
         ConditionalDropResult = conditionalDropResult;
     }

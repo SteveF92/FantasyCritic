@@ -49,10 +49,10 @@ public class MasterGameCalculatedStats
     public MasterGame MasterGame { get; }
     public int Year { get; }
 
-    public double PercentStandardGame { get;}
+    public double PercentStandardGame { get; }
     public double PercentCounterPick { get; }
-    public double EligiblePercentStandardGame { get;}
-    public double? AdjustedPercentCounterPick { get;  }
+    public double EligiblePercentStandardGame { get; }
+    public double? AdjustedPercentCounterPick { get; }
     public int NumberOfBids { get; }
     public int TotalBidAmount { get; }
     public double BidPercentile { get; }
