@@ -7,7 +7,7 @@ using FantasyCritic.Lib.Patreon;
 
 namespace FantasyCritic.MySQL;
 
-public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
+public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly string _connectionString;
@@ -111,7 +111,7 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         if (!Guid.TryParse(userId, out var parsedUserID))
         {
-            throw new ArgumentOutOfRangeException("userId", $"'{new { userId }}' is not a valid GUID.");
+            throw new ArgumentOutOfRangeException(nameof(userId), $"'{userId}' is not a valid GUID.");
         }
 
         using (var connection = new MySqlConnection(_connectionString))

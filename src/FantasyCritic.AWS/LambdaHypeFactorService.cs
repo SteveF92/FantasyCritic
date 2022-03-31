@@ -75,7 +75,7 @@ public class LambdaHypeFactorService : IHypeFactorService
         return entity.ToDomain();
     }
 
-    private void CreateCSVFile(IEnumerable<MasterGameYear> allMasterGameYears, string fileName)
+    private static void CreateCSVFile(IEnumerable<MasterGameYear> allMasterGameYears, string fileName)
     {
         IEnumerable<MasterGameYearScriptInput> outputModels = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x));
         using (var fileStream = File.OpenWrite(fileName))

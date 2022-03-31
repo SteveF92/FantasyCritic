@@ -425,7 +425,7 @@ public class AdminService
             var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
             var completeLeagueYearKeys = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
             var allLeagueYears = leagueYears.Where(x => completeLeagueYearKeys.Contains(x.Key)).ToList();
-            double totalLeagueCount = allLeagueYears.Count();
+            double totalLeagueCount = allLeagueYears.Count;
 
             foreach (var masterGame in cleanMasterGames)
             {
@@ -577,7 +577,7 @@ public class AdminService
         await _masterGameRepo.UpdateCodeBasedTags(tagsToAdd.SealDictionary());
     }
 
-    private double FixDouble(double num)
+    private static double FixDouble(double num)
     {
         if (double.IsNaN(num))
         {
@@ -592,7 +592,7 @@ public class AdminService
         return num;
     }
 
-    private double? FixDouble(double? num)
+    private static double? FixDouble(double? num)
     {
         if (!num.HasValue)
         {

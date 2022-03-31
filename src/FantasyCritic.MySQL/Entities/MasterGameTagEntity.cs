@@ -36,7 +36,7 @@ internal class MasterGameTagEntity
 
     public MasterGameTag ToDomain()
     {
-        var examples = JsonConvert.DeserializeObject<List<string>>(Examples);
+        var examples = JsonConvert.DeserializeObject<List<string>>(Examples)!;
         return new MasterGameTag(Name, ReadableName, ShortName, new MasterGameTagType(TagType), HasCustomCode, SystemTagOnly, Description, examples, BadgeColor);
     }
 }
