@@ -38,35 +38,33 @@ public class PatreonService
         _logger.Info($"Found {patreonUserDictionary.Count} patreon users.");
 
         List<PatronInfo> patronInfo = new List<PatronInfo>();
-        using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
+        using var client = new PatreonClient(_accessToken, _refreshToken, _clientId);
+        _logger.Info("Making patreon request.");
+        var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
+        if (campaignMembers != null)
         {
-            _logger.Info("Making patreon request.");
-            var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
-            if (campaignMembers != null)
+            _logger.Info("Patreon request successful.");
+            await foreach (var member in campaignMembers)
             {
-                _logger.Info("Patreon request successful.");
-                await foreach (var member in campaignMembers)
+                if (!patreonUserDictionary.TryGetValue(member.Relationships.User.Id, out var fantasyCriticUser))
                 {
-                    if (!patreonUserDictionary.TryGetValue(member.Relationships.User.Id, out var fantasyCriticUser))
-                    {
-                        continue;
-                    }
-
-                    bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
-                    bool isDonorUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Donor");
-                    string? donorName = null;
-                    if (isDonorUser)
-                    {
-                        isPlusUser = true;
-                        donorName = member.Relationships.User.FullName;
-                        if (fantasyCriticUser.PatreonDonorNameOverride is not null)
-                        {
-                            donorName = fantasyCriticUser.PatreonDonorNameOverride;
-                        }
-                    }
-
-                    patronInfo.Add(new PatronInfo(fantasyCriticUser, isPlusUser, donorName));
+                    continue;
                 }
+
+                bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
+                bool isDonorUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Donor");
+                string? donorName = null;
+                if (isDonorUser)
+                {
+                    isPlusUser = true;
+                    donorName = member.Relationships.User.FullName;
+                    if (fantasyCriticUser.PatreonDonorNameOverride is not null)
+                    {
+                        donorName = fantasyCriticUser.PatreonDonorNameOverride;
+                    }
+                }
+
+                patronInfo.Add(new PatronInfo(fantasyCriticUser, isPlusUser, donorName));
             }
         }
 
@@ -75,21 +73,19 @@ public class PatreonService
 
     public async Task<bool> UserIsPlusUser(string patreonProviderID)
     {
-        using (var client = new PatreonClient(_accessToken, _refreshToken, _clientId))
+        using var client = new PatreonClient(_accessToken, _refreshToken, _clientId);
+        var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
+        if (campaignMembers != null)
         {
-            var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
-            if (campaignMembers != null)
+            await foreach (var member in campaignMembers)
             {
-                await foreach (var member in campaignMembers)
+                if (member.Relationships.User.Id != patreonProviderID)
                 {
-                    if (member.Relationships.User.Id != patreonProviderID)
-                    {
-                        continue;
-                    }
-
-                    bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
-                    return isPlusUser;
+                    continue;
                 }
+
+                bool isPlusUser = member.Relationships.Tiers.Any(x => x.Title == "Fantasy Critic Plus");
+                return isPlusUser;
             }
         }
 

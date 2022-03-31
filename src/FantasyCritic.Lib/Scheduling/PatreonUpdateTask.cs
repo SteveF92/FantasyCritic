@@ -23,11 +23,9 @@ public class PatreonUpdateTask : IScheduledTask
 #pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-        using (var scope = serviceScopeFactory.CreateScope())
-        {
-            var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
-            await adminService.UpdatePatreonRoles();
-        }
+        using var scope = serviceScopeFactory.CreateScope();
+        var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
+        await adminService.UpdatePatreonRoles();
 #pragma warning restore CS0162
     }
 }

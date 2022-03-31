@@ -3,23 +3,20 @@
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Utilities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage;
 
-public partial class EmailModel : PageModel
+public class EmailModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
     private readonly EmailSendingService _emailSendingService;
 
-    public EmailModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager, EmailSendingService emailSendingService)
+    public EmailModel(FantasyCriticUserManager userManager, EmailSendingService emailSendingService)
     {
         _userManager = userManager;
-        _signInManager = signInManager;
         _emailSendingService = emailSendingService;
     }
 

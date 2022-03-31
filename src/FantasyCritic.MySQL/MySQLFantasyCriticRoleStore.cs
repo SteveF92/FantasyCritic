@@ -5,7 +5,7 @@ using FantasyCritic.MySQL.Entities.Identity;
 
 namespace FantasyCritic.MySQL;
 
-public class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
+public sealed class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
 {
     private readonly string _connectionString;
 
@@ -33,17 +33,15 @@ public class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        using (var connection = new MySqlConnection(_connectionString))
-        {
-            await connection.OpenAsync(cancellationToken);
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync(cancellationToken);
 
-            var userResult = await connection.QueryAsync<FantasyCriticRoleEntity>(
-                @"select * from tbl_user_role WHERE NormalizedName = @normalizedRoleName",
-                new { normalizedRoleName });
-            var entity = userResult.SingleOrDefault();
-            //TODO .NET 7 Nullable
-            return entity?.ToDomain()!;
-        }
+        var userResult = await connection.QueryAsync<FantasyCriticRoleEntity>(
+            @"select * from tbl_user_role WHERE NormalizedName = @normalizedRoleName",
+            new { normalizedRoleName });
+        var entity = userResult.SingleOrDefault();
+        //TODO .NET 7 Nullable
+        return entity?.ToDomain()!;
     }
 
     public Task<string> GetNormalizedRoleNameAsync(FantasyCriticRole role, CancellationToken cancellationToken)

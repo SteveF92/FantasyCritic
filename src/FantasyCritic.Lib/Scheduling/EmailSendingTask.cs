@@ -23,11 +23,9 @@ public class EmailSendingTask : IScheduledTask
 #pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-        using (var scope = serviceScopeFactory.CreateScope())
-        {
-            var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
-            await emailSendingService.SendScheduledEmails();
-        }
+        using var scope = serviceScopeFactory.CreateScope();
+        var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
+        await emailSendingService.SendScheduledEmails();
 #pragma warning restore CS0162
     }
 }

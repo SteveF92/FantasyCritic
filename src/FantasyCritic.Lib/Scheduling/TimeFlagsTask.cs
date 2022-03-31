@@ -23,11 +23,9 @@ public class TimeFlagsTask : IScheduledTask
 #pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-        using (var scope = serviceScopeFactory.CreateScope())
-        {
-            var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
-            await adminService.SetTimeFlags();
-        }
+        using var scope = serviceScopeFactory.CreateScope();
+        var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
+        await adminService.SetTimeFlags();
 #pragma warning restore CS0162
     }
 }

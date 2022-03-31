@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -78,26 +79,22 @@ public class LambdaHypeFactorService : IHypeFactorService
     private static void CreateCSVFile(IEnumerable<MasterGameYear> allMasterGameYears, string fileName)
     {
         IEnumerable<MasterGameYearScriptInput> outputModels = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x));
-        using (var fileStream = File.OpenWrite(fileName))
-        using (var streamWriter = new StreamWriter(fileStream))
-        using (var csv = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
-        {
-            csv.WriteRecords(outputModels);
-        }
+        using var fileStream = File.OpenWrite(fileName);
+        using var streamWriter = new StreamWriter(fileStream);
+        using var csv = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
+        csv.WriteRecords((IEnumerable) outputModels);
     }
 
     private async Task UploadMasterGameYearStats(string fileName)
     {
-        using (IAmazonS3 s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(_region)))
-        using (TransferUtility transferUtility = new TransferUtility(s3Client))
+        using IAmazonS3 s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(_region));
+        using TransferUtility transferUtility = new TransferUtility(s3Client);
+        var fileTransferUtilityRequest = new TransferUtilityUploadRequest
         {
-            var fileTransferUtilityRequest = new TransferUtilityUploadRequest
-            {
-                BucketName = _bucket,
-                Key = "HypeFactor/LiveData.csv",
-                FilePath = fileName
-            };
-            await transferUtility.UploadAsync(fileTransferUtilityRequest);
-        }
+            BucketName = _bucket,
+            Key = "HypeFactor/LiveData.csv",
+            FilePath = fileName
+        };
+        await transferUtility.UploadAsync(fileTransferUtilityRequest);
     }
 }

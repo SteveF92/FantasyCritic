@@ -70,11 +70,9 @@ public static class Program
 
     private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
     {
-        using (var connection = new MySqlConnection(_productionReadOnlyConnectionString))
-        {
-            var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
-            return masterGameTagResults.ToList();
-        }
+        await using var connection = new MySqlConnection(_productionReadOnlyConnectionString);
+        var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
+        return masterGameTagResults.ToList();
     }
 
     private static AdminService GetAdminService()

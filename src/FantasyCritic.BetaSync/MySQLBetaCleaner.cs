@@ -36,22 +36,18 @@ public class MySQLBetaCleaner
         }
 
         var batches = updateStatements.Chunk(500).ToList();
-        using (var connection = new MySqlConnection(_connectionString))
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        for (var index = 0; index < batches.Count; index++)
         {
-            await connection.OpenAsync();
-            using (var transaction = await connection.BeginTransactionAsync())
-            {
-                for (var index = 0; index < batches.Count; index++)
-                {
-                    _logger.Info($"Running user clean batch {index + 1}/{batches.Count}");
-                    var batch = batches[index];
-                    var joinedSQL = string.Join('\n', batch);
-                    await connection.ExecuteAsync(joinedSQL, transaction: transaction);
-                }
-
-                await transaction.CommitAsync();
-            }
+            _logger.Info($"Running user clean batch {index + 1}/{batches.Count}");
+            var batch = batches[index];
+            var joinedSQL = string.Join('\n', batch);
+            await connection.ExecuteAsync(joinedSQL, transaction: transaction);
         }
+
+        await transaction.CommitAsync();
     }
 
     internal async Task UpdateMasterGames(IEnumerable<MasterGameTag> productionTags, IEnumerable<MasterGame> productionMasterGames,
@@ -82,25 +78,21 @@ public class MySQLBetaCleaner
             betaKeepGames
         };
 
-        using (var connection = new MySqlConnection(_connectionString))
-        {
-            await connection.OpenAsync();
-            using (var transaction = await connection.BeginTransactionAsync())
-            {
-                await connection.ExecuteAsync("SET foreign_key_checks = 0;", transaction: transaction);
-                await connection.ExecuteAsync("DELETE FROM tbl_mastergame_hastag WHERE MasterGameID NOT IN @betaKeepGames AND TagName NOT IN @betaKeepTags;", paramsObject, transaction);
-                await connection.ExecuteAsync("DELETE FROM tbl_mastergame_subgame WHERE MasterGameID NOT IN @betaKeepGames;", paramsObject, transaction);
-                await connection.ExecuteAsync("DELETE FROM tbl_mastergame WHERE MasterGameID NOT IN @betaKeepGames;", paramsObject, transaction);
-                await connection.ExecuteAsync("DELETE FROM tbl_mastergame_tag WHERE Name NOT IN @betaKeepTags;", paramsObject, transaction);
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync("SET foreign_key_checks = 0;", transaction: transaction);
+        await connection.ExecuteAsync("DELETE FROM tbl_mastergame_hastag WHERE MasterGameID NOT IN @betaKeepGames AND TagName NOT IN @betaKeepTags;", paramsObject, transaction);
+        await connection.ExecuteAsync("DELETE FROM tbl_mastergame_subgame WHERE MasterGameID NOT IN @betaKeepGames;", paramsObject, transaction);
+        await connection.ExecuteAsync("DELETE FROM tbl_mastergame WHERE MasterGameID NOT IN @betaKeepGames;", paramsObject, transaction);
+        await connection.ExecuteAsync("DELETE FROM tbl_mastergame_tag WHERE Name NOT IN @betaKeepTags;", paramsObject, transaction);
 
-                await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_tag", 500, transaction);
-                await connection.BulkInsertAsync(masterGameEntities, "tbl_mastergame", 500, transaction);
-                await connection.BulkInsertAsync(masterSubGameEntities, "tbl_mastergame_subgame", 500, transaction);
-                await connection.BulkInsertAsync(productionGamesHaveTagEntities, "tbl_mastergame_hastag", 500, transaction);
+        await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_tag", 500, transaction);
+        await connection.BulkInsertAsync(masterGameEntities, "tbl_mastergame", 500, transaction);
+        await connection.BulkInsertAsync(masterSubGameEntities, "tbl_mastergame_subgame", 500, transaction);
+        await connection.BulkInsertAsync(productionGamesHaveTagEntities, "tbl_mastergame_hastag", 500, transaction);
 
-                await connection.ExecuteAsync("SET foreign_key_checks = 1;", transaction: transaction);
-                await transaction.CommitAsync();
-            }
-        }
+        await connection.ExecuteAsync("SET foreign_key_checks = 1;", transaction: transaction);
+        await transaction.CommitAsync();
     }
 }
