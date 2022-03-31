@@ -52,7 +52,7 @@ internal class MasterGameRequestEntity
     //Response
     public bool Answered { get; set; }
     public Instant? ResponseTimestamp { get; set; }
-    public string? ResponseNote { get; set; } = null!;
+    public string? ResponseNote { get; set; }
     public Guid? MasterGameID { get; set; }
 
     public bool Hidden { get; set; }

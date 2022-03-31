@@ -38,7 +38,7 @@ internal class MasterGameChangeRequestEntity
     //Response
     public bool Answered { get; set; }
     public Instant? ResponseTimestamp { get; set; }
-    public string? ResponseNote { get; set; } = null!;
+    public string? ResponseNote { get; set; }
 
     public bool Hidden { get; set; }
 

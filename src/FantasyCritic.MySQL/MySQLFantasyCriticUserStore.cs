@@ -12,7 +12,7 @@ public class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly string _connectionString;
     private readonly IClock _clock;
-    private List<FantasyCriticUser>? _userCache = null;
+    private List<FantasyCriticUser>? _userCache;
 
     public MySQLFantasyCriticUserStore(string connectionString, IClock clock)
     {
