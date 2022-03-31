@@ -257,6 +257,11 @@ public class Startup
             })
             .AddIdentityServerJwt();
 
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.Events = SPACookieOptions.GetEvents();
+        });
+
         services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo(@"C:\FantasyCritic\Keys\"));
 
