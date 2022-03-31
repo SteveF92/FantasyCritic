@@ -96,7 +96,7 @@ public interface IFantasyCriticRepo
     Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague);
     Task StartDraft(LeagueYear leagueYear);
     Task CompleteDraft(LeagueYear leagueYear);
-    Task ResetDraft(LeagueYear leagueYear);
+    Task ResetDraft(LeagueYear leagueYear, Instant timestamp);
 
     Task SetDraftPause(LeagueYear leagueYear, bool pause);
     Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions);

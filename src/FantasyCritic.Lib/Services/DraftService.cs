@@ -100,7 +100,7 @@ public class DraftService
         await _fantasyCriticRepo.StartDraft(leagueYear);
         var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
-        var draftComplete = await CompleteDraft(leagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+        var draftComplete = await CompleteDraft(updatedLeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
         return draftComplete;
     }
 
@@ -231,10 +231,9 @@ public class DraftService
 
     private async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
     {
-        await Task.Delay(1000);
         var today = _clock.GetToday();
         var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
-        var nextPublisher = GetNextDraftPublisher(leagueYear);
+        var nextPublisher = GetNextDraftPublisher(updatedLeagueYear);
         if (nextPublisher is null)
         {
             return (standardGamesAdded, counterPicksAdded);
@@ -244,8 +243,8 @@ public class DraftService
             return (standardGamesAdded, counterPicksAdded);
         }
 
-        var draftPhase = GetDraftPhase(leagueYear);
-        var draftStatus = GetDraftStatus(draftPhase, leagueYear);
+        var draftPhase = GetDraftPhase(updatedLeagueYear);
+        var draftStatus = GetDraftStatus(draftPhase, updatedLeagueYear);
         if (draftPhase.Equals(DraftPhase.Complete))
         {
             return (standardGamesAdded, counterPicksAdded);
@@ -255,12 +254,12 @@ public class DraftService
             var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher);
             var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher);
             var availableGamesEligibleInRemainingSlots = new List<PossibleMasterGameYear>();
-            var openSlots = nextPublisher.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame is null).ToList();
+            var openSlots = nextPublisher.GetPublisherSlots(updatedLeagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame is null).ToList();
             foreach (var availableGame in availableGames)
             {
                 foreach (var slot in openSlots)
                 {
-                    var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(availableGame.MasterGame.MasterGame, today);
+                    var eligibilityFactors = updatedLeagueYear.GetEligibilityFactorsForMasterGame(availableGame.MasterGame.MasterGame, today);
                     var claimErrors = SlotEligibilityService.GetClaimErrorsForSlot(slot, eligibilityFactors);
                     if (!claimErrors.Any())
                     {
@@ -311,7 +310,7 @@ public class DraftService
             return (standardGamesAdded, counterPicksAdded);
         }
 
-        return await AutoDraftForLeague(leagueYear, standardGamesAdded, counterPicksAdded);
+        return await AutoDraftForLeague(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
     }
 
     public DraftPhase GetDraftPhase(LeagueYear leagueYear)
@@ -407,6 +406,6 @@ public class DraftService
 
     public Task ResetDraft(LeagueYear leagueYear)
     {
-        return _fantasyCriticRepo.ResetDraft(leagueYear);
+        return _fantasyCriticRepo.ResetDraft(leagueYear, _clock.GetCurrentInstant());
     }
 }
