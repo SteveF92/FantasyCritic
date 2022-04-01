@@ -195,7 +195,7 @@ export default {
     },
     async parseEstimatedReleaseDate() {
       try {
-        if (!this.estimatedReleaseDate) {
+        if (this.releaseDate || !this.estimatedReleaseDate) {
           return;
         }
         const response = await axios.get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.estimatedReleaseDate);

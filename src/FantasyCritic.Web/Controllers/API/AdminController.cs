@@ -386,9 +386,9 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpGet]
-    public ActionResult<DateParseResponse> ParseEstimatedDate(DateParseRequest request)
+    public ActionResult<DateParseResponse> ParseEstimatedDate(string estimatedReleaseDate)
     {
-        var dates = TimeFunctions.ParseEstimatedReleaseDate(request.EstimatedReleaseDate, _clock);
+        var dates = TimeFunctions.ParseEstimatedReleaseDate(estimatedReleaseDate, _clock);
         var response = new DateParseResponse(dates.minimumReleaseDate, dates.maximumReleaseDate);
         return response;
     }

@@ -193,6 +193,9 @@ export default {
       }
     },
     async parseEstimatedReleaseDate() {
+      if (this.releaseDate || !this.estimatedReleaseDate) {
+        return;
+      }
       try {
         const response = await axios.get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate);
         this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
