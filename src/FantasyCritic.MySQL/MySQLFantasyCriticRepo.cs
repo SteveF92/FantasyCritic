@@ -2554,32 +2554,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
     {
         int tempPosition = bidPriorities.Select(x => x.Value).Max() + 1;
+        var tempEntities = bidPriorities.Select(x => new PickupBidPriorityUpdateEntity(x.Key.BidID, tempPosition++)).ToList();
+        var finalEntities = bidPriorities.Select(x => new PickupBidPriorityUpdateEntity(x.Key.BidID, x.Value)).ToList();
+        string sql = "update tbl_league_pickupbid set Priority = @Priority where BidID = @BidID";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        foreach (var bidPriority in bidPriorities)
-        {
-            await connection.ExecuteAsync(
-                "update tbl_league_pickupbid set Priority = @bidPriority where BidID = @bidID",
-                new
-                {
-                    bidID = bidPriority.Key.BidID,
-                    bidPriority = tempPosition
-                }, transaction);
-            tempPosition++;
-        }
-
-        foreach (var bidPriority in bidPriorities)
-        {
-            await connection.ExecuteAsync(
-                "update tbl_league_pickupbid set Priority = @bidPriority where BidID = @bidID",
-                new
-                {
-                    bidID = bidPriority.Key.BidID,
-                    bidPriority = bidPriority.Value
-                }, transaction);
-        }
-
+        await connection.ExecuteAsync(sql, tempEntities, transaction);
+        await connection.ExecuteAsync(sql, finalEntities, transaction);
         await transaction.CommitAsync();
     }
 

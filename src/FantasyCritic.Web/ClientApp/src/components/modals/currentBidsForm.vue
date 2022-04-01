@@ -127,7 +127,7 @@ export default {
     this.clearData();
   },
   methods: {
-    setBidPriorityOrder() {
+    async setBidPriorityOrder() {
       let desiredBidPriorityIDs = this.desiredBidPriorities.map(function (v) {
         return v.bidID;
       });
@@ -135,13 +135,9 @@ export default {
         publisherID: this.userPublisher.publisherID,
         BidPriorities: desiredBidPriorityIDs
       };
-      axios
-        .post('/api/league/SetBidPriorities', model)
-        .then(() => {
-          this.$refs.currentBidsFormRef.hide();
-          this.notifyAction('Bid priority has been changed.');
-        })
-        .catch(() => {});
+      await axios.post('/api/league/SetBidPriorities', model);
+      this.notifyAction('Bid priority has been changed.');
+      this.settingPriority = false;
     },
     startEditingBid(bid) {
       this.bidBeingEdited = bid;
