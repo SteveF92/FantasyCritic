@@ -1,19 +1,15 @@
 <template>
   <div class="slot-area" :style="slotColor">
     <div class="game-text">{{ slotLabel }}</div>
-    <div v-if="game" class="game-image-area">
-      <img v-if="masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
-      <font-awesome-layers v-else class="fa-8x no-game-image">
+    <div class="game-image-area">
+      <img v-if="game && masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+      <div v-if="game && !(masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName)" class="game-text game-name">{{ gameName }}</div>
+      <font-awesome-layers v-if="!game" class="fa-8x no-game-image">
         <font-awesome-icon :icon="['far', 'square']" />
-        <font-awesome-layers-text transform="shrink-14" value="No image found" />
+        <font-awesome-layers-text class="game-text empty-slot-text" value="Slot Empty" />
       </font-awesome-layers>
     </div>
-    <div v-else class="empty-slot-area">
-      <font-awesome-layers class="fa-8x no-game-image">
-        <font-awesome-icon :icon="['far', 'square']" />
-        <font-awesome-layers-text transform="shrink-14" value="Slot Empty" />
-      </font-awesome-layers>
-    </div>
+
     <div class="bottom-text-area">
       <div v-if="game" class="game-text">{{ dateText }}</div>
       <div v-if="game" class="game-text">{{ scoreText }}</div>
@@ -41,6 +37,13 @@ export default {
         return;
       }
       return this.game.masterGame;
+    },
+    gameName() {
+      if (this.masterGame) {
+        return this.masterGame.gameName;
+      }
+
+      return this.game.gameName;
     },
     ggCoverArtLink() {
       if (this.masterGame.ggCoverArtFileName) {
@@ -153,26 +156,27 @@ export default {
   text-align: center;
 }
 
-.regular-slot {
-  background-color: #cccccc;
+.game-name {
+  font-size: 30px;
 }
 
-.counter-pick-slot {
-  background-color: #aa1e1e;
+.game-image-area {
+  width: 165px;
+  height: 248px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.empty-slot-area {
+.empty-slot-text {
+  font-size: 25px;
 }
 
 .game-image {
   display: block;
   margin: auto;
   border-radius: 5%;
-}
-
-.no-game-image {
-  width: 165px;
-  height: 248px;
 }
 
 .bottom-text-area {
