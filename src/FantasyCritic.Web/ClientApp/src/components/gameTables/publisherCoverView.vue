@@ -31,7 +31,5 @@ export default {
   gap: 10px;
 }
 .cover-art-child {
-  width: 185px;
-  height: 306px;
 }
 </style>

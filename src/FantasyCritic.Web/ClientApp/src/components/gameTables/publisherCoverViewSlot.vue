@@ -14,7 +14,10 @@
         <font-awesome-layers-text transform="shrink-14" value="Slot Empty" />
       </font-awesome-layers>
     </div>
-    <div v-if="game" class="game-text">{{ gameText }}</div>
+    <div class="bottom-text-area">
+      <div v-if="game" class="game-text">{{ dateText }}</div>
+      <div v-if="game" class="game-text">{{ scoreText }}</div>
+    </div>
   </div>
 </template>
 <script>
@@ -45,15 +48,15 @@ export default {
       }
       return null;
     },
-    gameText() {
+    dateText() {
+      return GlobalFunctions.formatPublisherGameReleaseDate(this.game, true);
+    },
+    scoreText() {
       if (this.game.criticScore) {
         return `Score: ${GlobalFunctions.roundNumber(this.game.criticScore, 2)}`;
       }
-      if (this.game.released) {
-        return 'Waiting on reviews...';
-      }
 
-      return GlobalFunctions.formatPublisherGameReleaseDate(this.game, true);
+      return `Projection: ~${GlobalFunctions.roundNumber(this.game.masterGame.projectedFantasyPoints, 2)}`;
     },
     slotLabel() {
       if (this.gameSlot.counterPick) {
@@ -140,7 +143,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 300px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 .game-text {
@@ -169,5 +173,9 @@ export default {
 .no-game-image {
   width: 165px;
   height: 248px;
+}
+
+.bottom-text-area {
+  height: 50px;
 }
 </style>
