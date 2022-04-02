@@ -53,19 +53,50 @@
         </template>
       </div>
 
-      <playerGameTable></playerGameTable>
+      <div class="publisher-view-options">
+        <span class="cover-art-mode-options">
+          <label>Cover Art Mode</label>
+          <toggle-button v-model="editableCoverArtMode" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
+        </span>
+        <span class="table-options">
+          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
+          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
+          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
+          <template v-if="!moveMode && isPlusUser">
+            <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="editableIncludeRemovedInSorted">
+              <span class="checkbox-label">Include Dropped Games</span>
+            </b-form-checkbox>
+            <toggle-button
+              v-model="editableSortOrderMode"
+              class="toggle"
+              :sync="true"
+              :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }"
+              :css-colors="true"
+              :font-size="13"
+              :width="107"
+              :height="28" />
+          </template>
+        </span>
+      </div>
+
+      <playerGameTable v-show="!coverArtMode"></playerGameTable>
+      <publisherCoverView v-show="coverArtMode"></publisherCoverView>
     </div>
   </div>
 </template>
 
 <script>
 import PlayerGameTable from '@/components/gameTables/playerGameTable';
+import PublisherCoverView from '@/components/gameTables/publisherCoverView';
 import GlobalFunctions from '@/globalFunctions';
 import PublisherMixin from '@/mixins/publisherMixin';
+import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   components: {
-    PlayerGameTable
+    PlayerGameTable,
+    ToggleButton,
+    PublisherCoverView
   },
   mixins: [PublisherMixin],
   props: {
@@ -85,6 +116,30 @@ export default {
     },
     hasIneligibleGame() {
       return _.some(this.publisher.gameSlots, (x) => !x.gameMeetsSlotCriteria);
+    },
+    editableSortOrderMode: {
+      get() {
+        return this.sortOrderMode;
+      },
+      set(value) {
+        this.$store.commit('setSortOrderMode', value);
+      }
+    },
+    editableCoverArtMode: {
+      get() {
+        return this.coverArtMode;
+      },
+      set(value) {
+        this.$store.commit('setCoverArtMode', value);
+      }
+    },
+    editableIncludeRemovedInSorted: {
+      get() {
+        return this.includeRemovedInSorted;
+      },
+      set(value) {
+        this.$store.commit('setIncludeRemovedInSorted', value);
+      }
     }
   },
   watch: {
@@ -116,6 +171,17 @@ export default {
       }
 
       return notPublisherText;
+    },
+    enterMoveMode() {
+      this.$store.commit('enterMoveMode');
+    },
+    cancelMoveMode() {
+      this.$store.commit('cancelMoveMode');
+    },
+    confirmPositions() {
+      this.$store.dispatch('confirmPositions').then(() => {
+        this.$emit('gamesMoved');
+      });
     }
   }
 };
@@ -134,5 +200,37 @@ export default {
 
 .publisher-icon {
   font-size: 100px;
+}
+
+.publisher-view-options {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cover-art-mode-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+
+.cover-art-mode-options label {
+  margin: 0;
+}
+
+.table-options {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 5px;
+}
+
+.toggle {
+  margin: 0;
+}
+
+.view-mode-label {
+  margin: 0;
 }
 </style>

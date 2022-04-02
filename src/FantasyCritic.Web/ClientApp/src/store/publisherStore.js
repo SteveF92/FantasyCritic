@@ -9,7 +9,10 @@ export default {
     desiredPositions: null,
     moveMode: false,
     heldSlot: null,
-    moveGameError: ''
+    moveGameError: '',
+    sortOrderMode: false,
+    coverArtMode: false,
+    includeRemovedInSorted: false
   },
   getters: {
     publisher: (state) => state.publisher,
@@ -18,7 +21,10 @@ export default {
     moveMode: (state) => state.moveMode,
     desiredPositions: (state) => state.desiredPositions,
     holdingGame: (state) => !!state.heldSlot,
-    moveGameError: (state) => state.moveGameError
+    moveGameError: (state) => state.moveGameError,
+    sortOrderMode: (state) => state.sortOrderMode,
+    coverArtMode: (state) => state.coverArtMode,
+    includeRemovedInSorted: (state) => state.includeRemovedInSorted
   },
   actions: {
     async initializePublisherPage(context, publisherID) {
@@ -40,26 +46,29 @@ export default {
       context.commit('moveGameInternal', moveIntoSlot);
       context.commit('setDesiredPositions');
     },
-    confirmPositions(context) {
-      return new Promise(function (resolve, reject) {
-        let request = {
-          publisherID: context.getters.publisher.publisherID,
-          slotStates: context.getters.desiredPositions
-        };
-        axios
-          .post('/api/League/ReorderPublisherGames', request)
-          .then((response) => {
-            if (response.status === 200) {
-              context.commit('completeMoveMode');
-              resolve();
-            }
-          })
-          .catch((error) => {
-            context.commit('setMoveError', error.response.data);
-            context.commit('cancelMoveMode');
-            reject();
-          });
-      });
+    async confirmPositions(context) {
+      const existingPublisherObject = context.getters.publisher;
+      let request = {
+        publisherID: existingPublisherObject.publisherID,
+        slotStates: context.getters.desiredPositions
+      };
+
+      try {
+        await axios.post('/api/League/ReorderPublisherGames', request);
+        context.commit('completeMoveMode');
+
+        const publisherResponse = await axios.get('/api/League/GetPublisher/' + existingPublisherObject.publisherID);
+        const publisher = publisherResponse.data;
+        const leagueYearResponse = await axios.get('/api/League/GetLeagueYear?leagueID=' + existingPublisherObject.leagueID + '&year=' + existingPublisherObject.year);
+        const leagueYear = leagueYearResponse.data;
+
+        const initializeParams = { publisher, leagueYear };
+        context.commit('initializeInternal', initializeParams);
+        context.commit('setDesiredPositions');
+      } catch (error) {
+        context.commit('setMoveError', error.response.data);
+        context.commit('cancelMoveMode');
+      }
     }
   },
   mutations: {
@@ -98,7 +107,6 @@ export default {
       let tempSlot = _.cloneDeep(moveIntoSlot);
       moveIntoSlot.publisherGame = _.cloneDeep(state.heldSlot.publisherGame);
       state.heldSlot.publisherGame = _.cloneDeep(tempSlot.publisherGame);
-      state.heldSlot.gameMeetsSlotCriteria = true;
       state.heldSlot = null;
     },
     setDesiredPositions(state) {
@@ -114,6 +122,15 @@ export default {
     },
     setMoveError(state, error) {
       state.moveGameError = error;
+    },
+    setSortOrderMode(state, sortOrderMode) {
+      state.sortOrderMode = sortOrderMode;
+    },
+    setCoverArtMode(state, coverArtMode) {
+      state.coverArtMode = coverArtMode;
+    },
+    setIncludeRemovedInSorted(state, includeRemovedInSorted) {
+      state.includeRemovedInSorted = includeRemovedInSorted;
     }
   }
 };

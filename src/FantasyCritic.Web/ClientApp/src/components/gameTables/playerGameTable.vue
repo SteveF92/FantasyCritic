@@ -1,17 +1,5 @@
 <template>
   <div>
-    <div class="table-options">
-      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
-      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
-      <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
-      <template v-if="!moveMode && isPlusUser">
-        <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="includeRemovedInSorted">
-          <span class="checkbox-label">Include Dropped Games</span>
-        </b-form-checkbox>
-        <toggle-button v-model="sortOrderMode" class="toggle" :sync="true" :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }" :css-colors="true" :font-size="13" :width="107" :height="28" />
-      </template>
-    </div>
-
     <b-table
       :items="tableRows"
       :fields="tableFields"
@@ -87,22 +75,17 @@
 </template>
 
 <script>
-import { ToggleButton } from 'vue-js-toggle-button';
-
 import GlobalFunctions from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn';
 import PublisherMixin from '@/mixins/publisherMixin';
 
 export default {
   components: {
-    ToggleButton,
     GameNameColumn
   },
   mixins: [PublisherMixin],
   data() {
     return {
-      sortOrderMode: false,
-      includeRemovedInSorted: false,
       sortBy: 'overallSlotNumber',
       sortDesc: false
     };
@@ -110,7 +93,7 @@ export default {
   computed: {
     tableItems() {
       if (!this.sortOrderMode) {
-        return this.$store.getters.gameSlots;
+        return this.gameSlots;
       }
       let slotsWithGames = _.reject(this.publisher.gameSlots, ['publisherGame', null]);
       if (this.includeRemovedInSorted) {
@@ -131,8 +114,10 @@ export default {
     tableRows() {
       let rows = this.tableItems;
       for (let i = 0; i < rows.length; ++i) {
-        if (!rows[i].gameMeetsSlotCriteria) {
+        if (rows[i].publisherGame && !rows[i].gameMeetsSlotCriteria) {
           rows[i]._rowVariant = 'warning';
+        } else {
+          rows[i]._rowVariant = null;
         }
       }
       return rows;
@@ -146,9 +131,6 @@ export default {
         { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column', 'projected-text'] },
         { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] }
       ];
-    },
-    hasFormerGames() {
-      return this.publisher && this.publisher.formerGames.length > 0;
     },
     projectedPointsText() {
       return {
@@ -175,17 +157,6 @@ export default {
     }
   },
   methods: {
-    enterMoveMode() {
-      this.$store.commit('enterMoveMode');
-    },
-    cancelMoveMode() {
-      this.$store.commit('cancelMoveMode');
-    },
-    confirmPositions() {
-      this.$store.dispatch('confirmPositions').then(() => {
-        this.$emit('gamesMoved');
-      });
-    },
     getReleaseDate(publisherGame) {
       return GlobalFunctions.formatPublisherGameReleaseDate(publisherGame);
     },
@@ -211,22 +182,6 @@ export default {
 };
 </script>
 <style scoped>
-.table-options {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 5px;
-}
-
-.toggle {
-  margin: 0;
-}
-
-.view-mode-label {
-  margin: 0;
-}
-
 .counter-pick-badge {
   background-color: #aa1e1e;
   color: white;
