@@ -5,7 +5,7 @@
         <div class="col-xl-6 col-lg-12">
           <div class="game-image-area">
             <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
-              <img v-show="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+              <img v-if="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
               <a :href="ggLink" target="_blank">
                 <strong>
                   Image Provided by GG|
@@ -14,7 +14,7 @@
               </a>
             </div>
             <div v-else class="no-game-image-area">
-              <font-awesome-layers v-show="!masterGame.ggCoverArtFileName" class="fa-10x no-game-image">
+              <font-awesome-layers v-if="!masterGame.ggCoverArtFileName" class="fa-10x no-game-image">
                 <font-awesome-icon :icon="['far', 'square']" />
                 <font-awesome-layers-text transform="shrink-14" value="No image found" />
               </font-awesome-layers>

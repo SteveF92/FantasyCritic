@@ -1,20 +1,19 @@
 <template>
   <div>
-    <ul>
-      <li v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber">
-        <span v-if="gameSlot.publisherGame">
-          {{ gameSlot.publisherGame.gameName }}
-        </span>
-        <span v-else>Empty</span>
-      </li>
-    </ul>
+    <div v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber">
+      <publisherCoverViewSlot :game-slot="gameSlot"></publisherCoverViewSlot>
+    </div>
   </div>
 </template>
 
 <script>
 import PublisherMixin from '@/mixins/publisherMixin';
+import PublisherCoverViewSlot from '@/components/gameTables/publisherCoverViewSlot';
 
 export default {
+  components: {
+    PublisherCoverViewSlot
+  },
   mixins: [PublisherMixin]
 };
 </script>
