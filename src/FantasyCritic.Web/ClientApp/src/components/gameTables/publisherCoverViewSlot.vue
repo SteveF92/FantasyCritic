@@ -1,6 +1,6 @@
 <template>
   <div class="slot-area" :style="slotColor">
-    <label class="slot-label">{{ slotLabel }}</label>
+    <div class="game-text">{{ slotLabel }}</div>
     <div v-if="game" class="game-image-area">
       <img v-if="masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
       <font-awesome-layers v-else class="fa-8x no-game-image">
@@ -14,10 +14,12 @@
         <font-awesome-layers-text transform="shrink-14" value="Slot Empty" />
       </font-awesome-layers>
     </div>
+    <div v-if="game" class="game-text">{{ gameText }}</div>
   </div>
 </template>
 <script>
 import PublisherMixin from '@/mixins/publisherMixin';
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   mixins: [PublisherMixin],
@@ -42,6 +44,16 @@ export default {
         return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=165&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
+    },
+    gameText() {
+      if (this.game.criticScore) {
+        return `Score: ${GlobalFunctions.roundNumber(this.game.criticScore, 2)}`;
+      }
+      if (this.game.released) {
+        return 'Waiting on reviews...';
+      }
+
+      return GlobalFunctions.formatPublisherGameReleaseDate(this.game, true);
     },
     slotLabel() {
       if (this.gameSlot.counterPick) {
@@ -128,13 +140,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  padding-top: 0;
+  height: 300px;
 }
 
-.slot-label {
+.game-text {
   text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
-  margin: 0;
+  font-weight: bolder;
+  text-align: center;
 }
 
 .regular-slot {

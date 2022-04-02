@@ -32,5 +32,6 @@ export default {
 }
 .cover-art-child {
   width: 185px;
+  height: 306px;
 }
 </style>

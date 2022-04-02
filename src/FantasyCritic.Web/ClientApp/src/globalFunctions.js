@@ -23,16 +23,20 @@ export default {
     }
     return i + 'th';
   },
-  formatPublisherGameReleaseDate(publisherGame) {
+  formatPublisherGameReleaseDate(publisherGame, hideEstimated) {
     if (!publisherGame.masterGame) {
       return 'Unknown';
     }
 
-    return this.formatMasterGameReleaseDate(publisherGame.masterGame);
+    return this.formatMasterGameReleaseDate(publisherGame.masterGame, hideEstimated);
   },
-  formatMasterGameReleaseDate(masterGame) {
+  formatMasterGameReleaseDate(masterGame, hideEstimated) {
     if (masterGame.releaseDate) {
       return moment(masterGame.releaseDate).format('MMMM Do, YYYY');
+    }
+
+    if (hideEstimated) {
+      return masterGame.estimatedReleaseDate;
     }
 
     return masterGame.estimatedReleaseDate + ' (Estimated)';
@@ -64,5 +68,20 @@ export default {
     const fullString = date.toISOString();
     const dateString = fullString.substring(0, 10);
     return dateString;
+  },
+  roundNumber(value, decimals) {
+    if (value === 0) {
+      return 0;
+    }
+    if (!value) {
+      return '--';
+    }
+
+    if (!decimals) {
+      decimals = 0;
+    }
+
+    value = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    return value;
   }
 };
