@@ -1,26 +1,43 @@
 <template>
-  <div class="slot-area" :style="slotColor">
-    <div class="game-text">{{ slotLabel }}</div>
-    <div class="game-image-area">
-      <img v-if="game && masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
-      <div v-if="game && !(masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName)" class="game-text game-name">{{ gameName }}</div>
-      <font-awesome-layers v-if="!game" class="fa-8x no-game-image">
-        <font-awesome-icon :icon="['far', 'square']" />
-        <font-awesome-layers-text class="game-text empty-slot-text" value="Slot Empty" />
-      </font-awesome-layers>
+  <div>
+    <div class="slot-area" :style="slotColor">
+      <div class="game-text">{{ slotLabel }}</div>
+      <div class="game-image-area">
+        <a :id="popoverID" href="javascript:;" class="no-link-style">
+          <img v-if="game && masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+          <div v-if="game && !(masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName)" class="game-text game-name">
+            {{ gameName }}
+          </div>
+        </a>
+
+        <font-awesome-layers v-if="!game" class="fa-8x no-game-image">
+          <font-awesome-icon :icon="['far', 'square']" />
+          <font-awesome-layers-text class="game-text empty-slot-text" value="Slot Empty" />
+        </font-awesome-layers>
+      </div>
+
+      <div class="bottom-text-area">
+        <div v-if="game" class="game-text">{{ dateText }}</div>
+        <div v-if="game" class="game-text">{{ scoreText }}</div>
+      </div>
     </div>
 
-    <div class="bottom-text-area">
-      <div v-if="game" class="game-text">{{ dateText }}</div>
-      <div v-if="game" class="game-text">{{ scoreText }}</div>
-    </div>
+    <b-popover :target="popoverID" triggers="click blur" custom-class="master-game-popover">
+      <div class="mg-popover">
+        <masterGameSummary :master-game="masterGame" hide-image></masterGameSummary>
+      </div>
+    </b-popover>
   </div>
 </template>
 <script>
 import PublisherMixin from '@/mixins/publisherMixin';
+import MasterGameSummary from '@/components/masterGameSummary';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
+  components: {
+    MasterGameSummary
+  },
   mixins: [PublisherMixin],
   props: {
     gameSlot: { type: Object, required: true }
@@ -50,6 +67,9 @@ export default {
         return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=165&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
+    },
+    popoverID() {
+      return `mg-popover-${this._uid}`;
     },
     dateText() {
       return GlobalFunctions.formatPublisherGameReleaseDate(this.game, true);
@@ -157,9 +177,8 @@ export default {
 }
 
 .game-name {
-  font-size: 30px;
+  font-size: 25px;
 }
-
 .game-image-area {
   width: 165px;
   height: 248px;
@@ -181,5 +200,10 @@ export default {
 
 .bottom-text-area {
   height: 50px;
+}
+
+.no-link-style {
+  color: white;
+  text-decoration: none;
 }
 </style>

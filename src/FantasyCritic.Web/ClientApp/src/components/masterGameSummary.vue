@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="masterGame" class="summary">
-      <div class="game-image-area">
+      <div v-if="!hideImage" class="game-image-area">
         <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
           <img v-if="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
           <a :href="ggLink" target="_blank">
@@ -94,7 +94,8 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    masterGame: { type: Object, required: true }
+    masterGame: { type: Object, required: true },
+    hideImage: { type: Boolean }
   },
   data() {
     return {
