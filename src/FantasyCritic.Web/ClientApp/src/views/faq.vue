@@ -560,16 +560,13 @@
       <collapseCard>
         <div slot="header">How do projected points work?</div>
         <div slot="body">
-          The "simple" projected points are just the average number of points a player receives for a game. So, the average across the whole site. The "Advanced Projections" go much further, and
-          attempt to project what score an individual game will get using a linear regression algorithm based on popularity of games on the site versus the score the game ultimately gets.
+          The projected points system uses an algorithm to predict what score an individual game will get using a linear regression algorithm based on popularity of games on the site versus the score
+          the game ultimately gets. Additionally, any empty slots will be given an estimated point value as well, as it is assumed that you will eventually fill those slots.
         </div>
       </collapseCard>
       <collapseCard>
         <div slot="header">What's the "Pre-Release projected points"?</div>
-        <div slot="body">
-          This is the last "projected points" values before a game was reviewed. The idea is to compare what a game was projected to get vs. what it actually got. I'm still testing this feature, and
-          any games that were released before 2019-10-25 don't show up accurately for this field due to the way I was handling projections before that date.
-        </div>
+        <div slot="body">This is the last "projected points" values before a game was reviewed. The idea is to compare what a game was projected to get vs. what it actually got.</div>
       </collapseCard>
       <br />
 
