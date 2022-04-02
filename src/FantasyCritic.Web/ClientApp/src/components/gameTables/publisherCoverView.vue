@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber">
+  <div class="cover-art-container">
+    <div v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber" class="cover-art-child">
       <publisherCoverViewSlot :game-slot="gameSlot"></publisherCoverViewSlot>
     </div>
   </div>
@@ -17,3 +17,15 @@ export default {
   mixins: [PublisherMixin]
 };
 </script>
+<style scoped>
+.cover-art-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cover-art-child {
+  flex: 1 0 17%;
+  background-color: blue;
+  padding: 10px;
+}
+</style>
