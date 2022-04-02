@@ -288,6 +288,23 @@ public class AdminController : FantasyCriticController
         return Ok(fullSet);
     }
 
+    public async Task<FileStreamResult> ComparableActionProcessingDryRun()
+    {
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
+
+        IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticService.GetLeagueYears(currentYear.Year);
+
+        var nextBidTime = _clock.GetNextBidTime();
+        var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears);
+        var viewModels = actionResults.Results.LeagueActions.Select(x => new ComparableLeagueActionViewModel(x))
+            .OrderBy(x => x.LeagueID).ThenBy(x => x.PublisherID).ToList();
+
+        var csvStream = CSVUtilities.GetCSVStream(viewModels);
+        return new FileStreamResult(csvStream, "text/csv") { FileDownloadName = $"ComparableActions_{nextBidTime.ToEasternDate().ToISOString()}.csv" };
+    }
+
     [HttpPost]
     public async Task<IActionResult> ProcessActions()
     {

@@ -24,6 +24,7 @@
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="6.0.5" />
     <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="6.0.5" />
     <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="6.0.5" />
+    <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="Duende.IdentityServer" Version="6.0.4" />
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.3" />
