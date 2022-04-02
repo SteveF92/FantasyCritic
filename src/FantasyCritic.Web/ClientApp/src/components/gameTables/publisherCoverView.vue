@@ -1,5 +1,5 @@
 <template>
-  <div class="cover-art-container">
+  <div v-if="tagsLoaded" class="cover-art-container">
     <div v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber" class="cover-art-child">
       <publisherCoverViewSlot :game-slot="gameSlot"></publisherCoverViewSlot>
     </div>
@@ -14,18 +14,23 @@ export default {
   components: {
     PublisherCoverViewSlot
   },
-  mixins: [PublisherMixin]
+  mixins: [PublisherMixin],
+  computed: {
+    tagsLoaded() {
+      return !!this.$store.getters.allTags;
+    }
+  }
 };
 </script>
 <style scoped>
 .cover-art-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1500px;
   gap: 10px;
 }
 .cover-art-child {
-  flex: 1 0 17%;
-  background-color: blue;
-  padding: 10px;
+  width: 185px;
 }
 </style>

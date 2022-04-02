@@ -58,7 +58,7 @@
           <label>Cover Art Mode</label>
           <toggle-button v-model="editableCoverArtMode" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
         </span>
-        <span class="table-options">
+        <span v-show="!coverArtMode" class="table-options">
           <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
           <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
           <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
@@ -80,7 +80,9 @@
       </div>
 
       <playerGameTable v-show="!coverArtMode"></playerGameTable>
-      <publisherCoverView v-show="coverArtMode"></publisherCoverView>
+      <div class="cover-view">
+        <publisherCoverView v-show="coverArtMode"></publisherCoverView>
+      </div>
     </div>
   </div>
 </template>
@@ -205,6 +207,7 @@ export default {
 .publisher-view-options {
   display: flex;
   justify-content: space-between;
+  height: 50px;
 }
 
 .cover-art-mode-options {
@@ -232,5 +235,11 @@ export default {
 
 .view-mode-label {
   margin: 0;
+}
+
+.cover-view {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
 }
 </style>
