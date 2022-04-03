@@ -193,7 +193,7 @@ export default {
       }
     },
     async parseEstimatedReleaseDate() {
-      if (this.releaseDate || !this.estimatedReleaseDate) {
+      if (this.masterGame.releaseDate || !this.masterGame.estimatedReleaseDate) {
         return;
       }
       try {
