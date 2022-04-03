@@ -1,17 +1,21 @@
 <template>
   <div v-if="publisher && leagueYear">
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="publisher-info">
-        <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
-          {{ publisher.publisherIcon }}
-        </div>
+      <div class="cover-art-mode-options">
+        <label>Cover Art Mode</label>
+        <toggle-button v-model="editableCoverArtMode" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
+      </div>
+      <div class="publisher-header">
         <div class="publisher-details">
-          <div class="publisher-name">
-            <h1>{{ publisher.publisherName }}</h1>
+          <div class="publisher-name-and-icon">
+            <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
+              {{ publisher.publisherIcon }}
+            </div>
+            <div class="publisher-name">
+              <h1>{{ publisher.publisherName }}</h1>
+            </div>
           </div>
-
           <h4>Player Name: {{ publisher.playerName }}</h4>
-
           <h4>
             <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year } }">League: {{ publisher.leagueName }}</router-link>
           </h4>
@@ -53,30 +57,24 @@
         </template>
       </div>
 
-      <div class="publisher-view-options">
-        <span class="cover-art-mode-options">
-          <label>Cover Art Mode</label>
-          <toggle-button v-model="editableCoverArtMode" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
-        </span>
-        <span v-show="!coverArtMode" class="table-options">
-          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
-          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
-          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
-          <template v-if="!moveMode && isPlusUser">
-            <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="editableIncludeRemovedInSorted">
-              <span class="checkbox-label">Include Dropped Games</span>
-            </b-form-checkbox>
-            <toggle-button
-              v-model="editableSortOrderMode"
-              class="toggle"
-              :sync="true"
-              :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }"
-              :css-colors="true"
-              :font-size="13"
-              :width="107"
-              :height="28" />
-          </template>
-        </span>
+      <div v-show="!coverArtMode" class="table-options">
+        <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
+        <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
+        <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
+        <template v-if="!moveMode && isPlusUser">
+          <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="editableIncludeRemovedInSorted">
+            <span class="checkbox-label">Include Dropped Games</span>
+          </b-form-checkbox>
+          <toggle-button
+            v-model="editableSortOrderMode"
+            class="toggle"
+            :sync="true"
+            :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }"
+            :css-colors="true"
+            :font-size="13"
+            :width="107"
+            :height="28" />
+        </template>
       </div>
 
       <playerGameTable v-show="!coverArtMode"></playerGameTable>
@@ -189,8 +187,9 @@ export default {
 };
 </script>
 <style scoped>
-.publisher-info {
+.publisher-header {
   margin-top: 10px;
+  margin-bottom: 10px;
   display: flex;
 }
 
@@ -198,6 +197,11 @@ export default {
   background: #222222;
   border-radius: 5px;
   padding: 10px;
+}
+
+.publisher-name-and-icon {
+  display: flex;
+  align-items: center;
 }
 
 .publisher-name {
@@ -217,8 +221,9 @@ export default {
 }
 
 .cover-art-mode-options {
+  margin-top: 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
   gap: 5px;
 }
@@ -229,7 +234,7 @@ export default {
 
 .table-options {
   display: flex;
-  justify-content: flex-end;
+  justify-content: end;
   align-items: center;
   margin-bottom: 10px;
   gap: 5px;
