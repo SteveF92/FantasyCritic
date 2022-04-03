@@ -1,7 +1,15 @@
 <template>
-  <div v-if="tagsLoaded" class="cover-art-container">
-    <div v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber" class="cover-art-child">
-      <publisherCoverViewSlot :game-slot="gameSlot"></publisherCoverViewSlot>
+  <div>
+    <a href="https://ggapp.io/" target="_blank">
+      <strong>
+        All Images Provided by GG|
+        <font-awesome-icon icon="external-link-alt" />
+      </strong>
+    </a>
+    <div class="cover-art-container">
+      <div v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber">
+        <publisherCoverViewSlot :game-slot="gameSlot"></publisherCoverViewSlot>
+      </div>
     </div>
   </div>
 </template>
@@ -14,22 +22,16 @@ export default {
   components: {
     PublisherCoverViewSlot
   },
-  mixins: [PublisherMixin],
-  computed: {
-    tagsLoaded() {
-      return !!this.$store.getters.allTags;
-    }
-  }
+  mixins: [PublisherMixin]
 };
 </script>
 <style scoped>
 .cover-art-container {
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   max-width: 1500px;
   gap: 10px;
-}
-.cover-art-child {
 }
 </style>

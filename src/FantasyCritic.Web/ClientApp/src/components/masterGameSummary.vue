@@ -63,7 +63,7 @@
             </strong>
           </a>
         </div>
-        <div v-if="masterGame.ggToken && !masterGame.ggCoverArtFileName">
+        <div v-if="masterGame.ggToken && (!masterGame.ggCoverArtFileName || hideImage)">
           <a :href="ggLink" target="_blank">
             <strong>
               GG| Link
