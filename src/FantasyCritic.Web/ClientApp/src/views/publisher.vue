@@ -102,6 +102,13 @@
             </div>
           </div>
           <publisherCoverView></publisherCoverView>
+          <div class="logo-container">
+            <span class="gg-note">
+              Images provided by
+              <img src="@/assets/gg-logo.png" />
+            </span>
+            <img src="@/assets/cover-art-mode-watermark.png" />
+          </div>
         </div>
       </div>
     </div>
@@ -303,7 +310,19 @@ export default {
   padding: 10px;
 }
 
+.gg-note {
+  font-size: 20px;
+  font-weight: bolder;
+}
+
 .cover-art-view-publisher-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container {
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
