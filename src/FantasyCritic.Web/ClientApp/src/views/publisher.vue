@@ -102,12 +102,16 @@
             </div>
           </div>
           <publisherCoverView></publisherCoverView>
-          <div v-show="renderingSnapshot" class="logo-container">
+          <div class="logo-container">
             <span class="gg-note">
               Images provided by
-              <img src="@/assets/gg-logo.png" />
+              <a href="https://ggapp.io/" target="_blank">
+                <img src="@/assets/gg-logo.png" />
+              </a>
             </span>
-            <img src="@/assets/cover-art-mode-watermark.png" />
+            <div v-show="renderingSnapshot">
+              <img src="@/assets/cover-art-mode-watermark.png" />
+            </div>
           </div>
         </div>
       </div>
