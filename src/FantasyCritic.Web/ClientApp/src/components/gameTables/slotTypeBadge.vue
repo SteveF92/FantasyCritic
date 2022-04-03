@@ -8,7 +8,8 @@
         <span
           v-b-popover.hover.focus.top="getFlexText(gameSlot.specialSlot.requiredTags)"
           class="badge tag-badge slot-badge mg-badge-text"
-          :style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)">
+          :style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
+          :class="{ 'no-background': hideBackground }">
           FLX
         </span>
       </template>
@@ -32,7 +33,8 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    gameSlot: { type: Object, required: true }
+    gameSlot: { type: Object, required: true },
+    hideBackground: { type: Boolean }
   },
   computed: {
     regularText() {
@@ -129,5 +131,10 @@ export default {
 
 .dropped-badge {
   background-color: black;
+}
+
+.no-background {
+  background-color: transparent !important;
+  background-image: none !important;
 }
 </style>

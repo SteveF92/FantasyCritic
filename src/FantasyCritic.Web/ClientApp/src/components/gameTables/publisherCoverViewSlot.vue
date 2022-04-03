@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="slot-area" :style="slotColor">
-      <slotTypeBadge class="header-badge" :game-slot="gameSlot"></slotTypeBadge>
+      <slotTypeBadge class="header-badge" :game-slot="gameSlot" hide-background></slotTypeBadge>
       <div class="game-image-area">
         <a :id="popoverID" href="javascript:;" class="no-link-style">
           <img v-if="game && masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
@@ -10,10 +10,7 @@
           </div>
         </a>
 
-        <font-awesome-layers v-if="!game" class="fa-8x no-game-image">
-          <font-awesome-icon :icon="['far', 'square']" />
-          <font-awesome-layers-text class="game-text empty-slot-text" value="Slot Empty" />
-        </font-awesome-layers>
+        <div v-if="!game" class="game-text game-name">[Slot Empty]</div>
       </div>
 
       <div class="bottom-text-area">

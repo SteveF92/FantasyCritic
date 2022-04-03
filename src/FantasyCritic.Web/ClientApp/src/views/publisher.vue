@@ -194,6 +194,12 @@ export default {
   display: flex;
 }
 
+.publisher-details {
+  background: #222222;
+  border-radius: 5px;
+  padding: 10px;
+}
+
 .publisher-name {
   display: block;
   max-width: 100%;
@@ -238,7 +244,6 @@ export default {
 }
 
 .cover-view {
-  margin-top: 10px;
   display: flex;
   justify-content: center;
 }
