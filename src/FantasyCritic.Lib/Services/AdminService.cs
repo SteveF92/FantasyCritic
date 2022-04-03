@@ -28,10 +28,11 @@ public class AdminService
     private readonly PatreonService _patreonService;
     private readonly IClock _clock;
     private readonly AdminServiceConfiguration _configuration;
+    private readonly ActionProcessingService _actionProcessingService;
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration, ActionProcessingService actionProcessingService)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -46,6 +47,12 @@ public class AdminService
         _royaleService = royaleService;
         _hypeFactorService = hypeFactorService;
         _configuration = configuration;
+        _actionProcessingService = actionProcessingService;
+    }
+
+    public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
+    {
+        return _fantasyCriticRepo.GetLeagueYears(year);
     }
 
     public async Task FullDataRefresh()
@@ -276,6 +283,40 @@ public class AdminService
         var patreonUsers = await _userManager.GetAllPatreonUsers();
         var patronInfo = await _patreonService.GetPatronInfo(patreonUsers);
         await _userManager.UpdatePatronInfo(patronInfo);
+    }
+
+    public async Task<FinalizedActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)
+    {
+        IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears);
+        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year, allLeagueYears);
+
+        var onlyLeaguesWithActions = leaguesAndBids
+            .Where(x => x.Value.Any()).Select(x => x.Key)
+            .Concat(leaguesAndDropRequests.Where(x => x.Value.Any()).Select(x => x.Key))
+            .Distinct().Select(x => x.Key).ToHashSet();
+
+        var publishersInLeagues = allLeagueYears.SelectMany(x => x.Publishers).Where(x => onlyLeaguesWithActions.Contains(x.LeagueYearKey));
+
+        var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        FinalizedActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, masterGameYearDictionary);
+        return results;
+    }
+
+    public async Task ProcessActions(SystemWideValues systemWideValues, int year)
+    {
+        var now = _clock.GetCurrentInstant();
+        IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
+        var results = await GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
+        await _fantasyCriticRepo.SaveProcessedActionResults(results);
+    }
+
+    public async Task MakePublisherSlotsConsistent()
+    {
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
+        await _fantasyCriticRepo.ManualMakePublisherGameSlotsConsistent(currentYear!.Year);
     }
 
     private async Task UpdateSystemWideValues()

@@ -1791,6 +1791,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+    public async Task ManualMakePublisherGameSlotsConsistent(int year)
+    {
+        var leagueYears = await GetLeagueYears(year);
+        var publisherPairs = leagueYears.SelectMany(leagueYear => leagueYear.Publishers, (leagueYear, publisher) => new LeagueYearPublisherPair(leagueYear, publisher)).ToList();
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await MakePublisherGameSlotsConsistent(publisherPairs, connection, transaction);
+        await transaction.CommitAsync();
+    }
+
     private static Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, IEnumerable<Publisher> publishersToUpdate, MySqlConnection connection, MySqlTransaction transaction)
     {
         var pairs = publishersToUpdate.Select(x => new LeagueYearPublisherPair(leagueYear, x));
@@ -2479,22 +2490,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync("delete from tbl_league_action where PublisherID = @publisherID;", deleteObject);
-    }
-
-    public async Task<bool> LeagueHasBeenStarted(Guid leagueID)
-    {
-        var selectObject = new
-        {
-            leagueID
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
-        return await connection.ExecuteScalarAsync<bool>(
-            "select count(1) from vw_league " +
-            "join tbl_league_year on (vw_league.LeagueID = tbl_league_year.LeagueID) " +
-            "where PlayStatus <> 'NotStartedDraft' and vw_league.LeagueID = @leagueID and IsDeleted = 0;",
-            selectObject);
     }
 
     public async Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()

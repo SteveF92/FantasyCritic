@@ -84,9 +84,8 @@ public static class Program
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo, _clock);
         GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, leagueMemberService, _clock);
-        PublisherService publisherService = null!;
-        ActionProcessingService actionProcessingService = null!;
-        FantasyCriticService fantasyCriticService = new FantasyCriticService(gameAcquisitionService, leagueMemberService, publisherService, interLeagueService, fantasyCriticRepo, _clock, actionProcessingService);
+        ActionProcessingService actionProcessingService = new ActionProcessingService(gameAcquisitionService);
+        FantasyCriticService fantasyCriticService = new FantasyCriticService( leagueMemberService, interLeagueService, fantasyCriticRepo, _clock);
         IOpenCriticService openCriticService = null!;
         IGGService ggService = null!;
         PatreonService patreonService = null!;
@@ -103,6 +102,6 @@ public static class Program
         }
 
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
-            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
+            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, configuration, actionProcessingService);
     }
 }

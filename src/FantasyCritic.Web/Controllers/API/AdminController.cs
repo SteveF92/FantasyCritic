@@ -250,16 +250,23 @@ public class AdminController : FantasyCriticController
         return Ok();
     }
 
+    [HttpPost]
+    public async Task<IActionResult> MakePublisherSlotsConsistent()
+    {
+        await _adminService.MakePublisherSlotsConsistent();
+        return Ok();
+    }
+
     public async Task<ActionResult<ActionedGameSetViewModel>> ActionProcessingDryRun()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
-        IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticService.GetLeagueYears(currentYear.Year);
+        IReadOnlyList<LeagueYear> allLeagueYears = await _adminService.GetLeagueYears(currentYear.Year);
 
         var nextBidTime = _clock.GetNextBidTime();
-        var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears);
+        var actionResults = await _adminService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears);
         IEnumerable<LeagueAction> failingActions = actionResults.Results.LeagueActions.Where(x => x.IsFailed);
         var failingActionGames = failingActions.Select(x => x.MasterGameName).Distinct();
 
@@ -294,10 +301,10 @@ public class AdminController : FantasyCriticController
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         var currentYear = supportedYears.First(x => !x.Finished && x.OpenForPlay);
 
-        IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticService.GetLeagueYears(currentYear.Year);
+        IReadOnlyList<LeagueYear> allLeagueYears = await _adminService.GetLeagueYears(currentYear.Year);
 
         var nextBidTime = _clock.GetNextBidTime();
-        var actionResults = await _fantasyCriticService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears);
+        var actionResults = await _adminService.GetActionProcessingDryRun(systemWideValues, currentYear.Year, nextBidTime, allLeagueYears);
         var viewModels = actionResults.Results.LeagueActions.Select(x => new ComparableLeagueActionViewModel(x))
             .OrderBy(x => x.LeagueID).ThenBy(x => x.PublisherID).ToList();
 
@@ -335,7 +342,7 @@ public class AdminController : FantasyCriticController
                 continue;
             }
 
-            await _fantasyCriticService.ProcessActions(systemWideValues, supportedYear.Year);
+            await _adminService.ProcessActions(systemWideValues, supportedYear.Year);
         }
 
         return Ok();

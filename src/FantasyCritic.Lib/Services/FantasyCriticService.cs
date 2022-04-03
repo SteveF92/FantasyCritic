@@ -13,23 +13,16 @@ public class FantasyCriticService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
-    private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly LeagueMemberService _leagueMemberService;
-    private readonly PublisherService _publisherService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly ActionProcessingService _actionProcessingService;
 
-    public FantasyCriticService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
-        PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IClock clock, ActionProcessingService actionProcessingService)
+    public FantasyCriticService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService,
+        IFantasyCriticRepo fantasyCriticRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
-
         _leagueMemberService = leagueMemberService;
-        _publisherService = publisherService;
         _interLeagueService = interLeagueService;
-        _gameAcquisitionService = gameAcquisitionService;
-        _actionProcessingService = actionProcessingService;
     }
 
     public Task<League?> GetLeagueByID(Guid id)
@@ -52,11 +45,6 @@ public class FantasyCriticService
     public Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID)
     {
         return _fantasyCriticRepo.GetLeagueYearKeyForPublisherID(publisherID);
-    }
-
-    public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
-    {
-        return _fantasyCriticRepo.GetLeagueYears(year);
     }
 
     public async Task<Result<League>> CreateLeague(LeagueCreationParameters parameters)
@@ -357,33 +345,6 @@ public class FantasyCriticService
         return processingSets;
     }
 
-    public async Task<FinalizedActionProcessingResults> GetActionProcessingDryRun(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)
-    {
-        IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears);
-        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year, allLeagueYears);
-
-        var onlyLeaguesWithActions = leaguesAndBids
-            .Where(x => x.Value.Any()).Select(x => x.Key)
-            .Concat(leaguesAndDropRequests.Where(x => x.Value.Any()).Select(x => x.Key))
-            .Distinct().Select(x => x.Key).ToHashSet();
-
-        var publishersInLeagues = allLeagueYears.SelectMany(x => x.Publishers).Where(x => onlyLeaguesWithActions.Contains(x.LeagueYearKey));
-
-        var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
-        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
-
-        FinalizedActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, masterGameYearDictionary);
-        return results;
-    }
-
-    public async Task ProcessActions(SystemWideValues systemWideValues, int year)
-    {
-        var now = _clock.GetCurrentInstant();
-        IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
-        var results = await GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
-        await _fantasyCriticRepo.SaveProcessedActionResults(results);
-    }
-
     public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
     {
         return _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);
@@ -436,11 +397,6 @@ public class FantasyCriticService
         await _fantasyCriticRepo.DeleteLeague(league);
     }
 
-    public Task<bool> LeagueHasBeenStarted(Guid leagueID)
-    {
-        return _fantasyCriticRepo.LeagueHasBeenStarted(leagueID);
-    }
-
     public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
     {
         return _fantasyCriticRepo.GetFollowedLeagues(currentUser);
@@ -490,8 +446,8 @@ public class FantasyCriticService
 
     public async Task<IReadOnlyList<LeagueYear>> GetPublicLeagueYears(int year)
     {
-        var leagueYears = await GetLeagueYears(year);
-        return leagueYears.Where(x => x.League.PublicLeague).Where(x => x.Year == year).OrderByDescending(x => x.League.NumberOfFollowers).ToList();
+        var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
+        return leagueYears.Where(x => x.League.PublicLeague).OrderByDescending(x => x.League.NumberOfFollowers).ToList();
     }
 
     public async Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool? eligible)

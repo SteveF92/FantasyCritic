@@ -117,10 +117,10 @@ public interface IFantasyCriticRepo
     Task DeleteLeagueYear(LeagueYear leagueYear);
     Task DeleteLeague(League league);
     Task DeleteLeagueActions(Publisher publisher);
-    Task<bool> LeagueHasBeenStarted(Guid leagueID);
 
     Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets();
     Task SaveProcessedActionResults(FinalizedActionProcessingResults actionProcessingResults);
+    Task ManualMakePublisherGameSlotsConsistent(int year);
     Task UpdateSystemWideValues(SystemWideValues systemWideValues);
     Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);
     Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear);
