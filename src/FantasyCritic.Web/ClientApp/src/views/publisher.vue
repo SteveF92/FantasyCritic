@@ -2,7 +2,7 @@
   <div v-if="publisher && leagueYear">
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div class="cover-art-mode-options">
-        <b-button v-if="userIsPublisher" v-show="coverArtMode" variant="secondary" size="sm" @click="sharePublisher">
+        <b-button v-if="userIsPublisher" v-show="coverArtMode" variant="secondary" size="sm" @click="prepareSnapshot">
           <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
           <span>Share</span>
         </b-button>
@@ -86,7 +86,7 @@
       </div>
 
       <div v-show="coverArtMode" class="cover-art-container">
-        <div id="full-cover-art-view">
+        <div id="full-cover-art-view" :class="{ 'clear-border-radius': renderingSnapshot }">
           <div class="cover-art-view-publisher-info">
             <div class="publisher-name-and-icon">
               <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
@@ -102,7 +102,7 @@
             </div>
           </div>
           <publisherCoverView></publisherCoverView>
-          <div class="logo-container">
+          <div v-show="renderingSnapshot" class="logo-container">
             <span class="gg-note">
               Images provided by
               <img src="@/assets/gg-logo.png" />
@@ -136,7 +136,8 @@ export default {
   },
   data() {
     return {
-      errorInfo: ''
+      errorInfo: '',
+      renderingSnapshot: false
     };
   },
   computed: {
@@ -215,6 +216,10 @@ export default {
         this.$emit('gamesMoved');
       });
     },
+    prepareSnapshot() {
+      this.renderingSnapshot = true;
+      setTimeout(this.sharePublisher, 1);
+    },
     sharePublisher() {
       let elementID = '#full-cover-art-view';
       const options = { allowTaint: false, useCORS: true, scale: 2 };
@@ -233,6 +238,7 @@ export default {
         };
         navigator.share(shareData);
       });
+      this.renderingSnapshot = false;
     }
   }
 };
@@ -308,6 +314,10 @@ export default {
   background: #222222;
   border-radius: 5px;
   padding: 10px;
+}
+
+.clear-border-radius {
+  border-radius: 0 !important;
 }
 
 .gg-note {
