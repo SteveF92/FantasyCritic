@@ -417,8 +417,4 @@ export default {
   max-width: 100%;
   word-wrap: break-word;
 }
-
-.league-name h1 {
-  text-transform: none;
-}
 </style>
