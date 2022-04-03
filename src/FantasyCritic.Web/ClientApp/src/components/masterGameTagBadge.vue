@@ -1,9 +1,9 @@
 <template>
   <span>
-    <span v-if="!short" :id="popoverID" class="badge tag-badge" :style="badgeColor">
+    <span v-if="!short" :id="popoverID" class="badge tag-badge mg-badge-text" :style="badgeColor">
       {{ tag.readableName }}
     </span>
-    <span v-if="short" :id="popoverID" class="badge tag-badge" :style="badgeColor">
+    <span v-if="short" :id="popoverID" class="badge tag-badge mg-badge-text" :style="badgeColor">
       {{ tag.shortName }}
     </span>
     <template v-if="!noPopover">

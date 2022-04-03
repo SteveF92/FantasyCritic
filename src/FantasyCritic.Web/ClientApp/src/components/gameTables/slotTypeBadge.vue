@@ -5,17 +5,22 @@
         <masterGameTagBadge :tag-name="gameSlot.specialSlot.requiredTags[0]" short class="slot-badge"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span v-b-popover.hover.focus.top="getFlexText(gameSlot.specialSlot.requiredTags)" class="badge tag-badge slot-badge" :style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)">FLX</span>
+        <span
+          v-b-popover.hover.focus.top="getFlexText(gameSlot.specialSlot.requiredTags)"
+          class="badge tag-badge slot-badge mg-badge-text"
+          :style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)">
+          FLX
+        </span>
       </template>
     </span>
     <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && !gameSlot.counterPick">
-      <span v-b-popover.hover.focus.top="regularText" class="badge tag-badge regular-slot-badge slot-badge">REG</span>
+      <span v-b-popover.hover.focus.top="regularText" class="badge tag-badge regular-slot-badge slot-badge mg-badge-text">REG</span>
     </span>
     <span v-if="gameSlot.dropped">
-      <span v-b-popover.hover.focus.top="droppedText" class="badge tag-badge dropped-badge slot-badge">DRP</span>
+      <span v-b-popover.hover.focus.top="droppedText" class="badge tag-badge dropped-badge slot-badge mg-badge-text">DRP</span>
     </span>
     <span v-if="!gameSlot.specialSlot && gameSlot.counterPick">
-      <span v-b-popover.hover.focus.top="counterPickText" class="badge tag-badge counter-pick-badge slot-badge">CPK</span>
+      <span v-b-popover.hover.focus.top="counterPickText" class="badge tag-badge counter-pick-badge slot-badge mg-badge-text">CPK</span>
     </span>
   </span>
 </template>

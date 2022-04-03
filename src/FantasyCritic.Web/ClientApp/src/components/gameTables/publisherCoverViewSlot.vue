@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="slot-area" :style="slotColor">
-      <div class="game-text">{{ slotLabel }}</div>
+      <slotTypeBadge class="header-badge" :game-slot="gameSlot"></slotTypeBadge>
       <div class="game-image-area">
         <a :id="popoverID" href="javascript:;" class="no-link-style">
           <img v-if="game && masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
@@ -17,8 +17,12 @@
       </div>
 
       <div class="bottom-text-area">
-        <div v-if="game" class="game-text">{{ dateText }}</div>
-        <div v-if="game" class="game-text">{{ scoreText }}</div>
+        <div v-if="game" class="game-text">{{ globalFunctions.formatPublisherGameReleaseDate(game, true) }}</div>
+        <div v-if="game && game.criticScore" class="game-text">Score: {{ globalFunctions.roundNumber(game.criticScore, 2) }}</div>
+        <div v-if="game && !game.criticScore && game.masterGame" class="game-text">
+          Projection:
+          <span class="projected-text">~{{ globalFunctions.roundNumber(game.masterGame.projectedFantasyPoints, 2) }}</span>
+        </div>
       </div>
     </div>
 
@@ -32,17 +36,22 @@
 <script>
 import PublisherMixin from '@/mixins/publisherMixin';
 import MasterGameSummary from '@/components/masterGameSummary';
+import SlotTypeBadge from '@/components/gameTables/slotTypeBadge';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {
   components: {
-    MasterGameSummary
+    MasterGameSummary,
+    SlotTypeBadge
   },
   mixins: [PublisherMixin],
   props: {
     gameSlot: { type: Object, required: true }
   },
   computed: {
+    globalFunctions() {
+      return GlobalFunctions;
+    },
     game() {
       return this.gameSlot.publisherGame;
     },
@@ -70,9 +79,6 @@ export default {
     },
     popoverID() {
       return `mg-popover-${this._uid}`;
-    },
-    dateText() {
-      return GlobalFunctions.formatPublisherGameReleaseDate(this.game, true);
     },
     scoreText() {
       if (this.game.criticScore) {
@@ -179,6 +185,7 @@ export default {
 .game-name {
   font-size: 25px;
 }
+
 .game-image-area {
   width: 165px;
   height: 248px;
@@ -205,5 +212,9 @@ export default {
 .no-link-style {
   color: white;
   text-decoration: none;
+}
+
+.header-badge >>> .mg-badge-text {
+  font-size: 20px;
 }
 </style>
