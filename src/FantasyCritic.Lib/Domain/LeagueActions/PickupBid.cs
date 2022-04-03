@@ -53,6 +53,8 @@ public class PickupBid : IEquatable<PickupBid>
             conditionalDropResult);
     }
 
+    public LeagueYearPublisherPair GetLeagueYearPublisherPair() => new LeagueYearPublisherPair(LeagueYear, Publisher);
+
     public bool Equals(PickupBid? other)
     {
         if (ReferenceEquals(null, other)) return false;

@@ -25,6 +25,16 @@ public class ActionProcessingResults
     public IReadOnlyList<PublisherGame> AddedPublisherGames { get; }
     public IReadOnlyList<FormerPublisherGame> RemovedPublisherGames { get; }
 
+    public IReadOnlyList<LeagueYearPublisherPair> GetAllAffectedPublisherPairs()
+    {
+        return SuccessBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair())
+            .Concat(FailedBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair()))
+            .Concat(SuccessDrops.Select(x => x.GetLeagueYearPublisherPair()))
+            .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()))
+            .DistinctBy(x => x.Publisher.PublisherID)
+            .ToList();
+    }
+
     public static ActionProcessingResults GetEmptyResultsSet(PublisherStateSet publisherStateSet)
     {
         return new ActionProcessingResults(new List<SucceededPickupBid>(), new List<FailedPickupBid>(), new List<DropRequest>(),

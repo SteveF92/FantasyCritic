@@ -1827,7 +1827,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 var standardGames = publisherPair.Publisher.PublisherGames
                     .Where(x => !x.CounterPick)
-                    .OrderBy(x => x.SlotNumber);
+                    .OrderBy(x => x.Timestamp).ThenBy(x => x.SlotNumber);
                 foreach (var standardGame in standardGames)
                 {
                     preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, tempSlotNumber));
@@ -2522,7 +2522,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await AddFormerPublisherGames(actionProcessingResults.Results.RemovedPublisherGames, connection, transaction);
         await AddPublisherGames(actionProcessingResults.Results.AddedPublisherGames, connection, transaction);
 
-        var publisherPairsToAdjust = actionProcessingResults.Results.SuccessDrops.Select(x => x.GetLeagueYearPublisherPair());
+        var publisherPairsToAdjust = actionProcessingResults.Results.GetAllAffectedPublisherPairs();
         await MakePublisherGameSlotsConsistent(publisherPairsToAdjust, connection, transaction);
 
         await transaction.CommitAsync();
