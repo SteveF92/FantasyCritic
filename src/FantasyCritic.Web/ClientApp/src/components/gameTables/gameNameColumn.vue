@@ -229,7 +229,7 @@ export default {
   height: 25px;
   border-radius: 4px;
   color: #ffffff;
-  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
 }
 
 .lock-icon {

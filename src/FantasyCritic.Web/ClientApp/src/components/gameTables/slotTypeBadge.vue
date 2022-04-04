@@ -93,7 +93,7 @@ export default {
       return {
         backgroundImage: backGroundString,
         color: 'white',
-        'text-shadow': '1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000'
+        'text-shadow': '0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black'
       };
     },
     getFlexText(requiredTags) {
