@@ -175,7 +175,7 @@ export default {
 
 .game-text {
   text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
-  font-weight: bolder;
+  font-weight: bold;
   text-align: center;
 }
 
@@ -190,10 +190,6 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-.empty-slot-text {
-  font-size: 25px;
 }
 
 .game-image {

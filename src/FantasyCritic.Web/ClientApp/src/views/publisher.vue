@@ -86,7 +86,7 @@
       </div>
 
       <div v-show="coverArtMode" class="cover-art-container">
-        <div id="full-cover-art-view" :class="{ 'clear-border-radius': renderingSnapshot }">
+        <div id="full-cover-art-view" :class="{ 'full-cover-art-view-render-mode': renderingSnapshot }">
           <div class="cover-art-view-publisher-info">
             <div class="publisher-name-and-icon">
               <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
@@ -222,6 +222,8 @@ export default {
     },
     prepareSnapshot() {
       this.renderingSnapshot = true;
+      const viewport = document.querySelector('meta[name=viewport]');
+      viewport.setAttribute('content', 'width=1920');
       setTimeout(this.sharePublisher, 1);
     },
     sharePublisher() {
@@ -243,6 +245,8 @@ export default {
         navigator.share(shareData);
       });
       this.renderingSnapshot = false;
+      const viewport = document.querySelector('meta[name=viewport]');
+      viewport.setAttribute('content', 'width=device-width');
     }
   }
 };
@@ -320,7 +324,7 @@ export default {
   padding: 10px;
 }
 
-.clear-border-radius {
+.full-cover-art-view-render-mode {
   border-radius: 0 !important;
 }
 
