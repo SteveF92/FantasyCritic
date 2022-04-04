@@ -188,7 +188,6 @@ export default {
           left: 0,
           behavior: 'smooth'
         });
-        this.clearData();
       } catch (error) {
         this.errorInfo = error;
       }
