@@ -2,7 +2,7 @@
   <div>
     <div class="slot-area" :style="slotColor">
       <slotTypeBadge class="header-badge" :game-slot="gameSlot" hide-background></slotTypeBadge>
-      <div class="game-image-area">
+      <div class="game-image-area" :class="{ 'small-game-image-area': useSmallImages }">
         <a :id="popoverID" href="javascript:;" class="no-link-style">
           <img v-if="game && masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
           <div v-if="game && !(masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName)" class="game-text game-name">
@@ -46,6 +46,13 @@ export default {
     gameSlot: { type: Object, required: true }
   },
   computed: {
+    useSmallImages() {
+      if (window.innerWidth < 500) {
+        return true;
+      }
+
+      return false;
+    },
     globalFunctions() {
       return GlobalFunctions;
     },
@@ -69,8 +76,12 @@ export default {
       return this.game.gameName;
     },
     ggCoverArtLink() {
+      let width = 'w=165';
+      if (this.useSmallImages) {
+        width = 'w=115';
+      }
       if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=165&dpr=1&fit=crop&auto=compress&q=95`;
+        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?${width}&dpr=1&fit=crop&auto=compress&q=95`;
       }
       return null;
     },
@@ -177,10 +188,11 @@ export default {
   text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
   font-weight: bold;
   text-align: center;
+  font-size: 0.9rem;
 }
 
 .game-name {
-  font-size: 25px;
+  font-size: 1.5rem;
 }
 
 .game-image-area {
@@ -190,6 +202,11 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.small-game-image-area {
+  width: 125px !important;
+  height: 200px !important;
 }
 
 .game-image {
