@@ -23,9 +23,18 @@
             <h3>Share Publisher Option</h3>
             <p>Plus users can click a button to easily share their publishers (their lists of games) to social media.</p>
           </div>
+          <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
+            <b-img src="@/assets/plus-publisher-example.png" fluid alt="Publisher Example"></b-img>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
           <div class="col-lg-12 col-xl-6">
-            <img class="screenshot full-screenshot" src="@/assets/plus-publisher-example.png" />
-            <img class="screenshot mobile-screenshot" src="@/assets/plus-publisher-example-mobile.png" />
+            <h3>Cover Art View</h3>
+            <p>Plus users can view any publisher in a more visual way, as shown below. There's also a share button to easily share the image to social media.</p>
+          </div>
+          <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
+            <b-img src="@/assets/plus-cover-art-view-example.png" fluid alt="Cover Art View Example"></b-img>
           </div>
         </div>
         <hr />
@@ -38,9 +47,8 @@
             </p>
             <p>Players can use this to easily see all the stats for any game that is available, or see all the stats for the games that are taken, perhaps to make a decision about a counter pick.</p>
           </div>
-          <div class="col-lg-12 col-xl-6">
-            <img class="screenshot full-screenshot" src="@/assets/master-game-searching-example.png" />
-            <img class="screenshot mobile-screenshot" src="@/assets/master-game-searching-example-mobile.png" />
+          <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
+            <b-img src="@/assets/master-game-searching-example.png" fluid alt="Master Game Searching Example"></b-img>
           </div>
         </div>
         <hr />
@@ -54,8 +62,8 @@
               previously dropped. This even works for previous years, making it easy to go back and see how your draft fared.
             </p>
           </div>
-          <div class="col-lg-12 col-xl-6">
-            <img class="screenshot" src="@/assets/game-news-example.png" />
+          <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
+            <b-img src="@/assets/game-news-example.png" fluid alt="Game News Example"></b-img>
           </div>
         </div>
         <hr />
@@ -88,24 +96,12 @@ export default {
   display: block;
 }
 
-.screenshot {
+/* .screenshot {
   margin-left: auto;
   margin-right: auto;
   display: block;
   border-style: solid;
   border-width: 2px;
   border-color: white;
-}
-
-@media only screen and (max-width: 650px) {
-  .full-screenshot {
-    display: none;
-  }
-}
-
-@media only screen and (min-width: 651px) {
-  .mobile-screenshot {
-    display: none;
-  }
-}
+} */
 </style>
