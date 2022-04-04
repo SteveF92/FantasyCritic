@@ -186,7 +186,7 @@ export default {
 }
 
 .game-text {
-  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
   font-weight: bold;
   text-align: center;
   font-size: 1rem;
