@@ -182,10 +182,10 @@ export default {
         estimatedReleaseDate: this.estimatedReleaseDate
       };
 
-      if (this.estimatedReleaseDate) {
+      if (!this.hasReleaseDate && this.estimatedReleaseDate) {
         request.estimatedReleaseDate = this.estimatedReleaseDate;
       }
-      if (this.releaseDate) {
+      if (this.hasReleaseDate && this.releaseDate) {
         request.releaseDate = this.releaseDate;
         request.estimatedReleaseDate = this.releaseDate;
       }
