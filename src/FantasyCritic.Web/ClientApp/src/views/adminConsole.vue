@@ -32,13 +32,13 @@
         <b-button variant="warning" @click="takePostAction('TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
         <b-button variant="info" @click="takePostAction('TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
         <b-button variant="danger" @click="takePostAction('ProcessActions')">Process Actions</b-button>
-        <b-button variant="danger" @click="takePostAction('MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
       </div>
 
       <h2>Other</h2>
       <div>
         <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
         <b-button variant="danger" @click="takePostAction('SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
+        <b-button variant="danger" @click="takePostAction('MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
       </div>
 
       <h2>Database</h2>
