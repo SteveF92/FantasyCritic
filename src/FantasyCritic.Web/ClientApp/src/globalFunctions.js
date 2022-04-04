@@ -23,19 +23,22 @@ export default {
     }
     return i + 'th';
   },
-  formatPublisherGameReleaseDate(publisherGame, hideEstimated) {
+  formatPublisherGameReleaseDate(publisherGame, shorten) {
     if (!publisherGame.masterGame) {
       return 'Unknown';
     }
 
-    return this.formatMasterGameReleaseDate(publisherGame.masterGame, hideEstimated);
+    return this.formatMasterGameReleaseDate(publisherGame.masterGame, shorten);
   },
-  formatMasterGameReleaseDate(masterGame, hideEstimated) {
+  formatMasterGameReleaseDate(masterGame, shorten) {
     if (masterGame.releaseDate) {
+      if (shorten) {
+        return moment(masterGame.releaseDate).format('MMM Do, YYYY');
+      }
       return moment(masterGame.releaseDate).format('MMMM Do, YYYY');
     }
 
-    if (hideEstimated) {
+    if (shorten) {
       return masterGame.estimatedReleaseDate;
     }
 

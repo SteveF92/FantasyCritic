@@ -17,7 +17,8 @@
         <div v-if="game" class="game-text">{{ globalFunctions.formatPublisherGameReleaseDate(game, true) }}</div>
         <div v-if="game && game.criticScore" class="game-text">Score: {{ globalFunctions.roundNumber(game.criticScore, 2) }}</div>
         <div v-if="game && !game.criticScore && game.masterGame" class="game-text">
-          Projection:
+          <span v-show="!useSmallImages" class="projection-label">Projection:</span>
+          <span v-show="useSmallImages" class="projection-label">Proj.</span>
           <span class="projected-text">~{{ globalFunctions.roundNumber(game.masterGame.projectedFantasyPoints, 2) }}</span>
         </div>
       </div>
@@ -78,7 +79,7 @@ export default {
     ggCoverArtLink() {
       let width = 'w=165';
       if (this.useSmallImages) {
-        width = 'w=115';
+        width = 'w=125';
       }
       if (this.masterGame.ggCoverArtFileName) {
         return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?${width}&dpr=1&fit=crop&auto=compress&q=95`;
@@ -188,7 +189,7 @@ export default {
   text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
   font-weight: bold;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .game-name {
@@ -226,5 +227,9 @@ export default {
 
 .header-badge >>> .mg-badge-text {
   font-size: 20px;
+}
+
+.projection-label {
+  margin-right: 2px;
 }
 </style>
