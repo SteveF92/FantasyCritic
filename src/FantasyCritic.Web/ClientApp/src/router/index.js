@@ -30,7 +30,7 @@ let router = new VueRouter({
   routes
 });
 
-router.beforeEach(function (toRoute, fromRoute, next) {
+router.beforeEach(async function (toRoute, fromRoute, next) {
   if (toRoute.meta.title) {
     document.title = toRoute.meta.title + ' - Fantasy Critic';
   }
@@ -40,36 +40,13 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     store.commit('clearLeagueStoreData');
   }
 
-  var getPrereqs = function () {
-    var prereqs = [];
-    prereqs.push(
-      new Promise(function (resolve) {
-        if (!store.getters.allTags && !store.getters.masterGamesIsBusy) {
-          store.dispatch('getAllTags').then(() => {
-            resolve();
-          });
-        } else {
-          resolve();
-        }
-      })
-    );
+  if (!store.getters.allTags && !store.getters.masterGamesIsBusy) {
+    await store.dispatch('getAllTags');
+  }
 
-    prereqs.push(
-      new Promise(function (resolve) {
-        if (!store.getters.bidTimes && !store.getters.bidTimesIsBusy) {
-          store.dispatch('getBidTimes').then(() => {
-            resolve();
-          });
-        } else {
-          resolve();
-        }
-      })
-    );
-
-    return prereqs;
-  };
-
-  Promise.all(getPrereqs());
+  if (!store.getters.bidTimes && !store.getters.bidTimesIsBusy) {
+    await store.dispatch('getBidTimes');
+  }
 
   //If we are current, we're good to go
   if (store.getters.isAuth) {
@@ -81,34 +58,31 @@ router.beforeEach(function (toRoute, fromRoute, next) {
     return;
   }
 
-  store
-    .dispatch('getUserInfo')
-    .then(() => {
-      if (store.getters.isAuth) {
-        if (toRoute.meta.publicOnly) {
-          next({ path: '/home' });
-          return;
-        } else {
-          next();
-          return;
-        }
+  try {
+    await store.dispatch('getUserInfo');
+    if (store.getters.isAuth) {
+      if (toRoute.meta.publicOnly) {
+        next({ path: '/home' });
+        return;
       } else {
-        if (toRoute.meta.isPublic) {
-          next();
-          return;
-        } else {
-          store.commit('clearUserInfo');
-          window.location.href = '/Identity/Account/Login';
-          return;
-        }
+        next();
+        return;
       }
-    })
-    .catch(() => {
-      console.log('Router error');
-      store.commit('clearUserInfo');
-      window.location.href = '/Identity/Account/Login';
-      return;
-    });
+    } else {
+      if (toRoute.meta.isPublic) {
+        next();
+        return;
+      } else {
+        store.commit('clearUserInfo');
+        window.location.href = '/Identity/Account/Login';
+        return;
+      }
+    }
+  } catch (error) {
+    console.log('Router error');
+    store.commit('clearUserInfo');
+    window.location.href = '/Identity/Account/Login';
+  }
 });
 
 export default router;

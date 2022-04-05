@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-const leagueErrorMessageText = 'Something went wrong with this league. Contact us on Twitter or Discord for support.';
-
 export default {
   state: {
-    errorInfo: null,
+    hasError: false,
     forbidden: false,
     inviteCode: false,
     leagueYear: null,
@@ -53,7 +51,7 @@ export default {
 
         context.commit('setLeagueYear', leagueYearPayload);
       } catch (err) {
-        context.commit('setErrorInfo', leagueErrorMessageText);
+        context.commit('setError', err.response);
       }
     },
     fetchHistoryData(context) {
@@ -69,7 +67,7 @@ export default {
         .then((response) => {
           context.commit('setLeagueActions', response.data);
         })
-        .catch(() => context.commit('setErrorInfo', leagueErrorMessageText));
+        .catch((err) => context.commit('setError', err.response));
     },
     fetchLeagueActionSets(context) {
       const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
@@ -78,7 +76,7 @@ export default {
         .then((response) => {
           context.commit('setLeagueActionSets', response.data);
         })
-        .catch(() => context.commit('setErrorInfo', leagueErrorMessageText));
+        .catch((err) => context.commit('setError', err.response));
     },
     fetchHistoricalTrades(context) {
       const queryURL = '/api/League/TradeHistory?leagueID=' + context.state.leagueYear.leagueID + '&year=' + context.state.leagueYear.year;
@@ -87,12 +85,12 @@ export default {
         .then((response) => {
           context.commit('setHistoricalTrades', response.data);
         })
-        .catch(() => context.commit('setErrorInfo', leagueErrorMessageText));
+        .catch((err) => context.commit('setError', err.response));
     }
   },
   mutations: {
     clearLeagueStoreData(state) {
-      state.errorInfo = null;
+      state.hasError = false;
       state.forbidden = null;
       state.inviteCode = null;
       state.leagueYear = null;
@@ -103,11 +101,12 @@ export default {
       state.leagueActionSets = null;
       state.historicalTrades = null;
     },
-    setErrorInfo(state, errorInfo) {
-      state.errorInfo = errorInfo;
-    },
-    setForbidden(state, forbidden) {
-      state.forbidden = forbidden;
+    setError(state, response) {
+      if (response.status === 403) {
+        state.forbidden = true;
+      } else {
+        state.hasError = true;
+      }
     },
     setInviteCode(state, inviteCode) {
       state.inviteCode = inviteCode;

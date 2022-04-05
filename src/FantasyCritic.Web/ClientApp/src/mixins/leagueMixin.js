@@ -5,7 +5,7 @@ let leagueMixin = {
   mixins: [BasicMixin],
   computed: {
     ...mapState({
-      leagueErrorInfo: (state) => state.league.errorInfo,
+      hasError: (state) => state.league.hasError,
       forbidden: (state) => state.league.forbidden,
       inviteCode: (state) => state.league.inviteCode,
       leagueYear: (state) => state.league.leagueYear,

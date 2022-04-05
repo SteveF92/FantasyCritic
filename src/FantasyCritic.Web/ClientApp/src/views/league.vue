@@ -4,11 +4,9 @@
       <div v-if="forbidden">
         <div class="alert alert-danger" role="alert">You do not have permission to view this league.</div>
       </div>
+      <div v-if="hasError" class="alert alert-danger" role="alert">Something went wrong with this league. Contact us on Twitter or Discord for support.</div>
+      <div v-if="errorInfo" class="alert alert-danger" role="alert">{{ errorInfo }}</div>
       <div v-if="leagueYear">
-        <div v-if="leagueErrorInfo" class="alert alert-danger" role="alert">
-          {{ leagueErrorInfo }}
-        </div>
-
         <div class="row">
           <div class="league-header-row">
             <div class="league-header-flex">
@@ -202,7 +200,8 @@ export default {
   },
   data() {
     return {
-      selectedYear: null
+      selectedYear: null,
+      errorInfo: null
     };
   },
   computed: {
@@ -303,7 +302,7 @@ export default {
           this.refreshLeagueYear();
         })
         .catch(() => {
-          this.$store.commit('setErrorInfo', 'Something went wrong joining the league');
+          this.errorInfo = 'Something went wrong joining the league';
         });
     },
     startDraft() {

@@ -15,27 +15,21 @@ export default {
     isPlusUser: (state) => state.userInfo && state.userInfo.roles.includes('PlusUser')
   },
   actions: {
-    getUserInfo(context) {
+    async getUserInfo(context) {
       context.commit('setBusy', true);
-      return new Promise(function (resolve) {
-        axios
-          .get('/api/account/CurrentUser')
-          .then((res) => {
-            if (!res.data.userID) {
-              context.commit('clearUserInfo');
-              context.commit('setBusy', false);
-              resolve();
-            } else {
-              context.commit('setUserInfo', res.data);
-              context.commit('setBusy', false);
-              resolve();
-            }
-          })
-          .catch(() => {
-            context.commit('clearUserInfo');
-            context.commit('setBusy', false);
-          });
-      });
+      try {
+        const response = await axios.get('/api/account/CurrentUser');
+        if (!response.data.userID) {
+          context.commit('clearUserInfo');
+          context.commit('setBusy', false);
+        } else {
+          context.commit('setUserInfo', response.data);
+          context.commit('setBusy', false);
+        }
+      } catch (error) {
+        context.commit('clearUserInfo');
+        context.commit('setBusy', false);
+      }
     }
   },
   mutations: {
