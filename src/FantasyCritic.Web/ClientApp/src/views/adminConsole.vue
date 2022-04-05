@@ -43,8 +43,8 @@
 
       <h2>Database</h2>
       <div>
-        <b-button variant="info" @click="takePostAction('FullDataRefresh')">Get Recent Database Snapshots</b-button>
-        <b-button variant="warning" @click="getRecentDatabaseSnapshots">Snapshot Database</b-button>
+        <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
+        <b-button variant="warning" @click="takePostAction('SnapshotDatabase')">Snapshot Database</b-button>
       </div>
     </div>
 
