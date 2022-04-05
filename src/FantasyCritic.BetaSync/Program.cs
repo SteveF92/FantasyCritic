@@ -38,6 +38,13 @@ public static class Program
         _betaBucket = ConfigurationManager.AppSettings["betaBucket"]!;
         _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"]!;
         _betaConnectionString = ConfigurationManager.AppSettings["betaConnectionString"]!;
+
+        await RefreshAndCleanDatabase();
+        //await UpdateMasterGames();
+    }
+
+    private static async Task RefreshAndCleanDatabase()
+    {
         var productionRDSName = ConfigurationManager.AppSettings["productionRDSName"]!;
         var betaRDSName = ConfigurationManager.AppSettings["betaRDSName"]!;
 
@@ -45,6 +52,23 @@ public static class Program
 
         RDSRefresher rdsRefresher = new RDSRefresher(productionRDSName, betaRDSName);
         await rdsRefresher.CopySourceToDestination();
+        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
+        MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
+
+        _logger.Info("Cleaning emails/passwords for non-beta users");
+        var allUsers = await betaUserStore.GetAllUsers();
+        var betaUsers = await betaUserStore.GetUsersInRoleAsync("BetaTester", CancellationToken.None);
+        await cleaner.CleanEmailsAndPasswords(allUsers, betaUsers);
+    }
+
+    private static async Task UpdateMasterGames()
+    {
+        _awsRegion = ConfigurationManager.AppSettings["awsRegion"]!;
+        _betaBucket = ConfigurationManager.AppSettings["betaBucket"]!;
+        _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"]!;
+        _betaConnectionString = ConfigurationManager.AppSettings["betaConnectionString"]!;
+
+        DapperNodaTimeSetup.Register();
 
         MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(_productionReadOnlyConnectionString, _clock);
         MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
@@ -53,22 +77,18 @@ public static class Program
         MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
         AdminService betaAdminService = GetAdminService();
 
-        _logger.Info("Cleaning emails/passwords for non-beta users");
-        var allUsers = await betaUserStore.GetAllUsers();
-        var betaUsers = await betaUserStore.GetUsersInRoleAsync("BetaTester", CancellationToken.None);
-        await cleaner.CleanEmailsAndPasswords(allUsers, betaUsers);
-
         _logger.Info("Getting master games from production");
         var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
         var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
         var betaMasterGameTags = await betaMasterGameRepo.GetMasterGameTags();
         var betaMasterGames = await betaMasterGameRepo.GetMasterGames();
         IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
-        await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, betaMasterGameTags, betaMasterGames, productionGamesHaveTagEntities);
+        await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, betaMasterGameTags,
+            betaMasterGames, productionGamesHaveTagEntities);
         await betaAdminService.RefreshCaches();
     }
 
-    private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
+private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
     {
         await using var connection = new MySqlConnection(_productionReadOnlyConnectionString);
         var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
