@@ -82,11 +82,11 @@
         {{ data.item.dateAdjustedHypeFactor | score(1) }}
       </template>
       <template #cell(projectedOrRealFantasyPoints)="data">
-        <template v-if="data.item.isReleased || !data.item.willRelease">
+        <template v-if="data.item.fantasyPoints">
           {{ data.item.projectedOrRealFantasyPoints | score(1) }}
         </template>
         <template v-else>
-          <em>~{{ data.item.projectedOrRealFantasyPoints | score(1) }}</em>
+          <span class="projected-text">~{{ data.item.projectedOrRealFantasyPoints | score(1) }}</span>
         </template>
       </template>
       <template #cell(eligiblePercentStandardGame)="data">

@@ -42,7 +42,19 @@ public class PublisherSlot
         return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors);
     }
 
-    public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues, LocalDate currentDate,
+    public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues,
+        int standardGamesTaken, int numberOfStandardGames, LocalDate currentDate)
+    {
+        var realFantasyPoints = GetFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
+        if (realFantasyPoints.HasValue)
+        {
+            return realFantasyPoints.Value;
+        }
+
+        return GetProjectedFantasyPoints(scoringSystem, systemWideValues, standardGamesTaken, numberOfStandardGames);
+    }
+
+    public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues,
         int standardGamesTaken, int numberOfStandardGames)
     {
         if (PublisherGame is null)
@@ -60,16 +72,10 @@ public class PublisherSlot
             return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
         }
 
-        decimal? fantasyPoints = CalculateFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
-        if (fantasyPoints.HasValue)
-        {
-            return fantasyPoints.Value;
-        }
-
-        return PublisherGame.MasterGame.GetProjectedOrRealFantasyPoints(scoringSystem, CounterPick, currentDate);
+        return PublisherGame.MasterGame.GetProjectedFantasyPoints(scoringSystem, CounterPick);
     }
 
-    public decimal? CalculateFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
+    public decimal? GetFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
     {
         if (PublisherGame is null)
         {
@@ -84,7 +90,7 @@ public class PublisherSlot
             return null;
         }
 
-        var calculatedScore = PublisherGame.MasterGame.CalculateFantasyPoints(scoringSystem, CounterPick, currentDate, true);
+        var calculatedScore = PublisherGame.MasterGame.GetFantasyPoints(scoringSystem, CounterPick, currentDate);
         if (gameIsValidInSlot)
         {
             return calculatedScore;

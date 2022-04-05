@@ -252,7 +252,7 @@ public class FantasyCriticService
                     var gameIsEligible = publisherSlot.SlotIsValid(leagueYear);
                     var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
 
-                    decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
+                    decimal? fantasyPoints = publisherSlot.GetFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     publisherGameCalculatedStats.Add(publisherSlot.PublisherGame!.PublisherGameID, stats);
                     if (fantasyPoints.HasValue)
@@ -288,7 +288,7 @@ public class FantasyCriticService
                 var gameIsEligible = publisherSlot.SlotIsValid(leagueYear);
                 var pointsShouldCount = gameIsEligible || ineligiblePointsShouldCount;
 
-                decimal? fantasyPoints = publisherSlot.CalculateFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
+                decimal? fantasyPoints = publisherSlot.GetFantasyPoints(pointsShouldCount, leagueYear.Options.ScoringSystem, currentDate);
                 var stats = new PublisherGameCalculatedStats(fantasyPoints);
                 calculatedStats.Add(publisherSlot.PublisherGame!.PublisherGameID, stats);
             }

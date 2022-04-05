@@ -79,7 +79,7 @@ public class RoyaleService
 
         var currentDate = _clock.GetToday();
         masterGameYears = masterGameYears.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate >= yearQuarter.FirstDateOfQuarter);
-        masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedOrRealFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false, currentDate));
+        masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false));
 
         return masterGameYears.ToList();
     }

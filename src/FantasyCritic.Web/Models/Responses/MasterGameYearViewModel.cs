@@ -20,6 +20,7 @@ public class MasterGameYearViewModel
         WillRelease = masterGame.WillRelease();
         DelayContention = masterGame.MasterGame.DelayContention;
         CriticScore = masterGame.MasterGame.CriticScore;
+        FantasyPoints = masterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
         AveragedScore = masterGame.MasterGame.AveragedScore;
         OpenCriticID = masterGame.MasterGame.OpenCriticID;
         GGToken = masterGame.MasterGame.GGToken;
@@ -45,8 +46,8 @@ public class MasterGameYearViewModel
         HypeFactor = masterGame.HypeFactor;
         DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
         PeakHypeFactor = masterGame.PeakHypeFactor;
-        ProjectedFantasyPoints = masterGame.GetAlwaysProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false);
-        ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
+        ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false);
+        ProjectedOrRealFantasyPoints = FantasyPoints ?? ProjectedFantasyPoints;
         AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
     }
 
@@ -62,6 +63,7 @@ public class MasterGameYearViewModel
         IsReleased = masterGame.MasterGame.IsReleased(currentDate);
         WillRelease = masterGame.WillRelease();
         CriticScore = masterSubGame.CriticScore;
+        FantasyPoints = masterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
         AveragedScore = false;
         OpenCriticID = masterSubGame.OpenCriticID;
         SubGames = null;
@@ -85,8 +87,8 @@ public class MasterGameYearViewModel
         HypeFactor = masterGame.HypeFactor;
         DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
         PeakHypeFactor = masterGame.PeakHypeFactor;
-        ProjectedFantasyPoints = masterGame.GetAlwaysProjectedFantasyPoints(new StandardScoringSystem(), false);
-        ProjectedOrRealFantasyPoints = masterGame.GetProjectedOrRealFantasyPoints(new StandardScoringSystem(), false, currentDate);
+        ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false);
+        ProjectedOrRealFantasyPoints = FantasyPoints ?? ProjectedFantasyPoints;
         AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
     }
 
@@ -104,6 +106,7 @@ public class MasterGameYearViewModel
     public bool WillRelease { get; }
     public bool DelayContention { get; }
     public decimal? CriticScore { get; }
+    public decimal? FantasyPoints { get; }
     public bool AveragedScore { get; }
     public int? OpenCriticID { get; }
     public string? GGToken { get; }

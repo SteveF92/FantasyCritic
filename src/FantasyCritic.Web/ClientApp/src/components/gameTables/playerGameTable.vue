@@ -39,7 +39,10 @@
       </template>
 
       <template #cell(publisherGame.masterGame.projectedFantasyPoints)="data">
-        <template v-if="data.item.projectedFantasyPoints">~{{ data.item.projectedFantasyPoints | score(2) }}</template>
+        <template v-if="data.item.publisherGame && data.item.publisherGame.masterGame && data.item.publisherGame.masterGame.projectedFantasyPoints">
+          ~{{ data.item.publisherGame.masterGame.projectedFantasyPoints | score(2) }}
+        </template>
+        <template v-else>~{{ data.item.projectedFantasyPoints | score(2) }}</template>
       </template>
 
       <template #cell(publisherGame.fantasyPoints)="data">

@@ -115,7 +115,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return 0m;
         }
 
-        var basePoints = MasterGame.CalculateFantasyPoints(ScoringSystem.GetDefaultScoringSystem(YearQuarter.YearQuarter.Year), false, currentDate, true);
+        var basePoints = MasterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(YearQuarter.YearQuarter.Year), false, currentDate);
         if (!basePoints.HasValue)
         {
             return null;
