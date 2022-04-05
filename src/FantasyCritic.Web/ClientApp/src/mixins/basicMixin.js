@@ -2,7 +2,7 @@ import { mapGetters } from 'vuex';
 
 let basicMixin = {
   computed: {
-    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'userPublisher', 'authIsBusy']),
+    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'authIsBusy']),
     displayName() {
       if (!this.$store.getters.userInfo) {
         return;
