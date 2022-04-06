@@ -2,11 +2,20 @@
   <b-table :items="leagues" :fields="leagueFields" thead-class="hidden_header" bordered striped>
     <template #cell(leagueName)="data">
       <div class="row-flex">
-        <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }">
-          <font-awesome-icon v-if="leagueIcon !== 'user'" class="league-icon" :icon="leagueIcon" />
+        <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-icon">
+          <font-awesome-icon v-if="leagueIcon !== 'user'" :icon="leagueIcon" size="2x" />
           <template v-else>
-            <font-awesome-icon v-if="data.item.leagueManager.isManager" class="league-icon" icon="user-cog" />
-            <font-awesome-icon v-else class="league-icon" icon="user" />
+            <template v-if="!data.item.oneShotMode">
+              <font-awesome-icon v-if="data.item.isManager" icon="user-cog" size="2x" />
+              <font-awesome-icon v-else icon="user" size="2x" />
+            </template>
+            <template v-else>
+              <font-awesome-layers v-if="data.item.isManager">
+                <font-awesome-icon icon="cog" transform="right-16 down-5" />
+                <font-awesome-icon icon="1" size="2x" transform="right-2 down-2" />
+              </font-awesome-layers>
+              <font-awesome-icon v-else icon="1" size="2x" transform="right-4" />
+            </template>
           </template>
         </router-link>
         <div>
@@ -67,9 +76,10 @@ table >>> .hidden_header {
 }
 
 .league-icon {
-  width: 45px;
-  height: 45px;
-  margin-right: 10px;
+  margin-top: 5px;
+  margin-right: 17px;
+  width: 40px;
+  font-size: 20px;
 }
 
 .league-link {
