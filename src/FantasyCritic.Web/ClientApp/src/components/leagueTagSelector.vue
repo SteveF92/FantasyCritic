@@ -92,6 +92,11 @@ export default {
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     }
   },
+  watch: {
+    value() {
+      this.initializeValues();
+    }
+  },
   mounted() {
     this.initializeValues();
   },
@@ -103,6 +108,18 @@ export default {
       this.internalValue = _.cloneDeep(this.initialValue);
     },
     initializeValues() {
+      this.initialValue = {
+        banned: [],
+        allowed: [],
+        required: []
+      };
+
+      this.internalValue = {
+        banned: [],
+        allowed: [],
+        required: []
+      };
+
       this.tagOptions.forEach((tag) => {
         if (this.value.banned.includes(tag.name)) {
           this.initialValue.banned.push(tag.name);

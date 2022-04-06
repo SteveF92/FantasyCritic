@@ -356,16 +356,12 @@ export default {
         this.internalValue.unlimitedWillNotReleaseDroppableGames = false;
       }
 
-      let alwaysBannedTags = ['Port'];
-      let standardBannedTags = ['CurrentlyInEarlyAccess', 'ReleasedInternationally', 'YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster'];
-      let advancedBannedTags = ['ExpansionPack'];
+      let alwaysBannedTags = ['Port', 'CurrentlyInEarlyAccess', 'ReleasedInternationally'];
+      let standardBannedTags = ['YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster', 'ExpansionPack'];
 
       let bannedTags = alwaysBannedTags;
-      if (this.gameMode === 'Standard' || this.gameMode === 'Advanced') {
+      if (this.gameMode !== 'Beginner') {
         bannedTags = bannedTags.concat(standardBannedTags);
-      }
-      if (this.gameMode === 'Advanced') {
-        bannedTags = bannedTags.concat(advancedBannedTags);
       }
 
       this.internalValue.tags = {
