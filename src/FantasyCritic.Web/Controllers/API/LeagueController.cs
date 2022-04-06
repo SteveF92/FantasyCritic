@@ -588,6 +588,11 @@ public class LeagueController : BaseLeagueController
             return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
         }
 
+        if (leagueYear.Options.OneShotMode)
+        {
+            return BadRequest("This league is in 'one shot mode', which doesn't support bids.");
+        }
+
         PublisherGame? conditionalDropPublisherGame = null;
         if (request.ConditionalDropPublisherGameID.HasValue)
         {
@@ -1013,6 +1018,11 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
         var publisherGame = validResult.PublisherGame;
+
+        if (leagueYear.Options.OneShotMode)
+        {
+            return BadRequest("This league is in 'one shot mode', which doesn't support bids.");
+        }
 
         DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(leagueYear, publisher, publisherGame, false);
         var viewModel = new DropGameResultViewModel(dropResult);
