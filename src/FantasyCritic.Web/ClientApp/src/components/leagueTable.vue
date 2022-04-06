@@ -3,9 +3,11 @@
     <template #cell(leagueName)="data">
       <div class="row-flex">
         <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }">
-          <font-awesome-icon v-show="leagueIcon !== 'user'" class="league-icon" :icon="leagueIcon" />
-          <font-awesome-icon v-show="leagueIcon === 'user' && data.item.leagueManager.userID === userID" class="league-icon" icon="user-cog" />
-          <font-awesome-icon v-show="leagueIcon === 'user' && data.item.leagueManager.userID !== userID" class="league-icon" icon="user" />
+          <font-awesome-icon v-if="leagueIcon !== 'user'" class="league-icon" :icon="leagueIcon" />
+          <template v-else>
+            <font-awesome-icon v-if="data.item.leagueManager.isManager" class="league-icon" icon="user-cog" />
+            <font-awesome-icon v-else class="league-icon" icon="user" />
+          </template>
         </router-link>
         <div>
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-link">{{ data.item.leagueName }}</router-link>
@@ -32,7 +34,6 @@ export default {
   props: {
     leagues: { type: Array, required: true },
     leagueIcon: { type: String, required: true },
-    userID: { type: String, required: true },
     showArchive: { type: Boolean },
     showUnArchive: { type: Boolean }
   },

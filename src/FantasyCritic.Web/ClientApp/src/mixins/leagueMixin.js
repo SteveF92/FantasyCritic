@@ -87,6 +87,9 @@ let leagueMixin = {
       }
 
       return this.leagueYear.gameNews;
+    },
+    oneShotMode() {
+      return this.leagueYear.oneShotMode;
     }
   },
   methods: {

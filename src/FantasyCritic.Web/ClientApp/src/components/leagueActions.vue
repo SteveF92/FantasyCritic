@@ -100,7 +100,7 @@
             <li v-b-modal="'manageTagOverridesModal'" class="fake-link action">Override Game Tags</li>
             <li v-b-modal="'changeLeagueOptionsForm'" class="fake-link action">Change General League Options</li>
             <li v-b-modal="'removePlayerForm'" class="fake-link action">Remove a Player</li>
-            <li v-b-modal="'transfer ManagerForm'" class="fake-link action">Promote new League Manager</li>
+            <li v-b-modal="'transferManagerForm'" class="fake-link action">Promote new League Manager</li>
             <li v-b-modal="'addNewLeagueYear'" class="fake-link action">Start New Year</li>
           </ul>
         </div>

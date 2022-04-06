@@ -38,7 +38,7 @@
             <b-tabs pills>
               <b-tab title="My Leagues" title-item-class="tab-header">
                 <div v-if="myStandardLeagues && myStandardLeagues.length > 0">
-                  <leagueTable :leagues="myStandardLeagues" :league-icon="'user'" :user-i-d="userInfo.userID" :show-archive="true"></leagueTable>
+                  <leagueTable :leagues="myStandardLeagues" :league-icon="'user'" :show-archive="true"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not in any leagues! Why not create one?</label>
@@ -49,21 +49,21 @@
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
-                <leagueTable :leagues="invitedLeagues" :league-icon="'envelope'" :user-i-d="userInfo.userID"></leagueTable>
+                <leagueTable :leagues="invitedLeagues" :league-icon="'envelope'"></leagueTable>
               </b-tab>
               <b-tab title="Followed Leagues" title-item-class="tab-header">
                 <div v-if="myFollowedLeagues && myFollowedLeagues.length > 0">
-                  <leagueTable :leagues="myFollowedLeagues" :league-icon="'users'" :user-i-d="userInfo.userID"></leagueTable>
+                  <leagueTable :leagues="myFollowedLeagues" :league-icon="'users'"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
               <b-tab v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title="Archived Leagues" title-item-class="tab-header">
-                <leagueTable :leagues="myArchivedLeagues" :league-icon="'archive'" :user-i-d="userInfo.userID" :show-un-archive="true"></leagueTable>
+                <leagueTable :leagues="myArchivedLeagues" :league-icon="'archive'" :show-un-archive="true"></leagueTable>
               </b-tab>
               <b-tab v-if="myTestLeagues && myTestLeagues.length > 0" title="Test Leagues" title-item-class="tab-header">
-                <leagueTable :leagues="myTestLeagues" :league-icon="'atom'" :user-i-d="userInfo.userID"></leagueTable>
+                <leagueTable :leagues="myTestLeagues" :league-icon="'atom'"></leagueTable>
               </b-tab>
             </b-tabs>
           </b-card>

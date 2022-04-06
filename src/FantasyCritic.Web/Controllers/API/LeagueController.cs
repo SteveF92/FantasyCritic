@@ -89,15 +89,23 @@ public class LeagueController : BaseLeagueController
 
         IReadOnlyList<League> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
 
-        List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
+        List<LeagueWithStatusViewModel> viewModels = new List<LeagueWithStatusViewModel>();
         foreach (var league in myLeagues)
         {
             if (year.HasValue && !league.Years.Contains(year.Value))
             {
                 continue;
             }
+
+            int relevantYear = year ?? league.Years.Max();
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, relevantYear);
+            if (leagueYear is null)
+            {
+                _logger.LogError($"League is missing year: {league.LeagueID} {relevantYear}");
+                continue;
+            }
             bool isManager = (league.LeagueManager.Id == currentUser.Id);
-            viewModels.Add(new LeagueViewModel(league, isManager, true, false));
+            viewModels.Add(new LeagueWithStatusViewModel(league, leagueYear, isManager, true, false));
         }
 
         return Ok(viewModels);

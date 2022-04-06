@@ -49,7 +49,8 @@ import {
   faCrosshairs,
   faBalanceScale,
   faCaretDown,
-  faCaretLeft
+  faCaretLeft,
+  fa1
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faCircle as regCircle, faSquare as regSquare } from '@fortawesome/free-regular-svg-icons';
@@ -116,7 +117,8 @@ library.add(
   faCrosshairs,
   faBalanceScale,
   faCaretDown,
-  faCaretLeft
+  faCaretLeft,
+  fa1
 );
 
 export { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText };
