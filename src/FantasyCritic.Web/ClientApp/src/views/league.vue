@@ -11,7 +11,13 @@
           <div class="league-header-row">
             <div class="league-header-flex">
               <div class="league-name">
-                <h1>{{ league.leagueName }}</h1>
+                <h1>
+                  {{ league.leagueName }}
+                  <font-awesome-layers v-if="oneShotMode" v-b-popover.hover.focus.rightbottom="oneShotText">
+                    <font-awesome-icon icon="square" :style="{ color: '#d6993a' }" />
+                    <font-awesome-icon icon="1" size="xs" :style="{ color: 'white' }" />
+                  </font-awesome-layers>
+                </h1>
               </div>
 
               <div class="selector-area">
@@ -201,7 +207,8 @@ export default {
   data() {
     return {
       selectedYear: null,
-      errorInfo: null
+      errorInfo: null,
+      oneShotText: "This is a 'one shot' league, meaning there are no bids or drops. The draft is final."
     };
   },
   computed: {

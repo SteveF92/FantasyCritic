@@ -50,6 +50,7 @@ import {
   faBalanceScale,
   faCaretDown,
   faCaretLeft,
+  faSquare,
   fa1
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -118,7 +119,8 @@ library.add(
   faBalanceScale,
   faCaretDown,
   faCaretLeft,
-  fa1
+  fa1,
+  faSquare
 );
 
 export { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText };
