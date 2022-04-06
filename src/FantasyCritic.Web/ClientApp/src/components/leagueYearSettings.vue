@@ -350,6 +350,7 @@ export default {
       if (!this.oneShotMode) {
         this.internalValue.willReleaseDroppableGames = 1;
         this.internalValue.unlimitedWillNotReleaseDroppableGames = true;
+        this.internalValue.tradingSystem = 'NoTrades';
       } else {
         this.internalValue.willReleaseDroppableGames = 0;
         this.internalValue.unlimitedWillNotReleaseDroppableGames = false;

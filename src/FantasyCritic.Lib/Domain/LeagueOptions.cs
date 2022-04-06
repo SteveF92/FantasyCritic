@@ -103,7 +103,7 @@ public class LeagueOptions
 
     public bool OneShotMode => StandardGames == GamesToDraft && CounterPicks == CounterPicksToDraft &&
                                FreeDroppableGames == 0 && WillNotReleaseDroppableGames == 0 &&
-                               WillReleaseDroppableGames == 0;
+                               WillReleaseDroppableGames == 0 && TradingSystem.Equals(TradingSystem.NoTrades);
 
     public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
     {

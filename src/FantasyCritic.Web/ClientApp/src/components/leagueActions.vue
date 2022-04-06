@@ -30,7 +30,7 @@
           <ul class="actions-list">
             <li class="action">
               <router-link :to="{ name: 'publisher', params: { publisherid: userPublisher.publisherID } }">
-                <template v-if="leagueYear.hasSpecialSlots">My Publisher Details / Move Games</template>
+                <template v-if="leagueYear.hasSpecialSlots && !leagueYear.supportedYear.finished">My Publisher Details / Move Games</template>
                 <template v-else>My Publisher Details</template>
               </router-link>
             </li>
@@ -41,13 +41,16 @@
               <li v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftCounterPickForm'" class="fake-link action">
                 Draft Counterpick
               </li>
-              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
-              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
-              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'currentBidsForm'" class="fake-link action">My Current Bids</li>
-              <li v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
-              <li v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
-              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
-              <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>
+              <template v-if="!oneShotMode">
+                <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
+                <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
+                <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'currentBidsForm'" class="fake-link action">My Current Bids</li>
+                <li v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
+                <li v-show="leagueYear.playStatus.draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
+                <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
+                <li v-show="leagueYear.playStatus.draftFinished" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>
+              </template>
+
               <li v-b-modal="'gameQueueForm'" class="fake-link action">Watchlist</li>
               <li v-show="!leagueYear.playStatus.draftFinished" v-b-modal="'editAutoDraftForm'" class="fake-link action">Set Auto Draft</li>
             </template>
