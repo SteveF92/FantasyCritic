@@ -43,7 +43,7 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      standingFields: [
+      standingFieldsInternal: [
         { key: 'userName', label: 'User', thClass: 'bg-primary' },
         { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
         { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
@@ -57,6 +57,13 @@ export default {
     };
   },
   computed: {
+    standingFields() {
+      if (!this.oneShotMode) {
+        return this.standingFieldsInternal;
+      }
+
+      return this.standingFieldsInternal.slice(0, -1);
+    },
     standings() {
       let standings = this.leagueYear.players;
       if (!standings) {
