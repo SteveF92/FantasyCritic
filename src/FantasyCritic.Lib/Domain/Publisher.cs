@@ -73,7 +73,7 @@ public class Publisher : IEquatable<Publisher>
     public decimal GetProjectedFantasyPoints(LeagueYear leagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         var leagueOptions = leagueYear.Options;
-        bool ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots();
+        bool ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots;
         var slots = GetPublisherSlots(leagueOptions);
         decimal projectedScore = 0;
         foreach (var slot in slots)

@@ -99,7 +99,11 @@ public class LeagueOptions
     public TiebreakSystem TiebreakSystem { get; }
     public bool PublicLeague { get; }
 
-    public bool HasSpecialSlots() => SpecialGameSlots.Any();
+    public bool HasSpecialSlots => SpecialGameSlots.Any();
+
+    public bool OneShotMode => StandardGames == GamesToDraft && CounterPicks == CounterPicksToDraft &&
+                               FreeDroppableGames == 0 && WillNotReleaseDroppableGames == 0 &&
+                               WillReleaseDroppableGames == 0;
 
     public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
     {

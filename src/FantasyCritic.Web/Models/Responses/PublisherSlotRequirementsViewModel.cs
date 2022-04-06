@@ -5,7 +5,7 @@ public class PublisherSlotRequirementsViewModel
     public PublisherSlotRequirementsViewModel(LeagueOptions options)
     {
         RegularSlot = new PublisherSingleSlotRequirementsViewModel(options.LeagueTags);
-        if (!options.HasSpecialSlots())
+        if (!options.HasSpecialSlots)
         {
             OverallSlot = RegularSlot;
             SpecialSlots = new List<PublisherSingleSlotRequirementsViewModel>();

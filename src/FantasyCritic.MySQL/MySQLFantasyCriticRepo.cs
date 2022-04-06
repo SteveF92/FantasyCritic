@@ -1815,7 +1815,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private static async Task MakePublisherGameSlotsConsistent(IEnumerable<LeagueYearPublisherPair> publisherPairs, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var specialSlotPublisherIDs = publisherPairs.Where(x => x.LeagueYear.Options.HasSpecialSlots()).Select(x => x.Publisher.PublisherID).ToHashSet();
+        var specialSlotPublisherIDs = publisherPairs.Where(x => x.LeagueYear.Options.HasSpecialSlots).Select(x => x.Publisher.PublisherID).ToHashSet();
 
         int tempSlotNumber = 1000;
         var preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();

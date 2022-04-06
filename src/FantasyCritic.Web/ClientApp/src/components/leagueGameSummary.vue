@@ -54,14 +54,6 @@ export default {
       set(value) {
         this.$store.commit('setDraftOrderView', value);
       }
-    },
-    options() {
-      var options = {
-        standardGameSlots: this.leagueYear.standardGames,
-        counterPickSlots: this.leagueYear.counterPicks
-      };
-
-      return options;
     }
   }
 };

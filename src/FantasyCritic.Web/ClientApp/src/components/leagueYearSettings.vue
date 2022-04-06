@@ -19,6 +19,10 @@
         <div class="form-group">
           <label for="gameMode" class="control-label">Game Mode</label>
           <p>If you've played Fantasy Critic before, consider using Advanced. If you're playing with people new to video games in general, consider using Beginner.</p>
+          <p>
+            If you're looking for less of a commitment, you can consider "one shot" mode. In this mode, the draft is final, there is no dropping or bidding for games. This can be a good option if you
+            aren't sure you want to keep up with your league all year long.
+          </p>
           <b-form-select v-model="gameMode" :options="gameModeOptions" @input="fullAutoUpdate()"></b-form-select>
           <p>These modes change the recommended number of games per player and a few other settings. This just provides a baseline, you are free to tweak anything you want.</p>
         </div>
@@ -41,7 +45,7 @@
         </ValidationProvider>
       </div>
 
-      <div class="form-group">
+      <div v-show="!oneShotMode" class="form-group">
         <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
         <p>
           This is the number of games that will be chosen by each player at the draft. If this number is lower than the "Total Number of Games", the remainder will be
@@ -67,7 +71,7 @@
         </ValidationProvider>
       </div>
 
-      <div class="form-group">
+      <div v-show="!oneShotMode" class="form-group">
         <label for="counterPicksToDraft" class="control-label">Number of Counter Picks to Draft</label>
         <p>
           This is the number of games that will be chosen by each player at the draft. If this number is lower than the "Total Number of Counter Picks", the remainder will be
@@ -80,7 +84,7 @@
         </ValidationProvider>
       </div>
 
-      <div class="form-group">
+      <div v-show="!oneShotMode" class="form-group">
         <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
         <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:100|integer">
           <input id="minimumBidAmount" v-model="internalValue.minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
@@ -89,101 +93,105 @@
         <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
       </div>
 
-      <hr />
-      <h3>Bidding Settings</h3>
-      <div class="alert alert-info">
-        New for 2022, you can choose the new "public bidding" system. This feature can help balance leagues where some players are more engaged/invested than others. You can read more about it on the
-        <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ page</a>
-        .
-        <br />
-        If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
-      </div>
-      <label for="pickupSystem" class="control-label">Bidding System</label>
-      <b-form-select v-model="internalValue.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
-
-      <hr />
-      <h3>Trade Settings</h3>
-      <div class="alert alert-info">New for 2022, you can allow players in your leagues to trade games with each other.</div>
-      <label for="tradingSystem" class="control-label">Trading System</label>
-      <b-form-select v-model="internalValue.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
-
-      <hr />
-      <h3>Game Dropping Settings</h3>
-      <div class="alert alert-info">
-        If you like, you can allow players to drop a game before it releases. These settings allow you to choose how many such games can be dropped, if any. You can customize how many games are
-        droppable after the game is confirmed to be delayed, as well as how many are droppable that are still scheduled to release.
-        <br />
-        You can also use the "Any Unreleased" setting, which applies to all unreleased games, delayed or not.
-        <br />
-        For more details, check out the
-        <a href="/faq#dropping-games" target="_blank" class="text-secondary">FAQ.</a>
+      <div v-show="!oneShotMode">
+        <hr />
+        <h3>Bidding Settings</h3>
+        <div class="alert alert-info">
+          New for 2022, you can choose the new "public bidding" system. This feature can help balance leagues where some players are more engaged/invested than others. You can read more about it on
+          the
+          <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ page</a>
+          .
+          <br />
+          If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
+        </div>
+        <label for="pickupSystem" class="control-label">Bidding System</label>
+        <b-form-select v-model="internalValue.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
       </div>
 
-      <table class="table table-small table-bordered">
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col">Number</th>
-            <th scope="col">Unlimited?</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Will Release</th>
-            <td>
-              <ValidationProvider v-if="!internalValue.unlimitedWillReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
-                <input id="willReleaseDroppableGames" v-model="internalValue.willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
-                <span class="text-danger">{{ errors[0] }}</span>
-              </ValidationProvider>
-            </td>
-            <td>
-              <b-form-checkbox v-model="internalValue.unlimitedWillReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Will Not Release</th>
-            <td>
-              <ValidationProvider v-if="!internalValue.unlimitedWillNotReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
-                <input
-                  id="willNotReleaseDroppableGames"
-                  v-model="internalValue.willNotReleaseDroppableGames"
-                  name="Will Not Release Droppable Games"
-                  type="text"
-                  class="form-control input drop-number" />
-                <span class="text-danger">{{ errors[0] }}</span>
-              </ValidationProvider>
-            </td>
-            <td>
-              <b-form-checkbox v-model="internalValue.unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Any Unreleased</th>
-            <td>
-              <ValidationProvider v-if="!internalValue.unlimitedFreeDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
-                <input id="freeDroppableGames" v-model="internalValue.freeDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
-                <span class="text-danger">{{ errors[0] }}</span>
-              </ValidationProvider>
-            </td>
-            <td>
-              <b-form-checkbox v-model="internalValue.unlimitedFreeDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div>
-        <b-form-checkbox v-model="internalValue.dropOnlyDraftGames">
-          <span class="checkbox-label">Only allow drafted to be dropped</span>
-          <p>If this is checked, pickup games will not be droppable, no matter what the above settings are. Counter picks are never droppable.</p>
-        </b-form-checkbox>
+      <div v-show="!oneShotMode">
+        <hr />
+        <h3>Trade Settings</h3>
+        <div class="alert alert-info">New for 2022, you can allow players in your leagues to trade games with each other.</div>
+        <label for="tradingSystem" class="control-label">Trading System</label>
+        <b-form-select v-model="internalValue.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
       </div>
 
-      <div>
-        <b-form-checkbox v-model="internalValue.counterPicksBlockDrops">
-          <span class="checkbox-label">Counter Picks Block Drops</span>
-          <p>If this is checked, counter picking a game will prevent the original player from dropping the game.</p>
-        </b-form-checkbox>
+      <div v-show="!oneShotMode">
+        <hr />
+        <h3>Game Dropping Settings</h3>
+        <div class="alert alert-info">
+          If you like, you can allow players to drop a game before it releases. These settings allow you to choose how many such games can be dropped, if any. You can customize how many games are
+          droppable after the game is confirmed to be delayed, as well as how many are droppable that are still scheduled to release.
+          <br />
+          You can also use the "Any Unreleased" setting, which applies to all unreleased games, delayed or not.
+          <br />
+          For more details, check out the
+          <a href="/faq#dropping-games" target="_blank" class="text-secondary">FAQ.</a>
+        </div>
+        <table class="table table-small table-bordered">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Number</th>
+              <th scope="col">Unlimited?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Will Release</th>
+              <td>
+                <ValidationProvider v-if="!internalValue.unlimitedWillReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                  <input id="willReleaseDroppableGames" v-model="internalValue.willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
+                  <span class="text-danger">{{ errors[0] }}</span>
+                </ValidationProvider>
+              </td>
+              <td>
+                <b-form-checkbox v-model="internalValue.unlimitedWillReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Will Not Release</th>
+              <td>
+                <ValidationProvider v-if="!internalValue.unlimitedWillNotReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                  <input
+                    id="willNotReleaseDroppableGames"
+                    v-model="internalValue.willNotReleaseDroppableGames"
+                    name="Will Not Release Droppable Games"
+                    type="text"
+                    class="form-control input drop-number" />
+                  <span class="text-danger">{{ errors[0] }}</span>
+                </ValidationProvider>
+              </td>
+              <td>
+                <b-form-checkbox v-model="internalValue.unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Any Unreleased</th>
+              <td>
+                <ValidationProvider v-if="!internalValue.unlimitedFreeDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                  <input id="freeDroppableGames" v-model="internalValue.freeDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
+                  <span class="text-danger">{{ errors[0] }}</span>
+                </ValidationProvider>
+              </td>
+              <td>
+                <b-form-checkbox v-model="internalValue.unlimitedFreeDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div>
+          <b-form-checkbox v-model="internalValue.dropOnlyDraftGames">
+            <span class="checkbox-label">Only allow drafted to be dropped</span>
+            <p>If this is checked, pickup games will not be droppable, no matter what the above settings are. Counter picks are never droppable.</p>
+          </b-form-checkbox>
+        </div>
+        <div>
+          <b-form-checkbox v-model="internalValue.counterPicksBlockDrops">
+            <span class="checkbox-label">Counter Picks Block Drops</span>
+            <p>If this is checked, counter picking a game will prevent the original player from dropping the game.</p>
+          </b-form-checkbox>
+        </div>
       </div>
 
       <hr />
@@ -249,9 +257,14 @@ export default {
       intendedNumberOfPlayers: null,
       intendedNumberOfPlayersEverValid: false,
       gameMode: 'Standard',
-      gameModeOptions: ['Beginner', 'Standard', 'Advanced'],
+      gameModeOptions: ['One Shot', 'Beginner', 'Standard', 'Advanced'],
       internalValue: null
     };
+  },
+  computed: {
+    oneShotMode() {
+      return this.gameMode === 'One Shot';
+    }
   },
   watch: {
     intendedNumberOfPlayers: function () {
@@ -293,8 +306,10 @@ export default {
 
       let recommendedNumberOfGames = 72;
       let draftGameRatio = 1 / 2;
-
-      if (this.gameMode === 'Beginner') {
+      if (this.oneShotMode) {
+        recommendedNumberOfGames = 50;
+        draftGameRatio = 1;
+      } else if (this.gameMode === 'Beginner') {
         recommendedNumberOfGames = 42;
         draftGameRatio = 4 / 7;
       } else if (this.gameMode === 'Advanced') {
@@ -330,10 +345,15 @@ export default {
       this.internalValue.minimumBidAmount = 0;
       this.internalValue.freeDroppableGames = 0;
       this.internalValue.willNotReleaseDroppableGames = 0;
-      this.internalValue.willReleaseDroppableGames = 1;
       this.internalValue.unlimitedFreeDroppableGames = false;
-      this.internalValue.unlimitedWillNotReleaseDroppableGames = true;
       this.internalValue.unlimitedWillReleaseDroppableGames = false;
+      if (!this.oneShotMode) {
+        this.internalValue.willReleaseDroppableGames = 1;
+        this.internalValue.unlimitedWillNotReleaseDroppableGames = true;
+      } else {
+        this.internalValue.willReleaseDroppableGames = 0;
+        this.internalValue.unlimitedWillNotReleaseDroppableGames = false;
+      }
 
       let alwaysBannedTags = ['Port'];
       let standardBannedTags = ['CurrentlyInEarlyAccess', 'ReleasedInternationally', 'YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster'];
@@ -371,10 +391,21 @@ export default {
         return;
       }
 
-      let includeYearlyInstallmentSlot = true;
+      let includeYearlyInstallmentSlot = this.intendedNumberOfPlayers < 5;
       let includeExpansionPackSlot = numberOfSpecialSlots >= 2;
       let includeRemakeSlot = numberOfSpecialSlots >= 2;
-      let numberNGFSlots = numberOfSpecialSlots - 3;
+      let numberNonNGFSlots = 0;
+      if (includeYearlyInstallmentSlot) {
+        numberNonNGFSlots++;
+      }
+      if (includeExpansionPackSlot) {
+        numberNonNGFSlots++;
+      }
+      if (includeRemakeSlot) {
+        numberNonNGFSlots++;
+      }
+
+      let numberNGFSlots = numberOfSpecialSlots - numberNonNGFSlots;
       if (numberNGFSlots < 0) {
         numberNGFSlots = 0;
       }
@@ -392,24 +423,24 @@ export default {
           specialSlotPosition: slotIndex,
           requiredTags: ['YearlyInstallment']
         });
+        slotIndex++;
       }
-      slotIndex++;
 
       if (includeExpansionPackSlot) {
         this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
           requiredTags: ['ExpansionPack']
         });
+        slotIndex++;
       }
-      slotIndex++;
 
       if (includeRemakeSlot) {
         this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
           requiredTags: ['Remake', 'PartialRemake', 'DirectorsCut']
         });
+        slotIndex++;
       }
-      slotIndex++;
     }
   }
 };

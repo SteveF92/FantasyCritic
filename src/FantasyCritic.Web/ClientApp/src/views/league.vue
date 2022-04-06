@@ -44,7 +44,7 @@
         <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">You are viewing a private league.</div>
 
         <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
-          <p v-if="league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)">The draft is complete!</p>
+          <p v-if="!league.userIsInLeague || oneShotMode">The draft is complete!</p>
           <p v-else>The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!</p>
         </b-modal>
 

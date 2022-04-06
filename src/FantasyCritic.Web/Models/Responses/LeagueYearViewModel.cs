@@ -19,7 +19,6 @@ public class LeagueYearViewModel
         Year = leagueYear.Year;
         SupportedYear = new SupportedYearViewModel(leagueYear.SupportedYear);
         StandardGames = leagueYear.Options.StandardGames;
-        GamesToDraft = leagueYear.Options.GamesToDraft;
         CounterPicks = leagueYear.Options.CounterPicks;
         DraftSystem = leagueYear.Options.DraftSystem.Value;
         PickupSystem = leagueYear.Options.PickupSystem.Value;
@@ -33,7 +32,8 @@ public class LeagueYearViewModel
             UserIsActive = activeUsers.Any(x => x.Id == accessingUser.Id);
         }
         
-        HasSpecialSlots = leagueYear.Options.HasSpecialSlots();
+        HasSpecialSlots = leagueYear.Options.HasSpecialSlots;
+        OneShotMode = leagueYear.Options.OneShotMode;
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
@@ -122,7 +122,6 @@ public class LeagueYearViewModel
     public int Year { get; }
     public SupportedYearViewModel SupportedYear { get; }
     public int StandardGames { get; }
-    public int GamesToDraft { get; }
     public int CounterPicks { get; }
     public string DraftSystem { get; }
     public string PickupSystem { get; }
@@ -132,6 +131,7 @@ public class LeagueYearViewModel
     public bool UnlinkedGameExists { get; }
     public bool UserIsActive { get; }
     public bool HasSpecialSlots { get; }
+    public bool OneShotMode { get; }
     public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
     public IReadOnlyList<PublisherViewModel> Publishers { get; }
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
