@@ -330,6 +330,7 @@
             <li>Your league can also set a "counter pick deadline", after which, you can only chose to counter pick a game with a confirmed release date.</li>
             <li class="nested-list">
               <ul>
+                <li>A 'confirmed release date' means a single date, like "December 12th, 2022". A release date of "2022" does not count.</li>
                 <li>The intention for this is to prevent players from waiting until the very end of the year to counter pick a game that is almost certain to not release that year.</li>
               </ul>
             </li>

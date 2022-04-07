@@ -238,6 +238,7 @@
             After this date, a game without a confirmed release date can no longer be counter picked. This is only relevant if your league has "pickup counter picks". The intention for this is to
             prevent players from waiting until the very end of the year to counter pick a game that is almost certain to not release this year.
           </p>
+          <p>A 'confirmed release date' means a single date, like "December 12th, 2022". A release date of "2022" does not count.</p>
           <p>If you set this to December 31st, it will effectively have no relevance.</p>
         </div>
       </b-collapse>

@@ -310,15 +310,25 @@ public class GameAcquisitionService
             claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
         }
 
-        if (counterPick && !drafting && masterGame.DelayContention)
-        {
-            claimErrors.Add(new ClaimError("That game is in 'delay contention', and therefore cannot be counter picked.", true));
-        }
-
         bool willRelease = masterGame.MinimumReleaseDate.Year == year && !counterPickedGameIsManualWillNotRelease;
         if (!dropping && !released && !willRelease && !manuallyEligible)
         {
             claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
+        }
+
+        if (counterPick && !drafting)
+        {
+            if (masterGame.DelayContention)
+            {
+                claimErrors.Add(new ClaimError("That game is in 'delay contention', and therefore cannot be counter picked.", false));
+            }
+
+            bool confirmedWillRelease = masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year == year;
+            bool acquiringAfterDeadline = dateOfPotentialAcquisition >= leagueYear.CounterPickDeadline;
+            if (!confirmedWillRelease && acquiringAfterDeadline && willRelease)
+            {
+                claimErrors.Add(new ClaimError($"That game does not have a confirmed release date in {year}, and the 'counter pick deadline' has already passed (or will have by the time bids process).", false));
+            }
         }
 
         bool hasScore = masterGame.CriticScore.HasValue;
