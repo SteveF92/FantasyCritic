@@ -34,6 +34,7 @@ public class LeagueYearViewModel
         
         HasSpecialSlots = leagueYear.Options.HasSpecialSlots;
         OneShotMode = leagueYear.Options.OneShotMode;
+        CounterPickDeadline = leagueYear.CounterPickDeadline;
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
@@ -132,6 +133,7 @@ public class LeagueYearViewModel
     public bool UserIsActive { get; }
     public bool HasSpecialSlots { get; }
     public bool OneShotMode { get; }
+    public LocalDate CounterPickDeadline { get; }
     public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
     public IReadOnlyList<PublisherViewModel> Publishers { get; }
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }

@@ -327,6 +327,12 @@
           Pickup counter picks are like normal counter picks, but instead of taking them in the draft, you take them at any point in the year using the bidding system. A few notes on these:
           <ul>
             <li>If you do not fill a pickup counter pick slot by the end of the year, you will lose 15 points.</li>
+            <li>Your league can also set a "counter pick deadline", after which, you can only chose to counter pick a game with a confirmed release date.</li>
+            <li class="nested-list">
+              <ul>
+                <li>The intention for this is to prevent players from waiting until the very end of the year to counter pick a game that is almost certain to not release that year.</li>
+              </ul>
+            </li>
             <li>
               You cannot counter pick a game that is already set to "Will Not Release". You are free to counter pick a game that you
               <em>think</em>

@@ -35,16 +35,19 @@
 <script>
 import MasterGamePopover from '@/components/masterGamePopover';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge';
+import BasicMixin from '@/mixins/basicMixin';
 
 export default {
   components: {
     MasterGamePopover,
     SlotTypeBadge
   },
+  mixins: [BasicMixin],
   props: {
     gameSlot: { type: Object, required: true },
     supportedYear: { type: Object, required: true },
-    hasSpecialSlots: { type: Boolean, required: true }
+    hasSpecialSlots: { type: Boolean, required: true },
+    counterPickDeadline: { type: String, required: true }
   },
   computed: {
     game() {
@@ -190,7 +193,16 @@ export default {
           return 'Warning!';
         },
         content: () => {
-          return 'If you do not fill this slot by the end of the year, it will count as -15 points. <br/> <br/>' + 'See the FAQ for a full explanation.';
+          const partOne = 'If you do not fill this slot by the end of the year, it will count as -15 points.';
+          const lineBreak = '<br/> <br/>';
+          const optionalPart = `Additionally, after ${this.formatLongDate(this.counterPickDeadline)} you will only be able to counter pick a game with a confirmed release date.`;
+          const finalPart = 'See the FAQ for a full explanation.';
+          let finalString = partOne + lineBreak;
+          if (this.counterPickDeadline != `${this.supportedYear.year}-12-31`) {
+            finalString += optionalPart + lineBreak;
+          }
+          finalString += finalPart;
+          return finalString;
         }
       };
     }

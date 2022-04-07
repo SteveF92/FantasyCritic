@@ -23,7 +23,11 @@
       </template>
 
       <template #cell(publisherGame.gameName)="data">
-        <gameNameColumn :game-slot="data.item" :has-special-slots="leagueYear.hasSpecialSlots" :supported-year="leagueYear.supportedYear"></gameNameColumn>
+        <gameNameColumn
+          :game-slot="data.item"
+          :has-special-slots="leagueYear.hasSpecialSlots"
+          :supported-year="leagueYear.supportedYear"
+          :counter-pick-deadline="leagueYear.counterPickDeadline"></gameNameColumn>
       </template>
 
       <template #cell(publisherGame.masterGame.maximumReleaseDate)="data">
