@@ -38,12 +38,7 @@
         </template>
       </template>
 
-      <template #cell(publisherGame.masterGame.projectedFantasyPoints)="data">
-        <template v-if="data.item.publisherGame && data.item.publisherGame.masterGame && data.item.publisherGame.masterGame.projectedFantasyPoints">
-          ~{{ data.item.publisherGame.masterGame.projectedFantasyPoints | score(2) }}
-        </template>
-        <template v-else>~{{ data.item.projectedFantasyPoints | score(2) }}</template>
-      </template>
+      <template #cell(projectedFantasyPoints)="data">~{{ data.item.projectedFantasyPoints | score(2) }}</template>
 
       <template #cell(publisherGame.fantasyPoints)="data">
         <template v-if="data.item.publisherGame">
@@ -131,7 +126,7 @@ export default {
         { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'release-date-column'] },
         { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'acquired-column'] },
         { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] },
-        { key: 'publisherGame.masterGame.projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column', 'projected-text'] },
+        { key: 'projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column', 'projected-text'] },
         { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] }
       ];
     },
