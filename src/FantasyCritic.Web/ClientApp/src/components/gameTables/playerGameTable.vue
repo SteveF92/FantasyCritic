@@ -10,7 +10,7 @@
       :sort-desc.sync="sortDesc"
       primary-key="overallSlotNumber"
       tbody-tr-class="btable-player-game-row">
-      <template #head(publisherGame.masterGame.projectedFantasyPoints)>
+      <template #head(projectedFantasyPoints)>
         Projected
         <br />
         points
