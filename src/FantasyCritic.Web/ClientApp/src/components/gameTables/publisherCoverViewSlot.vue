@@ -14,13 +14,21 @@
       </div>
 
       <div class="bottom-text-area">
-        <div v-if="game" class="game-text">{{ globalFunctions.formatPublisherGameReleaseDate(game, true) }}</div>
-        <div v-if="game && game.criticScore" class="game-text">Score: {{ globalFunctions.roundNumber(game.criticScore, 2) }}</div>
-        <div v-if="game && !game.criticScore && game.masterGame" class="game-text">
-          <span v-show="!useSmallImages" class="projection-label">Projection:</span>
-          <span v-show="useSmallImages" class="projection-label">Proj.</span>
-          <span class="projected-text">~{{ globalFunctions.roundNumber(game.masterGame.projectedFantasyPoints, 2) }}</span>
-        </div>
+        <template v-if="game">
+          <template v-if="game.willRelease">
+            <div class="game-text">{{ globalFunctions.formatPublisherGameReleaseDate(game, true) }}</div>
+            <div v-if="game.criticScore" class="game-text">Score: {{ globalFunctions.roundNumber(game.criticScore, 2) }}</div>
+            <div v-if="!game.criticScore && game.masterGame" class="game-text">
+              <span v-show="!useSmallImages" class="projection-label">Projection:</span>
+              <span v-show="useSmallImages" class="projection-label">Proj.</span>
+              <span class="projected-text">~{{ globalFunctions.roundNumber(game.masterGame.projectedFantasyPoints, 2) }}</span>
+            </div>
+          </template>
+          <template v-else>
+            <div v-if="!leagueYear.supportedYear.finished" class="game-text">Will Not Release</div>
+            <div v-else class="game-text">Did Not Release</div>
+          </template>
+        </template>
       </div>
     </div>
 
@@ -218,6 +226,9 @@ export default {
 
 .bottom-text-area {
   height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .no-link-style {
