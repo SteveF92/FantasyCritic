@@ -23,7 +23,7 @@
             <th class="bg-primary">Counter Picks to Draft</th>
             <td>{{ leagueYearOptions.counterPicksToDraft }}</td>
           </tr>
-          <tr>
+          <tr v-if="leagueYearOptions.counterPickDeadline !== `${supportedYear.year}-12-31`">
             <th class="bg-primary">Counter Pick Deadline</th>
             <td>{{ formatLongDate(leagueYearOptions.counterPickDeadline) }}</td>
           </tr>

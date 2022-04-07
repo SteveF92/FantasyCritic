@@ -198,7 +198,7 @@ export default {
           const optionalPart = `Additionally, after ${this.formatLongDate(this.counterPickDeadline)} you will only be able to counter pick a game with a confirmed release date.`;
           const finalPart = 'See the FAQ for a full explanation.';
           let finalString = partOne + lineBreak;
-          if (this.counterPickDeadline != `${this.supportedYear.year}-12-31`) {
+          if (this.counterPickDeadline !== `${this.supportedYear.year}-12-31`) {
             finalString += optionalPart + lineBreak;
           }
           finalString += finalPart;
