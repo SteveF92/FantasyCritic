@@ -361,7 +361,7 @@ public class RoyaleController : FantasyCriticController
         }
     }
 
-    public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string gameName, Guid publisherID)
+    public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string? gameName, Guid publisherID)
     {
         RoyalePublisher? publisher = await _royaleService.GetPublisher(publisherID);
         if (publisher is null)
