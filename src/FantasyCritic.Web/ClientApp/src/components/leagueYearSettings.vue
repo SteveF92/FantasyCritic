@@ -30,7 +30,7 @@
     </div>
 
     <div v-if="internalValue && (intendedNumberOfPlayersEverValid || editMode)">
-      <div v-show="freshSettings">
+      <div v-if="freshSettings">
         <hr />
         <label>Based on your number of players and selected game mode, we recommend the following settings. However, you are free to change this.</label>
       </div>
@@ -231,6 +231,14 @@
           <b-form-select v-model="internalValue.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
           <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
         </div>
+        <div class="form-group">
+          <label for="tiebreakSystem" class="control-label">Counter Pick Deadline</label>
+          <flat-pickr v-model="internalValue.counterPickDeadline" class="form-control"></flat-pickr>
+          <p>
+            After this date, a game without a confirmed release date can no longer be counter picked. This is only relevant if your league has "pickup counter picks". The idea is to prevent players
+            from waiting until the very end of the year to pick a game that is almost certain to be delayed.
+          </p>
+        </div>
       </b-collapse>
     </div>
   </div>
@@ -295,6 +303,8 @@ export default {
       if (!this.freshSettings) {
         return;
       }
+
+      this.internalValue.counterPickDeadline = `${this.year}-11-01`;
 
       if (!this.intendedNumberOfPlayers) {
         return;

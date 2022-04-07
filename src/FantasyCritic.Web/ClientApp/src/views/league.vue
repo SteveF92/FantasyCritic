@@ -4,7 +4,9 @@
       <div v-if="forbidden">
         <div class="alert alert-danger" role="alert">You do not have permission to view this league.</div>
       </div>
-      <div v-if="hasError" class="alert alert-danger" role="alert">Something went wrong with this league. Contact us on Twitter or Discord for support.</div>
+      <div v-if="hasError" class="alert alert-danger" role="alert">
+        Something went wrong with this league. Contact us on Twitter or Discord for support. Please include the league ID in your message (Linking the URL will do).
+      </div>
       <div v-if="errorInfo" class="alert alert-danger" role="alert">{{ errorInfo }}</div>
       <div v-if="leagueYear">
         <div class="row">

@@ -76,7 +76,7 @@ public class FantasyCriticService
         }
 
         var league = leagueYear.League;
-        LeagueOptions options = new LeagueOptions(parameters, league);
+        LeagueOptions options = new LeagueOptions(parameters);
         var validateOptions = options.Validate();
         if (validateOptions.IsFailure)
         {

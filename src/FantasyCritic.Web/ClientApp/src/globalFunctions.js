@@ -64,8 +64,11 @@ export default {
     }
     return moment(publisherGame.removedTimestamp).format('MMMM Do, YYYY');
   },
-  formatLongDate(dateTime) {
+  formatLongDateTime(dateTime) {
     return moment(String(dateTime)).local().format('MMMM Do, YYYY, h:mm:ss a');
+  },
+  formatLongDate(date) {
+    return moment(String(date)).local().format('MMMM Do, YYYY');
   },
   toISODateString(date) {
     const fullString = date.toISOString();

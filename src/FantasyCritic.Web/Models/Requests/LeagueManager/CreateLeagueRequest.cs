@@ -12,7 +12,7 @@ public class CreateLeagueRequest
         int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedFreeDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops,
         int minimumBidAmount, string draftSystem, string pickupSystem, string tradingSystem, string tiebreakSystem,
-        LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
+        LocalDate counterPickDeadline, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
     {
         InitialYear = initialYear;
         LeagueName = leagueName;
@@ -33,6 +33,7 @@ public class CreateLeagueRequest
         PickupSystem = pickupSystem;
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
+        CounterPickDeadline = counterPickDeadline;
         Tags = tags;
         SpecialGameSlots = specialGameSlots;
     }
@@ -66,10 +67,31 @@ public class CreateLeagueRequest
     public string PickupSystem { get; }
     public string TiebreakSystem { get; }
     public string TradingSystem { get; }
+    public LocalDate CounterPickDeadline { get; }
     public bool PublicLeague { get; }
     public bool TestLeague { get; }
     public LeagueTagOptionsViewModel Tags { get; }
     public List<SpecialGameSlotViewModel> SpecialGameSlots { get; }
+
+    public Result IsValid()
+    {
+        if (string.IsNullOrWhiteSpace(LeagueName))
+        {
+            return Result.Failure("You cannot have a blank league name.");
+        }
+
+        if (Tags.Required.Any())
+        {
+            return Result.Failure("Impressive API usage, but required tags are not ready for prime time yet.");
+        }
+
+        if (CounterPickDeadline.Year != InitialYear)
+        {
+            return Result.Failure($"The counter pick deadline must be in {InitialYear}");
+        }
+
+        return Result.Success();
+    }
 
     public LeagueCreationParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
@@ -98,9 +120,11 @@ public class CreateLeagueRequest
         var leagueTags = Tags.ToDomain(tagDictionary);
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
+        var counterPickDeadline = new AnnualDate(CounterPickDeadline.Month, CounterPickDeadline.Day);
+
         LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
             freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-            InitialYear, leagueTags, specialGameSlots, draftSystem, pickupSystem, tiebreakSystem, scoringSystem, tradingSystem, PublicLeague, TestLeague);
+            InitialYear, leagueTags, specialGameSlots, draftSystem, pickupSystem, tiebreakSystem, scoringSystem, tradingSystem, counterPickDeadline, PublicLeague, TestLeague);
         return parameters;
     }
 }

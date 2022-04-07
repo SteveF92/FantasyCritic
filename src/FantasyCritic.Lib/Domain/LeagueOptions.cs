@@ -10,7 +10,7 @@ public class LeagueOptions
 
     public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
         bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem)
+        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, AnnualDate counterPickDeadline)
     {
         StandardGames = standardGames;
         GamesToDraft = gamesToDraft;
@@ -29,6 +29,7 @@ public class LeagueOptions
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
+        CounterPickDeadline = counterPickDeadline;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -53,11 +54,12 @@ public class LeagueOptions
         TradingSystem = parameters.TradingSystem;
         TiebreakSystem = parameters.TiebreakSystem;
         PublicLeague = parameters.PublicLeague;
+        CounterPickDeadline = parameters.CounterPickDeadline;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
 
-    public LeagueOptions(EditLeagueYearParameters parameters, League league)
+    public LeagueOptions(EditLeagueYearParameters parameters)
     {
         StandardGames = parameters.StandardGames;
         GamesToDraft = parameters.GamesToDraft;
@@ -76,6 +78,7 @@ public class LeagueOptions
         ScoringSystem = parameters.ScoringSystem;
         TradingSystem = parameters.TradingSystem;
         TiebreakSystem = parameters.TiebreakSystem;
+        CounterPickDeadline = parameters.CounterPickDeadline;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -97,6 +100,7 @@ public class LeagueOptions
     public ScoringSystem ScoringSystem { get; }
     public TradingSystem TradingSystem { get; }
     public TiebreakSystem TiebreakSystem { get; }
+    public AnnualDate CounterPickDeadline { get; }
     public bool PublicLeague { get; }
 
     public bool HasSpecialSlots => SpecialGameSlots.Any();
@@ -257,6 +261,11 @@ public class LeagueOptions
             differences.Add($"Trading System changed from {existingOptions.TradingSystem.ReadableName} to {TradingSystem.ReadableName}.");
         }
 
+        if (!CounterPickDeadline.Equals(existingOptions.CounterPickDeadline))
+        {
+            differences.Add($"Counter pick deadline changed from {existingOptions.CounterPickDeadline} to {CounterPickDeadline}.");
+        }
+
         var orderedExistingTags = existingOptions.LeagueTags.OrderBy(t => t.Tag.Name).ToList();
         var orderedNewTags = LeagueTags.OrderBy(t => t.Tag.Name).ToList();
         if (!orderedNewTags.SequenceEqual(orderedExistingTags))
@@ -284,7 +293,7 @@ public class LeagueOptions
     {
         var newScoringSystem = ScoringSystem.GetDefaultScoringSystem(requestYear);
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-            DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem);
+            DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, CounterPickDeadline);
         return options;
     }
 }

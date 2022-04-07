@@ -801,9 +801,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         string createLeagueYearSQL =
             "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-            "CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,PlayStatus) VALUES " +
+            "CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,PlayStatus,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
             "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-            "@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,@PlayStatus);";
+            "@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,@PlayStatus,@CounterPickDeadlineMonth,@CounterPickDeadlineDay);";
 
         await using (var connection = new MySqlConnection(_connectionString))
         {
@@ -832,7 +832,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, CounterPicksToDraft = @CounterPicksToDraft, " +
             "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
             "DropOnlyDraftGames = @DropOnlyDraftGames, CounterPicksBlockDrops = @CounterPicksBlockDrops, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem, " +
-            "PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem WHERE LeagueID = @LeagueID and Year = @Year";
+            "PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem, " +
+            "CounterPickDeadlineMonth = @CounterPickDeadlineMonth, CounterPickDeadlineDay = @CounterPickDeadlineDay WHERE LeagueID = @LeagueID and Year = @Year";
 
         var deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
         var deleteSpecialSlotsSQL = "delete from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
@@ -857,9 +858,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         string newLeagueYearSQL =
             "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-            "DraftSystem,PickupSystem,ScoringSystem,TradingSystem,PlayStatus) VALUES " +
+            "DraftSystem,PickupSystem,ScoringSystem,TradingSystem,PlayStatus,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
             "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-            "@DraftSystem,@PickupSystem,@ScoringSystem,@TradingSystem,@PlayStatus);";
+            "@DraftSystem,@PickupSystem,@ScoringSystem,@TradingSystem,@PlayStatus,@CounterPickDeadlineMonth,@CounterPickDeadlineDay);";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();

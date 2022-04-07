@@ -13,7 +13,7 @@ public class LeagueYearSettingsViewModel
         int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedFreeDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops,
         int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem,
-        LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
+        LocalDate counterPickDeadline, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
     {
         LeagueID = leagueID;
         Year = year;
@@ -35,6 +35,8 @@ public class LeagueYearSettingsViewModel
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
+        CounterPickDeadline = counterPickDeadline;
+
         Tags = tags;
         SpecialGameSlots = specialGameSlots;
     }
@@ -75,6 +77,7 @@ public class LeagueYearSettingsViewModel
         TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
         ScoringSystem = leagueYear.Options.ScoringSystem.Name;
         TradingSystem = leagueYear.Options.TradingSystem.Value;
+        CounterPickDeadline = leagueYear.CounterPickDeadline;
 
         var bannedTags = leagueYear.Options.LeagueTags
             .Where(x => x.Status == TagStatus.Banned)
@@ -119,9 +122,25 @@ public class LeagueYearSettingsViewModel
     public string ScoringSystem { get; }
     public string TradingSystem { get; }
     public string TiebreakSystem { get; }
+    public LocalDate CounterPickDeadline { get; }
 
     public LeagueTagOptionsViewModel Tags { get; }
     public List<SpecialGameSlotViewModel> SpecialGameSlots { get; }
+
+    public Result IsValid()
+    {
+        if (Tags.Required.Any())
+        {
+            return Result.Failure("Impressive API usage, but required tags are not ready for prime time yet.");
+        }
+
+        if (CounterPickDeadline.Year != Year)
+        {
+            return Result.Failure($"The counter pick deadline must be in {Year}");
+        }
+
+        return Result.Success();
+    }
 
     public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
@@ -147,12 +166,14 @@ public class LeagueYearSettingsViewModel
             willReleaseDroppableGames = -1;
         }
 
+        var counterPickDeadline = new AnnualDate(CounterPickDeadline.Month, CounterPickDeadline.Day);
+
         var leagueTags = Tags.ToDomain(tagDictionary);
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
         EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
             freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
-            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem);
+            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, counterPickDeadline);
         return parameters;
     }
 }

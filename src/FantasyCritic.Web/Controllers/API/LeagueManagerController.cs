@@ -48,28 +48,25 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest(currentUserResult.Error);
         }
         var currentUser = currentUserResult.Value;
-        if (string.IsNullOrWhiteSpace(request.LeagueName))
-        {
-            return BadRequest("You cannot have a blank league name.");
-        }
 
-        if (request.Tags.Required.Any())
+        var requestValid = request.IsValid();
+        if (requestValid.IsFailure)
         {
-            return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
+            return BadRequest(requestValid.Error);
         }
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.InitialYear);
         if (selectedSupportedYear is null)
         {
-            return BadRequest();
+            return BadRequest("That year is not supported.");
         }
 
         var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
         bool yearIsOpen = selectedSupportedYear.OpenForCreation || (userIsBetaUser && selectedSupportedYear.OpenForBetaUsers);
         if (!yearIsOpen)
         {
-            return BadRequest();
+            return BadRequest("That year is not open for play.");
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
@@ -197,9 +194,10 @@ public class LeagueManagerController : BaseLeagueController
         var currentUser = validResult.CurrentUser!;
         var leagueYear = validResult.LeagueYear;
 
-        if (request.Tags.Required.Any())
+        var requestValid = request.IsValid();
+        if (requestValid.IsFailure)
         {
-            return BadRequest("Impressive API usage, but required tags are not ready for prime time yet.");
+            return BadRequest(requestValid.Error);
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();

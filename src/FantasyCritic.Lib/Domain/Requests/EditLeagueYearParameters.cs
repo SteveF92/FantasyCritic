@@ -8,7 +8,7 @@ public class EditLeagueYearParameters
     public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
         int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount,
         IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem)
+        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, AnnualDate counterPickDeadline)
     {
         Manager = manager;
         LeagueID = leagueID;
@@ -30,6 +30,7 @@ public class EditLeagueYearParameters
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
+        CounterPickDeadline = counterPickDeadline;
     }
 
     public FantasyCriticUser Manager { get; }
@@ -52,4 +53,5 @@ public class EditLeagueYearParameters
     public ScoringSystem ScoringSystem { get; }
     public TradingSystem TradingSystem { get; }
     public TiebreakSystem TiebreakSystem { get; }
+    public AnnualDate CounterPickDeadline { get; }
 }

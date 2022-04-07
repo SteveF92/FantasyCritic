@@ -71,7 +71,10 @@ export default {
     }
   },
   mounted() {
-    this.freshSettings = this.$route.query.freshSettings;
+    this.freshSettings = false;
+    if (this.$route.query.freshSettings) {
+      this.freshSettings = this.$route.query.freshSettings;
+    }
     this.fetchLeagueOptions();
     this.fetchCurrentLeagueYearOptions();
     this.fetchLeagueYear();

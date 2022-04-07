@@ -154,7 +154,6 @@ import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin';
 import MasterGamePopover from '@/components/masterGamePopover';
 import CollapseCard from '@/components/collapseCard';
-import GlobalFunctions from '@/globalFunctions';
 
 export default {
   components: {
@@ -212,10 +211,10 @@ export default {
     header() {
       let finalHeader = `Trade between ${this.trade.proposerPublisherName} and ${this.trade.counterPartyPublisherName}`;
       if (this.trade.status === 'Proposed' || this.trade.status === 'Accepted') {
-        const proposedDate = GlobalFunctions.formatLongDate(this.trade.proposedTimestamp);
+        const proposedDate = this.formatLongDateTime(this.trade.proposedTimestamp);
         finalHeader += ` (Proposed on ${proposedDate})`;
       } else {
-        const completedDate = GlobalFunctions.formatLongDate(this.trade.completedTimestamp);
+        const completedDate = this.formatLongDateTime(this.trade.completedTimestamp);
         finalHeader += ` (${_.startCase(this.trade.status)} on ${completedDate})`;
       }
 

@@ -25,6 +25,8 @@ internal class LeagueYearEntity
         DropOnlyDraftGames = options.DropOnlyDraftGames;
         CounterPicksBlockDrops = options.CounterPicksBlockDrops;
         MinimumBidAmount = options.MinimumBidAmount;
+        CounterPickDeadlineMonth = options.CounterPickDeadline.Month;
+        CounterPickDeadlineDay = options.CounterPickDeadline.Day;
 
         DraftSystem = options.DraftSystem.Value;
         PickupSystem = options.PickupSystem.Value;
@@ -52,6 +54,8 @@ internal class LeagueYearEntity
     public string ScoringSystem { get; set; } = null!;
     public string TradingSystem { get; set; } = null!;
     public string PlayStatus { get; set; } = null!;
+    public int CounterPickDeadlineMonth { get; set; }
+    public int CounterPickDeadlineDay { get; set; }
     public Instant? DraftStartedTimestamp { get; set; }
     public Guid? WinningUserID { get; set; }
 
@@ -65,8 +69,10 @@ internal class LeagueYearEntity
         TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
         ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
+        AnnualDate counterPickDeadline = new AnnualDate(CounterPickDeadlineMonth, CounterPickDeadlineDay);
+
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-            DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem);
+            DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, counterPickDeadline);
 
         return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser, publishersInLeague);
     }

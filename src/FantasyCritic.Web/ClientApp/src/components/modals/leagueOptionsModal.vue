@@ -24,6 +24,10 @@
             <td>{{ leagueYearOptions.counterPicksToDraft }}</td>
           </tr>
           <tr>
+            <th class="bg-primary">Counter Pick Deadline</th>
+            <td>{{ formatLongDate(leagueYearOptions.counterPickDeadline) }}</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Minimum Bid Amount</th>
             <td>{{ leagueYearOptions.minimumBidAmount }}</td>
           </tr>
