@@ -105,7 +105,7 @@ public class Startup
             Configuration["PatreonService:CampaignID"]
         ));
 
-        services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress));
+        services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, _env.IsProduction()));
 
         services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
         services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));

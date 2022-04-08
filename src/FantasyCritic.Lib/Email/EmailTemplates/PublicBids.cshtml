@@ -1,8 +1,8 @@
-﻿@model FantasyCritic.Lib.Email.EmailModels.PublicBidEmailModel
+@model FantasyCritic.Lib.Email.EmailModels.PublicBidEmailModel
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <style>
         table {
             font-family: arial, sans-serif;
@@ -22,51 +22,55 @@
     </style>
 </head>
 <body>
-    <h1>Fantasy Critic Public Bidding Summary</h1>
-    <p>Here is your weekly summary of public bids in your leagues.</p>
-    
-    @foreach(var year in Model.PublicBiddingSetsByYear)
-    {
-        if (Model.ShowMultiYear)
-        {
-            <h2>@year.Key Leagues</h2>
-        }
+<h1>Fantasy Critic Public Bidding Summary</h1>
+@if (!Model.IsProduction)
+{
+    <h2>This email is not from the production site. It is from a test version of the site.</h2>
+}
+<p>Here is your weekly summary of public bids in your leagues.</p>
 
-        @foreach (var leagueYear in year.Value)
-        {
-            <hr />
-            <div>
-                <h3>
-                    <a href="@Model.GetLeagueLink(leagueYear.LeagueYear.Key)">@leagueYear.LeagueYear.League.LeagueName</a>
-                </h3>
-                @if (leagueYear.MasterGames.Any())
-                {
-                    <table>
-                        <tr>
-                            <th>Game Name</th>
-                            <th>Release Date</th>
-                        </tr>
-                        @foreach (var game in leagueYear.MasterGames)
-                        {
-                            <tr>
-                                <td>
-                                    @game.MasterGameYear.MasterGame.GameName
-                                    @if (game.CounterPick)
-                                    {
-                                        <text> (Counter Pick)</text>
-                                    }
-                                </td>
-                                <td>@game.MasterGameYear.MasterGame.GetReleaseDateString()</td>
-                            </tr>
-                        }
-                    </table>
-                }
-                else
-                {
-                    <p>No bids in this league this week.</p>
-                }
-            </div>
-        }
+@foreach (var year in Model.PublicBiddingSetsByYear)
+{
+    if (Model.ShowMultiYear)
+    {
+        <h2>@year.Key Leagues</h2>
     }
+
+    @foreach (var leagueYear in year.Value)
+    {
+        <hr/>
+        <div>
+            <h3>
+                <a href="@Model.GetLeagueLink(leagueYear.LeagueYear.Key)">@leagueYear.LeagueYear.League.LeagueName</a>
+            </h3>
+            @if (leagueYear.MasterGames.Any())
+            {
+                <table>
+                    <tr>
+                        <th>Game Name</th>
+                        <th>Release Date</th>
+                    </tr>
+                    @foreach (var game in leagueYear.MasterGames)
+                    {
+                        <tr>
+                            <td>
+                                @game.MasterGameYear.MasterGame.GameName
+                                @if (game.CounterPick)
+                                {
+                                    <text> (Counter Pick)</text>
+                                }
+                            </td>
+                            <td>@game.MasterGameYear.MasterGame.GetReleaseDateString()</td>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <p>No bids in this league this week.</p>
+            }
+        </div>
+    }
+}
 </body>
 </html>

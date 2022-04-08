@@ -20,6 +20,7 @@ public class EmailSendingService
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly string _baseAddress;
+    private readonly bool _isProduction;
     private readonly IClock _clock;
 
     public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
@@ -34,6 +35,7 @@ public class EmailSendingService
         _gameAcquisitionService = gameAcquisitionService;
         _leagueMemberService = leagueMemberService;
         _baseAddress = configuration.BaseAddress;
+        _isProduction = configuration.IsProduction;
         _clock = clock;
     }
 
@@ -100,7 +102,7 @@ public class EmailSendingService
     {
         string emailAddress = user.Email;
         string emailSubject = "FantasyCritic - This Week's Public Bids";
-        PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress);
+        PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress, _isProduction);
 
         var htmlResult = await GetHTMLString("PublicBids.cshtml", model);
 

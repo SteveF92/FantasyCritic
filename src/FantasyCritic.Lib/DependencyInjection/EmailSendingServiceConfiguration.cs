@@ -1,3 +1,3 @@
 namespace FantasyCritic.Lib.DependencyInjection;
 
-public record EmailSendingServiceConfiguration(string BaseAddress);
+public record EmailSendingServiceConfiguration(string BaseAddress, bool IsProduction);
