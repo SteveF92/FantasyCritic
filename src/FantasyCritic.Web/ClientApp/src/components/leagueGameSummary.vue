@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
-    <span v-show="leagueYear.hasSpecialSlots" class="full-toggle-section">
-      <span class="single-toggle-section">
+    <span class="full-toggle-section">
+      <span v-if="leagueYear.hasSpecialSlots" class="single-toggle-section">
         <label c>View Mode</label>
         <toggle-button
           v-model="editableDraftOrderView"
