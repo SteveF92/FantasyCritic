@@ -7,7 +7,6 @@ namespace FantasyCritic.Web;
 
 public static class Arguments
 {
-
     public static bool TryGetOptions(string[] args, bool inConsole, out string mode, out ushort port, out bool https)
     {
         var arguments = Parse(args);
