@@ -23,4 +23,5 @@ public class PublicBidEmailModel
     public bool ShowMultiYear => PublicBiddingSets.Count > 1;
 
     public string GetLeagueLink(LeagueYearKey key) => $"{BaseAddress}/league/{key.LeagueID}/{key.Year}";
+    public string GetManageAccountLink() => $"{BaseAddress}/Identity/Account/Manage/Email";
 }
