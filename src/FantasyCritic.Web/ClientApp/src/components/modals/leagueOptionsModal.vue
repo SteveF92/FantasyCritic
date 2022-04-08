@@ -33,18 +33,18 @@
           </tr>
           <tr>
             <th class="bg-primary">"Any Unreleased" Droppable Games</th>
-            <td v-show="!leagueYearOptions.unlimitedFreeDroppableGames">{{ leagueYearOptions.freeDroppableGames }}</td>
-            <td v-show="leagueYearOptions.unlimitedFreeDroppableGames">Unlimited</td>
+            <td v-if="!leagueYearOptions.unlimitedFreeDroppableGames">{{ leagueYearOptions.freeDroppableGames }}</td>
+            <td v-else>Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">"Will not Release" Droppable Games</th>
-            <td v-show="!leagueYearOptions.unlimitedWillNotReleaseDroppableGames">{{ leagueYearOptions.willNotReleaseDroppableGames }}</td>
-            <td v-show="leagueYearOptions.unlimitedWillNotReleaseDroppableGames">Unlimited</td>
+            <td v-if="!leagueYearOptions.unlimitedWillNotReleaseDroppableGames">{{ leagueYearOptions.willNotReleaseDroppableGames }}</td>
+            <td v-else>Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">"Will Release" Droppable Games</th>
-            <td v-show="!leagueYearOptions.unlimitedWillReleaseDroppableGames">{{ leagueYearOptions.willReleaseDroppableGames }}</td>
-            <td v-show="leagueYearOptions.unlimitedWillReleaseDroppableGames">Unlimited</td>
+            <td v-if="!leagueYearOptions.unlimitedWillReleaseDroppableGames">{{ leagueYearOptions.willReleaseDroppableGames }}</td>
+            <td v-else>Unlimited</td>
           </tr>
           <tr>
             <th class="bg-primary">Drop Only Drafted Games</th>

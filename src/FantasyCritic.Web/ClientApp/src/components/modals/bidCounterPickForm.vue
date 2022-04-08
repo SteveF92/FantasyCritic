@@ -9,7 +9,7 @@
       Bids are processed on Saturday Nights. See the FAQ for more info.
     </p>
 
-    <div v-show="publisherSlotsAreFilled" class="alert alert-danger">You have already filled all of your counter pick slots!</div>
+    <div v-if="publisherSlotsAreFilled" class="alert alert-danger">You have already filled all of your counter pick slots!</div>
 
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="search-results">

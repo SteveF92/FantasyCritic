@@ -23,7 +23,7 @@
         <div v-if="masterGame && masterGame.numberOutstandingCorrections" class="alert alert-warning">
           There are {{ masterGame.numberOutstandingCorrections }} correction(s) currently submitted that I have not reviewed. You may not need to submit anything.
         </div>
-        <p v-show="!masterGame">
+        <p v-if="!masterGame">
           <strong>You can suggest a correction by clicking a link on a master game's page.</strong>
         </p>
         <div v-if="masterGame" class="row">
@@ -84,16 +84,16 @@
                     <span>{{ request.requestNote }}</span>
                   </td>
                   <td>
-                    <span v-show="request.responseNote">{{ request.responseNote }}</span>
-                    <span v-show="!request.responseNote">&lt;Pending&gt;</span>
+                    <span v-if="request.responseNote">{{ request.responseNote }}</span>
+                    <span v-else>&lt;Pending&gt;</span>
                   </td>
                   <td>
-                    <span v-show="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
-                    <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
+                    <span v-if="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                    <span v-else>&lt;Pending&gt;</span>
                   </td>
                   <td class="select-cell">
-                    <span v-show="request.answered"><b-button variant="info" size="sm" @click="dismissRequest(request)">Dismiss Request</b-button></span>
-                    <span v-show="!request.answered"><b-button variant="danger" size="sm" @click="cancelRequest(request)">Cancel Request</b-button></span>
+                    <span v-if="request.answered"><b-button variant="info" size="sm" @click="dismissRequest(request)">Dismiss Request</b-button></span>
+                    <span v-else><b-button variant="danger" size="sm" @click="cancelRequest(request)">Cancel Request</b-button></span>
                   </td>
                 </tr>
               </tbody>

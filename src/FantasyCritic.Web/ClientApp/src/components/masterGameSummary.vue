@@ -42,18 +42,18 @@
         </div>
         <div>
           <span class="detail-label">Average Draft Position:</span>
-          <span v-show="masterGame.averageDraftPosition">{{ masterGame.averageDraftPosition | score(1) }}</span>
-          <span v-show="!masterGame.averageDraftPosition">Undrafted</span>
+          <span v-if="masterGame.averageDraftPosition">{{ masterGame.averageDraftPosition | score(1) }}</span>
+          <span v-else>Undrafted</span>
         </div>
         <div>
           <span class="detail-label">Hype Factor:</span>
-          <span v-show="masterGame.dateAdjustedHypeFactor">{{ masterGame.dateAdjustedHypeFactor | score(1) }}</span>
-          <span v-show="!masterGame.dateAdjustedHypeFactor">Unhyped...</span>
+          <span v-if="masterGame.dateAdjustedHypeFactor">{{ masterGame.dateAdjustedHypeFactor | score(1) }}</span>
+          <span v-else>Unhyped...</span>
         </div>
-        <div>
+        <div v-if="masterGame.projectedFantasyPoints">
           <span v-if="!masterGame.criticScore" class="detail-label">Projected Points:</span>
           <span v-else class="detail-label">Pre-Release Projected Points:</span>
-          <span v-show="masterGame.projectedFantasyPoints">~{{ masterGame.projectedFantasyPoints | score(1) }}</span>
+          <span>~{{ masterGame.projectedFantasyPoints | score(1) }}</span>
         </div>
         <div v-if="masterGame.openCriticID">
           <a :href="openCriticLink" target="_blank">

@@ -63,7 +63,7 @@
         <masterGameTagBadge :tag-name="tag"></masterGameTagBadge>
       </span>
     </div>
-    <div v-show="masterGame.notes">
+    <div v-if="masterGame.notes">
       <h3>Special Notes</h3>
       {{ masterGame.notes }}
     </div>

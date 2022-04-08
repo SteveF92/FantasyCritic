@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div v-show="royaleYearQuarterOptions">
+      <div v-if="royaleYearQuarterOptions">
         <b-dropdown text="Quarters" class="quarter-select">
           <b-dropdown-item
             v-for="royaleYearQuarterOption in royaleYearQuarterOptions"

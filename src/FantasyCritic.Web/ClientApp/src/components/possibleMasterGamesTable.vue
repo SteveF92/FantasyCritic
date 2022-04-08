@@ -9,7 +9,7 @@
       <template #cell(masterGame.maximumReleaseDate)="data">
         <div :class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
           <span>{{ data.item.masterGame.estimatedReleaseDate }}</span>
-          <span v-show="data.item.masterGame.isReleased">(Released)</span>
+          <span v-if="data.item.masterGame.isReleased">(Released)</span>
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">

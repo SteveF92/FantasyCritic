@@ -9,7 +9,7 @@
       Bids are processed on Saturday Nights. See the FAQ for more info.
     </p>
 
-    <div v-show="publisherSlotsAreFilled" class="alert alert-warning">
+    <div v-if="publisherSlotsAreFilled" class="alert alert-warning">
       Warning! You have already filled all of your game slots. You can still make bids, but you must drop a game first. You have two options:
       <ul>
         <li>Use the conditional drop option on this form to drop a game only if this bid succeeds.</li>

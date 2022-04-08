@@ -3,7 +3,7 @@
     <div v-show="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
-    <div v-show="activeTrades.length === 0" class="alert alert-info" role="alert">There are no active trades for this league. To see past trades, check the League History page.</div>
+    <div v-if="activeTrades.length === 0" class="alert alert-info" role="alert">There are no active trades for this league. To see past trades, check the League History page.</div>
 
     <tradeSummary v-for="activeTrade in activeTrades" :key="activeTrade.tradeID" :trade="activeTrade" default-visible></tradeSummary>
   </b-modal>

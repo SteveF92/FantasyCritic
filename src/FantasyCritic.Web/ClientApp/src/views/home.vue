@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-show="userInfo && !userInfo.emailConfirmed" class="alert alert-warning">
+    <div v-if="userInfo && !userInfo.emailConfirmed" class="alert alert-warning">
       <div>Your email address has not been confirmed. You cannot accept league invites via email until you do so.</div>
       <div>Check your email account for an email from us.</div>
       <span>

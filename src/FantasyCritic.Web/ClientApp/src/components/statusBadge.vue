@@ -1,8 +1,8 @@
 <template>
   <span>
-    <span v-show="isAvailable" class="badge badge-primary badge-success">Available</span>
-    <span v-show="alreadyOwned" class="badge badge-primary badge-info">Already Owned</span>
-    <span v-show="!isAvailable && !alreadyOwned" class="badge badge-primary badge-warning">{{ status }}</span>
+    <span v-if="isAvailable" class="badge badge-primary badge-success">Available</span>
+    <span v-if="alreadyOwned" class="badge badge-primary badge-info">Already Owned</span>
+    <span v-if="!isAvailable && !alreadyOwned" class="badge badge-primary badge-warning">{{ status }}</span>
   </span>
 </template>
 <script>

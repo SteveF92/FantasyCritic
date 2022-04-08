@@ -103,7 +103,7 @@
 
         <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
           <p>You need to create your publisher for this year.</p>
-          <p v-show="league.isManager">You can't invite players or change any settings until you create your publisher.</p>
+          <p v-if="league.isManager">You can't invite players or change any settings until you create your publisher.</p>
           <b-button v-b-modal="'createPublisher'" variant="primary" class="mx-2">Create Publisher</b-button>
           <createPublisherForm :league-year="leagueYear"></createPublisherForm>
         </div>
@@ -121,8 +121,8 @@
 
         <div v-if="leagueYear.playStatus.draftIsPaused">
           <div class="alert alert-danger">
-            <div v-show="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
-            <div v-show="league.isManager">The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
+            <div v-if="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
+            <div v-else>The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
           </div>
         </div>
         <div v-if="leagueYear.playStatus.draftIsActive && nextPublisherUp">
@@ -134,7 +134,7 @@
                 Next to draft:
                 <strong>{{ nextPublisherUp.publisherName }}</strong>
               </div>
-              <div v-show="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
+              <div v-if="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
             </div>
           </div>
           <div v-else>

@@ -17,10 +17,10 @@
       <hr />
       <div class="row">
         <div class="col-12 col-lg-6">
-          <b-button v-show="isAuth" variant="info" :to="{ name: 'masterGameRequest' }" class="nav-link request-button">Request new Master Game</b-button>
+          <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameRequest' }" class="nav-link request-button">Request new Master Game</b-button>
         </div>
         <div class="col-12 col-lg-6">
-          <b-button v-show="isAuth" variant="info" :to="{ name: 'masterGameChangeRequest' }" class="nav-link request-button">Suggest a Correction</b-button>
+          <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameChangeRequest' }" class="nav-link request-button">Suggest a Correction</b-button>
         </div>
       </div>
 

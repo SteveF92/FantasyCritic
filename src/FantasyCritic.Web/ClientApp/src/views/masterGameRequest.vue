@@ -104,19 +104,19 @@
               <tr v-for="request in myRequests" :key="request.requestID">
                 <td>
                   <span v-if="request.masterGame"><masterGamePopover :master-game="request.masterGame"></masterGamePopover></span>
-                  <span v-show="!request.masterGame">{{ request.gameName }}</span>
+                  <span v-else>{{ request.gameName }}</span>
                 </td>
                 <td>
-                  <span v-show="request.responseNote">{{ request.responseNote }}</span>
-                  <span v-show="!request.responseNote">&lt;Pending&gt;</span>
+                  <span v-if="request.responseNote">{{ request.responseNote }}</span>
+                  <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td>
-                  <span v-show="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
-                  <span v-show="!request.responseTimestamp">&lt;Pending&gt;</span>
+                  <span v-if="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                  <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td class="select-cell">
-                  <span v-show="request.answered"><b-button variant="info" size="sm" @click="dismissRequest(request)">Dismiss Request</b-button></span>
-                  <span v-show="!request.answered"><b-button variant="danger" size="sm" @click="cancelRequest(request)">Cancel Request</b-button></span>
+                  <span v-if="request.answered"><b-button variant="info" size="sm" @click="dismissRequest(request)">Dismiss Request</b-button></span>
+                  <span v-else><b-button variant="danger" size="sm" @click="cancelRequest(request)">Cancel Request</b-button></span>
                 </td>
               </tr>
             </tbody>
