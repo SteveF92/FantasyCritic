@@ -27,12 +27,19 @@ public class ActionProcessingResults
 
     public IReadOnlyList<LeagueYearPublisherPair> GetAllAffectedPublisherPairs()
     {
-        return SuccessBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair())
+        var publisherPairsToInclude = SuccessBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair())
             .Concat(FailedBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair()))
             .Concat(SuccessDrops.Select(x => x.GetLeagueYearPublisherPair()))
-            .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()))
-            .DistinctBy(x => x.Publisher.PublisherID)
-            .ToList();
+            .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()));
+
+        List<LeagueYearPublisherPair> updatedPublisherPairs = new List<LeagueYearPublisherPair>();
+        foreach (var publisherPair in publisherPairsToInclude)
+        {
+            var updatedPublisher = PublisherStateSet.GetPublisher(publisherPair.Publisher.PublisherID);
+            updatedPublisherPairs.Add(new LeagueYearPublisherPair(publisherPair.LeagueYear, updatedPublisher));
+        }
+
+        return updatedPublisherPairs;
     }
 
     public static ActionProcessingResults GetEmptyResultsSet(PublisherStateSet publisherStateSet)
