@@ -49,24 +49,24 @@
           <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
         </b-alert>
 
-        <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">You are viewing a private league.</div>
+        <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite || inviteCode)" class="alert alert-warning" role="info">You are viewing a private league.</div>
 
         <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!">
           <p v-if="!league.userIsInLeague || oneShotMode">The draft is complete!</p>
           <p v-else>The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!</p>
         </b-modal>
 
-        <div v-if="inviteCode && !league.userIsInLeague && !leagueYear.playStatus.playStarted" class="alert alert-info">
+        <div v-if="inviteCode && !league.userIsInLeague && !leagueYear.playStatus.playStarted" class="alert alert-secondary">
           You have been invited to join this league.
           <b-button v-if="isAuth" variant="primary" class="mx-2" @click="joinWithInviteLink()">Join League</b-button>
           <template v-else>
-            <b-button variant="primary" :to="{ name: 'login', query: { leagueid: leagueYear.leagueID, year: year, inviteCode: inviteCode } }">
+            <b-button variant="info" href="/Identity/Account/Login">
               <span>Log In</span>
-              <font-awesome-icon class="full-nav" icon="sign-in-alt" />
+              <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
             </b-button>
-            <b-button variant="primary" :to="{ name: 'register', query: { leagueid: leagueYear.leagueID, year: year, inviteCode: inviteCode } }">
+            <b-button variant="primary" href="/Identity/Account/Register">
               <span>Sign Up</span>
-              <font-awesome-icon class="full-nav" icon="user-plus" />
+              <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
             </b-button>
           </template>
         </div>

@@ -28,13 +28,13 @@
         </div>
         <div v-if="!userRoyalePublisher && !isAuth" class="alert alert-success">
           Sign up or log in to start playing now!
-          <b-button class="login-button" variant="info" :to="{ name: 'login' }">
+          <b-button variant="info" href="/Identity/Account/Login">
             <span>Log In</span>
-            <font-awesome-icon class="full-nav" icon="sign-in-alt" />
+            <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
           </b-button>
-          <b-button variant="primary" :to="{ name: 'register' }">
+          <b-button variant="primary" href="/Identity/Account/Register">
             <span>Sign Up</span>
-            <font-awesome-icon class="full-nav" icon="user-plus" />
+            <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
           </b-button>
         </div>
 

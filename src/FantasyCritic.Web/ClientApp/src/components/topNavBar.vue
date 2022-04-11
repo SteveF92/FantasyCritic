@@ -111,14 +111,7 @@
 import BasicMixin from '@/mixins/basicMixin';
 
 export default {
-  mixins: [BasicMixin],
-  methods: {
-    logout() {
-      this.$store.dispatch('logout').then(() => {
-        this.$router.push({ name: 'login' });
-      });
-    }
-  }
+  mixins: [BasicMixin]
 };
 </script>
 
