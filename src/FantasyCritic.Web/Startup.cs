@@ -76,8 +76,7 @@ public class Startup
         var jwtSecret = Configuration["Authentication:JWTSecret"];
         var duendeLicense = Configuration["IdentityServer:License"];
 
-        var identityConfig = new IdentityConfig(Configuration["IdentityServer:MainSecret"],
-            Configuration["IdentityServer:FCBotSecret"], Configuration["IdentityServer:CertificateKey"], _env.IsProduction());
+        var identityConfig = new IdentityConfig(baseAddress, Configuration["IdentityServer:MainSecret"], Configuration["IdentityServer:CertificateKey"]);
 
         // Add application services.
         services.AddHttpClient();
@@ -206,7 +205,8 @@ public class Startup
             })
             .AddPersistedGrantStore<MySQLPersistedGrantStore>()
             .AddInMemoryIdentityResources(IdentityConfig.IdentityResources)
-            .AddInMemoryApiScopes(IdentityConfig.ApiScopes)
+            .AddInMemoryApiScopes(IdentityConfig.APIScopes)
+            .AddInMemoryApiResources(IdentityConfig.APIResources)
             .AddInMemoryClients(identityConfig.Clients)
             .AddAspNetIdentity<FantasyCriticUser>();
 
