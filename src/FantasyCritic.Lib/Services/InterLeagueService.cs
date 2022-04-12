@@ -174,26 +174,6 @@ public class InterLeagueService
         return _masterGameRepo.DismissMasterGameChangeRequest(request);
     }
 
-    public Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)
-    {
-        return _masterGameRepo.LinkToOpenCritic(masterGame, openCriticID);
-    }
-
-    public Task LinkToGG(MasterGame masterGame, string ggToken)
-    {
-        return _masterGameRepo.LinkToGG(masterGame, ggToken);
-    }
-
-    public Task UpdateSystemWideValues(SystemWideValues systemWideValues)
-    {
-        return _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
-    }
-
-    public Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame)
-    {
-        return _fantasyCriticRepo.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
-    }
-
     public Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags()
     {
         return _masterGameRepo.GetMasterGameTags();

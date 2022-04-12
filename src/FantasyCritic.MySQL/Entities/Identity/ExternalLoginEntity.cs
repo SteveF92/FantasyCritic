@@ -1,6 +1,6 @@
 namespace FantasyCritic.MySQL.Entities.Identity;
 
-public class ExternalLoginEntity
+internal class ExternalLoginEntity
 {
     public string LoginProvider { get; set; } = null!;
     public string ProviderKey { get; set; } = null!;

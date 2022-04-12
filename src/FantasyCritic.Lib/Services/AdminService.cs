@@ -319,6 +319,21 @@ public class AdminService
         await _fantasyCriticRepo.ManualMakePublisherGameSlotsConsistent(currentYear!.Year);
     }
 
+    public Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)
+    {
+        return _masterGameRepo.LinkToOpenCritic(masterGame, openCriticID);
+    }
+
+    public Task LinkToGG(MasterGame masterGame, string ggToken)
+    {
+        return _masterGameRepo.LinkToGG(masterGame, ggToken);
+    }
+
+    public Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame)
+    {
+        return _fantasyCriticRepo.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
+    }
+
     private async Task UpdateSystemWideValues()
     {
         _logger.Info("Updating system wide values");
@@ -364,7 +379,7 @@ public class AdminService
 
         var averageStandardGamePointsByPickPosition = pointsForPosition.Select(position => new AveragePickPositionPoints(position.Key, position.Value.Count, position.Value.Average())).ToList();
         var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints, averageStandardGamePointsByPickPosition);
-        await _interLeagueService.UpdateSystemWideValues(systemWideValues);
+        await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
     }
 
     private async Task<HypeConstants> GetHypeConstants()

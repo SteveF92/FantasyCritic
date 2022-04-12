@@ -140,7 +140,7 @@ public class AdminController : FantasyCriticController
             return BadRequest("Bad master game");
         }
 
-        await _interLeagueService.LinkToOpenCritic(masterGame, request.OpenCriticID);
+        await _adminService.LinkToOpenCritic(masterGame, request.OpenCriticID);
 
         return Ok();
     }
@@ -154,7 +154,7 @@ public class AdminController : FantasyCriticController
             return BadRequest("Bad master game");
         }
 
-        await _interLeagueService.LinkToGG(masterGame, request.GGToken);
+        await _adminService.LinkToGG(masterGame, request.GGToken);
 
         return Ok();
     }
@@ -169,7 +169,7 @@ public class AdminController : FantasyCriticController
             return BadRequest("Bad master game");
         }
 
-        await _interLeagueService.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
+        await _adminService.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
 
         return Ok();
     }
