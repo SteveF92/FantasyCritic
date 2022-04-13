@@ -92,12 +92,7 @@ export default {
       axios
         .post('/api/leagueManager/RescindInvite', model)
         .then(() => {
-          let actionInfo = {
-            message: 'The invite to ' + inviteName + ' has been rescinded.',
-            fetchLeague: true,
-            fetchLeagueYear: true
-          };
-          this.notifyAction(actionInfo);
+          this.notifyAction('The invite to ' + inviteName + ' has been rescinded.');
         })
         .catch(() => {});
     }

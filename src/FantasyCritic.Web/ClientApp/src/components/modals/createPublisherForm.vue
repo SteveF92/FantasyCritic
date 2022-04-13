@@ -34,11 +34,7 @@ export default {
         .post('/api/league/createPublisher', model)
         .then(() => {
           this.$refs.createPublisherRef.hide();
-          let actionInfo = {
-            message: this.publisherName + ' created.',
-            fetchLeagueYear: true
-          };
-          this.notifyAction(actionInfo);
+          this.notifyAction(this.publisherName + ' created.');
           this.publisherName = '';
         })
         .catch(() => {});

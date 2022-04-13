@@ -126,10 +126,11 @@ export default {
       gamesToDraft: '',
       counterPicks: '',
       counterPicksToDraft: '',
-      initialYear: '',
       pickupSystem: 'SecretBidding',
       tiebreakSystem: 'LowestProjectedPoints',
       tradingSystem: 'Standard',
+      draftSystem: 'Flexible',
+      scoringSystem: 'Diminishing',
       specialGameSlots: [],
       tags: { banned: [], allowed: [], required: [] }
     };
@@ -144,6 +145,7 @@ export default {
         .catch((returnedError) => (this.error = returnedError));
     },
     postRequest() {
+      this.leagueYearSettings.year = this.initialYear;
       let selectedLeagueOptions = {
         leagueName: this.leagueName,
         publicLeague: this.publicLeague,
