@@ -14,17 +14,15 @@ public class GameController : FantasyCriticController
     private readonly InterLeagueService _interLeagueService;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly GameSearchingService _gameSearchingService;
-    private readonly PublisherService _publisherService;
     private readonly IClock _clock;
 
     public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService,
-        FantasyCriticService fantasyCriticService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock)
+        FantasyCriticService fantasyCriticService, GameSearchingService gameSearchingService, IClock clock)
         : base(userManager)
     {
         _interLeagueService = interLeagueService;
         _fantasyCriticService = fantasyCriticService;
         _gameSearchingService = gameSearchingService;
-        _publisherService = publisherService;
         _clock = clock;
     }
 

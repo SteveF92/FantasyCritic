@@ -9,14 +9,12 @@ namespace FantasyCritic.Web.Controllers.API;
 [Route("api/[controller]/[action]")]
 public class GeneralController : ControllerBase
 {
-    private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
     private readonly FantasyCriticUserManager _userManager;
     private readonly IClock _clock;
 
-    public GeneralController(FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, FantasyCriticUserManager userManager, IClock clock)
+    public GeneralController(InterLeagueService interLeagueService, FantasyCriticUserManager userManager, IClock clock)
     {
-        _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
         _userManager = userManager;
         _clock = clock;

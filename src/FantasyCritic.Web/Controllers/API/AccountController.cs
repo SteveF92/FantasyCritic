@@ -1,9 +1,7 @@
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -11,19 +9,10 @@ namespace FantasyCritic.Web.Controllers.API;
 [Authorize]
 public class AccountController : FantasyCriticController
 {
-    private readonly FantasyCriticRoleManager _roleManager;
-    private readonly IEmailSender _emailSender;
-    private readonly ILogger _logger;
-    private readonly IClock _clock;
-
-    public AccountController(FantasyCriticUserManager userManager, FantasyCriticRoleManager roleManager,
-        IEmailSender emailSender, ILogger<AccountController> logger, IClock clock) :
+    public AccountController(FantasyCriticUserManager userManager) :
         base(userManager)
     {
-        _roleManager = roleManager;
-        _emailSender = emailSender;
-        _logger = logger;
-        _clock = clock;
+
     }
 
     public async Task<ActionResult> CurrentUser()
