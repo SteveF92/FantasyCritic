@@ -81,21 +81,21 @@
                 <span class="caret"></span>
               </a>
               <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
-                <a href="/Identity/Account/Manage" class="dropdown-item">Manage Account</a>
+                <a href="/Account/Manage" class="dropdown-item">Manage Account</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/Identity/Account/Logout">Log off</a>
+                <a class="dropdown-item" href="/Account/Logout">Log off</a>
               </div>
             </li>
           </template>
           <template v-else>
             <li class="nav-item top-nav-button">
-              <b-button variant="info" href="/Identity/Account/Login" class="nav-link">
+              <b-button variant="info" href="/Account/Login" class="nav-link">
                 <span>Log In</span>
                 <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
               </b-button>
             </li>
             <li class="nav-item">
-              <b-button variant="primary" href="/Identity/Account/Register" class="nav-link">
+              <b-button variant="primary" href="/Account/Register" class="nav-link">
                 <span>Sign Up</span>
                 <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
               </b-button>

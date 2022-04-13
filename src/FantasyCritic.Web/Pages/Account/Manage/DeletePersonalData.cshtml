@@ -1,0 +1,40 @@
+@page
+@model DeletePersonalDataModel
+@{
+    ViewData["Title"] = "Delete Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div class="alert alert-danger">
+    <h2>Warning!</h2>
+    <div>Deleting your account is not reversible. If you click this button, the following will occur:</div>
+    <ul>
+        <li>All of your Royale Publishers will be deleted.</li>
+        <li>Any publishers you have in a normal league will be marked as 'Deleted', but the games will remain, as to not affect the other players.</li>
+        <li>Any outstanding drops or bids you have made will be cancelled.</li>
+        <li>All of your personal information, including display name, email address, and hashed password, will be deleted.</li>
+        <li>You will not be able to log in anymore.</li>
+    </ul>
+</div>
+<p>If you are sure, type your password into the box below and click the button.</p>
+
+<div>
+    <form id="delete-user" method="post" class="form-group">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        @if (Model.RequirePassword)
+        {
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+        }
+        <button class="btn btn-danger" type="submit">Delete my account</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

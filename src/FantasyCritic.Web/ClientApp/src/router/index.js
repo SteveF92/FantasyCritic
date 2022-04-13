@@ -74,14 +74,14 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
         return;
       } else {
         store.commit('clearUserInfo');
-        window.location.href = '/Identity/Account/Login';
+        window.location.href = '/Account/Login';
         return;
       }
     }
   } catch (error) {
     console.log('Router error');
     store.commit('clearUserInfo');
-    window.location.href = '/Identity/Account/Login';
+    window.location.href = '/Account/Login';
   }
 });
 

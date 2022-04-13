@@ -1,0 +1,96 @@
+@page
+@model ExternalLoginsModel
+@{
+    ViewData["Title"] = "Manage your external logins";
+    ViewData["ActivePage"] = ManageNavPages.ExternalLogins;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+@if (Model.CurrentLogins?.Count > 0)
+{
+    <h4>Linked Accounts</h4>
+    <table class="table">
+        <tbody>
+            @foreach (var login in Model.CurrentLogins)
+            {
+                <tr>
+                    <td id="@($"login-provider-{login.LoginProvider}")">@login.ProviderDisplayName</td>
+                    <td>
+                        @if (Model.ShowRemoveButton)
+                        {
+                            <form id="@($"remove-login-{login.LoginProvider}")" asp-page-handler="RemoveLogin" method="post">
+                                <div>
+                                    <input asp-for="@login.LoginProvider" name="LoginProvider" type="hidden" />
+                                    <input asp-for="@login.ProviderKey" name="ProviderKey" type="hidden" />
+                                    <button type="submit" class="btn btn-primary" title="Remove this @login.ProviderDisplayName login from your account">Remove</button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            @: &nbsp;
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<h4>Link Other Accounts</h4>
+<hr />
+<form id="link-login-form" asp-page-handler="LinkLogin" method="post" class="form-horizontal">
+    <div id="socialLoginList">
+        <p>
+            @if (Model.GoogleLogin is not null)
+            {
+                <div>
+                    <button type="submit" id="@($"link-login-button-{Model.GoogleLogin.Name}")" class="btn login-button login-button-google"
+                            name="provider" value="@Model.GoogleLogin.Name" title="Log in using your @Model.GoogleLogin.DisplayName account">
+                        <img src="/img/google.svg" class="brand-logo google-logo" />
+                        Link Google Account
+                    </button>
+                </div>
+            }
+            @if (Model.MicrosoftLogin is not null)
+            {
+                <div>
+                    <button type="submit" id="@($"link-login-button-{Model.MicrosoftLogin.Name}")" class="btn login-button login-button-microsoft"
+                            name="provider" value="@Model.MicrosoftLogin.Name" title="Log in using your @Model.MicrosoftLogin.DisplayName account">
+                        <img src="/img/microsoft.svg" class="brand-logo google-logo" />
+                        Link Microsoft Account
+                    </button>
+                </div>
+            }
+            @if (Model.TwitchLogin is not null)
+            {
+                <div>
+                    <button type="submit" id="@($"link-login-button-{Model.TwitchLogin.Name}")" class="btn login-button login-button-twitch"
+                            name="provider" value="@Model.TwitchLogin.Name" title="Log in using your @Model.TwitchLogin.DisplayName account">
+                        <img src="/img/twitch.svg" class="brand-logo google-logo" />
+                        Link Twitch Account
+                    </button>
+                </div>
+            }
+            @if (Model.PatreonLogin is not null)
+            {
+                <div>
+                    <button type="submit" id="@($"link-login-button-{Model.PatreonLogin.Name}")" class="btn login-button login-button-patreon"
+                            name="provider" value="@Model.PatreonLogin.Name" title="Log in using your @Model.PatreonLogin.DisplayName account">
+                        <img src="/img/patreon.png" class="brand-logo patreon-logo" />
+                        Link Patreon Account
+                    </button>
+                </div>
+            }
+            @if (Model.DiscordLogin is not null)
+            {
+                <div>
+                    <button type="submit" id="@($"link-login-button-{Model.DiscordLogin.Name}")" class="btn login-button login-button-discord"
+                            name="provider" value="@Model.DiscordLogin.Name" title="Log in using your @Model.DiscordLogin.DisplayName account">
+                        <img src="/img/discord.svg" class="brand-logo patreon-logo" />
+                        Link Discord Account
+                    </button>
+                </div>
+            }
+        </p>
+    </div>
+</form>

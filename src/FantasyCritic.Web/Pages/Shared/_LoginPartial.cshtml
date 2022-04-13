@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.Identity
+@using FantasyCritic.Lib.Identity;
+@inject SignInManager<FantasyCriticUser> SignInManager
+@inject UserManager<FantasyCriticUser> UserManager
+
+@{
+    string? returnUrl = null;
+    var query = ViewContext.HttpContext.Request.Query;
+    if (query.ContainsKey("returnUrl"))
+    {
+        returnUrl = query["returnUrl"];
+    }
+}
+
+<ul class="navbar-nav"> 
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Account (@User.Identity!.Name)</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/">Logout</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item top-nav-button">
+            <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl" title="Login">
+                <button type="button" class="btn btn-info top-nav-button">
+                    LOG IN
+                    <i class="fa fa-sign-in" aria-hidden="true"></i>
+                </button>
+            </a>
+        </li>
+        <li class="nav-item top-nav-button">
+            <a asp-area="Identity"asp-page="/Account/Register" asp-route-returnUrl="@returnUrl">
+                <button type="button" class="btn btn-primary top-nav-button">
+                    SIGN UP
+                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                </button>
+            </a>
+        </li>
+    }
+</ul>

@@ -60,11 +60,11 @@
           You have been invited to join this league.
           <b-button v-if="isAuth" variant="primary" class="mx-2" @click="joinWithInviteLink()">Join League</b-button>
           <template v-else>
-            <b-button variant="info" href="/Identity/Account/Login">
+            <b-button variant="info" href="/Account/Login">
               <span>Log In</span>
               <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
             </b-button>
-            <b-button variant="primary" href="/Identity/Account/Register">
+            <b-button variant="primary" href="/Account/Register">
               <span>Sign Up</span>
               <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
             </b-button>

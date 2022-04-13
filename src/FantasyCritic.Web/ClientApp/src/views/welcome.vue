@@ -17,7 +17,7 @@
         <div class="col-md-6 col-sm-12 registration-area">
           <div class="registration-box shadowed">
             <h2>Registration is free!</h2>
-            <b-button variant="primary" href="/Identity/Account/Register" class="nav-link">
+            <b-button variant="primary" href="/Account/Register" class="nav-link">
               <span>Sign up</span>
               <font-awesome-icon class="full-nav" icon="user-plus" />
             </b-button>
