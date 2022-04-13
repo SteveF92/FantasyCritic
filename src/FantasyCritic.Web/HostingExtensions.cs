@@ -1,12 +1,6 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+
 using System.IO;
-using VueCliMiddleware;
 using System.Text;
-using Dapper.NodaTime;
 using Duende.IdentityServer;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
@@ -14,6 +8,7 @@ using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
@@ -24,66 +19,69 @@ using FantasyCritic.Web.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using NLog;
 using NodaTime.Serialization.JsonNet;
-using FantasyCritic.Lib.Patreon;
+using VueCliMiddleware;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
 
-public class Startup
+public static class HostingExtensions
 {
-    private readonly IWebHostEnvironment _env;
-    private readonly string _spaPath;
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-    public Startup(IConfiguration configuration, IWebHostEnvironment env)
+    private static string GetSPAPath(IWebHostEnvironment env)
     {
-        Configuration = configuration;
-        _env = env;
+        if (env.IsDevelopment())
+        {
+            return "ClientApp";
+        }
 
-
-        if (_env.IsDevelopment())
+        return "ClientApp/dist";
+    }
+    public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
+    {
+        var env = builder.Environment;
+        if (env.IsDevelopment())
         {
             _logger.Info("Startup: Running in Development mode.");
-            _spaPath = "ClientApp";
         }
         else
         {
             _logger.Info("Startup: Running in Production mode.");
-            _spaPath = "ClientApp/dist";
         }
-    }
 
-    public IConfiguration Configuration { get; }
-
-    // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
-    {
+        var configuration = builder.Configuration;
+        var services = builder.Services;
         IClock clock = NodaTime.SystemClock.Instance;
-        var rdsInstanceName = Configuration["AWS:rdsInstanceName"];
-        var awsRegion = Configuration["AWS:region"];
-        var awsBucket = Configuration["AWS:bucket"];
-        var mailgunAPIKey = Configuration["Mailgun:apiKey"];
-        var baseAddress = Configuration["BaseAddress"];
-        var jwtSecret = Configuration["Authentication:JWTSecret"];
-        var duendeLicense = Configuration["IdentityServer:License"];
+        var rdsInstanceName = configuration["AWS:rdsInstanceName"];
+        var awsRegion = configuration["AWS:region"];
+        var awsBucket = configuration["AWS:bucket"];
+        var mailgunAPIKey = configuration["Mailgun:apiKey"];
+        var baseAddress = configuration["BaseAddress"];
+        var jwtSecret = configuration["Authentication:JWTSecret"];
+        var duendeLicense = configuration["IdentityServer:License"];
 
-        var identityConfig = new IdentityConfig(baseAddress, Configuration["IdentityServer:MainSecret"], Configuration["IdentityServer:CertificateKey"]);
+        var identityConfig = new IdentityConfig(baseAddress, configuration["IdentityServer:MainSecret"], configuration["IdentityServer:CertificateKey"]);
 
         // Add application services.
         services.AddHttpClient();
         services.AddTransient<IClock>(factory => clock);
 
         //MySQL Repos
-        string connectionString = Configuration.GetConnectionString("DefaultConnection");
+        string connectionString = configuration.GetConnectionString("DefaultConnection");
 
         var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
         var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
@@ -99,13 +97,13 @@ public class Startup
             new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore))));
 
         services.AddScoped<PatreonService>(factory => new PatreonService(
-            Configuration["PatreonService:AccessToken"],
-            Configuration["PatreonService:RefreshToken"],
-            Configuration["Authentication:Patreon:ClientId"],
-            Configuration["PatreonService:CampaignID"]
+            configuration["PatreonService:AccessToken"],
+            configuration["PatreonService:RefreshToken"],
+            configuration["Authentication:Patreon:ClientId"],
+            configuration["PatreonService:CampaignID"]
         ));
 
-        services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, _env.IsProduction()));
+        services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, env.IsProduction()));
 
         services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
         services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
@@ -122,11 +120,10 @@ public class Startup
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
 
-
         services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
         AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
-        if (_env.IsProduction() || _env.IsStaging())
+        if (env.IsProduction() || env.IsStaging())
         {
             adminServiceConfiguration = new AdminServiceConfiguration(false);
         }
@@ -194,7 +191,7 @@ public class Startup
             .AddRoleManager<FantasyCriticRoleManager>()
             .AddDefaultTokenProviders();
 
-        var builder = services.AddIdentityServer(options =>
+        var identityServerBuilder = services.AddIdentityServer(options =>
             {
                 options.LicenseKey = duendeLicense;
                 options.Events.RaiseErrorEvents = true;
@@ -210,53 +207,53 @@ public class Startup
             .AddInMemoryClients(identityConfig.Clients)
             .AddAspNetIdentity<FantasyCriticUser>();
 
-        if (_env.IsDevelopment())
+        if (env.IsDevelopment())
         {
-            builder.AddDeveloperSigningCredential();
+            identityServerBuilder.AddDeveloperSigningCredential();
         }
         else
         {
-            builder.AddSigningCredential($"CN={identityConfig.KeyName}");
+            identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
         }
 
         services
-            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = "FantasyCriticCookie";
-                options.LoginPath = "/Identity/Account/Login";
-                options.LogoutPath = "/Identity/Account/Logout";
-                options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                options.SlidingExpiration = true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
+           .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+           .AddCookie(options =>
+           {
+               options.Cookie.Name = "FantasyCriticCookie";
+               options.LoginPath = "/Identity/Account/Login";
+               options.LogoutPath = "/Identity/Account/Logout";
+               options.ExpireTimeSpan = TimeSpan.FromDays(30);
+               options.SlidingExpiration = true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
             })
-            .AddGoogle(options =>
-            {
-                options.ClientId = Configuration["Authentication:Google:ClientId"];
-                options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-            })
-            .AddMicrosoftAccount(microsoftOptions =>
-            {
-                microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
-                microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
-                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
-            })
-            .AddTwitch(options =>
-            {
-                options.ClientId = Configuration["Authentication:Twitch:ClientId"];
-                options.ClientSecret = Configuration["Authentication:Twitch:ClientSecret"];
-            })
-            .AddPatreon(options =>
-            {
-                options.ClientId = Configuration["Authentication:Patreon:ClientId"];
-                options.ClientSecret = Configuration["Authentication:Patreon:ClientSecret"];
-            })
-            .AddDiscord(options =>
-            {
-                options.ClientId = Configuration["Authentication:Discord:ClientId"];
-                options.ClientSecret = Configuration["Authentication:Discord:ClientSecret"];
-            })
-            .AddIdentityServerJwt();
+           .AddGoogle(options =>
+           {
+               options.ClientId = configuration["Authentication:Google:ClientId"];
+               options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+           })
+           .AddMicrosoftAccount(microsoftOptions =>
+           {
+               microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
+               microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
+               microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+               microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+           })
+           .AddTwitch(options =>
+           {
+               options.ClientId = configuration["Authentication:Twitch:ClientId"];
+               options.ClientSecret = configuration["Authentication:Twitch:ClientSecret"];
+           })
+           .AddPatreon(options =>
+           {
+               options.ClientId = configuration["Authentication:Patreon:ClientId"];
+               options.ClientSecret = configuration["Authentication:Patreon:ClientSecret"];
+           })
+           .AddDiscord(options =>
+           {
+               options.ClientId = configuration["Authentication:Discord:ClientId"];
+               options.ClientSecret = configuration["Authentication:Discord:ClientSecret"];
+           })
+           .AddIdentityServerJwt();
 
         services.ConfigureApplicationCookie(options =>
         {
@@ -290,17 +287,17 @@ public class Startup
         services.AddSignalR();
 
         // In production, the Vue files will be served from this directory
-        services.AddSpaStaticFiles(configuration =>
+        services.AddSpaStaticFiles(staticFileOptions =>
         {
-            configuration.RootPath = _spaPath;
+            staticFileOptions.RootPath = GetSPAPath(env);
         });
 
-        DapperNodaTimeSetup.Register();
+        return builder.Build();
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public static WebApplication ConfigurePipeline(this WebApplication app)
     {
+        var env = app.Environment;
         _ = Arguments.TryGetOptions(System.Environment.GetCommandLineArgs(), false, out string mode, out ushort port, out bool https);
 
         if (env.IsDevelopment())
@@ -353,14 +350,15 @@ public class Startup
             endpoints.MapHub<UpdateHub>("/updatehub");
         });
 
+        var spaPath = GetSPAPath(env);
         var spaStaticFileOptions = new StaticFileOptions
         {
-            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(env.ContentRootPath, _spaPath))
+            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(env.ContentRootPath, spaPath))
         };
 
         app.UseSpa(spa =>
         {
-            spa.Options.SourcePath = _spaPath;
+            spa.Options.SourcePath = spaPath;
 
             if (env.IsDevelopment())
             {
@@ -383,5 +381,7 @@ public class Startup
                 spa.Options.DefaultPageStaticFileOptions = spaStaticFileOptions;
             }
         });
+
+        return app;
     }
 }
