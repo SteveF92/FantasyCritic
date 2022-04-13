@@ -146,29 +146,9 @@ export default {
     postRequest() {
       let selectedLeagueOptions = {
         leagueName: this.leagueName,
-        initialYear: this.initialYear,
-        standardGames: this.leagueYearSettings.standardGames,
-        gamesToDraft: this.leagueYearSettings.gamesToDraft,
-        counterPicks: this.leagueYearSettings.counterPicks,
-        counterPicksToDraft: this.leagueYearSettings.counterPicksToDraft,
-        freeDroppableGames: this.leagueYearSettings.freeDroppableGames,
-        willNotReleaseDroppableGames: this.leagueYearSettings.willNotReleaseDroppableGames,
-        willReleaseDroppableGames: this.leagueYearSettings.willReleaseDroppableGames,
-        unlimitedFreeDroppableGames: this.leagueYearSettings.unlimitedFreeDroppableGames,
-        unlimitedWillNotReleaseDroppableGames: this.leagueYearSettings.unlimitedWillNotReleaseDroppableGames,
-        unlimitedWillReleaseDroppableGames: this.leagueYearSettings.unlimitedWillReleaseDroppableGames,
-        dropOnlyDraftGames: this.leagueYearSettings.dropOnlyDraftGames,
-        counterPicksBlockDrops: this.leagueYearSettings.counterPicksBlockDrops,
-        minimumBidAmount: this.leagueYearSettings.minimumBidAmount,
-        tags: this.leagueYearSettings.tags,
-        specialGameSlots: this.leagueYearSettings.specialGameSlots,
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
-        draftSystem: 'Flexible',
-        pickupSystem: this.leagueYearSettings.pickupSystem,
-        tiebreakSystem: this.leagueYearSettings.tiebreakSystem,
-        tradingSystem: this.leagueYearSettings.tradingSystem,
-        scoringSystem: 'Diminishing'
+        leagueYearSettings: this.leagueYearSettings
       };
 
       axios

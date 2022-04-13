@@ -1,16 +1,14 @@
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Requests;
 
-public class EditLeagueYearParameters
+public class LeagueYearParameters
 {
-    public EditLeagueYearParameters(FantasyCriticUser manager, Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
+    public LeagueYearParameters(Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
         int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount,
         IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
         DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, AnnualDate counterPickDeadline)
     {
-        Manager = manager;
         LeagueID = leagueID;
         Year = year;
         StandardGames = standardGames;
@@ -33,7 +31,6 @@ public class EditLeagueYearParameters
         CounterPickDeadline = counterPickDeadline;
     }
 
-    public FantasyCriticUser Manager { get; }
     public Guid LeagueID { get; }
     public int Year { get; }
     public int StandardGames { get; }

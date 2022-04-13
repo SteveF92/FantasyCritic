@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using FantasyCritic.Lib.Identity;
 using Newtonsoft.Json;
 
 namespace FantasyCritic.Web.Models.RoundTrip;
@@ -136,13 +135,13 @@ public class LeagueYearSettingsViewModel
 
         if (CounterPickDeadline.Year != Year)
         {
-            return Result.Failure($"The counter pick deadline must be in {Year}");
+            return Result.Failure($"The counter pick deadline must be in {Year}.");
         }
 
         return Result.Success();
     }
 
-    public EditLeagueYearParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    public LeagueYearParameters ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
         DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -171,7 +170,7 @@ public class LeagueYearSettingsViewModel
         var leagueTags = Tags.ToDomain(tagDictionary);
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
-        EditLeagueYearParameters parameters = new EditLeagueYearParameters(manager, LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
+        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
             freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount,
             leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, counterPickDeadline);
         return parameters;

@@ -34,32 +34,7 @@ public class LeagueOptions
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
 
-    public LeagueOptions(LeagueCreationParameters parameters)
-    {
-        StandardGames = parameters.StandardGames;
-        GamesToDraft = parameters.GamesToDraft;
-        CounterPicks = parameters.CounterPicks;
-        CounterPicksToDraft = parameters.CounterPicksToDraft;
-        FreeDroppableGames = parameters.FreeDroppableGames;
-        WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
-        WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
-        DropOnlyDraftGames = parameters.DropOnlyDraftGames;
-        CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
-        MinimumBidAmount = parameters.MinimumBidAmount;
-        LeagueTags = parameters.LeagueTags;
-        SpecialGameSlots = parameters.SpecialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
-        DraftSystem = parameters.DraftSystem;
-        PickupSystem = parameters.PickupSystem;
-        ScoringSystem = parameters.ScoringSystem;
-        TradingSystem = parameters.TradingSystem;
-        TiebreakSystem = parameters.TiebreakSystem;
-        PublicLeague = parameters.PublicLeague;
-        CounterPickDeadline = parameters.CounterPickDeadline;
-
-        _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
-    }
-
-    public LeagueOptions(EditLeagueYearParameters parameters)
+    public LeagueOptions(LeagueYearParameters parameters)
     {
         StandardGames = parameters.StandardGames;
         GamesToDraft = parameters.GamesToDraft;

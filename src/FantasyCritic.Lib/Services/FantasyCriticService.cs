@@ -49,7 +49,7 @@ public class FantasyCriticService
 
     public async Task<Result<League>> CreateLeague(LeagueCreationParameters parameters)
     {
-        LeagueOptions options = new LeagueOptions(parameters);
+        LeagueOptions options = new LeagueOptions(parameters.LeagueYearParameters);
 
         var validateOptions = options.Validate();
         if (validateOptions.IsFailure)
@@ -57,18 +57,18 @@ public class FantasyCriticService
             return Result.Failure<League>(validateOptions.Error);
         }
 
-        if (parameters.ScoringSystem.Name != DiminishingScoringSystem.StaticName)
+        if (parameters.LeagueYearParameters.ScoringSystem.Name != DiminishingScoringSystem.StaticName)
         {
             return Result.Failure<League>("That scoring mode is no longer supported.");
         }
 
-        IEnumerable<int> years = new List<int>() { parameters.InitialYear };
+        IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
         League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years, parameters.PublicLeague, parameters.TestLeague, false, 0);
-        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.InitialYear, options);
+        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newLeague);
     }
 
-    public async Task<Result> EditLeague(LeagueYear leagueYear, EditLeagueYearParameters parameters)
+    public async Task<Result> EditLeague(LeagueYear leagueYear, LeagueYearParameters parameters)
     {
         if (leagueYear.SupportedYear.Finished)
         {
@@ -163,7 +163,7 @@ public class FantasyCriticService
         return Result.Success();
     }
 
-    private static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(EditLeagueYearParameters parameters, LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
+    private static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(LeagueYearParameters parameters, LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
     {
         var slotCountShift = parameters.StandardGames - leagueYear.Options.StandardGames;
         Dictionary<Guid, int> finalSlotAssignments = new Dictionary<Guid, int>();

@@ -56,7 +56,7 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.InitialYear);
+        var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.LeagueYearSettings.Year);
         if (selectedSupportedYear is null)
         {
             return BadRequest("That year is not supported.");
@@ -201,7 +201,7 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
-        EditLeagueYearParameters domainRequest = request.ToDomain(currentUser, tagDictionary);
+        LeagueYearParameters domainRequest = request.ToDomain(tagDictionary);
         Result result = await _fantasyCriticService.EditLeague(leagueYear, domainRequest);
         if (result.IsFailure)
         {
