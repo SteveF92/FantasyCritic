@@ -305,9 +305,12 @@ public static class HostingExtensions
         app.UseIdentityServer();
         app.UseAuthorization();
 
-        app.MapControllers();
-        app.MapRazorPages();
-        app.MapHub<UpdateHub>("/updatehub");
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapRazorPages();
+            endpoints.MapHub<UpdateHub>("/updatehub");
+        });
 
         var spaPath = GetSPAPath(env);
         var spaStaticFileOptions = new StaticFileOptions
