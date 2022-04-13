@@ -1,7 +1,5 @@
 
 using System.IO;
-using System.Text;
-using Duende.IdentityServer;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -16,9 +14,6 @@ using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Identity;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +24,6 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using NLog;
 using NodaTime.Serialization.JsonNet;
@@ -149,35 +143,6 @@ public static class HostingExtensions
             args.SetObserved();
         });
 
-        services.AddAuthorization(ctx =>
-        {
-            ctx.AddPolicy("Api", policy =>
-            {
-                policy.AddAuthenticationSchemes(
-                    IdentityServerConstants.DefaultCookieAuthenticationScheme,
-                    JwtBearerDefaults.AuthenticationScheme);
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "FantasyCritic.WebAPI");
-            });
-        });
-
-        services.AddAuthentication()
-            .AddJwtBearer("Bearer", options =>
-            {
-                options.Authority = baseAddress;
-                options.RequireHttpsMetadata = true;
-
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateAudience = false,
-
-                    ValidTypes = new[] { "at+jwt" },
-
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-                };
-            });
-
         services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -186,7 +151,6 @@ public static class HostingExtensions
                 var specials = "-._@+ ";
                 options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
             })
-            .AddDefaultUI()
             .AddUserManager<FantasyCriticUserManager>()
             .AddRoleManager<FantasyCriticRoleManager>()
             .AddDefaultTokenProviders();
@@ -198,6 +162,8 @@ public static class HostingExtensions
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
+
+                // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
                 options.EmitStaticAudienceClaim = true;
             })
             .AddPersistedGrantStore<MySQLPersistedGrantStore>()
@@ -206,6 +172,8 @@ public static class HostingExtensions
             .AddInMemoryApiResources(IdentityConfig.APIResources)
             .AddInMemoryClients(identityConfig.Clients)
             .AddAspNetIdentity<FantasyCriticUser>();
+
+        services.AddLocalApiAuthentication();
 
         if (env.IsDevelopment())
         {
@@ -216,8 +184,7 @@ public static class HostingExtensions
             identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
         }
 
-        services
-           .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        services.AddAuthentication()
            .AddCookie(options =>
            {
                options.Cookie.Name = "FantasyCriticCookie";
@@ -252,12 +219,11 @@ public static class HostingExtensions
            {
                options.ClientId = configuration["Authentication:Discord:ClientId"];
                options.ClientSecret = configuration["Authentication:Discord:ClientSecret"];
-           })
-           .AddIdentityServerJwt();
+           });
 
-        services.ConfigureApplicationCookie(options =>
+        builder.Services.ConfigureApplicationCookie(options =>
         {
-            options.Events = SPACookieOptions.GetEvents();
+            options.Events = SPACookieOptions.GetModifiedEvents(options.Events);
         });
 
         services.AddDataProtection()
@@ -276,14 +242,13 @@ public static class HostingExtensions
             options.HttpsPort = 443;
         });
 
-        services.AddControllersWithViews()
+        services.AddControllers()
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             });
 
         services.AddRazorPages();
-
         services.AddSignalR();
 
         // In production, the Vue files will be served from this directory
@@ -329,31 +294,25 @@ public static class HostingExtensions
                 };
             }
         });
+
         if (!env.IsDevelopment())
         {
             app.UseSpaStaticFiles();
         }
 
         app.UseRouting();
-
         app.UseAuthentication();
         app.UseIdentityServer();
         app.UseAuthorization();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller}/{action=Index}/{id?}");
-
-            endpoints.MapRazorPages();
-            endpoints.MapHub<UpdateHub>("/updatehub");
-        });
+        app.MapControllers();
+        app.MapRazorPages();
+        app.MapHub<UpdateHub>("/updatehub");
 
         var spaPath = GetSPAPath(env);
         var spaStaticFileOptions = new StaticFileOptions
         {
-            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(env.ContentRootPath, spaPath))
+            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(Path.Combine(env.ContentRootPath, spaPath))
         };
 
         app.UseSpa(spa =>
