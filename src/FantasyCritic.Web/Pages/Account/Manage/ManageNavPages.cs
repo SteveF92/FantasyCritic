@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage;
+namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public static class ManageNavPages
 {

@@ -120,9 +120,7 @@ public class ConsentModel : PageModel
         return null;
     }
 
-    private ViewModel CreateConsentViewModel(
-        InputModel model, string returnUrl,
-        AuthorizationRequest request)
+    private ViewModel CreateConsentViewModel(InputModel model, string returnUrl, AuthorizationRequest request)
     {
         var vm = new ViewModel
         {

@@ -2,12 +2,12 @@
 
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using FantasyCritic.Lib.Services;
 
-namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage;
+namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class EmailModel : PageModel
 {

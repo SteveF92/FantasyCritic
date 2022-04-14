@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FantasyCritic.Web.Areas.Identity.Pages.Account;
+namespace FantasyCritic.Web.Pages.Account;
 
 public class AccessDeniedModel : PageModel
 {

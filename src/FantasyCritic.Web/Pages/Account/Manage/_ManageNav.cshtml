@@ -1,3 +1,4 @@
+@using FantasyCritic.Web.Pages.Account.Manage
 @inject SignInManager<FantasyCriticUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();

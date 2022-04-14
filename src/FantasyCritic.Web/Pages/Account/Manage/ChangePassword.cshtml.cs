@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-namespace FantasyCritic.Web.Areas.Identity.Pages.Account.Manage;
+
+namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class ChangePasswordModel : PageModel
 {

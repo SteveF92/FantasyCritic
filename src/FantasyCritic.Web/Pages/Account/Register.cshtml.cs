@@ -1,17 +1,17 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
+using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Services;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using FantasyCritic.Lib.Services;
 
-namespace FantasyCritic.Web.Areas.Identity.Pages.Account;
+namespace FantasyCritic.Web.Pages.Account;
 
 [AllowAnonymous]
 public class RegisterModel : PageModel

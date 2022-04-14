@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FantasyCritic.Web.Areas.Identity.Pages.Account;
+namespace FantasyCritic.Web.Pages.Account;
 
 [AllowAnonymous]
 public class LockoutModel : PageModel
