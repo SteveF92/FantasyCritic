@@ -90,11 +90,13 @@
 <script>
 import axios from 'axios';
 import MasterGameDetails from '@/components/masterGameDetails';
+import GGMixin from '@/mixins/ggMixin';
 
 export default {
   components: {
     MasterGameDetails
   },
+  mixins: [GGMixin],
   props: {
     mastergameid: { type: String, required: true }
   },
@@ -107,13 +109,10 @@ export default {
   },
   computed: {
     ggCoverArtLink() {
-      if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=307&dpr=1&fit=crop&auto=compress&q=95`;
-      }
-      return null;
+      return this.getGGCoverArtLinkForGame(this.masterGame, 307);
     },
     ggLink() {
-      return `https://ggapp.io/games/${this.masterGame.ggToken}`;
+      return this.getGGLinkForGame(this.masterGame);
     },
     isAdmin() {
       return this.$store.getters.isAdmin;

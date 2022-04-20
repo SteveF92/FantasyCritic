@@ -88,11 +88,13 @@
 <script>
 import moment from 'moment';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import GGMixin from '@/mixins/ggMixin';
 
 export default {
   components: {
     MasterGameTagBadge
   },
+  mixins: [GGMixin],
   props: {
     masterGame: { type: Object, required: true },
     hideImage: { type: Boolean }
@@ -104,10 +106,10 @@ export default {
   },
   computed: {
     ggCoverArtLink() {
-      if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?w=165&dpr=1&fit=crop&auto=compress&q=95`;
-      }
-      return null;
+      return this.getGGCoverArtLinkForGame(this.masterGame, 165);
+    },
+    ggLink() {
+      return this.getGGLinkForGame(this.masterGame);
     },
     isAdmin() {
       return this.$store.getters.isAdmin;
@@ -117,9 +119,6 @@ export default {
     },
     openCriticLink() {
       return `https://opencritic.com/game/${this.masterGame.openCriticID}/a`;
-    },
-    ggLink() {
-      return `https://ggapp.io/games/${this.masterGame.ggToken}`;
     }
   }
 };

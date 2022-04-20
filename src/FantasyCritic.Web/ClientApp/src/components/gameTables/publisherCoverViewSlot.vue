@@ -44,13 +44,14 @@ import PublisherMixin from '@/mixins/publisherMixin';
 import MasterGameSummary from '@/components/masterGameSummary';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge';
 import GlobalFunctions from '@/globalFunctions';
+import GGMixin from '@/mixins/ggMixin';
 
 export default {
   components: {
     MasterGameSummary,
     SlotTypeBadge
   },
-  mixins: [PublisherMixin],
+  mixins: [PublisherMixin, GGMixin],
   props: {
     gameSlot: { type: Object, required: true }
   },
@@ -85,14 +86,12 @@ export default {
       return this.game.gameName;
     },
     ggCoverArtLink() {
-      let width = 'w=165';
+      let width = 165;
       if (this.useSmallImages) {
-        width = 'w=125';
+        width = 125;
       }
-      if (this.masterGame.ggCoverArtFileName) {
-        return `https://ggapp.imgix.net/media/games/${this.masterGame.ggToken}/${this.masterGame.ggCoverArtFileName}?${width}&dpr=1&fit=crop&auto=compress&q=95`;
-      }
-      return null;
+
+      return this.getGGCoverArtLinkForGame(this.masterGame, width);
     },
     popoverID() {
       return `mg-popover-${this._uid}`;
