@@ -88,7 +88,7 @@ public static class Program
         await betaAdminService.RefreshCaches();
     }
 
-private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
+    private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
     {
         await using var connection = new MySqlConnection(_productionReadOnlyConnectionString);
         var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
