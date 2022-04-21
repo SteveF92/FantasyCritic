@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using FantasyCritic.Lib.Interfaces;
 using FluentEmail.Core;
 using FluentEmail.Mailgun;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace FantasyCritic.Mailgun;
 

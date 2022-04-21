@@ -2,10 +2,10 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Email.EmailModels;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using NLog;
 using RazorLight;
 using System.IO;
+using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Services;
 

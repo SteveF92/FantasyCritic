@@ -34,6 +34,7 @@ using Microsoft.Net.Http.Headers;
 using NLog;
 using NodaTime.Serialization.JsonNet;
 using FantasyCritic.Lib.Patreon;
+using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
 
