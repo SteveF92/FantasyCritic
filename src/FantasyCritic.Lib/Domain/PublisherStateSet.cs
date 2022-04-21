@@ -33,21 +33,25 @@ public class PublisherStateSet
 
     public void AcquireGameForPublisher(Publisher publisherToEdit, PublisherGame game, uint bidAmount)
     {
+        publisherToEdit = GetPublisher(publisherToEdit.PublisherID);
         UpdatePublisher(publisherToEdit, game, null, (int)bidAmount * -1, null);
     }
 
     public void SpendBudgetForPublisher(Publisher publisherToEdit, uint budget)
     {
+        publisherToEdit = GetPublisher(publisherToEdit.PublisherID);
         UpdatePublisher(publisherToEdit, null, null, (int)budget * -1, null);
     }
 
     public void ObtainBudgetForPublisher(Publisher publisherToEdit, uint budget)
     {
+        publisherToEdit = GetPublisher(publisherToEdit.PublisherID);
         UpdatePublisher(publisherToEdit, null, null, (int)budget, null);
     }
 
     public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions)
     {
+        publisherToEdit = GetPublisher(publisherToEdit.PublisherID);
         if (publisherGame.WillRelease())
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > publisherToEdit.WillReleaseGamesDropped)
