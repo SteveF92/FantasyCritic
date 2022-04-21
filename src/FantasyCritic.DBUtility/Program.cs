@@ -42,9 +42,10 @@ class Program
                 var nonDraftActions = leagueActions.Where(x => !x.Description.ToLower().Contains("draft")).ToList();
                 var processedBids = await fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
                 var successBids = processedBids.Where(x => x.Successful.HasValue && x.Successful.Value).ToList();
-                var publishersInTrades = trades.SelectMany(x => x.GetUpdatedPublishers()).DistinctBy(x => x.PublisherID).ToList();
-                foreach (var publisher in publishersInTrades)
+                var publisherIDs = trades.SelectMany(x => x.GetUpdatedPublishers()).Select(x => x.PublisherID).ToList();
+                foreach (var publisherID in publisherIDs)
                 {
+                    var publisher = leagueYear.GetPublisherByID(publisherID);
                     var leagueActionsForPublisher = nonDraftActions.Where(x => x.Publisher.PublisherID == publisher.PublisherID).ToList();
                     var tradesInvolvingPublisher = trades.Where(x => x.GetUpdatedPublishers().Select(x => x.PublisherID).Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
                     var successfulBidsForPublisher = successBids.Where(x => x.Publisher.PublisherID == publisher.PublisherID).OrderBy(x => x.Timestamp).ToList();
@@ -56,19 +57,22 @@ class Program
 
     private static void PrintStatsForPublisher(LeagueYear leagueYear, Publisher publisher, IReadOnlyList<LeagueAction> leagueActionsForPublisher, IReadOnlyList<Trade> tradesInvolvingPublisher, IReadOnlyList<PickupBid> successfulBidsForPublisher)
     {
-        Console.WriteLine("-------------------------------------------------------------");
-        Console.WriteLine($"League: {leagueYear.League.LeagueName} | Publisher: {publisher.PublisherName}");
-        Console.WriteLine("Starting: 100");
+        List<string> stringsToPrint = new List<string>();
+        stringsToPrint.Add("-------------------------------------------------------------");
+        stringsToPrint.Add($"League: {leagueYear.League.LeagueName} | Publisher: {publisher.PublisherName}");
+        stringsToPrint.Add($"https://www.fantasycritic.games/league/{leagueYear.League.LeagueID}/{leagueYear.Year}");
+        stringsToPrint.Add($"https://www.beta.fantasycritic.games/publisher/{publisher.PublisherID}");
+        stringsToPrint.Add("Starting: 100");
 
         long expectedBudget = 100;
-        foreach (var action in leagueActionsForPublisher)
+        foreach (var action in leagueActionsForPublisher.Where(x => x.ActionType == "Publisher Edited"))
         {
-            Console.WriteLine(action.Description);
+            stringsToPrint.Add(action.Description);
         }
         foreach (var bid in successfulBidsForPublisher)
         {
             expectedBudget -= bid.BidAmount;
-            Console.WriteLine($"Won {bid.MasterGame.GameName} with bid of {bid.BidAmount}");
+            stringsToPrint.Add($"Won {bid.MasterGame.GameName} with bid of {bid.BidAmount}");
         }
         foreach (var trade in tradesInvolvingPublisher)
         {
@@ -80,17 +84,24 @@ class Program
             }
             else
             {
-                budgetChange = trade.ProposerBudgetSendAmount * -1;
-                budgetChange += trade.CounterPartyBudgetSendAmount;
+                budgetChange = trade.CounterPartyBudgetSendAmount * -1;
+                budgetChange += trade.ProposerBudgetSendAmount;
             }
 
             expectedBudget += budgetChange;
-            Console.WriteLine($"Budget from trade: {budgetChange}");
+            stringsToPrint.Add($"Budget from trade: {budgetChange}");
         }
 
-        Console.WriteLine($"Expected Budget: {expectedBudget}");
-        Console.WriteLine($"Actual Budget: {publisher.Budget}");
-        Console.WriteLine("-------------------------------------------------------------");
+        stringsToPrint.Add($"Expected Budget: {expectedBudget}");
+        stringsToPrint.Add($"Actual Budget: {publisher.Budget}");
+        stringsToPrint.Add("-------------------------------------------------------------");
+        if (expectedBudget != publisher.Budget)
+        {
+            foreach (var stringPrint in stringsToPrint)
+            {
+                Console.WriteLine(stringPrint);
+            }
+        }
     }
 
     private static async Task<IReadOnlyList<LeagueYearKey>> GetLeagueYearsWithProblemTrades(SupportedYear year)
