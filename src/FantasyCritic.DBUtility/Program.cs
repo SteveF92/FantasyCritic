@@ -4,8 +4,10 @@ using Dapper.NodaTime;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MySqlConnector;
 using NodaTime;
 
@@ -38,16 +40,17 @@ class Program
                 var league = await fantasyCriticRepo.GetLeague(leagueYearKey.LeagueID);
                 var leagueYear = await fantasyCriticRepo.GetLeagueYear(league!, leagueYearKey.Year);
                 var trades = await fantasyCriticRepo.GetTradesForLeague(leagueYear);
+                var executedTrades = trades.Where(x => x.Status.Equals(TradeStatus.Executed));
                 var leagueActions = await fantasyCriticRepo.GetLeagueActions(leagueYear);
                 var nonDraftActions = leagueActions.Where(x => !x.Description.ToLower().Contains("draft")).ToList();
                 var processedBids = await fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
                 var successBids = processedBids.Where(x => x.Successful.HasValue && x.Successful.Value).ToList();
-                var publisherIDs = trades.SelectMany(x => x.GetUpdatedPublishers()).Select(x => x.PublisherID).ToList();
+                var publisherIDs = executedTrades.SelectMany(x => x.GetUpdatedPublishers()).Select(x => x.PublisherID).Distinct().ToList();
                 foreach (var publisherID in publisherIDs)
                 {
                     var publisher = leagueYear.GetPublisherByID(publisherID);
                     var leagueActionsForPublisher = nonDraftActions.Where(x => x.Publisher.PublisherID == publisher.PublisherID).ToList();
-                    var tradesInvolvingPublisher = trades.Where(x => x.GetUpdatedPublishers().Select(x => x.PublisherID).Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
+                    var tradesInvolvingPublisher = executedTrades.Where(x => x.GetUpdatedPublishers().Select(x => x.PublisherID).Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
                     var successfulBidsForPublisher = successBids.Where(x => x.Publisher.PublisherID == publisher.PublisherID).OrderBy(x => x.Timestamp).ToList();
                     PrintStatsForPublisher(leagueYear, publisher, leagueActionsForPublisher, tradesInvolvingPublisher, successfulBidsForPublisher); 
                 }
@@ -57,51 +60,57 @@ class Program
 
     private static void PrintStatsForPublisher(LeagueYear leagueYear, Publisher publisher, IReadOnlyList<LeagueAction> leagueActionsForPublisher, IReadOnlyList<Trade> tradesInvolvingPublisher, IReadOnlyList<PickupBid> successfulBidsForPublisher)
     {
-        List<string> stringsToPrint = new List<string>();
-        stringsToPrint.Add("-------------------------------------------------------------");
-        stringsToPrint.Add($"League: {leagueYear.League.LeagueName} | Publisher: {publisher.PublisherName}");
-        stringsToPrint.Add($"https://www.fantasycritic.games/league/{leagueYear.League.LeagueID}/{leagueYear.Year}");
-        stringsToPrint.Add($"https://www.beta.fantasycritic.games/publisher/{publisher.PublisherID}");
-        stringsToPrint.Add("Starting: 100");
+        List<(Instant, object)> rawBudgetEvents = new List<(Instant, object)>();
+        rawBudgetEvents.AddRange(leagueActionsForPublisher.Where(x => x.ActionType == "Publisher Edited" && x.Description.StartsWith("Changed budget")).Select(x => (x.Timestamp, x as object)));
+        rawBudgetEvents.AddRange(successfulBidsForPublisher.Select(x => (x.Timestamp, x as object)));
+        rawBudgetEvents.AddRange(tradesInvolvingPublisher.Select(x => (x.CompletedTimestamp!.Value, x as object)));
 
-        long expectedBudget = 100;
-        foreach (var action in leagueActionsForPublisher.Where(x => x.ActionType == "Publisher Edited"))
+        var sortedRawEvents = rawBudgetEvents.OrderBy(x => x.Item1);
+        List<BudgetEvent> budgetEvents = new List<BudgetEvent>();
+        long currentBudget = 100;
+        foreach (var rawEvent in sortedRawEvents)
         {
-            stringsToPrint.Add(action.Description);
-        }
-        foreach (var bid in successfulBidsForPublisher)
-        {
-            expectedBudget -= bid.BidAmount;
-            stringsToPrint.Add($"Won {bid.MasterGame.GameName} with bid of {bid.BidAmount}");
-        }
-        foreach (var trade in tradesInvolvingPublisher)
-        {
-            long budgetChange = 0;
-            if (trade.Proposer.PublisherID == publisher.PublisherID)
+            switch (rawEvent.Item2)
             {
-                budgetChange = trade.ProposerBudgetSendAmount * -1;
-                budgetChange += trade.CounterPartyBudgetSendAmount;
-            }
-            else
-            {
-                budgetChange = trade.CounterPartyBudgetSendAmount * -1;
-                budgetChange += trade.ProposerBudgetSendAmount;
+                case LeagueAction action:
+                    budgetEvents.Add(new BudgetEvent(currentBudget, action));
+                    break;
+                case PickupBid bid:
+                    budgetEvents.Add(new BudgetEvent(currentBudget, bid));
+                    break;
+                case Trade trade:
+                    bool isProposer = trade.Proposer.PublisherID == publisher.PublisherID;
+                    budgetEvents.Add(new BudgetEvent(currentBudget, trade, isProposer));
+                    break;
             }
 
-            expectedBudget += budgetChange;
-            stringsToPrint.Add($"Budget from trade: {budgetChange}");
+            currentBudget = budgetEvents.Last().NewBudget;
         }
 
-        stringsToPrint.Add($"Expected Budget: {expectedBudget}");
-        stringsToPrint.Add($"Actual Budget: {publisher.Budget}");
-        stringsToPrint.Add("-------------------------------------------------------------");
-        if (expectedBudget != publisher.Budget)
+        //if (currentBudget == publisher.Budget)
+        //{
+        //    return;
+        //}
+
+        Console.WriteLine("-------------------------------------------------------------");
+        Console.WriteLine($"League: {leagueYear.League.LeagueName} | Publisher: {publisher.PublisherName}");
+        Console.WriteLine($"https://www.fantasycritic.games/league/{leagueYear.League.LeagueID}/{leagueYear.Year}");
+        Console.WriteLine($"https://www.fantasycritic.games/publisher/{publisher.PublisherID}");
+        Console.WriteLine("Starting: 100");
+
+        foreach (var budgetEvent in budgetEvents)
         {
-            foreach (var stringPrint in stringsToPrint)
-            {
-                Console.WriteLine(stringPrint);
-            }
+            Console.WriteLine($"Event: {budgetEvent.Description} - {budgetEvent.Timestamp}");
+            Console.WriteLine($"\tChange: {budgetEvent.PreviousBudget}->{budgetEvent.NewBudget} ({budgetEvent.Change})");
         }
+
+        Console.WriteLine($"Expected Budget: {currentBudget}");
+        Console.WriteLine($"Actual Budget: {publisher.Budget}");
+        if (currentBudget != publisher.Budget)
+        {
+            Console.WriteLine("Mismatch!");
+        }
+        Console.WriteLine("-------------------------------------------------------------");
     }
 
     private static async Task<IReadOnlyList<LeagueYearKey>> GetLeagueYearsWithProblemTrades(SupportedYear year)

@@ -5,7 +5,7 @@ using NodaTime;
 namespace FantasyCritic.DBUtility;
 public class BudgetEvent
 {
-    public BudgetEvent(uint previousBudget, LeagueAction editPublisherAction)
+    public BudgetEvent(long previousBudget, LeagueAction editPublisherAction)
     {
         PreviousBudget = previousBudget;
         Timestamp = editPublisherAction.Timestamp;
@@ -16,18 +16,21 @@ public class BudgetEvent
         Description = editPublisherAction.Description;
     }
 
-    public BudgetEvent(uint previousBudget, Trade trade, bool isProposer)
+    public BudgetEvent(long previousBudget, Trade trade, bool isProposer)
     {
         PreviousBudget = previousBudget;
         Timestamp = trade.CompletedTimestamp!.Value;
 
+        string partyString = "";
         if (isProposer)
         {
+            partyString = "(Prop)";
             Change += trade.ProposerBudgetSendAmount * -1;
             Change += trade.CounterPartyBudgetSendAmount;
         }
         else
         {
+            partyString = "(Counter)";
             Change += trade.CounterPartyBudgetSendAmount * -1;
             Change += trade.ProposerBudgetSendAmount;
         }
@@ -35,15 +38,15 @@ public class BudgetEvent
         NewBudget = PreviousBudget + Change;
         if (Change > 0)
         {
-            Description = $"Acquired ${Change} in trade.";
+            Description = $"{partyString} | Acquired ${Change} in trade.";
         }
         else
         {
-            Description = $"Traded away ${Change}.";
+            Description = $"{partyString} | Traded away ${Change * -1}.";
         }
     }
 
-    public BudgetEvent(uint previousBudget, PickupBid bid)
+    public BudgetEvent(long previousBudget, PickupBid bid)
     {
         PreviousBudget = previousBudget;
         Timestamp = bid.Timestamp;
