@@ -1,9 +1,9 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authorization;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,13 +14,13 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class LoginModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
     private readonly ILogger<LoginModel> _logger;
 
     public LoginModel(SignInManager<FantasyCriticUser> signInManager,
         ILogger<LoginModel> logger,
-        UserManager<FantasyCriticUser> userManager)
+        FantasyCriticUserManager userManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;

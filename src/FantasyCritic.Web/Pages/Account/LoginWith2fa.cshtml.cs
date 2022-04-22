@@ -1,8 +1,8 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authorization;
 using FantasyCritic.Lib.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -73,9 +73,7 @@ public class LoginWith2faModel : PageModel
         }
 
         var authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
-
         var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, Input.RememberMachine);
-
         if (result.Succeeded)
         {
             _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);

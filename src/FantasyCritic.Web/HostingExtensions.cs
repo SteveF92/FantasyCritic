@@ -13,13 +13,12 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Hubs;
-using FantasyCritic.Web.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,16 +58,13 @@ public static class HostingExtensions
 
         var configuration = builder.Configuration;
         var services = builder.Services;
-        IClock clock = NodaTime.SystemClock.Instance;
+        IClock clock = SystemClock.Instance;
         var rdsInstanceName = configuration["AWS:rdsInstanceName"];
         var awsRegion = configuration["AWS:region"];
         var awsBucket = configuration["AWS:bucket"];
         var mailgunAPIKey = configuration["Mailgun:apiKey"];
         var baseAddress = configuration["BaseAddress"];
         var rootFolder = configuration["RootFolder"];
-        var duendeLicense = configuration["IdentityServer:License"];
-
-        var identityConfig = new IdentityConfig(baseAddress, configuration["IdentityServer:MainSecret"], configuration["IdentityServer:CertificateKey"]);
 
         // Add application services.
         services.AddHttpClient();
@@ -155,36 +151,7 @@ public static class HostingExtensions
             .AddRoleManager<FantasyCriticRoleManager>()
             .AddDefaultTokenProviders();
 
-        var identityServerBuilder = services.AddIdentityServer(options =>
-            {
-                options.LicenseKey = duendeLicense;
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-
-                // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
-                options.EmitStaticAudienceClaim = true;
-            })
-            .AddPersistedGrantStore<MySQLPersistedGrantStore>()
-            .AddInMemoryIdentityResources(IdentityConfig.IdentityResources)
-            .AddInMemoryApiScopes(IdentityConfig.APIScopes)
-            .AddInMemoryApiResources(IdentityConfig.APIResources)
-            .AddInMemoryClients(identityConfig.Clients)
-            .AddAspNetIdentity<FantasyCriticUser>();
-
-        services.AddLocalApiAuthentication();
-
-        if (env.IsDevelopment())
-        {
-            identityServerBuilder.AddDeveloperSigningCredential();
-        }
-        else
-        {
-            identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
-        }
-
-        services.AddAuthentication()
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
            .AddCookie(options =>
            {
                options.Cookie.Name = "FantasyCriticCookie";
@@ -220,12 +187,6 @@ public static class HostingExtensions
                options.ClientId = configuration["Authentication:Discord:ClientId"];
                options.ClientSecret = configuration["Authentication:Discord:ClientSecret"];
            });
-
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.Events = SPACookieOptions.GetModifiedEvents(options.Events);
-        });
-
 
         var keysFolder = Path.Combine(rootFolder, "Keys");
         services.AddDataProtection()
@@ -304,15 +265,20 @@ public static class HostingExtensions
 
         app.UseRouting();
         app.UseAuthentication();
-        app.UseIdentityServer();
         app.UseAuthorization();
 
+        //This works
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
             endpoints.MapRazorPages();
             endpoints.MapHub<UpdateHub>("/updatehub");
         });
+
+        //This does not
+        //app.MapControllers();
+        //app.MapRazorPages();
+        //app.MapHub<UpdateHub>("/updatehub");
 
         var spaPath = GetSPAPath(env);
         var spaStaticFileOptions = new StaticFileOptions
