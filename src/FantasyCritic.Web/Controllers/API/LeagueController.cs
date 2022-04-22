@@ -188,7 +188,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague && !inviteCodeIsValid)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         bool userIsFollowingLeague = false;
@@ -226,7 +226,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague && !inviteCodeIsValid)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear, validResult.ActiveUsers);
@@ -291,7 +291,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         var leagueActions = await _fantasyCriticService.GetLeagueActions(leagueYear);
@@ -316,7 +316,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear);
@@ -344,7 +344,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
@@ -371,7 +371,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         var leagueViewModel = new LeagueYearSettingsViewModel(leagueYear);
@@ -914,7 +914,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         var viewModels = GetGameNewsViewModel(leagueYear, false, false).ToList();
@@ -1442,7 +1442,7 @@ public class LeagueController : BaseLeagueController
 
         if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
         {
-            return Forbid();
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
         var currentDate = _clock.GetToday();

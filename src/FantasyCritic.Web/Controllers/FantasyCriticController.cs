@@ -32,4 +32,23 @@ public abstract class FantasyCriticController : ControllerBase
     }
 
     protected static GenericResultRecord<T> GetFailedResult<T>(IActionResult failedResult) where T : class => new GenericResultRecord<T>(null, failedResult);
+    protected GenericResultRecord<T> UnauthorizedOrForbid<T>(bool hasUser) where T : class
+    {
+        if (hasUser)
+        {
+            return new GenericResultRecord<T>(null, Forbid());
+        }
+
+        return new GenericResultRecord<T>(null, Unauthorized());
+    }
+    
+    protected IActionResult UnauthorizedOrForbid(bool hasUser)
+    {
+        if (hasUser)
+        {
+            return Forbid();
+        }
+
+        return Unauthorized();
+    }
 }
