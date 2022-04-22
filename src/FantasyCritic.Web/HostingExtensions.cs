@@ -65,7 +65,7 @@ public static class HostingExtensions
         var awsBucket = configuration["AWS:bucket"];
         var mailgunAPIKey = configuration["Mailgun:apiKey"];
         var baseAddress = configuration["BaseAddress"];
-        var jwtSecret = configuration["Authentication:JWTSecret"];
+        var rootFolder = configuration["RootFolder"];
         var duendeLicense = configuration["IdentityServer:License"];
 
         var identityConfig = new IdentityConfig(baseAddress, configuration["IdentityServer:MainSecret"], configuration["IdentityServer:CertificateKey"]);
@@ -226,8 +226,10 @@ public static class HostingExtensions
             options.Events = SPACookieOptions.GetModifiedEvents(options.Events);
         });
 
+
+        var keysFolder = Path.Combine(rootFolder, "Keys");
         services.AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo(@"C:\FantasyCritic\Keys\"));
+            .PersistKeysToFileSystem(new DirectoryInfo(keysFolder));
 
         services.AddHsts(options =>
         {
