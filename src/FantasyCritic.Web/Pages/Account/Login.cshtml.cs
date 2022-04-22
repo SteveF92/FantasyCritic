@@ -1,6 +1,8 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
+using Duende.IdentityServer.Events;
+using Duende.IdentityServer.Services;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -15,16 +17,22 @@ namespace FantasyCritic.Web.Pages.Account;
 public class LoginModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
+    private readonly IEventService _events;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
     private readonly ILogger<LoginModel> _logger;
+    private readonly IIdentityServerInteractionService _interaction;
 
     public LoginModel(SignInManager<FantasyCriticUser> signInManager,
         ILogger<LoginModel> logger,
-        FantasyCriticUserManager userManager)
+        IIdentityServerInteractionService interaction,
+        FantasyCriticUserManager userManager,
+        IEventService events)
     {
         _userManager = userManager;
+        _events = events;
         _signInManager = signInManager;
         _logger = logger;
+        _interaction = interaction;
     }
 
     [BindProperty]
@@ -93,6 +101,9 @@ public class LoginModel : PageModel
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in.");
+                var user = await _userManager.FindByEmailAsync(Input.Email);
+                var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName, clientId: context?.Client.ClientId));
                 return LocalRedirect(returnUrl);
             }
             if (result.RequiresTwoFactor)

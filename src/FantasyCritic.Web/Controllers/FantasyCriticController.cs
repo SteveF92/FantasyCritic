@@ -16,7 +16,7 @@ public abstract class FantasyCriticController : ControllerBase
 
     protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
     {
-        var userID = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        var userID = User.Claims.SingleOrDefault(x => x.Type == "sub")?.Value;
         if (userID is null)
         {
             return Result.Failure<FantasyCriticUser>("Can't get User ID");

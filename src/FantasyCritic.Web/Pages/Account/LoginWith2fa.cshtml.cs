@@ -1,6 +1,8 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
+using Duende.IdentityServer.Events;
+using Duende.IdentityServer.Services;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +17,15 @@ public class LoginWith2faModel : PageModel
 {
     private readonly SignInManager<FantasyCriticUser> _signInManager;
     private readonly ILogger<LoginWith2faModel> _logger;
+    private readonly IIdentityServerInteractionService _interaction;
+    private readonly IEventService _events;
 
-    public LoginWith2faModel(SignInManager<FantasyCriticUser> signInManager, ILogger<LoginWith2faModel> logger)
+    public LoginWith2faModel(SignInManager<FantasyCriticUser> signInManager, ILogger<LoginWith2faModel> logger, IIdentityServerInteractionService interaction, IEventService events)
     {
         _signInManager = signInManager;
         _logger = logger;
+        _interaction = interaction;
+        _events = events;
     }
 
     [BindProperty]
@@ -77,6 +83,8 @@ public class LoginWith2faModel : PageModel
         if (result.Succeeded)
         {
             _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName, clientId: context?.Client.ClientId));
             return LocalRedirect(returnUrl);
         }
         else if (result.IsLockedOut)

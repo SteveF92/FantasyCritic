@@ -13,6 +13,7 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Hubs;
+using FantasyCritic.Web.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -65,6 +66,9 @@ public static class HostingExtensions
         var mailgunAPIKey = configuration["Mailgun:apiKey"];
         var baseAddress = configuration["BaseAddress"];
         var rootFolder = configuration["RootFolder"];
+        var duendeLicense = configuration["IdentityServer:License"];
+
+        var identityConfig = new IdentityConfig(baseAddress, configuration["IdentityServer:MainSecret"], configuration["IdentityServer:FCBotSecret"], configuration["IdentityServer:CertificateKey"]);
 
         // Add application services.
         services.AddHttpClient();
@@ -151,15 +155,44 @@ public static class HostingExtensions
             .AddRoleManager<FantasyCriticRoleManager>()
             .AddDefaultTokenProviders();
 
+        var identityServerBuilder = services.AddIdentityServer(options =>
+            {
+                options.LicenseKey = duendeLicense;
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+
+                // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
+                options.EmitStaticAudienceClaim = true;
+                options.UserInteraction.ConsentUrl = "/Account/Consent";
+            })
+            .AddPersistedGrantStore<MySQLPersistedGrantStore>()
+            .AddInMemoryIdentityResources(IdentityConfig.IdentityResources)
+            .AddInMemoryApiScopes(IdentityConfig.APIScopes)
+            .AddInMemoryApiResources(IdentityConfig.APIResources)
+            .AddInMemoryClients(identityConfig.Clients)
+            .AddAspNetIdentity<FantasyCriticUser>();
+
+        if (env.IsDevelopment())
+        {
+            identityServerBuilder.AddDeveloperSigningCredential();
+        }
+        else
+        {
+            identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
+        }
+
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-           .AddCookie(options =>
-           {
+            .AddCookie(options =>
+            {
                options.Cookie.Name = "FantasyCriticCookie";
                options.LoginPath = "/Identity/Account/Login";
                options.LogoutPath = "/Identity/Account/Logout";
                options.ExpireTimeSpan = TimeSpan.FromDays(30);
                options.SlidingExpiration = true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
             })
+           .AddLocalApi()
            .AddGoogle(options =>
            {
                options.ClientId = configuration["Authentication:Google:ClientId"];
@@ -265,6 +298,7 @@ public static class HostingExtensions
 
         app.UseRouting();
         app.UseAuthentication();
+        app.UseIdentityServer();
         app.UseAuthorization();
 
         //This works

@@ -24,6 +24,8 @@
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="6.0.6" />
     <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="6.0.6" />
     <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="6.0.6" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="6.0.4" />
     <PackageReference Include="VueCliMiddleware" Version="6.0.0" />
