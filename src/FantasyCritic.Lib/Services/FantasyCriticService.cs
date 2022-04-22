@@ -38,8 +38,8 @@ public class FantasyCriticService
             return null;
         }
 
-        var options = await _fantasyCriticRepo.GetLeagueYear(league, year);
-        return options;
+        var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
+        return leagueYear;
     }
 
     public Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID)
@@ -360,7 +360,7 @@ public class FantasyCriticService
 
         foreach (var year in league.Years)
         {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league, year);
             var publishers = leagueYear.Publishers;
             foreach (var publisher in publishers)
             {

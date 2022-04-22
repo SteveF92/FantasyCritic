@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IFantasyCriticRepo
 {
     Task<League?> GetLeague(Guid id);
-    Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear);
+    Task<LeagueYear?> GetLeagueYear(League requestLeague, int requestYear);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
     Task AddNewLeagueYear(League league, int year, LeagueOptions options);
@@ -146,5 +146,16 @@ public interface IFantasyCriticRepo
         }
 
         return result;
+    }
+
+    async Task<LeagueYear> GetLeagueYearOrThrow(League league, int year)
+    {
+        var leagueYear = await GetLeagueYear(league, year);
+        if (leagueYear is null)
+        {
+            throw new Exception($"League year not found: {league.LeagueID} | {year}");
+        }
+
+        return leagueYear;
     }
 }

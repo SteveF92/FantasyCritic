@@ -98,7 +98,7 @@ public class DraftService
     public async Task<bool> StartDraft(LeagueYear leagueYear)
     {
         await _fantasyCriticRepo.StartDraft(leagueYear);
-        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
+        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
         var draftComplete = await CompleteDraft(updatedLeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
         return draftComplete;
@@ -107,7 +107,7 @@ public class DraftService
     public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
     {
         await _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
-        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
+        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League, leagueYear.Year);
         if (!pause)
         {
             await AutoDraftForLeague(updatedLeagueYear, 0, 0);
@@ -232,7 +232,7 @@ public class DraftService
     private async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
     {
         var today = _clock.GetToday();
-        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueYear.League, leagueYear.Year);
+        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League, leagueYear.Year);
         var nextPublisher = GetNextDraftPublisher(updatedLeagueYear);
         if (nextPublisher is null)
         {

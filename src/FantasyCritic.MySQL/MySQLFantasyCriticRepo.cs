@@ -38,7 +38,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         string leagueSQL = "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0;";
-        LeagueEntity leagueEntity = await connection.QuerySingleAsync<LeagueEntity>(leagueSQL, queryObject);
+        LeagueEntity leagueEntity = await connection.QuerySingleOrDefaultAsync<LeagueEntity>(leagueSQL, queryObject);
+        if (leagueEntity is null)
+        {
+            return null;
+        }
 
         FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(), CancellationToken.None);
 
@@ -75,7 +79,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return leagues;
     }
 
-    public async Task<LeagueYear> GetLeagueYear(League requestLeague, int requestYear)
+    public async Task<LeagueYear?> GetLeagueYear(League requestLeague, int requestYear)
     {
         var leagueTags = await GetLeagueYearTagEntities(requestLeague.LeagueID, requestYear);
         var specialGameSlots = await GetSpecialGameSlotEntities(requestLeague.LeagueID, requestYear);
@@ -93,9 +97,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         LeagueYearEntity yearEntity = await connection.QuerySingleOrDefaultAsync<LeagueYearEntity>(sql, queryObject);
-        if (yearEntity == null)
+        if (yearEntity is null)
         {
-            throw new Exception($"League Year not found: {requestLeague.LeagueID} {requestYear}");
+            return null;
         }
 
         var leagueYearKey = new LeagueYearKey(requestLeague.LeagueID, requestYear);
@@ -110,6 +114,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var publishers = await GetPublishersInLeagueForYear(leagueYearKey);
         LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear, winningUser, publishers);
         return year;
+    }
+
+    public async Task<LeagueYear> AssertLeagueYear(League requestLeague, int requestYear)
+    {
+        var leagueYear = await GetLeagueYear(requestLeague, requestYear);
+        if (leagueYear is null)
+        {
+            throw new Exception($"League Year not found: {requestLeague.LeagueID} {requestYear}");
+        }
+
+        return leagueYear;
     }
 
     public async Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID)
@@ -555,7 +570,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var publisher = await GetPublisherOrThrow(dropRequestEntity.PublisherID);
         var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropRequestEntity.MasterGameID);
         var league = await AsInterface.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
-        var leagueYear = await GetLeagueYear(league, publisher.LeagueYearKey.Year);
+        var leagueYear = await AssertLeagueYear(league, publisher.LeagueYearKey.Year);
 
         DropRequest domain = dropRequestEntity.ToDomain(publisher, masterGame, leagueYear);
         return domain;
@@ -771,7 +786,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var publisher = await GetPublisherOrThrow(bidEntity.PublisherID);
         var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
         var league = await AsInterface.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
-        var leagueYear = await GetLeagueYear(league, publisher.LeagueYearKey.Year);
+        var leagueYear = await AssertLeagueYear(league, publisher.LeagueYearKey.Year);
 
         var publisherGameDictionary = publisher.PublisherGames
             .Where(x => x.MasterGame is not null)
@@ -1677,7 +1692,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             throw new Exception($"Trade has bad league: {tradeEntity.TradeID}|{tradeEntity.LeagueID}.");
         }
 
-        var leagueYear = await GetLeagueYear(league, tradeEntity.Year);
+        var leagueYear = await AsInterface.GetLeagueYearOrThrow(league, tradeEntity.Year);
         Publisher proposer = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.ProposerPublisherID);
         Publisher counterParty = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
@@ -2684,7 +2699,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
     {
-        var mostRecentYear = await GetLeagueYear(league, league.Years.Max());
+        var mostRecentYear = await AsInterface.GetLeagueYearOrThrow(league, league.Years.Max());
         bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
 
         var userAddObject = new
