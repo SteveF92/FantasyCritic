@@ -10,12 +10,12 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class ResetAuthenticatorModel : PageModel
 {
-    UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
     ILogger<ResetAuthenticatorModel> _logger;
 
     public ResetAuthenticatorModel(
-        UserManager<FantasyCriticUser> userManager,
+        FantasyCriticUserManager userManager,
         SignInManager<FantasyCriticUser> signInManager,
         ILogger<ResetAuthenticatorModel> logger)
     {

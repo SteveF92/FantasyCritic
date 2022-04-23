@@ -11,9 +11,9 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class ConfirmEmailModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
 
-    public ConfirmEmailModel(UserManager<FantasyCriticUser> userManager)
+    public ConfirmEmailModel(FantasyCriticUserManager userManager)
     {
         _userManager = userManager;
     }

@@ -11,12 +11,12 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class ChangePasswordModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
     private readonly ILogger<ChangePasswordModel> _logger;
 
     public ChangePasswordModel(
-        UserManager<FantasyCriticUser> userManager,
+        FantasyCriticUserManager userManager,
         SignInManager<FantasyCriticUser> signInManager,
         ILogger<ChangePasswordModel> logger)
     {

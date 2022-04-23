@@ -10,11 +10,11 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class GenerateRecoveryCodesModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly ILogger<GenerateRecoveryCodesModel> _logger;
 
     public GenerateRecoveryCodesModel(
-        UserManager<FantasyCriticUser> userManager,
+        FantasyCriticUserManager userManager,
         ILogger<GenerateRecoveryCodesModel> logger)
     {
         _userManager = userManager;

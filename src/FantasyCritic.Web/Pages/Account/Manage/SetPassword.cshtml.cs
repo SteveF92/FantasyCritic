@@ -10,11 +10,11 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class SetPasswordModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
 
     public SetPasswordModel(
-        UserManager<FantasyCriticUser> userManager,
+        FantasyCriticUserManager userManager,
         SignInManager<FantasyCriticUser> signInManager)
     {
         _userManager = userManager;

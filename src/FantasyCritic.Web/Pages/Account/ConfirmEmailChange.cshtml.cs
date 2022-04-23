@@ -12,10 +12,10 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class ConfirmEmailChangeModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
 
-    public ConfirmEmailChangeModel(UserManager<FantasyCriticUser> userManager, SignInManager<FantasyCriticUser> signInManager)
+    public ConfirmEmailChangeModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;

@@ -9,7 +9,7 @@ public static class LinkBuilder
 {
     public static string GetBaseAddress(HttpRequest request) => $"{request.Scheme}://{request.Host.Value}";
 
-    public static async Task<string> GetConfirmEmailLink(UserManager<FantasyCriticUser> userManager, FantasyCriticUser user, HttpRequest request)
+    public static async Task<string> GetConfirmEmailLink(FantasyCriticUserManager userManager, FantasyCriticUser user, HttpRequest request)
     {
         var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var encodedCode = UrlEncoder.Default.Encode(code);
@@ -17,7 +17,7 @@ public static class LinkBuilder
         return link;
     }
 
-    public static async Task<string> GetForgotPasswordLink(UserManager<FantasyCriticUser> userManager, FantasyCriticUser user, HttpRequest request)
+    public static async Task<string> GetForgotPasswordLink(FantasyCriticUserManager userManager, FantasyCriticUser user, HttpRequest request)
     {
         var code = await userManager.GeneratePasswordResetTokenAsync(user);
         var encodedCode = UrlEncoder.Default.Encode(code);
@@ -25,7 +25,7 @@ public static class LinkBuilder
         return link;
     }
 
-    public static async Task<string> GetChangeEmailLink(UserManager<FantasyCriticUser> userManager, FantasyCriticUser user, string newEmail, HttpRequest request)
+    public static async Task<string> GetChangeEmailLink(FantasyCriticUserManager userManager, FantasyCriticUser user, string newEmail, HttpRequest request)
     {
         var code = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
         var encodedCode = UrlEncoder.Default.Encode(code);

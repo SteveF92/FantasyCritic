@@ -12,9 +12,9 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class ResetPasswordModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
 
-    public ResetPasswordModel(UserManager<FantasyCriticUser> userManager)
+    public ResetPasswordModel(FantasyCriticUserManager userManager)
     {
         _userManager = userManager;
     }

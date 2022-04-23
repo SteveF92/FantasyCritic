@@ -14,10 +14,10 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class ResendEmailConfirmationModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly EmailSendingService _emailSendingService;
 
-    public ResendEmailConfirmationModel(UserManager<FantasyCriticUser> userManager, EmailSendingService emailSendingService)
+    public ResendEmailConfirmationModel(FantasyCriticUserManager userManager, EmailSendingService emailSendingService)
     {
         _userManager = userManager;
         _emailSendingService = emailSendingService;

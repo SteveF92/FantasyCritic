@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Identity
 @using FantasyCritic.Lib.Identity;
 @inject SignInManager<FantasyCriticUser> SignInManager
-@inject UserManager<FantasyCriticUser> UserManager
+@inject FantasyCriticUserManager UserManager
 
 @{
     string? returnUrl = null;

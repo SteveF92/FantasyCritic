@@ -12,12 +12,12 @@ public class TwoFactorAuthenticationModel : PageModel
 {
     private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}";
 
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
     private readonly ILogger<TwoFactorAuthenticationModel> _logger;
 
     public TwoFactorAuthenticationModel(
-        UserManager<FantasyCriticUser> userManager,
+        FantasyCriticUserManager userManager,
         SignInManager<FantasyCriticUser> signInManager,
         ILogger<TwoFactorAuthenticationModel> logger)
     {

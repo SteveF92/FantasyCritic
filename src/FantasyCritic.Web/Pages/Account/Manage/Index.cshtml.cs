@@ -10,11 +10,11 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public partial class IndexModel : PageModel
 {
-    private readonly UserManager<FantasyCriticUser> _userManager;
+    private readonly FantasyCriticUserManager _userManager;
     private readonly SignInManager<FantasyCriticUser> _signInManager;
 
     public IndexModel(
-        UserManager<FantasyCriticUser> userManager,
+        FantasyCriticUserManager userManager,
         SignInManager<FantasyCriticUser> signInManager)
     {
         _userManager = userManager;
