@@ -1,7 +1,6 @@
 #nullable disable
 
 using FantasyCritic.Lib.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -11,12 +10,12 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 public class ResetAuthenticatorModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     ILogger<ResetAuthenticatorModel> _logger;
 
     public ResetAuthenticatorModel(
         FantasyCriticUserManager userManager,
-        SignInManager<FantasyCriticUser> signInManager,
+        FantasyCriticSignInManager signInManager,
         ILogger<ResetAuthenticatorModel> logger)
     {
         _userManager = userManager;

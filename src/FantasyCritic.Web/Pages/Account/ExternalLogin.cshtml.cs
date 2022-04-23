@@ -6,7 +6,6 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -16,12 +15,12 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class ExternalLoginModel : PageModel
 {
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly FantasyCriticUserManager _userManager;
     private readonly EmailSendingService _emailSendingService;
     private readonly ILogger<ExternalLoginModel> _logger;
 
-    public ExternalLoginModel(SignInManager<FantasyCriticUser> signInManager, FantasyCriticUserManager userManager,
+    public ExternalLoginModel(FantasyCriticSignInManager signInManager, FantasyCriticUserManager userManager,
         ILogger<ExternalLoginModel> logger, EmailSendingService emailSendingService)
     {
         _signInManager = signInManager;

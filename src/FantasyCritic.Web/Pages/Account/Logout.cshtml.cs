@@ -2,7 +2,6 @@
 
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -12,10 +11,10 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class LogoutModel : PageModel
 {
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly ILogger<LogoutModel> _logger;
 
-    public LogoutModel(SignInManager<FantasyCriticUser> signInManager, ILogger<LogoutModel> logger)
+    public LogoutModel(FantasyCriticSignInManager signInManager, ILogger<LogoutModel> logger)
     {
         _signInManager = signInManager;
         _logger = logger;

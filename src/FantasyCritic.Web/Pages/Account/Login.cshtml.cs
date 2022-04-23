@@ -18,11 +18,11 @@ public class LoginModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
     private readonly IEventService _events;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly ILogger<LoginModel> _logger;
     private readonly IIdentityServerInteractionService _interaction;
 
-    public LoginModel(SignInManager<FantasyCriticUser> signInManager,
+    public LoginModel(FantasyCriticSignInManager signInManager,
         ILogger<LoginModel> logger,
         IIdentityServerInteractionService interaction,
         FantasyCriticUserManager userManager,

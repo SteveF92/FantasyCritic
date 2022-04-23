@@ -1,7 +1,6 @@
 using System.Text.Encodings.Web;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Web.Utilities;
 

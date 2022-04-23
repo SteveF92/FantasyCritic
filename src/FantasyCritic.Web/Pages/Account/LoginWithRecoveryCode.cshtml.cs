@@ -3,7 +3,6 @@
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -13,10 +12,10 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class LoginWithRecoveryCodeModel : PageModel
 {
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly ILogger<LoginWithRecoveryCodeModel> _logger;
 
-    public LoginWithRecoveryCodeModel(SignInManager<FantasyCriticUser> signInManager, ILogger<LoginWithRecoveryCodeModel> logger)
+    public LoginWithRecoveryCodeModel(FantasyCriticSignInManager signInManager, ILogger<LoginWithRecoveryCodeModel> logger)
     {
         _signInManager = signInManager;
         _logger = logger;

@@ -3,7 +3,6 @@
 
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -13,9 +12,9 @@ namespace FantasyCritic.Web.Pages.Account;
 public class ConfirmEmailChangeModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
 
-    public ConfirmEmailChangeModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager)
+    public ConfirmEmailChangeModel(FantasyCriticUserManager userManager, FantasyCriticSignInManager signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;

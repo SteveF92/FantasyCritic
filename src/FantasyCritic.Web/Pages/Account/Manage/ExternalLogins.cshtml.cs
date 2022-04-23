@@ -11,11 +11,11 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 public class ExternalLoginsModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
 
     public ExternalLoginsModel(
         FantasyCriticUserManager userManager,
-        SignInManager<FantasyCriticUser> signInManager)
+        FantasyCriticSignInManager signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;

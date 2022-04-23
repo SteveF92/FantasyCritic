@@ -5,7 +5,6 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -15,12 +14,12 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class LoginWith2faModel : PageModel
 {
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly ILogger<LoginWith2faModel> _logger;
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IEventService _events;
 
-    public LoginWith2faModel(SignInManager<FantasyCriticUser> signInManager, ILogger<LoginWith2faModel> logger, IIdentityServerInteractionService interaction, IEventService events)
+    public LoginWith2faModel(FantasyCriticSignInManager signInManager, ILogger<LoginWith2faModel> logger, IIdentityServerInteractionService interaction, IEventService events)
     {
         _signInManager = signInManager;
         _logger = logger;

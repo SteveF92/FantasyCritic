@@ -6,7 +6,6 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -16,12 +15,12 @@ namespace FantasyCritic.Web.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly FantasyCriticUserManager _userManager;
     private readonly ILogger<RegisterModel> _logger;
     private readonly EmailSendingService _emailSendingService;
 
-    public RegisterModel(FantasyCriticUserManager userManager, SignInManager<FantasyCriticUser> signInManager,
+    public RegisterModel(FantasyCriticUserManager userManager, FantasyCriticSignInManager signInManager,
         ILogger<RegisterModel> logger, EmailSendingService emailSendingService)
     {
         _userManager = userManager;

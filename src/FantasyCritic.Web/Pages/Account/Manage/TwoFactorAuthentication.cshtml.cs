@@ -1,7 +1,6 @@
 #nullable disable
 
 using FantasyCritic.Lib.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -10,15 +9,15 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class TwoFactorAuthenticationModel : PageModel
 {
-    private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}";
+    private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}";
 
     private readonly FantasyCriticUserManager _userManager;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly ILogger<TwoFactorAuthenticationModel> _logger;
 
     public TwoFactorAuthenticationModel(
         FantasyCriticUserManager userManager,
-        SignInManager<FantasyCriticUser> signInManager,
+        FantasyCriticSignInManager signInManager,
         ILogger<TwoFactorAuthenticationModel> logger)
     {
         _userManager = userManager;

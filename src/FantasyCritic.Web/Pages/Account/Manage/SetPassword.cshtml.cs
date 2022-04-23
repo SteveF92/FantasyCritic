@@ -2,7 +2,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -11,11 +10,11 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 public class SetPasswordModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
 
     public SetPasswordModel(
         FantasyCriticUserManager userManager,
-        SignInManager<FantasyCriticUser> signInManager)
+        FantasyCriticSignInManager signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;

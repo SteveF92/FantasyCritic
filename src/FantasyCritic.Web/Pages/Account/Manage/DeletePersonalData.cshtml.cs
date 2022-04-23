@@ -2,7 +2,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -12,12 +11,12 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 public class DeletePersonalDataModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
-    private readonly SignInManager<FantasyCriticUser> _signInManager;
+    private readonly FantasyCriticSignInManager _signInManager;
     private readonly ILogger<DeletePersonalDataModel> _logger;
 
     public DeletePersonalDataModel(
         FantasyCriticUserManager userManager,
-        SignInManager<FantasyCriticUser> signInManager,
+        FantasyCriticSignInManager signInManager,
         ILogger<DeletePersonalDataModel> logger)
     {
         _userManager = userManager;

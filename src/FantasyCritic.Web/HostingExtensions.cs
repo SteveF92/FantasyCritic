@@ -151,6 +151,7 @@ public static class HostingExtensions
                 var specials = "-._@+ ";
                 options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
             })
+            .AddSignInManager<FantasyCriticSignInManager>()
             .AddUserManager<FantasyCriticUserManager>()
             .AddRoleManager<FantasyCriticRoleManager>()
             .AddDefaultTokenProviders();
