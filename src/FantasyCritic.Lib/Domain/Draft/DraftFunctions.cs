@@ -77,6 +77,72 @@ public static class DraftFunctions
         return draftStatus;
     }
 
+    public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, string draftOrderType, IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear)
+    {
+        if (draftOrderType == "Manual")
+        {
+            if (manualPublisherDraftPositions is null)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+            }
+            return GetDraftPositionsInternal(leagueYear, manualPublisherDraftPositions);
+        }
+
+        Random rng = new Random();
+        if (draftOrderType == "Random")
+        {
+            return GetDraftPositionsInternal(leagueYear, leagueYear.Publishers.Select(x => x.PublisherID).OrderBy(_ => rng.Next()).ToList());
+        }
+
+        if (draftOrderType == "InverseStandings")
+        {
+            if (previousLeagueYear is null)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+            }
+
+            var previousYearPublishers = previousLeagueYear.Publishers
+                .OrderBy(x => x.GetTotalFantasyPoints(previousLeagueYear.SupportedYear, previousLeagueYear.Options));
+
+            List<Publisher> currentYearPublishersInOrder = new List<Publisher>();
+            foreach (var previousYearPublisher in previousYearPublishers)
+            {
+                var currentYearPublisher = leagueYear.GetUserPublisher(previousYearPublisher.User);
+                if (currentYearPublisher is null)
+                {
+                    continue;
+                }
+
+                currentYearPublishersInOrder.Add(currentYearPublisher);
+            }
+
+            var notInLastYearPublishers = leagueYear.Publishers.Except(currentYearPublishersInOrder).OrderBy(_ => rng.Next()).ToList();
+            var midpoint = currentYearPublishersInOrder.Count / 2;
+            currentYearPublishersInOrder.InsertRange(midpoint, notInLastYearPublishers);
+
+            return GetDraftPositionsInternal(leagueYear, currentYearPublishersInOrder.Select(x => x.PublisherID).ToList());
+        }
+
+        return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+    }
+
+    private static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositionsInternal(LeagueYear leagueYear, IReadOnlyList<Guid> publisherIDsInRequestedDraftOrder)
+    {
+        List<KeyValuePair<Publisher, int>> draftPositions = new List<KeyValuePair<Publisher, int>>();
+        for (var index = 0; index < publisherIDsInRequestedDraftOrder.Count; index++)
+        {
+            var requestPublisher = publisherIDsInRequestedDraftOrder[index];
+            var publisher = leagueYear.GetPublisherByID(requestPublisher);
+            if (publisher is null)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+            }
+
+            draftPositions.Add(new KeyValuePair<Publisher, int>(publisher, index + 1));
+        }
+        return draftPositions;
+    }
+
     private static DraftPhase GetDraftPhase(LeagueYear leagueYear)
     {
         int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * leagueYear.Publishers.Count;

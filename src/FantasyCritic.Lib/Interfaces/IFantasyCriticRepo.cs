@@ -99,7 +99,7 @@ public interface IFantasyCriticRepo
     Task ResetDraft(LeagueYear leagueYear, Instant timestamp);
 
     Task SetDraftPause(LeagueYear leagueYear, bool pause);
-    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions);
+    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueAction draftSetAction);
     Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year);
     Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
     Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);

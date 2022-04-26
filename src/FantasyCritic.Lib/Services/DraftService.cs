@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Draft;
+using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
@@ -75,7 +76,11 @@ public class DraftService
             return Result.Failure("Some of the positions are not valid.");
         }
 
-        await _fantasyCriticRepo.SetDraftOrder(draftPositions);
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
+        string actionDescription = string.Join("\n", draftPositions.Select(x => $"• {x.Value}: {x.Key.PublisherName}"));
+        LeagueAction draftSetAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription, true);
+
+        await _fantasyCriticRepo.SetDraftOrder(draftPositions, draftSetAction);
         return Result.Success();
     }
 

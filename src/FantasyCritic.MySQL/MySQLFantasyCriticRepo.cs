@@ -270,7 +270,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await MakePublisherGameSlotsConsistent(leagueYear, publisher, connection, transaction);
         await AddFormerPublisherGames(new List<FormerPublisherGame>() { formerPublisherGame }, connection, transaction);
-        await AddLeagueActions(new List<LeagueAction>() { leagueAction }, connection, transaction);
+        await AddLeagueAction(leagueAction, connection, transaction);
         await transaction.CommitAsync();
         return Result.Success();
     }
@@ -749,7 +749,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(gameDeleteSQL, paramsObject, transaction);
         await connection.ExecuteAsync(draftResetSQL, paramsObject, transaction);
-        await AddLeagueActions(new List<LeagueAction>() { resetDraftAction }, connection, transaction);
+        await AddLeagueAction(resetDraftAction, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -862,7 +862,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await OrganizeSlots(leagueYear, slotAssignments, connection, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
-        await AddLeagueActions(new List<LeagueAction>() { settingsChangeAction }, connection, transaction);
+        await AddLeagueAction(settingsChangeAction, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -2134,34 +2134,22 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainGames;
     }
 
-    public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
+    public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueAction leagueAction)
     {
-        int tempPosition = draftPositions.Select(x => x.Value).Max() + 1;
+        string updateDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
+        string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 1 WHERE LeagueID = @LeagueID AND Year = @Year;";
+        var leagueYearKey = new LeagueYearKeyEntity(leagueAction.Publisher.LeagueYearKey);
+        var tempPositions = draftPositions.Select(x => new SetDraftOrderEntity(x.Key.PublisherID, x.Value + 100));
+        var finalPositions = draftPositions.Select(x => new SetDraftOrderEntity(x.Key.PublisherID, x.Value));
+
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        foreach (var draftPosition in draftPositions)
-        {
-            await connection.ExecuteAsync(
-                "update tbl_league_publisher set DraftPosition = @draftPosition where PublisherID = @publisherID",
-                new
-                {
-                    publisherID = draftPosition.Key.PublisherID,
-                    draftPosition = tempPosition
-                }, transaction);
-            tempPosition++;
-        }
 
-        foreach (var draftPosition in draftPositions)
-        {
-            await connection.ExecuteAsync(
-                "update tbl_league_publisher set DraftPosition = @draftPosition where PublisherID = @publisherID",
-                new
-                {
-                    publisherID = draftPosition.Key.PublisherID,
-                    draftPosition = draftPosition.Value
-                }, transaction);
-        }
+        await connection.ExecuteAsync(updateDraftOrderSQL, tempPositions, transaction);
+        await connection.ExecuteAsync(updateDraftOrderSQL, finalPositions, transaction);
+        await AddLeagueAction(leagueAction, connection, transaction);
+        await connection.ExecuteAsync(setFlagSQL, leagueYearKey, transaction);
 
         await transaction.CommitAsync();
     }
@@ -2455,7 +2443,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(sql, parameters, transaction);
-        await AddLeagueActions(new[] { leagueAction }, connection, transaction);
+        await AddLeagueAction(leagueAction, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -2659,6 +2647,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var entities = updatedPublishers.Select(x => new PublisherEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);
     }
+
+    private static Task AddLeagueAction(LeagueAction action, MySqlConnection connection, MySqlTransaction transaction) => AddLeagueActions(new List<LeagueAction>() {action}, connection, transaction);
 
     private static Task AddLeagueActions(IEnumerable<LeagueAction> actions, MySqlConnection connection, MySqlTransaction transaction)
     {

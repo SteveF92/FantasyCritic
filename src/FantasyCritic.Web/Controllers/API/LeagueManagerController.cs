@@ -749,20 +749,19 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
-        List<KeyValuePair<Publisher, int>> draftPositions = new List<KeyValuePair<Publisher, int>>();
-        for (var index = 0; index < request.PublisherDraftPositions.Count; index++)
+        LeagueYear? previousLeagueYear = null;
+        if (request.DraftOrderType == "InverseStandings")
         {
-            var requestPublisher = request.PublisherDraftPositions[index];
-            var publisher = leagueYear.GetPublisherByID(requestPublisher);
-            if (publisher is null)
-            {
-                return BadRequest();
-            }
-
-            draftPositions.Add(new KeyValuePair<Publisher, int>(publisher, index + 1));
+            previousLeagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year - 1);
         }
 
-        var result = await _draftService.SetDraftOrder(leagueYear, draftPositions);
+        var draftPositions = DraftFunctions.GetDraftPositions(leagueYear, request.DraftOrderType, request.ManualPublisherDraftPositions, previousLeagueYear);
+        if (draftPositions.IsFailure)
+        {
+            return BadRequest(draftPositions.Error);
+        }
+
+        var result = await _draftService.SetDraftOrder(leagueYear, draftPositions.Value);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
