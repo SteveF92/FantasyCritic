@@ -13,13 +13,14 @@ public class LeagueYear : IEquatable<LeagueYear>
     private readonly Publisher? _managerPublisher;
 
     public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
-        IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
+        bool draftOrderSet, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
         Instant? draftStartedTimestamp, FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers)
     {
         League = league;
         SupportedYear = year;
         Options = options;
         PlayStatus = playStatus;
+        DraftOrderSet = draftOrderSet;
         EligibilityOverrides = eligibilityOverrides.ToList();
         _eligibilityOverridesDictionary = EligibilityOverrides.ToDictionary(x => x.MasterGame);
         TagOverrides = tagOverrides.ToList();
@@ -37,6 +38,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public int Year => SupportedYear.Year;
     public LeagueOptions Options { get; }
     public PlayStatus PlayStatus { get; }
+    public bool DraftOrderSet { get; }
     public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverride> TagOverrides { get; }
     public Instant? DraftStartedTimestamp { get; }

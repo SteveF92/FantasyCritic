@@ -149,7 +149,8 @@ public class FantasyCriticService
         var tagOverrides = await GetTagOverrides(league, parameters.Year);
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
-        LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options, leagueYear.PlayStatus, eligibilityOverrides,
+        LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
+            leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
             tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
 
         var managerPublisher = leagueYear.GetManagerPublisherOrThrow();

@@ -10,7 +10,7 @@ internal class LeagueYearEntity
 
     }
 
-    public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus)
+    public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus, bool draftOrderSet)
     {
         LeagueID = league.LeagueID;
         Year = year;
@@ -34,6 +34,7 @@ internal class LeagueYearEntity
         ScoringSystem = options.ScoringSystem.Name;
         TradingSystem = options.TradingSystem.Value;
         PlayStatus = playStatus.Value;
+        DraftOrderSet = draftOrderSet;
     }
 
     public Guid LeagueID { get; set; }
@@ -54,6 +55,7 @@ internal class LeagueYearEntity
     public string ScoringSystem { get; set; } = null!;
     public string TradingSystem { get; set; } = null!;
     public string PlayStatus { get; set; } = null!;
+    public bool DraftOrderSet { get; set; }
     public int CounterPickDeadlineMonth { get; set; }
     public int CounterPickDeadlineDay { get; set; }
     public Instant? DraftStartedTimestamp { get; set; }
@@ -74,6 +76,6 @@ internal class LeagueYearEntity
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, counterPickDeadline);
 
-        return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser, publishersInLeague);
+        return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser, publishersInLeague);
     }
 }
