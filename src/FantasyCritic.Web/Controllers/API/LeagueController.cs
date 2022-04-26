@@ -1,4 +1,5 @@
 using System.Text;
+using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -229,10 +230,6 @@ public class LeagueController : BaseLeagueController
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
-        StartDraftResult startDraftResult = await _draftService.GetStartDraftResult(leagueYear, validResult.ActiveUsers);
-        Publisher? nextDraftPublisher = _draftService.GetNextDraftPublisher(leagueYear);
-        var draftPhase = _draftService.GetDraftPhase(leagueYear);
-
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
 
@@ -264,12 +261,13 @@ public class LeagueController : BaseLeagueController
         var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
         var recentGames = GetGameNewsViewModel(leagueYear, false, true).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
+        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers);
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentDate,
-            startDraftResult, validResult.ActiveUsers, nextDraftPublisher, draftPhase, systemWideValues,
+            validResult.ActiveUsers, completePlayStatus, systemWideValues,
             validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades, privatePublisherData, gameNewsViewModel);
         return Ok(leagueYearViewModel);
@@ -742,13 +740,13 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var nextPublisher = _draftService.GetNextDraftPublisher(leagueYear);
-        if (nextPublisher is null)
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus is null)
         {
-            return BadRequest("There are no spots open to draft.");
+            return BadRequest("Draft is not active.");
         }
 
-        if (!nextPublisher.Equals(publisher))
+        if (!draftStatus.NextDraftPublisher.Equals(publisher))
         {
             return BadRequest("It is not your turn to draft.");
         }
@@ -759,8 +757,7 @@ public class LeagueController : BaseLeagueController
             masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
         }
 
-        var draftPhase = _draftService.GetDraftPhase(leagueYear);
-        if (draftPhase.Equals(DraftPhase.StandardGames))
+        if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
         {
             if (request.CounterPick)
             {
@@ -768,7 +765,7 @@ public class LeagueController : BaseLeagueController
             }
         }
 
-        if (draftPhase.Equals(DraftPhase.CounterPicks))
+        if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
         {
             if (!request.CounterPick)
             {
@@ -776,7 +773,6 @@ public class LeagueController : BaseLeagueController
             }
         }
 
-        var draftStatus = _draftService.GetDraftStatus(draftPhase, leagueYear);
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, false, false, false, masterGame,
             draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 

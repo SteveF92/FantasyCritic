@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Identity;
 
@@ -7,8 +7,8 @@ namespace FantasyCritic.Web.Models.Responses;
 public class LeagueYearViewModel
 {
     public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear,
-        LocalDate currentDate, StartDraftResult startDraftResult, IEnumerable<FantasyCriticUser> activeUsers, Publisher? nextDraftPublisher,
-        DraftPhase draftPhase, SystemWideValues systemWideValues,
+        LocalDate currentDate,  IEnumerable<FantasyCriticUser> activeUsers,
+        CompletePlayStatus completePlayStatus, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
         IReadOnlyList<PublicBiddingMasterGame>? publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
@@ -37,7 +37,7 @@ public class LeagueYearViewModel
         CounterPickDeadline = leagueYear.CounterPickDeadline;
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
-            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, nextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
+            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
             .ToList();
 
         List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
@@ -86,18 +86,8 @@ public class LeagueYearViewModel
             }
         }
 
-        bool readyToSetDraftOrder = false;
-        if (allPublishersMade)
-        {
-            Players = playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList();
-            readyToSetDraftOrder = true;
-        }
-        else
-        {
-            Players = playerVMs;
-        }
-
-        PlayStatus = new PlayStatusViewModel(leagueYear.PlayStatus, readyToSetDraftOrder, startDraftResult.Ready, startDraftResult.Errors, draftPhase);
+        Players = allPublishersMade ? playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList() : playerVMs;
+        PlayStatus = new PlayStatusViewModel(completePlayStatus);
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
         SlotInfo = new PublisherSlotRequirementsViewModel(leagueYear.Options);

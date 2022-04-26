@@ -1,19 +1,21 @@
+using FantasyCritic.Lib.Domain.Draft;
+
 namespace FantasyCritic.Web.Models.Responses;
 
 public class PlayStatusViewModel
 {
-    public PlayStatusViewModel(PlayStatus domain, bool readyToSetDraftOrder, bool readyToDraft, IEnumerable<string> startDraftErrors, DraftPhase draftPhase)
+    public PlayStatusViewModel(CompletePlayStatus completePlayStatus)
     {
-        PlayStatus = domain.Value;
-        ReadyToSetDraftOrder = readyToSetDraftOrder;
-        ReadyToDraft = readyToDraft;
-        PlayStarted = domain.PlayStarted;
-        DraftIsActive = domain.DraftIsActive;
-        DraftIsPaused = domain.DraftIsPaused;
-        DraftFinished = domain.DraftFinished;
-        StartDraftErrors = startDraftErrors.ToList();
+        PlayStatus = completePlayStatus.PlayStatus.Value;
+        ReadyToSetDraftOrder = completePlayStatus.ReadyToSetDraftOrder;
+        ReadyToDraft = completePlayStatus.ReadyToDraft;
+        PlayStarted = completePlayStatus.PlayStatus.PlayStarted;
+        DraftIsActive = completePlayStatus.PlayStatus.DraftIsActive;
+        DraftIsPaused = completePlayStatus.PlayStatus.DraftIsPaused;
+        DraftFinished = completePlayStatus.PlayStatus.DraftFinished;
+        StartDraftErrors = completePlayStatus.StartDraftErrors;
 
-        if (draftPhase.Equals(DraftPhase.CounterPicks))
+        if (DraftPhase.CounterPicks.Equals(completePlayStatus.DraftStatus?.DraftPhase))
         {
             DraftingCounterPicks = true;
         }

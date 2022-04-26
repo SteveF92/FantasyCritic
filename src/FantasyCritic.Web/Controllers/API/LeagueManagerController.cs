@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
@@ -694,8 +695,8 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
 
-        bool readyToPlay = _draftService.LeagueIsReadyToPlay(leagueYear.SupportedYear, leagueYear.Publishers, activeUsers);
-        if (!readyToPlay)
+        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers);
+        if (!completePlayStatus.ReadyToDraft)
         {
             return BadRequest();
         }
@@ -742,8 +743,8 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
 
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
-        var readyToSetDraftOrder = _draftService.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers);
-        if (!readyToSetDraftOrder)
+        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers);
+        if (!completePlayStatus.ReadyToSetDraftOrder)
         {
             return BadRequest();
         }
@@ -783,13 +784,13 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var nextPublisher = _draftService.GetNextDraftPublisher(leagueYear);
-        if (nextPublisher is null)
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus is null)
         {
-            return BadRequest("There are no spots open to draft.");
+            return BadRequest("Draft is not active.");
         }
 
-        if (!nextPublisher.Equals(publisher))
+        if (!draftStatus.NextDraftPublisher.Equals(publisher))
         {
             return BadRequest("That publisher is not next up for drafting.");
         }
@@ -800,8 +801,7 @@ public class LeagueManagerController : BaseLeagueController
             masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
         }
 
-        var draftPhase = _draftService.GetDraftPhase(leagueYear);
-        if (draftPhase.Equals(DraftPhase.StandardGames))
+        if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
         {
             if (request.CounterPick)
             {
@@ -809,7 +809,7 @@ public class LeagueManagerController : BaseLeagueController
             }
         }
 
-        if (draftPhase.Equals(DraftPhase.CounterPicks))
+        if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
         {
             if (!request.CounterPick)
             {
@@ -817,7 +817,6 @@ public class LeagueManagerController : BaseLeagueController
             }
         }
 
-        var draftStatus = _draftService.GetDraftStatus(draftPhase, leagueYear);
         bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, request.CounterPick, masterGame, false);
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false,
             masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
