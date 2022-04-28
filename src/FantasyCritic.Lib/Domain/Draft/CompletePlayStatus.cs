@@ -3,12 +3,12 @@ using FantasyCritic.Lib.Identity;
 namespace FantasyCritic.Lib.Domain.Draft;
 public class CompletePlayStatus
 {
-    public CompletePlayStatus(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers)
+    public CompletePlayStatus(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager)
     {
         PlayStatus = leagueYear.PlayStatus;
         DraftOrderSet = leagueYear.DraftOrderSet;
         ReadyToSetDraftOrder = DraftFunctions.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers);
-        StartDraftErrors = DraftFunctions.GetStartDraftResult(leagueYear, activeUsers);
+        StartDraftErrors = DraftFunctions.GetStartDraftResult(leagueYear, activeUsers, isManager);
         DraftStatus = DraftFunctions.GetDraftStatus(leagueYear);
     }
 

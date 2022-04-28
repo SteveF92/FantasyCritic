@@ -261,7 +261,7 @@ public class LeagueController : BaseLeagueController
         var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
         var recentGames = GetGameNewsViewModel(leagueYear, false, true).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers);
+        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager);
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);

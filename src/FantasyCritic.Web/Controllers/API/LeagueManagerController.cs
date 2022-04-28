@@ -695,7 +695,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
 
-        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers);
+        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager);
         if (!completePlayStatus.ReadyToDraft)
         {
             return BadRequest();
@@ -743,7 +743,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
 
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers);
+        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager);
         if (!completePlayStatus.ReadyToSetDraftOrder)
         {
             return BadRequest();

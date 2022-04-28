@@ -19,7 +19,7 @@ public static class DraftFunctions
         return true;
     }
 
-    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers)
+    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager)
     {
         if (leagueYear.PlayStatus.PlayStarted)
         {
@@ -51,7 +51,7 @@ public static class DraftFunctions
 
         if (!leagueYear.DraftOrderSet)
         {
-            errors.Add("You must set the draft order.");
+            errors.Add(isManager ? "You must set the draft order." : "Your league manager must set the draft order.");
         }
 
         return errors;
