@@ -26,16 +26,16 @@ public class IdentityConfig
             new ApiScope(FantasyCriticScopes.WriteScopeName, new [] { "name" }),
         };
 
-    public IdentityConfig(string interactiveSecret, string keyName)
+    public IdentityConfig(string fcBotSecret, string keyName)
     {
         Clients = new Client[]
         {
             // interactive client using code flow + pkce
             new Client
             {
-                ClientId = "interactive",
-                ClientName = "Interactive Flow",
-                ClientSecrets = { new Secret(interactiveSecret.Sha256()) },
+                ClientId = "fcbot",
+                ClientName = "Fantasy Critic Bot",
+                ClientSecrets = { new Secret(fcBotSecret.Sha256()) },
 
                 AllowedGrantTypes = GrantTypes.Code,
 
