@@ -9,7 +9,7 @@ public class IdentityConfig
         new IdentityResource[]
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile(),
+            new IdentityResources.Profile()
         };
 
     public static IEnumerable<ApiResource> APIResources = new List<ApiResource>
@@ -21,34 +21,14 @@ public class IdentityConfig
     public static IEnumerable<ApiScope> APIScopes =>
         new ApiScope[]
         {
-            new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
+            // Added name to be sure that name is added to the JWT
+            new ApiScope(IdentityServerConstants.LocalApi.ScopeName, new [] { "name" }),
         };
 
-    public IdentityConfig(string baseAddress, string mvcSecret, string interactiveSecret, string keyName)
+    public IdentityConfig(string interactiveSecret, string keyName)
     {
         Clients = new Client[]
         {
-            // interactive ASP.NET Core MVC client
-            new Client
-            {
-                ClientId = "mvc",
-                ClientSecrets = { new Secret(mvcSecret.Sha256()) },
-
-                AllowedGrantTypes = GrantTypes.Code,
-            
-                // where to redirect to after login
-                RedirectUris = { $"{baseAddress}/signin-oidc" },
-
-                // where to redirect to after logout
-                PostLogoutRedirectUris = { $"{baseAddress}/signout-callback-oidc" },
-
-                AllowedScopes = new List<string>
-                {
-                    IdentityServerConstants.StandardScopes.OpenId,
-                    IdentityServerConstants.StandardScopes.Profile,
-                    IdentityServerConstants.LocalApi.ScopeName
-                }
-            },
             // interactive client using code flow + pkce
             new Client
             {
