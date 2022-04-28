@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = "Admin")]
+[Authorize("Admin")]
 public class AdminController : FantasyCriticController
 {
     private readonly AdminService _adminService;

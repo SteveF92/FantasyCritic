@@ -62,6 +62,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [Authorize("Write")]
     public async Task<IActionResult> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
     {
         var currentUserResult = await GetCurrentUser();
@@ -94,6 +95,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [Authorize("Write")]
     public async Task<IActionResult> ChangePublisherName([FromBody] ChangeRoyalePublisherNameRequest request)
     {
         var currentUserResult = await GetCurrentUser();
@@ -124,6 +126,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [Authorize("Write")]
     public async Task<IActionResult> ChangePublisherIcon([FromBody] ChangeRoyalePublisherIconRequest request)
     {
         var currentUserResult = await GetCurrentUser();
@@ -233,6 +236,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [Authorize("Write")]
     public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
     {
         var currentUserResult = await GetCurrentUser();
@@ -273,6 +277,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [Authorize("Write")]
     public async Task<IActionResult> SellGame([FromBody] SellRoyaleGameRequest request)
     {
         var currentUserResult = await GetCurrentUser();
@@ -317,6 +322,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [Authorize("Write")]
     public async Task<IActionResult> SetAdvertisingMoney([FromBody] SetAdvertisingMoneyRequest request)
     {
         var currentUserResult = await GetCurrentUser();

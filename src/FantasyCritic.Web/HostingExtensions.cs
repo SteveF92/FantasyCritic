@@ -144,15 +144,43 @@ public static class HostingExtensions
             args.SetObserved();
         });
 
+        var schemes = new []{IdentityConstants.ApplicationScheme, JwtBearerDefaults.AuthenticationScheme};
         services.AddAuthorization(options =>
         {
-            var builder = new AuthorizationPolicyBuilder();
-            builder.AuthenticationSchemes.Add(IdentityConstants.ApplicationScheme);
-            builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-            builder.RequireAuthenticatedUser();
+            var policyBuilder = new AuthorizationPolicyBuilder();
+            policyBuilder.AddAuthenticationSchemes(schemes);
+            policyBuilder.RequireAuthenticatedUser();
+            policyBuilder.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
 
-            options.DefaultPolicy = builder.Build();
+            var basicUserPolicy = policyBuilder.Build();
 
+            options.AddPolicy("BasicUser", basicUserPolicy);
+            options.DefaultPolicy = basicUserPolicy;
+
+            options.AddPolicy("PlusUser", policy =>
+            {
+                policy.AddAuthenticationSchemes(schemes);
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
+                policy.RequireRole("PlusUser");
+            });
+
+            options.AddPolicy("Admin", policy =>
+            {
+                policy.AddAuthenticationSchemes(schemes);
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
+                policy.RequireClaim("scope", FantasyCriticScopes.WriteScopeName);
+                policy.RequireRole("Admin");
+            });
+
+            options.AddPolicy("Write", policy =>
+            {
+                policy.AddAuthenticationSchemes(schemes);
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
+                policy.RequireClaim("scope", FantasyCriticScopes.WriteScopeName);
+            });
         });
 
         services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
@@ -235,8 +263,7 @@ public static class HostingExtensions
             {
                 options.ClientId = configuration["Authentication:Discord:ClientId"];
                 options.ClientSecret = configuration["Authentication:Discord:ClientSecret"];
-            })
-            ;
+            });
 
         var keysFolder = Path.Combine(rootFolder, "Keys");
         services.AddDataProtection()
