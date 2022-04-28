@@ -1,23 +1,23 @@
 <template>
-  <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
-    <div>
-      <h3 class="text-black">Invite Link</h3>
-      <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
-      <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
-        <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
-        <b-button v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied" variant="info" size="sm">Copy</b-button>
-        <b-button variant="danger" size="sm" @click="deleteInviteLink(inviteLink)">Delete</b-button>
+  <ValidationObserver v-slot="{ invalid }">
+    <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
+      <div v-show="errorInfo" class="alert alert-danger">
+        {{ errorInfo }}
       </div>
-      <br />
-      <b-button variant="primary" size="sm" @click="createInviteLink()">Create Invite Link</b-button>
-    </div>
-    <hr />
-    <div>
-      <h3 class="text-black">Invite Single Player</h3>
-      <ValidationObserver v-slot="{ invalid }">
+      <div>
+        <h3 class="text-black">Invite Link</h3>
+        <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
+        <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
+          <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
+          <b-button v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied" variant="info" size="sm">Copy</b-button>
+          <b-button variant="danger" size="sm" @click="deleteInviteLink(inviteLink)">Delete</b-button>
+        </div>
+        <br />
+        <b-button variant="primary" size="sm" @click="createInviteLink()">Create Invite Link</b-button>
+      </div>
+      <hr />
+      <div>
+        <h3 class="text-black">Invite Single Player</h3>
         <div class="form-horizontal">
           <div class="form-group email-form">
             <label for="inviteEmail" class="control-label">Email Address</label>
@@ -42,12 +42,12 @@
             </ValidationProvider>
           </div>
         </div>
-        <div slot="modal-footer">
-          <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="invalid || !valuesEntered" @click="invitePlayer" />
-        </div>
-      </ValidationObserver>
-    </div>
-  </b-modal>
+      </div>
+      <template #modal-footer>
+        <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="invalid || !valuesEntered" @click="invitePlayer" />
+      </template>
+    </b-modal>
+  </ValidationObserver>
 </template>
 <script>
 import axios from 'axios';
