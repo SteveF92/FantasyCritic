@@ -102,7 +102,7 @@ export default {
       state.historicalTrades = null;
     },
     setError(state, response) {
-      if (response.status === 403) {
+      if (response.status === 401 || response.status === 403) {
         state.forbidden = true;
       } else {
         state.hasError = true;
