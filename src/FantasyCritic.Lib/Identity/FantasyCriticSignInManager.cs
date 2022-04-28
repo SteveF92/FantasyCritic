@@ -19,20 +19,28 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
 
     public override Task SignInWithClaimsAsync(FantasyCriticUser user, bool isPersistent, IEnumerable<Claim> additionalClaims)
     {
-        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == IdentityServerConstants.LocalApi.ScopeName))
-        {
-            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", IdentityServerConstants.LocalApi.ScopeName) });
-        }
+        additionalClaims = AddScopes(additionalClaims);
         return base.SignInWithClaimsAsync(user, isPersistent, additionalClaims);
     }
 
     public override Task SignInWithClaimsAsync(FantasyCriticUser user, AuthenticationProperties authenticationProperties,
         IEnumerable<Claim> additionalClaims)
     {
-        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == IdentityServerConstants.LocalApi.ScopeName))
-        {
-            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", IdentityServerConstants.LocalApi.ScopeName) });
-        }
+        additionalClaims = AddScopes(additionalClaims);
         return base.SignInWithClaimsAsync(user, authenticationProperties, additionalClaims);
+    }
+
+    private static IReadOnlyList<Claim> AddScopes(IEnumerable<Claim> additionalClaims)
+    {
+        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == FantasyCriticScopes.ReadScopeName))
+        {
+            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", FantasyCriticScopes.ReadScopeName) });
+        }
+        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == FantasyCriticScopes.WriteScopeName))
+        {
+            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", FantasyCriticScopes.WriteScopeName) });
+        }
+
+        return additionalClaims.ToList();
     }
 }

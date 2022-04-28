@@ -1,5 +1,4 @@
 using System.IO;
-using Duende.IdentityServer;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -208,7 +207,7 @@ public static class HostingExtensions
             })
             .AddLocalApi(JwtBearerDefaults.AuthenticationScheme, options =>
             {
-                options.ExpectedScope = IdentityServerConstants.LocalApi.ScopeName;
+                options.ExpectedScope = FantasyCriticScopes.ReadScopeName;
             })
             .AddGoogle(options =>
             {
