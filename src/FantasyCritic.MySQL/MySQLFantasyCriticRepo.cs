@@ -1335,13 +1335,20 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task CreatePublisher(Publisher publisher)
     {
-        var entity = new PublisherEntity(publisher);
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(
+        string publisherCreateSQL =
             "insert into tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped) VALUES " +
-            "(@PublisherID,@PublisherName,@PublisherIcon,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped);",
-            entity);
+            "(@PublisherID,@PublisherName,@PublisherIcon,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped);";
+        string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 1 WHERE LeagueID = @LeagueID AND Year = @Year;";
+        
+        var entity = new PublisherEntity(publisher);
+        var leagueYearKey = new LeagueYearKeyEntity(publisher.LeagueYearKey);
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(publisherCreateSQL, entity, transaction);
+        await connection.ExecuteAsync(setFlagSQL, leagueYearKey, transaction);
+
+        await transaction.CommitAsync();
     }
 
     private async Task<IReadOnlyList<Publisher>> GetPublishersInLeagueForYear(LeagueYearKey leagueYearKey)
