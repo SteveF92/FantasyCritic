@@ -99,7 +99,7 @@
           <ul>
             <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
           </ul>
-          <b-button v-if="leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.')" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
+          <b-button v-if="mustSetDraftOrder" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
         </div>
 
         <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
@@ -123,7 +123,10 @@
         <div v-if="leagueYear.playStatus.draftIsPaused">
           <div class="alert alert-danger">
             <div v-if="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
-            <div v-else>The draft has been paused. You can undo games that have been drafted. Press 'Resume Draft' to go back to picking games.</div>
+            <div v-else>
+              The draft has been paused. You can undo games that have been drafted.
+              <b-button v-b-modal="'setPauseModal'" variant="success">Resume Draft</b-button>
+            </div>
           </div>
         </div>
         <div v-if="leagueYear.playStatus.draftIsActive && nextPublisherUp">
@@ -139,12 +142,18 @@
             </div>
           </div>
           <div v-else>
-            <div class="alert alert-success">
-              <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
-              <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
-              <div><strong>It is your turn to draft!</strong></div>
-              <div v-show="!leagueYear.playStatus.draftingCounterPicks">Select 'Draft Game' under 'Player Actions' in the sidebar!</div>
-              <div v-show="leagueYear.playStatus.draftingCounterPicks">Select 'Draft Counterpick' under 'Player Actions' in the sidebar!</div>
+            <div class="alert alert-success draft-header">
+              <div>
+                <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
+                <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
+                <div><strong>It is your turn to draft!</strong></div>
+              </div>
+              <div v-if="!leagueYear.playStatus.draftingCounterPicks">
+                <b-button v-b-modal="'playerDraftGameForm'" variant="primary">Draft Game</b-button>
+              </div>
+              <div v-else>
+                <b-button v-b-modal="'playerDraftCounterPickForm'" variant="primary">Draft Counter Pick</b-button>
+              </div>
             </div>
           </div>
         </div>
@@ -240,6 +249,9 @@ export default {
     },
     hasProposedTrade() {
       return _.some(this.leagueYear.activeTrades, (x) => x.waitingForUserResponse);
+    },
+    mustSetDraftOrder() {
+      return this.leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.');
     }
   },
   watch: {
@@ -425,5 +437,10 @@ export default {
   display: block;
   max-width: 100%;
   word-wrap: break-word;
+}
+
+.draft-header {
+  display: flex;
+  gap: 20px;
 }
 </style>

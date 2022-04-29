@@ -11,24 +11,24 @@ import LeagueMixin from '@/mixins/leagueMixin';
 export default {
   mixins: [LeagueMixin],
   methods: {
-    setPause() {
-      this.$refs.setPauseModalRef.hide();
-      const newPause = !this.draftIsPaused;
+    async setPause() {
+      let newPause = !this.draftIsPaused;
       var model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year,
         pause: newPause
       };
-      axios
-        .post('/api/leagueManager/SetDraftPause', model)
-        .then(() => {
-          let pauseMessage = 'Draft has been paused.';
-          if (!newPause) {
-            pauseMessage = 'Draft has been un-paused.';
-          }
-          this.notifyAction(pauseMessage);
-        })
-        .catch(() => {});
+      try {
+        await axios.post('/api/leagueManager/SetDraftPause', model);
+        let pauseMessage = 'Draft has been paused.';
+        if (!newPause) {
+          pauseMessage = 'Draft has been un-paused.';
+        }
+        this.notifyAction(pauseMessage);
+        this.$refs.setPauseModalRef.hide();
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 };
