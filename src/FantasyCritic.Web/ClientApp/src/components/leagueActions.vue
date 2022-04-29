@@ -264,6 +264,7 @@ export default {
   border-style: solid;
   background-color: #414141;
   padding-left: 5px;
+  padding-right: 5px;
 }
 
 .publisher-name {
