@@ -21,13 +21,12 @@ export default {
         const response = await axios.get('/api/account/CurrentUser');
         if (!response.data.userID) {
           context.commit('clearUserInfo');
-          context.commit('setBusy', false);
         } else {
           context.commit('setUserInfo', response.data);
-          context.commit('setBusy', false);
         }
       } catch (error) {
         context.commit('clearUserInfo');
+      } finally {
         context.commit('setBusy', false);
       }
     }
