@@ -60,7 +60,7 @@ public class DraftService
         await _publisherService.RemovePublisherGame(leagueYear, publisher, newestGame);
     }
 
-    public async Task<Result> SetDraftOrder(LeagueYear leagueYear, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
+    public async Task<Result> SetDraftOrder(LeagueYear leagueYear, DraftOrderType draftOrderType, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
     {
         int publishersCount = leagueYear.Publishers.Count;
         if (publishersCount != draftPositions.Count)
@@ -77,7 +77,8 @@ public class DraftService
         }
 
         var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
-        string actionDescription = string.Join("\n", draftPositions.Select(x => $"• {x.Value}: {x.Key.PublisherName}"));
+        string draftOrderDescription = string.Join("\n", draftPositions.Select(x => $"• {x.Value}: {x.Key.PublisherName}"));
+        string actionDescription = $"{draftOrderType.ActionDescription} \n {draftOrderDescription}";
         LeagueAction draftSetAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription, true);
 
         await _fantasyCriticRepo.SetDraftOrder(draftPositions, draftSetAction);

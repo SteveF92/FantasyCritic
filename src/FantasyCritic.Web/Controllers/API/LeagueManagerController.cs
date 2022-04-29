@@ -749,19 +749,25 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
+        var draftOrderType = DraftOrderType.TryFromValue(request.DraftOrderType);
+        if (draftOrderType is null)
+        {
+            return BadRequest();
+        }
+
         LeagueYear? previousLeagueYear = null;
-        if (request.DraftOrderType == "InverseStandings")
+        if (draftOrderType.Equals(DraftOrderType.InverseStandings))
         {
             previousLeagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year - 1);
         }
 
-        var draftPositions = DraftFunctions.GetDraftPositions(leagueYear, request.DraftOrderType, request.ManualPublisherDraftPositions, previousLeagueYear);
+        var draftPositions = DraftFunctions.GetDraftPositions(leagueYear, draftOrderType, request.ManualPublisherDraftPositions, previousLeagueYear);
         if (draftPositions.IsFailure)
         {
             return BadRequest(draftPositions.Error);
         }
 
-        var result = await _draftService.SetDraftOrder(leagueYear, draftPositions.Value);
+        var result = await _draftService.SetDraftOrder(leagueYear, draftOrderType, draftPositions.Value);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

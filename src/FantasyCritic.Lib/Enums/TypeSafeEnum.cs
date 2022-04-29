@@ -1,8 +1,6 @@
-using System.Reflection;
-
 namespace FantasyCritic.Lib.Enums;
 
-public abstract class TypeSafeEnum<TEnum> : IEquatable<TypeSafeEnum<TEnum>> where TEnum : TypeSafeEnum<TEnum>
+public abstract class TypeSafeEnum : IEquatable<TypeSafeEnum>
 {
     protected TypeSafeEnum(string value)
     {
@@ -11,36 +9,9 @@ public abstract class TypeSafeEnum<TEnum> : IEquatable<TypeSafeEnum<TEnum>> wher
 
     public string Value { get; }
 
-    public static IReadOnlyList<TEnum> GetAllPossibleValues()
-    {
-        Type enumType = typeof(TEnum);
-        var fields = enumType.GetFields(BindingFlags.Public | BindingFlags.Static);
-        var readonlyFields = fields.Where(x => x.IsInitOnly);
-        var returnsEnumType = readonlyFields.Where(x => x.FieldType == enumType);
-        List<TEnum> enumValues = returnsEnumType.Select(enumField => (TEnum)enumField.GetValue(null)!).ToList();
-        return enumValues;
-    }
-
-    public static TEnum FromValue(string searchName)
-    {
-        foreach (TEnum enumObject in GetAllPossibleValues())
-        {
-            string enumString = enumObject.Value.Replace(" ", string.Empty).ToLower();
-            string paramString = searchName.Replace(" ", string.Empty).ToLower();
-
-            if (enumString == paramString)
-            {
-                return enumObject;
-            }
-        }
-
-        var typeName = typeof(TEnum).Name;
-
-        throw new ArgumentException($"The given {typeName} type did not match any known types: {searchName}");
-    }
     public abstract override string ToString();
 
-    public bool Equals(TypeSafeEnum<TEnum>? other)
+    public bool Equals(TypeSafeEnum? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -51,12 +22,48 @@ public abstract class TypeSafeEnum<TEnum> : IEquatable<TypeSafeEnum<TEnum>> wher
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((TypeSafeEnum<TEnum>)obj);
+        if (obj.GetType() != GetType()) return false;
+        return Equals((TypeSafeEnum)obj);
     }
 
-    public override int GetHashCode()
+    public override int GetHashCode() => Value.GetHashCode();
+}
+
+public abstract class TypeSafeEnum<TEnum> : TypeSafeEnum where TEnum : TypeSafeEnum<TEnum>
+{
+    private static readonly IReadOnlyList<TEnum> _allValues = EnumUtils.GetAllPossibleValues<TEnum>();
+    private static readonly IReadOnlyDictionary<string, TEnum> _allComparisons = GetAllPossibleValues().ToDictionary(x => x.Value.Replace(" ", "").ToLower());
+
+    protected TypeSafeEnum(string value) : base(value)
     {
-        return Value.GetHashCode();
+
+    }
+
+    public static IReadOnlyList<TEnum> GetAllPossibleValues() => _allValues;
+
+    public static TEnum FromValue(string searchName)
+    {
+        var result = TryFromValue(searchName);
+        if (result is null)
+        {
+            throw new ArgumentException($"Could not match {searchName} to a known value.");
+        }
+        return result;
+    }
+
+    public static TEnum? TryFromValue(string searchName)
+    {
+        if (string.IsNullOrWhiteSpace(searchName))
+        {
+            return null;
+        }
+
+        string paramString = searchName.Replace(" ", "").ToLower();
+        if (_allComparisons.TryGetValue(paramString, out var enumObject))
+        {
+            return enumObject;
+        }
+
+        return null;
     }
 }

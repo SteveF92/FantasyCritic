@@ -1,22 +1,28 @@
 <template>
-  <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" @hidden="clearData">
-    <label>Drag and drop to change order.</label>
-    <div class="fluid container draft-order-editor">
-      <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
-        <transition-group type="transition" :name="'flip-list'">
-          <li v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
-            <font-awesome-icon icon="bars" class="handle" />
-            <span class="badge">{{ publisher.draftPosition }}</span>
-            {{ publisher.publisherName }} ({{ publisher.playerName }})
-          </li>
-        </transition-group>
-      </draggable>
+  <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" hide-footer @hidden="clearData">
+    <div v-show="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
+    <label>How do you want to set the draft order?</label>
+    <div class="order-options-list">
+      <b-button variant="success" size="sm" @click="setDraftOrder('Random')">Randomize Draft Order</b-button>
+      <b-button variant="success" size="sm" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
+      <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually Set Draft Order</b-button>
     </div>
 
-    <b-button variant="info" size="sm" @click="shuffleOrder">Randomize draft order</b-button>
+    <div v-show="showManualSettings">
+      <label>Drag and drop to change order.</label>
+      <div class="fluid container draft-order-editor">
+        <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
+          <transition-group type="transition" :name="'flip-list'">
+            <li v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
+              <font-awesome-icon icon="bars" class="handle" />
+              <span class="badge">{{ publisher.draftPosition }}</span>
+              {{ publisher.publisherName }} ({{ publisher.playerName }})
+            </li>
+          </transition-group>
+        </draggable>
+      </div>
 
-    <div slot="modal-footer">
-      <input type="submit" class="btn btn-primary" value="Set Draft Order" @click="setDraftOrder" />
+      <b-button class="confirm-button" variant="primary" size="sm" @click="setDraftOrder('Manual')">Confirm Draft Order</b-button>
     </div>
   </b-modal>
 </template>
@@ -33,9 +39,11 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
+      showManualSettings: false,
       desiredDraftOrder: [],
       isDragging: false,
-      delayedDragging: false
+      delayedDragging: false,
+      errorInfo: null
     };
   },
   computed: {
@@ -62,37 +70,27 @@ export default {
     this.clearData();
   },
   methods: {
-    setDraftOrder() {
-      let desiredDraftOrderIDs = this.desiredDraftOrder.map((v) => v.publisherID);
+    async setDraftOrder(draftOrderType) {
       var model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
-        publisherDraftPositions: desiredDraftOrderIDs
+        draftOrderType: draftOrderType
       };
-      axios
-        .post('/api/leagueManager/SetDraftOrder', model)
-        .then(() => {
-          this.$refs.editDraftOrderFormRef.hide();
-          this.notifyAction('Draft order has been changed.');
-        })
-        .catch(() => {});
+      if (draftOrderType === 'Manual') {
+        const desiredDraftOrderIDs = this.desiredDraftOrder.map((v) => v.publisherID);
+        model.manualPublisherDraftPositions = desiredDraftOrderIDs;
+      }
+
+      try {
+        await axios.post('/api/leagueManager/SetDraftOrder', model);
+        this.$refs.editDraftOrderFormRef.hide();
+        this.notifyAction('Draft order has been changed.');
+      } catch (error) {
+        this.errorInfo = error;
+      }
     },
     clearData() {
       this.desiredDraftOrder = this.leagueYear.publishers;
-    },
-    /**
-     * On randomize, shuffle current `desiredDraftOrder` array
-     * Uses Fisher–Yates_shuffle algorithm to randomize the publishers
-     */
-    shuffleOrder() {
-      const array = this.desiredDraftOrder;
-      this.desiredDraftOrder = []; // detach the watchers
-
-      for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      this.desiredDraftOrder = array;
     }
   }
 };
@@ -135,5 +133,16 @@ export default {
 
 .draft-order-item i {
   cursor: pointer;
+}
+
+.order-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.confirm-button {
+  float: right;
+  margin-top: 10px;
 }
 </style>

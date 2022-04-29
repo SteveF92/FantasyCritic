@@ -77,9 +77,9 @@ public static class DraftFunctions
         return draftStatus;
     }
 
-    public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, string draftOrderType, IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear)
+    public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType, IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear)
     {
-        if (draftOrderType == "Manual")
+        if (draftOrderType.Equals(DraftOrderType.Manual))
         {
             if (manualPublisherDraftPositions is null)
             {
@@ -89,12 +89,12 @@ public static class DraftFunctions
         }
 
         Random rng = new Random();
-        if (draftOrderType == "Random")
+        if (draftOrderType.Equals(DraftOrderType.Random))
         {
             return GetDraftPositionsInternal(leagueYear, leagueYear.Publishers.Select(x => x.PublisherID).OrderBy(_ => rng.Next()).ToList());
         }
 
-        if (draftOrderType == "InverseStandings")
+        if (draftOrderType.Equals(DraftOrderType.InverseStandings))
         {
             if (previousLeagueYear is null)
             {

@@ -16,7 +16,7 @@
       <div>
         <h4>Public Actions</h4>
         <ul class="actions-list">
-          <li v-if="leagueYear.playStatus.playStarted" class="fake-link action">
+          <li class="fake-link action">
             <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year } }">See League History</router-link>
           </li>
           <li v-b-modal="'leagueOptionsModal'" class="fake-link action">See League Options</li>
