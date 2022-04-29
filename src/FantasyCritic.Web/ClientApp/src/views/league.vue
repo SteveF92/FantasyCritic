@@ -99,6 +99,7 @@
           <ul>
             <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
           </ul>
+          <b-button v-if="leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.')" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
         </div>
 
         <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
