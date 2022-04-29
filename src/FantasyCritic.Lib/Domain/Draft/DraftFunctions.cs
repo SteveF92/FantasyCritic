@@ -98,7 +98,12 @@ public static class DraftFunctions
         {
             if (previousLeagueYear is null)
             {
-                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("There is no previous year to use for standings.");
+            }
+
+            if (!previousLeagueYear.PlayStatus.DraftFinished)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("The previous league year was not completed.");
             }
 
             var previousYearPublishers = previousLeagueYear.Publishers

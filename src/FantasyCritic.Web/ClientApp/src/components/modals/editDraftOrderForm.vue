@@ -2,10 +2,18 @@
   <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" hide-footer @hidden="clearData">
     <div v-show="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
     <label>How do you want to set the draft order?</label>
-    <div class="order-options-list">
-      <b-button variant="success" size="sm" @click="setDraftOrder('Random')">Randomize Draft Order</b-button>
+    <div v-if="hasPreviousYear" class="order-options-list">
+      <label>Recommended:</label>
       <b-button variant="success" size="sm" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
-      <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually Set Draft Order</b-button>
+      <label>Other Options:</label>
+      <b-button variant="secondary" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
+      <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
+    </div>
+    <div v-else class="order-options-list">
+      <label>Recommended:</label>
+      <b-button variant="success" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
+      <label>Other Options:</label>
+      <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
     </div>
 
     <div v-show="showManualSettings">
@@ -53,6 +61,9 @@ export default {
         group: 'description',
         disabled: false
       };
+    },
+    hasPreviousYear() {
+      return this.league.years.includes(this.leagueYear.year - 1);
     }
   },
   watch: {
@@ -86,7 +97,7 @@ export default {
         this.$refs.editDraftOrderFormRef.hide();
         this.notifyAction('Draft order has been changed.');
       } catch (error) {
-        this.errorInfo = error;
+        this.errorInfo = error.response.data;
       }
     },
     clearData() {
