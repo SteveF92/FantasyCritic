@@ -77,8 +77,7 @@ public class ConsentModel : PageModel
                 grantedConsent = new ConsentResponse
                 {
                     RememberConsent = Input.RememberConsent,
-                    ScopesValuesConsented = scopes.ToArray(),
-                    Description = Input.Description
+                    ScopesValuesConsented = scopes.ToArray()
                 };
 
                 // emit event
@@ -225,7 +224,6 @@ public class InputModel
     public IEnumerable<string> ScopesConsented { get; set; }
     public bool RememberConsent { get; set; } = true;
     public string ReturnUrl { get; set; }
-    public string Description { get; set; }
 }
 
 public class ViewModel

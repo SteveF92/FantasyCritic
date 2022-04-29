@@ -14,16 +14,15 @@ public class IdentityConfig
 
     public static IEnumerable<ApiResource> APIResources = new List<ApiResource>
     {
-        new ApiResource(FantasyCriticScopes.ReadScopeName),
-        new ApiResource(FantasyCriticScopes.WriteScopeName),
+        new ApiResource(FantasyCriticScopes.ReadScope.Name, FantasyCriticScopes.ReadScope.DisplayName),
+        new ApiResource(FantasyCriticScopes.WriteScope.Name, FantasyCriticScopes.WriteScope.DisplayName),
     };
 
     public static IEnumerable<ApiScope> APIScopes =>
         new ApiScope[]
         {
-            // Added name to be sure that name is added to the JWT
-            new ApiScope(FantasyCriticScopes.ReadScopeName, new [] { "name" }),
-            new ApiScope(FantasyCriticScopes.WriteScopeName, new [] { "name" }),
+            new ApiScope(FantasyCriticScopes.ReadScope.Name, FantasyCriticScopes.ReadScope.DisplayName),
+            new ApiScope(FantasyCriticScopes.WriteScope.Name, FantasyCriticScopes.WriteScope.DisplayName),
         };
 
     public IdentityConfig(string fcBotSecret, string keyName)
@@ -44,7 +43,7 @@ public class IdentityConfig
                 PostLogoutRedirectUris = { "https://localhost:44300/signout-callback-oidc" },
                 RequireConsent = true,
                 AllowOfflineAccess = true,
-                AllowedScopes = { FantasyCriticScopes.ReadScopeName }
+                AllowedScopes = { FantasyCriticScopes.ReadScope.Name }
             },
             
         };

@@ -31,13 +31,13 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
 
     private static IReadOnlyList<Claim> AddScopes(IEnumerable<Claim> additionalClaims)
     {
-        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == FantasyCriticScopes.ReadScopeName))
+        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == FantasyCriticScopes.ReadScope.Name))
         {
-            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", FantasyCriticScopes.ReadScopeName) });
+            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", FantasyCriticScopes.ReadScope.Name) });
         }
-        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == FantasyCriticScopes.WriteScopeName))
+        if (!additionalClaims.Any(x => x.Type == "scope" && x.Value == FantasyCriticScopes.WriteScope.Name))
         {
-            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", FantasyCriticScopes.WriteScopeName) });
+            additionalClaims = additionalClaims.Concat(new List<Claim>() { new Claim("scope", FantasyCriticScopes.WriteScope.Name) });
         }
 
         return additionalClaims.ToList();

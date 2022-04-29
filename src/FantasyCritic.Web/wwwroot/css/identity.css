@@ -108,3 +108,20 @@ body {
 .consent-scope-list li {
     list-style: none;
 }
+
+.consent-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.card, .card .list-group .list-group-item {
+    background-color: #414141;
+}
+
+.card-header {
+    font-size: 25px;
+}
+
+.list-group-item label {
+    font-size: 15px;
+}

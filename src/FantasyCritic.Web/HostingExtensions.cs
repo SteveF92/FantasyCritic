@@ -150,7 +150,7 @@ public static class HostingExtensions
             var policyBuilder = new AuthorizationPolicyBuilder();
             policyBuilder.AddAuthenticationSchemes(schemes);
             policyBuilder.RequireAuthenticatedUser();
-            policyBuilder.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
+            policyBuilder.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
 
             var basicUserPolicy = policyBuilder.Build();
 
@@ -161,7 +161,7 @@ public static class HostingExtensions
             {
                 policy.AddAuthenticationSchemes(schemes);
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
+                policy.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
                 policy.RequireRole("PlusUser");
             });
 
@@ -169,8 +169,8 @@ public static class HostingExtensions
             {
                 policy.AddAuthenticationSchemes(schemes);
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
-                policy.RequireClaim("scope", FantasyCriticScopes.WriteScopeName);
+                policy.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
+                policy.RequireClaim("scope", FantasyCriticScopes.WriteScope.Name);
                 policy.RequireRole("Admin");
             });
 
@@ -178,8 +178,8 @@ public static class HostingExtensions
             {
                 policy.AddAuthenticationSchemes(schemes);
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", FantasyCriticScopes.ReadScopeName);
-                policy.RequireClaim("scope", FantasyCriticScopes.WriteScopeName);
+                policy.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
+                policy.RequireClaim("scope", FantasyCriticScopes.WriteScope.Name);
             });
         });
 
@@ -235,7 +235,7 @@ public static class HostingExtensions
             })
             .AddLocalApi(JwtBearerDefaults.AuthenticationScheme, options =>
             {
-                options.ExpectedScope = FantasyCriticScopes.ReadScopeName;
+                options.ExpectedScope = FantasyCriticScopes.ReadScope.Name;
             })
             .AddGoogle(options =>
             {

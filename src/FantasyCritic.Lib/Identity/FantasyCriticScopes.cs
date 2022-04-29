@@ -1,6 +1,8 @@
 namespace FantasyCritic.Lib.Identity;
 public static class FantasyCriticScopes
 {
-    public const string ReadScopeName = "fc_read";
-    public const string WriteScopeName = "fc_write";
+    public static readonly FantasyCriticScope ReadScope = new FantasyCriticScope("fc_read", "Read Data");
+    public static readonly FantasyCriticScope WriteScope = new FantasyCriticScope("fc_write", "Change Data");
 }
+
+public record FantasyCriticScope(string Name, string DisplayName);
