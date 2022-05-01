@@ -28,7 +28,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using NLog;
 using NodaTime.Serialization.JsonNet;
-using VueCliMiddleware;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
@@ -37,15 +36,6 @@ public static class HostingExtensions
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-    private static string GetSPAPath(IWebHostEnvironment env)
-    {
-        if (env.IsDevelopment())
-        {
-            return "ClientApp";
-        }
-
-        return "ClientApp/dist";
-    }
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         var env = builder.Environment;
@@ -291,13 +281,6 @@ public static class HostingExtensions
         services.AddRazorPages();
         services.AddSignalR();
 
-        // In production, the Vue files will be served from this directory
-        services.AddSpaStaticFiles(staticFileOptions =>
-        {
-            staticFileOptions.RootPath = GetSPAPath(env);
-        });
-
-
         if (env.IsDevelopment())
         {
             // Only in Development, used for debugging
@@ -310,8 +293,6 @@ public static class HostingExtensions
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         var env = app.Environment;
-        _ = Arguments.TryGetOptions(System.Environment.GetCommandLineArgs(), false, out string mode, out ushort port, out bool https);
-
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -342,11 +323,6 @@ public static class HostingExtensions
             }
         });
 
-        if (!env.IsDevelopment())
-        {
-            app.UseSpaStaticFiles();
-        }
-
         app.UseRouting();
         app.UseIdentityServer();
         app.UseAuthorization();
@@ -363,38 +339,6 @@ public static class HostingExtensions
         //app.MapControllers();
         //app.MapRazorPages();
         //app.MapHub<UpdateHub>("/updatehub");
-
-        var spaPath = GetSPAPath(env);
-        var spaStaticFileOptions = new StaticFileOptions
-        {
-            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(Path.Combine(env.ContentRootPath, spaPath))
-        };
-
-        app.UseSpa(spa =>
-        {
-            spa.Options.SourcePath = spaPath;
-
-            if (env.IsDevelopment())
-            {
-                // run npm process with client app
-                if (mode == "start")
-                {
-                    spa.UseVueCli(npmScript: "serve", port: port, forceKill: true, https: https);
-                }
-
-                // if you just prefer to proxy requests from client app, use proxy to SPA dev server instead,
-                // app should be already running before starting a .NET client:
-                // run npm process with client app
-                if (mode == "attach")
-                {
-                    spa.UseProxyToSpaDevelopmentServer($"{(https ? "https" : "http")}://localhost:{port}"); // your Vue app port
-                }
-            }
-            else
-            {
-                spa.Options.DefaultPageStaticFileOptions = spaStaticFileOptions;
-            }
-        });
 
         return app;
     }
