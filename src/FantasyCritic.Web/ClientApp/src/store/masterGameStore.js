@@ -10,21 +10,16 @@ export default {
     masterGamesIsBusy: (state) => state.isBusy
   },
   actions: {
-    getAllTags(context) {
+    async getAllTags(context) {
       context.commit('setBusy', true);
-      return new Promise(function (resolve, reject) {
-        axios
-          .get('/api/Game/GetMasterGameTags')
-          .then((response) => {
-            context.commit('setTags', response.data);
-            context.commit('setBusy', false);
-            resolve();
-          })
-          .catch(() => {
-            context.commit('setBusy', false);
-            reject();
-          });
-      });
+      try {
+        const response = await axios.get('/api/Game/GetMasterGameTags');
+        context.commit('setTags', response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        context.commit('setBusy', false);
+      }
     }
   },
   mutations: {

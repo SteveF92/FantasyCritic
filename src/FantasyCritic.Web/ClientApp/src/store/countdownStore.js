@@ -10,21 +10,16 @@ export default {
     bidTimesIsBusy: (state) => state.isBusy
   },
   actions: {
-    getBidTimes(context) {
+    async getBidTimes(context) {
       context.commit('setBusy', true);
-      return new Promise(function (resolve, reject) {
-        axios
-          .get('/api/General/BidTimes')
-          .then((response) => {
-            context.commit('setBidTimes', response.data);
-            context.commit('setBidsBusy', false);
-            resolve();
-          })
-          .catch(() => {
-            context.commit('setBidsBusy', false);
-            reject();
-          });
-      });
+      try {
+        const response = await axios.get('/api/General/BidTimes');
+        context.commit('setBidTimes', response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        context.commit('setBusy', false);
+      }
     }
   },
   mutations: {
