@@ -288,7 +288,7 @@ export default {
   margin-top: 10px;
   margin-bottom: 10px;
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   gap: 5px;
 }
@@ -299,7 +299,7 @@ export default {
 
 .table-options {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 10px;
   gap: 5px;

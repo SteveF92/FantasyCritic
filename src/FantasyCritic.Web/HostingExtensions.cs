@@ -309,36 +309,16 @@ public static class HostingExtensions
             .AddRedirectToWww()
         );
 
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            OnPrepareResponse = (context) =>
-            {
-                var headers = context.Context.Response.GetTypedHeaders();
-
-                headers.CacheControl = new CacheControlHeaderValue
-                {
-                    Public = true,
-                    MaxAge = TimeSpan.FromDays(365)
-                };
-            }
-        });
+        app.UseStaticFiles();
 
         app.UseRouting();
         app.UseIdentityServer();
         app.UseAuthorization();
 
-        //This works
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-            endpoints.MapRazorPages();
-            endpoints.MapHub<UpdateHub>("/updatehub");
-        });
-
-        //This does not
-        //app.MapControllers();
-        //app.MapRazorPages();
-        //app.MapHub<UpdateHub>("/updatehub");
+        app.MapControllers();
+        app.MapRazorPages();
+        app.MapHub<UpdateHub>("/updatehub");
+        app.MapFallbackToFile("index.html"); ;
 
         return app;
     }
