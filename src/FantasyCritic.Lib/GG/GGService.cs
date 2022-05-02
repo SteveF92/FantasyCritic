@@ -36,7 +36,8 @@ public class GGService : IGGService
                 variables = new
                 {
                     token = ggToken
-                }
+                },
+                operationName = "getGameByToken"
             };
 
             var request = new HttpRequestMessage
