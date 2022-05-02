@@ -59,7 +59,7 @@ public class AdminService
     {
         await RefreshCriticInfo();
         await Task.Delay(1000);
-        await RefreshGGInfo();
+        await RefreshGGInfo(false);
 
         await Task.Delay(1000);
         await RefreshCaches();
@@ -124,14 +124,14 @@ public class AdminService
         _logger.Info("Done refreshing critic scores");
     }
 
-    public async Task RefreshGGInfo()
+    public async Task RefreshGGInfo(bool deepRefresh)
     {
         var masterGames = await _interLeagueService.GetMasterGames();
 
         var masterGamesToUpdate = masterGames.Where(x => x.GGToken is not null && !x.DoNotRefreshAnything).ToList();
         foreach (var masterGame in masterGamesToUpdate)
         {
-            if (!string.IsNullOrWhiteSpace(masterGame.GGCoverArtFileName))
+            if (!string.IsNullOrWhiteSpace(masterGame.GGCoverArtFileName) && !deepRefresh)
             {
                 continue;
             }

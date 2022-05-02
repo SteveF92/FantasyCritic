@@ -239,7 +239,7 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> RefreshGGInfo()
     {
-        await _adminService.RefreshGGInfo();
+        await _adminService.RefreshGGInfo(true);
         return Ok();
     }
 
