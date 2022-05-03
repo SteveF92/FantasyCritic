@@ -14,6 +14,7 @@ public class RoyaleService
     private readonly IMasterGameRepo _masterGameRepo;
 
     public const int MAX_GAMES = 25;
+    public static readonly Period FuturePurchaseDateLimit = Period.FromDays(5);
 
     public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
     {
@@ -104,6 +105,12 @@ public class RoyaleService
         if (masterGame.MasterGame.IsReleased(currentDate))
         {
             return new ClaimResult("Game has been released.", null);
+        }
+
+        var fiveDaysFuture = currentDate.Plus(FuturePurchaseDateLimit);
+        if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
+        {
+            return new ClaimResult("Game will release within 5 days.", null);
         }
         if (masterGame.MasterGame.CriticScore.HasValue)
         {

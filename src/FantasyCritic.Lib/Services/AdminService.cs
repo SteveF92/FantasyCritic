@@ -259,7 +259,7 @@ public class AdminService
 
         var latestQuarter = supportedQuarters.WhereMax(x => x.YearQuarter).Single();
         var nextQuarter = latestQuarter.YearQuarter.NextQuarter;
-        var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(5));
+        var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(15));
         if (nycNow.Date > dayToStartNextQuarter)
         {
             await _royaleService.StartNewQuarter(nextQuarter);
