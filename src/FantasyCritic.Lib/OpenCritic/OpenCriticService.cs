@@ -58,7 +58,9 @@ public class OpenCriticService : IOpenCriticService
                 }
             }
 
-            var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate);
+            var numReviews = parsedGameResponse.GetValue("numReviews")?.Value<int?>();
+            bool hasAnyReviews = numReviews.HasValue && numReviews > 0;
+            var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate, hasAnyReviews);
             return openCriticGame;
         }
         catch (HttpRequestException httpEx)

@@ -58,6 +58,7 @@ internal class MasterGameYearEntity
     public int? OpenCriticID { get; set; }
     public string? GGToken { get; set; }
     public decimal? CriticScore { get; set; }
+    public bool HasAnyReviews { get; set; }
     public string? Notes { get; set; }
     public string? BoxartFileName { get; set; }
     public string? GGCoverArtFileName { get; set; }
@@ -120,7 +121,7 @@ internal class MasterGameYearEntity
         var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
         var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
-            releaseDate, OpenCriticID, GGToken, CriticScore, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, subGames, tags);
+            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, subGames, tags);
 
         return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
             NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor, LinearRegressionHypeFactor);

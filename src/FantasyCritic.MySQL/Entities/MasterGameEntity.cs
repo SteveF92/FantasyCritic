@@ -48,6 +48,7 @@ internal class MasterGameEntity
     public int? OpenCriticID { get; set; }
     public string? GGToken { get; set; }
     public decimal? CriticScore { get; set; }
+    public bool HasAnyReviews { get; set; }
     public string? Notes { get; set; }
     public string? BoxartFileName { get; set; }
     public string? GGCoverArtFileName { get; set; }
@@ -61,7 +62,7 @@ internal class MasterGameEntity
     public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
-            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
+            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
             DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, subGames, tags);
     }
 }

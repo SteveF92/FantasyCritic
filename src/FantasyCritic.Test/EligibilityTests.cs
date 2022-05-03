@@ -41,7 +41,7 @@ public class EligibilityTests
     private static MasterGame CreateBasicMasterGame(string name, LocalDate releaseDate, MasterGameTag tag)
     {
         return new MasterGame(Guid.NewGuid(), name, releaseDate.ToISOString(), releaseDate, releaseDate, null, null, null,
-            releaseDate, null, null, null, "", null, null, null, false, false, false, false, Instant.MinValue,
+            releaseDate, null, null, null, false, "", null, null, null, false, false, false, false, Instant.MinValue,
             new List<MasterSubGame>(), new List<MasterGameTag>() { tag });
     }
 
@@ -49,9 +49,8 @@ public class EligibilityTests
         LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, IEnumerable<MasterGameTag> tags)
     {
         return new MasterGame(Guid.NewGuid(), name, "TBA", minimumReleaseDate, maximumReleaseDate,
-            earlyAccessReleaseDate, internationalReleaseDate, announcementDate, null, null, null, null, "", null, null, null, false, false, false, false,
+            earlyAccessReleaseDate, internationalReleaseDate, announcementDate, null, null, null, null, false, "", null, null, null, false, false, false, false,
             Instant.MinValue, new List<MasterSubGame>(), tags);
-
     }
 
     [Test]

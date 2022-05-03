@@ -120,14 +120,15 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             setFirstTimestamp = ", FirstCriticScoreTimestamp = CURRENT_TIMESTAMP ";
         }
 
-        string sql = $"update tbl_mastergame set CriticScore = @criticScore {setFirstTimestamp} where MasterGameID = @masterGameID";
+        string sql = $"update tbl_mastergame set CriticScore = @criticScore, HasAnyReviews = @hasAnyReviews {setFirstTimestamp} where MasterGameID = @masterGameID";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
             new
             {
                 masterGameID = masterGame.MasterGameID,
-                criticScore = openCriticGame.Score
+                criticScore = openCriticGame.Score,
+                hasAnyReviews = openCriticGame.HasAnyReviews
             });
     }
 

@@ -337,6 +337,11 @@ public class GameAcquisitionService
             claimErrors.Add(new ClaimError("That game already has a score.", true));
         }
 
+        if (!hasScore && masterGame.HasAnyReviews && !manuallyEligible)
+        {
+            claimErrors.Add(new ClaimError("That game already has reviews.", true));
+        }
+
         return claimErrors;
     }
 

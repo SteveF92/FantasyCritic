@@ -3,7 +3,7 @@ namespace FantasyCritic.Lib.Domain;
 public class MasterGame : IEquatable<MasterGame>
 {
     public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
-        LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, string? ggToken, decimal? criticScore,
+        LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, string? ggToken, decimal? criticScore, bool hasAnyReviews,
         string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
         bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
@@ -19,6 +19,7 @@ public class MasterGame : IEquatable<MasterGame>
         OpenCriticID = openCriticID;
         GGToken = ggToken;
         RawCriticScore = criticScore;
+        HasAnyReviews = hasAnyReviews;
         Notes = notes;
         BoxartFileName = boxartFileName;
         GGCoverArtFileName = ggCoverArtFileName;
@@ -58,6 +59,8 @@ public class MasterGame : IEquatable<MasterGame>
     public LocalDate GetDefiniteMaximumReleaseDate() => MaximumReleaseDate ?? LocalDate.MaxIsoValue;
 
     public decimal? RawCriticScore { get; }
+    public bool HasAnyReviews { get; }
+
     public decimal? CriticScore
     {
         get
