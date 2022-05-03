@@ -20,8 +20,5 @@ module.exports = {
           };
           return options;
         })
-  },
-  devServer: {
-    proxy: 'https://localhost:44391'
   }
 }
