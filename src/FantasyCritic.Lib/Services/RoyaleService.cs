@@ -121,6 +121,11 @@ public class RoyaleService
             return new ClaimResult("Game has a score.", null);
         }
 
+        if (masterGame.MasterGame.HasAnyReviews)
+        {
+            return new ClaimResult("That game already has reviews.", null);
+        }
+
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
         var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate);
         if (eligibilityErrors.Any())
