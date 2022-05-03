@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.29.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.29.1" />
     <PackageReference Include="Duende.IdentityServer" Version="6.0.4" />
     <PackageReference Include="FuzzyString.NETStandard" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.4" />
