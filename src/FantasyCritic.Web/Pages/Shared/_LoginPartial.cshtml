@@ -16,16 +16,16 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Account (@User.Identity!.Name)</a>
+            <a class="nav-link" asp-page="/Account/Manage/Index" title="Manage">Manage Account (@User.Identity!.Name)</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/">Logout</a>
+            <a class="nav-link" asp-page="/Account/Logout" asp-route-returnUrl="/">Logout</a>
         </li>
     }
     else
     {
         <li class="nav-item top-nav-button">
-            <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl" title="Login">
+            <a asp-page="/Account/Login" asp-route-returnUrl="@returnUrl" title="Login">
                 <button type="button" class="btn btn-info top-nav-button">
                     LOG IN
                     <i class="fa fa-sign-in" aria-hidden="true"></i>
@@ -33,7 +33,7 @@
             </a>
         </li>
         <li class="nav-item top-nav-button">
-            <a asp-area="Identity"asp-page="/Account/Register" asp-route-returnUrl="@returnUrl">
+            <a asp-page="/Account/Register" asp-route-returnUrl="@returnUrl">
                 <button type="button" class="btn btn-primary top-nav-button">
                     SIGN UP
                     <i class="fa fa-user-plus" aria-hidden="true"></i>

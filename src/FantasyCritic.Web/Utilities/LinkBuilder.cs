@@ -12,7 +12,7 @@ public static class LinkBuilder
     {
         var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var encodedCode = UrlEncoder.Default.Encode(code);
-        var link = $"{GetBaseAddress(request)}/Identity/Account/ConfirmEmail?userId={user.Id}&code={encodedCode}";
+        var link = $"{GetBaseAddress(request)}/Account/ConfirmEmail?userId={user.Id}&code={encodedCode}";
         return link;
     }
 
@@ -20,7 +20,7 @@ public static class LinkBuilder
     {
         var code = await userManager.GeneratePasswordResetTokenAsync(user);
         var encodedCode = UrlEncoder.Default.Encode(code);
-        var link = $"{GetBaseAddress(request)}/Identity/Account/ResetPassword?code={encodedCode}";
+        var link = $"{GetBaseAddress(request)}/Account/ResetPassword?code={encodedCode}";
         return link;
     }
 
@@ -29,7 +29,7 @@ public static class LinkBuilder
         var code = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
         var encodedCode = UrlEncoder.Default.Encode(code);
         var encodedNewEmail = UrlEncoder.Default.Encode(newEmail);
-        var link = $"{GetBaseAddress(request)}/Identity/Account/ConfirmEmailChange?userId={user.Id}&email={encodedNewEmail}&code={encodedCode}";
+        var link = $"{GetBaseAddress(request)}/Account/ConfirmEmailChange?userId={user.Id}&email={encodedNewEmail}&code={encodedCode}";
         return link;
     }
 }
