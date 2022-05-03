@@ -7,14 +7,14 @@ public class ClaimResult
     {
     }
 
-    public ClaimResult(string claimError, int? bestSlotNumber)
-        : this(new ClaimError(claimError, false), bestSlotNumber)
+    public ClaimResult(string claimError)
+        : this(new ClaimError(claimError, false))
     {
 
     }
 
-    public ClaimResult(ClaimError error, int? bestSlotNumber)
-        : this(new List<ClaimError>() { error }, bestSlotNumber)
+    public ClaimResult(ClaimError error)
+        : this(new List<ClaimError>() { error }, null)
     {
 
     }

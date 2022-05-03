@@ -89,22 +89,22 @@ public class RoyaleService
     {
         if (publisher.PublisherGames.Count >= MAX_GAMES)
         {
-            return new ClaimResult("Roster is full.", null);
+            return new ClaimResult("Roster is full.");
         }
         if (publisher.PublisherGames.Select(x => x.MasterGame).Contains(masterGame))
         {
-            return new ClaimResult("Publisher already has that game.", null);
+            return new ClaimResult("Publisher already has that game.");
         }
         if (!masterGame.WillReleaseInQuarter(publisher.YearQuarter.YearQuarter))
         {
-            return new ClaimResult("Game will not release this quarter.", null);
+            return new ClaimResult("Game will not release this quarter.");
         }
 
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
         if (masterGame.MasterGame.IsReleased(currentDate))
         {
-            return new ClaimResult("Game has been released.", null);
+            return new ClaimResult("Game has been released.");
         }
 
         if (publisher.YearQuarter.HasReleaseDateLimit)
@@ -112,32 +112,32 @@ public class RoyaleService
             var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
             if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
             {
-                return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.", null);
+                return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
             }
         }
 
         if (masterGame.MasterGame.CriticScore.HasValue)
         {
-            return new ClaimResult("Game has a score.", null);
+            return new ClaimResult("Game has a score.");
         }
 
         if (masterGame.MasterGame.HasAnyReviews)
         {
-            return new ClaimResult("That game already has reviews.", null);
+            return new ClaimResult("That game already has reviews.");
         }
 
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
         var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate);
         if (eligibilityErrors.Any())
         {
-            return new ClaimResult("Game is not eligible under Royale rules.", null);
+            return new ClaimResult("Game is not eligible under Royale rules.");
         }
 
         var currentBudget = publisher.Budget;
         var gameCost = masterGame.GetRoyaleGameCost();
         if (currentBudget < gameCost)
         {
-            return new ClaimResult("Not enough budget.", null);
+            return new ClaimResult("Not enough budget.");
         }
 
         RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);

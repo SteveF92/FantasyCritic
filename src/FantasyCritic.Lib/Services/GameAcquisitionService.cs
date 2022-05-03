@@ -428,13 +428,13 @@ public class GameAcquisitionService
         {
             if (counterPick)
             {
-                return new ClaimResult("Cannot make a counter pick bid with a conditional drop.", null);
+                return new ClaimResult("Cannot make a counter pick bid with a conditional drop.");
             }
 
             var dropResult = await MakeDropRequest(leagueYear, publisher, conditionalDropPublisherGame, true);
             if (dropResult.Result.IsFailure)
             {
-                return new ClaimResult(dropResult.Result.Error, null);
+                return new ClaimResult(dropResult.Result.Error);
             }
 
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
@@ -569,13 +569,13 @@ public class GameAcquisitionService
         {
             if (bid.CounterPick)
             {
-                return new ClaimResult("Cannot make a counter pick bid with a conditional drop.", null);
+                return new ClaimResult("Cannot make a counter pick bid with a conditional drop.");
             }
 
             var dropResult = await MakeDropRequest(bid.LeagueYear, bid.Publisher, conditionalDropPublisherGame, true);
             if (dropResult.Result.IsFailure)
             {
-                return new ClaimResult(dropResult.Result.Error, null);
+                return new ClaimResult(dropResult.Result.Error);
             }
 
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
