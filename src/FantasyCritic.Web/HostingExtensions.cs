@@ -144,7 +144,7 @@ public static class HostingExtensions
             args.SetObserved();
         });
 
-        var schemes = new []{IdentityConstants.ApplicationScheme, JwtBearerDefaults.AuthenticationScheme};
+        var schemes = new[] { IdentityConstants.ApplicationScheme, JwtBearerDefaults.AuthenticationScheme };
         services.AddAuthorization(options =>
         {
             var policyBuilder = new AuthorizationPolicyBuilder();
@@ -303,7 +303,7 @@ public static class HostingExtensions
             // Only in Development, used for debugging
             services.AddTransient<IAuthorizationHandler, FantasyCriticAuthorizationHandler>();
         }
-        
+
         return builder.Build();
     }
 

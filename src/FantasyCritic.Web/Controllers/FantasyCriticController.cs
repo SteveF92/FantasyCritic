@@ -41,7 +41,7 @@ public abstract class FantasyCriticController : ControllerBase
 
         return new GenericResultRecord<T>(null, Unauthorized());
     }
-    
+
     protected IActionResult UnauthorizedOrForbid(bool hasUser)
     {
         if (hasUser)

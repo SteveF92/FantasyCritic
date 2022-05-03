@@ -45,7 +45,7 @@ public class IdentityConfig
                 AllowOfflineAccess = true,
                 AllowedScopes = { FantasyCriticScopes.ReadScope.Name }
             },
-            
+
         };
 
         KeyName = keyName;

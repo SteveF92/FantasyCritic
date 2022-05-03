@@ -7,7 +7,7 @@ namespace FantasyCritic.Web.Models.Responses;
 public class LeagueYearViewModel
 {
     public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear,
-        LocalDate currentDate,  IEnumerable<FantasyCriticUser> activeUsers,
+        LocalDate currentDate, IEnumerable<FantasyCriticUser> activeUsers,
         CompletePlayStatus completePlayStatus, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
@@ -31,7 +31,7 @@ public class LeagueYearViewModel
         {
             UserIsActive = activeUsers.Any(x => x.Id == accessingUser.Id);
         }
-        
+
         HasSpecialSlots = leagueYear.Options.HasSpecialSlots;
         OneShotMode = leagueYear.Options.OneShotMode;
         CounterPickDeadline = leagueYear.CounterPickDeadline;

@@ -29,7 +29,7 @@ public class EditMasterGameRequest
     public int? OpenCriticID { get; init; }
     public string? GGToken { get; init; }
     public string? Notes { get; init; }
-    
+
     public Lib.Domain.MasterGame ToDomain(Lib.Domain.MasterGame existingMasterGame, Instant timestamp, IEnumerable<MasterGameTag> tags)
     {
         var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,

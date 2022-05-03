@@ -28,7 +28,7 @@ public class CreateMasterGameRequest
     public int? OpenCriticID { get; init; }
     public string? GGToken { get; init; }
     public string? Notes { get; init; }
-    
+
     public Lib.Domain.MasterGame ToDomain(IClock clock, IEnumerable<MasterGameTag> tags)
     {
         var now = clock.GetCurrentInstant();

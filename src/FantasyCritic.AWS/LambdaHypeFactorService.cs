@@ -82,7 +82,7 @@ public class LambdaHypeFactorService : IHypeFactorService
         using var fileStream = File.OpenWrite(fileName);
         using var streamWriter = new StreamWriter(fileStream);
         using var csv = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
-        csv.WriteRecords((IEnumerable) outputModels);
+        csv.WriteRecords((IEnumerable)outputModels);
     }
 
     private async Task UploadMasterGameYearStats(string fileName)

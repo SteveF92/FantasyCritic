@@ -105,7 +105,7 @@ public static class Program
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo, _clock);
         GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, leagueMemberService, _clock);
         ActionProcessingService actionProcessingService = new ActionProcessingService(gameAcquisitionService);
-        FantasyCriticService fantasyCriticService = new FantasyCriticService( leagueMemberService, interLeagueService, fantasyCriticRepo, _clock);
+        FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, fantasyCriticRepo, _clock);
         IOpenCriticService openCriticService = null!;
         IGGService ggService = null!;
         PatreonService patreonService = null!;

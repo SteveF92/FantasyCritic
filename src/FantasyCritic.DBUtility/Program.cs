@@ -52,7 +52,7 @@ class Program
                     var leagueActionsForPublisher = nonDraftActions.Where(x => x.Publisher.PublisherID == publisher.PublisherID).ToList();
                     var tradesInvolvingPublisher = executedTrades.Where(x => x.GetUpdatedPublishers().Select(x => x.PublisherID).Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
                     var successfulBidsForPublisher = successBids.Where(x => x.Publisher.PublisherID == publisher.PublisherID).OrderBy(x => x.Timestamp).ToList();
-                    PrintStatsForPublisher(leagueYear, publisher, leagueActionsForPublisher, tradesInvolvingPublisher, successfulBidsForPublisher); 
+                    PrintStatsForPublisher(leagueYear, publisher, leagueActionsForPublisher, tradesInvolvingPublisher, successfulBidsForPublisher);
                 }
             }
         }
@@ -116,7 +116,7 @@ class Program
     private static async Task<IReadOnlyList<LeagueYearKey>> GetLeagueYearsWithProblemTrades(SupportedYear year)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var keys = await connection.QueryAsync<LeagueYearKeyEntity>("select distinct LeagueID, Year from tbl_league_trade where Status = 'Executed' AND (ProposerBudgetSendAmount <> 0 OR CounterPartyBudgetSendAmount <> 0) AND Year = @year;", new {year = year.Year});
+        var keys = await connection.QueryAsync<LeagueYearKeyEntity>("select distinct LeagueID, Year from tbl_league_trade where Status = 'Executed' AND (ProposerBudgetSendAmount <> 0 OR CounterPartyBudgetSendAmount <> 0) AND Year = @year;", new { year = year.Year });
         return keys.Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToList();
     }
 }

@@ -1339,7 +1339,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "insert into tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped) VALUES " +
             "(@PublisherID,@PublisherName,@PublisherIcon,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped);";
         string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 1 WHERE LeagueID = @LeagueID AND Year = @Year;";
-        
+
         var entity = new PublisherEntity(publisher);
         var leagueYearKey = new LeagueYearKeyEntity(publisher.LeagueYearKey);
         await using var connection = new MySqlConnection(_connectionString);
@@ -2655,7 +2655,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return connection.ExecuteAsync(sql, entities, transaction);
     }
 
-    private static Task AddLeagueAction(LeagueAction action, MySqlConnection connection, MySqlTransaction transaction) => AddLeagueActions(new List<LeagueAction>() {action}, connection, transaction);
+    private static Task AddLeagueAction(LeagueAction action, MySqlConnection connection, MySqlTransaction transaction) => AddLeagueActions(new List<LeagueAction>() { action }, connection, transaction);
 
     private static Task AddLeagueActions(IEnumerable<LeagueAction> actions, MySqlConnection connection, MySqlTransaction transaction)
     {
