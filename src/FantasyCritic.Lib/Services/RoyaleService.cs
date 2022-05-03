@@ -14,7 +14,7 @@ public class RoyaleService
     private readonly IMasterGameRepo _masterGameRepo;
 
     public const int MAX_GAMES = 25;
-    public static readonly Period FuturePurchaseDateLimit = Period.FromDays(5);
+    public const int FUTURE_RELEASE_LIMIT_DAYS = 5;
 
     public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
     {
@@ -107,11 +107,15 @@ public class RoyaleService
             return new ClaimResult("Game has been released.", null);
         }
 
-        var fiveDaysFuture = currentDate.Plus(FuturePurchaseDateLimit);
-        if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
+        if (publisher.YearQuarter.HasReleaseDateLimit)
         {
-            return new ClaimResult("Game will release within 5 days.", null);
+            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+            if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
+            {
+                return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.", null);
+            }
         }
+
         if (masterGame.MasterGame.CriticScore.HasValue)
         {
             return new ClaimResult("Game has a score.", null);

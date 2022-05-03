@@ -15,6 +15,16 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
     public bool OpenForPlay { get; }
     public bool Finished { get; }
 
+    public bool HasReleaseDateLimit
+    {
+        get
+        {
+            var compare = YearQuarter.CompareTo(new YearQuarter(2022, 3));
+            var laterOrEqual = compare >= 0;
+            return laterOrEqual;
+        }
+    }
+
     public override string ToString()
     {
         return YearQuarter.ToString();
