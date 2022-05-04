@@ -90,6 +90,7 @@
             <li v-show="!playStarted" v-b-modal="'manageActivePlayers'" class="fake-link action">Manage Active Players</li>
             <li v-show="readyToSetDraftOrder && !playStarted" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
             <li v-show="!draftFinished" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
+            <li v-show="draftFinished" v-b-modal="'specialAuctionsModal'" class="fake-link action">Special Auctions</li>
             <li v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
             <li v-show="draftFinished" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
             <li v-show="draftFinished" v-b-modal="'associateGameForm'" class="fake-link action">Associate Unlinked Game</li>
