@@ -4,13 +4,30 @@
       Special auctions allow your league to process the bids for a given game before the normal bid processing time. The main reason to do this is in case of 'shadow drops', which is when a game is
       announced and then released very shortly after.
     </div>
+    <div v-if="leagueYear.activeSpecialAuctions.length > 0">
+      <label>Active Special Auctions</label>
+      <b-table-lite :items="leagueYear.activeSpecialAuctions" :fields="activeSpecialAuctionFields" bordered responsive striped>
+        <template #cell(masterGame)="data">
+          <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+        </template>
+        <template #cell(creationTime)="data">
+          {{ data.item.creationTime | dateTime }}
+        </template>
+        <template #cell(scheduledEndTime)="data">
+          {{ data.item.scheduledEndTime | dateTime }}
+          <b-badge v-if="data.item.isLocked" variant="danger">Ended</b-badge>
+          <b-button v-else variant="danger" @click="cancelSpecialAuction(data.item.masterGameYear)">Cancel</b-button>
+        </template>
+      </b-table-lite>
+    </div>
+
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
-        <label for="specialAuctionGameName" class="control-label">Game Name</label>
+        <label for="searchGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input id="specialAuctionGameName" v-model="specialAuctionGameName" name="specialAuctionGameName" type="text" class="form-control input" />
+          <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" @click="searchGame">Search Game</b-button>
+            <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="specialAuctionMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
@@ -37,30 +54,35 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import LeagueMixin from '@/mixins/leagueMixin';
 import MasterGameSummary from '@/components/masterGameSummary';
+import MasterGamePopover from '@/components/masterGamePopover';
 
 export default {
   components: {
     PossibleMasterGamesTable,
-    MasterGameSummary
+    MasterGameSummary,
+    MasterGamePopover
   },
   mixins: [LeagueMixin],
   data() {
     return {
-      specialAuctionGameName: '',
+      searchGameName: '',
       specialAuctionMasterGame: null,
       scheduledEndTime: null,
       possibleMasterGames: [],
-      errorInfo: ''
+      errorInfo: '',
+      activeSpecialAuctionFields: [
+        { key: 'masterGame', label: 'Game', thClass: ['bg-primary'] },
+        { key: 'creationTime', label: 'Creation Time', thClass: ['bg-primary'] },
+        { key: 'scheduledEndTime', label: 'End Time', thClass: ['bg-primary'] }
+      ],
+      datePickerConfig: {
+        enableTime: true
+      }
     };
   },
   computed: {
     formIsValid() {
       return this.specialAuctionMasterGame;
-    },
-    datePickerConfig() {
-      return {
-        enableTime: true
-      };
     }
   },
   methods: {
@@ -77,8 +99,23 @@ export default {
 
       try {
         await axios.post('/api/leagueManager/CreateSpecialAuction', model);
-        this.$refs.specialAuctionsModalRef.hide();
         this.notifyAction('Special auction created for: ' + this.specialAuctionMasterGame.gameName);
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
+    },
+    async cancelSpecialAuction(masterGameYear) {
+      var model = {
+        leagueID: this.leagueYear.leagueID,
+        year: this.leagueYear.year,
+        masterGameID: masterGameYear.masterGameID
+      };
+
+      try {
+        await axios.post('/api/leagueManager/CancelSpecialAuction', model);
+        this.notifyAction('Cancelled special auction for: ' + masterGameYear.gameName);
+        this.clearData();
       } catch (error) {
         this.errorInfo = error.response.data;
       }
@@ -87,7 +124,7 @@ export default {
       this.specialAuctionMasterGame = null;
       this.possibleMasterGames = [];
 
-      const endpointQuery = '/api/league/PossibleMasterGames?gameName=' + this.specialAuctionGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID;
+      const endpointQuery = '/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID;
       try {
         const response = await axios.get(endpointQuery);
         this.possibleMasterGames = response.data;
@@ -96,7 +133,7 @@ export default {
       }
     },
     clearData() {
-      this.specialAuctionGameName = '';
+      this.searchGameName = '';
       this.specialAuctionMasterGame = null;
       this.possibleMasterGames = [];
       this.errorInfo = '';
