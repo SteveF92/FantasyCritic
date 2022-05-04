@@ -4,18 +4,20 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 
 public class FinalizedActionProcessingResults
 {
-    public FinalizedActionProcessingResults(Guid processSetID, Instant processTime, string processName, ActionProcessingResults results)
+    public FinalizedActionProcessingResults(Guid processSetID, Instant processTime, string processName, ActionProcessingResults results, IEnumerable<SpecialAuction> specialAuctionsProcessed)
     {
         ProcessSetID = processSetID;
         ProcessTime = processTime;
         ProcessName = processName;
         Results = results;
+        SpecialAuctionsProcessed = specialAuctionsProcessed;
     }
 
     public Guid ProcessSetID { get; }
     public Instant ProcessTime { get; }
     public string ProcessName { get; }
     public ActionProcessingResults Results { get; }
+    public IEnumerable<SpecialAuction> SpecialAuctionsProcessed { get; }
 
     public IReadOnlyList<LeagueActionProcessingSet> GetLeagueActionSets(bool dryRun)
     {

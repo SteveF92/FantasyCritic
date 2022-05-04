@@ -15,7 +15,8 @@ public class ActionProcessingService
     }
 
     public FinalizedActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
-        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> publishers, Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+        IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> publishers, Instant processingTime,
+        IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         var publisherStateSet = new PublisherStateSet(publishers);
         var flatBids = allActiveBids.SelectMany(x => x.Value);
@@ -30,17 +31,35 @@ public class ActionProcessingService
         if (!allActiveBids.Any() && !allActiveDrops.Any())
         {
             var emptyResults = ActionProcessingResults.GetEmptyResultsSet(publisherStateSet);
-            return new FinalizedActionProcessingResults(processSetID, processingTime, processName, emptyResults);
+            return new FinalizedActionProcessingResults(processSetID, processingTime, processName, emptyResults, new List<SpecialAuction>());
         }
 
         ActionProcessingResults dropResults = ProcessDrops(allActiveDrops, publisherStateSet, processingTime);
         if (!allActiveBids.Any())
         {
-            return new FinalizedActionProcessingResults(processSetID, processingTime, processName, dropResults);
+            return new FinalizedActionProcessingResults(processSetID, processingTime, processName, dropResults, new List<SpecialAuction>());
         }
 
         ActionProcessingResults bidResults = ProcessPickupsIteration(systemWideValues, allActiveBids, dropResults, processingTime, masterGameYearDictionary);
-        return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults);
+        return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults, new List<SpecialAuction>());
+    }
+
+    public FinalizedActionProcessingResults ProcessSpecialAuctions(SystemWideValues systemWideValues, IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions,
+        Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+    {
+        var flatSpecialAuctions = leagueYearSpecialAuctions.SelectMany(x => x.SpecialAuctionsWithBids.Select(x => x.SpecialAuction)).ToList();
+        var flatBids = leagueYearSpecialAuctions.SelectMany(x => x.SpecialAuctionsWithBids.SelectMany(x => x.Bids));
+        var invalidBids = flatBids.Where(x => x.CounterPick && x.ConditionalDropPublisherGame is not null);
+        if (invalidBids.Any())
+        {
+            throw new Exception("There are counter pick bids with conditional drops.");
+        }
+
+        string processName = $"Special Auction Processing ({processingTime})";
+        Guid processSetID = Guid.NewGuid();
+
+        ActionProcessingResults bidResults = ProcessSpecialAuctionsInternal(systemWideValues, leagueYearSpecialAuctions, processingTime, masterGameYearDictionary);
+        return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults, flatSpecialAuctions);
     }
 
     private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, PublisherStateSet publisherStateSet, Instant processingTime)
@@ -110,6 +129,32 @@ public class ActionProcessingService
         }
 
         return newResults;
+    }
+
+    private ActionProcessingResults ProcessSpecialAuctionsInternal(SystemWideValues systemWideValues, IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions,
+        Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+    {
+        var allPublishers = leagueYearSpecialAuctions.SelectMany(x => x.LeagueYear.Publishers);
+        var publisherStateSet = new PublisherStateSet(allPublishers);
+        var processedBids = new ProcessedBidSet();
+        foreach (var singleLeagueYearSet in leagueYearSpecialAuctions)
+        {
+            var leagueYear = singleLeagueYearSet.LeagueYear;
+            var orderedSpecialAuctions = singleLeagueYearSet.SpecialAuctionsWithBids.OrderBy(x => x.SpecialAuction.ScheduledEndTime).ToList();
+            foreach (var specialAuctionWithBids in orderedSpecialAuctions)
+            {
+                if (!specialAuctionWithBids.Bids.Any())
+                {
+                    continue;
+                }
+
+                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, specialAuctionWithBids.Bids, publisherStateSet, systemWideValues, processingTime);
+                processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
+            }
+        }
+
+        ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, processingTime, masterGameYearDictionary);
+        return bidResults;
     }
 
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,

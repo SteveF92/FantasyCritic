@@ -32,6 +32,7 @@
         <b-button variant="warning" @click="takePostAction('TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
         <b-button variant="info" @click="takePostAction('TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
         <b-button variant="danger" @click="takePostAction('ProcessActions')">Process Actions</b-button>
+        <b-button variant="danger" @click="takePostAction('ProcessSpecialAuctions')">Process Special Auctions</b-button>
       </div>
 
       <h2>Other</h2>

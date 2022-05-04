@@ -1814,6 +1814,23 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+    public async  Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions()
+    {
+        string sql = "select * from tbl_league_specialauction where IsProcessed = 0;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<SpecialAuctionEntity>(sql);
+
+        List<SpecialAuction> domains = new List<SpecialAuction>();
+        foreach (var result in results)
+        {
+            var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(result.MasterGameID, result.Year);
+            domains.Add(result.ToDomain(masterGame));
+        }
+
+        return domains;
+    }
+
     public async Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear)
     {
         string sql = "select * from tbl_league_specialauction where LeagueID = @LeagueID AND Year = @Year;";

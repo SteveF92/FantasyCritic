@@ -290,12 +290,10 @@ public class AdminService
         IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears);
         IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> leaguesAndDropRequests = await _fantasyCriticRepo.GetActiveDropRequests(year, allLeagueYears);
 
-        var onlyLeaguesWithActions = leaguesAndBids
-            .Where(x => x.Value.Any()).Select(x => x.Key)
-            .Concat(leaguesAndDropRequests.Where(x => x.Value.Any()).Select(x => x.Key))
-            .Distinct().Select(x => x.Key).ToHashSet();
-
-        var publishersInLeagues = allLeagueYears.SelectMany(x => x.Publishers).Where(x => onlyLeaguesWithActions.Contains(x.LeagueYearKey));
+        var publishersInLeagues = leaguesAndBids
+            .Where(x => x.Value.Any()).SelectMany(x => x.Key.Publishers)
+            .Concat(leaguesAndDropRequests.Where(x => x.Value.Any()).SelectMany(x => x.Key.Publishers))
+            .Distinct();
 
         var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
@@ -304,11 +302,48 @@ public class AdminService
         return results;
     }
 
+    public async Task<FinalizedActionProcessingResults> GetSpecialAuctionResults(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)
+    {
+        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        var specialAuctionsToProcess = allSpecialAuctions.Where(x => !x.Processed && x.IsLocked(processingTime));
+        var groupedByLeagueYear = specialAuctionsToProcess.GroupBy(x => x.LeagueYearKey);
+        var leagueYearDictionary = allLeagueYears.ToDictionary(x => x.Key);
+        IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears);
+        List<LeagueYearSpecialAuctionSet> specialAuctionSets = new List<LeagueYearSpecialAuctionSet>();
+        foreach (var leagueYearGroup in groupedByLeagueYear)
+        {
+            var leagueYear = leagueYearDictionary[leagueYearGroup.Key];
+            var bidsForLeagueYear = leaguesAndBids[leagueYear];
+            List<SpecialAuctionWithBids> specialAuctionsWithBids = new List<SpecialAuctionWithBids>();
+            foreach (var specialAuction in leagueYearGroup)
+            {
+                var bidsForGame = bidsForLeagueYear.Where(x => x.MasterGame.Equals(specialAuction.MasterGameYear.MasterGame)).ToList();
+                specialAuctionsWithBids.Add(new SpecialAuctionWithBids(specialAuction, bidsForGame));
+            }
+
+            specialAuctionSets.Add(new LeagueYearSpecialAuctionSet(leagueYear, specialAuctionsWithBids));
+        }
+
+        var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        FinalizedActionProcessingResults results = _actionProcessingService.ProcessSpecialAuctions(systemWideValues, specialAuctionSets, processingTime, masterGameYearDictionary);
+        return results;
+    }
+
     public async Task ProcessActions(SystemWideValues systemWideValues, int year)
     {
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
         var results = await GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
+        await _fantasyCriticRepo.SaveProcessedActionResults(results);
+    }
+
+    public async Task ProcessSpecialAuctions(SystemWideValues systemWideValues, int year)
+    {
+        var now = _clock.GetCurrentInstant();
+        IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
+        var results = await GetSpecialAuctionResults(systemWideValues, year, now, allLeagueYears);
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
     }
 

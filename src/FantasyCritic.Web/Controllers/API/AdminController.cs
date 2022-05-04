@@ -349,6 +349,24 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
+    public async Task<IActionResult> ProcessSpecialAuctions()
+    {
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        foreach (var supportedYear in supportedYears)
+        {
+            if (supportedYear.Finished || !supportedYear.OpenForPlay)
+            {
+                continue;
+            }
+
+            await _adminService.ProcessSpecialAuctions(systemWideValues, supportedYear.Year);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
     {
         League? league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);
