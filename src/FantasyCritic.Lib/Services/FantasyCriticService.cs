@@ -750,13 +750,13 @@ public class FantasyCriticService
 
         if (masterGame.IsReleased(today))
         {
-            return Result.Failure("That game is already released");
+            return Result.Failure("That game is already released.");
         }
 
         var nycEndDate = scheduledEndTime.ToEasternDate();
         if (masterGame.IsReleased(nycEndDate))
         {
-            return Result.Failure("That game will be released before the end time you specified");
+            return Result.Failure("That game will be released before the end time you specified.");
         }
 
         var nextBidTime = _clock.GetNextBidTime();
