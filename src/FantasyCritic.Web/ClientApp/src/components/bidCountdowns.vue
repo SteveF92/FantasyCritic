@@ -5,10 +5,10 @@
         <h3>Bids are processing as we speak</h3>
         On a good day, bids process within 10 minutes. If it's been more than 20 minutes, check Twitter for updates.
       </template>
-      <vac v-if="!actionProcessing && nextPublicRevealTime" :end-time="nextPublicRevealTime">
+      <vac v-if="!actionProcessing && nextPublicRevealTime" :end-time="nextPublicRevealTime" @finish="publicBidRevealTimeElapsed">
         <span slot="process" slot-scope="{ timeObj }" class="countdown">Bids will be revealed in {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
       </vac>
-      <vac v-if="!actionProcessing && nextBidTime" :end-time="nextBidTime">
+      <vac v-if="!actionProcessing && nextBidTime" :end-time="nextBidTime" @finish="nextBidTimeElapsed">
         <span slot="process" slot-scope="{ timeObj }" class="countdown">{{ `Bids process in ${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
       </vac>
     </div>
