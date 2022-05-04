@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.Responses;
@@ -7,13 +8,14 @@ namespace FantasyCritic.Web.Models.Responses;
 public class LeagueYearViewModel
 {
     public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear,
-        LocalDate currentDate, IEnumerable<FantasyCriticUser> activeUsers,
+        Instant currentInstant, IEnumerable<FantasyCriticUser> activeUsers,
         CompletePlayStatus completePlayStatus, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
         IReadOnlyList<PublicBiddingMasterGame>? publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
-        IEnumerable<Trade> activeTrades, PrivatePublisherDataViewModel? privatePublisherData, GameNewsViewModel gameNews)
+        IEnumerable<Trade> activeTrades, IEnumerable<SpecialAuction> activeSpecialAuctions, PrivatePublisherDataViewModel? privatePublisherData, GameNewsViewModel gameNews)
     {
+        var currentDate = currentInstant.ToEasternDate();
         League = leagueViewModel;
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
@@ -104,6 +106,7 @@ public class LeagueYearViewModel
         }
 
         ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
+        ActiveSpecialAuctions = activeSpecialAuctions.Select(x => new SpecialAuctionViewModel(x, currentInstant)).ToList();
         PrivatePublisherData = privatePublisherData;
         GameNews = gameNews;
     }
@@ -133,6 +136,7 @@ public class LeagueYearViewModel
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
     public IReadOnlyList<PublicBiddingMasterGameViewModel>? PublicBiddingGames { get; }
     public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
+    public IReadOnlyList<SpecialAuctionViewModel> ActiveSpecialAuctions { get; }
     public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
     public GameNewsViewModel GameNews { get; }
 }

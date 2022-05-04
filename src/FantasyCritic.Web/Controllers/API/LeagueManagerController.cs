@@ -1100,13 +1100,39 @@ public class LeagueManagerController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
 
-        var masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
-        if (masterGame is null)
+        var masterGameYear = await _interLeagueService.GetMasterGameYear(request.MasterGameID, request.Year);
+        if (masterGameYear is null)
         {
             return BadRequest();
         }
 
-        Result result = await _fantasyCriticService.CreateSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, masterGame, request.ScheduledEndTime);
+        Result result = await _fantasyCriticService.CreateSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, masterGameYear, request.ScheduledEndTime);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Authorize("Write")]
+    public async Task<IActionResult> CancelSpecialAuction([FromBody] CancelSpecialAuctionRequest request)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+
+        var activeSpecialAuctions = await _fantasyCriticService.GetActiveSpecialAuctionsForLeague(leagueYearRecord.ValidResult!.LeagueYear);
+        var specialAuctionForGame = activeSpecialAuctions.SingleOrDefault(x => x.MasterGameYear.MasterGame.MasterGameID == request.MasterGameID);
+        if (specialAuctionForGame is null)
+        {
+            return BadRequest();
+        }
+
+        Result result = await _fantasyCriticService.CancelSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, specialAuctionForGame);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

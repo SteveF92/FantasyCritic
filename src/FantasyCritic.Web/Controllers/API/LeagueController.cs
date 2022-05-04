@@ -238,6 +238,7 @@ public class LeagueController : BaseLeagueController
         IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear);
 
         IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear);
+        IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _fantasyCriticService.GetActiveSpecialAuctionsForLeague(leagueYear);
 
         bool userIsFollowingLeague = false;
         Publisher? userPublisher = null;
@@ -248,7 +249,8 @@ public class LeagueController : BaseLeagueController
             userPublisher = leagueYear.GetUserPublisher(currentUser);
         }
 
-        var currentDate = _clock.GetToday();
+        var currentInstant = _clock.GetCurrentInstant();
+        var currentDate = currentInstant.ToEasternDate();
         PrivatePublisherDataViewModel? privatePublisherData = null;
         if (userPublisher is not null)
         {
@@ -266,10 +268,11 @@ public class LeagueController : BaseLeagueController
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
-        var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentDate,
+        var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
             validResult.ActiveUsers, completePlayStatus, systemWideValues,
             validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
-            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs, activeTrades, privatePublisherData, gameNewsViewModel);
+            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs,
+            activeTrades, activeSpecialAuctions, privatePublisherData, gameNewsViewModel);
         return Ok(leagueYearViewModel);
     }
 

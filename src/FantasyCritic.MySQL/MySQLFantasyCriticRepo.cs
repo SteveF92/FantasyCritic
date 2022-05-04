@@ -1825,7 +1825,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<SpecialAuction> domains = new List<SpecialAuction>();
         foreach (var result in results)
         {
-            var masterGame = await _masterGameRepo.GetMasterGameOrThrow(result.MasterGameID);
+            var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(result.MasterGameID, leagueYear.Year);
             domains.Add(result.ToDomain(masterGame));
         }
 
@@ -1838,6 +1838,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "INSERT INTO tbl_league_specialauction(LeagueID,Year,MasterGameID,CreationTime,ScheduledEndTime,Processed) " +
             "VALUES (@LeagueID,@Year,@MasterGameID,@CreationTime,@ScheduledEndTime,@Processed)";
 
+        var entity = new SpecialAuctionEntity(specialAuction);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(sql, entity, transaction);
+        await AddLeagueAction(action, connection, transaction);
+
+        await transaction.CommitAsync();
+    }
+
+    public async Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueAction action)
+    {
+        string sql = "DELETE FROM tbl_league_specialauction WHERE LeagueID = @LeagueID AND Year = @Year AND MasterGameID = @MasterGameID;";
         var entity = new SpecialAuctionEntity(specialAuction);
 
         await using var connection = new MySqlConnection(_connectionString);

@@ -138,6 +138,7 @@ public interface IFantasyCriticRepo
     Task ExecuteTrade(ExecutedTrade executedTrade);
     Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear);
     Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action);
+    Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueAction action);
 
     async Task<League> GetLeagueOrThrow(Guid id)
     {
@@ -160,4 +161,5 @@ public interface IFantasyCriticRepo
 
         return leagueYear;
     }
+
 }

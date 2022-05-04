@@ -743,10 +743,11 @@ public class FantasyCriticService
         return Result.Success();
     }
 
-    public async Task<Result> CreateSpecialAuction(LeagueYear leagueYear, MasterGame masterGame, Instant scheduledEndTime)
+    public async Task<Result> CreateSpecialAuction(LeagueYear leagueYear, MasterGameYear masterGameYear, Instant scheduledEndTime)
     {
         var now = _clock.GetCurrentInstant();
         var today = now.ToEasternDate();
+        var masterGame = masterGameYear.MasterGame;
 
         if (masterGame.IsReleased(today))
         {
@@ -790,12 +791,12 @@ public class FantasyCriticService
         }
 
         var existingSpecialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
-        if (existingSpecialAuctions.Any(x => x.MasterGame.Equals(masterGame)))
+        if (existingSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.Equals(masterGame)))
         {
             return Result.Failure("There is already a special auction for that game.");
         }
 
-        var specialAuction = new SpecialAuction(leagueYear.Key, masterGame, now, scheduledEndTime, false);
+        var specialAuction = new SpecialAuction(leagueYear.Key, masterGameYear, now, scheduledEndTime, false);
 
         var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         string actionDescription = $"Created special auction for '{masterGame.GameName}'.";
@@ -803,6 +804,35 @@ public class FantasyCriticService
 
         await _fantasyCriticRepo.CreateSpecialAuction(specialAuction, action);
 
+        return Result.Success();
+    }
+
+    public async Task<IReadOnlyList<SpecialAuction>> GetActiveSpecialAuctionsForLeague(LeagueYear leagueYear)
+    {
+        var allSpecialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
+        var activeSpecialAuctions = allSpecialAuctions.Where(x => !x.Processed).ToList();
+        return activeSpecialAuctions;
+    }
+
+    public async Task<Result> CancelSpecialAuction(LeagueYear leagueYear, SpecialAuction specialAuction)
+    {
+        var now = _clock.GetCurrentInstant();
+        if (specialAuction.Processed || specialAuction.IsLocked(now))
+        {
+            return Result.Failure("That special auction has already ended.");
+        }
+
+        var cutoff = specialAuction.ScheduledEndTime.Minus(Duration.FromMinutes(10));
+        if (now > cutoff)
+        {
+            return Result.Failure("You can't cancel a special auction within 10 minutes of it ending.");
+        }
+
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
+        string actionDescription = $"Cancelled special auction for '{specialAuction.MasterGameYear.MasterGame.GameName}'.";
+        LeagueAction action = new LeagueAction(managerPublisher, now, "Cancelled Special Auction", actionDescription, true);
+
+        await _fantasyCriticRepo.CancelSpecialAuction(specialAuction, action);
         return Result.Success();
     }
 }
