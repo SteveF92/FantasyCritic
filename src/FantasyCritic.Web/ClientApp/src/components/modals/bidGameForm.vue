@@ -1,13 +1,14 @@
 <template>
-  <b-modal id="bidGameForm" ref="bidGameFormRef" size="lg" title="Make a Bid" hide-footer @hidden="clearData">
+  <b-modal :id="modalID" :ref="modalRef" size="lg" title="Make a Bid" hide-footer @hidden="clearData">
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
-    <p>
+    <div v-if="!specialAuction" class="alert alert-info">
       You can use this form to place a bid on a game.
       <br />
       Bids are processed on Saturday Nights. See the FAQ for more info.
-    </p>
+    </div>
+    <div v-else class="alert alert-info">You are bidding on a game in a Special Auction.</div>
 
     <div v-if="publisherSlotsAreFilled" class="alert alert-warning">
       Warning! You have already filled all of your game slots. You can still make bids, but you must drop a game first. You have two options:
@@ -17,7 +18,7 @@
       </ul>
     </div>
 
-    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
+    <form v-if="!specialAuction" method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <label for="searchGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
         <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
@@ -55,39 +56,6 @@
           <h3 v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
           <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
         </div>
-        <div v-else>
-          <ValidationObserver>
-            <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
-            <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
-            <hr />
-            <div class="form-group">
-              <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
-
-              <ValidationProvider v-slot="{ errors }" rules="required|integer">
-                <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
-                <span class="text-danger">{{ errors[0] }}</span>
-              </ValidationProvider>
-            </div>
-            <div class="form-group">
-              <label for="conditionalDrop" class="control-label">
-                Conditional Drop (Optional)
-                <font-awesome-icon v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" icon="info-circle" />
-              </label>
-              <b-form-select v-model="conditionalDrop">
-                <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
-                  {{ publisherGame.gameName }}
-                </option>
-              </b-form-select>
-            </div>
-            <b-button v-if="formIsValid" variant="primary" class="add-game-button" :disabled="requestIsBusy" @click="bidGame">{{ bidButtonText }}</b-button>
-            <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
-              <h3 class="alert-heading">Error!</h3>
-              <ul>
-                <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
-              </ul>
-            </div>
-          </ValidationObserver>
-        </div>
       </div>
 
       <div v-show="searched && !bidMasterGame && possibleMasterGames.length === 0" class="alert alert-info">
@@ -96,6 +64,40 @@
         </div>
       </div>
     </form>
+
+    <div v-if="bidMasterGame">
+      <ValidationObserver>
+        <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
+        <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
+        <hr />
+        <div class="form-group">
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
+
+          <ValidationProvider v-slot="{ errors }" rules="required|integer">
+            <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
+            <span class="text-danger">{{ errors[0] }}</span>
+          </ValidationProvider>
+        </div>
+        <div class="form-group">
+          <label for="conditionalDrop" class="control-label">
+            Conditional Drop (Optional)
+            <font-awesome-icon v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" icon="info-circle" />
+          </label>
+          <b-form-select v-model="conditionalDrop">
+            <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
+              {{ publisherGame.gameName }}
+            </option>
+          </b-form-select>
+        </div>
+        <b-button v-if="formIsValid" variant="primary" class="add-game-button" :disabled="requestIsBusy" @click="bidGame">{{ bidButtonText }}</b-button>
+        <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
+          <h3 class="alert-heading">Error!</h3>
+          <ul>
+            <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
+          </ul>
+        </div>
+      </ValidationObserver>
+    </div>
   </b-modal>
 </template>
 
@@ -113,6 +115,9 @@ export default {
     SearchSlotTypeBadge
   },
   mixins: [LeagueMixin],
+  props: {
+    specialAuction: { type: Object, required: false, default: null }
+  },
   data() {
     return {
       searchGameName: '',
@@ -144,6 +149,23 @@ export default {
     },
     bidButtonText() {
       return 'Place Bid';
+    },
+    modalID() {
+      if (!this.specialAuction) {
+        return 'bidGameForm';
+      }
+      return `bidGameForm-${this.specialAuction.masterGameYear.masterGameID}`;
+    },
+    modalRef() {
+      if (!this.specialAuction) {
+        return 'bidGameFormRef';
+      }
+      return `bidGameFormRef-${this.specialAuction.masterGameYear.masterGameID}`;
+    }
+  },
+  mounted() {
+    if (this.specialAuction) {
+      this.bidMasterGame = this.specialAuction.masterGameYear;
     }
   },
   methods: {
@@ -238,8 +260,10 @@ export default {
         });
     },
     clearDataExceptSearch() {
+      if (!this.specialAuction) {
+        this.bidMasterGame = null;
+      }
       this.bidResult = null;
-      this.bidMasterGame = null;
       this.bidAmount = 0;
       this.possibleMasterGames = [];
       this.searched = false;
