@@ -90,6 +90,15 @@ let leagueMixin = {
     },
     oneShotMode() {
       return this.leagueYear.oneShotMode;
+    },
+    playStarted() {
+      return this.leagueYear.playStatus.playStarted;
+    },
+    readyToSetDraftOrder() {
+      return this.leagueYear.playStatus.readyToSetDraftOrder;
+    },
+    draftFinished() {
+      return this.leagueYear.playStatus.draftFinished;
     }
   },
   methods: {
