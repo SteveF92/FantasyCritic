@@ -1814,14 +1814,40 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear)
+    public async Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear)
     {
-        throw new NotImplementedException();
+        string sql = "select * from tbl_league_specialauction where LeagueID = @LeagueID AND Year = @Year;";
+        var key = new LeagueYearKeyEntity(leagueYear.Key);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<SpecialAuctionEntity>(sql, key);
+
+        List<SpecialAuction> domains = new List<SpecialAuction>();
+        foreach (var result in results)
+        {
+            var masterGame = await _masterGameRepo.GetMasterGameOrThrow(result.MasterGameID);
+            domains.Add(result.ToDomain(masterGame));
+        }
+
+        return domains;
     }
 
-    public Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action)
+    public async Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action)
     {
-        throw new NotImplementedException();
+        string sql =
+            "INSERT INTO tbl_league_specialauction(LeagueID,Year,MasterGameID,CreationTime,ScheduledEndTime,Processed) " +
+            "VALUES (@LeagueID,@Year,@MasterGameID,@CreationTime,@ScheduledEndTime,@Processed)";
+
+        var entity = new SpecialAuctionEntity(specialAuction);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(sql, entity, transaction);
+        await AddLeagueAction(action, connection, transaction);
+
+        await transaction.CommitAsync();
     }
 
     public async Task ManualMakePublisherGameSlotsConsistent(int year)
