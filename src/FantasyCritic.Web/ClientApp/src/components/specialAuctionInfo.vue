@@ -2,20 +2,21 @@
   <b-alert variant="secondary" show>
     Special Auction in progress for:
     <masterGamePopover :master-game="specialAuction.masterGameYear"></masterGamePopover>
-    <template v-if="!isLocked">
-      <div>Auction is scheduled to close at: {{ scheduledEndTime | dateTime }}</div>
-      <b-button v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary">Place Bid</b-button>
-      <bidGameForm :special-auction="specialAuction"></bidGameForm>
-      <br />
-      <vac :end-time="scheduledEndTime" @finish="endTimeElapsed">
-        <span slot="process" slot-scope="{ timeObj }" class="countdown">Auction will close in {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
-      </vac>
-    </template>
-    <template v-else>
+    <div v-if="!isLocked" class="active-layout">
+      <div>
+        <div>Bids will process for this game only at: {{ scheduledEndTime | dateTime }}</div>
+        <vac :end-time="scheduledEndTime" @finish="endTimeElapsed">
+          <span slot="process" slot-scope="{ timeObj }" class="countdown">Time Remaining: {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+        </vac>
+      </div>
+      <b-button v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
+    </div>
+    <div v-else>
       <div>Auction closed at: {{ scheduledEndTime | dateTime }}</div>
       <h3>This auction is now locked, and will process shortly.</h3>
       On a good day, bids process within 10 minutes. If it's been more than 20 minutes, contact me on Twitter or Discord.
-    </template>
+    </div>
+    <bidGameForm :special-auction="specialAuction"></bidGameForm>
   </b-alert>
 </template>
 
@@ -55,7 +56,10 @@ export default {
 </script>
 <style scoped>
 .countdown {
-  font-size: 20px;
   font-weight: bold;
+}
+.active-layout {
+  display: flex;
+  gap: 30px;
 }
 </style>
