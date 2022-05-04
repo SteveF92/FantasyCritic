@@ -83,6 +83,7 @@
 
         <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" show>Someone has proposed a trade with you. Please check 'See Active Trades' on the sidebar.</b-alert>
         <b-alert v-if="leagueYear.userIsActive && hasActiveTrade" show>There are active trades under consideration. Please check 'See Active Trades' on the sidebar.</b-alert>
+        <specialAuctionInfo v-for="activeSpecialAuction in leagueYear.activeSpecialAuctions" :key="activeSpecialAuction.masterGameID" :special-auction="activeSpecialAuction"></specialAuctionInfo>
         <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
           <div class="alert alert-success" role="alert">
             This year is finished! The winner is
@@ -199,6 +200,7 @@ import GameNews from '@/components/gameNews';
 import ActiveBids from '@/components/activeBids';
 import BidCountdowns from '@/components/bidCountdowns';
 import LeagueMixin from '@/mixins/leagueMixin';
+import SpecialAuctionInfo from '@/components/specialAuctionInfo';
 
 export default {
   components: {
@@ -209,7 +211,8 @@ export default {
     LeagueActions,
     GameNews,
     ActiveBids,
-    BidCountdowns
+    BidCountdowns,
+    SpecialAuctionInfo
   },
   mixins: [LeagueMixin],
   props: {
