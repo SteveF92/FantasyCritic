@@ -1816,7 +1816,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async  Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions()
     {
-        string sql = "select * from tbl_league_specialauction where IsProcessed = 0;";
+        string sql = "select * from tbl_league_specialauction where Processed = 0;";
 
         await using var connection = new MySqlConnection(_connectionString);
         var results = await connection.QueryAsync<SpecialAuctionEntity>(sql);
@@ -2604,8 +2604,20 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var publisherPairsToAdjust = actionProcessingResults.Results.GetAllAffectedPublisherPairs();
         await MakePublisherGameSlotsConsistent(publisherPairsToAdjust, connection, transaction);
+        await MarkSpecialAuctionsFinalized(actionProcessingResults.SpecialAuctionsProcessed, connection, transaction);
 
         await transaction.CommitAsync();
+    }
+
+    private Task MarkSpecialAuctionsFinalized(IEnumerable<SpecialAuction> specialAuctionsProcessed, MySqlConnection connection, MySqlTransaction transaction)
+    {
+        string sql = "UPDATE tbl_league_specialauction SET Processed = 1 WHERE SpecialAuctionID IN @specialAuctionIDs";
+        var paramsObject = new
+        {
+            specialAuctionIDs = specialAuctionsProcessed.Select(x => x.SpecialAuctionID).ToList()
+        };
+
+        return connection.ExecuteAsync(sql, paramsObject, transaction);
     }
 
     public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
@@ -2706,14 +2718,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private static Task MarkBidStatus(IEnumerable<IProcessedBid> bids, bool success, Guid processSetID, MySqlConnection connection, MySqlTransaction transaction)
     {
+        string sql = "update tbl_league_pickupbid SET Successful = @Successful, ProcessSetID = @ProcessSetID, Outcome = @Outcome, ProjectedPointsAtTimeOfBid = @ProjectedPointsAtTimeOfBid where BidID = @BidID;";
         var entities = bids.Select(x => new PickupBidEntity(x, success, processSetID));
-        return connection.ExecuteAsync("update tbl_league_pickupbid SET Successful = @Successful, ProcessSetID = @ProcessSetID, Outcome = @Outcome, ProjectedPointsAtTimeOfBid = @ProjectedPointsAtTimeOfBid where BidID = @BidID;", entities, transaction);
+        return connection.ExecuteAsync(sql, entities, transaction);
     }
 
     private static Task MarkDropStatus(IEnumerable<DropRequest> drops, bool success, Guid processSetID, MySqlConnection connection, MySqlTransaction transaction)
     {
+        string sql = "update tbl_league_droprequest SET Successful = @Successful, ProcessSetID = @ProcessSetID where DropRequestID = @DropRequestID;";
         var entities = drops.Select(x => new DropRequestEntity(x, success, processSetID));
-        return connection.ExecuteAsync("update tbl_league_droprequest SET Successful = @Successful, ProcessSetID = @ProcessSetID where DropRequestID = @DropRequestID;", entities, transaction);
+        return connection.ExecuteAsync(sql, entities, transaction);
     }
 
     private static Task UpdatePublisherBudgetsAndDroppedGames(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)

@@ -8,6 +8,7 @@ public class SpecialAuctionEntity
 
     public SpecialAuctionEntity(SpecialAuction domain)
     {
+        SpecialAuctionID = domain.SpecialAuctionID;
         LeagueID = domain.LeagueYearKey.LeagueID;
         Year = domain.LeagueYearKey.Year;
         MasterGameID = domain.MasterGameYear.MasterGame.MasterGameID;
@@ -16,6 +17,7 @@ public class SpecialAuctionEntity
         Processed = domain.Processed;
     }
 
+    public Guid SpecialAuctionID { get; set; }
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
     public Guid MasterGameID { get; set; }
@@ -25,7 +27,7 @@ public class SpecialAuctionEntity
 
     public SpecialAuction ToDomain(MasterGameYear masterGameYear)
     {
-        return new SpecialAuction(new LeagueYearKey(LeagueID, Year), masterGameYear, CreationTime, ScheduledEndTime,
+        return new SpecialAuction(SpecialAuctionID, new LeagueYearKey(LeagueID, Year), masterGameYear, CreationTime, ScheduledEndTime,
             Processed);
     }
 }

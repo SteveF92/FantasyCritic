@@ -385,7 +385,8 @@ public class GameAcquisitionService
         return claimResult;
     }
 
-    public async Task<ClaimResult> MakePickupBid(LeagueYear leagueYear, Publisher publisher, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame, bool counterPick, uint bidAmount)
+    public async Task<ClaimResult> MakePickupBid(LeagueYear leagueYear, Publisher publisher, MasterGame masterGame,
+        PublisherGame? conditionalDropPublisherGame, bool counterPick, uint bidAmount)
     {
         if (bidAmount < leagueYear.Options.MinimumBidAmount)
         {
@@ -422,6 +423,12 @@ public class GameAcquisitionService
             counterPickedGameIsManualWillNotRelease, false, false, masterGame, null, null);
 
         Instant nextBidTime = _clock.GetNextBidTime();
+        var specialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
+        var activeSpecialAuctionForGame = specialAuctions.SingleOrDefault(x => !x.Processed && x.MasterGameYear.MasterGame.Equals(masterGame));
+        if (activeSpecialAuctionForGame is not null)
+        {
+            nextBidTime = activeSpecialAuctionForGame.ScheduledEndTime;
+        }
 
         int? validDropSlot = null;
         if (conditionalDropPublisherGame is not null)

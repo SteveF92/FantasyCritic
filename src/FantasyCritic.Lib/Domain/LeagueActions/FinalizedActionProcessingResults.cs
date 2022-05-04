@@ -19,6 +19,21 @@ public class FinalizedActionProcessingResults
     public ActionProcessingResults Results { get; }
     public IEnumerable<SpecialAuction> SpecialAuctionsProcessed { get; }
 
+    public bool IsEmpty()
+    {
+        if (SpecialAuctionsProcessed.Any())
+        {
+            return false;
+        }
+
+        if (Results.LeagueActions.Any())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public IReadOnlyList<LeagueActionProcessingSet> GetLeagueActionSets(bool dryRun)
     {
         List<DropRequest> allDrops;

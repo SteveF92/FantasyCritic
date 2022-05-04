@@ -47,8 +47,8 @@ public class ActionProcessingService
     public FinalizedActionProcessingResults ProcessSpecialAuctions(SystemWideValues systemWideValues, IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions,
         Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
-        var flatSpecialAuctions = leagueYearSpecialAuctions.SelectMany(x => x.SpecialAuctionsWithBids.Select(x => x.SpecialAuction)).ToList();
-        var flatBids = leagueYearSpecialAuctions.SelectMany(x => x.SpecialAuctionsWithBids.SelectMany(x => x.Bids));
+        var flatSpecialAuctions = leagueYearSpecialAuctions.SelectMany(x => x.SpecialAuctionsWithBids.Select(y => y.SpecialAuction)).ToList();
+        var flatBids = leagueYearSpecialAuctions.SelectMany(x => x.SpecialAuctionsWithBids.SelectMany(y => y.Bids));
         var invalidBids = flatBids.Where(x => x.CounterPick && x.ConditionalDropPublisherGame is not null);
         if (invalidBids.Any())
         {

@@ -1,9 +1,10 @@
 namespace FantasyCritic.Lib.Domain;
 public class SpecialAuction
 {
-    public SpecialAuction(LeagueYearKey leagueYearKey, MasterGameYear masterGameYear, Instant creationTime,
+    public SpecialAuction(Guid specialAuctionID, LeagueYearKey leagueYearKey, MasterGameYear masterGameYear, Instant creationTime,
         Instant scheduledEndTime, bool processed)
     {
+        SpecialAuctionID = specialAuctionID;
         LeagueYearKey = leagueYearKey;
         MasterGameYear = masterGameYear;
         CreationTime = creationTime;
@@ -11,6 +12,7 @@ public class SpecialAuction
         Processed = processed;
     }
 
+    public Guid SpecialAuctionID { get; }
     public LeagueYearKey LeagueYearKey { get; }
     public MasterGameYear MasterGameYear { get; }
     public Instant CreationTime { get; }

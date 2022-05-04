@@ -228,7 +228,7 @@ export default {
           this.isBusy = false;
         });
     },
-    bidGame() {
+    async bidGame() {
       var request = {
         publisherID: this.userPublisher.publisherID,
         masterGameID: this.bidMasterGame.masterGameID,
@@ -241,23 +241,21 @@ export default {
       }
 
       this.requestIsBusy = true;
-      axios
-        .post('/api/league/MakePickupBid', request)
-        .then((response) => {
-          this.bidResult = response.data;
-          this.requestIsBusy = false;
-          if (!this.bidResult.success) {
-            return;
-          }
+      try {
+        const response = await axios.post('/api/league/MakePickupBid', request);
+        this.bidResult = response.data;
+        this.requestIsBusy = false;
+        if (!this.bidResult.success) {
+          return;
+        }
 
-          this.$refs.bidGameFormRef.hide();
-          this.notifyAction('Bid for ' + this.bidMasterGame.gameName + ' for $' + this.bidAmount + ' was made.');
-          this.clearData();
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-          this.requestIsBusy = false;
-        });
+        this.$refs[this.modalRef].hide();
+        this.notifyAction('Bid for ' + this.bidMasterGame.gameName + ' for $' + this.bidAmount + ' was made.');
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = error.response.data;
+        this.requestIsBusy = false;
+      }
     },
     clearDataExceptSearch() {
       if (!this.specialAuction) {

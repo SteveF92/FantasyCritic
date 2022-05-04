@@ -344,6 +344,11 @@ public class AdminService
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
         var results = await GetSpecialAuctionResults(systemWideValues, year, now, allLeagueYears);
+        if (results.IsEmpty())
+        {
+            return;
+        }
+
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
     }
 

@@ -796,7 +796,7 @@ public class FantasyCriticService
             return Result.Failure("There is already a special auction for that game.");
         }
 
-        var specialAuction = new SpecialAuction(leagueYear.Key, masterGameYear, now, scheduledEndTime, false);
+        var specialAuction = new SpecialAuction(Guid.NewGuid(), leagueYear.Key, masterGameYear, now, scheduledEndTime, false);
 
         var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         string actionDescription = $"Created special auction for '{masterGame.GameName}'.";
