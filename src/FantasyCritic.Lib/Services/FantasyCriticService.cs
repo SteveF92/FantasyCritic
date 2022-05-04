@@ -771,6 +771,12 @@ public class FantasyCriticService
             return Result.Failure("The end time must be at least an hour before the next time that bids process.");
         }
 
+        var oneHourAway = now.Plus(Duration.FromHours(1));
+        if (scheduledEndTime < oneHourAway)
+        {
+            return Result.Failure("The end time must be at least one hour from now.");
+        }
+
         var allCurrentPublisherGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => !x.CounterPick && x.MasterGame is not null)
