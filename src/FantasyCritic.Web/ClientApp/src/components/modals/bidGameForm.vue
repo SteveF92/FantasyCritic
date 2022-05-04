@@ -18,11 +18,11 @@
     </div>
 
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
-      <label for="bidGameName" class="control-label">Game Name</label>
+      <label for="searchGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
-        <input id="bidGameName" v-model="bidGameName" name="bidGameName" type="text" class="form-control input" />
+        <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
         <span class="input-group-btn">
-          <b-button variant="info" @click="searchGame">Search Game</b-button>
+          <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
         </span>
       </div>
 
@@ -115,7 +115,7 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      bidGameName: '',
+      searchGameName: '',
       bidMasterGame: null,
       bidAmount: 0,
       bidResult: null,
@@ -151,7 +151,7 @@ export default {
       this.clearDataExceptSearch();
       this.isBusy = true;
       axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.bidGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
@@ -250,7 +250,7 @@ export default {
     },
     clearData() {
       this.clearDataExceptSearch();
-      this.bidGameName = '';
+      this.searchGameName = '';
     },
     newGameSelected() {
       this.bidResult = null;

@@ -7,7 +7,7 @@
         <div class="input-group game-search-input">
           <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" @click="searchGame">Search Game</b-button>
+            <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>

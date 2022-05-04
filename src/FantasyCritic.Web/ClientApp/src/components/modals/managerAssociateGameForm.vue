@@ -20,11 +20,11 @@
 
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
-        <label for="associateGameName" class="control-label">Game Name</label>
+        <label for="searchGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input id="associateGameName" v-model="associateGameName" name="associateGameName" type="text" class="form-control input" />
+          <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" @click="searchGame">Search Game</b-button>
+            <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
@@ -68,7 +68,7 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      associateGameName: '',
+      searchGameName: '',
       associatePublisher: null,
       associateMasterGame: null,
       associatePublisherGame: null,
@@ -82,7 +82,7 @@ export default {
       this.possibleMasterGames = [];
       this.associateResult = null;
       axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.associateGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
         })
@@ -106,7 +106,7 @@ export default {
 
           this.$refs.associateGameFormRef.hide();
           this.notifyAction(this.associateMasterGame.gameName + ' sucessfully associated.');
-          this.associateGameName = '';
+          this.searchGameName = '';
           this.associatePublisher = null;
           this.associateMasterGame = null;
           this.associatePublisherGame = null;
@@ -117,7 +117,7 @@ export default {
     },
     clearData() {
       this.associateResult = null;
-      this.associateGameName = '';
+      this.searchGameName = '';
       this.associatePublisher = null;
       this.associateMasterGame = null;
       this.associatePublisherGame = null;

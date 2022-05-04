@@ -28,11 +28,11 @@
     </div>
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
-        <label for="overrideGameName" class="control-label">Game Name</label>
+        <label for="searchGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
-          <input id="overrideGameName" v-model="overrideGameName" name="overrideGameName" type="text" class="form-control input" />
+          <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" @click="searchGame">Search Game</b-button>
+            <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
@@ -68,7 +68,7 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      overrideGameName: '',
+      searchGameName: '',
       overrideMasterGame: null,
       possibleMasterGames: [],
       errorInfo: '',
@@ -101,7 +101,7 @@ export default {
       this.overrideMasterGame = null;
       this.possibleMasterGames = [];
       axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.overrideGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
         .then((response) => {
           this.possibleMasterGames = response.data;
         })
@@ -127,7 +127,7 @@ export default {
         });
     },
     clearData() {
-      this.overrideGameName = '';
+      this.searchGameName = '';
       this.overrideMasterGame = null;
       this.possibleMasterGames = [];
       this.errorInfo = '';
