@@ -1814,6 +1814,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+    public Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task ManualMakePublisherGameSlotsConsistent(int year)
     {
         var leagueYears = await GetLeagueYears(year);

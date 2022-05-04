@@ -136,6 +136,8 @@ public interface IFantasyCriticRepo
     Task AddTradeVote(TradeVote tradeVote);
     Task DeleteTradeVote(Trade trade, FantasyCriticUser user);
     Task ExecuteTrade(ExecutedTrade executedTrade);
+    Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear);
+    Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action);
 
     async Task<League> GetLeagueOrThrow(Guid id)
     {

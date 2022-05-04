@@ -1089,4 +1089,29 @@ public class LeagueManagerController : BaseLeagueController
 
         return Ok();
     }
+
+    [HttpPost]
+    [Authorize("Write")]
+    public async Task<IActionResult> CreateSpecialAuction([FromBody] CreateSpecialAuctionRequest request)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+
+        var masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID);
+        if (masterGame is null)
+        {
+            return BadRequest();
+        }
+
+        Result result = await _fantasyCriticService.CreateSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, masterGame, request.ScheduledEndTime);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
+    }
 }

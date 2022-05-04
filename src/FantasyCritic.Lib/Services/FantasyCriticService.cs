@@ -742,4 +742,61 @@ public class FantasyCriticService
         await _fantasyCriticRepo.ExecuteTrade(executedTrade);
         return Result.Success();
     }
+
+    public async Task<Result> CreateSpecialAuction(LeagueYear leagueYear, MasterGame masterGame, Instant scheduledEndTime)
+    {
+        var now = _clock.GetCurrentInstant();
+        var today = now.ToEasternDate();
+
+        if (masterGame.IsReleased(today))
+        {
+            return Result.Failure("That game is already released");
+        }
+
+        var nycEndDate = scheduledEndTime.ToEasternDate();
+        if (masterGame.IsReleased(nycEndDate))
+        {
+            return Result.Failure("That game will be released before the end time you specified");
+        }
+
+        var nextBidTime = _clock.GetNextBidTime();
+        if (scheduledEndTime > nextBidTime)
+        {
+            return Result.Failure("The end time must be before the next time that bids process.");
+        }
+
+        var closeToNextBidTime = nextBidTime.Minus(Duration.FromHours(1));
+        if (scheduledEndTime > closeToNextBidTime)
+        {
+            return Result.Failure("The end time must be at least an hour before the next time that bids process.");
+        }
+
+        var allCurrentPublisherGames = leagueYear.Publishers
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => !x.CounterPick && x.MasterGame is not null)
+            .Select(x => x.MasterGame!.MasterGame)
+            .Distinct()
+            .ToHashSet();
+
+        if (allCurrentPublisherGames.Contains(masterGame))
+        {
+            return Result.Failure("A player in the league already has that game.");
+        }
+
+        var existingSpecialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
+        if (existingSpecialAuctions.Any(x => x.MasterGame.Equals(masterGame)))
+        {
+            return Result.Failure("There is already a special auction for that game.");
+        }
+
+        var specialAuction = new SpecialAuction(leagueYear.Key, masterGame, now, scheduledEndTime, false);
+
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
+        string actionDescription = $"Created special auction for '{masterGame.GameName}'.";
+        LeagueAction action = new LeagueAction(managerPublisher, now, "Created Special Auction", actionDescription, true);
+
+        await _fantasyCriticRepo.CreateSpecialAuction(specialAuction, action);
+
+        return Result.Success();
+    }
 }
