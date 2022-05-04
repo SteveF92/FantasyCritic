@@ -14,6 +14,7 @@ public class LeagueActionProcessingSetViewModel
         ProcessName = domain.ProcessName;
         Drops = domain.Drops.Select(x => new DropGameRequestViewModel(x, currentDate)).ToList();
         Bids = domain.Bids.Select(x => new PickupBidViewModel(x, currentDate)).ToList();
+        IsSpecialAuction = domain.ProcessName.Contains("Special", StringComparison.OrdinalIgnoreCase);
     }
 
     public Guid LeagueID { get; }
@@ -24,4 +25,5 @@ public class LeagueActionProcessingSetViewModel
     public string ProcessName { get; }
     public IReadOnlyList<DropGameRequestViewModel> Drops { get; }
     public IReadOnlyList<PickupBidViewModel> Bids { get; }
+    public bool IsSpecialAuction { get; }
 }
