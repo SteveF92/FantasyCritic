@@ -63,7 +63,8 @@ public interface IFantasyCriticRepo
 
     Task FullyRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame);
 
-    Task<Result> ManagerRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
+    Task ManagerRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
+    Task SuperDropGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
     Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
     Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);
 

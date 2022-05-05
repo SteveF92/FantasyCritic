@@ -255,7 +255,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task<Result> ManagerRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
+    public async Task ManagerRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
     {
         string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
         await using var connection = new MySqlConnection(_connectionString);
@@ -265,14 +265,32 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         if (removed != 1)
         {
             await transaction.RollbackAsync();
-            return Result.Failure("Removing game failed.");
+            throw new Exception($"Removing game failed: {publisher.PublisherID} | {publisherGame.GameName}");
         }
 
         await MakePublisherGameSlotsConsistent(leagueYear, publisher, connection, transaction);
         await AddFormerPublisherGames(new List<FormerPublisherGame>() { formerPublisherGame }, connection, transaction);
         await AddLeagueAction(leagueAction, connection, transaction);
         await transaction.CommitAsync();
-        return Result.Success();
+    }
+
+    public async Task SuperDropGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction)
+    {
+        string sql = "delete from tbl_league_publishergame where PublisherGameID = @publisherGameID;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        var removed = await connection.ExecuteAsync(sql, new { publisherGameID = publisherGame.PublisherGameID }, transaction);
+        if (removed != 1)
+        {
+            await transaction.RollbackAsync();
+            throw new Exception($"Removing game failed: {publisher.PublisherID} | {publisherGame.GameName}");
+        }
+
+        await MakePublisherGameSlotsConsistent(leagueYear, publisher, connection, transaction);
+        await AddFormerPublisherGames(new List<FormerPublisherGame>() { formerPublisherGame }, connection, transaction);
+        await AddLeagueAction(leagueAction, connection, transaction);
+        await transaction.CommitAsync();
     }
 
     public async Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)

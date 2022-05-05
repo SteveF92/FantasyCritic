@@ -1033,10 +1033,30 @@ public class LeagueController : BaseLeagueController
 
         if (leagueYear.Options.OneShotMode)
         {
-            return BadRequest("This league is in 'one shot mode', which doesn't support bids.");
+            return BadRequest("This league is in 'one shot mode', which doesn't support drops.");
         }
 
         DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(leagueYear, publisher, publisherGame, false);
+        var viewModel = new DropGameResultViewModel(dropResult);
+
+        return Ok(viewModel);
+    }
+
+    [HttpPost]
+    [Authorize("Write")]
+    public async Task<IActionResult> UseSuperDrop([FromBody] DropGameRequestRequest request)
+    {
+        var publisherRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        if (publisherRecord.FailedResult is not null)
+        {
+            return publisherRecord.FailedResult;
+        }
+        var validResult = publisherRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
+        var publisherGame = validResult.PublisherGame;
+
+        DropResult dropResult = await _gameAcquisitionService.UseSuperDrop(leagueYear, publisher, publisherGame);
         var viewModel = new DropGameResultViewModel(dropResult);
 
         return Ok(viewModel);

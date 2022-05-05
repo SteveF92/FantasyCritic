@@ -524,6 +524,20 @@ public class GameAcquisitionService
         return dropResult;
     }
 
+    public async Task<DropResult> UseSuperDrop(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
+    {
+        if (publisher.SuperDropsAvailable < 1)
+        {
+            return new DropResult(Result.Failure("You do not have any super drops available"));
+        }
+
+        var now = _clock.GetCurrentInstant();
+        var action = new LeagueAction(publisher, now, "Super Dropped Game", $"Super dropped game '{publisherGame.GameName}'", false);
+        var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Super dropped by player");
+        await _fantasyCriticRepo.SuperDropGame(leagueYear, publisher, publisherGame, formerPublisherGame, action);
+        return new DropResult(Result.Success());
+    }
+
     public Task<IReadOnlyList<PickupBid>> GetActiveAcquisitionBids(LeagueYear leagueYear, Publisher publisher)
     {
         return _fantasyCriticRepo.GetActivePickupBids(leagueYear, publisher);

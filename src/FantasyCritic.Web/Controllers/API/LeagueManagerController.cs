@@ -625,12 +625,7 @@ public class LeagueManagerController : BaseLeagueController
         var publisher = validResult.Publisher;
         var publisherGame = validResult.PublisherGame;
 
-        Result result = await _publisherService.RemovePublisherGame(leagueYear, publisher, publisherGame);
-        if (result.IsFailure)
-        {
-            return BadRequest(result.Error);
-        }
-
+        await _publisherService.RemovePublisherGame(leagueYear, publisher, publisherGame);
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
 
         return Ok();
