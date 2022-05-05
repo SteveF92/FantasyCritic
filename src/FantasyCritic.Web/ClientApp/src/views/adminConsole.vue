@@ -40,6 +40,7 @@
         <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
         <b-button variant="danger" @click="takePostAction('SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
         <b-button variant="danger" @click="takePostAction('MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
+        <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
       </div>
 
       <h2>Database</h2>
@@ -58,6 +59,13 @@
       </div>
       <b-button variant="info" @click="resendConfirmationEmail">Send Confirmation</b-button>
     </div>
+    <div v-show="showGrantSuperDrops">
+      <div class="form-group">
+        <label for="superDropConfirmation" class="control-label">Type 'I want to grant super drops'</label>
+        <input v-model="superDropConfirmation" type="text" class="form-control input" />
+      </div>
+      <b-button variant="info" @click="grantSuperDrops">Send Confirmation</b-button>
+    </div>
   </div>
 </template>
 <script>
@@ -73,7 +81,9 @@ export default {
       jobAttempted: '',
       recentSnapshots: null,
       showRecentConfirmationEmail: false,
-      resendConfirmationUserID: null
+      resendConfirmationUserID: null,
+      showGrantSuperDrops: false,
+      superDropConfirmation: null
     };
   },
   methods: {
@@ -90,6 +100,15 @@ export default {
       } finally {
         this.isBusy = false;
       }
+    },
+    async grantSuperDrops() {
+      if (this.superDropConfirmation !== 'I want to grant super drops') {
+        return;
+      }
+
+      this.showGrantSuperDrops = false;
+      this.superDropConfirmation = null;
+      await this.takePostAction('GrantSuperDrops');
     },
     getRecentDatabaseSnapshots() {
       this.isBusy = true;
