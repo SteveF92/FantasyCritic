@@ -189,6 +189,7 @@ export default {
       this.bidBeingEdited = null;
       this.conditionalDrop = null;
       this.bidAmount = null;
+      this.errorInfo = null;
     }
   }
 };
