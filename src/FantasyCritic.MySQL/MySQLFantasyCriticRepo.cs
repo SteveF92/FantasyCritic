@@ -1852,8 +1852,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action)
     {
         string sql =
-            "INSERT INTO tbl_league_specialauction(LeagueID,Year,MasterGameID,CreationTime,ScheduledEndTime,Processed) " +
-            "VALUES (@LeagueID,@Year,@MasterGameID,@CreationTime,@ScheduledEndTime,@Processed)";
+            "INSERT INTO tbl_league_specialauction(SpecialAuctionID,LeagueID,Year,MasterGameID,CreationTime,ScheduledEndTime,Processed) " +
+            "VALUES (@SpecialAuctionID,@LeagueID,@Year,@MasterGameID,@CreationTime,@ScheduledEndTime,@Processed)";
 
         var entity = new SpecialAuctionEntity(specialAuction);
 
