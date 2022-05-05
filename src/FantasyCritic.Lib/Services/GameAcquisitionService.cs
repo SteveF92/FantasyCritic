@@ -808,7 +808,7 @@ public class GameAcquisitionService
             return Result.Failure("A player in the league already has that game.");
         }
 
-        var existingSpecialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
+        var existingSpecialAuctions = await GetActiveSpecialAuctionsForLeague(leagueYear);
         if (existingSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.Equals(masterGame)))
         {
             return Result.Failure("There is already a special auction for that game.");
