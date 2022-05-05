@@ -339,8 +339,24 @@ public class AdminService
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
     }
 
-    public async Task ProcessSpecialAuctions(SystemWideValues systemWideValues, int year)
+    public async Task ProcessSpecialAuctions()
     {
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        foreach (var supportedYear in supportedYears)
+        {
+            if (supportedYear.Finished || !supportedYear.OpenForPlay)
+            {
+                continue;
+            }
+
+            await ProcessSpecialAuctionsForYear(systemWideValues, supportedYear.Year);
+        }
+    }
+
+    private async Task ProcessSpecialAuctionsForYear(SystemWideValues systemWideValues, int year)
+    {
+        _logger.Info($"Processing special auctions for {year}.");
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
         var results = await GetSpecialAuctionResults(systemWideValues, year, now, allLeagueYears);
