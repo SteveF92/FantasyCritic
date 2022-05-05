@@ -1882,6 +1882,24 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+    public async Task GrantSuperDrops(IEnumerable<Publisher> publishersToGrantSuperDrop, IEnumerable<LeagueAction> superDropActions)
+    {
+        string sql = "UPDATE tbl_league_publisher SET SuperDropsAvailable = SuperDropsAvailable + 1 WHERE PublisherID in @publisherIDs";
+        var updateObject = new
+        {
+            publisherIDs = publishersToGrantSuperDrop.Select(x => x.PublisherID).ToList()
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(sql, updateObject, transaction);
+        await AddLeagueActions(superDropActions, connection, transaction);
+
+        await transaction.CommitAsync();
+    }
+
     public async Task ManualMakePublisherGameSlotsConsistent(int year)
     {
         var leagueYears = await GetLeagueYears(year);

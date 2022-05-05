@@ -445,4 +445,12 @@ public class AdminController : FantasyCriticController
         await _emailSendingService.SendPublicBidEmails();
         return Ok();
     }
+
+    [HttpPost]
+    public async Task<IActionResult> GrantSuperDrops()
+    {
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        await _adminService.GrantSuperDrops(systemWideValues);
+        return Ok();
+    }
 }

@@ -46,7 +46,7 @@ public class PublisherViewModel
         }
 
         UserIsInLeague = userIsInLeague;
-        PublicLeague = leagueYear.Options.PublicLeague;
+        PublicLeague = leagueYear.League.PublicLeague;
         OutstandingInvite = outstandingInvite;
 
         var dateToCheck = currentDate;

@@ -21,7 +21,7 @@ public class MinimalPublisherViewModel
         Budget = publisher.Budget;
 
         UserIsInLeague = userIsInLeague;
-        PublicLeague = leagueYear.Options.PublicLeague;
+        PublicLeague = leagueYear.League.PublicLeague;
         OutstandingInvite = outstandingInvite;
 
         var dateToCheck = currentDate;

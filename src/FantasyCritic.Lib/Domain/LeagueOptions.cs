@@ -79,13 +79,11 @@ public class LeagueOptions
     public TradingSystem TradingSystem { get; }
     public TiebreakSystem TiebreakSystem { get; }
     public AnnualDate CounterPickDeadline { get; }
-    public bool PublicLeague { get; }
-
     public bool HasSpecialSlots => SpecialGameSlots.Any();
 
     public bool OneShotMode => StandardGames == GamesToDraft && CounterPicks == CounterPicksToDraft &&
                                FreeDroppableGames == 0 && WillNotReleaseDroppableGames == 0 &&
-                               WillReleaseDroppableGames == 0 && TradingSystem.Equals(TradingSystem.NoTrades);
+                               WillReleaseDroppableGames == 0 && !GrantSuperDrops && TradingSystem.Equals(TradingSystem.NoTrades);
 
     public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
     {
