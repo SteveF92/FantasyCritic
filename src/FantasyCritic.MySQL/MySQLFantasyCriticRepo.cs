@@ -2511,6 +2511,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             sql += "FreeGamesDropped = @freeGamesDropped,";
             parameters.Add("freeGamesDropped", editValues.FreeGamesDropped.Value);
         }
+        if (editValues.SuperDropsAvailable.HasValue)
+        {
+            sql += "SuperDropsAvailable = @superDropsAvailable,";
+            parameters.Add("superDropsAvailable", editValues.SuperDropsAvailable.Value);
+        }
 
         sql = sql.TrimEnd(',');
         sql += " WHERE PublisherID = @publisherID";

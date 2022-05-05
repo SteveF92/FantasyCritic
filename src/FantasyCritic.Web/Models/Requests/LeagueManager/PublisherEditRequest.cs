@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Requests.LeagueManager;
 
 public class PublisherEditRequest
 {
-    public PublisherEditRequest(Guid publisherID, string publisherName, int budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped)
+    public PublisherEditRequest(Guid publisherID, string publisherName, int budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable)
     {
         PublisherID = publisherID;
         PublisherName = publisherName;
@@ -12,7 +12,9 @@ public class PublisherEditRequest
         FreeGamesDropped = freeGamesDropped;
         WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
         WillReleaseGamesDropped = willReleaseGamesDropped;
+        SuperDropsAvailable = superDropsAvailable;
     }
+    
 
     public Guid PublisherID { get; }
     public string PublisherName { get; }
@@ -20,9 +22,10 @@ public class PublisherEditRequest
     public int FreeGamesDropped { get; }
     public int WillNotReleaseGamesDropped { get; }
     public int WillReleaseGamesDropped { get; }
+    public int SuperDropsAvailable { get; }
 
     public EditPublisherRequest ToDomain(LeagueYear leagueYear, Publisher publisher)
     {
-        return new EditPublisherRequest(leagueYear, publisher, PublisherName, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped);
+        return new EditPublisherRequest(leagueYear, publisher, PublisherName, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable);
     }
 }

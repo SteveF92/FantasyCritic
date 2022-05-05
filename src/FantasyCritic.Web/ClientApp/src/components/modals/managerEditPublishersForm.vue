@@ -31,6 +31,10 @@
           <label for="newWillReleaseGamesDropped" class="control-label">Will Release Games Dropped</label>
           <input id="newWillReleaseGamesDropped" v-model="newWillReleaseGamesDropped" name="newWillReleaseGamesDropped" type="text" class="form-control input" />
         </div>
+        <div class="form-group">
+          <label for="newSuperDropsAvailable" class="control-label">Super Drops Available</label>
+          <input id="newSuperDropsAvailable" v-model="newSuperDropsAvailable" name="newSuperDropsAvailable" type="text" class="form-control input" />
+        </div>
 
         <div>
           <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" @click="makeEditRequest" />
@@ -59,6 +63,7 @@ export default {
       newFreeGamesDropped: null,
       newWillNotReleaseGamesDropped: null,
       newWillReleaseGamesDropped: null,
+      newSuperDropsAvailable: null,
       errorInfo: null
     };
   },
@@ -69,6 +74,7 @@ export default {
       this.newFreeGamesDropped = selectedPublisher.freeGamesDropped;
       this.newWillNotReleaseGamesDropped = selectedPublisher.willNotReleaseGamesDropped;
       this.newWillReleaseGamesDropped = selectedPublisher.willReleaseGamesDropped;
+      this.newSuperDropsAvailable = selectedPublisher.superDropsAvailable;
     },
     makeEditRequest() {
       var model = {
@@ -77,7 +83,8 @@ export default {
         budget: this.newBudget,
         freeGamesDropped: this.newFreeGamesDropped,
         willNotReleaseGamesDropped: this.newWillNotReleaseGamesDropped,
-        willReleaseGamesDropped: this.newWillReleaseGamesDropped
+        willReleaseGamesDropped: this.newWillReleaseGamesDropped,
+        superDropsAvailable: this.newSuperDropsAvailable
       };
       axios
         .post('/api/leagueManager/EditPublisher', model)

@@ -2,7 +2,8 @@ namespace FantasyCritic.Lib.Domain.Requests;
 
 public class EditPublisherRequest
 {
-    public EditPublisherRequest(LeagueYear leagueYear, Publisher publisher, string newPublisherName, int budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped)
+    public EditPublisherRequest(LeagueYear leagueYear, Publisher publisher, string newPublisherName, int budget, int freeGamesDropped,
+        int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable)
     {
         LeagueYear = leagueYear;
         Publisher = publisher;
@@ -26,6 +27,10 @@ public class EditPublisherRequest
         {
             WillReleaseGamesDropped = willReleaseGamesDropped;
         }
+        if (publisher.SuperDropsAvailable != superDropsAvailable)
+        {
+            SuperDropsAvailable = superDropsAvailable;
+        }
     }
 
     public LeagueYear LeagueYear { get; }
@@ -35,6 +40,7 @@ public class EditPublisherRequest
     public int? FreeGamesDropped { get; }
     public int? WillNotReleaseGamesDropped { get; }
     public int? WillReleaseGamesDropped { get; }
+    public int? SuperDropsAvailable { get; }
 
     public bool SomethingChanged()
     {
@@ -42,7 +48,8 @@ public class EditPublisherRequest
                Budget.HasValue ||
                FreeGamesDropped.HasValue ||
                WillNotReleaseGamesDropped.HasValue ||
-               WillReleaseGamesDropped.HasValue;
+               WillReleaseGamesDropped.HasValue ||
+               SuperDropsAvailable.HasValue;
     }
 
     public string GetActionString()
@@ -68,10 +75,14 @@ public class EditPublisherRequest
         {
             changes.Add($"Changed 'will release games dropped' to {WillReleaseGamesDropped.Value}");
         }
+        if (SuperDropsAvailable.HasValue)
+        {
+            changes.Add($"Changed 'super drops available' to {SuperDropsAvailable.Value}");
+        }
 
         if (changes.Count == 0)
         {
-            return "Nothing changed. This is a bug.";
+            throw new Exception($"Nothing changed for publisher: {Publisher.PublisherID}");
         }
         if (changes.Count == 1)
         {
