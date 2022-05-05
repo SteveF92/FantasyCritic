@@ -334,6 +334,11 @@ public class AdminService
     public async Task ProcessActions(SystemWideValues systemWideValues, int year)
     {
         var now = _clock.GetCurrentInstant();
+        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        if (allSpecialAuctions.Any(x => x.IsLocked(now)))
+        {
+            throw new Exception("There are special auctions that need to be processed.");
+        }
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
         var results = await GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
