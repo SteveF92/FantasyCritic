@@ -7,7 +7,7 @@ public class PublisherGame
     {
         PublisherID = publisherID;
         PublisherGameID = publisherGameID;
-        GameName = gameName;
+        OriginalGameName = gameName;
         Timestamp = timestamp;
         CounterPick = counterPick;
         ManualCriticScore = manualCriticScore;
@@ -23,7 +23,7 @@ public class PublisherGame
 
     public Guid PublisherID { get; }
     public Guid PublisherGameID { get; }
-    public string GameName { get; }
+    public string OriginalGameName { get; }
     public Instant Timestamp { get; }
     public bool CounterPick { get; }
     public decimal? ManualCriticScore { get; }
@@ -35,6 +35,8 @@ public class PublisherGame
     public int? OverallDraftPosition { get; }
     public uint? BidAmount { get; }
     public Guid? AcquiredInTradeID { get; }
+
+    public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
     public bool WillRelease()
     {
