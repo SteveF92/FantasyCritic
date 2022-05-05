@@ -5,8 +5,8 @@ namespace FantasyCritic.Lib.Domain;
 public class Publisher : IEquatable<Publisher>
 {
     public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, int draftPosition,
-        IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget, int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped,
-        bool autoDraft)
+        IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
+        int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, bool autoDraft)
     {
         PublisherID = publisherID;
         LeagueYearKey = leagueYearKey;
@@ -20,6 +20,7 @@ public class Publisher : IEquatable<Publisher>
         FreeGamesDropped = freeGamesDropped;
         WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
         WillReleaseGamesDropped = willReleaseGamesDropped;
+        SuperDropsAvailable = superDropsAvailable;
         AutoDraft = autoDraft;
     }
 
@@ -35,6 +36,7 @@ public class Publisher : IEquatable<Publisher>
     public int FreeGamesDropped { get; }
     public int WillNotReleaseGamesDropped { get; }
     public int WillReleaseGamesDropped { get; }
+    public int SuperDropsAvailable { get; }
     public bool AutoDraft { get; }
 
     public decimal? AverageCriticScore
@@ -191,8 +193,16 @@ public class Publisher : IEquatable<Publisher>
 
     public override string ToString() => $"{PublisherID}|{PublisherName}";
 
-    public Result CanDropGame(bool willRelease, LeagueOptions leagueOptions)
+    public Result CanDropGame(bool willRelease, LeagueOptions leagueOptions, bool superDrop)
     {
+        if (superDrop)
+        {
+            if (SuperDropsAvailable > 0)
+            {
+                return Result.Success();
+            }
+            return Result.Failure("Publisher does not have any super drops.");
+        }
         if (willRelease)
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
@@ -221,6 +231,6 @@ public class Publisher : IEquatable<Publisher>
     {
         return new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
             null, 0, new List<PublisherGame>(),
-            new List<FormerPublisherGame>(), 0, 0, 0, 0, false);
+            new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, false);
     }
 }

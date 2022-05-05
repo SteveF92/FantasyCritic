@@ -140,7 +140,7 @@ public class GameAcquisitionService
         }
 
         bool gameWillRelease = publisherGame.WillRelease();
-        var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options);
+        var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options, false);
         return new DropResult(dropResult);
     }
 
@@ -194,7 +194,7 @@ public class GameAcquisitionService
         }
 
         bool gameWillRelease = publisherGame.WillRelease();
-        var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options);
+        var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options, false);
         return new DropResult(dropResult);
     }
 

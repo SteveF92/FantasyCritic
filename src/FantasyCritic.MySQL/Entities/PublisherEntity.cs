@@ -21,6 +21,7 @@ internal class PublisherEntity
         FreeGamesDropped = publisher.FreeGamesDropped;
         WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
         WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
+        SuperDropsAvailable = publisher.SuperDropsAvailable;
         Budget = publisher.Budget;
         AutoDraft = publisher.AutoDraft;
     }
@@ -35,12 +36,13 @@ internal class PublisherEntity
     public int FreeGamesDropped { get; set; }
     public int WillNotReleaseGamesDropped { get; set; }
     public int WillReleaseGamesDropped { get; set; }
+    public int SuperDropsAvailable { get; set; }
     public uint Budget { get; set; }
     public bool AutoDraft { get; set; }
 
     public Publisher ToDomain(LeagueYearKey leagueYearKey, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
     {
         return new Publisher(PublisherID, leagueYearKey, user, PublisherName, PublisherIcon, DraftPosition,
-            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, AutoDraft);
+            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraft);
     }
 }

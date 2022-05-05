@@ -49,9 +49,18 @@ public class PublisherStateSet
         UpdatePublisher(publisherToEdit, null, null, (int)budget, null);
     }
 
-    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions)
+    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions, bool superDrop)
     {
         publisherToEdit = GetPublisher(publisherToEdit.PublisherID);
+        if (superDrop)
+        {
+            if (publisherToEdit.SuperDropsAvailable > 0)
+            {
+                UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.Super);
+                return;
+            }
+            throw new Exception("Publisher does not have any super drops.");
+        }
         if (publisherGame.WillRelease())
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > publisherToEdit.WillReleaseGamesDropped)
@@ -104,6 +113,7 @@ public class PublisherStateSet
         int freeGamesDropped = publisherToEdit.FreeGamesDropped;
         int willNotReleaseGamesDropped = publisherToEdit.WillNotReleaseGamesDropped;
         int willReleaseGamesDropped = publisherToEdit.WillReleaseGamesDropped;
+        int superDropsAvailable = publisherToEdit.SuperDropsAvailable;
 
         switch (dropType)
         {
@@ -116,17 +126,21 @@ public class PublisherStateSet
             case DropType.WillRelease:
                 willReleaseGamesDropped++;
                 break;
+            case DropType.Super:
+                superDropsAvailable--;
+                break;
         }
 
         return new Publisher(publisherToEdit.PublisherID, publisherToEdit.LeagueYearKey, publisherToEdit.User, publisherToEdit.PublisherName, publisherToEdit.PublisherIcon, publisherToEdit.DraftPosition,
             newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, freeGamesDropped, willNotReleaseGamesDropped,
-            willReleaseGamesDropped, publisherToEdit.AutoDraft);
+            willReleaseGamesDropped, superDropsAvailable, publisherToEdit.AutoDraft);
     }
 
     private enum DropType
     {
         Free,
         WillNotRelease,
-        WillRelease
+        WillRelease,
+        Super
     }
 }
