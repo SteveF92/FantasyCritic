@@ -48,6 +48,7 @@
                 <li v-show="draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
                 <li v-show="draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
                 <li v-show="draftFinished" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
+                <li v-show="draftFinished && userPublisher.superDropsAvailable > 0" v-b-modal="'dropGameForm'" class="fake-link action">Use a Super Drop</li>
                 <li v-show="draftFinished" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>
               </template>
 
@@ -127,6 +128,7 @@
         <activeTradesModal></activeTradesModal>
 
         <dropGameForm></dropGameForm>
+        <superDropGameForm></superDropGameForm>
         <currentDropsForm></currentDropsForm>
         <gameQueueForm></gameQueueForm>
 
@@ -169,6 +171,7 @@ import BidGameForm from '@/components/modals/bidGameForm';
 import BidCounterPickForm from '@/components/modals/bidCounterPickForm';
 import CurrentBidsForm from '@/components/modals/currentBidsForm';
 import DropGameForm from '@/components/modals/dropGameForm';
+import SuperDropGameForm from '@/components/modals/superDropGameForm';
 import CurrentDropsForm from '@/components/modals/currentDropsForm';
 import GameQueueForm from '@/components/modals/gameQueueForm';
 import ProposeTradeForm from '@/components/modals/proposeTradeForm';
@@ -217,6 +220,7 @@ export default {
     CurrentBidsForm,
     GameQueueForm,
     DropGameForm,
+    SuperDropGameForm,
     CurrentDropsForm,
     EligibilityOverridesModal,
     TagOverridesModal,

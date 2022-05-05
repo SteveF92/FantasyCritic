@@ -71,6 +71,7 @@ public class PublisherViewModel
         FreeDroppableGames = leagueYear.Options.FreeDroppableGames;
         WillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = leagueYear.Options.WillReleaseDroppableGames;
+        SuperDropsAvailable = publisher.SuperDropsAvailable;
     }
 
     public Guid PublisherID { get; }
@@ -103,4 +104,5 @@ public class PublisherViewModel
     public int FreeDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
+    public int SuperDropsAvailable { get; }
 }
