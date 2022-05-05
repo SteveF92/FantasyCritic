@@ -37,6 +37,13 @@ Vue.filter('dateTime', function (value) {
   return '';
 });
 
+Vue.filter('dateTimeAt', function (value) {
+  if (value) {
+    return moment(String(value)).local().format('MMMM Do, YYYY, [at] h:mm:ss a');
+  }
+  return '';
+});
+
 Vue.filter('date', function (value) {
   if (value) {
     return moment(String(value)).local().format('YYYY-MM-DD');

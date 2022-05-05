@@ -37,7 +37,7 @@
       <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
       <masterGameSummary :master-game="specialAuctionMasterGame"></masterGameSummary>
       <hr />
-      <label>Auction End Time</label>
+      <label>Auction End Time (In your local time zone)</label>
       <flat-pickr v-model="scheduledEndTime" :config="datePickerConfig" class="form-control"></flat-pickr>
       <b-button variant="success" class="create-button" @click="createSpecialAuction">Create Special Auction</b-button>
     </div>

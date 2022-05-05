@@ -1,10 +1,10 @@
 <template>
   <b-alert variant="secondary" show>
-    Special Auction in progress for:
-    <masterGamePopover :master-game="specialAuction.masterGameYear"></masterGamePopover>
     <div v-if="!isLocked" class="active-layout">
       <div>
-        <div>Bids will process for this game only at: {{ scheduledEndTime | dateTime }}</div>
+        Special Auction in progress for:
+        <masterGamePopover :master-game="specialAuction.masterGameYear"></masterGamePopover>
+        <div>Bids will process for this game only on: {{ scheduledEndTime | dateTimeAt }}</div>
         <vac :end-time="scheduledEndTime" @finish="endTimeElapsed">
           <span slot="process" slot-scope="{ timeObj }" class="countdown">Time Remaining: {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
         </vac>
@@ -60,6 +60,8 @@ export default {
 }
 .active-layout {
   display: flex;
-  gap: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
 }
 </style>
