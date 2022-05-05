@@ -1128,8 +1128,7 @@ public class LeagueManagerController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
 
-        var activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYearRecord.ValidResult!.LeagueYear);
-        var specialAuctionForGame = activeSpecialAuctions.SingleOrDefault(x => x.MasterGameYear.MasterGame.MasterGameID == request.MasterGameID);
+        var specialAuctionForGame = await _gameAcquisitionService.GetActiveSpecialAuctionForGame(leagueYearRecord.ValidResult!.LeagueYear, request.MasterGameID);
         if (specialAuctionForGame is null)
         {
             return BadRequest();

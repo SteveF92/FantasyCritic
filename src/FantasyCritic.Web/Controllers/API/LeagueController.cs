@@ -677,12 +677,6 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        bool canCancel = _gameAcquisitionService.CanCancelBid(leagueYear, maybeBid.CounterPick);
-        if (!canCancel)
-        {
-            return BadRequest("Can't cancel a bid when in the public bidding window.");
-        }
-
         PickupBid bid = maybeBid;
         Result result = await _gameAcquisitionService.RemovePickupBid(bid);
         if (result.IsFailure)

@@ -558,17 +558,24 @@ public class GameAcquisitionService
     {
         if (bid.Successful != null)
         {
-            return new ClaimResult(new List<ClaimError>() { new ClaimError("Bid has already been processed", false) }, null);
+            return new ClaimResult(new ClaimError("Bid has already been processed", false));
         }
 
         if (bidAmount < bid.LeagueYear.Options.MinimumBidAmount)
         {
-            return new ClaimResult(new List<ClaimError>() { new ClaimError("That bid does not meet the league's minimum bid.", false) }, null);
+            return new ClaimResult(new ClaimError("That bid does not meet the league's minimum bid.", false));
         }
 
         if (bidAmount > bid.Publisher.Budget)
         {
-            return new ClaimResult(new List<ClaimError>() { new ClaimError("You do not have enough budget to make that bid.", false) }, null);
+            return new ClaimResult(new ClaimError("You do not have enough budget to make that bid.", false));
+        }
+
+        var now = _clock.GetCurrentInstant();
+        var activeSpecialAuctionForGame = await GetActiveSpecialAuctionForGame(bid.LeagueYear, bid.MasterGame);
+        if (activeSpecialAuctionForGame is not null && activeSpecialAuctionForGame.IsLocked(now))
+        {
+            return new ClaimResult(new ClaimError("Can't edit a bid after the special auction has locked.", false));
         }
 
         int? validDropSlot = null;
@@ -603,6 +610,19 @@ public class GameAcquisitionService
 
     public async Task<Result> RemovePickupBid(PickupBid bid)
     {
+        bool canCancelBid = CanCancelBid(bid.LeagueYear, bid.CounterPick);
+        if (!canCancelBid)
+        {
+            return Result.Failure("Can't cancel a bid when in the public bidding window.");
+        }
+
+        var now = _clock.GetCurrentInstant();
+        var activeSpecialAuctionForGame = await GetActiveSpecialAuctionForGame(bid.LeagueYear, bid.MasterGame);
+        if (activeSpecialAuctionForGame is not null && activeSpecialAuctionForGame.IsLocked(now))
+        {
+            return Result.Failure("Can't cancel a bid after the special auction has locked.");
+        }
+
         if (bid.Successful != null)
         {
             return Result.Failure("Bid has already been processed");
@@ -610,6 +630,27 @@ public class GameAcquisitionService
 
         await _fantasyCriticRepo.RemovePickupBid(bid);
         return Result.Success();
+    }
+
+    private bool CanCancelBid(LeagueYear leagueYear, bool counterPick)
+    {
+        bool inPublicBidWindow = IsInPublicBiddingWindow(leagueYear);
+        if (!inPublicBidWindow)
+        {
+            return true;
+        }
+
+        if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
+        {
+            return false;
+        }
+
+        if (counterPick && leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public async Task<Result> RemoveDropRequest(DropRequest dropRequest)
@@ -678,27 +719,6 @@ public class GameAcquisitionService
         }
 
         return publicBiddingMasterGames.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame);
-    }
-
-    public bool CanCancelBid(LeagueYear leagueYear, bool counterPick)
-    {
-        bool inPublicBidWindow = IsInPublicBiddingWindow(leagueYear);
-        if (!inPublicBidWindow)
-        {
-            return true;
-        }
-
-        if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
-        {
-            return false;
-        }
-
-        if (counterPick && leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
-        {
-            return true;
-        }
-
-        return false;
     }
 
     public async Task<IReadOnlyList<PublicBiddingSet>> GetPublicBiddingGames(int year)
@@ -808,8 +828,8 @@ public class GameAcquisitionService
             return Result.Failure("A player in the league already has that game.");
         }
 
-        var existingSpecialAuctions = await GetActiveSpecialAuctionsForLeague(leagueYear);
-        if (existingSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.Equals(masterGame)))
+        var existingSpecialAuction = await GetActiveSpecialAuctionForGame(leagueYear, masterGame);
+        if (existingSpecialAuction is not null)
         {
             return Result.Failure("There is already a special auction for that game.");
         }
@@ -830,6 +850,17 @@ public class GameAcquisitionService
         var allSpecialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
         var activeSpecialAuctions = allSpecialAuctions.Where(x => !x.Processed).ToList();
         return activeSpecialAuctions;
+    }
+
+    public Task<SpecialAuction?> GetActiveSpecialAuctionForGame(LeagueYear leagueYear, MasterGame masterGame)
+    {
+        return GetActiveSpecialAuctionForGame(leagueYear, masterGame.MasterGameID);
+    }
+
+    public async Task<SpecialAuction?> GetActiveSpecialAuctionForGame(LeagueYear leagueYear, Guid masterGameID)
+    {
+        var activeSpecialAuctions = await GetActiveSpecialAuctionsForLeague(leagueYear);
+        return activeSpecialAuctions.SingleOrDefault(x => x.MasterGameYear.MasterGame.MasterGameID.Equals(masterGameID));
     }
 
     public async Task<Result> CancelSpecialAuction(LeagueYear leagueYear, SpecialAuction specialAuction)
