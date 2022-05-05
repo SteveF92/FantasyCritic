@@ -749,4 +749,97 @@ public class GameAcquisitionService
 
         return currentTime > publicBidDateTime;
     }
+
+    public async Task<Result> CreateSpecialAuction(LeagueYear leagueYear, MasterGameYear masterGameYear, Instant scheduledEndTime)
+    {
+        var now = _clock.GetCurrentInstant();
+        var today = now.ToEasternDate();
+        var masterGame = masterGameYear.MasterGame;
+
+        if (masterGame.IsReleased(today))
+        {
+            return Result.Failure("That game is already released.");
+        }
+
+        var nycEndDate = scheduledEndTime.ToEasternDate();
+        if (masterGame.IsReleased(nycEndDate))
+        {
+            return Result.Failure("That game will be released before the end time you specified.");
+        }
+
+        var nextBidTime = _clock.GetNextBidTime();
+        if (scheduledEndTime > nextBidTime)
+        {
+            return Result.Failure("The end time must be before the next time that bids process.");
+        }
+
+        var closeToNextBidTime = nextBidTime.Minus(Duration.FromHours(1));
+        if (scheduledEndTime > closeToNextBidTime)
+        {
+            return Result.Failure("The end time must be at least an hour before the next time that bids process.");
+        }
+
+        var oneHourAway = now.Plus(Duration.FromHours(1));
+        if (scheduledEndTime < oneHourAway)
+        {
+            return Result.Failure("The end time must be at least one hour from now.");
+        }
+
+        var allCurrentPublisherGames = leagueYear.Publishers
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => !x.CounterPick && x.MasterGame is not null)
+            .Select(x => x.MasterGame!.MasterGame)
+            .Distinct()
+            .ToHashSet();
+
+        if (allCurrentPublisherGames.Contains(masterGame))
+        {
+            return Result.Failure("A player in the league already has that game.");
+        }
+
+        var existingSpecialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
+        if (existingSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.Equals(masterGame)))
+        {
+            return Result.Failure("There is already a special auction for that game.");
+        }
+
+        var specialAuction = new SpecialAuction(Guid.NewGuid(), leagueYear.Key, masterGameYear, now, scheduledEndTime, false);
+
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
+        string actionDescription = $"Created special auction for '{masterGame.GameName}'.";
+        LeagueAction action = new LeagueAction(managerPublisher, now, "Created Special Auction", actionDescription, true);
+
+        await _fantasyCriticRepo.CreateSpecialAuction(specialAuction, action);
+
+        return Result.Success();
+    }
+
+    public async Task<IReadOnlyList<SpecialAuction>> GetActiveSpecialAuctionsForLeague(LeagueYear leagueYear)
+    {
+        var allSpecialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
+        var activeSpecialAuctions = allSpecialAuctions.Where(x => !x.Processed).ToList();
+        return activeSpecialAuctions;
+    }
+
+    public async Task<Result> CancelSpecialAuction(LeagueYear leagueYear, SpecialAuction specialAuction)
+    {
+        var now = _clock.GetCurrentInstant();
+        if (specialAuction.Processed || specialAuction.IsLocked(now))
+        {
+            return Result.Failure("That special auction has already ended.");
+        }
+
+        var cutoff = specialAuction.ScheduledEndTime.Minus(Duration.FromMinutes(10));
+        if (now > cutoff)
+        {
+            return Result.Failure("You can't cancel a special auction within 10 minutes of it ending.");
+        }
+
+        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
+        string actionDescription = $"Cancelled special auction for '{specialAuction.MasterGameYear.MasterGame.GameName}'.";
+        LeagueAction action = new LeagueAction(managerPublisher, now, "Cancelled Special Auction", actionDescription, true);
+
+        await _fantasyCriticRepo.CancelSpecialAuction(specialAuction, action);
+        return Result.Success();
+    }
 }

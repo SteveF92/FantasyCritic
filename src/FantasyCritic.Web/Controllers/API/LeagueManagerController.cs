@@ -1106,7 +1106,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
-        Result result = await _fantasyCriticService.CreateSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, masterGameYear, request.ScheduledEndTime);
+        Result result = await _gameAcquisitionService.CreateSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, masterGameYear, request.ScheduledEndTime);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -1125,14 +1125,14 @@ public class LeagueManagerController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
 
-        var activeSpecialAuctions = await _fantasyCriticService.GetActiveSpecialAuctionsForLeague(leagueYearRecord.ValidResult!.LeagueYear);
+        var activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYearRecord.ValidResult!.LeagueYear);
         var specialAuctionForGame = activeSpecialAuctions.SingleOrDefault(x => x.MasterGameYear.MasterGame.MasterGameID == request.MasterGameID);
         if (specialAuctionForGame is null)
         {
             return BadRequest();
         }
 
-        Result result = await _fantasyCriticService.CancelSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, specialAuctionForGame);
+        Result result = await _gameAcquisitionService.CancelSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, specialAuctionForGame);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

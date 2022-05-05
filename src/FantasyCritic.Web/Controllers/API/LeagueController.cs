@@ -238,7 +238,7 @@ public class LeagueController : BaseLeagueController
         IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear);
 
         IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear);
-        IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _fantasyCriticService.GetActiveSpecialAuctionsForLeague(leagueYear);
+        IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
 
         bool userIsFollowingLeague = false;
         Publisher? userPublisher = null;
