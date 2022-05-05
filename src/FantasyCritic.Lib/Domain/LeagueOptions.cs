@@ -9,7 +9,7 @@ public class LeagueOptions
     private readonly Dictionary<int, SpecialGameSlot> _specialSlotDictionary;
 
     public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
-        bool dropOnlyDraftGames, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
+        bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
         DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, AnnualDate counterPickDeadline)
     {
         StandardGames = standardGames;
@@ -20,6 +20,7 @@ public class LeagueOptions
         WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
         WillReleaseDroppableGames = willReleaseDroppableGames;
         DropOnlyDraftGames = dropOnlyDraftGames;
+        GrantSuperDrops = grantSuperDrops;
         CounterPicksBlockDrops = counterPicksBlockDrops;
         MinimumBidAmount = minimumBidAmount;
         LeagueTags = leagueTags.ToList();
@@ -44,6 +45,7 @@ public class LeagueOptions
         WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
         DropOnlyDraftGames = parameters.DropOnlyDraftGames;
+        GrantSuperDrops = parameters.GrantSuperDrops;
         CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
         MinimumBidAmount = parameters.MinimumBidAmount;
         LeagueTags = parameters.LeagueTags;
@@ -66,6 +68,7 @@ public class LeagueOptions
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
     public bool DropOnlyDraftGames { get; }
+    public bool GrantSuperDrops { get; }
     public bool CounterPicksBlockDrops { get; }
     public int MinimumBidAmount { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
@@ -268,7 +271,7 @@ public class LeagueOptions
     {
         var newScoringSystem = ScoringSystem.GetDefaultScoringSystem(requestYear);
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-            DropOnlyDraftGames, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, CounterPickDeadline);
+            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, CounterPickDeadline);
         return options;
     }
 }
