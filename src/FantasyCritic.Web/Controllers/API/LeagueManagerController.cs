@@ -27,10 +27,12 @@ public class LeagueManagerController : BaseLeagueController
     private readonly IHubContext<UpdateHub> _hubContext;
     private readonly EmailSendingService _emailSendingService;
     private readonly GameAcquisitionService _gameAcquisitionService;
+    private readonly TradeService _tradeService;
 
     public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
-        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService) : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
+        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService, TradeService tradeService)
+        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
     {
         _draftService = draftService;
         _publisherService = publisherService;
@@ -38,6 +40,7 @@ public class LeagueManagerController : BaseLeagueController
         _hubContext = hubContext;
         _emailSendingService = emailSendingService;
         _gameAcquisitionService = gameAcquisitionService;
+        _tradeService = tradeService;
     }
 
     [HttpPost]
@@ -1050,13 +1053,13 @@ public class LeagueManagerController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
 
-        var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+        var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
         }
 
-        Result result = await _fantasyCriticService.RejectTradeByManager(trade);
+        Result result = await _tradeService.RejectTradeByManager(trade);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -1075,13 +1078,13 @@ public class LeagueManagerController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
 
-        var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+        var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
         }
 
-        Result result = await _fantasyCriticService.ExecuteTrade(trade);
+        Result result = await _tradeService.ExecuteTrade(trade);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

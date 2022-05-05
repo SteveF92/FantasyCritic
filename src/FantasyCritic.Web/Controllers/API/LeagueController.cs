@@ -35,10 +35,12 @@ public class LeagueController : BaseLeagueController
     private readonly IHubContext<UpdateHub> _hubContext;
     private readonly ILogger<LeagueController> _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
+    private readonly TradeService _tradeService;
 
     public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
-        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService) : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
+        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService)
+        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
     {
         _draftService = draftService;
         _gameSearchingService = gameSearchingService;
@@ -47,6 +49,7 @@ public class LeagueController : BaseLeagueController
         _hubContext = hubContext;
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
+        _tradeService = tradeService;
     }
 
     public async Task<IActionResult> LeagueOptions()
@@ -237,7 +240,7 @@ public class LeagueController : BaseLeagueController
         var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear);
         IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear);
 
-        IReadOnlyList<Trade> activeTrades = await _fantasyCriticService.GetActiveTradesForLeague(leagueYear);
+        IReadOnlyList<Trade> activeTrades = await _tradeService.GetActiveTradesForLeague(leagueYear);
         IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
 
         bool userIsFollowingLeague = false;
@@ -1269,7 +1272,7 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        Result result = await _fantasyCriticService.ProposeTrade(leagueYear, publisher, request.CounterPartyPublisherID, request.ProposerPublisherGameIDs,
+        Result result = await _tradeService.ProposeTrade(leagueYear, publisher, request.CounterPartyPublisherID, request.ProposerPublisherGameIDs,
             request.CounterPartyPublisherGameIDs, request.ProposerBudgetSendAmount, request.CounterPartyBudgetSendAmount, request.Message);
         if (result.IsFailure)
         {
@@ -1291,7 +1294,7 @@ public class LeagueController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var currentUser = validResult.CurrentUser!;
 
-        var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+        var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
@@ -1303,7 +1306,7 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        Result result = await _fantasyCriticService.RescindTrade(trade);
+        Result result = await _tradeService.RescindTrade(trade);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -1325,7 +1328,7 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
-        var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+        var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
@@ -1337,7 +1340,7 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        Result result = await _fantasyCriticService.AcceptTrade(trade);
+        Result result = await _tradeService.AcceptTrade(trade);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -1359,7 +1362,7 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
-        var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+        var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
@@ -1371,7 +1374,7 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        Result result = await _fantasyCriticService.RejectTradeByCounterParty(trade);
+        Result result = await _tradeService.RejectTradeByCounterParty(trade);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -1393,7 +1396,7 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
-        var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+        var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
@@ -1407,7 +1410,7 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        Result result = await _fantasyCriticService.VoteOnTrade(trade, currentUser, request.Approved, request.Comment);
+        Result result = await _tradeService.VoteOnTrade(trade, currentUser, request.Approved, request.Comment);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -1429,7 +1432,7 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
-        var trade = await _fantasyCriticService.GetTrade(request.TradeID);
+        var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
@@ -1443,7 +1446,7 @@ public class LeagueController : BaseLeagueController
             return Forbid();
         }
 
-        Result result = await _fantasyCriticService.DeleteTradeVote(trade, currentUser);
+        Result result = await _tradeService.DeleteTradeVote(trade, currentUser);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -1471,7 +1474,7 @@ public class LeagueController : BaseLeagueController
         }
 
         var currentDate = _clock.GetToday();
-        var trades = await _fantasyCriticService.GetTradesForLeague(leagueYear);
+        var trades = await _tradeService.GetTradesForLeague(leagueYear);
         var inactiveTrades = trades.Where(x => !x.Status.IsActive);
         var viewModels = inactiveTrades.Select(x => new TradeViewModel(x, currentDate));
         return Ok(viewModels);
