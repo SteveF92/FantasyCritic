@@ -187,6 +187,17 @@
           </b-form-checkbox>
         </div>
         <div>
+          <b-form-checkbox v-model="internalValue.grantSuperDrops">
+            <span class="checkbox-label">Enable Super Drops</span>
+            <p>
+              Super drops allow players to drop a single game, with no conditions. For example, you can drop a game that already came out and scored poorly, or you can drop a counterpick that scored
+              very well. While league managers can always manually grant a player a super drop, if you choose this option, players that are doing poorly in the league will be given one automatically.
+              For more details,
+              <a href="/faq#dropping-games" target="_blank">click here.</a>
+            </p>
+          </b-form-checkbox>
+        </div>
+        <div>
           <b-form-checkbox v-model="internalValue.counterPicksBlockDrops">
             <span class="checkbox-label">Counter Picks Block Drops</span>
             <p>If this is checked, counter picking a game will prevent the original player from dropping the game.</p>

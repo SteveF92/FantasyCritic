@@ -400,6 +400,20 @@
           cases themselves. League managers can use "Remove Publisher Game" to remove the game and "Edit Publishers" to manually adjust the amount of games the publisher has dropped.
         </div>
       </collapseCard>
+      <collapseCard>
+        <div slot="header">How do "Super Drops" work?</div>
+        <div slot="body">
+          <p>
+            A super drop allows a player to drop any one of their games, immediately, no questions asked. Even if the game is already released, even if it's been counter picked, even if it is a
+            counter pick. You also don't need to wait for the drop to process on Saturday, it happens immediately instead.
+          </p>
+          <p>
+            This mechanic is intended to help players that have fallen far behind in their league. League managers can decide to grant a player a super drop manually using the "Edit Publishers"
+            option. Additionally, leagues can also turn on "Automatic Super Drops". If this option is enabled, on September 1st, any player that has less than 65% of the projected points of the player
+            with the most projected points will be given a super drop automatically.
+          </p>
+        </div>
+      </collapseCard>
       <br />
 
       <h2><a id="scoring">Scoring</a></h2>

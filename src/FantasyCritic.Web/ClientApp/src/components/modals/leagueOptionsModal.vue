@@ -51,6 +51,10 @@
             <td>{{ leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
           </tr>
           <tr>
+            <th class="bg-primary">Automatic Super Drops</th>
+            <td>{{ leagueYearOptions.grantSuperDrops | yesNo }}</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Counter Picks Block Drops</th>
             <td>{{ leagueYearOptions.counterPicksBlockDrops | yesNo }}</td>
           </tr>
