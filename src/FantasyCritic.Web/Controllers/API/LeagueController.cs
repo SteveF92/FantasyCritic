@@ -237,11 +237,11 @@ public class LeagueController : BaseLeagueController
         IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
 
         FantasyCriticUser? previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear);
-        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear);
         IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear);
 
         IReadOnlyList<Trade> activeTrades = await _tradeService.GetActiveTradesForLeague(leagueYear);
         IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
+        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
 
         bool userIsFollowingLeague = false;
         Publisher? userPublisher = null;
@@ -593,8 +593,9 @@ public class LeagueController : BaseLeagueController
             return BadRequest("That master game does not exist.");
         }
 
-        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear);
-        bool publicBidIsValid = _gameAcquisitionService.PublicBidIsValid(leagueYear, masterGame, request.CounterPick, publicBiddingGames);
+        var activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
+        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
+        bool publicBidIsValid = _gameAcquisitionService.PublicBidIsValid(leagueYear, masterGame, request.CounterPick, publicBiddingGames, activeSpecialAuctions);
         if (!publicBidIsValid)
         {
             return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");

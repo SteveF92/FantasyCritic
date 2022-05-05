@@ -623,7 +623,7 @@ public class GameAcquisitionService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<PublicBiddingMasterGame>?> GetPublicBiddingGames(LeagueYear leagueYear)
+    public async Task<IReadOnlyList<PublicBiddingMasterGame>?> GetPublicBiddingGames(LeagueYear leagueYear, IReadOnlyList<SpecialAuction> activeSpecialAuctions)
     {
         var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
         if (!isInPublicWindow)
@@ -642,10 +642,16 @@ public class GameAcquisitionService
             bidsToCount = bidsToCount.Where(x => !x.CounterPick).ToList();
         }
 
+        var specialAuctionGames = activeSpecialAuctions.Select(x => x.MasterGameYear.MasterGame).ToHashSet();
         var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame);
         List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
         foreach (var bid in distinctBids)
         {
+            if (specialAuctionGames.Contains(bid.MasterGame))
+            {
+                continue;
+            }
+
             var masterGameYear = await _masterGameRepo.GetMasterGameYearOrThrow(bid.MasterGame.MasterGameID, leagueYear.Year);
             var claimResult = GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false);
             masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
@@ -654,7 +660,7 @@ public class GameAcquisitionService
         return masterGameYears;
     }
 
-    public bool PublicBidIsValid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, IReadOnlyList<PublicBiddingMasterGame>? publicBiddingMasterGames)
+    public bool PublicBidIsValid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, IReadOnlyList<PublicBiddingMasterGame>? publicBiddingMasterGames, IEnumerable<SpecialAuction> activeSpecialAuctions)
     {
         if (publicBiddingMasterGames is null)
         {
@@ -662,6 +668,11 @@ public class GameAcquisitionService
         }
 
         if (counterPick && leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+        {
+            return true;
+        }
+
+        if (activeSpecialAuctions.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame))
         {
             return true;
         }
