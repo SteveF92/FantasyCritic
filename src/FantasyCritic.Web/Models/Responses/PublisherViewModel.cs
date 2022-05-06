@@ -40,7 +40,7 @@ public class PublisherViewModel
         TotalProjectedPoints = publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate);
         Budget = publisher.Budget;
 
-        if (nextDraftPublisher is not null && nextDraftPublisher.PublisherID == publisher.PublisherID)
+        if (nextDraftPublisher?.PublisherID == publisher.PublisherID)
         {
             NextToDraft = true;
         }
