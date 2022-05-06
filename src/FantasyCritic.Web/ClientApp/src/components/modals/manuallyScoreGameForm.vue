@@ -37,7 +37,7 @@
         </div>
 
         <div v-if="manuallyScoreGame && (manualScore || removeManualScore)">
-          <b-button variant="primary" class="add-game-button" @click="manuallyScorePublisherGame">{{ buttonText }}</b-button>
+          <b-button variant="primary" class="full-width-button" @click="manuallyScorePublisherGame">{{ buttonText }}</b-button>
           <div v-if="errorInfo" class="alert alert-danger manuallyScore-error">
             <h3 class="alert-heading">Error!</h3>
             <p>{{ errorInfo }}</p>
@@ -128,10 +128,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
-
 .claim-error {
   margin-top: 10px;
 }

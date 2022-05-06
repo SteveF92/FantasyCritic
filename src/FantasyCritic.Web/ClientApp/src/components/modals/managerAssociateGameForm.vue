@@ -35,7 +35,7 @@
 
     <form v-if="associateMasterGame" method="post" class="form-horizontal" role="form" @submit.prevent="associateGame">
       <div>
-        <input type="submit" class="btn btn-primary add-game-button" value="Associate game" />
+        <input type="submit" class="btn btn-primary full-width-button" value="Associate game" />
       </div>
 
       <div v-if="associateResult && !associateResult.success" class="alert associate-error" :class="{ 'alert-danger': !associateResult.overridable, 'alert-warning': associateResult.overridable }">
@@ -133,9 +133,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
 .associate-error {
   margin-top: 10px;
 }

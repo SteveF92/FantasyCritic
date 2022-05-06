@@ -31,10 +31,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
-
 .select-cell {
   text-align: center;
 }

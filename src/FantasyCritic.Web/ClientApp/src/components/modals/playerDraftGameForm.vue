@@ -55,9 +55,9 @@
       <div v-if="draftMasterGame || draftUnlistedGame">
         <h3 v-show="draftMasterGame" for="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
         <masterGameSummary v-if="draftMasterGame" :master-game="draftMasterGame"></masterGameSummary>
-        <hr />
-        <b-button v-if="formIsValid" variant="primary" class="add-game-button" :disabled="isBusy" @click="addGame">Draft Game</b-button>
+        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Draft Game</b-button>
         <div v-if="draftResult && !draftResult.success" class="alert draft-error" :class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
+          <hr />
           <h3 v-if="draftResult.overridable" class="alert-heading">Warning!</h3>
           <h3 v-if="!draftResult.overridable" class="alert-heading">Error!</h3>
           <ul>
@@ -238,9 +238,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
 .draft-error {
   margin-top: 10px;
 }

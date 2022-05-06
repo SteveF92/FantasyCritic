@@ -21,10 +21,10 @@
           <br />
           <div v-if="manuallySetWillNotReleaseGame">
             <div v-if="manuallySetWillNotReleaseGame.manualWillNotRelease">
-              <b-button variant="primary" class="add-game-button" @click="manuallySetWillNotRelease(false)">Clear manual 'Will not Release'</b-button>
+              <b-button variant="primary" class="full-width-button" @click="manuallySetWillNotRelease(false)">Clear manual 'Will not Release'</b-button>
             </div>
             <div v-if="!manuallySetWillNotReleaseGame.manualWillNotRelease">
-              <b-button variant="primary" class="add-game-button" @click="manuallySetWillNotRelease(true)">Set game as 'Will not Release'</b-button>
+              <b-button variant="primary" class="full-width-button" @click="manuallySetWillNotRelease(true)">Set game as 'Will not Release'</b-button>
             </div>
           </div>
         </div>
@@ -71,10 +71,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
-
 .claim-error {
   margin-top: 10px;
 }

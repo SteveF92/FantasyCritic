@@ -21,10 +21,10 @@
       </div>
 
       <div v-if="gameToDrop">
-        <input type="submit" class="btn btn-danger add-game-button" value="Make Drop Game Request" :disabled="isBusy" />
+        <input type="submit" class="btn btn-danger full-width-button" value="Make Drop Game Request" :disabled="isBusy" />
       </div>
-      <hr />
       <div v-if="dropResult && !dropResult.success" class="alert bid-error alert-danger">
+        <hr />
         <h3 class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in dropResult.errors" :key="error">{{ error }}</li>

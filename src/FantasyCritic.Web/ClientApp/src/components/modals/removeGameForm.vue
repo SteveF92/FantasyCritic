@@ -23,7 +23,7 @@
         </div>
 
         <div v-if="removeGame">
-          <b-button variant="primary" class="add-game-button" @click="removePublisherGame">Remove Game</b-button>
+          <b-button variant="primary" class="full-width-button" @click="removePublisherGame">Remove Game</b-button>
           <div v-if="errorInfo" class="alert alert-danger remove-error">
             <h3 class="alert-heading">Error!</h3>
             <p class="text-white">{{ errorInfo }}</p>
@@ -71,10 +71,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
-
 .claim-error {
   margin-top: 10px;
 }

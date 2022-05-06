@@ -25,7 +25,7 @@
         </div>
 
         <div v-if="selectedCounterPick">
-          <input type="submit" class="btn btn-primary add-game-button" value="Select Game as Counter-Pick" />
+          <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter-Pick" />
         </div>
       </form>
     </div>
@@ -95,9 +95,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
 .draft-error {
   margin-top: 10px;
 }

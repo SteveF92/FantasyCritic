@@ -51,7 +51,7 @@
         </span>
       </div>
       <div>
-        <input v-if="formIsValid" type="submit" class="btn btn-primary add-game-button" value="Add game to publisher" />
+        <input v-if="formIsValid" type="submit" class="btn btn-primary full-width-button" value="Add game to publisher" />
       </div>
       <div v-if="claimResult && !claimResult.success" class="alert claim-error" :class="{ 'alert-danger': !claimResult.overridable, 'alert-warning': claimResult.overridable }">
         <h3 v-if="claimResult.overridable" class="alert-heading">Warning!</h3>
@@ -178,9 +178,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
 .claim-error {
   margin-top: 10px;
 }

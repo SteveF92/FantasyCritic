@@ -31,7 +31,7 @@
                     </div>
                   </div>
                 </div>
-                <b-button variant="secondary" class="add-game-button" @click="addGame(proposerPublisherGames)">Add Game</b-button>
+                <b-button variant="secondary" class="full-width-button" @click="addGame(proposerPublisherGames)">Add Game</b-button>
               </div>
             </div>
             <div class="col-6">
@@ -52,7 +52,7 @@
                     </div>
                   </div>
                 </div>
-                <b-button variant="secondary" class="add-game-button" @click="addGame(counterPartyPublisherGames)">Add Game</b-button>
+                <b-button variant="secondary" class="full-width-button" @click="addGame(counterPartyPublisherGames)">Add Game</b-button>
               </div>
             </div>
           </div>
@@ -202,9 +202,5 @@ export default {
   align-items: center;
   gap: 10px;
   margin-bottom: 5px;
-}
-
-.add-game-button {
-  width: 100%;
 }
 </style>

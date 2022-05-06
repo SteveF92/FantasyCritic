@@ -69,7 +69,7 @@
           </option>
         </b-form-select>
       </div>
-      <b-button variant="primary" class="add-game-button" :disabled="isBusy" @click="editBid">Edit Bid</b-button>
+      <b-button variant="primary" class="full-width-button" :disabled="isBusy" @click="editBid">Edit Bid</b-button>
       <div v-if="editBidResult && !editBidResult.success" class="alert bid-error alert-danger">
         <h3 class="alert-heading">Error!</h3>
         <ul>
@@ -195,9 +195,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-game-button {
-  width: 100%;
-}
 .select-cell {
   text-align: center;
 }
