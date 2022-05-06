@@ -290,6 +290,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await MakePublisherGameSlotsConsistent(leagueYear, publisher, connection, transaction);
         await AddFormerPublisherGames(new List<FormerPublisherGame>() { formerPublisherGame }, connection, transaction);
         await AddLeagueAction(leagueAction, connection, transaction);
+        await DecrementSuperDropsAvailable(publisher, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -2777,6 +2778,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                      "WillNotReleaseGamesDropped = @WillNotReleaseGamesDropped, WillReleaseGamesDropped = @WillReleaseGamesDropped where PublisherID = @PublisherID;";
         var entities = updatedPublishers.Select(x => new PublisherEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);
+    }
+
+    private static Task DecrementSuperDropsAvailable(Publisher publisher, MySqlConnection connection, MySqlTransaction transaction)
+    {
+        string sql = "update tbl_league_publisher SET SuperDropsAvailable = SuperDropsAvailable - 1 where PublisherID = @PublisherID;";
+        var paramsObject = new
+        {
+            publisherID = publisher.PublisherID
+        };
+        return connection.ExecuteAsync(sql, paramsObject, transaction);
     }
 
     private static Task AddLeagueAction(LeagueAction action, MySqlConnection connection, MySqlTransaction transaction) => AddLeagueActions(new List<LeagueAction>() { action }, connection, transaction);
