@@ -858,6 +858,14 @@ public class GameAcquisitionService
             return Result.Failure("There is already a special auction for that game.");
         }
 
+        MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, nycEndDate);
+        var claimErrors = SlotEligibilityService.GetClaimErrorsForLeagueYear(eligibilityFactors);
+        if (claimErrors.Any())
+        {
+            string joinedString = string.Join("\n", claimErrors.Select(x => $"• {x.Error}"));
+            return Result.Failure(joinedString);
+        }
+
         var specialAuction = new SpecialAuction(Guid.NewGuid(), leagueYear.Key, masterGameYear, now, scheduledEndTime, false);
 
         var managerPublisher = leagueYear.GetManagerPublisherOrThrow();

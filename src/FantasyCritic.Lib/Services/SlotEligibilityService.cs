@@ -127,7 +127,7 @@ public static class SlotEligibilityService
         return bestSlot.SlotNumber;
     }
 
-    private static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
+    public static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
     {
         //This function returns a list of errors if a game is not eligible in ANY slot
         if (eligibilityFactors.GameIsSpecificallyAllowed)
