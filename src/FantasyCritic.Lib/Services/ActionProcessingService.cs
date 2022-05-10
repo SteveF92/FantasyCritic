@@ -113,7 +113,7 @@ public class ActionProcessingService
                 continue;
             }
 
-            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, publisherStateSet, systemWideValues, processingTime);
+            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, publisherStateSet, systemWideValues, processingTime, false);
             processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
         }
 
@@ -148,7 +148,7 @@ public class ActionProcessingService
                     continue;
                 }
 
-                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, specialAuctionWithBids.Bids, publisherStateSet, systemWideValues, processingTime);
+                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, specialAuctionWithBids.Bids, publisherStateSet, systemWideValues, processingTime, true);
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
         }
@@ -158,7 +158,7 @@ public class ActionProcessingService
     }
 
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
-        PublisherStateSet publisherStateSet, SystemWideValues systemWideValues, Instant processingTime)
+        PublisherStateSet publisherStateSet, SystemWideValues systemWideValues, Instant processingTime, bool specialAuctions)
     {
         LeagueYear updatedLeagueYear = publisherStateSet.GetUpdatedLeagueYear(leagueYear);
         var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
@@ -199,7 +199,7 @@ public class ActionProcessingService
                 }
             }
 
-            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false);
+            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions);
             if (claimResult.NoSpaceError)
             {
                 noSpaceLeftBids.Add(pickupBidWithConditionalDropResult);
