@@ -7,9 +7,10 @@
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
       <template #cell(masterGame.maximumReleaseDate)="data">
-        <div :class="{ 'text-danger': data.item.masterGame.isReleased }" class="release-date">
+        <div :class="{ 'text-danger': data.item.masterGame.isReleased && !data.item.masterGame.releasingToday }" class="release-date">
           <span>{{ data.item.masterGame.estimatedReleaseDate }}</span>
-          <span v-if="data.item.masterGame.isReleased">(Released)</span>
+          <span v-if="data.item.masterGame.isReleased && !data.item.masterGame.releasingToday" class="release-date-qualifier">(Released)</span>
+          <span v-if="data.item.masterGame.releasingToday" class="release-date-qualifier">(Today)</span>
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
@@ -95,5 +96,9 @@ export default {
   .no-mobile {
     display: none;
   }
+}
+
+.release-date-qualifier {
+  margin-left: 5px;
 }
 </style>

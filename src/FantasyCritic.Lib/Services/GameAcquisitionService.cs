@@ -801,17 +801,27 @@ public class GameAcquisitionService
         var today = now.ToEasternDate();
         var masterGame = masterGameYear.MasterGame;
 
-        if (masterGame.IsReleased(today))
-        {
-            return Result.Failure("That game is already released.");
-        }
-
         var nycEndDate = scheduledEndTime.ToEasternDate();
-        if (masterGame.IsReleased(nycEndDate))
+        if (masterGame.ReleaseDate != today)
         {
-            return Result.Failure("That game will be released before the end time you specified.");
-        }
+            if (masterGame.IsReleased(today))
+            {
+                return Result.Failure("That game is already released.");
+            }
 
+            if (masterGame.IsReleased(nycEndDate))
+            {
+                return Result.Failure("That game will be released before the end time you specified.");
+            }
+        }
+        else
+        {
+            if (nycEndDate != today)
+            {
+                return Result.Failure("That game will be released before the end time you specified.");
+            }
+        }
+        
         var nextBidTime = _clock.GetNextBidTime();
         if (scheduledEndTime > nextBidTime)
         {

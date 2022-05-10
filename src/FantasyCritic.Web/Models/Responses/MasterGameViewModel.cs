@@ -15,6 +15,7 @@ public class MasterGameViewModel
         ReleaseDate = masterGame.ReleaseDate;
 
         IsReleased = masterGame.IsReleased(currentDate);
+        ReleasingToday = masterGame.ReleaseDate == currentDate;
 
         DoNotRefreshDate = masterGame.DoNotRefreshDate;
         DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
@@ -45,6 +46,7 @@ public class MasterGameViewModel
         MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
         ReleaseDate = masterSubGame.ReleaseDate;
         IsReleased = masterSubGame.IsReleased(currentDate);
+        ReleasingToday = masterSubGame.ReleaseDate == currentDate;
         CriticScore = masterSubGame.CriticScore;
         AveragedScore = false;
         OpenCriticID = masterSubGame.OpenCriticID;
@@ -62,6 +64,7 @@ public class MasterGameViewModel
     public LocalDate? AnnouncementDate { get; }
     public LocalDate? ReleaseDate { get; }
     public bool IsReleased { get; }
+    public bool ReleasingToday { get; }
     public bool DoNotRefreshDate { get; }
     public bool DoNotRefreshAnything { get; }
     public bool EligibilityChanged { get; }

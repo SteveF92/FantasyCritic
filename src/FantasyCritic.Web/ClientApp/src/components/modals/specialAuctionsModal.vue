@@ -36,6 +36,16 @@
     <div v-if="specialAuctionMasterGame">
       <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
       <masterGameSummary :master-game="specialAuctionMasterGame"></masterGameSummary>
+      <div v-if="specialAuctionMasterGame.releasingToday" class="alert alert-warning">
+        This game is releasing today. It may already be released. You can make a special auction, but it's up to you to decide if there is already too much information out about this game. You should
+        consider:
+        <ul>
+          <li>Is it playable right now?</li>
+          <li>Are there already reviews?</li>
+        </ul>
+
+        It is ultimately up to you though.
+      </div>
       <hr />
       <label>Auction End Time (In your local time zone)</label>
       <flat-pickr v-model="scheduledEndTime" :config="datePickerConfig" class="form-control"></flat-pickr>

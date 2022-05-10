@@ -37,6 +37,10 @@ public class PossibleMasterGameYearViewModel
             {
                 return "Already Owned";
             }
+            if (MasterGame.ReleasingToday)
+            {
+                return "Releasing Today";
+            }
             if (IsReleased)
             {
                 return "Released";

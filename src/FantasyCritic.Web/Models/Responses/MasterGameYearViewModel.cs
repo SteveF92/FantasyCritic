@@ -17,6 +17,7 @@ public class MasterGameYearViewModel
         AnnouncementDate = masterGame.MasterGame.AnnouncementDate;
         ReleaseDate = masterGame.MasterGame.ReleaseDate;
         IsReleased = masterGame.MasterGame.IsReleased(currentDate);
+        ReleasingToday = masterGame.MasterGame.ReleaseDate == currentDate;
         WillRelease = masterGame.WillRelease();
         DelayContention = masterGame.MasterGame.DelayContention;
         CriticScore = masterGame.MasterGame.CriticScore;
@@ -59,8 +60,9 @@ public class MasterGameYearViewModel
         EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
         MinimumReleaseDate = masterSubGame.MinimumReleaseDate;
         MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
-        ReleaseDate = masterGame.MasterGame.ReleaseDate;
-        IsReleased = masterGame.MasterGame.IsReleased(currentDate);
+        ReleaseDate = masterSubGame.ReleaseDate;
+        IsReleased = masterSubGame.IsReleased(currentDate);
+        ReleasingToday = masterSubGame.ReleaseDate == currentDate;
         WillRelease = masterGame.WillRelease();
         CriticScore = masterSubGame.CriticScore;
         FantasyPoints = masterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
@@ -103,6 +105,7 @@ public class MasterGameYearViewModel
     public LocalDate? AnnouncementDate { get; }
     public LocalDate? ReleaseDate { get; }
     public bool IsReleased { get; }
+    public bool ReleasingToday { get; }
     public bool WillRelease { get; }
     public bool DelayContention { get; }
     public decimal? CriticScore { get; }
