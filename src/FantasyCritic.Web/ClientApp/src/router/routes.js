@@ -218,8 +218,7 @@ export const routes = [
     component: MasterGameEditor,
     name: 'masterGameEditor',
     meta: {
-      title: 'Master Game Editor',
-      isPublic: false
+      title: 'Master Game Editor'
     },
     props: true
   },
@@ -229,7 +228,6 @@ export const routes = [
     name: 'adminConsole',
     meta: {
       title: 'Admin Console',
-      isPublic: false,
       adminOnly: true
     }
   },
@@ -239,7 +237,6 @@ export const routes = [
     name: 'activeMasterGameRequests',
     meta: {
       title: 'Active Master Game Requests',
-      isPublic: false,
       adminOnly: true
     }
   },
@@ -249,7 +246,6 @@ export const routes = [
     name: 'activeMasterGameChangeRequests',
     meta: {
       title: 'Active Master Game Change Requests',
-      isPublic: false,
       adminOnly: true
     }
   },
@@ -259,7 +255,6 @@ export const routes = [
     name: 'masterGameCreator',
     meta: {
       title: 'Master Game Creator',
-      isPublic: false,
       adminOnly: true
     }
   },
@@ -269,7 +264,6 @@ export const routes = [
     name: 'actionProcessingDryRunResults',
     meta: {
       title: 'Action Processing Dry Run Results',
-      isPublic: false,
       adminOnly: true
     }
   },
