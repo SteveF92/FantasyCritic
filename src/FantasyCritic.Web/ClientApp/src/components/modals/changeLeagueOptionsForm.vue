@@ -16,7 +16,7 @@
           <span class="checkbox-label">Test League</span>
           <p>
             If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site. If you want to change a test league into a regular league, you'll
-            need to contact me.
+            need to contact us.
           </p>
         </b-form-checkbox>
       </div>

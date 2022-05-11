@@ -14,7 +14,7 @@
     <div v-else>
       <div>Auction closed at: {{ scheduledEndTime | dateTime }}</div>
       <h3>This auction is now locked, and will process shortly.</h3>
-      On a good day, bids process within 10 minutes. If it's been more than 20 minutes, contact me on Twitter or Discord.
+      On a good day, bids process within 10 minutes. If it's been more than 20 minutes, contact us on Twitter or Discord.
     </div>
     <bidGameForm :special-auction="specialAuction"></bidGameForm>
   </b-alert>

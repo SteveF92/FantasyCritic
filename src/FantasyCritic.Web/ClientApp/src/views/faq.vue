@@ -148,7 +148,7 @@
       <collapseCard>
         <div slot="header">How do I delete a league?</div>
         <div slot="body">
-          As of now, you'll need to contact me. Renaming your league to something like "delete me!" and sending me your league ID (it's what appears afer 'league/' and before '/{year}' in the URL)
+          As of now, you'll need to contact us. Renaming your league to something like "delete me!" and sending me your league ID (it's what appears afer 'league/' and before '/{year}' in the URL)
           helps.
         </div>
       </collapseCard>
