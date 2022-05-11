@@ -10,14 +10,14 @@ public class FinalizedActionProcessingResults
         ProcessTime = processTime;
         ProcessName = processName;
         Results = results;
-        SpecialAuctionsProcessed = specialAuctionsProcessed;
+        SpecialAuctionsProcessed = specialAuctionsProcessed.ToList();
     }
 
     public Guid ProcessSetID { get; }
     public Instant ProcessTime { get; }
     public string ProcessName { get; }
     public ActionProcessingResults Results { get; }
-    public IEnumerable<SpecialAuction> SpecialAuctionsProcessed { get; }
+    public IReadOnlyList<SpecialAuction> SpecialAuctionsProcessed { get; }
 
     public bool IsEmpty()
     {

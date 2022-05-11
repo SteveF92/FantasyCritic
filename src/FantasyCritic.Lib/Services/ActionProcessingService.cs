@@ -117,7 +117,7 @@ public class ActionProcessingService
             processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
         }
 
-        ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, processingTime, masterGameYearDictionary);
+        ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, processingTime, masterGameYearDictionary, new List<LeagueAction>());
         var newResults = existingResults.Combine(bidResults);
         var remainingBids = flatAllBids.Except(processedBids.ProcessedBids);
         if (remainingBids.Any())
@@ -137,14 +137,17 @@ public class ActionProcessingService
         var allPublishers = leagueYearSpecialAuctions.SelectMany(x => x.LeagueYear.Publishers);
         var publisherStateSet = new PublisherStateSet(allPublishers);
         var processedBids = new ProcessedBidSet();
+        List<LeagueAction> noBidsActions = new List<LeagueAction>();
         foreach (var singleLeagueYearSet in leagueYearSpecialAuctions)
         {
             var leagueYear = singleLeagueYearSet.LeagueYear;
             var orderedSpecialAuctions = singleLeagueYearSet.SpecialAuctionsWithBids.OrderBy(x => x.SpecialAuction.ScheduledEndTime).ToList();
             foreach (var specialAuctionWithBids in orderedSpecialAuctions)
             {
+                var masterGame = specialAuctionWithBids.SpecialAuction.MasterGameYear.MasterGame;
                 if (!specialAuctionWithBids.Bids.Any())
                 {
+                    noBidsActions.Add(new LeagueAction(leagueYear.GetManagerPublisherOrThrow(), processingTime, "Special Auction Ended", $"Special Auction for: '{masterGame.GameName}' ended with no bids and no winner.", false));
                     continue;
                 }
 
@@ -153,7 +156,7 @@ public class ActionProcessingService
             }
         }
 
-        ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, processingTime, masterGameYearDictionary);
+        ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, processingTime, masterGameYearDictionary, noBidsActions);
         return bidResults;
     }
 
@@ -367,7 +370,7 @@ public class ActionProcessingService
     }
 
     private static ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, PublisherStateSet publisherStateSet,
-        Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+        Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary, IEnumerable<LeagueAction> additionalActions)
     {
         List<PublisherGame> gamesToAdd = new List<PublisherGame>();
         List<LeagueAction> leagueActions = new List<LeagueAction>();
@@ -400,6 +403,7 @@ public class ActionProcessingService
             conditionalDroppedGames.Add(formerPublisherGame);
         }
 
+        leagueActions.AddRange(additionalActions);
         ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, failedBids,
             leagueActions, publisherStateSet, gamesToAdd, conditionalDroppedGames);
         return bidProcessingResults;
