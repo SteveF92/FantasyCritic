@@ -242,6 +242,11 @@ public class LeagueOptions
             differences.Add($"Counter pick deadline changed from {existingOptions.CounterPickDeadline} to {CounterPickDeadline}.");
         }
 
+        if (GrantSuperDrops != existingOptions.GrantSuperDrops)
+        {
+            differences.Add($"'Grant Super Drops' changed from {existingOptions.GrantSuperDrops.ToYesNoString()} to {GrantSuperDrops.ToYesNoString()}.");
+        }
+
         var orderedExistingTags = existingOptions.LeagueTags.OrderBy(t => t.Tag.Name).ToList();
         var orderedNewTags = LeagueTags.OrderBy(t => t.Tag.Name).ToList();
         if (!orderedNewTags.SequenceEqual(orderedExistingTags))
