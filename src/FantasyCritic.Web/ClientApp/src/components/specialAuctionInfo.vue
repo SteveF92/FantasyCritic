@@ -9,7 +9,7 @@
           <span slot="process" slot-scope="{ timeObj }" class="countdown">Time Remaining: {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
         </vac>
       </div>
-      <b-button v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
+      <b-button v-if="league.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
     </div>
     <div v-else>
       <div>Auction closed at: {{ scheduledEndTime | dateTime }}</div>
@@ -24,12 +24,14 @@
 import moment from 'moment';
 import MasterGamePopover from '@/components/masterGamePopover';
 import BidGameForm from '@/components/modals/bidGameForm';
+import LeagueMixin from '@/mixins/leagueMixin';
 
 export default {
   components: {
     MasterGamePopover,
     BidGameForm
   },
+  mixins: [LeagueMixin],
   props: {
     specialAuction: { type: Object, required: true }
   },
