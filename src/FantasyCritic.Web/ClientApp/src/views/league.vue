@@ -254,7 +254,7 @@ export default {
       return _.some(this.leagueYear.activeTrades, (x) => x.waitingForUserResponse);
     },
     mustSetDraftOrder() {
-      return this.leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.');
+      return this.leagueYear.playStatus.readyToSetDraftOrder && this.leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.');
     }
   },
   watch: {
