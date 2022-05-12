@@ -52,6 +52,7 @@ public class LeagueController : BaseLeagueController
         _tradeService = tradeService;
     }
 
+    [AllowAnonymous]
     public async Task<IActionResult> LeagueOptions()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();

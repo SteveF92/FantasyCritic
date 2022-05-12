@@ -1362,6 +1362,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var entity = new PublisherEntity(publisher);
         var leagueYearKey = new LeagueYearKeyEntity(publisher.LeagueYearKey);
         await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
         await connection.ExecuteAsync(publisherCreateSQL, entity, transaction);
