@@ -901,22 +901,6 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("You can't change the override setting of a game that came out in a previous year.");
         }
 
-        var currentDate = _clock.GetToday();
-        var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, currentDate);
-        bool alreadyEligible = SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
-        bool isAllowing = request.Eligible.HasValue && request.Eligible.Value;
-        bool isBanning = request.Eligible.HasValue && !request.Eligible.Value;
-
-        if (isAllowing && alreadyEligible)
-        {
-            return BadRequest("That game is already eligible in your league.");
-        }
-
-        if (isBanning && !alreadyEligible)
-        {
-            return BadRequest("That game is already ineligible in your league.");
-        }
-
         await _fantasyCriticService.SetEligibilityOverride(leagueYear, masterGame, request.Eligible);
         var refreshedLeagueYear = await _fantasyCriticService.GetLeagueYear(leagueYear.League.LeagueID, request.Year);
         if (refreshedLeagueYear is null)
