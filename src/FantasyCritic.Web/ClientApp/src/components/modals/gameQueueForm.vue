@@ -35,7 +35,7 @@
 
     <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possible-games="possibleMasterGames" @input="addGameToQueue"></possibleMasterGamesTable>
 
-    <div v-if="queueResult && !queueResult.success" class="alert bid-error alert-danger">
+    <div v-if="queueResult && !queueResult.success" class="alert alert-danger bid-error">
       <h3 class="alert-heading">Error!</h3>
       <ul>
         <li v-for="error in queueResult.errors" :key="error">{{ error }}</li>

@@ -23,8 +23,7 @@
       <div v-if="gameToDrop">
         <input type="submit" class="btn btn-danger full-width-button" value="Make Drop Game Request" :disabled="isBusy" />
       </div>
-      <div v-if="dropResult && !dropResult.success" class="alert bid-error alert-danger">
-        <hr />
+      <div v-if="dropResult && !dropResult.success" class="alert alert-danger bid-error">
         <h3 class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in dropResult.errors" :key="error">{{ error }}</li>

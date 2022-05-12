@@ -70,7 +70,7 @@
         </b-form-select>
       </div>
       <b-button variant="primary" class="full-width-button" :disabled="isBusy" @click="editBid">Edit Bid</b-button>
-      <div v-if="editBidResult && !editBidResult.success" class="alert bid-error alert-danger">
+      <div v-if="editBidResult && !editBidResult.success" class="alert alert-danger bid-error">
         <h3 class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in editBidResult.errors" :key="error">{{ error }}</li>

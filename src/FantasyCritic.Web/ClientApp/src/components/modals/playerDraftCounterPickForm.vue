@@ -10,7 +10,7 @@
         </b-form-select>
       </div>
 
-      <div v-if="draftResult && !draftResult.success" class="alert bid-error alert-danger">
+      <div v-if="draftResult && !draftResult.success" class="alert alert-danger bid-error">
         <h3 class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>

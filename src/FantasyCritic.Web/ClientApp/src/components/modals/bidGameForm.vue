@@ -90,7 +90,7 @@
           </b-form-select>
         </div>
         <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="requestIsBusy" @click="bidGame">{{ bidButtonText }}</b-button>
-        <div v-if="bidResult && !bidResult.success" class="alert bid-error alert-danger">
+        <div v-if="bidResult && !bidResult.success" class="alert alert-danger bid-error">
           <h3 class="alert-heading">Error!</h3>
           <ul>
             <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
@@ -281,10 +281,6 @@ export default {
 };
 </script>
 <style scoped>
-.bid-error {
-  margin-top: 10px;
-}
-
 .game-search-input {
   margin-bottom: 15px;
 }
