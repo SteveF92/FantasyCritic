@@ -254,10 +254,10 @@ export default {
       return revealIsNext;
     },
     hasActiveTrade() {
-      return _.some(this.leagueYear.activeTrades, (x) => !x.waitingForUserResponse);
+      return _.some(this.leagueYear.activeTrades, (x) => x.counterPartyPublisherID !== this.userPublisher.publisherID);
     },
     hasProposedTrade() {
-      return _.some(this.leagueYear.activeTrades, (x) => x.waitingForUserResponse);
+      return _.some(this.leagueYear.activeTrades, (x) => x.counterPartyPublisherID === this.userPublisher.publisherID);
     },
     mustSetDraftOrder() {
       return this.leagueYear.playStatus.readyToSetDraftOrder && this.leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.');
