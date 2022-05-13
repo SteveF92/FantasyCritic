@@ -87,6 +87,7 @@ export default {
   methods: {
     rescindInvite(inviteID, inviteName) {
       var model = {
+        leagueID: this.leagueYear.league.leagueID,
         inviteID: inviteID
       };
       axios
