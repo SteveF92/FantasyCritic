@@ -657,7 +657,8 @@ public class LeagueManagerController : BaseLeagueController
         var publisherGame = validResult.PublisherGame;
 
         await _fantasyCriticService.ManuallyScoreGame(publisherGame, manualCriticScore);
-        await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
+        var updatedLeagueYear = await _fantasyCriticService.GetLeagueYear(leagueYear.League.LeagueID, leagueYear.Year);
+        await _fantasyCriticService.UpdatePublisherGameCalculatedStats(updatedLeagueYear!);
 
         return Ok();
     }
