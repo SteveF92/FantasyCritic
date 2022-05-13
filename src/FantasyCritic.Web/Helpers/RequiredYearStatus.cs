@@ -88,7 +88,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                     return Result.Failure("That action can only be taken while the draft is active.");
                 }
                 break;
-            case { } status when ActiveDraft.Equals(status):
+            case { } status when DraftPaused.Equals(status):
                 if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
