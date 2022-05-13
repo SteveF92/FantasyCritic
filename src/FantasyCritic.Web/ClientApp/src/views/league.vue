@@ -81,8 +81,14 @@
           </div>
         </div>
 
-        <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" show>Someone has proposed a trade with you. Please check 'See Active Trades' on the sidebar.</b-alert>
-        <b-alert v-if="leagueYear.userIsActive && hasActiveTrade" show>There are active trades under consideration. Please check 'See Active Trades' on the sidebar.</b-alert>
+        <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" show>
+          Someone has proposed a trade with you.
+          <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
+        </b-alert>
+        <b-alert v-if="leagueYear.userIsActive && hasActiveTrade" show>
+          There are active trades under consideration.
+          <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
+        </b-alert>
         <specialAuctionInfo v-for="activeSpecialAuction in leagueYear.activeSpecialAuctions" :key="activeSpecialAuction.masterGameID" :special-auction="activeSpecialAuction"></specialAuctionInfo>
         <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
           <div class="alert alert-success" role="alert">
