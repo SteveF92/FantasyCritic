@@ -688,7 +688,6 @@ public class GameAcquisitionService
         var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
         var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
-
         var bidsToCount = activeBidsForLeague;
         if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
         {
@@ -734,7 +733,7 @@ public class GameAcquisitionService
         return publicBiddingMasterGames.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame);
     }
 
-    public async Task<IReadOnlyList<PublicBiddingSet>> GetPublicBiddingGames(int year)
+    public async Task<IReadOnlyList<EmailPublicBiddingSet>> GetPublicBiddingGames(int year)
     {
         var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
         var activeBidsByLeague = await _fantasyCriticRepo.GetActivePickupBids(year, leagueYears);
@@ -742,7 +741,7 @@ public class GameAcquisitionService
         var currentDate = _clock.GetToday();
         var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
-        List<PublicBiddingSet> publicBiddingSets = new List<PublicBiddingSet>();
+        List<EmailPublicBiddingSet> publicBiddingSets = new List<EmailPublicBiddingSet>();
         foreach (var activeBidsForLeague in activeBidsByLeague)
         {
             if (!activeBidsForLeague.Key.PlayStatus.DraftFinished || !activeBidsForLeague.Key.Options.PickupSystem.HasPublicBiddingWindow)
@@ -766,7 +765,7 @@ public class GameAcquisitionService
                 masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
             }
 
-            publicBiddingSets.Add(new PublicBiddingSet(activeBidsForLeague.Key, masterGameYears));
+            publicBiddingSets.Add(new EmailPublicBiddingSet(activeBidsForLeague.Key, masterGameYears));
         }
 
         return publicBiddingSets;

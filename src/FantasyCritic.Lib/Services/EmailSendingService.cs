@@ -61,7 +61,7 @@ public class EmailSendingService
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
-        var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, PublicBiddingSet>();
+        var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, EmailPublicBiddingSet>();
         foreach (var year in activeYears)
         {
             var publicBiddingSets = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
@@ -82,7 +82,7 @@ public class EmailSendingService
                 continue;
             }
 
-            List<PublicBiddingSet> publicBiddingSetsForUser = new List<PublicBiddingSet>();
+            List<EmailPublicBiddingSet> publicBiddingSetsForUser = new List<EmailPublicBiddingSet>();
             foreach (var leagueYearKey in leagueYearKeys)
             {
                 if (publicBiddingSetDictionary.TryGetValue(leagueYearKey, out var publicBiddingSet))
@@ -98,7 +98,7 @@ public class EmailSendingService
         }
     }
 
-    private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<PublicBiddingSet> publicBiddingSet)
+    private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<EmailPublicBiddingSet> publicBiddingSet)
     {
         string emailAddress = user.Email;
         string emailSubject = "FantasyCritic - This Week's Public Bids";

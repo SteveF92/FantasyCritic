@@ -1,8 +1,8 @@
 namespace FantasyCritic.Lib.Domain;
 
-public class PublicBiddingSet
+public class EmailPublicBiddingSet
 {
-    public PublicBiddingSet(LeagueYear leagueYear, IEnumerable<PublicBiddingMasterGame> masterGames)
+    public EmailPublicBiddingSet(LeagueYear leagueYear, IEnumerable<PublicBiddingMasterGame> masterGames)
     {
         LeagueYear = leagueYear;
         MasterGames = masterGames.ToList();

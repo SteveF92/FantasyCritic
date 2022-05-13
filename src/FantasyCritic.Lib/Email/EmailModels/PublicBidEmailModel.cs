@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Email.EmailModels;
 
 public class PublicBidEmailModel
 {
-    public PublicBidEmailModel(FantasyCriticUser user, IReadOnlyList<PublicBiddingSet> publicBiddingSets, string baseAddress, bool isProduction)
+    public PublicBidEmailModel(FantasyCriticUser user, IReadOnlyList<EmailPublicBiddingSet> publicBiddingSets, string baseAddress, bool isProduction)
     {
         User = user;
         PublicBiddingSets = publicBiddingSets;
@@ -15,11 +15,11 @@ public class PublicBidEmailModel
     }
 
     public FantasyCriticUser User { get; }
-    public IReadOnlyList<PublicBiddingSet> PublicBiddingSets { get; }
+    public IReadOnlyList<EmailPublicBiddingSet> PublicBiddingSets { get; }
     public string BaseAddress { get; }
     public bool IsProduction { get; }
 
-    public IReadOnlyDictionary<int, IReadOnlyList<PublicBiddingSet>> PublicBiddingSetsByYear { get; }
+    public IReadOnlyDictionary<int, IReadOnlyList<EmailPublicBiddingSet>> PublicBiddingSetsByYear { get; }
     public bool ShowMultiYear => PublicBiddingSets.Count > 1;
 
     public string GetLeagueLink(LeagueYearKey key) => $"{BaseAddress}/league/{key.LeagueID}/{key.Year}";
