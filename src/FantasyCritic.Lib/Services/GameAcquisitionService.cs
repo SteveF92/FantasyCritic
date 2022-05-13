@@ -676,7 +676,7 @@ public class GameAcquisitionService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<PublicBiddingMasterGame>?> GetPublicBiddingGames(LeagueYear leagueYear, IReadOnlyList<SpecialAuction> activeSpecialAuctions)
+    public async Task<PublicBiddingSet?> GetPublicBiddingGames(LeagueYear leagueYear, IReadOnlyList<SpecialAuction> activeSpecialAuctions)
     {
         var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
         if (!isInPublicWindow)
@@ -710,7 +710,8 @@ public class GameAcquisitionService
             masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
         }
 
-        return masterGameYears;
+        var publicBidTime = GetCurrentWeekPublicBidTime();
+        return new PublicBiddingSet(masterGameYears, publicBidTime);
     }
 
     public bool PublicBidIsValid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, IReadOnlyList<PublicBiddingMasterGame>? publicBiddingMasterGames, IEnumerable<SpecialAuction> activeSpecialAuctions)
@@ -784,14 +785,20 @@ public class GameAcquisitionService
         }
 
         var currentTime = _clock.GetCurrentInstant();
+        var publicBidDateTime = GetCurrentWeekPublicBidTime();
+
+        return currentTime > publicBidDateTime;
+    }
+
+    public Instant GetCurrentWeekPublicBidTime()
+    {
         var previousBidTime = _clock.GetPreviousBidTime();
         LocalDate previousBidDate = previousBidTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
         var publicBidDate = previousBidDate.Next(TimeExtensions.PublicBiddingRevealDay);
         var publicBidDateTime = (publicBidDate + TimeExtensions.PublicBiddingRevealTime)
             .InZoneStrictly(TimeExtensions.EasternTimeZone)
             .ToInstant();
-
-        return currentTime > publicBidDateTime;
+        return publicBidDateTime;
     }
 
     public async Task<Result> CreateSpecialAuction(LeagueYear leagueYear, MasterGameYear masterGameYear, Instant scheduledEndTime)

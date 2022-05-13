@@ -57,7 +57,11 @@ export default {
       };
     },
     games() {
-      return this.leagueYear.publicBiddingGames;
+      if (!this.leagueYear.publicBiddingGames) {
+        return [];
+      }
+
+      return this.leagueYear.publicBiddingGames.masterGames;
     }
   },
   methods: {

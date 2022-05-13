@@ -12,7 +12,7 @@ public class LeagueYearViewModel
         CompletePlayStatus completePlayStatus, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
-        IReadOnlyList<PublicBiddingMasterGame>? publicBiddingGames, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
+        PublicBiddingSet? publicBiddingSet, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
         IEnumerable<Trade> activeTrades, IEnumerable<SpecialAuction> activeSpecialAuctions, PrivatePublisherDataViewModel? privatePublisherData, GameNewsViewModel gameNews)
     {
         var currentDate = currentInstant.ToEasternDate();
@@ -100,9 +100,9 @@ public class LeagueYearViewModel
             ManagerMessages = ManagerMessages.Where(x => x.IsPublic).ToList();
         }
 
-        if (publicBiddingGames is not null)
+        if (publicBiddingSet is not null)
         {
-            PublicBiddingGames = publicBiddingGames.Select(x => new PublicBiddingMasterGameViewModel(x, currentDate)).ToList();
+            PublicBiddingGames = new PublicBiddingSetViewModel(publicBiddingSet, currentDate);
         }
 
         ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
@@ -134,7 +134,7 @@ public class LeagueYearViewModel
     public PublisherSlotRequirementsViewModel SlotInfo { get; }
     public PlayStatusViewModel PlayStatus { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
-    public IReadOnlyList<PublicBiddingMasterGameViewModel>? PublicBiddingGames { get; }
+    public PublicBiddingSetViewModel? PublicBiddingGames { get; }
     public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
     public IReadOnlyList<SpecialAuctionViewModel> ActiveSpecialAuctions { get; }
     public PrivatePublisherDataViewModel? PrivatePublisherData { get; }

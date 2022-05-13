@@ -596,7 +596,7 @@ public class LeagueController : BaseLeagueController
 
         var activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
         var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
-        bool publicBidIsValid = _gameAcquisitionService.PublicBidIsValid(leagueYear, masterGame, request.CounterPick, publicBiddingGames, activeSpecialAuctions);
+        bool publicBidIsValid = _gameAcquisitionService.PublicBidIsValid(leagueYear, masterGame, request.CounterPick, publicBiddingGames?.MasterGames, activeSpecialAuctions);
         if (!publicBidIsValid)
         {
             return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
