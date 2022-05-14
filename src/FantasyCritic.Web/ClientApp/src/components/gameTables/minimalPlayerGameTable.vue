@@ -9,6 +9,7 @@
           <div class="publisher-name">
             {{ publisher.publisherName }}
           </div>
+          <div class="publisher-slogan">~"{{ slogan }}"</div>
           <router-link v-show="!renderingSnapshot" :to="{ name: 'publisher', params: { publisherid: publisher.publisherID } }">
             <font-awesome-icon icon="info-circle" />
             Details
@@ -70,7 +71,8 @@ export default {
   },
   data() {
     return {
-      renderingSnapshot: false
+      renderingSnapshot: false,
+      slogan: "It's all about the game"
     };
   },
   computed: {

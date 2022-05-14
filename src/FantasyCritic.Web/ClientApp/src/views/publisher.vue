@@ -16,8 +16,11 @@
               <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
                 {{ publisher.publisherIcon }}
               </div>
-              <div class="publisher-name">
-                <h1>{{ publisher.publisherName }}</h1>
+              <div class="publisher-name-and-slogan">
+                <div class="publisher-name">
+                  <h1>{{ publisher.publisherName }}</h1>
+                </div>
+                <div class="publisher-slogan">~"{{ slogan }}"</div>
               </div>
             </div>
             <h4>Player Name: {{ publisher.playerName }}</h4>
@@ -147,7 +150,8 @@ export default {
   data() {
     return {
       errorInfo: '',
-      renderingSnapshot: false
+      renderingSnapshot: false,
+      slogan: "It's all about the game"
     };
   },
   computed: {
@@ -286,6 +290,11 @@ export default {
 .publisher-name-and-icon {
   display: flex;
   align-items: center;
+}
+
+.publisher-name-and-slogan {
+  display: flex;
+  flex-direction: column;
 }
 
 .publisher-name {
