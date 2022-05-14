@@ -23,11 +23,11 @@
       </template>
       <template #cell(projectedFantasyPoints)="data">
         {{ data.item.projectedFantasyPoints | score(2) }}
-        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topProjectedPublisher.publisherID }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
+        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
       </template>
       <template #cell(totalFantasyPoints)="data">
         {{ data.item.totalFantasyPoints | score(2) }}
-        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topPublisher.publisherID }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
+        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
       </template>
       <template #cell(gamesReleased)="data">
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesReleased }}</span>
@@ -90,7 +90,7 @@ export default {
 
       return null;
     },
-    topProjectedPublisher() {
+    projectedTopPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
         return _.maxBy(this.leagueYear.publishers, 'totalProjectedPoints');
       }
@@ -110,6 +110,12 @@ export default {
           this.notifyAction('The invite to ' + inviteName + ' has been rescinded.');
         })
         .catch(() => {});
+    },
+    isTopPublisher(publisher) {
+      return this.topPublisher && this.topPublisher.publisherID === publisher.publisherID;
+    },
+    isProjectedTopPublisher(publisher) {
+      return this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
     },
     ordinal_suffix_of(num) {
       return GlobalFunctions.ordinal_suffix_of(num);
