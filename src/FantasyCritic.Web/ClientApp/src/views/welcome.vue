@@ -50,9 +50,9 @@
       <div class="col-md-5 offset-md-1 col-sm-12 critic-royale-logo-area">
         <img class="critic-royale-logo" src="@/assets/critic-royale-logo.svg" />
       </div>
-      <div class="col-md-6 col-sm-12">
+      <div class="col-md-6 col-sm-12 welcome-message">
         <h1 class="welcome-heading">Critics Royale!</h1>
-        <p class="welcome-message">
+        <p>
           Don't have a league to join? Want to start playing in the middle of the year? Our new "Critics Royale" mode is structured similar to Daily Fantasy Sports, allowing you to compete on your own
           against the entire site for a leaderboard position. Instead of drafting, you're given a 'budget' which you use to select your games. Your goal is to spend that money wisely and put together
           the best lineup of games that you can.
@@ -124,7 +124,7 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="list-ol" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
               </font-awesome-layers>
               <span class="feature-description">Assemble your dream team</span>
             </div>
@@ -142,7 +142,7 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="money-bill-alt" transform="shrink-8 left-2" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="money-bill-alt" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
                 <font-awesome-icon icon="slash" transform="shrink-6 left-2" />
               </font-awesome-layers>
               <span class="feature-description">Totally free</span>
