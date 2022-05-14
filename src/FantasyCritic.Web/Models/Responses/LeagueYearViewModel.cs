@@ -42,6 +42,25 @@ public class LeagueYearViewModel
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
             .ToList();
 
+
+        var publisherRankings = leagueYear.Publishers
+            .Select(x => new
+                {
+                    x.PublisherID,
+                    Ranking = leagueYear.Publishers.Count(y => y.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options) > x.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options)) + 1
+                }
+            )
+            .ToDictionary(x => x.PublisherID, x => x.Ranking);
+
+        var publisherProjectedRankings = leagueYear.Publishers
+            .Select(x => new
+                {
+                    x.PublisherID,
+                    Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate) > x.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate)) + 1
+                }
+            )
+            .ToDictionary(x => x.PublisherID, x => x.Ranking);
+
         List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
         bool allPublishersMade = true;
         foreach (var user in activeUsers)
@@ -54,9 +73,11 @@ public class LeagueYearViewModel
             }
             else
             {
+                int ranking = publisherRankings[publisher.PublisherID];
+                int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
                 bool isPreviousYearWinner = previousYearWinner is not null && previousYearWinner.Id == user.Id;
                 playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
-                    userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner));
+                    userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner, ranking, projectedRanking));
             }
         }
 

@@ -23,11 +23,11 @@
       </template>
       <template #cell(projectedFantasyPoints)="data">
         {{ data.item.projectedFantasyPoints | score(2) }}
-        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topProjectedPublisher.publisherID }">- {{ ordinal_suffix_of(data.index + 1) }}</span>
+        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topProjectedPublisher.publisherID }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
       </template>
       <template #cell(totalFantasyPoints)="data">
         {{ data.item.totalFantasyPoints | score(2) }}
-        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topPublisher.publisherID }">- {{ ordinal_suffix_of(data.index + 1) }}</span>
+        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topPublisher.publisherID }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
       </template>
       <template #cell(gamesReleased)="data">
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesReleased }}</span>

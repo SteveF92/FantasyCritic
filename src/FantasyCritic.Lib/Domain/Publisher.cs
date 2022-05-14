@@ -4,6 +4,9 @@ namespace FantasyCritic.Lib.Domain;
 
 public class Publisher : IEquatable<Publisher>
 {
+    private decimal? _cachedProjectedPoints = null;
+    private decimal? _cachedTotalPoints = null;
+
     public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, string? publisherSlogan,
         int draftPosition, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
         int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, bool autoDraft)
@@ -64,18 +67,30 @@ public class Publisher : IEquatable<Publisher>
 
     public decimal GetTotalFantasyPoints(SupportedYear year, LeagueOptions leagueOptions)
     {
+        if (_cachedTotalPoints.HasValue)
+        {
+            return _cachedTotalPoints.Value;
+        }
+
         var emptyCounterPickSlotPoints = GetEmptyCounterPickSlotPoints(year, leagueOptions) ?? 0m;
         var score = PublisherGames.Sum(x => x.FantasyPoints);
         if (!score.HasValue)
         {
+            _cachedTotalPoints = emptyCounterPickSlotPoints;
             return emptyCounterPickSlotPoints;
         }
 
+        _cachedTotalPoints = score.Value + emptyCounterPickSlotPoints;
         return score.Value + emptyCounterPickSlotPoints;
     }
 
     public decimal GetProjectedFantasyPoints(LeagueYear leagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
     {
+        if (_cachedProjectedPoints.HasValue)
+        {
+            return _cachedProjectedPoints.Value;
+        }
+
         var leagueOptions = leagueYear.Options;
         bool ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots;
         var slots = GetPublisherSlots(leagueOptions);
@@ -88,6 +103,7 @@ public class Publisher : IEquatable<Publisher>
             projectedScore += slotScore;
         }
 
+        _cachedProjectedPoints = projectedScore;
         return projectedScore;
     }
 
