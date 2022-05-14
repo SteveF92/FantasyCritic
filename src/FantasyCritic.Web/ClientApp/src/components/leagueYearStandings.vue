@@ -21,8 +21,14 @@
           </span>
         </span>
       </template>
-      <template #cell(projectedFantasyPoints)="data">{{ data.item.projectedFantasyPoints | score(2) }}</template>
-      <template #cell(totalFantasyPoints)="data">{{ data.item.totalFantasyPoints | score(2) }}</template>
+      <template #cell(projectedFantasyPoints)="data">
+        {{ data.item.projectedFantasyPoints | score(2) }}
+        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topProjectedPublisher.publisherID }">- {{ ordinal_suffix_of(data.index + 1) }}</span>
+      </template>
+      <template #cell(totalFantasyPoints)="data">
+        {{ data.item.totalFantasyPoints | score(2) }}
+        <span class="standings-position" :class="{ 'text-bold': data.item.publisher.publisherID === topPublisher.publisherID }">- {{ ordinal_suffix_of(data.index + 1) }}</span>
+      </template>
       <template #cell(gamesReleased)="data">
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesReleased }}</span>
       </template>
@@ -38,6 +44,7 @@
 <script>
 import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin';
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   mixins: [LeagueMixin],
@@ -82,6 +89,13 @@ export default {
       }
 
       return null;
+    },
+    topProjectedPublisher() {
+      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
+        return _.maxBy(this.leagueYear.publishers, 'totalProjectedPoints');
+      }
+
+      return null;
     }
   },
   methods: {
@@ -96,6 +110,9 @@ export default {
           this.notifyAction('The invite to ' + inviteName + ' has been rescinded.');
         })
         .catch(() => {});
+    },
+    ordinal_suffix_of(num) {
+      return GlobalFunctions.ordinal_suffix_of(num);
     }
   }
 };
