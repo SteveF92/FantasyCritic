@@ -31,6 +31,12 @@
             </router-link>
           </div>
           <div>
+            <a href="https://store.fantasycritic.games" target="_blank">
+              <font-awesome-icon icon="cart-shopping" size="lg" />
+              <span class="full-nav">Store</span>
+            </a>
+          </div>
+          <div>
             <router-link :to="{ name: 'fantasyCriticPlus' }" title="Fantasy Critic Plus">
               <img class="fc-plus-nav" src="@/assets/plus.svg" />
               <span class="full-nav">Fantasy Critic Plus</span>
