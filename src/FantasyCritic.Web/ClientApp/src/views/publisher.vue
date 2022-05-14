@@ -20,7 +20,7 @@
                 <div class="publisher-name">
                   <h1>{{ publisher.publisherName }}</h1>
                 </div>
-                <div class="publisher-slogan">~"{{ slogan }}"</div>
+                <div v-if="publisher.publisherSlogan" class="publisher-slogan">~"{{ publisher.publisherSlogan }}"</div>
               </div>
             </div>
             <h4>Player Name: {{ publisher.playerName }}</h4>

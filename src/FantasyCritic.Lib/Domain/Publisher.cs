@@ -4,8 +4,8 @@ namespace FantasyCritic.Lib.Domain;
 
 public class Publisher : IEquatable<Publisher>
 {
-    public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, int draftPosition,
-        IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
+    public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, string? publisherSlogan,
+        int draftPosition, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
         int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, bool autoDraft)
     {
         PublisherID = publisherID;
@@ -13,6 +13,7 @@ public class Publisher : IEquatable<Publisher>
         User = user;
         PublisherName = publisherName;
         PublisherIcon = publisherIcon;
+        PublisherSlogan = publisherSlogan;
         DraftPosition = draftPosition;
         PublisherGames = publisherGames.ToList();
         FormerPublisherGames = formerPublisherGames.ToList();
@@ -29,6 +30,7 @@ public class Publisher : IEquatable<Publisher>
     public FantasyCriticUser User { get; }
     public string PublisherName { get; }
     public string? PublisherIcon { get; }
+    public string? PublisherSlogan { get; }
     public int DraftPosition { get; }
     public IReadOnlyList<PublisherGame> PublisherGames { get; }
     public IReadOnlyList<FormerPublisherGame> FormerPublisherGames { get; }
@@ -230,7 +232,7 @@ public class Publisher : IEquatable<Publisher>
     public static Publisher GetFakePublisher(LeagueYearKey leagueYearKey)
     {
         return new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
-            null, 0, new List<PublisherGame>(),
+            null,null, 0, new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, false);
     }
 }

@@ -17,6 +17,7 @@ public class PublisherViewModel
         UserID = publisher.User.Id;
         PublisherName = publisher.PublisherName;
         PublisherIcon = publisher.PublisherIcon;
+        PublisherSlogan = publisher.PublisherSlogan;
         LeagueName = leagueYear.League.LeagueName;
         PlayerName = publisher.User.UserName;
         Year = leagueYear.Year;
@@ -79,6 +80,7 @@ public class PublisherViewModel
     public Guid UserID { get; }
     public string PublisherName { get; }
     public string? PublisherIcon { get; }
+    public string? PublisherSlogan { get; }
     public string LeagueName { get; }
     public string PlayerName { get; }
     public int Year { get; }
