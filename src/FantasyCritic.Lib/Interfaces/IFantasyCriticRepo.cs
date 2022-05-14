@@ -94,6 +94,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
     Task ChangePublisherName(Publisher publisher, string publisherName);
     Task ChangePublisherIcon(Publisher publisher, string? publisherIcon);
+    Task ChangePublisherSlogan(Publisher publisher, string? publisherSlogan);
     Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague);
     Task StartDraft(LeagueYear leagueYear);
     Task CompleteDraft(LeagueYear leagueYear);

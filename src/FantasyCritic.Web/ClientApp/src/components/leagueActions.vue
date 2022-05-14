@@ -57,6 +57,7 @@
             </template>
             <li v-b-modal="'changePublisherNameForm'" class="fake-link action">Change Publisher Name</li>
             <li v-if="isPlusUser" v-b-modal="'changePublisherIconForm'" class="fake-link action">Change Publisher Icon</li>
+            <li v-if="isPlusUser" v-b-modal="'changePublisherSloganForm'" class="fake-link action">Change Publisher Slogan</li>
           </ul>
         </div>
 
@@ -134,6 +135,7 @@
 
         <changePublisherNameForm></changePublisherNameForm>
         <changePublisherIconForm></changePublisherIconForm>
+        <changePublisherSloganForm></changePublisherSloganForm>
 
         <addNewLeagueYearForm></addNewLeagueYearForm>
         <invitePlayerForm></invitePlayerForm>
@@ -181,6 +183,7 @@ import EligibilityOverridesModal from '@/components/modals/eligibilityOverridesM
 import TagOverridesModal from '@/components/modals/tagOverridesModal';
 import ChangePublisherNameForm from '@/components/modals/changePublisherNameForm';
 import ChangePublisherIconForm from '@/components/modals/changePublisherIconForm';
+import ChangePublisherSloganForm from '@/components/modals/changePublisherSloganForm';
 import PlayerDraftGameForm from '@/components/modals/playerDraftGameForm';
 import PlayerDraftCounterPickForm from '@/components/modals/playerDraftCounterPickForm';
 import EditAutoDraftForm from '@/components/modals/editAutoDraftForm';
@@ -226,6 +229,7 @@ export default {
     TagOverridesModal,
     ChangePublisherNameForm,
     ChangePublisherIconForm,
+    ChangePublisherSloganForm,
     PlayerDraftGameForm,
     PlayerDraftCounterPickForm,
     EditAutoDraftForm,

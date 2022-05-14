@@ -526,6 +526,22 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
+    [Authorize("PlusUser")]
+    [Authorize("Write")]
+    public async Task<IActionResult> ChangePublisherSlogan([FromBody] ChangePublisherSloganRequest request)
+    {
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
+        if (publisherRecord.FailedResult is not null)
+        {
+            return publisherRecord.FailedResult;
+        }
+        var publisher = publisherRecord.ValidResult!.Publisher;
+
+        await _publisherService.ChangePublisherSlogan(publisher, request.PublisherSlogan);
+        return Ok();
+    }
+
+    [HttpPost]
     [Authorize("Write")]
     public async Task<IActionResult> SetAutoDraft([FromBody] SetAutoDraftRequest request)
     {

@@ -712,6 +712,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             });
     }
 
+    public async Task ChangePublisherSlogan(Publisher publisher, string? publisherSlogan)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync("update tbl_league_publisher SET PublisherSlogan = @publisherSlogan where PublisherID = @publisherID;",
+            new
+            {
+                publisherID = publisher.PublisherID,
+                publisherSlogan
+            });
+    }
+
     public async Task SetAutoDraft(Publisher publisher, bool autoDraft)
     {
         await using var connection = new MySqlConnection(_connectionString);

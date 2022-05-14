@@ -43,6 +43,11 @@ public class PublisherService
         return _fantasyCriticRepo.ChangePublisherIcon(publisher, publisherIcon);
     }
 
+    public Task ChangePublisherSlogan(Publisher publisher, string? publisherSlogan)
+    {
+        return _fantasyCriticRepo.ChangePublisherSlogan(publisher, publisherSlogan);
+    }
+
     public Task SetAutoDraft(Publisher publisher, bool autoDraft)
     {
         return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
