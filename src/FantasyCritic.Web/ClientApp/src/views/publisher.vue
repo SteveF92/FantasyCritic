@@ -116,6 +116,11 @@
           </div>
         </div>
       </div>
+
+      <div v-if="previousPublisher && nextPublisher" class="publisher-nav">
+        <b-button variant="primary" :to="{ name: 'publisher', params: { publisherid: previousPublisher.publisherID } }">Previous Publisher - {{ previousPublisher.publisherName }}</b-button>
+        <b-button variant="primary" :to="{ name: 'publisher', params: { publisherid: nextPublisher.publisherID } }">Next Publisher - {{ nextPublisher.publisherName }}</b-button>
+      </div>
     </div>
   </div>
 </template>
@@ -178,6 +183,20 @@ export default {
       set(value) {
         this.$store.commit('setIncludeRemovedInSorted', value);
       }
+    },
+    nextPublisher() {
+      let nextPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === this.publisher.draftPosition + 1)[0];
+      if (!nextPublisher) {
+        nextPublisher = this.leagueYear.publishers[0];
+      }
+      return nextPublisher;
+    },
+    previousPublisher() {
+      let previousPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === this.publisher.draftPosition - 1)[0];
+      if (!previousPublisher) {
+        previousPublisher = this.leagueYear.publishers[this.leagueYear.publishers.length - 1];
+      }
+      return previousPublisher;
     }
   },
   watch: {
@@ -346,5 +365,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.publisher-nav {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 </style>
