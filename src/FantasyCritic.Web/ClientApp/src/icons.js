@@ -51,7 +51,8 @@ import {
   faCaretDown,
   faCaretLeft,
   faSquare,
-  fa1
+  fa1,
+  faCartShopping
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faCircle as regCircle, faSquare as regSquare } from '@fortawesome/free-regular-svg-icons';
@@ -120,7 +121,8 @@ library.add(
   faCaretDown,
   faCaretLeft,
   fa1,
-  faSquare
+  faSquare,
+  faCartShopping
 );
 
 export { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText };

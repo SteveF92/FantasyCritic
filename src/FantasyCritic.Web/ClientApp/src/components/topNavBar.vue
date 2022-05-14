@@ -50,6 +50,12 @@
             </router-link>
           </li>
           <li class="nav-item" :class="{ 'optional-link': !isAuth }">
+            <a class="nav-link" href="https://store.fantasycritic.games" target="_blank">
+              <font-awesome-icon class="topnav-icon minimal-nav" icon="cart-shopping" size="lg" />
+              <span class="full-nav">Store</span>
+            </a>
+          </li>
+          <li class="nav-item" :class="{ 'optional-link': !isAuth }">
             <router-link :to="{ name: 'fantasyCriticPlus' }" class="nav-link" title="Fantasy Critic Plus">
               <img class="topnav-image fc-plus-icon minimal-nav" src="@/assets/plus.svg" />
               <span class="full-nav">Plus</span>
@@ -140,43 +146,43 @@ export default {
   margin-right: 3px;
 }
 
-@media only screen and (max-width: 1080px) {
+@media only screen and (max-width: 1115px) {
   .full-logo {
     display: none;
   }
 }
 
-@media only screen and (min-width: 1081px) {
+@media only screen and (min-width: 1116px) {
   .minimal-logo {
     display: none;
   }
 }
 
-@media only screen and (max-width: 890px) {
+@media only screen and (max-width: 935px) {
   .full-nav {
     display: none;
   }
 }
 
-@media screen and (min-width: 891px) and (max-width: 1275px) {
+@media screen and (min-width: 936px) and (max-width: 1320px) {
   .minimal-nav {
     display: none;
   }
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 765px) {
   .optional-link {
     display: none;
   }
 }
 
-@media only screen and (max-width: 530px) {
+@media only screen and (max-width: 490px) {
   .brand-nav {
     display: none;
   }
 }
 
-@media only screen and (max-width: 745px) {
+@media only screen and (max-width: 790px) {
   .topnav-button-icon {
     display: none;
   }
