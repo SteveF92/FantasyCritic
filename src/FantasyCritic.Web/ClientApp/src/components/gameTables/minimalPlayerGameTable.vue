@@ -9,7 +9,7 @@
           <div class="publisher-name">
             {{ publisher.publisherName }}
           </div>
-          <div v-if="publisher.publisherSlogan" class="publisher-slogan">~"{{ publisher.publisherSlogan }}"</div>
+          <div v-if="publisher.publisherSlogan" class="publisher-slogan">"{{ publisher.publisherSlogan }}"</div>
           <router-link v-show="!renderingSnapshot" :to="{ name: 'publisher', params: { publisherid: publisher.publisherID } }">
             <font-awesome-icon icon="info-circle" />
             Details
