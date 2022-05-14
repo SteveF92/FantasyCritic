@@ -20,7 +20,7 @@
                 <div class="publisher-name">
                   <h1>{{ publisher.publisherName }}</h1>
                 </div>
-                <div v-if="publisher.publisherSlogan" class="publisher-slogan">~"{{ publisher.publisherSlogan }}"</div>
+                <h2 v-if="publisher.publisherSlogan" class="publisher-slogan">~"{{ publisher.publisherSlogan }}"</h2>
               </div>
             </div>
             <h4>Player Name: {{ publisher.playerName }}</h4>
@@ -158,8 +158,7 @@ export default {
   data() {
     return {
       errorInfo: '',
-      renderingSnapshot: false,
-      slogan: "It's all about the game"
+      renderingSnapshot: false
     };
   },
   computed: {

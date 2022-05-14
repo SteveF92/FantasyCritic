@@ -71,8 +71,7 @@ export default {
   },
   data() {
     return {
-      renderingSnapshot: false,
-      slogan: "It's all about the game"
+      renderingSnapshot: false
     };
   },
   computed: {
@@ -171,6 +170,10 @@ export default {
   color: white;
   font-weight: bold;
 }
+
+.publisher-slogan {
+  font-size: 15px;
+}
 </style>
 <style>
 .player-summary table th {
@@ -225,9 +228,5 @@ export default {
 
 .share-button {
   color: white;
-}
-
-.publisher-slogan {
-  font-size: 20px;
 }
 </style>
