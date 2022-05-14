@@ -15,10 +15,10 @@
 
         <div class="row">
           <div class="col-lg-12 col-xl-6">
-            <h3>Publisher Icons</h3>
+            <h3>Publisher Icons and Slogans</h3>
             <p>
-              Plus users can chose an icon to represent their Publishers, both in normal leagues and in Critics Royale. Right now, the icon is limited to "one emoji", but we may add support for custom
-              images in the future.
+              Plus users can chose an icon and slogan to represent their Publishers, both in normal leagues and in Critics Royale. Right now, the icon is limited to "one emoji", but we may add support
+              for custom images in the future.
             </p>
             <h3>Share Publisher Option</h3>
             <p>Plus users can click a button to easily share their publishers (their lists of games) to social media.</p>

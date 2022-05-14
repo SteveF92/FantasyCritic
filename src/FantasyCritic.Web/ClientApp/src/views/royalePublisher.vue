@@ -6,6 +6,7 @@
           {{ publisher.publisherIcon }}
         </div>
         <h1 class="publisher-name">{{ publisher.publisherName }}</h1>
+        <h2 v-if="publisher.publisherSlogan" class="publisher-slogan">~"{{ publisher.publisherSlogan }}"</h2>
         <h4>Player Name: {{ publisher.playerName }}</h4>
         <h4>
           Year/Quarter:
@@ -33,10 +34,12 @@
             <b-button v-b-modal="'royalePurchaseGameForm'" block variant="primary" class="action-button">Purchase a Game</b-button>
             <b-button v-b-modal="'royaleChangePublisherNameForm'" block variant="secondary" class="action-button">Change Publisher Name</b-button>
             <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherIconForm'" block variant="secondary" class="action-button">Change Publisher Icon</b-button>
+            <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherSloganForm'" block variant="secondary" class="action-button">Change Publisher Slogan</b-button>
 
             <royalePurchaseGameForm :year-quarter="publisher.yearQuarter" :user-royale-publisher="publisher" @gamePurchased="gamePurchased"></royalePurchaseGameForm>
             <royaleChangePublisherNameForm :user-royale-publisher="publisher" @publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
             <royaleChangePublisherIconForm :user-royale-publisher="publisher" @publisherIconChanged="publisherIconChanged"></royaleChangePublisherIconForm>
+            <royaleChangePublisherSloganForm :user-royale-publisher="publisher" @publisherSloganChanged="publisherSloganChanged"></royaleChangePublisherSloganForm>
           </div>
         </div>
       </div>
@@ -116,6 +119,7 @@ import MasterGamePopover from '@/components/masterGamePopover';
 import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm';
 import RoyaleChangePublisherNameForm from '@/components/modals/royaleChangePublisherNameForm';
 import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePublisherIconForm';
+import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePublisherSloganForm';
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal';
 
 import GlobalFunctions from '@/globalFunctions';
@@ -127,7 +131,8 @@ export default {
     RoyaleChangePublisherIconForm,
     RoyalePurchaseGameForm,
     MasterGamePopover,
-    SellRoyaleGameModal
+    SellRoyaleGameModal,
+    RoyaleChangePublisherSloganForm
   },
   mixins: [BasicMixin],
   props: {
@@ -210,9 +215,12 @@ export default {
     publisherIconChanged() {
       this.fetchPublisher();
       let message = 'Publisher icon changed.';
-      this.$bvToast.toast(message, {
-        autoHideDelay: 5000
-      });
+      this.makeToast(message);
+    },
+    publisherSloganChanged() {
+      this.fetchPublisher();
+      let message = 'Publisher slogan changed.';
+      this.makeToast(message);
     },
     setGameToSell(publisherGame) {
       this.gameToModify = publisherGame;

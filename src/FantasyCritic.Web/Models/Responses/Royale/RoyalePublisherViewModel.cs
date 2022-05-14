@@ -13,6 +13,7 @@ public class RoyalePublisherViewModel
         UserID = domain.User.Id;
         PublisherName = domain.PublisherName;
         PublisherIcon = domain.PublisherIcon;
+        PublisherSlogan = domain.PublisherSlogan;
         PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, currentDate, allMasterGameTags)).ToList();
         Budget = domain.Budget;
         TotalFantasyPoints = domain.GetTotalFantasyPoints();
@@ -32,6 +33,7 @@ public class RoyalePublisherViewModel
     public string PlayerName { get; }
     public string PublisherName { get; }
     public string? PublisherIcon { get; }
+    public string? PublisherSlogan { get; }
     public IReadOnlyList<RoyalePublisherGameViewModel> PublisherGames { get; }
     public decimal Budget { get; }
     public decimal TotalFantasyPoints { get; }

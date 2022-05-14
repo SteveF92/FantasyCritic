@@ -24,8 +24,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     public async Task CreatePublisher(RoyalePublisher publisher)
     {
         RoyalePublisherEntity entity = new RoyalePublisherEntity(publisher);
-        string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,PublisherIcon,Budget) " +
-                     "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@PublisherIcon,@Budget)";
+        string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,PublisherIcon,PublisherSlogan,Budget) " +
+                     "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@PublisherIcon,@PublisherSlogan,@Budget)";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
     }
@@ -49,6 +49,17 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         {
             publisherID = publisher.PublisherID,
             publisherIcon
+        });
+    }
+
+    public async Task ChangePublisherSlogan(RoyalePublisher publisher, string? publisherSlogan)
+    {
+        string sql = "UPDATE tbl_royale_publisher SET PublisherSlogan = @publisherSlogan WHERE PublisherID = @publisherID;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, new
+        {
+            publisherID = publisher.PublisherID,
+            publisherSlogan
         });
     }
 

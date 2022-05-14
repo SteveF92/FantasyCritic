@@ -44,7 +44,7 @@ public class RoyaleService
 
     public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)
     {
-        RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, null, new List<RoyalePublisherGame>(), 100m);
+        RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, null, null, new List<RoyalePublisherGame>(), 100m);
         await _royaleRepo.CreatePublisher(publisher);
         return publisher;
     }
@@ -57,6 +57,11 @@ public class RoyaleService
     public Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon)
     {
         return _royaleRepo.ChangePublisherIcon(publisher, publisherIcon);
+    }
+
+    public Task ChangePublisherSlogan(RoyalePublisher publisher, string? publisherSlogan)
+    {
+        return _royaleRepo.ChangePublisherSlogan(publisher, publisherSlogan);
     }
 
     public Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)

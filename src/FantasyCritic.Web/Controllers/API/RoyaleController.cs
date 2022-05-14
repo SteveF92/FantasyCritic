@@ -136,11 +136,6 @@ public class RoyaleController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        if (string.IsNullOrWhiteSpace(request.PublisherIcon))
-        {
-            return BadRequest("You cannot have a blank name.");
-        }
-
         RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
         if (publisher is null)
         {
@@ -153,6 +148,32 @@ public class RoyaleController : FantasyCriticController
         }
 
         await _royaleService.ChangePublisherIcon(publisher, request.PublisherIcon);
+        return Ok();
+    }
+
+    [HttpPost]
+    [Authorize("Write")]
+    public async Task<IActionResult> ChangePublisherSlogan([FromBody] ChangeRoyalePublisherSloganRequest request)
+    {
+        var currentUserResult = await GetCurrentUser();
+        if (currentUserResult.IsFailure)
+        {
+            return BadRequest(currentUserResult.Error);
+        }
+        var currentUser = currentUserResult.Value;
+
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
+        if (publisher is null)
+        {
+            return NotFound();
+        }
+
+        if (!publisher.User.Equals(currentUser))
+        {
+            return Forbid();
+        }
+
+        await _royaleService.ChangePublisherSlogan(publisher, request.PublisherSlogan);
         return Ok();
     }
 
