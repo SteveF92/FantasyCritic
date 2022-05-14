@@ -120,9 +120,17 @@
         </div>
       </div>
 
-      <div v-if="previousPublisher && nextPublisher" class="publisher-nav">
-        <b-button variant="primary" :to="{ name: 'publisher', params: { publisherid: previousPublisher.publisherID } }">Previous Publisher - {{ previousPublisher.publisherName }}</b-button>
-        <b-button variant="primary" :to="{ name: 'publisher', params: { publisherid: nextPublisher.publisherID } }">Next Publisher - {{ nextPublisher.publisherName }}</b-button>
+      <div v-if="previousPublisher && nextPublisher" class="row">
+        <div class="col-md-12 col-lg-5">
+          <b-button class="publisher-nav" variant="primary" :to="{ name: 'publisher', params: { publisherid: previousPublisher.publisherID } }">
+            Previous Publisher - {{ previousPublisher.publisherName }}
+          </b-button>
+        </div>
+        <div class="col-md-12 col-lg-5 offset-lg-2">
+          <b-button class="publisher-nav" variant="primary" :to="{ name: 'publisher', params: { publisherid: nextPublisher.publisherID } }">
+            Next Publisher - {{ nextPublisher.publisherName }}
+          </b-button>
+        </div>
       </div>
     </div>
   </div>
@@ -377,8 +385,7 @@ export default {
 }
 
 .publisher-nav {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  margin-top: 5px;
+  width: 100%;
 }
 </style>
