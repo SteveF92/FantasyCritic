@@ -25,7 +25,7 @@
               <span class="full-nav">How to Play</span>
             </router-link>
           </li>
-          <li class="nav-item">
+          <li class="nav-item super-optional-nav">
             <router-link :to="{ name: 'faq' }" class="nav-link" title="FAQ">
               <font-awesome-icon class="topnav-icon minimal-nav" icon="question-circle" size="lg" />
               <span class="full-nav">FAQ</span>
@@ -176,7 +176,7 @@ export default {
   }
 }
 
-@media only screen and (max-width: 490px) {
+@media only screen and (max-width: 515px) {
   .brand-nav {
     display: none;
   }
@@ -184,6 +184,12 @@ export default {
 
 @media only screen and (max-width: 790px) {
   .topnav-button-icon {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .super-optional-nav {
     display: none;
   }
 }
