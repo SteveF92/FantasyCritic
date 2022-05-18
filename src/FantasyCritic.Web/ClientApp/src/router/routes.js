@@ -1,6 +1,7 @@
 import Welcome from '@/views/welcome';
 import Home from '@/views/home';
 import About from '@/views/about';
+import Community from '@/views/community';
 import HowToPlay from '@/views/howToPlay';
 import Faq from '@/views/faq';
 import Contact from '@/views/contact';
@@ -61,6 +62,15 @@ export const routes = [
     name: 'about',
     meta: {
       title: 'About',
+      isPublic: true
+    }
+  },
+  {
+    path: '/community',
+    component: Community,
+    name: 'community',
+    meta: {
+      title: 'Community',
       isPublic: true
     }
   },

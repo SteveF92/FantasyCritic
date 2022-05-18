@@ -31,6 +31,12 @@
             </router-link>
           </div>
           <div>
+            <router-link :to="{ name: 'community' }" title="Community">
+              <font-awesome-icon icon="users" size="lg" />
+              <span class="full-nav">Community</span>
+            </router-link>
+          </div>
+          <div>
             <a href="https://store.fantasycritic.games" target="_blank">
               <font-awesome-icon icon="cart-shopping" size="lg" />
               <span class="full-nav">Store</span>

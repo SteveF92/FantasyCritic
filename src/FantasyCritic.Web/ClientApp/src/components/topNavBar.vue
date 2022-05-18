@@ -43,6 +43,12 @@
               <span class="full-nav">About</span>
             </router-link>
           </li>
+          <li class="nav-item" :class="{ 'optional-link': !isAuth }">
+            <router-link :to="{ name: 'community' }" class="nav-link" title="Community">
+              <font-awesome-icon class="topnav-icon minimal-nav" icon="users" size="lg" />
+              <span class="full-nav">Community</span>
+            </router-link>
+          </li>
           <li class="nav-item optional-link">
             <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">
               <font-awesome-icon class="topnav-icon minimal-nav" icon="envelope" size="lg" />

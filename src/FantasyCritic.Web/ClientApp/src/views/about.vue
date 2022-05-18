@@ -112,14 +112,14 @@
         <p>Fantasy Critic uses cookies to manage user authentication, but we don't track you for advertising purposes or anything like that.</p>
         <h4>Advertising</h4>
         <p>At this time, Fantasy Critic does not run any ads. If this ever changes, this policy will be updated.</p>
-        <h4>Children’s Privacy</h4>
+        <h4>Children's Privacy</h4>
         <p>Fantasy Critic is not intended to be used by anyone under the age of 13, in compliance with the Children's Online Privacy Protection Act.</p>
       </div>
       <hr />
       <h2>Technical Credits</h2>
       <div class="text-well">
         <h3>Software Packages</h3>
-        <p>This site uses the following software packages heavily, and I wouldn’t be able to create this site without them.</p>
+        <p>This site uses the following software packages heavily, and I wouldn't be able to create this site without them.</p>
 
         <ul>
           <li>ASP.NET Core</li>
