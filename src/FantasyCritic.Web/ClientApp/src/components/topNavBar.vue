@@ -62,7 +62,7 @@
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
-      <b-navbar-nav v-if="!authIsBusy" class="ml-auto">
+      <b-navbar-nav v-if="!authIsBusy" class="ml-auto user-dropdown">
         <b-nav-item href="https://patreon.com/fantasycritic" target="_blank">
           <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
           <span class="brand-text">Patreon</span>
@@ -76,7 +76,7 @@
           <span class="brand-text">Discord</span>
         </b-nav-item>
 
-        <b-nav-item-dropdown v-if="isAuth && userInfo" right class="user-dropdown">
+        <b-nav-item-dropdown v-if="isAuth && userInfo" right>
           <!-- Using 'button-content' slot -->
           <template #button-content>
             <span class="user-text">{{ displayName }}</span>
