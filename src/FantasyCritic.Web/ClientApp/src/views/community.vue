@@ -6,12 +6,6 @@
       <div>
         <h2>Discord</h2>
         <div class="text-well">
-          <div>
-            <a href="https://discord.gg/dNa7DD3" target="_blank">
-              <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
-              Join our Server
-            </a>
-          </div>
           <p>The Discord is the primary home for the Fantasy Critic community. We have channels for:</p>
           <ul>
             <li>Finding a league</li>
@@ -21,19 +15,23 @@
             <li>Discussing new features</li>
             <li>...and more</li>
           </ul>
+          <a href="https://discord.gg/dNa7DD3" target="_blank">
+            <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+            Join our Server
+          </a>
         </div>
       </div>
       <div>
         <h2>Subreddit</h2>
         <div class="text-well">
-          <div>
-            <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-              <font-awesome-icon :icon="['fab', 'reddit']" size="lg" class="reddit-icon" />
-              r/fantasycritic
-            </a>
-          </div>
-          The subreddit admitedly doesn't see as much traffic as it used to, as it's been largely supplanted by our Discord. However, it may still be where you want to go if you want to post something
-          very detailed like a feature proposal.
+          <p>
+            The subreddit admitedly doesn't see as much traffic as it used to, as it's been largely supplanted by our Discord. However, it may still be where you want to go if you want to post
+            something very detailed like a feature proposal.
+          </p>
+          <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
+            <font-awesome-icon :icon="['fab', 'reddit']" size="lg" class="reddit-icon" />
+            r/fantasycritic
+          </a>
         </div>
       </div>
       <div>
@@ -59,13 +57,13 @@
             </p>
             <div>
               <a href="https://discord.com/api/oauth2/authorize?client_id=974105816724553759&permissions=139586914368&scope=bot" target="_blank">
-                <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+                <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
                 Add To Your Discord Server
               </a>
             </div>
             <div>
               <a href="https://github.com/rarDevelopment/fantasy-critic-bot" target="_blank">
-                <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" />
+                <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" fixed-width />
                 Github
               </a>
             </div>
@@ -76,17 +74,18 @@
             <p>
               Bot created by
               <a href="https://github.com/drcatdoctor" target="_blank">drcat.</a>
-              While this bot is still functional, it has not been updated in a while. Notably, the method described on Github to make the bot connect to a private league no longer works.
+              While this bot is still functional, it has not been updated in a while. Full instructions are available on Github, but I can't guarantee full functionality. Notably, the method described
+              on Github to make the bot connect to a private league no longer works.
             </p>
             <div>
               <a href="https://discord.com/api/oauth2/authorize?client_id=671814513967890459&permissions=2048&scope=bot" target="_blank">
-                <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+                <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
                 Add To Your Discord Server
               </a>
             </div>
             <div>
               <a href="https://github.com/drcatdoctor/fcbot" target="_blank">
-                <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" />
+                <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" fixed-width />
                 Github
               </a>
             </div>

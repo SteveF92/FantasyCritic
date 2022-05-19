@@ -152,49 +152,49 @@ export default {
   margin-right: 3px;
 }
 
-@media only screen and (max-width: 1115px) {
+@media only screen and (max-width: 1200px) {
   .full-logo {
     display: none;
   }
 }
 
-@media only screen and (min-width: 1116px) {
+@media only screen and (min-width: 1201px) {
   .minimal-logo {
     display: none;
   }
 }
 
-@media only screen and (max-width: 935px) {
+@media only screen and (max-width: 1020px) {
   .full-nav {
     display: none;
   }
 }
 
-@media screen and (min-width: 936px) and (max-width: 1320px) {
+@media screen and (min-width: 1001px) and (max-width: 1460px) {
   .minimal-nav {
     display: none;
   }
 }
 
-@media only screen and (max-width: 765px) {
+@media only screen and (max-width: 800px) {
   .optional-link {
     display: none;
   }
 }
 
-@media only screen and (max-width: 515px) {
+@media only screen and (max-width: 550px) {
   .brand-nav {
     display: none;
   }
 }
 
-@media only screen and (max-width: 790px) {
+@media only screen and (max-width: 825px) {
   .topnav-button-icon {
     display: none;
   }
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 435px) {
   .super-optional-nav {
     display: none;
   }
