@@ -16,47 +16,47 @@
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
         <b-nav-item :to="{ name: 'criticsRoyale' }">
-          <img class="topnav-image" src="@/assets/critics-royale-top-nav.svg" />
+          <img class="royale-icon topnav-icon" src="@/assets/critics-royale-top-nav.svg" />
           <span class="full-nav">Royale</span>
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'howtoplay' }">
-          <font-awesome-icon class="topnav-icon" icon="book-open" size="lg" />
+          <font-awesome-icon class="topnav-icon" icon="book-open" size="lg" fixed-width />
           <span class="full-nav">How to Play</span>
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'faq' }">
-          <font-awesome-icon class="topnav-icon" icon="question-circle" size="lg" />
+          <font-awesome-icon class="topnav-icon" icon="question-circle" size="lg" fixed-width />
           <span class="full-nav">FAQ</span>
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'masterGames' }">
-          <font-awesome-icon class="topnav-icon" icon="gamepad" size="lg" />
+          <font-awesome-icon class="topnav-icon" icon="gamepad" size="lg" fixed-width />
           <span class="full-nav">Games</span>
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'about' }">
-          <font-awesome-icon class="topnav-icon" icon="info-circle" size="lg" />
+          <font-awesome-icon class="topnav-icon" icon="info-circle" size="lg" fixed-width />
           <span class="full-nav">About</span>
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'community' }">
-          <font-awesome-icon class="topnav-icon" icon="users" size="lg" />
+          <font-awesome-icon class="topnav-icon" icon="users" size="lg" fixed-width />
           <span class="full-nav">Community</span>
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'contact' }">
-          <font-awesome-icon class="topnav-icon" icon="envelope" size="lg" />
+          <font-awesome-icon class="topnav-icon" icon="envelope" size="lg" fixed-width />
           <span class="full-nav">Contact</span>
         </b-nav-item>
 
         <b-nav-item href="https://store.fantasycritic.games" target="_blank">
-          <font-awesome-icon class="topnav-icon" icon="cart-shopping" size="lg" />
+          <font-awesome-icon class="topnav-icon" icon="cart-shopping" size="lg" fixed-width />
           <span class="full-nav">Store</span>
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'fantasyCriticPlus' }">
-          <img class="topnav-image fc-plus-icon" src="@/assets/plus.svg" />
+          <img class="fc-plus-icon topnav-icon" src="@/assets/plus.svg" />
           <span class="full-nav">Plus</span>
         </b-nav-item>
       </b-navbar-nav>
@@ -64,13 +64,16 @@
       <!-- Right aligned nav items -->
       <b-navbar-nav v-if="!authIsBusy" class="ml-auto">
         <b-nav-item href="https://patreon.com/fantasycritic" target="_blank">
-          <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" />
+          <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
+          <span class="brand-text">Patreon</span>
         </b-nav-item>
         <b-nav-item href="https://twitter.com/fantasy_critic" target="_blank">
-          <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" />
+          <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" fixed-width />
+          <span class="brand-text">Twitter</span>
         </b-nav-item>
         <b-nav-item href="https://discord.gg/dNa7DD3" target="_blank">
-          <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+          <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
+          <span class="brand-text">Discord</span>
         </b-nav-item>
 
         <b-nav-item-dropdown v-if="isAuth && userInfo" right>
@@ -121,25 +124,39 @@ export default {
 }
 
 .topnav-icon,
-.full-nav {
+.full-nav,
+.brand-text {
   color: #d6993a;
 }
 
-.topnav-image {
+.royale-icon {
   height: 27px;
   padding-bottom: 3px;
-  margin-right: 3px;
+  margin-right: 1px;
 }
 
-@media only screen and (max-width: 1200px) {
+.fc-plus-icon {
+  height: 27px;
+  padding-bottom: 3px;
+  margin-right: 5px;
+}
+
+.nav-link {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+.minimal-logo {
+  display: none;
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1200px) {
   .full-logo {
     display: none;
   }
-}
 
-@media only screen and (min-width: 1201px) {
   .minimal-logo {
-    display: none;
+    display: block;
   }
 }
 
@@ -150,14 +167,19 @@ export default {
 }
 
 @media screen and (min-width: 1001px) and (max-width: 1460px) {
-  .topnav-icon,
-  .topnav-image {
+  .topnav-icon {
     display: none;
   }
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (min-width: 768px) and (max-width: 1000px) {
   .full-nav {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .brand-text {
     display: none;
   }
 }
