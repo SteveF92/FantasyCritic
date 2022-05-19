@@ -1,123 +1,100 @@
 <template>
-  <div>
-    <nav class="navbar navbar-expand bg-white main-nav">
-      <router-link :to="{ name: 'welcome' }" class="navbar-brand">
-        <template v-if="!isPlusUser">
-          <img class="full-logo" src="@/assets/horizontal-logo.svg" />
-          <img class="minimal-logo" src="@/assets/minimal-logo.svg" />
-        </template>
+  <b-navbar toggleable="md" type="light" variant="light" class="main-nav">
+    <b-navbar-brand :to="{ name: 'welcome' }">
+      <template v-if="!isPlusUser">
+        <img class="full-logo" src="@/assets/horizontal-logo.svg" />
+        <img class="minimal-logo" src="@/assets/minimal-logo.svg" />
+      </template>
+      <template v-else>
+        <img class="full-logo" src="@/assets/horizontal-logo-plus.svg" />
+        <img class="minimal-logo" src="@/assets/minimal-logo-plus.svg" />
+      </template>
+    </b-navbar-brand>
+
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <b-nav-item :to="{ name: 'criticsRoyale' }">
+          <img class="topnav-image" src="@/assets/critics-royale-top-nav.svg" />
+          <span class="full-nav">Royale</span>
+        </b-nav-item>
+
+        <b-nav-item :to="{ name: 'howtoplay' }">
+          <font-awesome-icon class="topnav-icon" icon="book-open" size="lg" />
+          <span class="full-nav">How to Play</span>
+        </b-nav-item>
+
+        <b-nav-item :to="{ name: 'faq' }">
+          <font-awesome-icon class="topnav-icon" icon="question-circle" size="lg" />
+          <span class="full-nav">FAQ</span>
+        </b-nav-item>
+
+        <b-nav-item :to="{ name: 'masterGames' }">
+          <font-awesome-icon class="topnav-icon" icon="gamepad" size="lg" />
+          <span class="full-nav">Games</span>
+        </b-nav-item>
+
+        <b-nav-item :to="{ name: 'about' }">
+          <font-awesome-icon class="topnav-icon" icon="info-circle" size="lg" />
+          <span class="full-nav">About</span>
+        </b-nav-item>
+
+        <b-nav-item :to="{ name: 'community' }">
+          <font-awesome-icon class="topnav-icon" icon="users" size="lg" />
+          <span class="full-nav">Community</span>
+        </b-nav-item>
+
+        <b-nav-item :to="{ name: 'contact' }">
+          <font-awesome-icon class="topnav-icon" icon="envelope" size="lg" />
+          <span class="full-nav">Contact</span>
+        </b-nav-item>
+
+        <b-nav-item href="https://store.fantasycritic.games" target="_blank">
+          <font-awesome-icon class="topnav-icon" icon="cart-shopping" size="lg" />
+          <span class="full-nav">Store</span>
+        </b-nav-item>
+
+        <b-nav-item :to="{ name: 'fantasyCriticPlus' }">
+          <img class="topnav-image fc-plus-icon" src="@/assets/plus.svg" />
+          <span class="full-nav">Plus</span>
+        </b-nav-item>
+      </b-navbar-nav>
+
+      <!-- Right aligned nav items -->
+      <b-navbar-nav v-if="!authIsBusy" class="ml-auto">
+        <b-nav-item href="https://patreon.com/fantasycritic" target="_blank">
+          <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" />
+        </b-nav-item>
+        <b-nav-item href="https://twitter.com/fantasy_critic" target="_blank">
+          <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" />
+        </b-nav-item>
+        <b-nav-item href="https://discord.gg/dNa7DD3" target="_blank">
+          <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+        </b-nav-item>
+
+        <b-nav-item-dropdown v-if="isAuth && userInfo" right>
+          <!-- Using 'button-content' slot -->
+          <template #button-content>
+            <font-awesome-icon class="topnav-user-icon" icon="user" size="lg" />
+            <span class="full-nav">{{ displayName }}</span>
+          </template>
+          <b-dropdown-item href="/Account/Manage">Manage Account</b-dropdown-item>
+          <b-dropdown-item href="/Account/Logout">Log Off</b-dropdown-item>
+        </b-nav-item-dropdown>
         <template v-else>
-          <img class="full-logo" src="@/assets/horizontal-logo-plus.svg" />
-          <img class="minimal-logo" src="@/assets/minimal-logo-plus.svg" />
+          <b-button variant="info" href="/Account/Login">
+            <span>Log In</span>
+            <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
+          </b-button>
+          <b-button variant="primary" href="/Account/Register">
+            <span>Sign Up</span>
+            <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
+          </b-button>
         </template>
-      </router-link>
-      <div class="navbar-collapse collapse">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <router-link :to="{ name: 'criticsRoyale' }" class="nav-link" title="Critics Royale">
-              <img class="topnav-image" src="@/assets/critics-royale-top-nav.svg" />
-              <span class="full-nav">Royale</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'howtoplay' }" class="nav-link" title="How to Play">
-              <font-awesome-icon class="topnav-icon" icon="book-open" size="lg" />
-              <span class="full-nav">How to Play</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'faq' }" class="nav-link" title="FAQ">
-              <font-awesome-icon class="topnav-icon" icon="question-circle" size="lg" />
-              <span class="full-nav">FAQ</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'masterGames' }" class="nav-link" title="Games">
-              <font-awesome-icon class="topnav-icon" icon="gamepad" size="lg" />
-              <span class="full-nav">Games</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'about' }" class="nav-link" title="About">
-              <font-awesome-icon class="topnav-icon" icon="info-circle" size="lg" />
-              <span class="full-nav">About</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'community' }" class="nav-link" title="Community">
-              <font-awesome-icon class="topnav-icon" icon="users" size="lg" />
-              <span class="full-nav">Community</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'contact' }" class="nav-link" title="Contact">
-              <font-awesome-icon class="topnav-icon" icon="envelope" size="lg" />
-              <span class="full-nav">Contact</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://store.fantasycritic.games" target="_blank">
-              <font-awesome-icon class="topnav-icon" icon="cart-shopping" size="lg" />
-              <span class="full-nav">Store</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'fantasyCriticPlus' }" class="nav-link" title="Fantasy Critic Plus">
-              <img class="topnav-image fc-plus-icon" src="@/assets/plus.svg" />
-              <span class="full-nav">Plus</span>
-            </router-link>
-          </li>
-        </ul>
-      </div>
-      <div v-if="!authIsBusy" class="my-2 my-lg-0">
-        <ul class="navbar-nav">
-          <li class="nav-item brand-nav">
-            <a class="nav-link" href="https://patreon.com/fantasycritic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" />
-            </a>
-          </li>
-          <li class="nav-item brand-nav">
-            <a class="nav-link" href="https://twitter.com/fantasy_critic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" />
-            </a>
-          </li>
-          <li class="nav-item brand-nav">
-            <a class="nav-link" href="https://discord.gg/dNa7DD3" target="_blank">
-              <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
-            </a>
-          </li>
-          <template v-if="isAuth && userInfo">
-            <li v-if="displayName" class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                <font-awesome-icon class="topnav-user-icon" icon="user" size="lg" />
-                <span class="full-nav">{{ displayName }}</span>
-                <span class="caret"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right top-nav-dropdown" aria-labelledby="navbarDropdown">
-                <a href="/Account/Manage" class="dropdown-item">Manage Account</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/Account/Logout">Log off</a>
-              </div>
-            </li>
-          </template>
-          <template v-else>
-            <li class="nav-item">
-              <b-button variant="info" href="/Account/Login" class="nav-link">
-                <span>Log In</span>
-                <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
-              </b-button>
-            </li>
-            <li class="nav-item">
-              <b-button variant="primary" href="/Account/Register" class="nav-link">
-                <span>Sign Up</span>
-                <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
-              </b-button>
-            </li>
-          </template>
-        </ul>
-      </div>
-    </nav>
-  </div>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
 </template>
 
 <script>
@@ -141,6 +118,11 @@ export default {
 .full-logo,
 .minimal-logo {
   height: 47px;
+}
+
+.topnav-icon,
+.full-nav {
+  color: #d6993a;
 }
 
 .topnav-image {
