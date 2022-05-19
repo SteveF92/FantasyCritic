@@ -76,11 +76,10 @@
           <span class="brand-text">Discord</span>
         </b-nav-item>
 
-        <b-nav-item-dropdown v-if="isAuth && userInfo" right>
+        <b-nav-item-dropdown v-if="isAuth && userInfo" right class="user-dropdown">
           <!-- Using 'button-content' slot -->
           <template #button-content>
-            <font-awesome-icon class="topnav-user-icon" icon="user" size="lg" />
-            <span class="full-nav">{{ displayName }}</span>
+            <span class="user-text">{{ displayName }}</span>
           </template>
           <b-dropdown-item href="/Account/Manage">Manage Account</b-dropdown-item>
           <b-dropdown-item href="/Account/Logout">Log Off</b-dropdown-item>
@@ -125,7 +124,8 @@ export default {
 
 .topnav-icon,
 .full-nav,
-.brand-text {
+.brand-text,
+.user-text {
   color: #d6993a;
 }
 
@@ -148,6 +148,12 @@ export default {
 
 .minimal-logo {
   display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .user-dropdown {
+    padding-bottom: 10px;
+  }
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1200px) {
