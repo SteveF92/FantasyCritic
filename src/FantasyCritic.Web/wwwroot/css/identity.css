@@ -1,7 +1,9 @@
 .main-navbar {
     padding: 0;
     margin: 0;
-    background-color: #343a40 !important;
+    background-color: #15171a !important;
+    margin-bottom: 3px;
+    padding-bottom: 1px;
 }
 
 .logo-link {
