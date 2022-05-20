@@ -1,6 +1,6 @@
 <template>
   <footer class="footer">
-    <div class="container">
+    <div class="container bg-dark">
       <div class="row justify-content-between">
         <div class="footer-logo" col-lg-4>
           <img src="@/assets/logo-white.png" />
