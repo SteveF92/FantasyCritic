@@ -160,7 +160,7 @@
           <div class="alert alert-secondary">
             <div class="d-flex">
               <div class="mr-auto p-2">More Questions?</div>
-              <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our full FAQ Page</b-button>
+              <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
             </div>
           </div>
         </div>
