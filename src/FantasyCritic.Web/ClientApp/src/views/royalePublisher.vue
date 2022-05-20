@@ -1,7 +1,7 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="publisher">
-      <div class="publisher-header">
+      <div class="publisher-header bg-secondary">
         <div v-if="publisher.publisherIcon && iconIsValid" class="publisher-icon">
           {{ publisher.publisherIcon }}
         </div>
@@ -292,7 +292,6 @@ export default {
   border: 2px;
   border-color: #d6993a;
   border-style: solid;
-  background-color: #414141;
   padding-left: 5px;
 }
 

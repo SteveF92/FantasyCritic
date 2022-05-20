@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="md" type="dark" variant="dark" class="main-nav">
+  <b-navbar toggleable="md" type="dark" variant="secondary" class="main-nav">
     <b-navbar-brand :to="{ name: 'welcome' }">
       <template v-if="!isPlusUser">
         <img class="full-logo" src="/img/horizontal-logo.svg" />
@@ -111,6 +111,7 @@ export default {
 .main-nav {
   padding-top: 0;
   padding-bottom: 0;
+  margin-bottom: 3px;
 }
 
 .navbar-brand {

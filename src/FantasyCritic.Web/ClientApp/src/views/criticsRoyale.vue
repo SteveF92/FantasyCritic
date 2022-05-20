@@ -12,7 +12,7 @@
           </b-dropdown-item>
         </b-dropdown>
       </div>
-      <div class="critic-royale-header-area">
+      <div class="critic-royale-header-area bg-secondary">
         <img class="critic-royale-header" src="@/assets/critic-royale-logo.svg" />
       </div>
 
@@ -248,7 +248,6 @@ export default {
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
-  background-color: #4a4a4a;
   margin-right: 25%;
   margin-left: 25%;
   border-radius: 5px;

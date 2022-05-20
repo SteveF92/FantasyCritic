@@ -18,7 +18,7 @@
 
     <div v-show="showManualSettings">
       <label>Drag and drop to change order.</label>
-      <div class="fluid container draft-order-editor">
+      <div class="fluid container draft-order-editor bg-secondary">
         <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
           <transition-group type="transition" :name="'flip-list'">
             <li v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
@@ -108,7 +108,6 @@ export default {
 </script>
 <style>
 .draft-order-editor {
-  background-color: #414141;
   border-radius: 5px;
   padding-left: 20px;
   padding-right: 20px;

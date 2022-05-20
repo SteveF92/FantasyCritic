@@ -14,7 +14,7 @@
     </div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">
-        <draggable class="tag-drag-list" :list="internalValue.banned" group="tags" @change="onChange">
+        <draggable class="tag-drag-list bg-secondary" :list="internalValue.banned" group="tags" @change="onChange">
           <div v-for="element in internalValue.banned" :key="element" class="tag-drag-item">
             <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
@@ -24,7 +24,7 @@
       </div>
 
       <div class="tag-flex-drag">
-        <draggable class="tag-drag-list" :list="internalValue.allowed" group="tags" @change="onChange">
+        <draggable class="tag-drag-list bg-secondary" :list="internalValue.allowed" group="tags" @change="onChange">
           <div v-for="element in internalValue.allowed" :key="element" class="tag-drag-item">
             <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
@@ -155,7 +155,6 @@ export default {
   margin: 3px;
 }
 .tag-drag-list {
-  background: #404040;
   border-radius: 10px;
   padding: 5px;
 }

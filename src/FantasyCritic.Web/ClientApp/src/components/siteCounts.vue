@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="siteCounts" class="row counts-area">
+    <div v-if="siteCounts" class="row counts-area bg-secondary">
       <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
         <div class="row">
           <div class="col-6 col-sm-3">
@@ -53,7 +53,6 @@ export default {
 
 <style scoped>
 .counts-area {
-  background-color: #414141;
   text-align: center;
 }
 </style>

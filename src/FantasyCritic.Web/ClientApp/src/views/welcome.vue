@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="row welcome-area">
+    <div class="row welcome-area bg-secondary">
       <div class="col-md-5 offset-md-1 col-sm-12 welcome-heading">
         <h1>Play free forever!</h1>
       </div>
@@ -46,7 +46,7 @@
 
     <br />
 
-    <div class="row welcome-area">
+    <div class="row welcome-area bg-secondary">
       <div class="col-md-5 offset-md-1 col-sm-12 critic-royale-logo-area">
         <img class="critic-royale-logo" src="@/assets/critic-royale-logo.svg" />
       </div>
@@ -107,7 +107,7 @@
       </div>
     </div>
 
-    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1 features-area">
+    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1 features-area bg-secondary">
       <h2 class="features-heading">Features and Highlights</h2>
       <div class="feature-highlights-area">
         <div class="row">
@@ -237,10 +237,6 @@ export default {
   max-width: 500px;
 }
 
-.welcome-area {
-  background-color: #4a4a4a;
-}
-
 .welcome-heading {
   text-align: center;
 }
@@ -282,7 +278,6 @@ export default {
 }
 
 .features-area {
-  background-color: #414141;
   padding-bottom: 15px;
 }
 

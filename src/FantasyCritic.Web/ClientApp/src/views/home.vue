@@ -34,7 +34,7 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card v-if="userInfo" title="Leagues" class="homepage-section">
+          <b-card v-if="userInfo" title="Leagues" bg-variant="secondary">
             <b-tabs pills>
               <b-tab title="My Leagues" title-item-class="tab-header">
                 <div v-if="myStandardLeagues && myStandardLeagues.length > 0">
@@ -71,7 +71,7 @@
 
         <div class="col-lg-4 col-md-12">
           <hr class="d-md-block d-lg-none" />
-          <tweets class="homepage-section"></tweets>
+          <tweets></tweets>
         </div>
       </div>
 
@@ -79,14 +79,14 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card v-if="gameNews" class="homepage-section">
+          <b-card v-if="gameNews" bg-variant="secondary">
             <gameNews :game-news="gameNews" mode="user" />
           </b-card>
         </div>
 
         <div class="col-lg-4 col-md-12">
           <hr class="d-md-block d-lg-none" />
-          <b-card title="Popular Public Leagues" class="homepage-section">
+          <b-card title="Popular Public Leagues" bg-variant="secondary">
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
             <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
@@ -255,17 +255,9 @@ export default {
   min-width: 200px;
 }
 
-div >>> div.card {
-  background: rgba(50, 50, 50, 0.8);
-}
-
 div >>> .tab-header a {
   border-radius: 0px;
   font-weight: bolder;
   color: white;
-}
-
-div >>> .tab-header .active {
-  background-color: #414141;
 }
 </style>

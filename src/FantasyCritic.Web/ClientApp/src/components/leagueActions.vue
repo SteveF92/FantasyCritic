@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="league-actions">
+    <div class="league-actions bg-secondary">
       <div v-if="userPublisher">
         <div class="publisher-section">
           <div v-if="userPublisher.publisherIcon && iconIsValid" class="publisher-icon">
@@ -274,7 +274,6 @@ export default {
   border: 2px;
   border-color: #d6993a;
   border-style: solid;
-  background-color: #414141;
   padding-left: 5px;
   padding-right: 5px;
 }
