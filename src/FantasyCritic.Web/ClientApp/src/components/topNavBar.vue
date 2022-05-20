@@ -111,7 +111,6 @@ export default {
 .main-nav {
   padding-top: 0;
   padding-bottom: 0;
-  margin-bottom: 3px;
 }
 
 .navbar-brand {
