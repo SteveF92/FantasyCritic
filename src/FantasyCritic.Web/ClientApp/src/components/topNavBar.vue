@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="md" type="light" variant="light" class="main-nav">
+  <b-navbar toggleable="md" type="dark" variant="dark" class="main-nav">
     <b-navbar-brand :to="{ name: 'welcome' }">
       <template v-if="!isPlusUser">
         <img class="full-logo" src="@/assets/horizontal-logo.svg" />
