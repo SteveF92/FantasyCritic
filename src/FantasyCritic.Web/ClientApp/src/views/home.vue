@@ -34,8 +34,8 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card v-if="userInfo" title="Leagues" bg-variant="secondary">
-            <b-tabs pills>
+          <b-card v-if="userInfo" title="Leagues">
+            <b-tabs pills class="league-tabs">
               <b-tab title="My Leagues" title-item-class="tab-header">
                 <div v-if="myStandardLeagues && myStandardLeagues.length > 0">
                   <leagueTable :leagues="myStandardLeagues" :league-icon="'user'" :show-archive="true"></leagueTable>
@@ -79,14 +79,14 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-12">
-          <b-card v-if="gameNews" bg-variant="secondary">
+          <b-card v-if="gameNews">
             <gameNews :game-news="gameNews" mode="user" />
           </b-card>
         </div>
 
         <div class="col-lg-4 col-md-12">
           <hr class="d-md-block d-lg-none" />
-          <b-card title="Popular Public Leagues" bg-variant="secondary">
+          <b-card title="Popular Public Leagues">
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
             <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
@@ -253,6 +253,14 @@ export default {
 .main-button {
   margin-top: 5px;
   min-width: 200px;
+}
+
+div >>> div.card {
+  background: rgba(50, 50, 50, 0.8);
+}
+
+div >>> .tab-header {
+  margin-bottom: 5px;
 }
 
 div >>> .tab-header a {
