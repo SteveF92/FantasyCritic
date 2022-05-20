@@ -88,7 +88,7 @@ export default {
 .plus-logo {
   margin-top: 10px;
   margin-bottom: 10px;
-  background-color: white;
+  background-color: rgba(50, 50, 50, 0.8);
   border-radius: 20px;
   max-width: 1000px;
   margin-left: auto;
