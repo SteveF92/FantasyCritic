@@ -301,14 +301,11 @@
             <li>The bid placed earlier wins.</li>
             <li>The player who was later in the draft order wins.</li>
           </ol>
-          However, leagues can choose to flip the 2nd and 3rd options, so that after highest bids, the next tiebreaker is the bid placed earlier. Twos special notes on 'Lowest Projected Points Wins':
-          <ul>
-            <li>The projections used are the 'advanced' projections.</li>
-            <li>
-              If your league uses 'special game slots', then points are counted towards your projection even if the game is not eligible for the slot it is in. The reason for this is to prevent people
-              from intentionally moving games into slots they aren't eligible for in order to decrease their projected points while trying to win a bid tiebreak.
-            </li>
-          </ul>
+          <p>However, leagues can choose to flip the 2nd and 3rd options, so that after highest bids, the next tiebreaker is the bid placed earlier.</p>
+          <p>
+            If your league uses 'special game slots', then points are counted towards your projection even if the game is not eligible for the slot it is in. The reason for this is to prevent players
+            from intentionally moving games into slots they aren't eligible for in order to decrease their projected points while trying to win a bid tiebreak.
+          </p>
         </div>
       </collapseCard>
       <collapseCard>
