@@ -95,13 +95,4 @@ export default {
   margin-right: auto;
   display: block;
 }
-
-/* .screenshot {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  border-style: solid;
-  border-width: 2px;
-  border-color: white;
-} */
 </style>
