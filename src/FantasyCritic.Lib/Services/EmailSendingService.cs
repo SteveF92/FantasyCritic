@@ -2,7 +2,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Email.EmailModels;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using NLog;
+using Serilog;
 using RazorLight;
 using System.IO;
 using FantasyCritic.Lib.Interfaces;
@@ -11,8 +11,6 @@ namespace FantasyCritic.Lib.Services;
 
 public class EmailSendingService
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private readonly FantasyCriticUserManager _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InterLeagueService _interLeagueService;
@@ -51,7 +49,7 @@ public class EmailSendingService
         bool isTimeToSendPublicBidEmails = dayOfWeek == TimeExtensions.PublicBiddingRevealDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet;
         if (isTimeToSendPublicBidEmails)
         {
-            _logger.Info($"Sending public bid emails because date/time is: {nycNow}");
+            Log.Information($"Sending public bid emails because date/time is: {nycNow}");
             await SendPublicBidEmails();
         }
     }

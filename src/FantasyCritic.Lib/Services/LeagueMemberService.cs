@@ -1,14 +1,12 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using NLog;
+using Serilog;
 
 namespace FantasyCritic.Lib.Services;
 
 public class LeagueMemberService
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private readonly FantasyCriticUserManager _userManager;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
@@ -229,7 +227,7 @@ public class LeagueMemberService
             var deletePublisher = allPublishers.SingleOrDefault(x => x.User.Id == removeUser.Id);
             if (deletePublisher != null)
             {
-                _logger.Warn($"Deleting publisher: {deletePublisher.PublisherID} from league: {deletePublisher.LeagueYearKey.LeagueID} " +
+                Log.Warning($"Deleting publisher: {deletePublisher.PublisherID} from league: {deletePublisher.LeagueYearKey.LeagueID} " +
                              $"in year: {deletePublisher.LeagueYearKey.Year}");
                 await _fantasyCriticRepo.FullyRemovePublisher(leagueYear, deletePublisher);
             }
