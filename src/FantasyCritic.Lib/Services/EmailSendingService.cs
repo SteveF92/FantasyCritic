@@ -11,6 +11,8 @@ namespace FantasyCritic.Lib.Services;
 
 public class EmailSendingService
 {
+    private static readonly ILogger _logger = Log.ForContext<EmailSendingService>();
+
     private readonly FantasyCriticUserManager _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InterLeagueService _interLeagueService;
@@ -49,7 +51,7 @@ public class EmailSendingService
         bool isTimeToSendPublicBidEmails = dayOfWeek == TimeExtensions.PublicBiddingRevealDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet;
         if (isTimeToSendPublicBidEmails)
         {
-            Log.Information($"Sending public bid emails because date/time is: {nycNow}");
+            _logger.Information($"Sending public bid emails because date/time is: {nycNow}");
             await SendPublicBidEmails();
         }
     }

@@ -7,6 +7,7 @@ namespace FantasyCritic.Web.Hubs;
 public class UpdateHub : Hub
 {
     private readonly FantasyCriticService _fantasyCriticService;
+    private static readonly ILogger _logger = Log.ForContext<UpdateHub>();
 
     public UpdateHub(FantasyCriticService fantasyCriticService)
     {
@@ -22,7 +23,7 @@ public class UpdateHub : Hub
     {
         if (ex is not null)
         {
-            Log.Error(ex, $"SignalR disconnected with error: {Context.ConnectionId}");
+            _logger.Error(ex, $"SignalR disconnected with error: {Context.ConnectionId}");
         }
 
         await base.OnDisconnectedAsync(ex);
@@ -49,7 +50,7 @@ public class UpdateHub : Hub
         }
         catch (Exception e)
         {
-            Log.Error(e, "SignalR fail!");
+            _logger.Error(e, "SignalR fail!");
             throw;
         }
     }

@@ -15,6 +15,8 @@ namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 {
+    private static readonly ILogger _logger = Log.ForContext<MySQLFantasyCriticRepo>();
+
     private readonly string _connectionString;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly IMasterGameRepo _masterGameRepo;
@@ -172,7 +174,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             if (!leaguesDictionary.TryGetValue(entity.LeagueID, out var league))
             {
-                Log.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                _logger.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                 continue;
             }
 
@@ -212,7 +214,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         for (var index = 0; index < updateBatches.Count; index++)
         {
-            Log.Information($"Running publisher game update {index + 1}/{updateBatches.Count}");
+            _logger.Information($"Running publisher game update {index + 1}/{updateBatches.Count}");
             var batch = updateBatches[index];
             await connection.ExecuteAsync(sql, batch, transaction);
         }
@@ -230,7 +232,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         for (var index = 0; index < updateBatches.Count; index++)
         {
-            Log.Information($"Running league year winner update {index + 1}/{updateBatches.Count}");
+            _logger.Information($"Running league year winner update {index + 1}/{updateBatches.Count}");
             var batch = updateBatches[index];
             await connection.ExecuteAsync(sql, batch, transaction);
         }
@@ -1059,7 +1061,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             if (!leaguesDictionary.TryGetValue(entity.LeagueID, out var league))
             {
-                Log.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                _logger.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                 continue;
             }
 
@@ -2877,7 +2879,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             if (league is null)
             {
                 //League has probably been deleted.
-                Log.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                _logger.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                 continue;
             }
 

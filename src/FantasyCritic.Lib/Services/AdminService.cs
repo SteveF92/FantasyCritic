@@ -13,6 +13,8 @@ namespace FantasyCritic.Lib.Services;
 
 public class AdminService
 {
+    private static readonly ILogger _logger = Log.ForContext<AdminService>();
+
     private readonly IRDSManager _rdsManager;
     private readonly RoyaleService _royaleService;
     private readonly IHypeFactorService _hypeFactorService;
@@ -68,11 +70,11 @@ public class AdminService
 
     public async Task RefreshCriticInfo()
     {
-        Log.Information("Refreshing critic scores");
+        _logger.Information("Refreshing critic scores");
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
         if (!systemWideSettings.RefreshOpenCritic)
         {
-            Log.Information("Not refreshing Open Critic scores as the flag is turned off.");
+            _logger.Information("Not refreshing Open Critic scores as the flag is turned off.");
             return;
         }
 
@@ -100,7 +102,7 @@ public class AdminService
             }
             else
             {
-                Log.Warning($"Getting an open critic game failed (empty return): {masterGame.GameName} | [{masterGame.OpenCriticID.Value}]");
+                _logger.Warning($"Getting an open critic game failed (empty return): {masterGame.GameName} | [{masterGame.OpenCriticID.Value}]");
             }
 
             foreach (var subGame in masterGame.SubGames)
@@ -119,7 +121,7 @@ public class AdminService
             }
         }
 
-        Log.Information("Done refreshing critic scores");
+        _logger.Information("Done refreshing critic scores");
     }
 
     public async Task RefreshGGInfo(bool deepRefresh)
@@ -141,14 +143,14 @@ public class AdminService
             }
             else
             {
-                Log.Warning($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken}]");
+                _logger.Warning($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken}]");
             }
         }
     }
 
     public async Task UpdateFantasyPoints()
     {
-        Log.Information("Updating fantasy points");
+        _logger.Information("Updating fantasy points");
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
@@ -165,8 +167,8 @@ public class AdminService
             await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers);
         }
 
-        Log.Information("Done updating fantasy points");
-        Log.Information("Updating royale fantasy points");
+        _logger.Information("Done updating fantasy points");
+        _logger.Information("Updating royale fantasy points");
 
         var supportedQuarters = await _royaleService.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
@@ -179,12 +181,12 @@ public class AdminService
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
         }
 
-        Log.Information("Done updating royale fantasy points");
+        _logger.Information("Done updating royale fantasy points");
     }
 
     public async Task RefreshCaches()
     {
-        Log.Information("Refreshing caches");
+        _logger.Information("Refreshing caches");
 
         LocalDate today = _clock.GetToday();
         LocalDate tomorrow = today.PlusDays(1);
@@ -195,7 +197,7 @@ public class AdminService
         HypeConstants hypeConstants;
         if (_configuration.DefaultHypeConstants)
         {
-            Log.Information("Using default hype constants");
+            _logger.Information("Using default hype constants");
             hypeConstants = HypeConstants.GetReasonableDefaults();
         }
         else
@@ -203,7 +205,7 @@ public class AdminService
             hypeConstants = await GetHypeConstants();
         }
         await UpdateGameStats(hypeConstants);
-        Log.Information("Done refreshing caches");
+        _logger.Information("Done refreshing caches");
     }
 
     public Task SnapshotDatabase()
@@ -234,7 +236,7 @@ public class AdminService
             var endDate = new LocalDate(supportedYear.Year, 12, 31);
             if (nycNow.Date > endDate)
             {
-                Log.Information($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
+                _logger.Information($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
                 await _interLeagueService.FinishYear(supportedYear);
             }
         }
@@ -250,7 +252,7 @@ public class AdminService
             var endDate = supportedQuarter.YearQuarter.LastDateOfQuarter;
             if (nycNow.Date > endDate)
             {
-                Log.Information($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
+                _logger.Information($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
                 await _royaleService.FinishQuarter(supportedQuarter);
             }
         }
@@ -269,9 +271,9 @@ public class AdminService
         var latestTimeToSet = new LocalTime(20, 59);
         if (dayOfWeek == TimeExtensions.ActionProcessingDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet)
         {
-            Log.Information($"Automatically setting action processing mode = true because date/time is: {nycNow}");
+            _logger.Information($"Automatically setting action processing mode = true because date/time is: {nycNow}");
             await _interLeagueService.SetActionProcessingMode(true);
-            Log.Information("Snapshotting database");
+            _logger.Information("Snapshotting database");
             await _rdsManager.SnapshotRDS(now);
         }
     }
@@ -359,7 +361,7 @@ public class AdminService
 
     private async Task ProcessSpecialAuctionsForYear(SystemWideValues systemWideValues, int year)
     {
-        Log.Information($"Processing special auctions for {year}.");
+        _logger.Information($"Processing special auctions for {year}.");
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
         var results = await GetSpecialAuctionResults(systemWideValues, year, now, allLeagueYears);
@@ -419,7 +421,7 @@ public class AdminService
 
     private async Task UpdateSystemWideValues()
     {
-        Log.Information("Updating system wide values");
+        _logger.Information("Updating system wide values");
 
         List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
         var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -467,7 +469,7 @@ public class AdminService
 
     private async Task<HypeConstants> GetHypeConstants()
     {
-        Log.Information("Getting Hype Constants");
+        _logger.Information("Getting Hype Constants");
         var supportedYears = await _interLeagueService.GetSupportedYears();
         List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
 
@@ -484,14 +486,14 @@ public class AdminService
         }
 
         var hypeConstants = await _hypeFactorService.GetHypeConstants(allMasterGameYears);
-        Log.Information($"Hype Constants: {hypeConstants}");
+        _logger.Information($"Hype Constants: {hypeConstants}");
 
         return hypeConstants;
     }
 
     private async Task UpdateGameStats(HypeConstants hypeConstants)
     {
-        Log.Information("Updating game stats.");
+        _logger.Information("Updating game stats.");
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var currentDate = _clock.GetToday();
@@ -680,7 +682,7 @@ public class AdminService
 
     private async Task UpdateCodeBasedTags(LocalDate today)
     {
-        Log.Information("Updating Code Based Tags");
+        _logger.Information("Updating Code Based Tags");
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var allMasterGames = await _masterGameRepo.GetMasterGames();
         var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);

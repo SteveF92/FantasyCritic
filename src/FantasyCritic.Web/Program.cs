@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Hosting;
 using Dapper.NodaTime;
 using FantasyCritic.Web;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 
@@ -19,27 +18,18 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Logger(config =>
     {
         config.Filter
-            .ByExcluding(logEvent =>
+            .ByIncludingOnly(logEvent =>
             {
                 if (logEvent.Properties.TryGetValue("SourceContext", out var sourceContext))
                 {
                     var sourceContextString = sourceContext?.ToString();
                     if (sourceContextString is not null && sourceContextString.StartsWith("\"FantasyCritic"))
                     {
-                        return false;
+                        return true;
                     }
                 }
 
-                if (logEvent.Properties.TryGetValue("ActionName", out var actionName))
-                {
-                    var actionNameString = actionName?.ToString();
-                    if (actionNameString is not null && actionNameString.StartsWith("\"FantasyCritic"))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                return false;
             })
             .WriteTo.File(myLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
     })
