@@ -7,6 +7,8 @@ namespace FantasyCritic.Lib.Services;
 
 public class LeagueMemberService
 {
+    private static readonly ILogger _logger = Log.ForContext<LeagueMemberService>();
+
     private readonly FantasyCriticUserManager _userManager;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
@@ -227,7 +229,7 @@ public class LeagueMemberService
             var deletePublisher = allPublishers.SingleOrDefault(x => x.User.Id == removeUser.Id);
             if (deletePublisher != null)
             {
-                Log.Warning($"Deleting publisher: {deletePublisher.PublisherID} from league: {deletePublisher.LeagueYearKey.LeagueID} " +
+                _logger.Warning($"Deleting publisher: {deletePublisher.PublisherID} from league: {deletePublisher.LeagueYearKey.LeagueID} " +
                              $"in year: {deletePublisher.LeagueYearKey.Year}");
                 await _fantasyCriticRepo.FullyRemovePublisher(leagueYear, deletePublisher);
             }
