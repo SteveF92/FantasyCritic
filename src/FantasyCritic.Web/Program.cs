@@ -48,9 +48,10 @@ try
 
     IConfigurationStore configurationStore;
     var awsRegion = Environment.GetEnvironmentVariable("awsRegion");
-    if (!string.IsNullOrWhiteSpace(awsRegion))
+    var secretsManagerPrefix = Environment.GetEnvironmentVariable("secretsManagerPrefix");
+    if (!string.IsNullOrWhiteSpace(awsRegion) && !string.IsNullOrWhiteSpace(secretsManagerPrefix))
     {
-        var awsStore = new SecretsManagerConfigurationStore(awsRegion);
+        var awsStore = new SecretsManagerConfigurationStore(awsRegion, secretsManagerPrefix);
         await awsStore.PopulateAllValues();
         configurationStore = awsStore;
     }
