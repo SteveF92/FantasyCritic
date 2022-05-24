@@ -16,14 +16,12 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Statistics;
 using Newtonsoft.Json;
-using NLog;
+using Serilog;
 
 namespace FantasyCritic.AWS;
 
 public class LambdaHypeFactorService : IHypeFactorService
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private readonly string _region;
     private readonly string _bucket;
 
@@ -59,9 +57,9 @@ public class LambdaHypeFactorService : IHypeFactorService
         InvokeResponse response = await lambdaClient.InvokeAsync(request);
         if (response.HttpStatusCode != HttpStatusCode.OK || !string.IsNullOrWhiteSpace(response.FunctionError))
         {
-            _logger.Error(response.HttpStatusCode);
-            _logger.Error(response.FunctionError);
-            _logger.Error(response.LogResult);
+            Log.Error(response.HttpStatusCode.ToString());
+            Log.Error(response.FunctionError);
+            Log.Error(response.LogResult);
             throw new Exception("Lambda function failed.");
         }
 

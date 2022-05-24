@@ -3,13 +3,12 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.MySQL.Entities;
-using NLog;
+using Serilog;
 
 namespace FantasyCritic.MySQL;
 
 public class MySQLMasterGameRepo : IMasterGameRepo
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly string _connectionString;
     private readonly Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
@@ -508,7 +507,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateReleaseDateEstimates(LocalDate tomorrow)
     {
-        _logger.Info("Updating Release Date Estimates");
+        Log.Information("Updating Release Date Estimates");
 
         var sql = "UPDATE tbl_mastergame SET MinimumReleaseDate = ReleaseDate, MaximumReleaseDate = ReleaseDate, EstimatedReleaseDate = ReleaseDate where ReleaseDate is not NULL;";
         var sql2 = "UPDATE tbl_mastergame SET MinimumReleaseDate = @tomorrow WHERE MinimumReleaseDate < @tomorrow AND ReleaseDate IS NULL;";
