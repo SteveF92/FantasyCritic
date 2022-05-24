@@ -2,15 +2,17 @@ using Microsoft.AspNetCore.Hosting;
 using Dapper.NodaTime;
 using FantasyCritic.Web;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 
+string allLogPath = @"C:\FantasyCritic\Logs\log-all";
+string warnLogPath = @"C:\FantasyCritic\Logs\log-warning";
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File(@"C:\FantasyCritic\Logs\log-all", rollingInterval: RollingInterval.Day)
-    .WriteTo.File(@"C:\FantasyCritic\Logs\log-warning", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning)
+    .WriteTo.File(allLogPath, rollingInterval: RollingInterval.Day, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}")
+    .WriteTo.File(warnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}")
     .CreateLogger();
 
 try
