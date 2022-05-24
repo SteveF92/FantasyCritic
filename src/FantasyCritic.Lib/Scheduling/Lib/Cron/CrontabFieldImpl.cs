@@ -201,7 +201,7 @@ public sealed class CrontabFieldImpl : IObjectReference
         Debug.Assert(str != null);
         Debug.Assert(innerException != null);
 
-        throw new FormatException(string.Format("'{0}' is not a valid crontab field expression.", str),
+        throw new FormatException($"'{str}' is not a valid crontab field expression.",
             innerException);
     }
 

@@ -1,20 +1,25 @@
 using Microsoft.AspNetCore.Hosting;
-using NLog.Web;
 using Dapper.NodaTime;
 using FantasyCritic.Web;
 using Microsoft.AspNetCore.Builder;
-using NLog;
+using Serilog;
+using Serilog.Events;
 
-var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(@"C:\FantasyCritic\Logs\log-all", rollingInterval: RollingInterval.Day)
+    .WriteTo.File(@"C:\FantasyCritic\Logs\log-warning", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning)
+    .CreateLogger();
 
 try
 {
-    logger.Debug("init main");
     DapperNodaTimeSetup.Register();
-
+    Log.Information("Starting web host");
     var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseNLog();
     builder.WebHost.UseIIS();
+    builder.Host.UseSerilog();
 
     var app = builder
         .ConfigureServices()
@@ -22,12 +27,11 @@ try
 
     app.Run();
 }
-catch (Exception ex) when (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
+catch (Exception ex)
 {
-    logger.Fatal(ex, "Unhandled exception");
+    Log.Fatal(ex, "Host terminated unexpectedly");
 }
 finally
 {
-    logger.Info("Shut down complete");
-    LogManager.Shutdown();
+    Log.CloseAndFlush();
 }
