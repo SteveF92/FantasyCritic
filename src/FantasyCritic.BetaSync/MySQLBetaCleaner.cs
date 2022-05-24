@@ -8,14 +8,12 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
-using NLog;
+using Serilog;
 
 namespace FantasyCritic.BetaSync;
 
 public class MySQLBetaCleaner
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private readonly string _connectionString;
 
     public MySQLBetaCleaner(string connectionString)
@@ -41,7 +39,7 @@ public class MySQLBetaCleaner
         await using var transaction = await connection.BeginTransactionAsync();
         for (var index = 0; index < batches.Count; index++)
         {
-            _logger.Info($"Running user clean batch {index + 1}/{batches.Count}");
+            Log.Information($"Running user clean batch {index + 1}/{batches.Count}");
             var batch = batches[index];
             var joinedSQL = string.Join('\n', batch);
             await connection.ExecuteAsync(joinedSQL, transaction: transaction);
@@ -56,13 +54,13 @@ public class MySQLBetaCleaner
         var tagsOnBetaNotOnProduction = betaTags.Except(productionTags).ToList();
         foreach (var tag in tagsOnBetaNotOnProduction)
         {
-            _logger.Warn($"Tag: {tag.ReadableName} on beta but not production.");
+            Log.Warning($"Tag: {tag.ReadableName} on beta but not production.");
         }
 
         var gamesOnBetaNotOnProduction = betaMasterGames.Except(productionMasterGames).ToList();
         foreach (var game in gamesOnBetaNotOnProduction)
         {
-            _logger.Warn($"Game: {game.GameName} on beta but not production.");
+            Log.Warning($"Game: {game.GameName} on beta but not production.");
         }
 
         var betaKeepTags = tagsOnBetaNotOnProduction.Select(x => x.Name);

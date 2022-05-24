@@ -4,15 +4,13 @@ using System.Threading.Tasks;
 using Amazon.RDS;
 using Amazon.RDS.Model;
 using FantasyCritic.Lib.Extensions;
-using NLog;
 using NodaTime;
+using Serilog;
 
 namespace FantasyCritic.BetaSync;
 
 public class RDSRefresher
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private readonly AmazonRDSClient _rdsClient;
     private readonly string _sourceRdsName;
     private readonly string _destinationRdsName;
@@ -26,12 +24,13 @@ public class RDSRefresher
 
     public async Task CopySourceToDestination()
     {
+        Log.Information("Starting up copy process.");
         DBInstance destinationDB = await GetDBInstanceByIdentifier(_destinationRdsName);
-        _logger.Info($"Destination Database: {destinationDB.DBInstanceIdentifier}");
+        Log.Information($"Destination Database: {destinationDB.DBInstanceIdentifier}");
 
         DBSnapshot snapshotChosen = await SelectDBSnapshot(_sourceRdsName);
 
-        _logger.Info($"Source Snapshot: {snapshotChosen.DBSnapshotIdentifier}");
+        Log.Information($"Source Snapshot: {snapshotChosen.DBSnapshotIdentifier}");
 
         string newNameForOldServer = await RenameOldInstance(destinationDB);
 
@@ -40,7 +39,7 @@ public class RDSRefresher
         DBInstance oldServer = await GetDBInstanceByIdentifier(newNameForOldServer);
         await DeleteInstance(oldServer);
 
-        _logger.Info("Process Complete.");
+        Log.Information("Process Complete.");
     }
 
     private async Task<DBSnapshot> SelectDBSnapshot(string sourceRDSName)
@@ -61,14 +60,14 @@ public class RDSRefresher
         }
 
         DBSnapshot snapshotChosen = snapshotsForInstance[Convert.ToInt32(snapshotSelection)];
-        _logger.Info($"Selected snapshot: {snapshotChosen.DBSnapshotIdentifier}");
+        Log.Information($"Selected snapshot: {snapshotChosen.DBSnapshotIdentifier}");
         return snapshotChosen;
     }
 
     private async Task<string> RenameOldInstance(DBInstance instance)
     {
         string newName = instance.DBInstanceIdentifier + "-old";
-        _logger.Info($"Renaming {instance.DBInstanceIdentifier} to {newName}");
+        Log.Information($"Renaming {instance.DBInstanceIdentifier} to {newName}");
         ModifyDBInstanceRequest modifyDBInstanceRequest = new ModifyDBInstanceRequest()
         {
             DBInstanceIdentifier = instance.DBInstanceIdentifier,
@@ -79,13 +78,13 @@ public class RDSRefresher
         ModifyDBInstanceResponse modifyResponse = await _rdsClient.ModifyDBInstanceAsync(modifyDBInstanceRequest);
 
         await WaitForDBToHaveName(instance.DbiResourceId, newName);
-        _logger.Info("Rename successful.");
+        Log.Information("Rename successful.");
         return newName;
     }
 
     private async Task<DBInstance> RestoreFromSnapshot(DBInstance instance, DBSnapshot snapshot)
     {
-        _logger.Info("Creating new instance from snapshot.");
+        Log.Information("Creating new instance from snapshot.");
         RestoreDBInstanceFromDBSnapshotRequest restoreRequest = new RestoreDBInstanceFromDBSnapshotRequest()
         {
             DBSnapshotIdentifier = snapshot.DBSnapshotIdentifier,
@@ -107,14 +106,14 @@ public class RDSRefresher
 
         await WaitForDBToBeAvailable(restoreResponse.DBInstance.DbiResourceId);
 
-        _logger.Info("Creation Successful.");
+        Log.Information("Creation Successful.");
 
         return restoreResponse.DBInstance;
     }
 
     private async Task DeleteInstance(DBInstance instance)
     {
-        _logger.Info("Deleting old instance.");
+        Log.Information("Deleting old instance.");
 
         string finalSnapshotID = $"beta-final-snap-{SystemClock.Instance.GetToday().ToISOString()}-{Guid.NewGuid().ToString()[0]}";
         var deleteRequest = new DeleteDBInstanceRequest()

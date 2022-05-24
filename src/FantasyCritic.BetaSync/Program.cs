@@ -10,7 +10,6 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
-using NLog;
 using NodaTime;
 using FantasyCritic.AWS;
 using FantasyCritic.MySQL.Entities;
@@ -19,13 +18,12 @@ using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
+using Serilog;
 
 namespace FantasyCritic.BetaSync;
 
 public static class Program
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private static string _awsRegion = null!;
     private static string _betaBucket = null!;
     private static string _productionReadOnlyConnectionString = null!;
@@ -34,6 +32,10 @@ public static class Program
 
     static async Task Main(string[] args)
     {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateLogger();
+
         _awsRegion = ConfigurationManager.AppSettings["awsRegion"]!;
         _betaBucket = ConfigurationManager.AppSettings["betaBucket"]!;
         _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"]!;
@@ -55,7 +57,7 @@ public static class Program
         MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
         MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
 
-        _logger.Info("Cleaning emails/passwords for non-beta users");
+        Log.Information("Cleaning emails/passwords for non-beta users");
         var allUsers = await betaUserStore.GetAllUsers();
         var betaUsers = await betaUserStore.GetUsersInRoleAsync("BetaTester", CancellationToken.None);
         await cleaner.CleanEmailsAndPasswords(allUsers, betaUsers);
@@ -77,7 +79,7 @@ public static class Program
         MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
         AdminService betaAdminService = GetAdminService();
 
-        _logger.Info("Getting master games from production");
+        Log.Information("Getting master games from production");
         var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
         var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
         var betaMasterGameTags = await betaMasterGameRepo.GetMasterGameTags();
