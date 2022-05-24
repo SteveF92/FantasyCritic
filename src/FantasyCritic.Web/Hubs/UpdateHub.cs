@@ -1,13 +1,11 @@
 using FantasyCritic.Lib.Services;
 using Microsoft.AspNetCore.SignalR;
-using NLog;
+using Serilog;
 
 namespace FantasyCritic.Web.Hubs;
 
 public class UpdateHub : Hub
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private readonly FantasyCriticService _fantasyCriticService;
 
     public UpdateHub(FantasyCriticService fantasyCriticService)
@@ -24,8 +22,7 @@ public class UpdateHub : Hub
     {
         if (ex is not null)
         {
-            _logger.Error($"SignalR disconnected with error: {Context.ConnectionId}");
-            _logger.Error(ex);
+            Log.Error(ex, $"SignalR disconnected with error: {Context.ConnectionId}");
         }
 
         await base.OnDisconnectedAsync(ex);
@@ -52,10 +49,8 @@ public class UpdateHub : Hub
         }
         catch (Exception e)
         {
-            _logger.Error("SignalR fail!");
-            _logger.Error(e);
+            Log.Error(e, "SignalR fail!");
             throw;
         }
-
     }
 }

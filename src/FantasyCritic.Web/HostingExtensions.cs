@@ -26,7 +26,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
-using NLog;
+using Serilog;
 using NodaTime.Serialization.JsonNet;
 using VueCliMiddleware;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
@@ -35,8 +35,6 @@ namespace FantasyCritic.Web;
 
 public static class HostingExtensions
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private static string GetSPAPath(IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
@@ -51,11 +49,11 @@ public static class HostingExtensions
         var env = builder.Environment;
         if (env.IsDevelopment())
         {
-            _logger.Info("Startup: Running in Development mode.");
+            Log.Information("Startup: Running in Development mode.");
         }
         else
         {
-            _logger.Info("Startup: Running in Production mode.");
+            Log.Information("Startup: Running in Production mode.");
         }
 
         var configuration = builder.Configuration;
