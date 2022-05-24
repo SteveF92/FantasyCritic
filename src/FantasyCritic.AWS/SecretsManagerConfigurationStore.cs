@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.SecretsManager;
@@ -76,6 +77,26 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
             }
 
             nextToken = response.NextToken;
+        }
+
+        foreach (var secret in allSecrets)
+        {
+            var request = new GetSecretValueRequest()
+            {
+                SecretId = secret.Name
+            };
+
+            var secretResponse = await client.GetSecretValueAsync(request);
+            if (secretResponse.SecretString != null)
+            {
+                _parameterCache.Add(secret.Name, secretResponse.SecretString);
+            }
+            else
+            {
+                StreamReader reader = new StreamReader(secretResponse.SecretBinary);
+                string decodedBinarySecret = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(reader.ReadToEnd()));
+                _parameterCache.Add(secret.Name, decodedBinarySecret);
+            }
         }
     }
 }
