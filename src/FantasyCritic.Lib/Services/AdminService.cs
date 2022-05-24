@@ -4,7 +4,7 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.GG;
-using NLog;
+using Serilog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
@@ -13,8 +13,6 @@ namespace FantasyCritic.Lib.Services;
 
 public class AdminService
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
     private readonly IRDSManager _rdsManager;
     private readonly RoyaleService _royaleService;
     private readonly IHypeFactorService _hypeFactorService;
@@ -70,11 +68,11 @@ public class AdminService
 
     public async Task RefreshCriticInfo()
     {
-        _logger.Info("Refreshing critic scores");
+        Log.Information("Refreshing critic scores");
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
         if (!systemWideSettings.RefreshOpenCritic)
         {
-            _logger.Info("Not refreshing Open Critic scores as the flag is turned off.");
+            Log.Information("Not refreshing Open Critic scores as the flag is turned off.");
             return;
         }
 
@@ -102,7 +100,7 @@ public class AdminService
             }
             else
             {
-                _logger.Warn($"Getting an open critic game failed (empty return): {masterGame.GameName} | [{masterGame.OpenCriticID.Value}]");
+                Log.Warning($"Getting an open critic game failed (empty return): {masterGame.GameName} | [{masterGame.OpenCriticID.Value}]");
             }
 
             foreach (var subGame in masterGame.SubGames)
@@ -121,7 +119,7 @@ public class AdminService
             }
         }
 
-        _logger.Info("Done refreshing critic scores");
+        Log.Information("Done refreshing critic scores");
     }
 
     public async Task RefreshGGInfo(bool deepRefresh)
@@ -143,14 +141,14 @@ public class AdminService
             }
             else
             {
-                _logger.Warn($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken}]");
+                Log.Warning($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken}]");
             }
         }
     }
 
     public async Task UpdateFantasyPoints()
     {
-        _logger.Info("Updating fantasy points");
+        Log.Information("Updating fantasy points");
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
@@ -167,8 +165,8 @@ public class AdminService
             await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers);
         }
 
-        _logger.Info("Done updating fantasy points");
-        _logger.Info("Updating royale fantasy points");
+        Log.Information("Done updating fantasy points");
+        Log.Information("Updating royale fantasy points");
 
         var supportedQuarters = await _royaleService.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
@@ -181,12 +179,12 @@ public class AdminService
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
         }
 
-        _logger.Info("Done updating royale fantasy points");
+        Log.Information("Done updating royale fantasy points");
     }
 
     public async Task RefreshCaches()
     {
-        _logger.Info("Refreshing caches");
+        Log.Information("Refreshing caches");
 
         LocalDate today = _clock.GetToday();
         LocalDate tomorrow = today.PlusDays(1);
@@ -197,7 +195,7 @@ public class AdminService
         HypeConstants hypeConstants;
         if (_configuration.DefaultHypeConstants)
         {
-            _logger.Info("Using default hype constants");
+            Log.Information("Using default hype constants");
             hypeConstants = HypeConstants.GetReasonableDefaults();
         }
         else
@@ -205,7 +203,7 @@ public class AdminService
             hypeConstants = await GetHypeConstants();
         }
         await UpdateGameStats(hypeConstants);
-        _logger.Info("Done refreshing caches");
+        Log.Information("Done refreshing caches");
     }
 
     public Task SnapshotDatabase()
@@ -236,7 +234,7 @@ public class AdminService
             var endDate = new LocalDate(supportedYear.Year, 12, 31);
             if (nycNow.Date > endDate)
             {
-                _logger.Info($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
+                Log.Information($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
                 await _interLeagueService.FinishYear(supportedYear);
             }
         }
@@ -252,7 +250,7 @@ public class AdminService
             var endDate = supportedQuarter.YearQuarter.LastDateOfQuarter;
             if (nycNow.Date > endDate)
             {
-                _logger.Info($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
+                Log.Information($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
                 await _royaleService.FinishQuarter(supportedQuarter);
             }
         }
@@ -271,9 +269,9 @@ public class AdminService
         var latestTimeToSet = new LocalTime(20, 59);
         if (dayOfWeek == TimeExtensions.ActionProcessingDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet)
         {
-            _logger.Info($"Automatically setting action processing mode = true because date/time is: {nycNow}");
+            Log.Information($"Automatically setting action processing mode = true because date/time is: {nycNow}");
             await _interLeagueService.SetActionProcessingMode(true);
-            _logger.Info("Snapshotting database");
+            Log.Information("Snapshotting database");
             await _rdsManager.SnapshotRDS(now);
         }
     }
@@ -361,7 +359,7 @@ public class AdminService
 
     private async Task ProcessSpecialAuctionsForYear(SystemWideValues systemWideValues, int year)
     {
-        _logger.Info($"Processing special auctions for {year}.");
+        Log.Information($"Processing special auctions for {year}.");
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
         var results = await GetSpecialAuctionResults(systemWideValues, year, now, allLeagueYears);
@@ -421,7 +419,7 @@ public class AdminService
 
     private async Task UpdateSystemWideValues()
     {
-        _logger.Info("Updating system wide values");
+        Log.Information("Updating system wide values");
 
         List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
         var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -469,7 +467,7 @@ public class AdminService
 
     private async Task<HypeConstants> GetHypeConstants()
     {
-        _logger.Info("Getting Hype Constants");
+        Log.Information("Getting Hype Constants");
         var supportedYears = await _interLeagueService.GetSupportedYears();
         List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
 
@@ -486,14 +484,14 @@ public class AdminService
         }
 
         var hypeConstants = await _hypeFactorService.GetHypeConstants(allMasterGameYears);
-        _logger.Info($"Hype Constants: {hypeConstants}");
+        Log.Information($"Hype Constants: {hypeConstants}");
 
         return hypeConstants;
     }
 
     private async Task UpdateGameStats(HypeConstants hypeConstants)
     {
-        _logger.Info("Updating game stats.");
+        Log.Information("Updating game stats.");
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var currentDate = _clock.GetToday();
@@ -682,7 +680,7 @@ public class AdminService
 
     private async Task UpdateCodeBasedTags(LocalDate today)
     {
-        _logger.Info("Updating Code Based Tags");
+        Log.Information("Updating Code Based Tags");
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var allMasterGames = await _masterGameRepo.GetMasterGames();
         var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);
