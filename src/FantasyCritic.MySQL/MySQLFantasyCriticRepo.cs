@@ -8,8 +8,8 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
-using NLog;
 using FantasyCritic.MySQL.Entities.Trades;
+using Serilog;
 
 namespace FantasyCritic.MySQL;
 
@@ -18,7 +18,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     private readonly string _connectionString;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly IMasterGameRepo _masterGameRepo;
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     public MySQLFantasyCriticRepo(string connectionString, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo)
     {
@@ -173,7 +172,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             if (!leaguesDictionary.TryGetValue(entity.LeagueID, out var league))
             {
-                _logger.Warn($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                Log.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                 continue;
             }
 
@@ -213,7 +212,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         for (var index = 0; index < updateBatches.Count; index++)
         {
-            _logger.Info($"Running publisher game update {index + 1}/{updateBatches.Count}");
+            Log.Information($"Running publisher game update {index + 1}/{updateBatches.Count}");
             var batch = updateBatches[index];
             await connection.ExecuteAsync(sql, batch, transaction);
         }
@@ -231,7 +230,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         for (var index = 0; index < updateBatches.Count; index++)
         {
-            _logger.Info($"Running league year winner update {index + 1}/{updateBatches.Count}");
+            Log.Information($"Running league year winner update {index + 1}/{updateBatches.Count}");
             var batch = updateBatches[index];
             await connection.ExecuteAsync(sql, batch, transaction);
         }
@@ -1060,7 +1059,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             if (!leaguesDictionary.TryGetValue(entity.LeagueID, out var league))
             {
-                _logger.Warn($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                Log.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                 continue;
             }
 
@@ -2878,7 +2877,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             if (league is null)
             {
                 //League has probably been deleted.
-                _logger.Warn($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                Log.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                 continue;
             }
 
