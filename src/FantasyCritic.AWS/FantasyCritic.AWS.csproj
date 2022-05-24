@@ -11,9 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.12.8" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.13.2" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.8.25" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.13.3" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.13.11" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.9.5" />
   </ItemGroup>
 
   <ItemGroup>
