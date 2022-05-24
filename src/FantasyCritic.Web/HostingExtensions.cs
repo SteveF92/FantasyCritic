@@ -22,7 +22,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
@@ -44,7 +43,8 @@ public static class HostingExtensions
 
         return "ClientApp/dist";
     }
-    public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
+
+    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, IConfigurationStore configuration)
     {
         var env = builder.Environment;
         if (env.IsDevelopment())
@@ -56,25 +56,24 @@ public static class HostingExtensions
             Log.Information("Startup: Running in Production mode.");
         }
 
-        var configuration = builder.Configuration;
         var services = builder.Services;
         IClock clock = SystemClock.Instance;
-        var rdsInstanceName = configuration["AWS:rdsInstanceName"];
-        var awsRegion = configuration["AWS:region"];
-        var awsBucket = configuration["AWS:bucket"];
-        var mailgunAPIKey = configuration["Mailgun:apiKey"];
-        var baseAddress = configuration["BaseAddress"];
-        var rootFolder = configuration["RootFolder"];
-        var duendeLicense = configuration["IdentityServer:License"];
+        var rdsInstanceName = configuration.GetConfigValue("AWS:rdsInstanceName");
+        var awsRegion = configuration.GetConfigValue("AWS:region");
+        var awsBucket = configuration.GetConfigValue("AWS:bucket");
+        var mailgunAPIKey = configuration.GetConfigValue("Mailgun:apiKey");
+        var baseAddress = configuration.GetConfigValue("BaseAddress");
+        var rootFolder = configuration.GetConfigValue("RootFolder");
+        var duendeLicense = configuration.GetConfigValue("IdentityServer:License");
 
-        var identityConfig = new IdentityConfig(configuration["IdentityServer:FCBotSecret"], configuration["IdentityServer:CertificateKey"]);
+        var identityConfig = new IdentityConfig(configuration.GetConfigValue("IdentityServer:FCBotSecret"), configuration.GetConfigValue("IdentityServer:CertificateKey"));
 
         // Add application services.
         services.AddHttpClient();
         services.AddTransient<IClock>(factory => clock);
 
         //MySQL Repos
-        string connectionString = configuration.GetConnectionString("DefaultConnection");
+        string connectionString = configuration.GetConfigValue("ConnectionStrings:DefaultConnection");
 
         var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
         var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
@@ -90,10 +89,10 @@ public static class HostingExtensions
             new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore))));
 
         services.AddScoped<PatreonService>(factory => new PatreonService(
-            configuration["PatreonService:AccessToken"],
-            configuration["PatreonService:RefreshToken"],
-            configuration["Authentication:Patreon:ClientId"],
-            configuration["PatreonService:CampaignID"]
+            configuration.GetConfigValue("PatreonService:AccessToken"),
+            configuration.GetConfigValue("PatreonService:RefreshToken"),
+            configuration.GetConfigValue("Authentication:Patreon:ClientId"),
+            configuration.GetConfigValue("PatreonService:CampaignID")
         ));
 
         services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, env.IsProduction()));
@@ -239,30 +238,30 @@ public static class HostingExtensions
             })
             .AddGoogle(options =>
             {
-                options.ClientId = configuration["Authentication:Google:ClientId"];
-                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                options.ClientId = configuration.GetConfigValue("Authentication:Google:ClientId");
+                options.ClientSecret = configuration.GetConfigValue("Authentication:Google:ClientSecret");
             })
             .AddMicrosoftAccount(microsoftOptions =>
             {
                 microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
                 microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
-                microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
-                microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+                microsoftOptions.ClientId = configuration.GetConfigValue("Authentication:Microsoft:ClientId");
+                microsoftOptions.ClientSecret = configuration.GetConfigValue("Authentication:Microsoft:ClientSecret");
             })
             .AddTwitch(options =>
             {
-                options.ClientId = configuration["Authentication:Twitch:ClientId"];
-                options.ClientSecret = configuration["Authentication:Twitch:ClientSecret"];
+                options.ClientId = configuration.GetConfigValue("Authentication:Twitch:ClientId");
+                options.ClientSecret = configuration.GetConfigValue("Authentication:Twitch:ClientSecret");
             })
             .AddPatreon(options =>
             {
-                options.ClientId = configuration["Authentication:Patreon:ClientId"];
-                options.ClientSecret = configuration["Authentication:Patreon:ClientSecret"];
+                options.ClientId = configuration.GetConfigValue("Authentication:Patreon:ClientId");
+                options.ClientSecret = configuration.GetConfigValue("Authentication:Patreon:ClientSecret");
             })
             .AddDiscord(options =>
             {
-                options.ClientId = configuration["Authentication:Discord:ClientId"];
-                options.ClientSecret = configuration["Authentication:Discord:ClientSecret"];
+                options.ClientId = configuration.GetConfigValue("Authentication:Discord:ClientId");
+                options.ClientSecret = configuration.GetConfigValue("Authentication:Discord:ClientSecret");
             });
 
         var keysFolder = Path.Combine(rootFolder, "Keys");

@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Dapper.NodaTime;
+using FantasyCritic.AWS;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Web;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Events;
@@ -43,8 +46,21 @@ try
     builder.WebHost.UseIIS();
     builder.Host.UseSerilog();
 
+    IConfigurationStore configurationStore;
+    var awsRegion = Environment.GetEnvironmentVariable("awsRegion");
+    if (!string.IsNullOrWhiteSpace(awsRegion))
+    {
+        var awsStore = new SecretsManagerConfigurationStore(awsRegion);
+        await awsStore.PopulateAllValues();
+        configurationStore = awsStore;
+    }
+    else
+    {
+        configurationStore = new ConfigurationFileStore(builder.Configuration);
+    }
+
     var app = builder
-        .ConfigureServices()
+        .ConfigureServices(configurationStore)
         .ConfigurePipeline();
 
     app.Run();
