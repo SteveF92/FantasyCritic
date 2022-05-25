@@ -12,8 +12,6 @@ $numFiles = (Get-ChildItem "C:\FantasyCritic\Binary\" | Measure-Object).Count
 Write-Output "Delete done, $numFiles in folder."
 Write-Output "Copying files"
 Copy-Item -Path "C:\FantasyCritic\BuildArea\*" -Destination "C:\FantasyCritic\Binary\" -Force -Recurse
-Write-Output "Copying Items"
-Copy-Item -Path "C:\Users\Administrator\Desktop\CopyFiles\appsettings.json" -Destination "C:\FantasyCritic\Binary\" -Force
 Write-Output "Starting site"
 Start-Website "FantasyCritic"
 Write-Output "Update finished"
