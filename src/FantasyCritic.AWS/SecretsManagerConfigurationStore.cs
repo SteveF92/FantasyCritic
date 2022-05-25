@@ -12,18 +12,18 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
 {
     private readonly string _region;
     private readonly string _secretsManagerPrefix;
-    private readonly Dictionary<string, string> _parameterCache;
+    private readonly Dictionary<string, string> _awsSecretsCache;
 
     public SecretsManagerConfigurationStore(string region, string secretsManagerPrefix)
     {
         _region = region;
         _secretsManagerPrefix = secretsManagerPrefix;
-        _parameterCache = new Dictionary<string, string>();
+        _awsSecretsCache = new Dictionary<string, string>();
     }
 
     public string GetConfigValue(string name)
     {
-        if (!_parameterCache.TryGetValue(name, out var value))
+        if (!_awsSecretsCache.TryGetValue(name, out var value))
         {
             throw new Exception($"Config value: {name} not found.");
         }
@@ -35,6 +35,14 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
 
         return value;
     }
+
+    public string GetConnectionString(string name)
+    {
+        var rawValue = GetConfigValue(name);
+        return rawValue;
+    }
+
+    public string GetAWSRegion() => _region;
 
     public async Task PopulateAllValues()
     {
@@ -86,16 +94,17 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
                 SecretId = secret.Name
             };
 
+            var secretNameReplaced = secret.Name.Replace('_', ':');
             var secretResponse = await client.GetSecretValueAsync(request);
             if (secretResponse.SecretString != null)
             {
-                _parameterCache.Add(secret.Name, secretResponse.SecretString);
+                _awsSecretsCache.Add(secretNameReplaced, secretResponse.SecretString);
             }
             else
             {
                 StreamReader reader = new StreamReader(secretResponse.SecretBinary);
                 string decodedBinarySecret = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(reader.ReadToEnd()));
-                _parameterCache.Add(secret.Name, decodedBinarySecret);
+                _awsSecretsCache.Add(secretNameReplaced, decodedBinarySecret);
             }
         }
     }
