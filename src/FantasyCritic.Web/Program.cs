@@ -17,7 +17,6 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.File(allLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
     .WriteTo.File(warnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
-
     .WriteTo.Logger(config =>
     {
         config.Filter
@@ -48,10 +47,10 @@ try
 
     IConfigurationStore configurationStore;
     var fileConfigurationStore = new ConfigurationFileStore(builder.Configuration);
-    var awsRegion = Environment.GetEnvironmentVariable("awsRegion");
     var secretsManagerPrefix = Environment.GetEnvironmentVariable("secretsManagerPrefix");
-    if (!string.IsNullOrWhiteSpace(awsRegion) && !string.IsNullOrWhiteSpace(secretsManagerPrefix))
+    if (!string.IsNullOrWhiteSpace(secretsManagerPrefix))
     {
+        var awsRegion = fileConfigurationStore.GetAWSRegion();
         var awsStore = new SecretsManagerConfigurationStore(awsRegion, secretsManagerPrefix);
         await awsStore.PopulateAllValues();
         configurationStore = new ConfigurationStoreSet(fileConfigurationStore, awsStore);
