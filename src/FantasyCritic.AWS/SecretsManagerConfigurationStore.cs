@@ -6,6 +6,7 @@ using Amazon;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.AWS;
 public class SecretsManagerConfigurationStore : IConfigurationStore
@@ -94,7 +95,7 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
                 SecretId = secret.Name
             };
 
-            var secretNameReplaced = secret.Name.Replace('_', ':');
+            var secretNameReplaced = secret.Name.TrimStart(_secretsManagerPrefix).Replace('_', ':');
             var secretResponse = await client.GetSecretValueAsync(request);
             if (secretResponse.SecretString != null)
             {
