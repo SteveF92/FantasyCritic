@@ -21,4 +21,10 @@ public class ConfigurationFileStore : IConfigurationStore
 
         return value;
     }
+
+    public string GetConnectionString(string name) => GetConfigValue(name);
+    public string GetAWSRegion()
+    {
+        return GetConfigValue("AWS:region");
+    }
 }

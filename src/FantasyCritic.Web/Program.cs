@@ -47,17 +47,18 @@ try
     builder.Host.UseSerilog();
 
     IConfigurationStore configurationStore;
+    var fileConfigurationStore = new ConfigurationFileStore(builder.Configuration);
     var awsRegion = Environment.GetEnvironmentVariable("awsRegion");
     var secretsManagerPrefix = Environment.GetEnvironmentVariable("secretsManagerPrefix");
     if (!string.IsNullOrWhiteSpace(awsRegion) && !string.IsNullOrWhiteSpace(secretsManagerPrefix))
     {
         var awsStore = new SecretsManagerConfigurationStore(awsRegion, secretsManagerPrefix);
         await awsStore.PopulateAllValues();
-        configurationStore = awsStore;
+        configurationStore = new ConfigurationStoreSet(fileConfigurationStore, awsStore);
     }
     else
     {
-        configurationStore = new ConfigurationFileStore(builder.Configuration);
+        configurationStore = fileConfigurationStore;
     }
 
     var app = builder

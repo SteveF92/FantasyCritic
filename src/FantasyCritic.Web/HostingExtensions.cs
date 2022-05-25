@@ -58,8 +58,8 @@ public static class HostingExtensions
 
         var services = builder.Services;
         IClock clock = SystemClock.Instance;
+        var awsRegion = configuration.GetAWSRegion();
         var rdsInstanceName = configuration.GetConfigValue("AWS:rdsInstanceName");
-        var awsRegion = configuration.GetConfigValue("AWS:region");
         var awsBucket = configuration.GetConfigValue("AWS:bucket");
         var mailgunAPIKey = configuration.GetConfigValue("Mailgun:apiKey");
         var baseAddress = configuration.GetConfigValue("BaseAddress");
