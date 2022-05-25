@@ -7,6 +7,8 @@ using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Extensions;
+using Newtonsoft.Json;
+using Filter = Amazon.SecretsManager.Model.Filter;
 
 namespace FantasyCritic.AWS;
 public class SecretsManagerConfigurationStore : IConfigurationStore
@@ -40,7 +42,13 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
     public string GetConnectionString(string name)
     {
         var rawValue = GetConfigValue(name);
-        return rawValue;
+        var connectionStringObject = JsonConvert.DeserializeObject<ConnectionStringEntity>(rawValue);
+        if (connectionStringObject is null)
+        {
+            throw new Exception($"Cannot parse connection string: {name}");
+        }
+
+        return $"Server={connectionStringObject.Host};Database=fantasycritic;Uid={connectionStringObject.Username};Pwd={connectionStringObject.Password};charset=utf8;sslMode=required;MaximumPoolsize=50;";
     }
 
     public string GetAWSRegion() => _region;

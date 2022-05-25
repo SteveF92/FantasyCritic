@@ -73,7 +73,7 @@ public static class HostingExtensions
         services.AddTransient<IClock>(factory => clock);
 
         //MySQL Repos
-        string connectionString = configuration.GetConfigValue("ConnectionStrings:DefaultConnection");
+        string connectionString = configuration.GetConnectionString("ConnectionStrings:DefaultConnection");
 
         var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
         var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
