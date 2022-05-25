@@ -21,9 +21,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "awsRegion": "us-east-1",
         "secretsManagerPrefix": "fantasyCritic/beta/"
-
       }
     }
   }
