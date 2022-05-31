@@ -53,9 +53,9 @@ public class Program
 
     private static void ConfigureLogging()
     {
-        string allLogPath = @"C:\FantasyCritic\Logs\log-all.txt";
-        string myLogPath = @"C:\FantasyCritic\Logs\log-my.txt";
-        string warnLogPath = @"C:\FantasyCritic\Logs\log-warning.txt";
+        string allLogPath = @"C:\FantasyCritic\Logs\log-allLocalOnly.txt";
+        string myLogPath = @"C:\FantasyCritic\Logs\log-myLocalOnly.txt";
+        string warnLogPath = @"C:\FantasyCritic\Logs\log-warningLocalOnly.txt";
         string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
