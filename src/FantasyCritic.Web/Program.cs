@@ -1,3 +1,5 @@
+using Amazon;
+using Amazon.CloudWatchLogs;
 using Microsoft.AspNetCore.Hosting;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
@@ -5,8 +7,11 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.AwsCloudWatch;
 
 namespace FantasyCritic.Web;
 
@@ -28,6 +33,11 @@ public class Program
             var app = builder
                 .ConfigureServices(configurationStore)
                 .ConfigurePipeline();
+
+            if (!app.Environment.IsDevelopment())
+            {
+                ConfigureCloudLogging(app.Environment, configurationStore);
+            }
 
             await app.RunAsync();
         }
@@ -70,6 +80,50 @@ public class Program
                     })
                     .WriteTo.File(myLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
             })
+            .CreateLogger();
+    }
+
+    private static void ConfigureCloudLogging(IWebHostEnvironment env, IConfigurationStore configurationStore)
+    {
+        var region = RegionEndpoint.GetBySystemName(configurationStore.GetAWSRegion());
+        var client = new AmazonCloudWatchLogsClient(region);
+
+        string environmentName = "dev";
+        if (env.IsStaging())
+        {
+            environmentName = "beta";
+        }
+
+        if (env.IsProduction())
+        {
+            environmentName = "prod";
+        }
+
+        var logGroupName = "/fantasyCritic/" + environmentName;
+
+        // options for the sink defaults in https://github.com/Cimpress-MCP/serilog-sinks-awscloudwatch/blob/master/src/Serilog.Sinks.AwsCloudWatch/CloudWatchSinkOptions.cs
+        var options = new CloudWatchSinkOptions
+        {
+            // the name of the CloudWatch Log group for logging
+            LogGroupName = logGroupName,
+
+            // the main formatter of the log event
+            TextFormatter = new JsonFormatter(),
+
+            // other defaults defaults
+            MinimumLogEventLevel = LogEventLevel.Information,
+            BatchSizeLimit = 100,
+            QueueSizeLimit = 10000,
+            Period = TimeSpan.FromSeconds(10),
+            CreateLogGroup = true,
+            LogStreamNameProvider = new DefaultLogStreamProvider(),
+            RetryAttempts = 5
+        };
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.AmazonCloudWatch(options, client)
             .CreateLogger();
     }
 
