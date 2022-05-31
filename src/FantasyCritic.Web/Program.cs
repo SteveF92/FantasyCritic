@@ -53,9 +53,9 @@ public class Program
 
     private static void ConfigureLogging()
     {
-        string allLogPath = @"C:\FantasyCritic\Logs\log-all";
-        string myLogPath = @"C:\FantasyCritic\Logs\log-my";
-        string warnLogPath = @"C:\FantasyCritic\Logs\log-warning";
+        string allLogPath = @"C:\FantasyCritic\Logs\log-all.txt";
+        string myLogPath = @"C:\FantasyCritic\Logs\log-my.txt";
+        string warnLogPath = @"C:\FantasyCritic\Logs\log-warning.txt";
         string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -85,6 +85,11 @@ public class Program
 
     private static void ConfigureCloudLogging(IWebHostEnvironment env, IConfigurationStore configurationStore)
     {
+        string allLogPath = @"C:\FantasyCritic\Logs\log-all.txt";
+        string myLogPath = @"C:\FantasyCritic\Logs\log-my.txt";
+        string warnLogPath = @"C:\FantasyCritic\Logs\log-warning.txt";
+        string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
+
         var region = RegionEndpoint.GetBySystemName(configurationStore.GetAWSRegion());
         var client = new AmazonCloudWatchLogsClient(region);
 
@@ -123,6 +128,26 @@ public class Program
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
+            .WriteTo.File(allLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
+            .WriteTo.File(warnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
+            .WriteTo.Logger(config =>
+            {
+                config.Filter
+                    .ByIncludingOnly(logEvent =>
+                    {
+                        if (logEvent.Properties.TryGetValue("SourceContext", out var sourceContext))
+                        {
+                            var sourceContextString = sourceContext?.ToString();
+                            if (sourceContextString is not null && sourceContextString.StartsWith("\"FantasyCritic"))
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    })
+                    .WriteTo.File(myLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
+            })
             .WriteTo.AmazonCloudWatch(options, client)
             .CreateLogger();
     }
