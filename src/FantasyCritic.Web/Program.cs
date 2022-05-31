@@ -17,9 +17,12 @@ namespace FantasyCritic.Web;
 
 public class Program
 {
+    private const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
+
     public static async Task Main(string[] args)
     {
-        ConfigureLogging();
+        var loggingPaths = new LoggingPaths();
+        ConfigureLogging(loggingPaths);
 
         try
         {
@@ -36,7 +39,7 @@ public class Program
 
             if (!app.Environment.IsDevelopment())
             {
-                ConfigureCloudLogging(app.Environment, configurationStore);
+                ConfigureCloudLogging(loggingPaths, app.Environment, configurationStore);
             }
 
             await app.RunAsync();
@@ -51,17 +54,13 @@ public class Program
         }
     }
 
-    private static void ConfigureLogging()
+    private static void ConfigureLogging(LoggingPaths loggingPaths)
     {
-        string allLogPath = @"C:\FantasyCritic\Logs\log-allLocalOnly.txt";
-        string myLogPath = @"C:\FantasyCritic\Logs\log-myLocalOnly.txt";
-        string warnLogPath = @"C:\FantasyCritic\Logs\log-warningLocalOnly.txt";
-        string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .WriteTo.File(allLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
-            .WriteTo.File(warnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
+            .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
+            .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
             .WriteTo.Logger(config =>
             {
                 config.Filter
@@ -78,18 +77,13 @@ public class Program
 
                         return false;
                     })
-                    .WriteTo.File(myLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
+                    .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
             })
             .CreateLogger();
     }
 
-    private static void ConfigureCloudLogging(IWebHostEnvironment env, IConfigurationStore configurationStore)
+    private static void ConfigureCloudLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, IConfigurationStore configurationStore)
     {
-        string allLogPath = @"C:\FantasyCritic\Logs\log-all.txt";
-        string myLogPath = @"C:\FantasyCritic\Logs\log-my.txt";
-        string warnLogPath = @"C:\FantasyCritic\Logs\log-warning.txt";
-        string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
-
         var region = RegionEndpoint.GetBySystemName(configurationStore.GetAWSRegion());
         var client = new AmazonCloudWatchLogsClient(region);
 
@@ -128,8 +122,8 @@ public class Program
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .WriteTo.File(allLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
-            .WriteTo.File(warnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
+            .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
+            .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
             .WriteTo.Logger(config =>
             {
                 config.Filter
@@ -146,7 +140,7 @@ public class Program
 
                         return false;
                     })
-                    .WriteTo.File(myLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
+                    .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
             })
             .WriteTo.AmazonCloudWatch(options, client)
             .CreateLogger();
