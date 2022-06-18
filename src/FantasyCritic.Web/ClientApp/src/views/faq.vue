@@ -605,6 +605,50 @@
         </div>
       </collapseCard>
       <collapseCard>
+        <div slot="header">How do you decide what kind of a "remake" a game is?</div>
+        <div slot="body">
+          <div v-if="allTags">
+            <p>There are several "remake" tags, and they go in this order, from "most remade" to "least remade":</p>
+
+            <masterGameTagBadge tag-name="Reimagining"></masterGameTagBadge>
+            >
+            <masterGameTagBadge tag-name="Remake"></masterGameTagBadge>
+            >
+            <masterGameTagBadge tag-name="PartialRemake"></masterGameTagBadge>
+            >
+            <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
+
+            <p>
+              There is also
+              <masterGameTagBadge tag-name="DirectorsCut"></masterGameTagBadge>
+              , which is somewhere around
+              <masterGameTagBadge tag-name="PartialRemake"></masterGameTagBadge>
+              and
+              <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
+              , but it's hard to say for sure what order it goes in.
+            </p>
+            <p>
+              As for how we decide what a game is, we judge where a game falls based on the information available before release. If the game has a close comparison, that will be used as a precedent.
+              For example, when deciding how to classify 'Pokémon Brilliant Diamond and Shining Pearl', we considered what the prior Pokemon remakes would be classified as. When things aren't entirely
+              clear, we will generally lean on "more remade" rather than "less remade".
+            </p>
+            <p>
+              We have a
+              <a href="https://tiermaker.com/list/video-games/fantasy-critic-remake-levels-585753/1752747" target="_blank">
+                tier list
+                <font-awesome-icon icon="external-link-alt" />
+              </a>
+              lays out a lot of examples, and we use it to guide our decisions.
+            </p>
+            <p>If you want to get involved in these making these decisions, we talk about this frequently on our Discord.</p>
+            <a href="https://discord.gg/dNa7DD3" target="_blank">
+              <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+              Join our Server
+            </a>
+          </div>
+        </div>
+      </collapseCard>
+      <collapseCard>
         <div slot="header">I don't agree with your tags! My league allows "remakes" but "Tony Hawk 1 + 2" is really just a remaster. It shouldn't be allowed!</div>
         <div slot="body">
           It's up to your league and ultimately up to your league manager. League managers can override the eligibility rules and assign the game you want to your team during the draft. Additionally,
