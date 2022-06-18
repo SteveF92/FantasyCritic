@@ -56,7 +56,7 @@
               and will include more features down the line. One important note: the bot does not work with private leagues, although we may change that down the line.
             </p>
             <div>
-              <a href="https://discord.com/api/oauth2/authorize?client_id=974105816724553759&permissions=139586914368&scope=bot" target="_blank">
+              <a href="https://discord.com/api/oauth2/authorize?client_id=936106026695028807&permissions=139586914368&scope=bot" target="_blank">
                 <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
                 Add To Your Discord Server
               </a>
