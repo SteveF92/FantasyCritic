@@ -611,11 +611,11 @@
             <p>There are several "remake" tags, and they go in this order, from "most remade" to "least remade":</p>
 
             <masterGameTagBadge tag-name="Reimagining"></masterGameTagBadge>
-            >
+            &gt;
             <masterGameTagBadge tag-name="Remake"></masterGameTagBadge>
-            >
+            &gt;
             <masterGameTagBadge tag-name="PartialRemake"></masterGameTagBadge>
-            >
+            &gt;
             <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
 
             <p>
