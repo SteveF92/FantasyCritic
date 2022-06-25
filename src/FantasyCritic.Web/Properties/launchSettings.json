@@ -20,8 +20,7 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "secretsManagerPrefix": "fantasyCritic/beta/"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
