@@ -13,30 +13,46 @@ using Filter = Amazon.SecretsManager.Model.Filter;
 namespace FantasyCritic.AWS;
 public class SecretsManagerConfigurationStore : IConfigurationStore
 {
+    private const string SharedPrefix = "shared/";
     private readonly string _region;
-    private readonly string _secretsManagerPrefix;
-    private readonly Dictionary<string, string> _awsSecretsCache;
+    private readonly string _appName;
+    private readonly string _environment;
 
-    public SecretsManagerConfigurationStore(string region, string secretsManagerPrefix)
+    private readonly Dictionary<string, string> _environmentsSecretsCache;
+    private readonly Dictionary<string, string> _sharedSecretsCache;
+
+    public SecretsManagerConfigurationStore(string region, string appName, string environment)
     {
         _region = region;
-        _secretsManagerPrefix = secretsManagerPrefix;
-        _awsSecretsCache = new Dictionary<string, string>();
+        _appName = appName + "/";
+        _environment = environment + "/";
+        _environmentsSecretsCache = new Dictionary<string, string>();
+        _sharedSecretsCache = new Dictionary<string, string>();
     }
 
     public string GetConfigValue(string name)
     {
-        if (!_awsSecretsCache.TryGetValue(name, out var value))
+        void CheckHasValue(string value)
         {
-            throw new Exception($"Config value: {name} not found.");
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new Exception($"Config value: {name} not found.");
+            }
         }
 
-        if (string.IsNullOrWhiteSpace(value))
+        if (_environmentsSecretsCache.TryGetValue(name, out var environmentValue))
         {
-            throw new Exception($"Config value: {name} not found.");
+            CheckHasValue(environmentValue);
+            return environmentValue;
         }
 
-        return value;
+        if (_sharedSecretsCache.TryGetValue(name, out var sharedValue))
+        {
+            CheckHasValue(sharedValue);
+            return sharedValue;
+        }
+
+        throw new Exception($"Config value: {name} not found.");
     }
 
     public string GetConnectionString(string name)
@@ -70,7 +86,7 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
                         Key = "name",
                         Values = new List<string>()
                         {
-                            _secretsManagerPrefix
+                            _appName
                         }
                     }
                 }
@@ -98,23 +114,36 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
 
         foreach (var secret in allSecrets)
         {
-            var request = new GetSecretValueRequest()
+            var secretNameWithoutAppName = secret.Name.TrimStart(_appName);
+            if (secretNameWithoutAppName.StartsWith(SharedPrefix))
             {
-                SecretId = secret.Name
-            };
+                await AddValueToCache(client, secret, secretNameWithoutAppName, SharedPrefix, _sharedSecretsCache);
+            }
+            else if (secretNameWithoutAppName.StartsWith(_environment))
+            {
+                await AddValueToCache(client, secret, secretNameWithoutAppName, _environment, _environmentsSecretsCache);
+            }
+        }
+    }
 
-            var secretNameReplaced = secret.Name.TrimStart(_secretsManagerPrefix).Replace('_', ':');
-            var secretResponse = await client.GetSecretValueAsync(request);
-            if (secretResponse.SecretString != null)
-            {
-                _awsSecretsCache.Add(secretNameReplaced, secretResponse.SecretString);
-            }
-            else
-            {
-                StreamReader reader = new StreamReader(secretResponse.SecretBinary);
-                string decodedBinarySecret = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(reader.ReadToEnd()));
-                _awsSecretsCache.Add(secretNameReplaced, decodedBinarySecret);
-            }
+    private async Task AddValueToCache(IAmazonSecretsManager client, SecretListEntry secret, string secretWithoutAppName, string environment, Dictionary<string, string> cacheToUse)
+    {
+        var request = new GetSecretValueRequest()
+        {
+            SecretId = secret.Name
+        };
+
+        var withoutEnvironment = secretWithoutAppName.TrimStart(environment).Replace('_', ':');
+        var secretResponse = await client.GetSecretValueAsync(request);
+        if (secretResponse.SecretString != null)
+        {
+            cacheToUse.Add(withoutEnvironment, secretResponse.SecretString);
+        }
+        else
+        {
+            StreamReader reader = new StreamReader(secretResponse.SecretBinary);
+            string decodedBinarySecret = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(reader.ReadToEnd()));
+            cacheToUse.Add(withoutEnvironment, decodedBinarySecret);
         }
     }
 }

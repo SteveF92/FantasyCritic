@@ -32,7 +32,7 @@ public class Program
             builder.WebHost.UseIIS();
             builder.Host.UseSerilog();
 
-            var configurationStore = await GetConfigurationStore(builder.Configuration);
+            var configurationStore = await GetConfigurationStore(builder.Configuration, builder.Environment);
             var app = builder
                 .ConfigureServices(configurationStore)
                 .ConfigurePipeline();
@@ -146,15 +146,19 @@ public class Program
             .CreateLogger();
     }
 
-    private static async Task<IConfigurationStore> GetConfigurationStore(ConfigurationManager configurationManager)
+    private static async Task<IConfigurationStore> GetConfigurationStore(ConfigurationManager configurationManager, IWebHostEnvironment environment)
     {
         IConfigurationStore configurationStore;
         var fileConfigurationStore = new ConfigurationFileStore(configurationManager);
-        var secretsManagerPrefix = Environment.GetEnvironmentVariable("secretsManagerPrefix");
-        if (!string.IsNullOrWhiteSpace(secretsManagerPrefix))
+        if (!environment.IsDevelopment())
         {
+            string fixedEnvironmentName = environment.EnvironmentName;
+            if (environment.IsStaging())
+            {
+                fixedEnvironmentName = "beta";
+            }
             var awsRegion = fileConfigurationStore.GetAWSRegion();
-            var awsStore = new SecretsManagerConfigurationStore(awsRegion, secretsManagerPrefix);
+            var awsStore = new SecretsManagerConfigurationStore(awsRegion, "fantasyCritic", fixedEnvironmentName);
             await awsStore.PopulateAllValues();
             configurationStore = new ConfigurationStoreSet(fileConfigurationStore, awsStore);
         }
