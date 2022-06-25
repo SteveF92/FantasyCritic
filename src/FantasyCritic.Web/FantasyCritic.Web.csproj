@@ -19,17 +19,17 @@
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="6.0.6" />
     <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="6.0.6" />
     <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="6.0.6" />
-    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="6.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="6.0.5" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="6.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="6.0.6" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.AwsCloudWatch" Version="4.0.171" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="VueCliMiddleware" Version="6.0.0" />
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.6" />
   </ItemGroup>
 
   <PropertyGroup>
