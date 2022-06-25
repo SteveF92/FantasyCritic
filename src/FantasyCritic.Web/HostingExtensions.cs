@@ -223,7 +223,7 @@ public static class HostingExtensions
             identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
         }
 
-        services.AddAuthentication(IdentityConstants.ApplicationScheme)
+        var authenticationBuilder = services.AddAuthentication(IdentityConstants.ApplicationScheme)
             .AddCookie(options =>
             {
                 options.Cookie.Name = "FantasyCriticCookie";
@@ -235,34 +235,40 @@ public static class HostingExtensions
             .AddLocalApi(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.ExpectedScope = FantasyCriticScopes.ReadScope.Name;
-            })
-            .AddGoogle(options =>
-            {
-                options.ClientId = configuration.GetConfigValue("Authentication:Google:ClientId");
-                options.ClientSecret = configuration.GetConfigValue("Authentication:Google:ClientSecret");
-            })
-            .AddMicrosoftAccount(microsoftOptions =>
-            {
-                microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
-                microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
-                microsoftOptions.ClientId = configuration.GetConfigValue("Authentication:Microsoft:ClientId");
-                microsoftOptions.ClientSecret = configuration.GetConfigValue("Authentication:Microsoft:ClientSecret");
-            })
-            .AddTwitch(options =>
-            {
-                options.ClientId = configuration.GetConfigValue("Authentication:Twitch:ClientId");
-                options.ClientSecret = configuration.GetConfigValue("Authentication:Twitch:ClientSecret");
-            })
-            .AddPatreon(options =>
-            {
-                options.ClientId = configuration.GetConfigValue("Authentication:Patreon:ClientId");
-                options.ClientSecret = configuration.GetConfigValue("Authentication:Patreon:ClientSecret");
-            })
-            .AddDiscord(options =>
-            {
-                options.ClientId = configuration.GetConfigValue("Authentication:Discord:ClientId");
-                options.ClientSecret = configuration.GetConfigValue("Authentication:Discord:ClientSecret");
             });
+
+        if (env.IsProduction())
+        {
+            authenticationBuilder
+                .AddGoogle(options =>
+                {
+                    options.ClientId = configuration.GetConfigValue("Authentication:Google:ClientId");
+                    options.ClientSecret = configuration.GetConfigValue("Authentication:Google:ClientSecret");
+                })
+                .AddMicrosoftAccount(microsoftOptions =>
+                {
+                    microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
+                    microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
+                    microsoftOptions.ClientId = configuration.GetConfigValue("Authentication:Microsoft:ClientId");
+                    microsoftOptions.ClientSecret = configuration.GetConfigValue("Authentication:Microsoft:ClientSecret");
+                })
+                .AddTwitch(options =>
+                {
+                    options.ClientId = configuration.GetConfigValue("Authentication:Twitch:ClientId");
+                    options.ClientSecret = configuration.GetConfigValue("Authentication:Twitch:ClientSecret");
+                })
+                .AddPatreon(options =>
+                {
+                    options.ClientId = configuration.GetConfigValue("Authentication:Patreon:ClientId");
+                    options.ClientSecret = configuration.GetConfigValue("Authentication:Patreon:ClientSecret");
+                })
+                .AddDiscord(options =>
+                {
+                    options.ClientId = configuration.GetConfigValue("Authentication:Discord:ClientId");
+                    options.ClientSecret = configuration.GetConfigValue("Authentication:Discord:ClientSecret");
+                });
+        }
+
 
         var keysFolder = Path.Combine(rootFolder, "Keys");
         services.AddDataProtection()
