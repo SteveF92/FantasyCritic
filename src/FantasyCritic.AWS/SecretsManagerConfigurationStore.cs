@@ -25,7 +25,7 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
     {
         _region = region;
         _appName = appName + "/";
-        _environment = environment + "/";
+        _environment = environment.ToLower() + "/";
         _environmentsSecretsCache = new Dictionary<string, string>();
         _sharedSecretsCache = new Dictionary<string, string>();
     }
