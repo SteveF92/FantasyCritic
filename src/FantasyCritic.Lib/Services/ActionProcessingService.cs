@@ -40,7 +40,9 @@ public class ActionProcessingService
             return new FinalizedActionProcessingResults(processSetID, processingTime, processName, dropResults, new List<SpecialAuction>());
         }
 
-        ActionProcessingResults bidResults = ProcessPickupsIteration(systemWideValues, allActiveBids, dropResults, processingTime, masterGameYearDictionary);
+        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed = new List<PublisherGame>().ToLookup(x => (LeagueYearKey) null!);
+
+        ActionProcessingResults bidResults = ProcessPickupsIteration(systemWideValues, allActiveBids, dropResults, processingTime, masterGameYearDictionary, conditionalDropsThatWillSucceed);
         return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults, new List<SpecialAuction>());
     }
 
@@ -100,7 +102,8 @@ public class ActionProcessingService
     }
 
     private ActionProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
-        ActionProcessingResults existingResults, Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+        ActionProcessingResults existingResults, Instant processingTime, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary,
+        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed)
     {
         IEnumerable<PickupBid> flatAllBids = allActiveBids.SelectMany(x => x.Value);
 
@@ -113,7 +116,8 @@ public class ActionProcessingService
                 continue;
             }
 
-            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, publisherStateSet, systemWideValues, processingTime, false);
+            var conditionalDropsThatWillSucceedForLeague = conditionalDropsThatWillSucceed[leagueYear.Key.Key].ToList();
+            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear.Key, leagueYear.Value, publisherStateSet, systemWideValues, processingTime, false, conditionalDropsThatWillSucceedForLeague);
             processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
         }
 
@@ -123,7 +127,7 @@ public class ActionProcessingService
         if (remainingBids.Any())
         {
             IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> remainingBidDictionary = remainingBids.GroupToDictionary(x => x.LeagueYear);
-            var subProcessingResults = ProcessPickupsIteration(systemWideValues, remainingBidDictionary, newResults, processingTime, masterGameYearDictionary);
+            var subProcessingResults = ProcessPickupsIteration(systemWideValues, remainingBidDictionary, newResults, processingTime, masterGameYearDictionary, conditionalDropsThatWillSucceed);
             ActionProcessingResults combinedResults = newResults.Combine(subProcessingResults);
             return combinedResults;
         }
@@ -151,7 +155,7 @@ public class ActionProcessingService
                     continue;
                 }
 
-                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, specialAuctionWithBids.Bids, publisherStateSet, systemWideValues, processingTime, true);
+                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, specialAuctionWithBids.Bids, publisherStateSet, systemWideValues, processingTime, true, new List<PublisherGame>());
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
         }
@@ -161,7 +165,8 @@ public class ActionProcessingService
     }
 
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
-        PublisherStateSet publisherStateSet, SystemWideValues systemWideValues, Instant processingTime, bool specialAuctions)
+        PublisherStateSet publisherStateSet, SystemWideValues systemWideValues, Instant processingTime,
+        bool specialAuctions, IReadOnlyList<PublisherGame> conditionalDropsThatWillSucceed)
     {
         LeagueYear updatedLeagueYear = publisherStateSet.GetUpdatedLeagueYear(leagueYear);
         var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
@@ -188,7 +193,8 @@ public class ActionProcessingService
         {
             Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
             bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(updatedLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
-            var gameRequest = new ClaimGameDomainRequest(updatedLeagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick, counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
+            var gameRequest = new ClaimGameDomainRequest(updatedLeagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick,
+                counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
             PickupBid pickupBidWithConditionalDropResult = activeBid;
             int? validConditionalDropSlot = null;
@@ -202,7 +208,8 @@ public class ActionProcessingService
                 }
             }
 
-            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions);
+            bool counterPickWillBeConditionallyDropped = activeBid.CounterPick && conditionalDropsThatWillSucceed.ContainsGame(activeBid.MasterGame);
+            var claimResult = _gameAcquisitionService.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped);
             if (claimResult.NoSpaceError)
             {
                 noSpaceLeftBids.Add(pickupBidWithConditionalDropResult);

@@ -21,7 +21,7 @@ public class GameAcquisitionService
         _clock = clock;
     }
 
-    public ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting, bool partOfSpecialAuction)
+    public ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting, bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped)
     {
         var currentDate = _clock.GetToday();
         var dateOfPotentialAcquisition = currentDate;
@@ -42,6 +42,11 @@ public class GameAcquisitionService
             var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate,
                 dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease, drafting, partOfSpecialAuction);
             claimErrors.AddRange(masterGameErrors);
+        }
+
+        if (counterPickWillBeConditionallyDropped)
+        {
+            claimErrors.Add(new ClaimError("Game has been dropped by the other player.", false));
         }
 
         LeaguePublisherGameSet gameSet = new LeaguePublisherGameSet(request.Publisher.PublisherID, leagueYear.Publishers);
@@ -354,7 +359,7 @@ public class GameAcquisitionService
             masterGameYear = new MasterGameYear(request.MasterGame, request.LeagueYear.Year);
         }
 
-        ClaimResult claimResult = CanClaimGame(request, null, null, true, drafting, false);
+        ClaimResult claimResult = CanClaimGame(request, null, null, true, drafting, false, false);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -445,7 +450,7 @@ public class GameAcquisitionService
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
-        var claimResult = CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction);
+        var claimResult = CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -469,7 +474,7 @@ public class GameAcquisitionService
         }
 
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
-        var claimResult = CanClaimGame(claimRequest, null, null, false, false, false);
+        var claimResult = CanClaimGame(claimRequest, null, null, false, false, false, false);
         if (!claimResult.Success)
         {
             return claimResult;
