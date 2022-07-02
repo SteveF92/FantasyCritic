@@ -847,9 +847,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         string createLeagueYearSQL =
             "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-            "CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,PlayStatus,DraftOrderSet,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
+            "GrantSuperDrops,CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,PlayStatus,DraftOrderSet,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
             "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-            "@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay);";
+            "@GrantSuperDrops,@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay);";
 
         await using (var connection = new MySqlConnection(_connectionString))
         {
@@ -877,7 +877,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         string editLeagueYearSQL =
             "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, CounterPicksToDraft = @CounterPicksToDraft, " +
             "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
-            "DropOnlyDraftGames = @DropOnlyDraftGames, CounterPicksBlockDrops = @CounterPicksBlockDrops, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem, " +
+            "DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem, " +
             "PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem, " +
             "CounterPickDeadlineMonth = @CounterPickDeadlineMonth, CounterPickDeadlineDay = @CounterPickDeadlineDay WHERE LeagueID = @LeagueID and Year = @Year";
 
