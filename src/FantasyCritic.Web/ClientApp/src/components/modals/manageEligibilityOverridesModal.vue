@@ -37,11 +37,14 @@
             <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
-
-        <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
+        <possibleMasterGamesTable
+          v-if="!overrideMasterGame && possibleMasterGames.length > 0"
+          v-model="overrideMasterGame"
+          :possible-games="possibleMasterGames"
+          @input="newGameSelected"></possibleMasterGamesTable>
       </div>
     </form>
+    <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
     <div v-if="overrideMasterGame" class="eligibility-set-buttons">
       <b-button variant="danger" size="sm" @click="setEligibility(overrideMasterGame, false)">Ban Game</b-button>
       <b-button variant="success" size="sm" @click="setEligibility(overrideMasterGame, true)">Allow Game</b-button>

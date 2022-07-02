@@ -35,11 +35,14 @@
             <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="overrideMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
-
-        <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
+        <possibleMasterGamesTable
+          v-if="!overrideMasterGame && possibleMasterGames.length > 0"
+          v-model="overrideMasterGame"
+          :possible-games="possibleMasterGames"
+          @input="newGameSelected"></possibleMasterGamesTable>
       </div>
     </form>
+    <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
     <div v-if="overrideMasterGame">
       <masterGameTagSelector v-model="chosenTags"></masterGameTagSelector>
       <b-button variant="info" class="set-tags-button" size="sm" @click="setTags(overrideMasterGame)">Set Tags</b-button>
