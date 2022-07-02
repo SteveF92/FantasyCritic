@@ -560,13 +560,15 @@
         </div>
       </collapseCard>
       <collapseCard>
-        <div slot="header">I see a score on the site but not on OpenCritic? Why?</div>
+        <div slot="header">A game is linked to an Open Critic page but there is no score. Why?</div>
+        <div slot="body">Open Critic only generates and displays an average score once there are at least three "Top Critic" reviews. This is the score that Fantasy Critic uses.</div>
+      </collapseCard>
+      <collapseCard>
+        <div slot="header">One of my games was released but never got enough reviews to have a score on Open Critic. Can I drop it?</div>
         <div slot="body">
-          This typically happens when a game is very new. When you use the OpenCritic API, there are actually two seperate scores: "Average Score", and "Top Critic Score". The "Average Score" is
-          simply the average of every scored review that the site lists. The "Top Critic Score" is the average of all scored reviews from critic who are marked as "Top Critics". In both cases, there
-          must be at least 3 reviews in the average before the API will return a number. The score that is displayed on OpenCritic's UI is the "Top Critic Score", and that is what Fantasy Critic uses
-          - when available. If there is no "Top Critic Score" available, but there is an "Average Score", then Fantasy Critic will use that. This will happen if, for example, OpenCritic has three
-          scored reviews listed, but only 2 of them are from "Top Critics". In these cases, the score is likely to change significantly as very few reviews are accounted for so far.
+          By default, no. There are some games that come with an inherent risk of not getting enough reviews. For example, obscure indie games, games that have been in early access for a long time,
+          free to play games, and free DLC for already released games. Judging this risk is part of selecting your games. You league is free to make a "house rule" and allow games in this situation to
+          be dropped, if you so choose.
         </div>
       </collapseCard>
       <collapseCard>
