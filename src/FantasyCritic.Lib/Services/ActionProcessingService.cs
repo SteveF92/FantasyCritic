@@ -40,7 +40,7 @@ public class ActionProcessingService
             return new FinalizedActionProcessingResults(processSetID, processingTime, processName, dropResults, new List<SpecialAuction>());
         }
 
-        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed = new List<PublisherGame>().ToLookup(x => (LeagueYearKey) null!);
+        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed = GetConditionalDropsThatWillSucceed(allActiveBids, processingTime);
 
         ActionProcessingResults bidResults = ProcessPickupsIteration(systemWideValues, allActiveBids, dropResults, processingTime, masterGameYearDictionary, conditionalDropsThatWillSucceed);
         return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults, new List<SpecialAuction>());
@@ -99,6 +99,26 @@ public class ActionProcessingService
 
         ActionProcessingResults dropProcessingResults = ActionProcessingResults.GetResultsSetFromDropResults(successDrops, failedDrops, leagueActions, publisherStateSet, gamesToDelete);
         return dropProcessingResults;
+    }
+
+    private ILookup<LeagueYearKey, PublisherGame> GetConditionalDropsThatWillSucceed(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, Instant processingTime)
+    {
+        List<(LeagueYearKey, PublisherGame)> conditionalDropsThatWillSucceed = new List<(LeagueYearKey, PublisherGame)>();
+
+        foreach (var leagueYearSet in allActiveBids)
+        {
+            var bidsWithConditionalDrops = leagueYearSet.Value.Where(x => x.ConditionalDropPublisherGame is not null).ToList();
+            foreach (var bid in bidsWithConditionalDrops)
+            {
+                var conditionalDropResult = _gameAcquisitionService.CanConditionallyDropGame(bid, leagueYearSet.Key, bid.Publisher, processingTime);
+                if (conditionalDropResult.Result.IsSuccess)
+                {
+                    conditionalDropsThatWillSucceed.Add((leagueYearSet.Key.Key, bid.ConditionalDropPublisherGame!));
+                }
+            }
+        }
+
+        return conditionalDropsThatWillSucceed.ToLookup(x => x.Item1, y => y.Item2);
     }
 
     private ActionProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
