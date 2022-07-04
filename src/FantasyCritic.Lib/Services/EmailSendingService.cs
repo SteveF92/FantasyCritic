@@ -73,6 +73,11 @@ public class EmailSendingService
 
         var userEmailSettings = await _userManager.GetAllEmailSettings();
         var usersWithPublicBidEmails = userEmailSettings.Where(x => !x.User.IsDeleted && x.User.EmailConfirmed && x.EmailTypes.Contains(EmailType.PublicBids)).Select(x => x.User).ToList();
+        if (!_isProduction)
+        {
+            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+            usersWithPublicBidEmails = usersWithPublicBidEmails.Intersect(adminUsers).ToList();
+        }
         var usersWithLeagueYears = await _leagueMemberService.GetUsersWithLeagueYearsWithPublisher();
 
         foreach (var user in usersWithPublicBidEmails)
