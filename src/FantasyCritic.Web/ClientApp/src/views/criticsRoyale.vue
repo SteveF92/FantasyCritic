@@ -4,7 +4,7 @@
       <div v-if="royaleYearQuarterOptions">
         <b-dropdown text="Quarters" class="quarter-select">
           <b-dropdown-item
-            v-for="royaleYearQuarterOption in royaleYearQuarterOptions"
+            v-for="royaleYearQuarterOption in reversedQuarters"
             :key="royaleYearQuarterOption.year + '-' + royaleYearQuarterOption.quarter"
             :active="royaleYearQuarterOption.year === year && royaleYearQuarterOption.quarter === quarter"
             :to="{ name: 'criticsRoyale', params: { year: royaleYearQuarterOption.year, quarter: royaleYearQuarterOption.quarter } }">
@@ -159,6 +159,9 @@ export default {
   computed: {
     rows() {
       return this.royaleStandings.length;
+    },
+    reversedQuarters() {
+      return this.royaleYearQuarterOptions.slice().reverse();
     }
   },
   watch: {
