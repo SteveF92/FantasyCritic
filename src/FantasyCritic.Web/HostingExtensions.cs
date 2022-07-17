@@ -231,6 +231,9 @@ public static class HostingExtensions
                 options.LogoutPath = "/Account/Logout";
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration = true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.HttpOnly = true;
+
             })
             .AddLocalApi(JwtBearerDefaults.AuthenticationScheme, options =>
             {
