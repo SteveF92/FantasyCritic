@@ -44,36 +44,30 @@ public static class HostingExtensions
         return "ClientApp/dist";
     }
 
-    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, IConfigurationStore configuration)
+    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, string awsRegion, ConfigurationStoreSet configuration)
     {
-        var env = builder.Environment;
-        if (env.IsDevelopment())
-        {
-            Log.Information("Startup: Running in Development mode.");
-        }
-        else
-        {
-            Log.Information("Startup: Running in Production mode.");
-        }
-
         var services = builder.Services;
-        IClock clock = SystemClock.Instance;
-        var awsRegion = configuration.GetAWSRegion();
-        var rdsInstanceName = configuration.GetConfigValue("AWS:rdsInstanceName");
-        var awsBucket = configuration.GetConfigValue("AWS:bucket");
-        var mailgunAPIKey = configuration.GetConfigValue("Mailgun:apiKey");
-        var baseAddress = configuration.GetConfigValue("BaseAddress");
-        var rootFolder = configuration.GetConfigValue("RootFolder");
-        var duendeLicense = configuration.GetConfigValue("IdentityServer:License");
+        var environment = builder.Environment;
 
-        var identityConfig = new IdentityConfig(configuration.GetConfigValue("IdentityServer:FCBotSecret"), configuration.GetConfigValue("IdentityServer:CertificateKey"));
+        Log.Information($"Startup: Running in {environment} mode.");
+
+        var rdsInstanceName = configuration.AssertConfigValue("AWS:rdsInstanceName");
+        var awsBucket = configuration.AssertConfigValue("AWS:bucket");
+        var mailgunAPIKey = configuration.AssertConfigValue("Mailgun:apiKey");
+        var baseAddress = configuration.AssertConfigValue("BaseAddress");
+        var rootFolder = configuration.AssertConfigValue("RootFolder");
+        var duendeLicense = configuration.AssertConfigValue("IdentityServer:License");
+
+        var identityConfig = new IdentityConfig(configuration.AssertConfigValue("IdentityServer:FCBotSecret"), configuration.AssertConfigValue("IdentityServer:CertificateKey"));
+
+        IClock clock = SystemClock.Instance;
 
         // Add application services.
         services.AddHttpClient();
         services.AddTransient<IClock>(factory => clock);
 
         //MySQL Repos
-        string connectionString = configuration.GetConnectionString("ConnectionStrings:DefaultConnection");
+        string connectionString = configuration.AssertConnectionString("DefaultConnection");
 
         var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
         var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
@@ -89,13 +83,13 @@ public static class HostingExtensions
             new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore))));
 
         services.AddScoped<PatreonService>(factory => new PatreonService(
-            configuration.GetConfigValue("PatreonService:AccessToken"),
-            configuration.GetConfigValue("PatreonService:RefreshToken"),
-            configuration.GetConfigValue("Authentication:Patreon:ClientId"),
-            configuration.GetConfigValue("PatreonService:CampaignID")
+            configuration.AssertConfigValue("PatreonService:AccessToken"),
+            configuration.AssertConfigValue("PatreonService:RefreshToken"),
+            configuration.AssertConfigValue("Authentication:Patreon:ClientId"),
+            configuration.AssertConfigValue("PatreonService:CampaignID")
         ));
 
-        services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, env.IsProduction()));
+        services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
 
         services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
         services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
@@ -116,7 +110,7 @@ public static class HostingExtensions
         services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
         AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
-        if (env.IsProduction() || env.IsStaging())
+        if (environment.IsProduction() || environment.IsStaging())
         {
             adminServiceConfiguration = new AdminServiceConfiguration(false);
         }
@@ -214,7 +208,7 @@ public static class HostingExtensions
             .AddInMemoryClients(identityConfig.Clients)
             .AddAspNetIdentity<FantasyCriticUser>();
 
-        if (env.IsDevelopment())
+        if (environment.IsDevelopment())
         {
             identityServerBuilder.AddDeveloperSigningCredential();
         }
@@ -240,38 +234,37 @@ public static class HostingExtensions
                 options.ExpectedScope = FantasyCriticScopes.ReadScope.Name;
             });
 
-        if (env.IsProduction())
+        if (environment.IsProduction())
         {
             authenticationBuilder
                 .AddGoogle(options =>
                 {
-                    options.ClientId = configuration.GetConfigValue("Authentication:Google:ClientId");
-                    options.ClientSecret = configuration.GetConfigValue("Authentication:Google:ClientSecret");
+                    options.ClientId = configuration.AssertConfigValue("Authentication:Google:ClientId");
+                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Google:ClientSecret");
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
                     microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
                     microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
-                    microsoftOptions.ClientId = configuration.GetConfigValue("Authentication:Microsoft:ClientId");
-                    microsoftOptions.ClientSecret = configuration.GetConfigValue("Authentication:Microsoft:ClientSecret");
+                    microsoftOptions.ClientId = configuration.AssertConfigValue("Authentication:Microsoft:ClientId");
+                    microsoftOptions.ClientSecret = configuration.AssertConfigValue("Authentication:Microsoft:ClientSecret");
                 })
                 .AddTwitch(options =>
                 {
-                    options.ClientId = configuration.GetConfigValue("Authentication:Twitch:ClientId");
-                    options.ClientSecret = configuration.GetConfigValue("Authentication:Twitch:ClientSecret");
+                    options.ClientId = configuration.AssertConfigValue("Authentication:Twitch:ClientId");
+                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Twitch:ClientSecret");
                 })
                 .AddPatreon(options =>
                 {
-                    options.ClientId = configuration.GetConfigValue("Authentication:Patreon:ClientId");
-                    options.ClientSecret = configuration.GetConfigValue("Authentication:Patreon:ClientSecret");
+                    options.ClientId = configuration.AssertConfigValue("Authentication:Patreon:ClientId");
+                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Patreon:ClientSecret");
                 })
                 .AddDiscord(options =>
                 {
-                    options.ClientId = configuration.GetConfigValue("Authentication:Discord:ClientId");
-                    options.ClientSecret = configuration.GetConfigValue("Authentication:Discord:ClientSecret");
+                    options.ClientId = configuration.AssertConfigValue("Authentication:Discord:ClientId");
+                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Discord:ClientSecret");
                 });
         }
-
 
         var keysFolder = Path.Combine(rootFolder, "Keys");
         services.AddDataProtection()
@@ -302,11 +295,11 @@ public static class HostingExtensions
         // In production, the Vue files will be served from this directory
         services.AddSpaStaticFiles(staticFileOptions =>
         {
-            staticFileOptions.RootPath = GetSPAPath(env);
+            staticFileOptions.RootPath = GetSPAPath(environment);
         });
 
 
-        if (env.IsDevelopment())
+        if (environment.IsDevelopment())
         {
             // Only in Development, used for debugging
             services.AddTransient<IAuthorizationHandler, FantasyCriticAuthorizationHandler>();

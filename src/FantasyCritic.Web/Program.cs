@@ -1,10 +1,10 @@
+using System.Reflection;
 using Amazon;
 using Amazon.CloudWatchLogs;
 using Microsoft.AspNetCore.Hosting;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -32,14 +32,15 @@ public class Program
             builder.WebHost.UseIIS();
             builder.Host.UseSerilog();
 
-            var configurationStore = await GetConfigurationStore(builder.Configuration, builder.Environment);
+            var awsRegion = builder.Configuration["AWS:region"];
+            var configuration = await GetConfiguration(builder.Environment, awsRegion);
             var app = builder
-                .ConfigureServices(configurationStore)
+                .ConfigureServices(awsRegion, configuration)
                 .ConfigurePipeline();
 
             if (!app.Environment.IsDevelopment())
             {
-                ConfigureCloudLogging(loggingPaths, app.Environment, configurationStore);
+                ConfigureCloudLogging(loggingPaths, app.Environment, awsRegion);
             }
 
             await app.RunAsync();
@@ -52,6 +53,34 @@ public class Program
         {
             Log.CloseAndFlush();
         }
+    }
+
+    private static async Task<ConfigurationStoreSet> GetConfiguration(IWebHostEnvironment environment, string awsRegion)
+    {
+        var nativeConfig = new ConfigurationBuilder()
+            .SetBasePath(environment.ContentRootPath)
+            .AddJsonFile("appsettings.json")
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+            .Build();
+
+        List<IConfigurationStore> stores = new List<IConfigurationStore>()
+        {
+            new NativeConfiguration(nativeConfig)
+        };
+
+        if (!environment.IsDevelopment())
+        {
+            string fixedEnvironmentName = environment.EnvironmentName;
+            if (environment.IsStaging())
+            {
+                fixedEnvironmentName = "beta";
+            }
+            var awsStore = new SecretsManagerConfigurationStore(awsRegion, "fantasyCritic", fixedEnvironmentName);
+            await awsStore.PopulateAllValues();
+            stores.Add(awsStore);
+        }
+
+        return new ConfigurationStoreSet(stores);
     }
 
     private static void ConfigureLogging(LoggingPaths loggingPaths)
@@ -82,9 +111,9 @@ public class Program
             .CreateLogger();
     }
 
-    private static void ConfigureCloudLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, IConfigurationStore configurationStore)
+    private static void ConfigureCloudLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, string awsRegion)
     {
-        var region = RegionEndpoint.GetBySystemName(configurationStore.GetAWSRegion());
+        var region = RegionEndpoint.GetBySystemName(awsRegion);
         var client = new AmazonCloudWatchLogsClient(region);
 
         string environmentName = "dev";
@@ -144,29 +173,5 @@ public class Program
             })
             .WriteTo.AmazonCloudWatch(options, client)
             .CreateLogger();
-    }
-
-    private static async Task<IConfigurationStore> GetConfigurationStore(ConfigurationManager configurationManager, IWebHostEnvironment environment)
-    {
-        IConfigurationStore configurationStore;
-        var fileConfigurationStore = new ConfigurationFileStore(configurationManager);
-        if (!environment.IsDevelopment())
-        {
-            string fixedEnvironmentName = environment.EnvironmentName;
-            if (environment.IsStaging())
-            {
-                fixedEnvironmentName = "beta";
-            }
-            var awsRegion = fileConfigurationStore.GetAWSRegion();
-            var awsStore = new SecretsManagerConfigurationStore(awsRegion, "fantasyCritic", fixedEnvironmentName);
-            await awsStore.PopulateAllValues();
-            configurationStore = new ConfigurationStoreSet(fileConfigurationStore, awsStore);
-        }
-        else
-        {
-            configurationStore = fileConfigurationStore;
-        }
-
-        return configurationStore;
     }
 }

@@ -8,7 +8,6 @@ using Amazon.SecretsManager.Model;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Extensions;
 using Newtonsoft.Json;
-using Filter = Amazon.SecretsManager.Model.Filter;
 
 namespace FantasyCritic.AWS;
 public class SecretsManagerConfigurationStore : IConfigurationStore
@@ -30,49 +29,37 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
         _sharedSecretsCache = new Dictionary<string, string>();
     }
 
-    public string GetConfigValue(string name)
+    public string? GetConfigValue(string name)
     {
-        void CheckHasValue(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new Exception($"Config value: {name} not found.");
-            }
-        }
-
         if (_environmentsSecretsCache.TryGetValue(name, out var environmentValue))
         {
-            CheckHasValue(environmentValue);
             return environmentValue;
         }
 
         if (_sharedSecretsCache.TryGetValue(name, out var sharedValue))
         {
-            CheckHasValue(sharedValue);
             return sharedValue;
         }
 
-        throw new Exception($"Config value: {name} not found.");
+        return null;
     }
 
-    public string GetConnectionString(string name)
+    public string? GetConnectionString(string name)
     {
-        var rawValue = GetConfigValue(name);
-        var connectionStringObject = JsonConvert.DeserializeObject<ConnectionStringEntity>(rawValue);
-        if (connectionStringObject is null)
+        var rawValue = GetConfigValue("ConnectionStrings:" + name);
+        if (rawValue is null)
         {
-            throw new Exception($"Cannot parse connection string: {name}");
+            return null;
         }
 
+        var connectionStringObject = JsonConvert.DeserializeObject<ConnectionStringEntity>(rawValue)!;
         return $"Server={connectionStringObject.Host};Database=fantasycritic;Uid={connectionStringObject.Username};Pwd={connectionStringObject.Password};charset=utf8;sslMode=required;MaximumPoolsize=50;";
     }
-
-    public string GetAWSRegion() => _region;
 
     public async Task PopulateAllValues()
     {
         IAmazonSecretsManager client = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(_region));
-        
+
         string? nextToken = null;
         List<SecretListEntry> allSecrets = new List<SecretListEntry>();
         while (true)

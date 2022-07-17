@@ -2,45 +2,60 @@ namespace FantasyCritic.Lib.DependencyInjection;
 
 public class ConfigurationStoreSet : IConfigurationStore
 {
-    private readonly IConfigurationStore _normalStore;
-    private readonly IConfigurationStore _secretStore;
+    private readonly IReadOnlyList<IConfigurationStore> _stores;
 
-    public ConfigurationStoreSet(IConfigurationStore normalStore, IConfigurationStore secretStore)
+    public ConfigurationStoreSet(IEnumerable<IConfigurationStore> stores)
     {
-        _normalStore = normalStore;
-        _secretStore = secretStore;
+        _stores = stores.Reverse().ToList();
     }
 
-    public string GetConfigValue(string name)
+    public string? GetConfigValue(string name)
     {
-        var primaryStoreValue = _normalStore.GetConfigValue(name);
-        if (primaryStoreValue != "secret")
+        foreach (var store in _stores)
         {
-            return primaryStoreValue;
+            var value = store.GetConfigValue(name);
+            if (value is not null)
+            {
+                return value;
+            }
         }
 
-        return _secretStore.GetConfigValue(name);
+        return null;
     }
 
-    public string GetConnectionString(string name)
+    public string? GetConnectionString(string name)
     {
-        var primaryStoreValue = _normalStore.GetConnectionString(name);
-        if (primaryStoreValue != "secret")
+        foreach (var store in _stores)
         {
-            return primaryStoreValue;
+            var value = store.GetConnectionString(name);
+            if (value is not null)
+            {
+                return value;
+            }
         }
 
-        return _secretStore.GetConnectionString(name);
+        return null;
     }
 
-    public string GetAWSRegion()
+    public string AssertConfigValue(string name)
     {
-        var primaryStoreValue = _normalStore.GetAWSRegion();
-        if (primaryStoreValue != "secret")
+        var value = GetConfigValue(name);
+        if (value is null)
         {
-            return primaryStoreValue;
+            throw new Exception($"Cannot get config value: {name}");
         }
 
-        return _secretStore.GetAWSRegion();
+        return value;
+    }
+
+    public string AssertConnectionString(string name)
+    {
+        var value = GetConnectionString(name);
+        if (value is null)
+        {
+            throw new Exception($"Cannot get connection string: {name}");
+        }
+
+        return value;
     }
 }
