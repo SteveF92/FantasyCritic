@@ -7,6 +7,8 @@
       You can use this form to place a bid on a game.
       <br />
       Bids are processed on Saturday Nights. See the FAQ for more info.
+      <br />
+      Games that have already released, or are confirmed not to release this year are not available to be counterpicked.
     </p>
 
     <div v-if="publisherSlotsAreFilled" class="alert alert-danger">You have already filled all of your counter pick slots!</div>
@@ -16,7 +18,7 @@
         <ValidationObserver>
           <h3 class="text-black">Available Counter Picks</h3>
           <b-form-select v-model="bidCounterPick">
-            <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
+            <option v-for="publisherGame in availableCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
               {{ publisherGame.gameName }}
             </option>
           </b-form-select>
@@ -75,11 +77,11 @@ export default {
     bidButtonText() {
       return 'Place Counter Pick Bid';
     },
-    availableCounterPicks() {
-      return this.leagueYear.availableCounterPicks;
-    },
     counterPickInvalid() {
       return this.bidCounterPick && !this.bidCounterPick.masterGame;
+    },
+    availableCounterPicks() {
+      return _.filter(this.possibleCounterPicks, (x) => x.willRelease && !x.released);
     }
   },
   mounted() {
