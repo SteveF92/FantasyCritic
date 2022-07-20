@@ -236,13 +236,14 @@ public class FantasyCriticService
 
         var currentDate = _clock.GetToday();
         Dictionary<LeagueYearKey, FantasyCriticUser> winningUsers = new Dictionary<LeagueYearKey, FantasyCriticUser>();
-        var publishersByYear = allPublishersForYear.GroupBy(x => x.LeagueYearKey.Year);
-        foreach (var publishersForYear in publishersByYear)
+        var publishersByLeagueYear = allPublishersForYear.GroupBy(x => x.LeagueYearKey);
+        foreach (var publishersForLeagueYear in publishersByLeagueYear)
         {
+            var sortedLeagueYearPublishers = publishersForLeagueYear.OrderBy(x => x.DraftPosition).ToList();
             decimal highestPoints = 0m;
-            foreach (var publisher in publishersForYear)
+            var leagueYear = leagueYearDictionary[publishersForLeagueYear.Key];
+            foreach (var publisher in sortedLeagueYearPublishers)
             {
-                var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
                 decimal totalPointsForPublisher = 0m;
                 var slots = publisher.GetPublisherSlots(leagueYear.Options).Where(x => x.PublisherGame is not null).ToList();
                 foreach (var publisherSlot in slots)
@@ -261,7 +262,7 @@ public class FantasyCriticService
                     }
                 }
 
-                if (totalPointsForPublisher > highestPoints && leagueYear.WinningUser is null)
+                if (totalPointsForPublisher >= highestPoints && leagueYear.WinningUser is null)
                 {
                     highestPoints = totalPointsForPublisher;
                     winningUsers[publisher.LeagueYearKey] = publisher.User;
