@@ -8,12 +8,19 @@ public static class TimeFunctions
     {
         var range = ParseEstimatedReleaseDateInner(estimatedReleaseDate, clock);
         var tomorrow = clock.GetToday().PlusDays(1);
+        LocalDate minimumDate = range.MinimumReleaseDate;
+        LocalDate? maximumDate = range.MaximumReleaseDate;
         if (range.MinimumReleaseDate < tomorrow)
         {
-            return new EstimatedReleaseDateRange(tomorrow, range.MaximumReleaseDate);
+            minimumDate = tomorrow;
         }
 
-        return range;
+        if (estimatedReleaseDate.EndsWith("Or Later", StringComparison.OrdinalIgnoreCase))
+        {
+            maximumDate = null;
+        }
+
+        return new EstimatedReleaseDateRange(minimumDate, maximumDate);
     }
 
     private static EstimatedReleaseDateRange ParseEstimatedReleaseDateInner(string estimatedReleaseDate, IClock clock)
@@ -24,8 +31,10 @@ public static class TimeFunctions
             return new EstimatedReleaseDateRange(tomorrow, null);
         }
 
+        var trimOrLater = estimatedReleaseDate.ToLower().TrimStartingFromFirstInstance(" or later");
+
         int? yearPart;
-        var splitString = estimatedReleaseDate.Split(" ");
+        var splitString = trimOrLater.Split(" ");
         if (splitString.Length == 1)
         {
             yearPart = TryParseYear(splitString.Single());
@@ -46,20 +55,6 @@ public static class TimeFunctions
                 }
 
                 return new EstimatedReleaseDateRange(new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
-            }
-        }
-        else if (splitString.Length == 4 && estimatedReleaseDate.EndsWith("or Later", StringComparison.OrdinalIgnoreCase))
-        {
-            yearPart = TryParseYear(splitString.Last());
-            if (yearPart.HasValue)
-            {
-                var recognizedSubYears = GetRecognizedSubYears(yearPart.Value);
-                if (recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart))
-                {
-                    return new EstimatedReleaseDateRange(subYearPart.MinimumReleaseDate, null);
-                }
-
-                return new EstimatedReleaseDateRange(new LocalDate(yearPart.Value, 1, 1), null);
             }
         }
 
