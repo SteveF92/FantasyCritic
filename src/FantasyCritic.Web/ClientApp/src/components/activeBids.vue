@@ -4,7 +4,7 @@
       <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="games" :fields="gamesFields" bordered striped responsive small>
         <template #cell(gameName)="data">
           <span class="game-name-column">
-            <span v-if="data.item.counterPick" v-b-popover.hover.focus="counterPickText" class="badge tag-badge counter-pick-badge">CP</span>
+            <span v-if="data.item.counterPick" v-b-popover.hover.focus="counterPickText" class="badge tag-badge counter-pick-badge">CPK</span>
             <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
             <font-awesome-icon
               v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0"
