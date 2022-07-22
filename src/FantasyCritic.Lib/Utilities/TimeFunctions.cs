@@ -4,24 +4,24 @@ namespace FantasyCritic.Lib.Utilities;
 
 public static class TimeFunctions
 {
-    public static (LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate) ParseEstimatedReleaseDate(string estimatedReleaseDate, IClock clock)
+    public static EstimatedReleaseDateRange ParseEstimatedReleaseDate(string estimatedReleaseDate, IClock clock)
     {
         var range = ParseEstimatedReleaseDateInner(estimatedReleaseDate, clock);
         var tomorrow = clock.GetToday().PlusDays(1);
-        if (range.minimumReleaseDate < tomorrow)
+        if (range.MinimumReleaseDate < tomorrow)
         {
-            return new(tomorrow, range.maximumReleaseDate);
+            return new EstimatedReleaseDateRange(tomorrow, range.MaximumReleaseDate);
         }
 
         return range;
     }
 
-    private static (LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate) ParseEstimatedReleaseDateInner(string estimatedReleaseDate, IClock clock)
+    private static EstimatedReleaseDateRange ParseEstimatedReleaseDateInner(string estimatedReleaseDate, IClock clock)
     {
         var tomorrow = clock.GetToday().PlusDays(1);
         if (estimatedReleaseDate == "TBA")
         {
-            return (tomorrow, null);
+            return new EstimatedReleaseDateRange(tomorrow, null);
         }
 
         int? yearPart;
@@ -31,7 +31,7 @@ public static class TimeFunctions
             yearPart = TryParseYear(splitString.Single());
             if (yearPart.HasValue)
             {
-                return (new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
+                return new EstimatedReleaseDateRange(new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
             }
         }
         else if (splitString.Length == 2)
@@ -40,13 +40,12 @@ public static class TimeFunctions
             if (yearPart.HasValue)
             {
                 var recognizedSubYears = GetRecognizedSubYears(yearPart.Value);
-                bool hasSubYear = recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart);
-                if (hasSubYear)
+                if (recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart))
                 {
-                    return subYearPart;
+                    return new EstimatedReleaseDateRange(subYearPart.MinimumReleaseDate, subYearPart.MaximumReleaseDate);
                 }
 
-                return (new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
+                return new EstimatedReleaseDateRange(new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
             }
         }
         else if (splitString.Length == 4 && estimatedReleaseDate.EndsWith("or Later", StringComparison.OrdinalIgnoreCase))
@@ -55,17 +54,16 @@ public static class TimeFunctions
             if (yearPart.HasValue)
             {
                 var recognizedSubYears = GetRecognizedSubYears(yearPart.Value);
-                bool hasSubYear = recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart);
-                if (hasSubYear)
+                if (recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart))
                 {
-                    return new(subYearPart.minimumDate, null);
+                    return new EstimatedReleaseDateRange(subYearPart.MinimumReleaseDate, null);
                 }
 
-                return (new LocalDate(yearPart.Value, 1, 1), null);
+                return new EstimatedReleaseDateRange(new LocalDate(yearPart.Value, 1, 1), null);
             }
         }
 
-        return (tomorrow, null);
+        return new EstimatedReleaseDateRange(tomorrow, null);
     }
 
     private static int? TryParseYear(string yearPart)
@@ -79,7 +77,7 @@ public static class TimeFunctions
         return null;
     }
 
-    private static IReadOnlyDictionary<string, (LocalDate minimumDate, LocalDate maximumDate)> GetRecognizedSubYears(int year)
+    private static IReadOnlyDictionary<string, EstimatedReleaseDateRange> GetRecognizedSubYears(int year)
     {
         LocalDate endOfFebruary = new LocalDate(year, 2, 28);
         if (CalendarSystem.Iso.IsLeapYear(year))
@@ -87,7 +85,7 @@ public static class TimeFunctions
             endOfFebruary = new LocalDate(year, 2, 29);
         }
 
-        return new Dictionary<string, (LocalDate minimumDate, LocalDate maximumDate)>()
+        var dictionary = new Dictionary<string, (LocalDate MinimumDate, LocalDate MaximumDate)>()
         {
             {"early", (new LocalDate(year, 1, 1), new LocalDate(year, 6, 30))},
             {"mid", (new LocalDate(year, 3, 1), new LocalDate(year, 10, 31))},
@@ -113,5 +111,8 @@ public static class TimeFunctions
             {"november", (new LocalDate(year, 11, 1), new LocalDate(year, 11, 30))},
             {"december", (new LocalDate(year, 12, 1), new LocalDate(year, 12, 31))},
         };
+
+        var typedDictionary = dictionary.ToDictionary(x => x.Key, y => new EstimatedReleaseDateRange(y.Value.MinimumDate, y.Value.MaximumDate));
+        return typedDictionary;
     }
 }

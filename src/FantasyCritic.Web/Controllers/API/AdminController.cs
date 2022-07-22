@@ -420,7 +420,7 @@ public class AdminController : FantasyCriticController
     public ActionResult<DateParseResponse> ParseEstimatedDate(string estimatedReleaseDate)
     {
         var dates = TimeFunctions.ParseEstimatedReleaseDate(estimatedReleaseDate, _clock);
-        var response = new DateParseResponse(dates.minimumReleaseDate, dates.maximumReleaseDate);
+        var response = new DateParseResponse(dates.MinimumReleaseDate, dates.MaximumReleaseDate);
         return response;
     }
 
