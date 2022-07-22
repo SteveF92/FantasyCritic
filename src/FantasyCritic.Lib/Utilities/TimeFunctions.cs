@@ -49,6 +49,21 @@ public static class TimeFunctions
                 return (new LocalDate(yearPart.Value, 1, 1), new LocalDate(yearPart.Value, 12, 31));
             }
         }
+        else if (splitString.Length == 4 && estimatedReleaseDate.EndsWith("or Later", StringComparison.OrdinalIgnoreCase))
+        {
+            yearPart = TryParseYear(splitString.Last());
+            if (yearPart.HasValue)
+            {
+                var recognizedSubYears = GetRecognizedSubYears(yearPart.Value);
+                bool hasSubYear = recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart);
+                if (hasSubYear)
+                {
+                    return new(subYearPart.minimumDate, null);
+                }
+
+                return (new LocalDate(yearPart.Value, 1, 1), null);
+            }
+        }
 
         return (tomorrow, null);
     }
