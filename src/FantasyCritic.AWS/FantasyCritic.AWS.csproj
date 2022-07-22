@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.13.17" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.13.25" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.9.19" />
-    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.2.59" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.13.25" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.14.7" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.9.28" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.2.67" />
   </ItemGroup>
 
   <ItemGroup>
