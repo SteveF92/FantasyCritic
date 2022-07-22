@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "prestart": "node aspnetcore-https",
     "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve",
+    "start": "vue-cli-service serve --port 44477",
+    "watch": "vue-cli-service build --mode=development --watch",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

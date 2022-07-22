@@ -1,3 +1,5 @@
+const httpsBase = 'C:/Users/elite/AppData/Roaming/ASP.NET/https/';
+
 module.exports = {
   chainWebpack: config => {
     config.module
@@ -20,5 +22,15 @@ module.exports = {
           };
           return options;
         })
+  },
+  devServer: {
+    server: {
+      type: 'https',
+      options: {
+        cert: httpsBase + 'fantasy-critic-client-app.pem',
+        key: httpsBase + 'fantasy-critic-client-app.key',
+        requestCert: true
+      }
+    }
   }
 }
