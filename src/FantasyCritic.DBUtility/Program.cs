@@ -5,9 +5,9 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MySqlConnector;
 using NodaTime;
 
@@ -18,7 +18,7 @@ class Program
     private static readonly string _connectionString = ConfigurationManager.AppSettings["ConnectionString"]!;
     private static readonly IClock _clock = SystemClock.Instance;
 
-    static async Task Main(string[] args)
+    public static async Task Main()
     {
         DapperNodaTimeSetup.Register();
         await FindBadBudgets();
@@ -26,9 +26,9 @@ class Program
 
     private static async Task FindBadBudgets()
     {
-        MySQLFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
-        MySQLMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
-        MySQLFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
+        IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
+        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
+        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
 
         var supportedYears = await fantasyCriticRepo.GetSupportedYears();
         var tradeYears = supportedYears.Where(x => x.Year >= 2022).ToList();
@@ -38,9 +38,9 @@ class Program
             foreach (var leagueYearKey in leagueYearsWithProblemTrades)
             {
                 var league = await fantasyCriticRepo.GetLeague(leagueYearKey.LeagueID);
-                var leagueYear = await fantasyCriticRepo.GetLeagueYear(league!, leagueYearKey.Year);
+                var leagueYear = await fantasyCriticRepo.GetLeagueYearOrThrow(league!, leagueYearKey.Year);
                 var trades = await fantasyCriticRepo.GetTradesForLeague(leagueYear);
-                var executedTrades = trades.Where(x => x.Status.Equals(TradeStatus.Executed));
+                var executedTrades = trades.Where(x => x.Status.Equals(TradeStatus.Executed)).ToList();
                 var leagueActions = await fantasyCriticRepo.GetLeagueActions(leagueYear);
                 var nonDraftActions = leagueActions.Where(x => !x.Description.ToLower().Contains("draft")).ToList();
                 var processedBids = await fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
@@ -48,9 +48,9 @@ class Program
                 var publisherIDs = executedTrades.SelectMany(x => x.GetUpdatedPublishers()).Select(x => x.PublisherID).Distinct().ToList();
                 foreach (var publisherID in publisherIDs)
                 {
-                    var publisher = leagueYear.GetPublisherByID(publisherID);
+                    var publisher = leagueYear.GetPublisherByIDOrThrow(publisherID);
                     var leagueActionsForPublisher = nonDraftActions.Where(x => x.Publisher.PublisherID == publisher.PublisherID).ToList();
-                    var tradesInvolvingPublisher = executedTrades.Where(x => x.GetUpdatedPublishers().Select(x => x.PublisherID).Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
+                    var tradesInvolvingPublisher = executedTrades.Where(x => x.GetUpdatedPublishers().Select(y => y.PublisherID).Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
                     var successfulBidsForPublisher = successBids.Where(x => x.Publisher.PublisherID == publisher.PublisherID).OrderBy(x => x.Timestamp).ToList();
                     PrintStatsForPublisher(leagueYear, publisher, leagueActionsForPublisher, tradesInvolvingPublisher, successfulBidsForPublisher);
                 }

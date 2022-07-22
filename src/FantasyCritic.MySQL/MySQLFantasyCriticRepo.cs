@@ -2664,7 +2664,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    private Task MarkSpecialAuctionsFinalized(IEnumerable<SpecialAuction> specialAuctionsProcessed, MySqlConnection connection, MySqlTransaction transaction)
+    private static Task MarkSpecialAuctionsFinalized(IEnumerable<SpecialAuction> specialAuctionsProcessed, MySqlConnection connection, MySqlTransaction transaction)
     {
         string sql = "UPDATE tbl_league_specialauction SET Processed = 1 WHERE SpecialAuctionID IN @specialAuctionIDs";
         var paramsObject = new

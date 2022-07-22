@@ -61,7 +61,7 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
     {
-        if (publisherSlot.PublisherGame is null || publisherSlot.PublisherGame.MasterGame is null)
+        if (publisherSlot.PublisherGame?.MasterGame is null)
         {
             return null;
         }
@@ -125,6 +125,17 @@ public class LeagueYear : IEquatable<LeagueYear>
         if (!hasPublisher)
         {
             return null;
+        }
+
+        return publisher;
+    }
+
+    public Publisher GetPublisherByIDOrThrow(Guid publisherID)
+    {
+        var publisher = GetPublisherByID(publisherID);
+        if (publisher is null)
+        {
+            throw new Exception($"League: {League.LeagueID} has no publisher with ID: {publisherID}");
         }
 
         return publisher;
