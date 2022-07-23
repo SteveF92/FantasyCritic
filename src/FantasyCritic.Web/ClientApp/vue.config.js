@@ -1,4 +1,11 @@
+const { env } = require("process");
 const httpsBase = 'C:/Users/elite/AppData/Roaming/ASP.NET/https/';
+
+const target = env.ASPNETCORE_HTTPS_PORT
+  ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
+  : env.ASPNETCORE_URLS
+  ? env.ASPNETCORE_URLS.split(";")[0]
+  : "http://localhost:44391";
 
 module.exports = {
   chainWebpack: config => {
@@ -31,6 +38,10 @@ module.exports = {
         key: httpsBase + 'fantasy-critic-client-app.key'
       }
     },
-    proxy: 'https://localhost:44391/'
+    proxy: target,
+    client: {
+      webSocketURL: 'auto://localhost:44477/ws',
+    },
+    allowedHosts: 'all'
   }
 }
