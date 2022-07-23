@@ -30,6 +30,7 @@ module.exports = {
         cert: httpsBase + 'fantasy-critic-client-app.pem',
         key: httpsBase + 'fantasy-critic-client-app.key'
       }
-    }
+    },
+    proxy: 'https://localhost:44391/'
   }
 }
