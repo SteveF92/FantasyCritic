@@ -317,18 +317,9 @@ public static class HostingExtensions
         app.UseIdentityServer();
         app.UseAuthorization();
 
-        //This works
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-            endpoints.MapRazorPages();
-            endpoints.MapHub<UpdateHub>("/updatehub");
-        });
-
-        //This does not
-        //app.MapControllers();
-        //app.MapRazorPages();
-        //app.MapHub<UpdateHub>("/updatehub");
+        app.MapControllers();
+        app.MapRazorPages();
+        app.MapHub<UpdateHub>("/updatehub");
 
         app.MapFallbackToFile("index.html");
 

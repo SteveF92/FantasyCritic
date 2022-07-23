@@ -38,7 +38,41 @@ module.exports = {
         key: httpsBase + 'fantasy-critic-client-app.key'
       }
     },
-    proxy: target,
+    proxy: {
+      "^/api": {
+        target: target,
+        changeOrigin: true,
+      },
+      "^/Account": {
+        target: target,
+        changeOrigin: true,
+      },
+      "^/updatehub": {
+        target: target,
+        ws: true,
+        changeOrigin: true,
+      },
+      "^/.well-known": {
+        target: target,
+        changeOrigin: true,
+      },
+      "^/css": {
+        target: target,
+        changeOrigin: true,
+      },
+      "^/img": {
+        target: target,
+        changeOrigin: true,
+      },
+      "^/js": {
+        target: target,
+        changeOrigin: true,
+      },
+      "^/lib": {
+        target: target,
+        changeOrigin: true,
+      },
+    },
     client: {
       webSocketURL: 'auto://localhost:44477/ws',
     },
