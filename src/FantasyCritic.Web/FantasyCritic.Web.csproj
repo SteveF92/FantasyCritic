@@ -8,6 +8,9 @@
     <Company>Fantasy Critic</Company>
     <Description>Fantasy football for video games</Description>
     <UserSecretsId>785d062a-8464-48af-81ba-ab28edd03b1d</UserSecretsId>
+    <SpaRoot>ClientApp\</SpaRoot>
+    <SpaProxyServerUrl>https://localhost:44477</SpaProxyServerUrl>
+    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -23,11 +26,11 @@
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.7" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
     <PackageReference Include="Serilog.Sinks.AwsCloudWatch" Version="4.0.171" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="VueCliMiddleware" Version="6.0.0" />
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.7" />
   </ItemGroup>
@@ -58,11 +61,6 @@
     </Content>
   </ItemGroup>
 
-  <PropertyGroup>
-    <SpaRoot>ClientApp\</SpaRoot>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-  </PropertyGroup>
-
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
@@ -83,13 +81,13 @@
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --prod" />
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
-      <DistFiles Include="$(SpaRoot)dist\**" />
+      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </ResolvedFileToPublish>

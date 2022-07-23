@@ -28,8 +28,7 @@ module.exports = {
       type: 'https',
       options: {
         cert: httpsBase + 'fantasy-critic-client-app.pem',
-        key: httpsBase + 'fantasy-critic-client-app.key',
-        requestCert: true
+        key: httpsBase + 'fantasy-critic-client-app.key'
       }
     }
   }
