@@ -29,13 +29,12 @@ public class UpdateHub : Hub
         await base.OnDisconnectedAsync(ex);
     }
 
-    public async Task Subscribe(string leagueID, string year)
+    public async Task Subscribe(string leagueID, int year)
     {
         try
         {
             Guid leagueGUID = Guid.Parse(leagueID);
-            int yearInt = int.Parse(year);
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueGUID, yearInt);
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueGUID, year);
             if (leagueYear is null)
             {
                 return;
