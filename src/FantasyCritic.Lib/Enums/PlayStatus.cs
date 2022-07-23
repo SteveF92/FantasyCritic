@@ -19,6 +19,7 @@ public class PlayStatus : TypeSafeEnum<PlayStatus>
     public bool DraftFinished => (Value == DraftFinal.Value);
     public bool DraftIsActive => (Value == Drafting.Value);
     public bool DraftIsPaused => (Value == DraftPaused.Value);
+    public bool DraftIsActiveOrPaused => DraftIsActive || DraftIsPaused;
 
     public override string ToString() => Value;
 }

@@ -40,7 +40,7 @@ public class UpdateHub : Hub
                 return;
             }
 
-            if (!leagueYear.PlayStatus.DraftIsActive)
+            if (!leagueYear.PlayStatus.DraftIsActiveOrPaused)
             {
                 return;
             }
