@@ -128,6 +128,7 @@ public class Program
         }
 
         var logGroupName = "/fantasyCritic/" + environmentName;
+        Log.Information($"Using cloudwatch: {logGroupName}");
 
         // options for the sink defaults in https://github.com/Cimpress-MCP/serilog-sinks-awscloudwatch/blob/master/src/Serilog.Sinks.AwsCloudWatch/CloudWatchSinkOptions.cs
         var options = new CloudWatchSinkOptions
