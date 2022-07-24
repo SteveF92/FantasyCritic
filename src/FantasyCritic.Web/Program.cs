@@ -124,7 +124,7 @@ public class Program
 
         if (env.IsProduction())
         {
-            environmentName = "prod";
+            environmentName = "production";
         }
 
         var logGroupName = "/fantasyCritic/" + environmentName;
