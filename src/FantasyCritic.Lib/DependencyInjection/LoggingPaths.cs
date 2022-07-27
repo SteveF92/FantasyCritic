@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.DependencyInjection;
 public class LoggingPaths
 {
     private readonly string _windowsBase = @"C:\FantasyCritic\Logs\";
-    private readonly string _linuxBase = @"/var/log/fantasyCritic/";
+    private readonly string _linuxBase = @"~/FantasyCritic/";
 
     public string AllLogPath => $"{GetBase()}log-all.txt";
     public string MyLogPath => $"{GetBase()}log-my.txt";

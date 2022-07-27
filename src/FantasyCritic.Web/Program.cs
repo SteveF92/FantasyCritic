@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Amazon;
 using Amazon.CloudWatchLogs;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +30,12 @@ public class Program
             DapperNodaTimeSetup.Register();
             Log.Information("Starting web host");
             var builder = WebApplication.CreateBuilder(args);
-            builder.WebHost.UseIIS();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                builder.WebHost.UseIIS();
+            }
+
             builder.Host.UseSerilog();
 
             var awsRegion = builder.Configuration["AWS:region"];

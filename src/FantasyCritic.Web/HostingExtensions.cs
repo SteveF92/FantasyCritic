@@ -1,4 +1,5 @@
 using System.IO;
+using System.Runtime.InteropServices;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -43,8 +44,13 @@ public static class HostingExtensions
         var awsBucket = configuration.AssertConfigValue("AWS:bucket");
         var mailgunAPIKey = configuration.AssertConfigValue("Mailgun:apiKey");
         var baseAddress = configuration.AssertConfigValue("BaseAddress");
-        var rootFolder = configuration.AssertConfigValue("RootFolder");
         var duendeLicense = configuration.AssertConfigValue("IdentityServer:License");
+
+        var rootFolder = configuration.AssertConfigValue("LinuxRootFolder");
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            rootFolder = configuration.AssertConfigValue("RootFolder");
+        }
 
         var identityConfig = new IdentityConfig(configuration.AssertConfigValue("IdentityServer:FCBotSecret"), configuration.AssertConfigValue("IdentityServer:CertificateKey"));
 
