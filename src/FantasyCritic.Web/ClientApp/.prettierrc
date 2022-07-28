@@ -5,7 +5,7 @@
   "trailingComma": "none",
   "printWidth": 200,
   "vueIndentScriptAndStyle": false,
-  "endOfLine": "crlf",
+  "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "ignore",
   "bracketSameLine": true
 }
