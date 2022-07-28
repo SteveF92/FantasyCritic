@@ -72,7 +72,7 @@ public class PublisherSlot
             return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
         }
 
-        return PublisherGame.MasterGame.GetProjectedFantasyPoints(scoringSystem, CounterPick);
+        return PublisherGame.MasterGame.GetProjectedFantasyPoints(scoringSystem, CounterPick, true);
     }
 
     public decimal? GetFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)

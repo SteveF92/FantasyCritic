@@ -101,8 +101,13 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return true;
     }
 
-    public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+    public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick, bool useCriticScoreIfExists)
     {
+        if (useCriticScoreIfExists && MasterGame.CriticScore.HasValue)
+        {
+            return scoringSystem.GetPointsForScore(MasterGame.CriticScore.Value, counterPick);
+        }
+
         return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
     }
 

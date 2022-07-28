@@ -18,10 +18,10 @@
           <template v-if="game.willRelease">
             <div class="game-text">{{ globalFunctions.formatPublisherGameReleaseDate(game, true) }}</div>
             <div v-if="game.criticScore" class="game-text">Score: {{ globalFunctions.roundNumber(game.criticScore, 2) }}</div>
-            <div v-if="!game.criticScore && game.masterGame" class="game-text">
+            <div v-if="!game.criticScore" class="game-text">
               <span v-show="!useSmallImages" class="projection-label">Projection:</span>
               <span v-show="useSmallImages" class="projection-label">Proj.</span>
-              <span class="projected-text">~{{ globalFunctions.roundNumber(game.masterGame.projectedFantasyPoints, 2) }}</span>
+              <span class="projected-text">~{{ globalFunctions.roundNumber(gameSlot.projectedFantasyPoints, 2) }}</span>
             </div>
           </template>
           <template v-else>
@@ -95,13 +95,6 @@ export default {
     },
     popoverID() {
       return `mg-popover-${this._uid}`;
-    },
-    scoreText() {
-      if (this.game.criticScore) {
-        return `Score: ${GlobalFunctions.roundNumber(this.game.criticScore, 2)}`;
-      }
-
-      return `Projection: ~${GlobalFunctions.roundNumber(this.game.masterGame.projectedFantasyPoints, 2)}`;
     },
     slotLabel() {
       if (this.gameSlot.counterPick) {
