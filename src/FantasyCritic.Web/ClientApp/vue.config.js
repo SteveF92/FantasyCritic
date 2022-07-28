@@ -1,5 +1,13 @@
 const { env } = require("process");
-const httpsBase = 'C:/Users/elite/AppData/Roaming/ASP.NET/https/';
+const path = require('path');
+
+const baseFolder =
+  process.env.APPDATA !== undefined && process.env.APPDATA !== ''
+    ? `${process.env.APPDATA}/ASP.NET/https`
+    : `${process.env.HOME}/.aspnet/https`;
+
+  const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];
+  const certificateName = certificateArg ? certificateArg.groups.value : process.env.npm_package_name;
 
 const target = env.ASPNETCORE_HTTPS_PORT
   ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
@@ -34,8 +42,8 @@ module.exports = {
     server: {
       type: 'https',
       options: {
-        cert: httpsBase + 'fantasy-critic-client-app.pem',
-        key: httpsBase + 'fantasy-critic-client-app.key'
+        cert: path.join(baseFolder, `${certificateName}.pem`),
+        key: path.join(baseFolder, `${certificateName}.key`)
       }
     },
     proxy: {
