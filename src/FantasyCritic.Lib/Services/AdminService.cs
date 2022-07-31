@@ -126,6 +126,13 @@ public class AdminService
 
     public async Task RefreshGGInfo(bool deepRefresh)
     {
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (!systemWideSettings.RefreshOpenCritic)
+        {
+            _logger.Information("Not refreshing GG data as the flag is turned off.");
+            return;
+        }
+
         var masterGames = await _interLeagueService.GetMasterGames();
 
         var masterGamesToUpdate = masterGames.Where(x => x.GGToken is not null && !x.DoNotRefreshAnything).ToList();
