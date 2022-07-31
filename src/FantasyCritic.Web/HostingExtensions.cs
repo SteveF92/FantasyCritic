@@ -1,6 +1,7 @@
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -210,7 +211,17 @@ public static class HostingExtensions
         }
         else
         {
-            identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
+            }
+            else
+            {
+                var certPath = configuration.AssertConfigValue("IdentityServer:CertificatePath");
+                var certPassword = configuration.AssertConfigValue("IdentityServer:CertificatePassword");
+                var rsaCert = new X509Certificate2(certPath, certPassword);
+                identityServerBuilder.AddSigningCredential(rsaCert);
+            }
         }
 
         var authenticationBuilder = services.AddAuthentication(IdentityConstants.ApplicationScheme)
