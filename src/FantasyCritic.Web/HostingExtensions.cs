@@ -299,7 +299,6 @@ public static class HostingExtensions
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         var env = app.Environment;
-        _ = Arguments.TryGetOptions(System.Environment.GetCommandLineArgs(), false, out string mode, out ushort port, out bool https);
 
         if (env.IsDevelopment())
         {
