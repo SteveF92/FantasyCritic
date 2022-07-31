@@ -1,8 +1,8 @@
+echo Stopping service
+sudo systemctl stop fantasy-critic.service
+
 echo Building
 dotnet publish src/FantasyCritic.Web/FantasyCritic.Web.csproj -c Release -o ../BuildArea
-
-echo Build done, stopping service
-sudo systemctl stop fantasy-critic.service
 
 echo Deleting and moving files
 rm -rf /var/www/fantasy-critic/*
