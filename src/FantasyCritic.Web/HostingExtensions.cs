@@ -1,4 +1,5 @@
 using System.IO;
+using System.Net;
 using System.Runtime.InteropServices;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
@@ -21,6 +22,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
@@ -286,11 +288,19 @@ public static class HostingExtensions
         services.AddRazorPages();
         services.AddSignalR();
 
-
         if (environment.IsDevelopment())
         {
             // Only in Development, used for debugging
             services.AddTransient<IAuthorizationHandler, FantasyCriticAuthorizationHandler>();
+        }
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
         }
 
         return builder.Build();
@@ -299,6 +309,10 @@ public static class HostingExtensions
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         var env = app.Environment;
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            app.UseForwardedHeaders();
+        }
 
         if (env.IsDevelopment())
         {
