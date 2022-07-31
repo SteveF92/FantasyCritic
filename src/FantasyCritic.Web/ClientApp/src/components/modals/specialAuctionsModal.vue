@@ -48,7 +48,7 @@
       </div>
       <hr />
       <label>Auction End Time (In your local time zone)</label>
-      <flat-pickr v-model="scheduledEndTime" :config="datePickerConfig" class="form-control"></flat-pickr>
+      <b-form-datepicker v-model="scheduledEndTime" :config="datePickerConfig" class="form-control"></b-form-datepicker>
       <b-button variant="success" class="create-button" @click="createSpecialAuction">Create Special Auction</b-button>
     </div>
     <br />
