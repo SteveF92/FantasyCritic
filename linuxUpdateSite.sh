@@ -1,0 +1,1 @@
+dotnet publish src/FantasyCritic.Web/FantasyCritic.Web.csproj -c Release -o /var/www/fantasy-critic
