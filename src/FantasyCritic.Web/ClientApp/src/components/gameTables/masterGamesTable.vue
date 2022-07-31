@@ -82,7 +82,8 @@
         {{ data.item.dateAdjustedHypeFactor | score(1) }}
       </template>
       <template #cell(projectedOrRealFantasyPoints)="data">
-        <span :class="{ 'projected-text': !data.item.fantasyPoints }">~{{ data.item.projectedOrRealFantasyPoints | score(1) }}</span>
+        <span v-if="data.item.fantasyPoints">{{ data.item.fantasyPoints | score(1) }}</span>
+        <span v-if="!data.item.fantasyPoints" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
       </template>
       <template #cell(eligiblePercentStandardGame)="data">
         {{ data.item.eligiblePercentStandardGame | percent(1) }}
