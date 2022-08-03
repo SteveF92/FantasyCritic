@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
@@ -13,9 +14,9 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
 
-    public MySQLRoyaleRepo(string connectionString, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo, IFantasyCriticRepo fantasyCriticRepo)
+    public MySQLRoyaleRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo, IFantasyCriticRepo fantasyCriticRepo)
     {
-        _connectionString = connectionString;
+        _connectionString = configuration.ConnectionString;
         _userStore = userStore;
         _masterGameRepo = masterGameRepo;
         _fantasyCriticRepo = fantasyCriticRepo;

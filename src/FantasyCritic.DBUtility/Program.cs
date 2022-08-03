@@ -1,6 +1,7 @@
 using System.Configuration;
 using Dapper;
 using Dapper.NodaTime;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
@@ -26,9 +27,10 @@ class Program
 
     private static async Task FindBadBudgets()
     {
-        IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_connectionString, _clock);
-        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_connectionString, userStore);
-        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_connectionString, userStore, masterGameRepo);
+        RepositoryConfiguration repoConfig = new RepositoryConfiguration(_connectionString, _clock);
+        IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repoConfig);
+        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(repoConfig, userStore);
+        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo);
 
         var supportedYears = await fantasyCriticRepo.GetSupportedYears();
         var tradeYears = supportedYears.Where(x => x.Year >= 2022).ToList();

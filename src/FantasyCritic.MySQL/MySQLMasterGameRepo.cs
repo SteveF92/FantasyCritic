@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -17,9 +18,9 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     private Dictionary<Guid, MasterGame> _masterGamesCache;
 
-    public MySQLMasterGameRepo(string connectionString, IReadOnlyFantasyCriticUserStore userStore)
+    public MySQLMasterGameRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore)
     {
-        _connectionString = connectionString;
+        _connectionString = configuration.ConnectionString;
         _userStore = userStore;
         _masterGamesCache = new Dictionary<Guid, MasterGame>();
         _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();

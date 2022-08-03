@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -66,18 +65,24 @@ public static class HostingExtensions
         //MySQL Repos
         string connectionString = configuration.AssertConnectionString("DefaultConnection");
 
-        var userStore = new MySQLFantasyCriticUserStore(connectionString, clock);
-        var roleStore = new MySQLFantasyCriticRoleStore(connectionString);
-        services.AddScoped<IFantasyCriticUserStore>(factory => userStore);
-        services.AddScoped<IFantasyCriticRoleStore>(factory => roleStore);
-        services.AddScoped<RepositoryConfiguration>(factory => new RepositoryConfiguration(connectionString, clock));
-        services.AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>(factory => userStore);
-        services.AddScoped<IRoleStore<FantasyCriticRole>, MySQLFantasyCriticRoleStore>(factory => roleStore);
+        services.AddSingleton<RepositoryConfiguration>(factory => new RepositoryConfiguration(connectionString, clock));
+        services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
+        AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
+        if (environment.IsProduction() || environment.IsStaging())
+        {
+            adminServiceConfiguration = new AdminServiceConfiguration(false);
+        }
+        services.AddSingleton<AdminServiceConfiguration>(_ => adminServiceConfiguration);
 
-        services.AddScoped<IMasterGameRepo>(factory => new MySQLMasterGameRepo(connectionString, userStore));
-        services.AddScoped<IFantasyCriticRepo>(factory => new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore)));
-        services.AddScoped<IRoyaleRepo>(factory => new MySQLRoyaleRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore),
-            new MySQLFantasyCriticRepo(connectionString, userStore, new MySQLMasterGameRepo(connectionString, userStore))));
+        services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
+        services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
+        services.AddScoped<IFantasyCriticRoleStore, MySQLFantasyCriticRoleStore>();
+        services.AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>();
+        services.AddScoped<IRoleStore<FantasyCriticRole>, MySQLFantasyCriticRoleStore>();
+
+        services.AddScoped<IMasterGameRepo, MySQLMasterGameRepo>();
+        services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
+        services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
 
         services.AddScoped<PatreonService>(factory => new PatreonService(
             configuration.AssertConfigValue("PatreonService:AccessToken"),
@@ -85,8 +90,6 @@ public static class HostingExtensions
             configuration.AssertConfigValue("Authentication:Patreon:ClientId"),
             configuration.AssertConfigValue("PatreonService:CampaignID")
         ));
-
-        services.AddScoped<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
 
         services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
         services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
@@ -106,12 +109,6 @@ public static class HostingExtensions
 
         services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
-        AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
-        if (environment.IsProduction() || environment.IsStaging())
-        {
-            adminServiceConfiguration = new AdminServiceConfiguration(false);
-        }
-        services.AddScoped<AdminServiceConfiguration>(_ => adminServiceConfiguration);
         services.AddScoped<AdminService>();
 
         services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>

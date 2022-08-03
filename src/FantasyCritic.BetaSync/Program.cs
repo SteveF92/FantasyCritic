@@ -54,7 +54,8 @@ public static class Program
 
         RDSRefresher rdsRefresher = new RDSRefresher(productionRDSName, betaRDSName);
         await rdsRefresher.CopySourceToDestination();
-        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
+        RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(_betaConnectionString, _clock);
+        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
         MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
 
         Log.Information("Cleaning emails/passwords for non-beta users");
@@ -72,10 +73,12 @@ public static class Program
 
         DapperNodaTimeSetup.Register();
 
-        MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(_productionReadOnlyConnectionString, _clock);
-        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
-        MySQLMasterGameRepo productionMasterGameRepo = new MySQLMasterGameRepo(_productionReadOnlyConnectionString, productionUserStore);
-        MySQLMasterGameRepo betaMasterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
+        RepositoryConfiguration productionRepoConfig = new RepositoryConfiguration(_productionReadOnlyConnectionString, _clock);
+        RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(_betaConnectionString, _clock);
+        MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(productionRepoConfig);
+        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
+        MySQLMasterGameRepo productionMasterGameRepo = new MySQLMasterGameRepo(productionRepoConfig, productionUserStore);
+        MySQLMasterGameRepo betaMasterGameRepo = new MySQLMasterGameRepo(betaRepoConfig, betaUserStore);
         MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
         AdminService betaAdminService = GetAdminService();
 
@@ -100,9 +103,10 @@ public static class Program
     private static AdminService GetAdminService()
     {
         FantasyCriticUserManager userManager = null!;
-        IFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(_betaConnectionString, _clock);
-        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_betaConnectionString, betaUserStore);
-        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_betaConnectionString, betaUserStore, masterGameRepo);
+        RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(_betaConnectionString, _clock);
+        IFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
+        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(betaRepoConfig, betaUserStore);
+        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(betaRepoConfig, betaUserStore, masterGameRepo);
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo, _clock);
         GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, leagueMemberService, _clock);

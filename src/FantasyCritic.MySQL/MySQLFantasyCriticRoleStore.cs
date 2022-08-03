@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using FantasyCritic.Lib.Identity;
@@ -9,9 +10,9 @@ public sealed class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
 {
     private readonly string _connectionString;
 
-    public MySQLFantasyCriticRoleStore(string connectionString)
+    public MySQLFantasyCriticRoleStore(RepositoryConfiguration configuration)
     {
-        _connectionString = connectionString;
+        _connectionString = configuration.ConnectionString;
     }
 
     public Task<IdentityResult> CreateAsync(FantasyCriticRole role, CancellationToken cancellationToken)

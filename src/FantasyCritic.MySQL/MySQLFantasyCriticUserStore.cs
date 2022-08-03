@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using FantasyCritic.Lib.Identity;
@@ -12,10 +13,10 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     private readonly IClock _clock;
     private List<FantasyCriticUser>? _userCache;
 
-    public MySQLFantasyCriticUserStore(string connectionString, IClock clock)
+    public MySQLFantasyCriticUserStore(RepositoryConfiguration configuration)
     {
-        _connectionString = connectionString;
-        _clock = clock;
+        _connectionString = configuration.ConnectionString;
+        _clock = configuration.Clock;
     }
 
     public async Task<IdentityResult> CreateAsync(FantasyCriticUser user, CancellationToken cancellationToken)
