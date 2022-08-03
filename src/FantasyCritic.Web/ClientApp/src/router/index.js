@@ -31,10 +31,6 @@ let router = new VueRouter({
 });
 
 router.beforeEach(async function (toRoute, fromRoute, next) {
-  if (toRoute.meta.title) {
-    document.title = toRoute.meta.title + ' - Fantasy Critic';
-  }
-
   if (toRoute.path !== fromRoute.path) {
     store.commit('clearPublisherStoreData');
     store.commit('clearLeagueStoreData');
@@ -64,24 +60,27 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
       if (toRoute.meta.publicOnly) {
         next({ path: '/home' });
         return;
-      } else {
-        next();
-        return;
       }
+      return next();
+    }
+
+    if (toRoute.meta.isPublic) {
+      return next();
     } else {
-      if (toRoute.meta.isPublic) {
-        next();
-        return;
-      } else {
-        store.commit('clearUserInfo');
-        window.location.href = '/Account/Login';
-        return;
-      }
+      store.commit('clearUserInfo');
+      window.location.href = '/Account/Login';
+      return;
     }
   } catch (error) {
     console.log('Router error');
     store.commit('clearUserInfo');
     window.location.href = '/Account/Login';
+  }
+});
+
+router.afterEach((toRoute) => {
+  if (toRoute.meta.title) {
+    document.title = toRoute.meta.title + ' - Fantasy Critic';
   }
 });
 
