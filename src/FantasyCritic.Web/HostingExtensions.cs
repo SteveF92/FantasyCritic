@@ -3,6 +3,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -14,6 +15,7 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.AuthorizationHandlers;
+using FantasyCritic.Web.BackgroundServices;
 using FantasyCritic.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -43,6 +45,7 @@ public static class HostingExtensions
         var awsBucket = configuration.AssertConfigValue("AWS:bucket");
         var mailgunAPIKey = configuration.AssertConfigValue("Mailgun:apiKey");
         var baseAddress = configuration.AssertConfigValue("BaseAddress");
+        var discordBotToken = configuration.AssertConfigValue("Discord:BotToken");
 
         var rootFolder = configuration.AssertConfigValue("LinuxRootFolder");
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -61,6 +64,8 @@ public static class HostingExtensions
 
         services.AddSingleton<RepositoryConfiguration>(factory => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
+        services.AddSingleton<DiscordConfiguration>(_ => new DiscordConfiguration(discordBotToken));
+
         AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
         if (environment.IsProduction() || environment.IsStaging())
         {
@@ -100,6 +105,8 @@ public static class HostingExtensions
         services.AddScoped<FantasyCriticService>();
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
+        services.AddScoped<DiscordPushService>();
+        services.AddScoped<DiscordRequestService>();
 
         services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
@@ -124,6 +131,9 @@ public static class HostingExtensions
         {
             args.SetObserved();
         });
+
+        //Hosted Services
+        services.AddHostedService<DiscordHostedService>();
 
         services.AddAuthorization(options =>
         {

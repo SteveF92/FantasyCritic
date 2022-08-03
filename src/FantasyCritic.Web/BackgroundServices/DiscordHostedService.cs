@@ -1,18 +1,19 @@
 using Microsoft.Extensions.Hosting;
 using FantasyCritic.Lib.Discord;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.BackgroundServices;
 public class DiscordHostedService : BackgroundService
 {
-    private const int DelayMilliseconds = 1 * 1000;
+    private const int DelayMilliseconds = 5 * 1000;
     private readonly ILogger<DiscordHostedService> _logger;
-    private readonly DiscordRequestService _requestService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public DiscordHostedService(ILogger<DiscordHostedService> logger, DiscordRequestService requestService)
+    public DiscordHostedService(ILogger<DiscordHostedService> logger, IServiceProvider serviceProvider)
     {
         _logger = logger;
-        _requestService = requestService;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -20,9 +21,13 @@ public class DiscordHostedService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Beginning Discord request iteration");
-            await _requestService.HandleRequests();
+            var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+            using var scope = serviceScopeFactory.CreateScope();
+            var requestService = scope.ServiceProvider.GetRequiredService<DiscordRequestService>();
+            await requestService.HandleRequests();
             await Task.Delay(DelayMilliseconds, stoppingToken);
         }
+
         _logger.LogWarning("Stopped listening for Discord requests");
     }
 }
