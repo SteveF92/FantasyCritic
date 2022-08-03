@@ -1,7 +1,6 @@
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -16,8 +15,6 @@ using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.AuthorizationHandlers;
 using FantasyCritic.Web.Hubs;
-using FantasyCritic.Web.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -46,15 +43,12 @@ public static class HostingExtensions
         var awsBucket = configuration.AssertConfigValue("AWS:bucket");
         var mailgunAPIKey = configuration.AssertConfigValue("Mailgun:apiKey");
         var baseAddress = configuration.AssertConfigValue("BaseAddress");
-        var duendeLicense = configuration.AssertConfigValue("IdentityServer:License");
 
         var rootFolder = configuration.AssertConfigValue("LinuxRootFolder");
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             rootFolder = configuration.AssertConfigValue("RootFolder");
         }
-
-        var identityConfig = new IdentityConfig(configuration.AssertConfigValue("IdentityServer:FCBotSecret"), configuration.AssertConfigValue("IdentityServer:CertificateKey"));
 
         IClock clock = SystemClock.Instance;
 
@@ -131,13 +125,11 @@ public static class HostingExtensions
             args.SetObserved();
         });
 
-        var schemes = new[] { IdentityConstants.ApplicationScheme, JwtBearerDefaults.AuthenticationScheme };
         services.AddAuthorization(options =>
         {
             var policyBuilder = new AuthorizationPolicyBuilder();
-            policyBuilder.AddAuthenticationSchemes(schemes);
+            policyBuilder.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
             policyBuilder.RequireAuthenticatedUser();
-            policyBuilder.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
 
             var basicUserPolicy = policyBuilder.Build();
 
@@ -146,27 +138,22 @@ public static class HostingExtensions
 
             options.AddPolicy("PlusUser", policy =>
             {
-                policy.AddAuthenticationSchemes(schemes);
+                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
                 policy.RequireRole("PlusUser");
             });
 
             options.AddPolicy("Admin", policy =>
             {
-                policy.AddAuthenticationSchemes(schemes);
+                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
-                policy.RequireClaim("scope", FantasyCriticScopes.WriteScope.Name);
                 policy.RequireRole("Admin");
             });
 
             options.AddPolicy("Write", policy =>
             {
-                policy.AddAuthenticationSchemes(schemes);
+                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", FantasyCriticScopes.ReadScope.Name);
-                policy.RequireClaim("scope", FantasyCriticScopes.WriteScope.Name);
             });
         });
 
@@ -183,44 +170,6 @@ public static class HostingExtensions
             .AddRoleManager<FantasyCriticRoleManager>()
             .AddDefaultTokenProviders();
 
-        var identityServerBuilder = services.AddIdentityServer(options =>
-            {
-                options.LicenseKey = duendeLicense;
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-
-                // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
-                options.EmitStaticAudienceClaim = true;
-                options.UserInteraction.ConsentUrl = "/Account/Consent";
-            })
-            .AddPersistedGrantStore<MySQLPersistedGrantStore>()
-            .AddInMemoryIdentityResources(IdentityConfig.IdentityResources)
-            .AddInMemoryApiScopes(IdentityConfig.APIScopes)
-            .AddInMemoryApiResources(IdentityConfig.APIResources)
-            .AddInMemoryClients(identityConfig.Clients)
-            .AddAspNetIdentity<FantasyCriticUser>();
-
-        if (environment.IsDevelopment())
-        {
-            identityServerBuilder.AddDeveloperSigningCredential();
-        }
-        else
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                identityServerBuilder.AddSigningCredential($"CN={identityConfig.KeyName}");
-            }
-            else
-            {
-                var certPath = configuration.AssertConfigValue("IdentityServer:CertificatePath");
-                var certPassword = configuration.AssertConfigValue("IdentityServer:CertificatePassword");
-                var rsaCert = new X509Certificate2(certPath, certPassword);
-                identityServerBuilder.AddSigningCredential(rsaCert);
-            }
-        }
-
         var authenticationBuilder = services.AddAuthentication(IdentityConstants.ApplicationScheme)
             .AddCookie(options =>
             {
@@ -228,14 +177,10 @@ public static class HostingExtensions
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                options.SlidingExpiration = true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
+                options.SlidingExpiration =
+                    true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.Cookie.HttpOnly = true;
-
-            })
-            .AddLocalApi(JwtBearerDefaults.AuthenticationScheme, options =>
-            {
-                options.ExpectedScope = FantasyCriticScopes.ReadScope.Name;
             });
 
         if (environment.IsProduction())
@@ -317,7 +262,7 @@ public static class HostingExtensions
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         var env = app.Environment;
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !env.IsDevelopment())
         {
             app.UseForwardedHeaders();
         }
@@ -341,7 +286,7 @@ public static class HostingExtensions
         app.UseStaticFiles();
 
         app.UseRouting();
-        app.UseIdentityServer();
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();

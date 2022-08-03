@@ -1,8 +1,6 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
-using Duende.IdentityServer.Events;
-using Duende.IdentityServer.Services;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +14,11 @@ public class LoginWith2faModel : PageModel
 {
     private readonly FantasyCriticSignInManager _signInManager;
     private readonly ILogger<LoginWith2faModel> _logger;
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IEventService _events;
 
-    public LoginWith2faModel(FantasyCriticSignInManager signInManager, ILogger<LoginWith2faModel> logger, IIdentityServerInteractionService interaction, IEventService events)
+    public LoginWith2faModel(FantasyCriticSignInManager signInManager, ILogger<LoginWith2faModel> logger)
     {
         _signInManager = signInManager;
         _logger = logger;
-        _interaction = interaction;
-        _events = events;
     }
 
     [BindProperty]
@@ -82,20 +76,17 @@ public class LoginWith2faModel : PageModel
         if (result.Succeeded)
         {
             _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName, clientId: context?.Client.ClientId));
             return LocalRedirect(returnUrl);
         }
-        else if (result.IsLockedOut)
+
+        if (result.IsLockedOut)
         {
             _logger.LogWarning("User with ID '{UserId}' account locked out.", user.Id);
             return RedirectToPage("./Lockout");
         }
-        else
-        {
-            _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", user.Id);
-            ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
-            return Page();
-        }
+
+        _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", user.Id);
+        ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
+        return Page();
     }
 }
