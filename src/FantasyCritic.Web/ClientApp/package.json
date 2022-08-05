@@ -5,9 +5,9 @@
   "scripts": {
     "prestart": "node aspnetcore-https",
     "build": "vue-cli-service build",
-    "client": "vue-cli-service serve --mode client",
-    "serve": "vue-cli-service serve",
-    "start": "vue-cli-service serve --port 44477",
+    "client": "vue-cli-service serve --mode client --https",
+    "serve": "vue-cli-service serve --https",
+    "start": "vue-cli-service serve --port 44477 --https",
     "watch": "vue-cli-service build --mode=development --watch",
     "lint": "vue-cli-service lint"
   },
