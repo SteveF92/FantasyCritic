@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.31.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.31.1" />
     <PackageReference Include="FuzzyString.NETStandard" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
