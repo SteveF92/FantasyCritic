@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prestart": "node aspnetcore-https",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --modern",
     "client": "vue-cli-service serve --mode client --https",
     "serve": "vue-cli-service serve --https",
     "start": "vue-cli-service serve --port 44477 --https",
