@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using Serilog;
 using NodaTime.Serialization.JsonNet;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
@@ -283,7 +284,19 @@ public static class HostingExtensions
             .AddRedirectToWww()
         );
 
-        app.UseStaticFiles();
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            OnPrepareResponse = (context) =>
+            {
+                var headers = context.Context.Response.GetTypedHeaders();
+
+                headers.CacheControl = new CacheControlHeaderValue
+                {
+                    Public = true,
+                    MaxAge = TimeSpan.FromDays(365)
+                };
+            }
+        });
 
         app.UseRouting();
         app.UseAuthentication();
