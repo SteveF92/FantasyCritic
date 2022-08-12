@@ -117,7 +117,7 @@ public static class Program
         PatreonService patreonService = null!;
         IRDSManager rdsManager = null!;
         RoyaleService royaleService = null!;
-        IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket);
+        IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket, "");
 
         AdminServiceConfiguration configuration = new AdminServiceConfiguration(true);
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
