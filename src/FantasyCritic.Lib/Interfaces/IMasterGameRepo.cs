@@ -42,26 +42,4 @@ public interface IMasterGameRepo
     Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary();
     Task UpdateCodeBasedTags(IReadOnlyDictionary<MasterGame, IReadOnlyList<MasterGameTag>> tagsToAdd);
     Task UpdateGGStats(MasterGame masterGame, GGGame ggGame);
-
-    async Task<MasterGame> GetMasterGameOrThrow(Guid masterGameID)
-    {
-        var masterGameResult = await GetMasterGame(masterGameID);
-        if (masterGameResult is null)
-        {
-            throw new Exception($"Master Game not found: {masterGameID}");
-        }
-
-        return masterGameResult;
-    }
-
-    async Task<MasterGameYear> GetMasterGameYearOrThrow(Guid masterGameID, int year)
-    {
-        var masterGameResult = await GetMasterGameYear(masterGameID, year);
-        if (masterGameResult is null)
-        {
-            throw new Exception($"Master Game Year not found: {masterGameID}|{year}");
-        }
-
-        return masterGameResult;
-    }
 }
