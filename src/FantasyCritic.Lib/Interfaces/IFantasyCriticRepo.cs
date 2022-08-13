@@ -143,26 +143,4 @@ public interface IFantasyCriticRepo
     Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action);
     Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueAction action);
     Task GrantSuperDrops(IEnumerable<Publisher> publishersToGrantSuperDrop, IEnumerable<LeagueAction> superDropActions);
-
-    async Task<League> GetLeagueOrThrow(Guid id)
-    {
-        var result = await GetLeague(id);
-        if (result is null)
-        {
-            throw new Exception($"League not found: {id}");
-        }
-
-        return result;
-    }
-
-    async Task<LeagueYear> GetLeagueYearOrThrow(League league, int year)
-    {
-        var leagueYear = await GetLeagueYear(league, year);
-        if (leagueYear is null)
-        {
-            throw new Exception($"League year not found: {league.LeagueID} | {year}");
-        }
-
-        return leagueYear;
-    }
 }

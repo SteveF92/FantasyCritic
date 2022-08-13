@@ -86,7 +86,8 @@ public static class HostingExtensions
             configuration.AssertConfigValue("PatreonService:CampaignID")
         ));
 
-        services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket));
+        var tempFolder = Path.Combine(rootFolder, "Temp");
+        services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket, tempFolder));
         services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();

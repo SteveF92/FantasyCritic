@@ -26,16 +26,19 @@ public class LambdaHypeFactorService : IHypeFactorService
 
     private readonly string _region;
     private readonly string _bucket;
+    private readonly string _tempFolder;
 
-    public LambdaHypeFactorService(string region, string bucket)
+    public LambdaHypeFactorService(string region, string bucket, string tempFolder)
     {
         _region = region;
         _bucket = bucket;
+        _tempFolder = tempFolder;
     }
 
     public async Task<HypeConstants> GetHypeConstants(IEnumerable<MasterGameYear> allMasterGameYears)
     {
-        string fileName = "LiveData.csv";
+        Directory.CreateDirectory(_tempFolder);
+        string fileName = Path.Combine(_tempFolder, "LiveData.csv");
         File.Delete(fileName);
         CreateCSVFile(allMasterGameYears, fileName);
         await UploadMasterGameYearStats(fileName);

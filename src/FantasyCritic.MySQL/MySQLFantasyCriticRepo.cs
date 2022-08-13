@@ -29,8 +29,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         _masterGameRepo = masterGameRepo;
     }
 
-    private IFantasyCriticRepo AsInterface => (IFantasyCriticRepo)this;
-
     public async Task<League?> GetLeague(Guid id)
     {
         await using var connection = new MySqlConnection(_connectionString);
@@ -590,7 +588,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var publisher = await GetPublisherOrThrow(dropRequestEntity.PublisherID);
         var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropRequestEntity.MasterGameID);
-        var league = await AsInterface.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
+        var league = await this.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
         var leagueYear = await AssertLeagueYear(league, publisher.LeagueYearKey.Year);
 
         DropRequest domain = dropRequestEntity.ToDomain(publisher, masterGame, leagueYear);
@@ -817,7 +815,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var publisher = await GetPublisherOrThrow(bidEntity.PublisherID);
         var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
-        var league = await AsInterface.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
+        var league = await this.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
         var leagueYear = await AssertLeagueYear(league, publisher.LeagueYearKey.Year);
 
         var publisherGameDictionary = publisher.PublisherGames
@@ -1286,7 +1284,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return null;
         }
 
-        var league = await AsInterface.GetLeagueOrThrow(result.LeagueID);
+        var league = await this.GetLeagueOrThrow(result.LeagueID);
         return result.ToDomain(league);
     }
 
@@ -1726,13 +1724,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
 
-        var league = await AsInterface.GetLeagueOrThrow(tradeEntity.LeagueID);
+        var league = await this.GetLeagueOrThrow(tradeEntity.LeagueID);
         if (league is null)
         {
             throw new Exception($"Trade has bad league: {tradeEntity.TradeID}|{tradeEntity.LeagueID}.");
         }
 
-        var leagueYear = await AsInterface.GetLeagueYearOrThrow(league, tradeEntity.Year);
+        var leagueYear = await this.GetLeagueYearOrThrow(league, tradeEntity.Year);
         Publisher proposer = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.ProposerPublisherID);
         Publisher counterParty = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
@@ -2845,7 +2843,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
     {
-        var mostRecentYear = await AsInterface.GetLeagueYearOrThrow(league, league.Years.Max());
+        var mostRecentYear = await this.GetLeagueYearOrThrow(league, league.Years.Max());
         bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
 
         var userAddObject = new
@@ -2876,7 +2874,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<LeagueInvite> leagueInvites = new List<LeagueInvite>();
         foreach (var entity in entities)
         {
-            var league = await AsInterface.GetLeagueOrThrow(entity.LeagueID);
+            var league = await this.GetLeagueOrThrow(entity.LeagueID);
             if (league is null)
             {
                 //League has probably been deleted.
@@ -2900,7 +2898,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private async Task<LeagueInvite> ConvertLeagueInviteEntity(LeagueInviteEntity entity)
     {
-        var league = await AsInterface.GetLeagueOrThrow(entity.LeagueID);
+        var league = await this.GetLeagueOrThrow(entity.LeagueID);
         if (league is null)
         {
             throw new Exception($"Cannot find league for league (should never happen) LeagueID: {entity.LeagueID}");
