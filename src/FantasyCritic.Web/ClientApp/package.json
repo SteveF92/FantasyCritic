@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "prestart": "node aspnetcore-https",
-    "build": "vue-cli-service build",
-    "serve": "vue-cli-service serve",
-    "start": "vue-cli-service serve --port 44477",
+    "build": "vue-cli-service build --modern",
+    "client": "vue-cli-service serve --mode client --https",
+    "serve": "vue-cli-service serve --https",
+    "start": "vue-cli-service serve --port 44477 --https",
     "watch": "vue-cli-service build --mode=development --watch",
     "lint": "vue-cli-service lint"
   },
@@ -20,7 +21,7 @@
     "axios": "^0.27.2",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
-    "core-js": "^3.24.0",
+    "core-js": "^3.24.1",
     "grapheme-breaker-mjs": "^1.0.4",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
@@ -40,7 +41,7 @@
     "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.9",
+    "@babel/core": "^7.18.10",
     "@babel/eslint-parser": "^7.18.9",
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
@@ -48,12 +49,12 @@
     "@vue/cli-plugin-router": "~5.0.8",
     "@vue/cli-plugin-vuex": "~5.0.8",
     "@vue/cli-service": "~5.0.8",
-    "eslint": "^8.20.0",
+    "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^8.7.1",
     "prettier": "^2.7.1",
-    "sass": "^1.54.0",
+    "sass": "^1.54.3",
     "sass-loader": "^12.6.0",
     "vue-template-compiler": "^2.7.8"
   }

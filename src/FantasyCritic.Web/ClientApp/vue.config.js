@@ -6,14 +6,18 @@ const baseFolder =
     ? `${process.env.APPDATA}/ASP.NET/https`
     : `${process.env.HOME}/.aspnet/https`;
 
-  const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];
-  const certificateName = certificateArg ? certificateArg.groups.value : process.env.npm_package_name;
+const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];
+const certificateName = certificateArg ? certificateArg.groups.value : process.env.npm_package_name;
 
-const target = env.ASPNETCORE_HTTPS_PORT
+let target = env.ASPNETCORE_HTTPS_PORT
   ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
   : env.ASPNETCORE_URLS
   ? env.ASPNETCORE_URLS.split(";")[0]
   : "http://localhost:44391";
+
+if (process.env.CLIENT_MODE) {
+  target = "https://www.fantasycritic.games";
+}
 
 module.exports = {
   chainWebpack: config => {

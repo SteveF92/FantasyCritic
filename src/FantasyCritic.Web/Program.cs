@@ -30,6 +30,7 @@ public class Program
             DapperNodaTimeSetup.Register();
             Log.Information("Starting web host");
             var builder = WebApplication.CreateBuilder(args);
+            Log.Information($"Running in {builder.Environment.EnvironmentName} mode.");
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

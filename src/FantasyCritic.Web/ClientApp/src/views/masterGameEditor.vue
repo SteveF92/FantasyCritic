@@ -164,7 +164,6 @@ export default {
   async mounted() {
     await this.fetchMasterGame();
     await this.fetchChangeRequest();
-    this.parseEstimatedReleaseDate();
     this.populateTags();
   },
   methods: {

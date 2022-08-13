@@ -25,7 +25,7 @@
         <h2>Subreddit</h2>
         <div class="text-well">
           <p>
-            The subreddit admitedly doesn't see as much traffic as it used to, as it's been largely supplanted by our Discord. However, it may still be where you want to go if you want to post
+            The subreddit admittedly doesn't see as much traffic as it used to, as it's been largely supplanted by our Discord. However, it may still be where you want to go if you want to post
             something very detailed like a feature proposal.
           </p>
           <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
