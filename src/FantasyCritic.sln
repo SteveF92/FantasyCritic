@@ -25,7 +25,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.DBUtility", "FantasyCritic.DBUtility\FantasyCritic.DBUtility.csproj", "{C7AAA97D-179D-42CE-83E9-9C4900D21DDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.DBUtility", "FantasyCritic.DBUtility\FantasyCritic.DBUtility.csproj", "{C7AAA97D-179D-42CE-83E9-9C4900D21DDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.DiscordBot", "FantasyCritic.DiscordBot\FantasyCritic.DiscordBot.csproj", "{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{C7AAA97D-179D-42CE-83E9-9C4900D21DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7AAA97D-179D-42CE-83E9-9C4900D21DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7AAA97D-179D-42CE-83E9-9C4900D21DDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
