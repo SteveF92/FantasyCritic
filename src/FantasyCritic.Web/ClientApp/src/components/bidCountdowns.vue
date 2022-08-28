@@ -32,15 +32,15 @@ export default {
       if (this.mode !== 'NextPublic') {
         return null;
       }
-      let date = moment(this.$store.getters.bidTimes.nextPublicBiddingTime);
-      return date.format('YYYY-MM-DD HH:mm:ss');
+
+      return moment(this.$store.getters.bidTimes.nextPublicBiddingTime).toDate();
     },
     nextBidTime() {
       if (this.mode !== 'NextBid') {
         return null;
       }
-      let date = moment(this.$store.getters.bidTimes.nextBidLockTime);
-      return date.format('YYYY-MM-DD HH:mm:ss');
+
+      return moment(this.$store.getters.bidTimes.nextBidLockTime).toDate();
     },
     actionProcessing() {
       return this.forceActionProcessing || this.$store.getters.bidTimes.actionProcessingMode;
