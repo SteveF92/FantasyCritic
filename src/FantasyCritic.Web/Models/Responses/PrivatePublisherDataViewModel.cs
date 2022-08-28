@@ -5,10 +5,10 @@ public class PrivatePublisherDataViewModel
 {
     public PrivatePublisherDataViewModel(LeagueYear leagueYear, Publisher userPublisher,
         IEnumerable<PickupBid> myActiveBids, IEnumerable<DropRequest> myActiveDrops, IEnumerable<QueuedGame> queuedGames,
-        LocalDate currentDate)
+        LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
-        MyActiveBids = myActiveBids.Select(x => new PickupBidViewModel(x, currentDate)).OrderBy(x => x.Priority).ToList();
-        MyActiveDrops = myActiveDrops.Select(x => new DropGameRequestViewModel(x, currentDate)).OrderBy(x => x.Timestamp).ToList();
+        MyActiveBids = myActiveBids.Select(x => new PickupBidViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Priority).ToList();
+        MyActiveDrops = myActiveDrops.Select(x => new DropGameRequestViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Timestamp).ToList();
 
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)

@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PickupBidViewModel
 {
-    public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate)
+    public PickupBidViewModel(PickupBid pickupBid, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearLookup)
     {
         BidID = pickupBid.BidID;
         PublisherID = pickupBid.Publisher.PublisherID;
@@ -13,7 +13,9 @@ public class PickupBidViewModel
         Priority = pickupBid.Priority;
         Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
         Successful = pickupBid.Successful;
-        MasterGame = new MasterGameViewModel(pickupBid.MasterGame, currentDate);
+
+        var masterGameYear = masterGameYearLookup[pickupBid.MasterGame.MasterGameID];
+        MasterGame = new MasterGameYearViewModel(masterGameYear, currentDate);
 
         if (pickupBid.ConditionalDropPublisherGame is not null)
         {
@@ -32,7 +34,7 @@ public class PickupBidViewModel
     public int Priority { get; }
     public DateTime Timestamp { get; }
     public bool? Successful { get; }
-    public MasterGameViewModel MasterGame { get; }
+    public MasterGameYearViewModel MasterGame { get; }
     public PublisherGameViewModel? ConditionalDropPublisherGame { get; }
     public bool CounterPick { get; }
     public string? Outcome { get; }

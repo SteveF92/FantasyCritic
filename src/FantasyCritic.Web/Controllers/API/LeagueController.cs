@@ -261,7 +261,9 @@ public class LeagueController : BaseLeagueController
             var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(leagueYear, userPublisher);
             var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(leagueYear, userPublisher);
             var queuedGames = await _publisherService.GetQueuedGames(userPublisher);
-            privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate);
+            var masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+            var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+            privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate, masterGameYearDictionary);
         }
 
         var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
@@ -327,7 +329,9 @@ public class LeagueController : BaseLeagueController
         var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear);
 
         var currentDate = _clock.GetToday();
-        var viewModels = leagueActionSets.Where(x => x.HasActions).Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
+        var masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+        var viewModels = leagueActionSets.Where(x => x.HasActions).Select(x => new LeagueActionProcessingSetViewModel(x, currentDate, masterGameYearDictionary));
         viewModels = viewModels.OrderByDescending(x => x.ProcessTime);
         return Ok(viewModels);
     }

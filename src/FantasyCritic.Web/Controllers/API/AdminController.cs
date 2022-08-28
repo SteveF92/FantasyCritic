@@ -290,7 +290,9 @@ public class AdminController : FantasyCriticController
         var leagueActionViewModels = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(leagueYearDictionary[x.Publisher.LeagueYearKey], x)).ToList();
 
         var leagueActionSets = actionResults.GetLeagueActionSets(true);
-        var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
+        var masterGameYears = await _interLeagueService.GetMasterGameYears(currentYear.Year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+        var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate, masterGameYearDictionary));
         ActionedGameSetViewModel fullSet = new ActionedGameSetViewModel(pickupGames, dropGames, leagueActionViewModels, leagueActionSetViewModels);
         return Ok(fullSet);
     }
