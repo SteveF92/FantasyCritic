@@ -104,6 +104,7 @@ export default {
     return {
       masterGame: null,
       masterGameYears: [],
+      changeLog: [],
       error: ''
     };
   },
@@ -138,30 +139,41 @@ export default {
     }
   },
   watch: {
-    $route() {
-      this.fetchMasterGame();
+    async $route() {
+      await this.fetchMasterGame();
+      await this.fetchMasterGameChangeLog();
+      await this.fetchMasterGameYears();
     }
   },
-  mounted() {
-    this.fetchMasterGame();
-    this.fetchMasterGameYears();
+  async mounted() {
+    await this.fetchMasterGame();
+    await this.fetchMasterGameChangeLog();
+    await this.fetchMasterGameYears();
   },
   methods: {
-    fetchMasterGame() {
-      axios
-        .get('/api/game/MasterGame/' + this.mastergameid)
-        .then((response) => {
-          this.masterGame = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchMasterGame() {
+      try {
+        const response = await axios.get('/api/game/MasterGame/' + this.mastergameid);
+        this.masterGame = response.data;
+      } catch (error) {
+        this.error = error.data;
+      }
     },
-    fetchMasterGameYears() {
-      axios
-        .get('/api/game/MasterGameYears/' + this.mastergameid)
-        .then((response) => {
-          this.masterGameYears = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchMasterGameChangeLog() {
+      try {
+        const response = await axios.get('/api/game/MasterGameChangeLog/' + this.mastergameid);
+        this.changeLog = response.data;
+      } catch (error) {
+        this.error = error.data;
+      }
+    },
+    async fetchMasterGameYears() {
+      try {
+        const response = await axios.get('/api/game/MasterGameYears/' + this.mastergameid);
+        this.masterGameYears = response.data;
+      } catch (error) {
+        this.error = error.data;
+      }
     }
   }
 };
