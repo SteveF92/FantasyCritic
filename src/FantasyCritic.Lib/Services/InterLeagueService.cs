@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -42,7 +43,7 @@ public class InterLeagueService
     public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
     {
         var now = _clock.GetCurrentInstant();
-        string? change = editedMasterGame.CompareToExistingGame(existingMasterGame);
+        string? change = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
         if (change is null)
         {
             return Result.Failure("No change was made.");

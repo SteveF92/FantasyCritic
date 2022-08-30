@@ -22,6 +22,11 @@ public static class TimeExtensions
         return date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
     }
 
+    public static string ToNullableISOString(this LocalDate? date)
+    {
+        return !date.HasValue ? "No Date" : date.Value.ToISOString();
+    }
+
     public static Instant GetNextPublicRevealTime(this IClock clock) => GetNextTime(clock, PublicBiddingRevealDay, PublicBiddingRevealTime);
     public static Instant GetNextBidTime(this IClock clock) => GetNextTime(clock, ActionProcessingDay, ActionProcessingTime);
 

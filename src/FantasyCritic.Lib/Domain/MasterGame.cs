@@ -1,3 +1,6 @@
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Utilities;
+
 namespace FantasyCritic.Lib.Domain;
 
 public class MasterGame : IEquatable<MasterGame>
@@ -149,7 +152,7 @@ public class MasterGame : IEquatable<MasterGame>
         return MasterGameID.GetHashCode();
     }
 
-    public string? CompareToExistingGame(MasterGame existingMasterGame)
+    public string? CompareToExistingGame(MasterGame existingMasterGame, LocalDate today)
     {
         List<string> differences = new List<string>();
 
@@ -158,44 +161,46 @@ public class MasterGame : IEquatable<MasterGame>
             differences.Add($"GameName changed from {existingMasterGame.GameName} to {GameName}.");
         }
 
-        if (EstimatedReleaseDate != existingMasterGame.EstimatedReleaseDate)
+        if (ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue && ReleaseDate != existingMasterGame.ReleaseDate)
         {
-            differences.Add($"Estimated release date changed from {existingMasterGame.EstimatedReleaseDate} to {EstimatedReleaseDate}.");
+            differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableISOString()} to {ReleaseDate.ToNullableISOString()}.");
         }
-
-        if (MinimumReleaseDate != existingMasterGame.MinimumReleaseDate)
+        else
         {
-            differences.Add($"Minimum release date changed from {existingMasterGame.MinimumReleaseDate} to {MinimumReleaseDate}.");
+            string existingRangeString = TimeFunctions.GetFormattedReleaseDateRangeString(today, existingMasterGame.MinimumReleaseDate, existingMasterGame.MaximumReleaseDate);
+            string newRangeString = TimeFunctions.GetFormattedReleaseDateRangeString(today, existingMasterGame.MinimumReleaseDate, existingMasterGame.MaximumReleaseDate);
+            if (ReleaseDate.HasValue && !existingMasterGame.ReleaseDate.HasValue)
+            {
+                differences.Add($"Release date changed from {existingMasterGame.EstimatedReleaseDate}{existingRangeString} to {ReleaseDate.ToNullableISOString()}.");
+            }
+            else if (!ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue)
+            {
+                differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableISOString()} to {EstimatedReleaseDate}{newRangeString}.");
+            }
+            else
+            {
+                differences.Add($"Estimated release date changed from {existingMasterGame.EstimatedReleaseDate}{existingRangeString} to {EstimatedReleaseDate}{newRangeString}.");
+            }
         }
-
-        if (MaximumReleaseDate != existingMasterGame.MaximumReleaseDate)
-        {
-            differences.Add($"Maximum release date changed from {existingMasterGame.MaximumReleaseDate} to {MaximumReleaseDate}.");
-        }
-
+        
         if (EarlyAccessReleaseDate != existingMasterGame.EarlyAccessReleaseDate)
         {
-            differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate} to {EarlyAccessReleaseDate}.");
+            differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate.ToNullableISOString()} to {EarlyAccessReleaseDate.ToNullableISOString()}.");
         }
 
         if (InternationalReleaseDate != existingMasterGame.InternationalReleaseDate)
         {
-            differences.Add($"International release date changed from {existingMasterGame.InternationalReleaseDate} to {InternationalReleaseDate}.");
+            differences.Add($"International release date changed from {existingMasterGame.InternationalReleaseDate.ToNullableISOString()} to {InternationalReleaseDate.ToNullableISOString()}.");
         }
 
         if (AnnouncementDate != existingMasterGame.AnnouncementDate)
         {
-            differences.Add($"Announcement date changed from {existingMasterGame.AnnouncementDate} to {AnnouncementDate}.");
-        }
-
-        if (ReleaseDate != existingMasterGame.ReleaseDate)
-        {
-            differences.Add($"Release date changed from {existingMasterGame.ReleaseDate} to {ReleaseDate}.");
+            differences.Add($"Announcement date changed from {existingMasterGame.AnnouncementDate.ToNullableISOString()} to {AnnouncementDate.ToNullableISOString()}.");
         }
 
         if (Notes != existingMasterGame.Notes)
         {
-            differences.Add($"Notes changed from {existingMasterGame.Notes} to {Notes}.");
+            differences.Add($"Notes changed from '{existingMasterGame.Notes}' to '{Notes}'.");
         }
 
         var orderedExistingTags = existingMasterGame.Tags.OrderBy(t => t.Name).ToList();
