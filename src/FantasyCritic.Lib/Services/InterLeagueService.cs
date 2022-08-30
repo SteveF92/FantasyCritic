@@ -10,11 +10,13 @@ public class InterLeagueService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
+    private readonly IClock _clock;
 
-    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo)
+    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
+        _clock = clock;
     }
 
     public Task<SystemWideSettings> GetSystemWideSettings()
@@ -37,9 +39,11 @@ public class InterLeagueService
         return _masterGameRepo.CreateMasterGame(masterGame);
     }
 
-    public Task EditMasterGame(MasterGame masterGame)
+    public Task EditMasterGame(MasterGame masterGame, FantasyCriticUser changedByUser)
     {
-        return _masterGameRepo.EditMasterGame(masterGame);
+        var now = _clock.GetCurrentInstant();
+        var changeLogEntry = new MasterGameChangeLogEntry(Guid.NewGuid(), masterGame, changedByUser, now, "");
+        return _masterGameRepo.EditMasterGame(masterGame, changeLogEntry);
     }
 
     public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()

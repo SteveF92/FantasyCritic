@@ -82,8 +82,9 @@ public class AdminController : FantasyCriticController
             return BadRequest();
         }
 
+        var user = await GetCurrentUserOrThrow();
         MasterGame masterGame = viewModel.ToDomain(existingMasterGame, instant, tags);
-        await _interLeagueService.EditMasterGame(masterGame);
+        await _interLeagueService.EditMasterGame(masterGame, user);
         var currentDate = _clock.GetToday();
         var vm = new MasterGameViewModel(masterGame, currentDate);
 

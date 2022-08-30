@@ -64,12 +64,17 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task EditMasterGame(MasterGame masterGame)
+    public Task EditMasterGame(MasterGame masterGame, MasterGameChangeLogEntry changeLogEntry)
     {
         throw new NotImplementedException();
     }
 
     public Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)
     {
         throw new NotImplementedException();
     }

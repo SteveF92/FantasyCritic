@@ -14,10 +14,11 @@ public interface IMasterGameRepo
     Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
 
     Task CreateMasterGame(MasterGame masterGame);
-    Task EditMasterGame(MasterGame masterGame);
+    Task EditMasterGame(MasterGame masterGame, MasterGameChangeLogEntry changeLogEntry);
 
     Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
 
+    Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame);
     Task CreateMasterGameRequest(MasterGameRequest domainRequest);
     Task CreateMasterGameChangeRequest(MasterGameChangeRequest domainRequest);
     Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user);
