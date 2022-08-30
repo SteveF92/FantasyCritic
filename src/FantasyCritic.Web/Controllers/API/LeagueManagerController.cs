@@ -47,12 +47,7 @@ public class LeagueManagerController : BaseLeagueController
     [Authorize("Write")]
     public async Task<IActionResult> CreateLeague([FromBody] CreateLeagueRequest request)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         var requestValid = request.IsValid();
         if (requestValid.IsFailure)

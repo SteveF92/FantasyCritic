@@ -59,15 +59,9 @@ public class LeagueController : BaseLeagueController
         var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished);
 
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.IsSuccess)
         {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
-
-        if (currentUser != null)
-        {
-            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
+            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUserResult.Value, "BetaTester");
             if (userIsBetaUser)
             {
                 var betaYears = supportedYears.Where(x => x.OpenForBetaUsers);
@@ -85,12 +79,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<IActionResult> MyLeagues(int? year)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         IReadOnlyList<League> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
 
@@ -118,12 +107,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<IActionResult> FollowedLeagues()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         IReadOnlyList<League> leaguesFollowing = await _fantasyCriticService.GetFollowedLeagues(currentUser);
 
@@ -138,12 +122,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<IActionResult> MyInvites()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
         var viewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
@@ -573,12 +552,7 @@ public class LeagueController : BaseLeagueController
     [Authorize("Write")]
     public async Task<IActionResult> DeclineInvite([FromBody] DeleteInviteRequest request)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         LeagueInvite? invite = await _leagueMemberService.GetInvite(request.InviteID);
         if (invite is null)
@@ -856,12 +830,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<ActionResult<List<SingleGameNewsViewModel>>> MyUpcomingGames()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
@@ -894,12 +863,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<ActionResult<GameNewsViewModel>> MyGameNews()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
@@ -1279,12 +1243,7 @@ public class LeagueController : BaseLeagueController
     [Authorize("Write")]
     public async Task<IActionResult> DismissManagerMessage([FromBody] DismissManagerMessageRequest request)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         Result result = await _fantasyCriticService.DismissManagerMessage(request.MessageID, currentUser.Id);
         if (result.IsFailure)
