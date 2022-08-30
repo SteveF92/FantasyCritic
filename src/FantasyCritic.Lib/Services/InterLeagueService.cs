@@ -39,11 +39,23 @@ public class InterLeagueService
         return _masterGameRepo.CreateMasterGame(masterGame);
     }
 
-    public Task EditMasterGame(MasterGame masterGame, FantasyCriticUser changedByUser)
+    public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
     {
         var now = _clock.GetCurrentInstant();
-        var changeLogEntry = new MasterGameChangeLogEntry(Guid.NewGuid(), masterGame, changedByUser, now, "");
-        return _masterGameRepo.EditMasterGame(masterGame, changeLogEntry);
+        Result<string> changeResult = existingMasterGame.CompareToEditedGame(editedMasterGame);
+        if (changeResult.IsFailure)
+        {
+            return Result.Failure(changeResult.Error);
+        }
+
+        var changeLogEntry = new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, changeResult.Value);
+        await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntry);
+        return Result.Success(changeLogEntry);
+    }
+
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)
+    {
+        return _masterGameRepo.GetMasterGameChangeLog(masterGame);
     }
 
     public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()

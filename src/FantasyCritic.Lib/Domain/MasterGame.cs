@@ -148,4 +148,9 @@ public class MasterGame : IEquatable<MasterGame>
     {
         return MasterGameID.GetHashCode();
     }
+
+    public Result<string> CompareToEditedGame(MasterGame editedMasterGame)
+    {
+        return Result.Success("");
+    }
 }

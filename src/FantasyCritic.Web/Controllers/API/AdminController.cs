@@ -83,13 +83,17 @@ public class AdminController : FantasyCriticController
         }
 
         var user = await GetCurrentUserOrThrow();
-        MasterGame masterGame = viewModel.ToDomain(existingMasterGame, instant, tags);
-        await _interLeagueService.EditMasterGame(masterGame, user);
+        MasterGame editedMasterGame = viewModel.ToDomain(existingMasterGame, instant, tags);
+        var result = await _interLeagueService.EditMasterGame(existingMasterGame, editedMasterGame, user);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
         var currentDate = _clock.GetToday();
-        var vm = new MasterGameViewModel(masterGame, currentDate);
+        var vm = new MasterGameViewModel(editedMasterGame, currentDate);
 
-        _logger.LogInformation($"Edited master game: {masterGame.MasterGameID}");
-        return CreatedAtAction("MasterGame", "Game", new { id = masterGame.MasterGameID }, vm);
+        _logger.LogInformation($"Edited master game: {editedMasterGame.MasterGameID}");
+        return CreatedAtAction("MasterGame", "Game", new { id = editedMasterGame.MasterGameID }, vm);
     }
 
     [HttpPost]

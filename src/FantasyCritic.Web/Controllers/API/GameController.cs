@@ -42,6 +42,21 @@ public class GameController : FantasyCriticController
         return viewModel;
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<List<MasterGameChangeLogEntryViewModel>>> MasterGameChangeLog(Guid id)
+    {
+        var masterGame = await _interLeagueService.GetMasterGame(id);
+        if (masterGame is null)
+        {
+            return NotFound();
+        }
+
+        var changes = await _interLeagueService.GetMasterGameChangeLog(masterGame);
+
+        var viewModels = changes.Select(x => new MasterGameChangeLogEntryViewModel(x)).ToList();
+        return viewModels;
+    }
+
     [HttpGet("{id}/{year}")]
     public async Task<ActionResult<MasterGameYearViewModel>> MasterGameYear(Guid id, int year)
     {
