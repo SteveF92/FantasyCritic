@@ -43,15 +43,15 @@ public class InterLeagueService
     public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
     {
         var now = _clock.GetCurrentInstant();
-        string? change = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
-        if (change is null)
+        var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
+        if (!changes.Any())
         {
             return Result.Failure("No change was made.");
         }
 
-        var changeLogEntry = new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, change);
-        await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntry);
-        return Result.Success(changeLogEntry);
+        var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
+        await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
+        return Result.Success();
     }
 
     public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)

@@ -152,7 +152,7 @@ public class MasterGame : IEquatable<MasterGame>
         return MasterGameID.GetHashCode();
     }
 
-    public string? CompareToExistingGame(MasterGame existingMasterGame, LocalDate today)
+    public IReadOnlyList<string> CompareToExistingGame(MasterGame existingMasterGame, LocalDate today)
     {
         List<string> differences = new List<string>();
 
@@ -165,7 +165,9 @@ public class MasterGame : IEquatable<MasterGame>
         {
             differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableISOString()} to {ReleaseDate.ToNullableISOString()}.");
         }
-        else
+        else if (EstimatedReleaseDate != existingMasterGame.EstimatedReleaseDate ||
+                 MinimumReleaseDate != existingMasterGame.MinimumReleaseDate ||
+                 MaximumReleaseDate != existingMasterGame.MaximumReleaseDate)
         {
             string existingRangeString = TimeFunctions.GetFormattedReleaseDateRangeString(today, existingMasterGame.MinimumReleaseDate, existingMasterGame.MaximumReleaseDate);
             string newRangeString = TimeFunctions.GetFormattedReleaseDateRangeString(today, existingMasterGame.MinimumReleaseDate, existingMasterGame.MaximumReleaseDate);
@@ -210,12 +212,6 @@ public class MasterGame : IEquatable<MasterGame>
             differences.Add($"Tags changed from {string.Join(",", orderedExistingTags.Select(x => x.ReadableName))} to {string.Join(",", orderedNewTags.Select(x => x.ReadableName))}.");
         }
 
-        if (!differences.Any())
-        {
-            return null;
-        }
-
-        string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
-        return finalString;
+        return differences;
     }
 }

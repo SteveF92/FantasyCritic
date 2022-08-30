@@ -191,7 +191,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await transaction.CommitAsync();
     }
 
-    public async Task EditMasterGame(MasterGame masterGame, MasterGameChangeLogEntry changeLogEntry)
+    public async Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries)
     {
         string editSQL = "UPDATE tbl_mastergame SET " +
                          "GameName = @GameName, " +
@@ -217,12 +217,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";
 
-        string changeLogSQL =
-            "insert into tbl_mastergame_changelog(MasterGameChangeID,MasterGameID,ChangedByUserID,Timestamp,Change) VALUES " +
-            "(@MasterGameChangeID,@MasterGameID,@ChangedByUserID,@Timestamp,@Change);";
-
         var entity = new MasterGameEntity(masterGame);
-        var changeLogEntity = new MasterGameChangeLogEntity(changeLogEntry);
+        var changeLogEntities = changeLogEntries.Select(x => new MasterGameChangeLogEntity(x)).ToList();
         var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
 
         var excludeFields = new List<string>() { "TimeAdded" };
@@ -231,7 +227,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(editSQL, entity, transaction);
         await connection.ExecuteAsync(deleteTagsSQL, new { masterGame.MasterGameID }, transaction);
-        await connection.ExecuteAsync(changeLogSQL, changeLogEntity, transaction);
+        await connection.BulkInsertAsync<MasterGameChangeLogEntity>(changeLogEntities, "tbl_mastergame_changelog", 500, transaction);
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
         await transaction.CommitAsync();
     }

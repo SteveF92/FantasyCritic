@@ -9,7 +9,7 @@
       </div>
       <hr />
       <div v-if="responseInfo" class="alert alert-success">Master Game edited successfully!</div>
-      <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+      <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request: {{ errorInfo }}</div>
       <div v-if="generatedSQL">
         <h3>Generated SQL</h3>
         <div class="row">
@@ -238,7 +238,7 @@ export default {
           behavior: 'smooth'
         });
       } catch (error) {
-        this.errorInfo = error;
+        this.errorInfo = error.response.data;
       }
     },
     generateSQL() {

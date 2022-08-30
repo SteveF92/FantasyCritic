@@ -164,7 +164,7 @@ export default {
         const response = await axios.get('/api/game/MasterGameChangeLog/' + this.mastergameid);
         this.changeLog = response.data;
       } catch (error) {
-        this.error = error.data;
+        this.error = error.response.data;
       }
     },
     async fetchMasterGameYears() {
@@ -172,7 +172,7 @@ export default {
         const response = await axios.get('/api/game/MasterGameYears/' + this.mastergameid);
         this.masterGameYears = response.data;
       } catch (error) {
-        this.error = error.data;
+        this.error = error.response.data;
       }
     }
   }

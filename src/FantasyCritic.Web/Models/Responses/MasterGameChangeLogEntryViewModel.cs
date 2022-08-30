@@ -7,11 +7,11 @@ public class MasterGameChangeLogEntryViewModel
         MasterGameChangeID = domain.MasterGameChangeID;
         ChangedByUser = new FantasyCriticUserViewModel(domain.ChangedByUser);
         Timestamp = domain.Timestamp;
-        Change = domain.Change;
+        Description = domain.Description;
     }
 
     public Guid MasterGameChangeID { get; }
     public FantasyCriticUserViewModel ChangedByUser { get; }
     public Instant Timestamp { get; }
-    public string Change { get; }
+    public string Description { get; }
 }

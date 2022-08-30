@@ -64,7 +64,7 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task EditMasterGame(MasterGame masterGame, MasterGameChangeLogEntry changeLogEntry)
+    public Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries)
     {
         throw new NotImplementedException();
     }

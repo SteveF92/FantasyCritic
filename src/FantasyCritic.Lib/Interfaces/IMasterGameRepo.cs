@@ -14,7 +14,7 @@ public interface IMasterGameRepo
     Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
 
     Task CreateMasterGame(MasterGame masterGame);
-    Task EditMasterGame(MasterGame masterGame, MasterGameChangeLogEntry changeLogEntry);
+    Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries);
 
     Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
 

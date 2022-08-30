@@ -14,17 +14,17 @@ internal class MasterGameChangeLogEntity
         MasterGameID = domain.MasterGame.MasterGameID;
         ChangedByUserID = domain.ChangedByUser.Id;
         Timestamp = domain.Timestamp;
-        Change = domain.Change;
+        Description = domain.Description;
     }
 
     public Guid MasterGameChangeID { get; set; }
     public Guid MasterGameID { get; set; }
     public Guid ChangedByUserID { get; set; }
     public Instant Timestamp { get; set; }
-    public string Change { get; set; } = null!;
+    public string Description { get; set; } = null!;
 
     public MasterGameChangeLogEntry ToDomain(MasterGame masterGame, FantasyCriticUser changedByUser)
     {
-        return new MasterGameChangeLogEntry(MasterGameChangeID, masterGame, changedByUser, Timestamp, Change);
+        return new MasterGameChangeLogEntry(MasterGameChangeID, masterGame, changedByUser, Timestamp, Description);
     }
 }

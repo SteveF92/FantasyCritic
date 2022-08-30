@@ -3,7 +3,7 @@ CREATE TABLE `tbl_mastergame_changelog` (
 	`MasterGameID` CHAR(36) NOT NULL,
 	`ChangedByUserID` CHAR(36) NOT NULL,
 	`Timestamp` DATETIME NOT NULL,
-	`Change` TEXT NOT NULL,
+	`Description` TEXT NOT NULL,
 	PRIMARY KEY (`MasterGameChangeID`) USING BTREE,
 	INDEX `FK__tbl_mastergame` (`MasterGameID`) USING BTREE,
 	INDEX `FK__tbl_user` (`ChangedByUserID`) USING BTREE,
