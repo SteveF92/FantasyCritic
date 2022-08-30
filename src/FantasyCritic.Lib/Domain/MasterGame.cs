@@ -149,8 +149,68 @@ public class MasterGame : IEquatable<MasterGame>
         return MasterGameID.GetHashCode();
     }
 
-    public Result<string> CompareToEditedGame(MasterGame editedMasterGame)
+    public string? CompareToExistingGame(MasterGame existingMasterGame)
     {
-        return Result.Success("");
+        List<string> differences = new List<string>();
+
+        if (GameName != existingMasterGame.GameName)
+        {
+            differences.Add($"GameName changed from {existingMasterGame.GameName} to {GameName}.");
+        }
+
+        if (EstimatedReleaseDate != existingMasterGame.EstimatedReleaseDate)
+        {
+            differences.Add($"Estimated release date changed from {existingMasterGame.EstimatedReleaseDate} to {EstimatedReleaseDate}.");
+        }
+
+        if (MinimumReleaseDate != existingMasterGame.MinimumReleaseDate)
+        {
+            differences.Add($"Minimum release date changed from {existingMasterGame.MinimumReleaseDate} to {MinimumReleaseDate}.");
+        }
+
+        if (MaximumReleaseDate != existingMasterGame.MaximumReleaseDate)
+        {
+            differences.Add($"Maximum release date changed from {existingMasterGame.MaximumReleaseDate} to {MaximumReleaseDate}.");
+        }
+
+        if (EarlyAccessReleaseDate != existingMasterGame.EarlyAccessReleaseDate)
+        {
+            differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate} to {EarlyAccessReleaseDate}.");
+        }
+
+        if (InternationalReleaseDate != existingMasterGame.InternationalReleaseDate)
+        {
+            differences.Add($"International release date changed from {existingMasterGame.InternationalReleaseDate} to {InternationalReleaseDate}.");
+        }
+
+        if (AnnouncementDate != existingMasterGame.AnnouncementDate)
+        {
+            differences.Add($"Announcement date changed from {existingMasterGame.AnnouncementDate} to {AnnouncementDate}.");
+        }
+
+        if (ReleaseDate != existingMasterGame.ReleaseDate)
+        {
+            differences.Add($"Release date changed from {existingMasterGame.ReleaseDate} to {ReleaseDate}.");
+        }
+
+        if (Notes != existingMasterGame.Notes)
+        {
+            differences.Add($"Notes changed from {existingMasterGame.Notes} to {Notes}.");
+        }
+
+        var orderedExistingTags = existingMasterGame.Tags.OrderBy(t => t.Name).ToList();
+        var orderedNewTags = Tags.OrderBy(t => t.Name).ToList();
+        if (!orderedNewTags.SequenceEqual(orderedExistingTags))
+        {
+            differences.Add($"Tags changed from {string.Join(",", orderedExistingTags.Select(x => x.ReadableName))} to {string.Join(",", orderedNewTags.Select(x => x.ReadableName))}.");
+        }
+
+        if (!differences.Any())
+        {
+            return null;
+        }
+
+        string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
+        return finalString;
     }
 }

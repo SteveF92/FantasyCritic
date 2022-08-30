@@ -42,13 +42,13 @@ public class InterLeagueService
     public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
     {
         var now = _clock.GetCurrentInstant();
-        Result<string> changeResult = existingMasterGame.CompareToEditedGame(editedMasterGame);
-        if (changeResult.IsFailure)
+        string? change = editedMasterGame.CompareToExistingGame(existingMasterGame);
+        if (change is null)
         {
-            return Result.Failure(changeResult.Error);
+            return Result.Failure("No change was made.");
         }
 
-        var changeLogEntry = new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, changeResult.Value);
+        var changeLogEntry = new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, change);
         await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntry);
         return Result.Success(changeLogEntry);
     }
