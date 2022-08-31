@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 
 namespace FantasyCritic.Lib.Extensions;
 
@@ -17,14 +18,38 @@ public static class TimeExtensions
             .LocalDateTime.Date;
     }
 
-    public static string ToISOString(this LocalDate date)
+    public static string ToISOString(this LocalDate date, string? wrapWith = null)
     {
-        return date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var value = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        return WrapWith(value, wrapWith);
     }
 
-    public static string ToNullableISOString(this LocalDate? date)
+    public static string ToLongDate(this LocalDate date, string? wrapWith = null)
     {
-        return !date.HasValue ? "No Date" : date.Value.ToISOString();
+        var value = date.ToString("dddd, MMMM dd, yyyy", CultureInfo.InvariantCulture);
+        return WrapWith(value, wrapWith);
+    }
+
+    public static string ToNullableISOString(this LocalDate? date, string? wrapWith = null)
+    {
+        var value = date?.ToISOString() ?? "No Date";
+        return WrapWith(value, wrapWith);
+    }
+
+    public static string ToNullableLongDate(this LocalDate? date, string? wrapWith = null)
+    {
+        var value = date?.ToLongDate() ?? "No Date";
+        return WrapWith(value, wrapWith);
+    }
+
+    private static string WrapWith(string value, string? wrapWith = null)
+    {
+        if (wrapWith is null)
+        {
+            return value;
+        }
+
+        return $"{wrapWith}{value}{wrapWith}";
     }
 
     public static Instant GetNextPublicRevealTime(this IClock clock) => GetNextTime(clock, PublicBiddingRevealDay, PublicBiddingRevealTime);

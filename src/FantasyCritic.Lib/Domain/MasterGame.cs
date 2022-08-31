@@ -163,7 +163,7 @@ public class MasterGame : IEquatable<MasterGame>
 
         if (ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue && ReleaseDate != existingMasterGame.ReleaseDate)
         {
-            differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableISOString()} to {ReleaseDate.ToNullableISOString()}.");
+            differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableLongDate("'")} to {ReleaseDate.ToNullableLongDate("'")}.");
         }
         else if (EstimatedReleaseDate != existingMasterGame.EstimatedReleaseDate ||
                  MinimumReleaseDate != existingMasterGame.MinimumReleaseDate ||
@@ -173,11 +173,11 @@ public class MasterGame : IEquatable<MasterGame>
             string newRangeString = TimeFunctions.GetFormattedReleaseDateRangeString(today, existingMasterGame.MinimumReleaseDate, existingMasterGame.MaximumReleaseDate);
             if (ReleaseDate.HasValue && !existingMasterGame.ReleaseDate.HasValue)
             {
-                differences.Add($"Release date changed from {existingMasterGame.EstimatedReleaseDate}{existingRangeString} to {ReleaseDate.ToNullableISOString()}.");
+                differences.Add($"Release date changed from {existingMasterGame.EstimatedReleaseDate}{existingRangeString} to {ReleaseDate.ToNullableLongDate()}.");
             }
             else if (!ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue)
             {
-                differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableISOString()} to {EstimatedReleaseDate}{newRangeString}.");
+                differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableLongDate("'")} to {EstimatedReleaseDate}{newRangeString}.");
             }
             else
             {
@@ -187,17 +187,17 @@ public class MasterGame : IEquatable<MasterGame>
         
         if (EarlyAccessReleaseDate != existingMasterGame.EarlyAccessReleaseDate)
         {
-            differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate.ToNullableISOString()} to {EarlyAccessReleaseDate.ToNullableISOString()}.");
+            differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate.ToNullableLongDate("'")} to {EarlyAccessReleaseDate.ToNullableLongDate("'")}.");
         }
 
         if (InternationalReleaseDate != existingMasterGame.InternationalReleaseDate)
         {
-            differences.Add($"International release date changed from {existingMasterGame.InternationalReleaseDate.ToNullableISOString()} to {InternationalReleaseDate.ToNullableISOString()}.");
+            differences.Add($"International release date changed from {existingMasterGame.InternationalReleaseDate.ToNullableLongDate("'")} to {InternationalReleaseDate.ToNullableLongDate("'")}.");
         }
 
         if (AnnouncementDate != existingMasterGame.AnnouncementDate)
         {
-            differences.Add($"Announcement date changed from {existingMasterGame.AnnouncementDate.ToNullableISOString()} to {AnnouncementDate.ToNullableISOString()}.");
+            differences.Add($"Announcement date changed from {existingMasterGame.AnnouncementDate.ToNullableLongDate("'")} to {AnnouncementDate.ToNullableLongDate("'")}.");
         }
 
         if (Notes != existingMasterGame.Notes)
@@ -209,7 +209,7 @@ public class MasterGame : IEquatable<MasterGame>
         var orderedNewTags = Tags.OrderBy(t => t.Name).ToList();
         if (!orderedNewTags.SequenceEqual(orderedExistingTags))
         {
-            differences.Add($"Tags changed from {string.Join(",", orderedExistingTags.Select(x => x.ReadableName))} to {string.Join(",", orderedNewTags.Select(x => x.ReadableName))}.");
+            differences.Add($"Tags changed from {string.Join(", ", orderedExistingTags.Select(x => x.ReadableName))} to {string.Join(", ", orderedNewTags.Select(x => x.ReadableName))}.");
         }
 
         return differences;

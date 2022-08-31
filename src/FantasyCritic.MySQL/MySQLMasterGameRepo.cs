@@ -249,7 +249,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var users = await _userStore.GetAllUsers();
         var userDictionary = users.ToDictionary(x => x.Id);
 
-        var sql = "select * from tbl_mastergame_changelog where MasterGameID = @MasterGameID";
+        var sql = "select * from tbl_mastergame_changelog where MasterGameID = @MasterGameID order by Timestamp";
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql, new { masterGame.MasterGameID } );
 

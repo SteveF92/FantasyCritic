@@ -4,8 +4,7 @@ namespace FantasyCritic.Lib.Utilities;
 
 public static class TimeFunctions
 {
-    public static string GetFormattedReleaseDateRangeString(LocalDate today, LocalDate minimumReleaseDate,
-        LocalDate? maximumReleaseDate)
+    public static string GetFormattedReleaseDateRangeString(LocalDate today, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate)
     {
         var releaseDateString = GetReleaseDateRangeString(today, minimumReleaseDate, maximumReleaseDate);
         if (releaseDateString is not null)
@@ -22,17 +21,17 @@ public static class TimeFunctions
         bool hasMaximum = maximumReleaseDate.HasValue;
         if (hasMinimum && hasMaximum)
         {
-            return $"Between {minimumReleaseDate.ToISOString()} and {maximumReleaseDate!.Value.ToISOString()}";
+            return $"Between {minimumReleaseDate.ToLongDate("'")} and {maximumReleaseDate!.Value.ToLongDate("'")}";
         }
 
         if (hasMinimum && !hasMaximum)
         {
-            return $"After {minimumReleaseDate.ToISOString()}";
+            return $"After {minimumReleaseDate.ToLongDate("'")}";
         }
 
         if (!hasMinimum && hasMaximum)
         {
-            return $"Before {maximumReleaseDate!.Value.ToISOString()}";
+            return $"Before {maximumReleaseDate!.Value.ToLongDate("'")}";
         }
 
         return null;

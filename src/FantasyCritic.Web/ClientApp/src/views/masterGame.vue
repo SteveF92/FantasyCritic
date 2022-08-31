@@ -31,12 +31,22 @@
             <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID } }"><strong>Edit Master Game</strong></router-link>
           </div>
           <hr />
+
           <div class="text-well">
             <h2>Details</h2>
             <masterGameDetails :master-game="masterGame"></masterGameDetails>
           </div>
 
-          <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-year-section">
+          <div v-if="changeLog && changeLog.length > 0" class="text-well master-game-section">
+            <h2>Change Log</h2>
+            <b-table :items="changeLog" :fields="changeLogFields" bordered striped responsive small>
+              <template #cell(timestamp)="data">
+                {{ data.item.timestamp | longDate }}
+              </template>
+            </b-table>
+          </div>
+
+          <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-section">
             <h2>Stats for {{ masterGameYear.year }}</h2>
             <ul>
               <li>Drafted or picked up in {{ masterGameYear.eligiblePercentStandardGame | percent(1) }} of leagues where it is eligible.</li>
@@ -105,7 +115,11 @@ export default {
       masterGame: null,
       masterGameYears: [],
       changeLog: [],
-      error: ''
+      error: '',
+      changeLogFields: [
+        { key: 'timestamp', label: 'Timestamp', thClass: 'bg-primary' },
+        { key: 'description', label: 'Description', thClass: 'bg-primary' }
+      ]
     };
   },
   computed: {
@@ -209,7 +223,7 @@ export default {
   align-items: center;
 }
 
-.master-game-year-section {
+.master-game-section {
   margin-top: 10px;
 }
 </style>
