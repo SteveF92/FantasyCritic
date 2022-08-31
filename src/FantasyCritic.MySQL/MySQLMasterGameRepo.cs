@@ -275,7 +275,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,ResponseUserID,MasterGameID,OpenCriticID,GGToken,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
+            "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,GGToken,Answered,ResponseTimestamp,ResponseNote,ResponseUserID,Hidden) VALUES " +
             "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@GGToken,@Answered,@ResponseTimestamp,@ResponseNote,@ResponseUserID,@Hidden);",
             entity);
     }
