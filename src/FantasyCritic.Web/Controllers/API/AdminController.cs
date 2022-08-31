@@ -57,7 +57,8 @@ public class AdminController : FantasyCriticController
             };
         }
 
-        MasterGame masterGame = viewModel.ToDomain(_clock, tags);
+        var currentUser = await GetCurrentUserOrThrow();
+        MasterGame masterGame = viewModel.ToDomain(_clock, tags, currentUser);
         await _interLeagueService.CreateMasterGame(masterGame);
         var currentDate = _clock.GetToday();
         var vm = new MasterGameViewModel(masterGame, currentDate);
@@ -116,7 +117,8 @@ public class AdminController : FantasyCriticController
         }
 
         Instant instant = _clock.GetCurrentInstant();
-        await _interLeagueService.CompleteMasterGameRequest(maybeRequest, instant, request.ResponseNote, masterGame);
+        var user = await GetCurrentUserOrThrow();
+        await _interLeagueService.CompleteMasterGameRequest(maybeRequest, instant, request.ResponseNote, user, masterGame);
 
         return Ok();
     }
@@ -131,7 +133,8 @@ public class AdminController : FantasyCriticController
         }
 
         Instant instant = _clock.GetCurrentInstant();
-        await _interLeagueService.CompleteMasterGameChangeRequest(maybeRequest, instant, request.ResponseNote);
+        var user = await GetCurrentUserOrThrow();
+        await _interLeagueService.CompleteMasterGameChangeRequest(maybeRequest, instant, request.ResponseNote, user);
 
         return Ok();
     }

@@ -26,7 +26,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, null, new LocalDate(2018, 7, 13),
             null, null, 84.8095m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -46,7 +46,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, null, new LocalDate(2018, 7, 13),
             null, null, 84.8095m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -66,7 +66,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 94.8125m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -86,7 +86,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 65.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -106,7 +106,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 55.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -126,7 +126,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 45.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -146,7 +146,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 35.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -166,7 +166,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 25.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -186,7 +186,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 15.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -206,7 +206,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 5.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -226,7 +226,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 10, 20), new LocalDate(2018, 10, 20), null, null, null, new LocalDate(2018, 10, 20),
             null, null, null, false, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -246,7 +246,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2019, 10, 20), new LocalDate(2019, 10, 20), null, null, null, new LocalDate(2019, 10, 20),
             null, null, null, false, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
@@ -266,7 +266,7 @@ public class StandardScoringTests
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
             null, null, 65.8559m, true, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
-            fakeClock.GetCurrentInstant(), new List<MasterSubGame>(), new List<MasterGameTag>());
+            fakeClock.GetCurrentInstant(), Guid.Empty, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, true, null, testGame);
