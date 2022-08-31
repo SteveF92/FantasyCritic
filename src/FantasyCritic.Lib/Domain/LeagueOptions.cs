@@ -184,17 +184,17 @@ public class LeagueOptions
 
         if (FreeDroppableGames != existingOptions.FreeDroppableGames)
         {
-            differences.Add($"Number of 'any unreleased' droppable games per publisher changed from {existingOptions.FreeDroppableGames} to {FreeDroppableGames}.");
+            differences.Add($"Number of 'any unreleased' droppable games per publisher changed from {existingOptions.FreeDroppableGames.ToDroppableString()} to {FreeDroppableGames.ToDroppableString()}.");
         }
 
         if (WillNotReleaseDroppableGames != existingOptions.WillNotReleaseDroppableGames)
         {
-            differences.Add($"Number of 'will not release' droppable games per publisher changed from {existingOptions.WillNotReleaseDroppableGames} to {WillNotReleaseDroppableGames}.");
+            differences.Add($"Number of 'will not release' droppable games per publisher changed from {existingOptions.WillNotReleaseDroppableGames.ToDroppableString()} to {WillNotReleaseDroppableGames.ToDroppableString()}.");
         }
 
         if (WillReleaseDroppableGames != existingOptions.WillReleaseDroppableGames)
         {
-            differences.Add($"Number of 'will release' droppable games per publisher changed from {existingOptions.WillReleaseDroppableGames} to {WillReleaseDroppableGames}.");
+            differences.Add($"Number of 'will release' droppable games per publisher changed from {existingOptions.WillReleaseDroppableGames.ToDroppableString()} to {WillReleaseDroppableGames.ToDroppableString()}.");
         }
 
         if (DropOnlyDraftGames != existingOptions.DropOnlyDraftGames)
