@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text;
 
 namespace FantasyCritic.Lib.Extensions;
 

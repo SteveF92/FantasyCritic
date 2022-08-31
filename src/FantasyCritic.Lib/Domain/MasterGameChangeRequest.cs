@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Domain;
 public class MasterGameChangeRequest
 {
     public MasterGameChangeRequest(Guid requestID, FantasyCriticUser user, Instant requestTimestamp, string requestNote,
-        MasterGame masterGame, int? openCriticID, string? ggToken, bool answered, Instant? responseTimestamp, string? responseNote, bool hidden)
+        MasterGame masterGame, int? openCriticID, string? ggToken, bool answered, Instant? responseTimestamp, string? responseNote, FantasyCriticUser? responseUser, bool hidden)
     {
         RequestID = requestID;
         User = user;
@@ -17,6 +17,7 @@ public class MasterGameChangeRequest
         Answered = answered;
         ResponseTimestamp = responseTimestamp;
         ResponseNote = responseNote;
+        ResponseUser = responseUser;
         Hidden = hidden;
     }
 
@@ -33,6 +34,7 @@ public class MasterGameChangeRequest
     public bool Answered { get; }
     public Instant? ResponseTimestamp { get; }
     public string? ResponseNote { get; }
+    public FantasyCriticUser? ResponseUser { get; }
 
     public bool Hidden { get; }
 }

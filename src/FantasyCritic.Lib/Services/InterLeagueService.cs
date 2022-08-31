@@ -170,15 +170,15 @@ public class InterLeagueService
     }
 
     public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime,
-        string responseNote, MasterGame? masterGame)
+        string responseNote, FantasyCriticUser responseUser, MasterGame? masterGame)
     {
-        return _masterGameRepo.CompleteMasterGameRequest(masterGameRequest, responseTime, responseNote, masterGame);
+        return _masterGameRepo.CompleteMasterGameRequest(masterGameRequest, responseTime, responseNote, responseUser, masterGame);
     }
 
     public Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
-        string responseNote)
+        string responseNote, FantasyCriticUser responseUser)
     {
-        return _masterGameRepo.CompleteMasterGameChangeRequest(masterGameRequest, responseTime, responseNote);
+        return _masterGameRepo.CompleteMasterGameChangeRequest(masterGameRequest, responseTime, responseUser, responseNote);
     }
 
     public Task DismissMasterGameRequest(MasterGameRequest masterGameRequest)

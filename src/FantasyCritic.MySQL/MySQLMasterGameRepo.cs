@@ -263,9 +263,9 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
             "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,GGToken,ReleaseDate,EstimatedReleaseDate," +
-            "Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
+            "Answered,ResponseTimestamp,ResponseNote,ResponseUserID,MasterGameID,Hidden) VALUES " +
             "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@GGToken,@ReleaseDate,@EstimatedReleaseDate," +
-            "@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
+            "@Answered,@ResponseTimestamp,@ResponseNote,@ResponseUserID,@MasterGameID,@Hidden);",
             entity);
     }
 
@@ -275,8 +275,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,GGToken,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
-            "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@GGToken,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
+            "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,ResponseUserID,MasterGameID,OpenCriticID,GGToken,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
+            "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@GGToken,@Answered,@ResponseTimestamp,@ResponseNote,@ResponseUserID,@Hidden);",
             entity);
     }
 
@@ -312,7 +312,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return count;
     }
 
-    public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, MasterGame? masterGame)
+    public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime,
+        string responseNote, FantasyCriticUser responseUser, MasterGame? masterGame)
     {
         Guid? masterGameID = null;
         if (masterGame is not null)
@@ -320,7 +321,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             masterGameID = masterGame.MasterGameID;
         }
         string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, " +
-                     "ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
+                     "ResponseNote = @responseNote, ResponseUserID = @responseUserID, MasterGameID = @masterGameID where RequestID = @requestID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
             new
@@ -328,21 +329,24 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 requestID = masterGameRequest.RequestID,
                 masterGameID,
                 responseTime = responseTime.ToDateTimeUtc(),
-                responseNote
+                responseNote,
+                responseUserID = responseUser.Id
             });
     }
 
-    public async Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote)
+    public async Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
+        FantasyCriticUser responseUser, string responseNote)
     {
         string sql = "update tbl_mastergame_changerequest set Answered = 1, ResponseTimestamp = @responseTime, " +
-                     "ResponseNote = @responseNote where RequestID = @requestID;";
+                     "ResponseNote = @responseNote, ResponseUserID = @responseUserID where RequestID = @requestID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
             new
             {
                 requestID = masterGameRequest.RequestID,
                 responseTime = responseTime.ToDateTimeUtc(),
-                responseNote
+                responseNote,
+                responseUserID = responseUser.Id
             });
     }
 
@@ -368,6 +372,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         var masterGames = await GetMasterGames();
         var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
         List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
         foreach (var entity in entities)
         {
@@ -377,7 +382,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID.Value);
             }
 
-            MasterGameRequest domain = entity.ToDomain(users.Single(x => x.Id == entity.UserID), masterGame);
+            MasterGameRequest domain = entity.ToDomain(userDictionary[entity.UserID], masterGame, entity.ResponseUserID.HasValue ? userDictionary[entity.ResponseUserID.Value] : null);
             domainRequests.Add(domain);
         }
 
@@ -388,11 +393,12 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         var masterGames = await GetMasterGames();
         var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
         List<MasterGameChangeRequest> domainRequests = new List<MasterGameChangeRequest>();
         foreach (var entity in entities)
         {
             var masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID);
-            MasterGameChangeRequest domain = entity.ToDomain(users.Single(x => x.Id == entity.UserID), masterGame);
+            MasterGameChangeRequest domain = entity.ToDomain(userDictionary[entity.UserID], masterGame, entity.ResponseUserID.HasValue ? userDictionary[entity.ResponseUserID.Value] : null);
             domainRequests.Add(domain);
         }
 
@@ -417,8 +423,13 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
+        FantasyCriticUser? responseUser = null;
+        if (entity.ResponseUserID.HasValue)
+        {
+            responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
+        }
 
-        return entity.ToDomain(user, masterGame);
+        return entity.ToDomain(user, masterGame, responseUser);
     }
 
     public async Task<MasterGameChangeRequest?> GetMasterGameChangeRequest(Guid requestID)
@@ -440,8 +451,13 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
+        FantasyCriticUser? responseUser = null;
+        if (entity.ResponseUserID.HasValue)
+        {
+            responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
+        }
 
-        return entity.ToDomain(user, masterGame);
+        return entity.ToDomain(user, masterGame, responseUser);
     }
 
     public async Task DeleteMasterGameRequest(MasterGameRequest request)

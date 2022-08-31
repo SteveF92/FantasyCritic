@@ -32,8 +32,10 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests();
     Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests();
     Task<int> GetNumberOutstandingCorrections(MasterGame masterGame);
-    Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, MasterGame? masterGame);
-    Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote);
+    Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote,
+        FantasyCriticUser responseUser, MasterGame? masterGame);
+    Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
+        FantasyCriticUser responseUser, string responseNote);
     Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
     Task LinkToGG(MasterGame masterGame, string ggToken);
     Task UpdateReleaseDateEstimates(LocalDate tomorrow);

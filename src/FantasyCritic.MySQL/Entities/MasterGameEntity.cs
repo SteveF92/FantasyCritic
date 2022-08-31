@@ -34,6 +34,8 @@ internal class MasterGameEntity
         DelayContention = masterGame.DelayContention;
         EligibilityChanged = masterGame.EligibilityChanged;
         AddedTimestamp = masterGame.AddedTimestamp;
+        AddedByUserID = masterGame.AddedByUserID;
+
     }
 
     public Guid MasterGameID { get; set; }
@@ -58,11 +60,12 @@ internal class MasterGameEntity
     public bool EligibilityChanged { get; set; }
     public bool DelayContention { get; set; }
     public Instant AddedTimestamp { get; set; }
+    public Guid AddedByUserID { get; set; }
 
     public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
-            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, subGames, tags);
+            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, AddedByUserID, subGames, tags);
     }
 }

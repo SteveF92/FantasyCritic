@@ -26,6 +26,7 @@ internal class MasterGameRequestEntity
         Answered = domain.Answered;
         ResponseTimestamp = domain.ResponseTimestamp;
         ResponseNote = domain.ResponseNote;
+        ResponseUserID = domain.ResponseUser?.Id;
 
         if (domain.MasterGame is not null)
         {
@@ -53,13 +54,14 @@ internal class MasterGameRequestEntity
     public bool Answered { get; set; }
     public Instant? ResponseTimestamp { get; set; }
     public string? ResponseNote { get; set; }
+    public Guid? ResponseUserID { get; set; }
     public Guid? MasterGameID { get; set; }
 
     public bool Hidden { get; set; }
 
-    public MasterGameRequest ToDomain(FantasyCriticUser user, MasterGame? masterGame)
+    public MasterGameRequest ToDomain(FantasyCriticUser user, MasterGame? masterGame, FantasyCriticUser? responseUser)
     {
         return new MasterGameRequest(RequestID, user, RequestTimestamp, RequestNote, GameName, SteamID, OpenCriticID, GGToken, ReleaseDate, EstimatedReleaseDate,
-            Answered, ResponseTimestamp, ResponseNote, masterGame, Hidden);
+            Answered, ResponseTimestamp, ResponseNote, responseUser, masterGame, Hidden);
     }
 }

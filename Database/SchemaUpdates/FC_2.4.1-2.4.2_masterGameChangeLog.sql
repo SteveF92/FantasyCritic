@@ -30,3 +30,11 @@ UPDATE tbl_mastergame SET AddedByUserID = {USERID};
 
 ALTER TABLE `tbl_mastergame`
 	CHANGE COLUMN `AddedByUserID` `AddedByUserID` CHAR(36) NOT NULL AFTER `AddedTimestamp`;
+
+ALTER TABLE `tbl_caching_mastergameyear`
+	ADD COLUMN `AddedByUserID` CHAR(36) NULL DEFAULT NULL AFTER `AddedTimestamp`;
+
+UPDATE tbl_caching_mastergameyear SET AddedByUserID = {USERID};
+
+ALTER TABLE `tbl_caching_mastergameyear`
+	CHANGE COLUMN `AddedByUserID` `AddedByUserID` CHAR(36) NOT NULL AFTER `AddedTimestamp`;

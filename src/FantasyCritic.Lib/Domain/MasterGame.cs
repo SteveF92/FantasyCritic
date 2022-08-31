@@ -8,7 +8,8 @@ public class MasterGame : IEquatable<MasterGame>
     public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
         LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, string? ggToken, decimal? criticScore, bool hasAnyReviews,
         string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
-        bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
+        bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, Guid addedByUserID,
+        IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
         MasterGameID = masterGameID;
         GameName = gameName;
@@ -32,6 +33,7 @@ public class MasterGame : IEquatable<MasterGame>
         DoNotRefreshAnything = doNotRefreshAnything;
         EligibilityChanged = eligibilityChanged;
         AddedTimestamp = addedTimestamp;
+        AddedByUserID = addedByUserID;
         SubGames = subGames.ToList();
         Tags = tags.ToList();
     }
@@ -56,6 +58,7 @@ public class MasterGame : IEquatable<MasterGame>
     public bool DoNotRefreshAnything { get; }
     public bool EligibilityChanged { get; }
     public Instant AddedTimestamp { get; }
+    public Guid AddedByUserID { get; }
     public IReadOnlyList<MasterSubGame> SubGames { get; }
     public IReadOnlyList<MasterGameTag> Tags { get; }
 
