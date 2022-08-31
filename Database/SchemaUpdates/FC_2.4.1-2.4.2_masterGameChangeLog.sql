@@ -12,3 +12,21 @@ CREATE TABLE `tbl_mastergame_changelog` (
 )
 ENGINE=InnoDB
 ;
+
+ALTER TABLE `tbl_mastergame_changerequest`
+	ADD COLUMN `ResponseUserID` CHAR(36) NULL DEFAULT NULL AFTER `ResponseNote`;
+
+UPDATE tbl_mastergame_changerequest SET ResponseUserID = {USERID} WHERE ResponseNote IS NOT NULL;
+
+ALTER TABLE `tbl_mastergame_request`
+	ADD COLUMN `ResponseUserID` CHAR(36) NULL DEFAULT NULL AFTER `ResponseNote`;
+
+UPDATE tbl_mastergame_request SET ResponseUserID = {USERID} WHERE ResponseNote IS NOT NULL;
+
+ALTER TABLE `tbl_mastergame`
+	ADD COLUMN `AddedByUserID` CHAR(36) NULL DEFAULT NULL AFTER `AddedTimestamp`;
+
+UPDATE tbl_mastergame SET AddedByUserID = {USERID};
+
+ALTER TABLE `tbl_mastergame`
+	CHANGE COLUMN `AddedByUserID` `AddedByUserID` CHAR(36) NOT NULL AFTER `AddedTimestamp`;
