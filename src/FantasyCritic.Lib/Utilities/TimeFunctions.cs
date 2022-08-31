@@ -4,39 +4,6 @@ namespace FantasyCritic.Lib.Utilities;
 
 public static class TimeFunctions
 {
-    public static string GetFormattedReleaseDateRangeString(LocalDate today, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate)
-    {
-        var releaseDateString = GetReleaseDateRangeString(today, minimumReleaseDate, maximumReleaseDate);
-        if (releaseDateString is not null)
-        {
-            return $" ({releaseDateString})";
-        }
-
-        return "";
-    }
-
-    private static string? GetReleaseDateRangeString(LocalDate today, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate)
-    {
-        bool hasMinimum = minimumReleaseDate != today.PlusDays(1);
-        bool hasMaximum = maximumReleaseDate.HasValue;
-        if (hasMinimum && hasMaximum)
-        {
-            return $"Between {minimumReleaseDate.ToLongDate("'")} and {maximumReleaseDate!.Value.ToLongDate("'")}";
-        }
-
-        if (hasMinimum && !hasMaximum)
-        {
-            return $"After {minimumReleaseDate.ToLongDate("'")}";
-        }
-
-        if (!hasMinimum && hasMaximum)
-        {
-            return $"Before {maximumReleaseDate!.Value.ToLongDate("'")}";
-        }
-
-        return null;
-    }
-
     public static EstimatedReleaseDateRange ParseEstimatedReleaseDate(string estimatedReleaseDate, IClock clock)
     {
         var range = ParseEstimatedReleaseDateInner(estimatedReleaseDate, clock);

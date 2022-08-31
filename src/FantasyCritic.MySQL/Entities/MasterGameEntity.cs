@@ -35,7 +35,6 @@ internal class MasterGameEntity
         EligibilityChanged = masterGame.EligibilityChanged;
         AddedTimestamp = masterGame.AddedTimestamp;
         AddedByUserID = masterGame.AddedByUserID;
-
     }
 
     public Guid MasterGameID { get; set; }

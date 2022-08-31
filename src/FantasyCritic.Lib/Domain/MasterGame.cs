@@ -172,19 +172,17 @@ public class MasterGame : IEquatable<MasterGame>
                  MinimumReleaseDate != existingMasterGame.MinimumReleaseDate ||
                  MaximumReleaseDate != existingMasterGame.MaximumReleaseDate)
         {
-            string existingRangeString = TimeFunctions.GetFormattedReleaseDateRangeString(today, existingMasterGame.MinimumReleaseDate, existingMasterGame.MaximumReleaseDate);
-            string newRangeString = TimeFunctions.GetFormattedReleaseDateRangeString(today, existingMasterGame.MinimumReleaseDate, existingMasterGame.MaximumReleaseDate);
             if (ReleaseDate.HasValue && !existingMasterGame.ReleaseDate.HasValue)
             {
-                differences.Add($"Release date changed from {existingMasterGame.EstimatedReleaseDate}{existingRangeString} to {ReleaseDate.ToNullableLongDate()}.");
+                differences.Add($"Release date changed from '{existingMasterGame.EstimatedReleaseDate}' to {ReleaseDate.ToNullableLongDate("'")}.");
             }
             else if (!ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue)
             {
-                differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableLongDate("'")} to {EstimatedReleaseDate}{newRangeString}.");
+                differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableLongDate("'")} to '{EstimatedReleaseDate}'.");
             }
             else
             {
-                differences.Add($"Estimated release date changed from {existingMasterGame.EstimatedReleaseDate}{existingRangeString} to {EstimatedReleaseDate}{newRangeString}.");
+                differences.Add($"Estimated release date changed from '{existingMasterGame.EstimatedReleaseDate}' to '{EstimatedReleaseDate}'.");
             }
         }
         
