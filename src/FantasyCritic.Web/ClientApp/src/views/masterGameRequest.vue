@@ -95,6 +95,7 @@
             <thead>
               <tr class="bg-primary">
                 <th scope="col" class="game-column">Game Name</th>
+                <th scope="col">Answered By</th>
                 <th scope="col">Response</th>
                 <th scope="col">Response Time</th>
                 <th scope="col"></th>
@@ -105,6 +106,10 @@
                 <td>
                   <span v-if="request.masterGame"><masterGamePopover :master-game="request.masterGame"></masterGamePopover></span>
                   <span v-else>{{ request.gameName }}</span>
+                </td>
+                <td>
+                  <span v-if="request.responseUser">{{ request.responseUser.displayName }}</span>
+                  <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td>
                   <span v-if="request.responseNote">{{ request.responseNote }}</span>
@@ -160,19 +165,15 @@ export default {
       return !!this.estimatedReleaseDate || !!this.releaseDate;
     }
   },
-  mounted() {
-    this.fetchMyRequests();
+  async mounted() {
+    await this.fetchMyRequests();
   },
   methods: {
-    fetchMyRequests() {
-      axios
-        .get('/api/game/MyMasterGameRequests')
-        .then((response) => {
-          this.myRequests = response.data;
-        })
-        .catch(() => {});
+    async fetchMyRequests() {
+      const response = await axios.get('/api/game/MyMasterGameRequests');
+      this.myRequests = response.data;
     },
-    sendMasterGameRequestRequest() {
+    async sendMasterGameRequestRequest() {
       let request = {
         gameName: this.gameName,
         requestNote: this.requestNote,
@@ -190,21 +191,19 @@ export default {
         request.estimatedReleaseDate = this.releaseDate;
       }
 
-      axios
-        .post('/api/game/CreateMasterGameRequest', request)
-        .then(() => {
-          this.showSent = true;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-          });
-          this.clearData();
-          this.fetchMyRequests();
-        })
-        .catch((error) => {
-          this.errorInfo = error.response;
+      try {
+        await axios.post('/api/game/CreateMasterGameRequest', request);
+        this.showSent = true;
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
         });
+        this.clearData();
+        await this.fetchMyRequests();
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
     clearData() {
       this.gameName = '';
@@ -216,28 +215,20 @@ export default {
       this.estimatedReleaseDate = '';
       this.$validator.reset();
     },
-    cancelRequest(request) {
+    async cancelRequest(request) {
       let model = {
         requestID: request.requestID
       };
-      axios
-        .post('/api/game/DeleteMasterGameRequest', model)
-        .then(() => {
-          this.showDeleted = true;
-          this.fetchMyRequests();
-        })
-        .catch(() => {});
+      await axios.post('/api/game/DeleteMasterGameRequest', model);
+      this.showDeleted = true;
+      await this.fetchMyRequests();
     },
-    dismissRequest(request) {
+    async dismissRequest(request) {
       let model = {
         requestID: request.requestID
       };
-      axios
-        .post('/api/game/DismissMasterGameRequest', model)
-        .then(() => {
-          this.fetchMyRequests();
-        })
-        .catch(() => {});
+      await axios.post('/api/game/DismissMasterGameRequest', model);
+      await this.fetchMyRequests();
     }
   }
 };
