@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain;
 
@@ -199,6 +198,21 @@ public class MasterGame : IEquatable<MasterGame>
         if (AnnouncementDate != existingMasterGame.AnnouncementDate)
         {
             differences.Add($"Announcement date changed from {existingMasterGame.AnnouncementDate.ToNullableLongDate("'")} to {AnnouncementDate.ToNullableLongDate("'")}.");
+        }
+
+        if (string.IsNullOrWhiteSpace(Notes) && !string.IsNullOrWhiteSpace(existingMasterGame.Notes))
+        {
+            differences.Add($"Note added: '{Notes}'.");
+        }
+        else if (!string.IsNullOrWhiteSpace(Notes) && string.IsNullOrWhiteSpace(existingMasterGame.Notes))
+        {
+            differences.Add($"Note removed: '{existingMasterGame.Notes}'.");
+        }
+        else if (!string.IsNullOrWhiteSpace(Notes) && !string.IsNullOrWhiteSpace(existingMasterGame.Notes) &&
+                 !Notes.Equals(existingMasterGame.Notes))
+        {
+            differences.Add($"Note removed: '{existingMasterGame.Notes}'.");
+            differences.Add($"Note added: '{Notes}'.");
         }
 
         if (Notes != existingMasterGame.Notes)
