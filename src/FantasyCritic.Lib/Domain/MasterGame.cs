@@ -160,7 +160,7 @@ public class MasterGame : IEquatable<MasterGame>
 
         if (GameName != existingMasterGame.GameName)
         {
-            differences.Add($"GameName changed from {existingMasterGame.GameName} to {GameName}.");
+            differences.Add($"Game name changed from {existingMasterGame.GameName} to {GameName}.");
         }
 
         if (ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue && ReleaseDate != existingMasterGame.ReleaseDate)
@@ -213,6 +213,15 @@ public class MasterGame : IEquatable<MasterGame>
         {
             differences.Add($"Note removed: '{existingMasterGame.Notes}'.");
             differences.Add($"Note added: '{Notes}'.");
+        }
+
+        if (DelayContention && !existingMasterGame.DelayContention)
+        {
+            differences.Add("Game set to 'Delay in Contention'.");
+        }
+        else if (!DelayContention && existingMasterGame.DelayContention)
+        {
+            differences.Add("Game is no longer 'Delay in Contention'.");
         }
 
         var orderedExistingTags = existingMasterGame.Tags.OrderBy(t => t.Name).ToList();
