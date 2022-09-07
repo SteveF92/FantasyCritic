@@ -708,7 +708,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 leagueYear = year
             });
 
-        List<LeagueAction> leagueActions = entities.Select(x => x.ToDomain(publisherDictionary[x.PublisherID])).ToList();
+        var leagueActions = new List<LeagueAction>();
+        foreach (var entity in entities)
+        {
+            if (publisherDictionary.TryGetValue(entity.PublisherID, out var publisher))
+            {
+                leagueActions.Add(entity.ToDomain(publisher));
+            }
+        }
+        
         return leagueActions;
     }
 
