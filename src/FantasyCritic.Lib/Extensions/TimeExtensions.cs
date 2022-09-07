@@ -94,9 +94,17 @@ public static class TimeExtensions
         return dateTime.InZoneStrictly(nyc).ToInstant();
     }
 
+    public static Instant GetSuperDropsGrantTime(this IClock clock)
+    {
+        var currentDate = clock.GetToday();
+        var superDropsDate = SuperDropsDate.InYear(currentDate.Year);
+        return superDropsDate.AtStartOfDayInZone(EasternTimeZone).ToInstant();
+    }
+
     public static readonly DateTimeZone EasternTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")!;
     public static readonly IsoDayOfWeek PublicBiddingRevealDay = IsoDayOfWeek.Thursday;
     public static readonly LocalTime PublicBiddingRevealTime = new LocalTime(20, 0);
     public static readonly IsoDayOfWeek ActionProcessingDay = IsoDayOfWeek.Saturday;
     public static readonly LocalTime ActionProcessingTime = new LocalTime(20, 0);
+    public static readonly AnnualDate SuperDropsDate = new AnnualDate(9, 1);
 }

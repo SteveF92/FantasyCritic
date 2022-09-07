@@ -694,6 +694,24 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return leagueActions;
     }
 
+    public async Task<IReadOnlyList<LeagueAction>> GetLeagueActions(int year)
+    {
+        var leagueYears = await GetLeagueYears(year);
+        var publisherDictionary = leagueYears.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID, x => x);
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<LeagueActionEntity>(
+            "select tbl_league_action.PublisherID, tbl_league_action.Timestamp, tbl_league_action.ActionType, tbl_league_action.Description, tbl_league_action.ManagerAction from tbl_league_action " +
+            "join tbl_league_publisher on (tbl_league_action.PublisherID = tbl_league_publisher.PublisherID) " +
+            "where tbl_league_publisher.Year = @leagueYear;",
+            new
+            {
+                leagueYear = year
+            });
+
+        List<LeagueAction> leagueActions = entities.Select(x => x.ToDomain(publisherDictionary[x.PublisherID])).ToList();
+        return leagueActions;
+    }
+
     public async Task ChangePublisherName(Publisher publisher, string publisherName)
     {
         await using var connection = new MySqlConnection(_connectionString);

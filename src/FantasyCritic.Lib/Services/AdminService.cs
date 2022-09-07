@@ -396,6 +396,11 @@ public class AdminService
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(currentYear!.Year);
         var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.Options.GrantSuperDrops);
 
+        var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
+        var grantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop" || x.Description.Contains("Changed 'super drops available' to"));
+        var leagueActionsAfterDate = grantActions.Where(x => x.Timestamp > _clock.GetSuperDropsGrantTime());
+        var leaguesThatGranted = leagueActionsAfterDate.Select(x => x.Publisher.LeagueYearKey).ToHashSet();
+
         List<Publisher> publishersToGrantSuperDrop = new List<Publisher>();
         List<LeagueAction> superDropActions = new List<LeagueAction>();
         foreach (var leagueYear in leagueYearsWithSuperDrops)
@@ -403,8 +408,17 @@ public class AdminService
             var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
             var highestScoringPublisher = publishersWithProjectedPoints.MaxBy(x => x.Value);
             var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < highestScoringPublisher.Value * 0.65m).ToList();
-            var actions = publishersWithLowScores.Select(x => new LeagueAction(x.Key, now, "Granted Super Drop", "Granted one super drop due to league standings.", false));
-            publishersToGrantSuperDrop.AddRange(publishersWithLowScores.Select(x => x.Key));
+            List<LeagueAction> actions = new List<LeagueAction>();
+            foreach (var publisher in publishersWithLowScores)
+            {
+                if (leaguesThatGranted.Contains(publisher.Key.LeagueYearKey))
+                {
+                    continue;
+                }
+
+                actions.Add(new LeagueAction(publisher.Key, now, "Granted Super Drop", "Granted one super drop due to league standings.", false));
+                publishersToGrantSuperDrop.Add(publisher.Key);
+            }
             superDropActions.AddRange(actions);
         }
 
