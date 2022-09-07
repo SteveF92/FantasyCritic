@@ -387,8 +387,9 @@ public class AdminService
         await _fantasyCriticRepo.ManualMakePublisherGameSlotsConsistent(currentYear!.Year);
     }
 
-    public async Task GrantSuperDrops(SystemWideValues systemWideValues)
+    public async Task GrantSuperDrops()
     {
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
         var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -397,9 +398,15 @@ public class AdminService
         var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.Options.GrantSuperDrops);
 
         var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
-        var grantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop" || x.Description.Contains("Changed 'super drops available' to"));
-        var leagueActionsAfterDate = grantActions.Where(x => x.Timestamp > _clock.GetSuperDropsGrantTime());
-        var leaguesThatGranted = leagueActionsAfterDate.Select(x => x.Publisher.LeagueYearKey).ToHashSet();
+        var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
+        var automatedGrantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop");
+        var manualGrantActions = new List<LeagueAction>();
+        if (currentYear.Is2022)
+        {
+            manualGrantActions = allSuperDropActions.Where(x => x.ActionType == "Publisher Edited" && x.Description.StartsWith("Changed 'super drops available' to") && x.Timestamp > _clock.GetSuperDropsGrantTime()).ToList();
+        }
+
+        var publishersAlreadyGranted = automatedGrantActions.Concat(manualGrantActions).Select(x => x.Publisher.PublisherID).ToHashSet();
 
         List<Publisher> publishersToGrantSuperDrop = new List<Publisher>();
         List<LeagueAction> superDropActions = new List<LeagueAction>();
@@ -411,7 +418,7 @@ public class AdminService
             List<LeagueAction> actions = new List<LeagueAction>();
             foreach (var publisher in publishersWithLowScores)
             {
-                if (leaguesThatGranted.Contains(publisher.Key.LeagueYearKey))
+                if (publishersAlreadyGranted.Contains(publisher.Key.PublisherID))
                 {
                     continue;
                 }

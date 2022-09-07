@@ -94,10 +94,23 @@ public static class TimeExtensions
         return dateTime.InZoneStrictly(nyc).ToInstant();
     }
 
+    public static bool ShouldGrantSuperDrops(this IClock clock)
+    {
+        var now = clock.GetCurrentInstant();
+        var date = now.ToEasternDate();
+        var superDropsGrantTime = GetSuperDropsGrantTime(date.Year);
+        return now >= superDropsGrantTime;
+    }
+
     public static Instant GetSuperDropsGrantTime(this IClock clock)
     {
         var currentDate = clock.GetToday();
-        var superDropsDate = SuperDropsDate.InYear(currentDate.Year);
+        return GetSuperDropsGrantTime(currentDate.Year);
+    }
+
+    private static Instant GetSuperDropsGrantTime(int year)
+    {
+        var superDropsDate = SuperDropsDate.InYear(year);
         return superDropsDate.AtStartOfDayInZone(EasternTimeZone).ToInstant();
     }
 

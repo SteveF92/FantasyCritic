@@ -459,8 +459,7 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> GrantSuperDrops()
     {
-        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-        await _adminService.GrantSuperDrops(systemWideValues);
+        await _adminService.GrantSuperDrops();
         return Ok();
     }
 }
