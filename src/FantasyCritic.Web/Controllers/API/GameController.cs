@@ -299,4 +299,12 @@ public class GameController : FantasyCriticController
         var vms = domains.Select(x => new MasterGameTagViewModel(x)).ToList();
         return vms;
     }
+
+    public async Task<ActionResult<List<CompleteMasterGameChangeViewModel>>> GetRecentMasterGameChanges()
+    {
+        IReadOnlyList<MasterGameChangeLogEntry> recentChanges = await _interLeagueService.GetRecentMasterGameChanges();
+        var currentDate = _clock.GetToday();
+        var vms = recentChanges.Select(x => new CompleteMasterGameChangeViewModel(x, currentDate)).ToList();
+        return vms;
+    }
 }

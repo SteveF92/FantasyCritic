@@ -256,6 +256,25 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return entities.Select(entity => entity.ToDomain(masterGame, userDictionary[entity.ChangedByUserID])).ToList();
     }
 
+    public async Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    {
+        var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
+
+        var masterGames = await GetMasterGames();
+        var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
+
+        var sql = "select * from tbl_mastergame_changelog where MasterGameID = @MasterGameID order by Timestamp desc limit 100";
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql);
+
+        var domains = entities
+            .Select(entity => entity.ToDomain(masterGameDictionary[entity.MasterGameID], userDictionary[entity.ChangedByUserID]))
+            .ToList();
+
+        return domains;
+    }
+
     public async Task CreateMasterGameRequest(MasterGameRequest domainRequest)
     {
         var entity = new MasterGameRequestEntity(domainRequest);

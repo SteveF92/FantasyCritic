@@ -19,6 +19,7 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
 
     Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame);
+    Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges();
     Task CreateMasterGameRequest(MasterGameRequest domainRequest);
     Task CreateMasterGameChangeRequest(MasterGameChangeRequest domainRequest);
     Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user);

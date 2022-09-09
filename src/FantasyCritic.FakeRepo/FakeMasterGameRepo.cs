@@ -79,6 +79,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    {
+        throw new NotImplementedException();
+    }
+
     public Task CreateMasterGameRequest(MasterGameRequest domainRequest)
     {
         throw new NotImplementedException();

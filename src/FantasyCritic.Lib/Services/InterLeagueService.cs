@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
@@ -204,5 +205,10 @@ public class InterLeagueService
     public Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()
     {
         return _fantasyCriticRepo.GetActionProcessingSets();
+    }
+
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    {
+        return _masterGameRepo.GetRecentMasterGameChanges();
     }
 }
