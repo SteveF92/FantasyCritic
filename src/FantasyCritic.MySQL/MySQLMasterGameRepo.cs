@@ -264,7 +264,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGames = await GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
-        var sql = "select * from tbl_mastergame_changelog where MasterGameID = @MasterGameID order by Timestamp desc limit 100";
+        var sql = "select * from tbl_mastergame_changelog order by Timestamp desc limit 100";
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql);
 
