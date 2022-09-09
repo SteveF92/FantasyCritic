@@ -122,6 +122,7 @@ public static class HostingExtensions
         services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
         services.AddSingleton<IScheduledTask, EmailSendingTask>();
         services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
+        services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
         services.AddScheduler((sender, args) =>
         {
             args.SetObserved();
