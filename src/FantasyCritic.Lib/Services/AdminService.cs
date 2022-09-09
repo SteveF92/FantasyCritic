@@ -389,6 +389,7 @@ public class AdminService
 
     public async Task GrantSuperDrops()
     {
+        _logger.Information("Granting super drops.");
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
