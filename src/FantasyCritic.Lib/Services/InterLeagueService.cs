@@ -44,11 +44,6 @@ public class InterLeagueService
     {
         var now = _clock.GetCurrentInstant();
         var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
-        if (!changes.Any())
-        {
-            return Result.Failure("No change was made.");
-        }
-
         var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
         await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
         return Result.Success();

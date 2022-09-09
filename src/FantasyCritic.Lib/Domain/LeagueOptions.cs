@@ -266,6 +266,11 @@ public class LeagueOptions
             return null;
         }
 
+        if (differences.Count == 1)
+        {
+            return differences.Single();
+        }
+
         string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
         return finalString;
     }

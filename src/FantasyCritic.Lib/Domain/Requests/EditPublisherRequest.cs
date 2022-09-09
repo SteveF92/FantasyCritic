@@ -89,7 +89,7 @@ public class EditPublisherRequest
             return changes.Single() + ".";
         }
 
-        string joinedString = string.Join("; ", changes) + ".";
-        return joinedString;
+        string finalString = string.Join("\n", changes.Select(x => $"• {x}"));
+        return finalString;
     }
 }
