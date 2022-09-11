@@ -117,7 +117,7 @@ export default {
       changeLog: [],
       error: '',
       changeLogFields: [
-        { key: 'timestamp', label: 'Timestamp', thClass: 'bg-primary' },
+        { key: 'timestamp', label: 'Date of Change', thClass: 'bg-primary' },
         { key: 'description', label: 'Description', thClass: 'bg-primary' }
       ]
     };

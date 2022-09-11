@@ -34,7 +34,7 @@ export default {
       recentChanges: null,
       gameFields: [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+        { key: 'timestamp', label: 'Date of Change', sortable: true, thClass: 'bg-primary' },
         { key: 'description', label: 'Description', thClass: 'bg-primary' }
         //{ key: 'changedByUser', label: 'Changed by', thClass: 'bg-primary' }
       ]
