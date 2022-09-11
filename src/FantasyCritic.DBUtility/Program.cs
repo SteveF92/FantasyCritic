@@ -1,4 +1,4 @@
-using System.Configuration;
+using System.Reflection;
 using Dapper;
 using Dapper.NodaTime;
 using FantasyCritic.Lib.DependencyInjection;
@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
+using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using NodaTime;
 
@@ -17,11 +18,19 @@ namespace FantasyCritic.DBUtility;
 
 class Program
 {
-    private static readonly string _connectionString = ConfigurationManager.AppSettings["ConnectionString"]!;
+    private static string _connectionString = null!;
     private static readonly IClock _clock = SystemClock.Instance;
 
     public static async Task Main()
     {
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+            .Build();
+
+        _connectionString = configuration["ConnectionString"];
+
         DapperNodaTimeSetup.Register();
         await FindBadBudgets();
     }

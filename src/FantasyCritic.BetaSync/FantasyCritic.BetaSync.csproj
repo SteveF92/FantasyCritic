@@ -12,20 +12,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.AWS\FantasyCritic.AWS.csproj" />
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="App.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

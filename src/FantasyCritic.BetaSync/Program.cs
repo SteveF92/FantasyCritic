@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Dapper;
 using Dapper.NodaTime;
@@ -18,6 +19,7 @@ using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace FantasyCritic.BetaSync;
@@ -28,6 +30,8 @@ public static class Program
     private static string _betaBucket = null!;
     private static string _productionReadOnlyConnectionString = null!;
     private static string _betaConnectionString = null!;
+    private static string _productionRDSName = null!;
+    private static string _betaRDSName = null!;
     private static readonly IClock _clock = SystemClock.Instance;
 
     static async Task Main(string[] args)
@@ -36,10 +40,20 @@ public static class Program
             .WriteTo.Console()
             .CreateLogger();
 
-        _awsRegion = ConfigurationManager.AppSettings["awsRegion"]!;
-        _betaBucket = ConfigurationManager.AppSettings["betaBucket"]!;
-        _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"]!;
-        _betaConnectionString = ConfigurationManager.AppSettings["betaConnectionString"]!;
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+            .Build();
+
+        _awsRegion = configuration["awsRegion"];
+        _betaBucket = configuration["betaBucket"];
+        _productionReadOnlyConnectionString = configuration["productionConnectionString"];
+        _betaConnectionString = configuration["betaConnectionString"];
+        _productionRDSName = configuration["productionRDSName"];
+        _betaRDSName = configuration["betaRDSName"];
+
+        DapperNodaTimeSetup.Register();
 
         await RefreshAndCleanDatabase();
         //await UpdateMasterGames();
@@ -47,12 +61,7 @@ public static class Program
 
     private static async Task RefreshAndCleanDatabase()
     {
-        var productionRDSName = ConfigurationManager.AppSettings["productionRDSName"]!;
-        var betaRDSName = ConfigurationManager.AppSettings["betaRDSName"]!;
-
-        DapperNodaTimeSetup.Register();
-
-        RDSRefresher rdsRefresher = new RDSRefresher(productionRDSName, betaRDSName);
+        RDSRefresher rdsRefresher = new RDSRefresher(_productionRDSName, _betaRDSName);
         await rdsRefresher.CopySourceToDestination();
         RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(_betaConnectionString, _clock);
         MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
@@ -66,13 +75,6 @@ public static class Program
 
     private static async Task UpdateMasterGames()
     {
-        _awsRegion = ConfigurationManager.AppSettings["awsRegion"]!;
-        _betaBucket = ConfigurationManager.AppSettings["betaBucket"]!;
-        _productionReadOnlyConnectionString = ConfigurationManager.AppSettings["productionConnectionString"]!;
-        _betaConnectionString = ConfigurationManager.AppSettings["betaConnectionString"]!;
-
-        DapperNodaTimeSetup.Register();
-
         RepositoryConfiguration productionRepoConfig = new RepositoryConfiguration(_productionReadOnlyConnectionString, _clock);
         RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(_betaConnectionString, _clock);
         MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(productionRepoConfig);
