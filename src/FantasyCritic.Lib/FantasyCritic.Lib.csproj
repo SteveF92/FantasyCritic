@@ -44,11 +44,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.31.1" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.34.0" />
     <PackageReference Include="FuzzyString.NETStandard" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NodaTime" Version="3.1.0" />
+    <PackageReference Include="NodaTime" Version="3.1.2" />
     <PackageReference Include="CsvHelper" Version="28.0.1" />
     <PackageReference Include="Patreon.Net" Version="1.0.1" />
 	<PackageReference Include="RazorLight" Version="2.1.0" />
