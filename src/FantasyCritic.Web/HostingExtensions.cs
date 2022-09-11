@@ -18,6 +18,7 @@ using FantasyCritic.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -218,9 +219,10 @@ public static class HostingExtensions
                 });
         }
 
-        var keysFolder = Path.Combine(rootFolder, "Keys");
+        services.AddSingleton<IXmlRepository, MySQLXmlRepository>();
+        var serviceProvider = services.BuildServiceProvider();
         services.AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo(keysFolder));
+            .AddKeyManagementOptions(options => options.XmlRepository = serviceProvider.GetService<IXmlRepository>());
 
         services.AddHsts(options =>
         {
