@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Identity;
+
 namespace FantasyCritic.MySQL.Entities;
 
 internal class MasterGameYearEntity
@@ -81,7 +83,7 @@ internal class MasterGameYearEntity
     public DateTime AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
-    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, int year, IEnumerable<MasterGameTag> tags)
+    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, int year, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
     {
         LocalDate? releaseDate = null;
         if (ReleaseDate.HasValue)
@@ -122,7 +124,7 @@ internal class MasterGameYearEntity
         var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
         var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
-            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, AddedByUserID,
+            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, addedByUser,
             subGames, tags);
 
         return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,

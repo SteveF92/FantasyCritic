@@ -35,7 +35,7 @@ public class EditMasterGameRequest
         var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
             EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.RawCriticScore, existingMasterGame.HasAnyReviews, Notes, existingMasterGame.BoxartFileName,
             existingMasterGame.GGCoverArtFileName, existingMasterGame.FirstCriticScoreTimestamp, DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention,
-            timestamp, existingMasterGame.AddedByUserID, existingMasterGame.SubGames, tags);
+            timestamp, existingMasterGame.AddedByUser, existingMasterGame.SubGames, tags);
         return masterGame;
     }
 }

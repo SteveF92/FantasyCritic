@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using FantasyCritic.Lib.Identity;
 
 [assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]
 namespace FantasyCritic.MySQL.Entities;
@@ -34,7 +35,7 @@ internal class MasterGameEntity
         DelayContention = masterGame.DelayContention;
         EligibilityChanged = masterGame.EligibilityChanged;
         AddedTimestamp = masterGame.AddedTimestamp;
-        AddedByUserID = masterGame.AddedByUserID;
+        AddedByUserID = masterGame.AddedByUser.Id;
     }
 
     public Guid MasterGameID { get; set; }
@@ -61,10 +62,10 @@ internal class MasterGameEntity
     public Instant AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
-    public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
+    public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
-            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, AddedByUserID, subGames, tags);
+            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, addedByUser, subGames, tags);
     }
 }

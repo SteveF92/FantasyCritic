@@ -34,6 +34,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var possibleTags = await GetMasterGameTags();
+        var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
 
         await using var connection = new MySqlConnection(_connectionString);
         var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tbl_mastergame;");
@@ -50,7 +52,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 .Where(x => tagAssociations.Contains(x.Name))
                 .ToList();
 
-            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags);
+            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
             masterGames.Add(domain);
         }
 
@@ -66,6 +68,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var possibleTags = await GetMasterGameTags();
+        var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
 
         await using var connection = new MySqlConnection(_connectionString);
         var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_mastergameyear where Year = @year;", new { year });
@@ -82,7 +86,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 .Where(x => tagAssociations.Contains(x.Name))
                 .ToList();
 
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), year, tags);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), year, tags, userDictionary[entity.AddedByUserID]);
             masterGames.Add(domain);
         }
 

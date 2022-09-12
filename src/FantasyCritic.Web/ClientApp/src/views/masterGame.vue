@@ -43,6 +43,9 @@
               <template #cell(timestamp)="data">
                 {{ data.item.timestamp | longDate }}
               </template>
+              <template #cell(changedByUser)="data">
+                {{ data.item.changedByUser.displayName }}
+              </template>
             </b-table>
           </div>
 
@@ -116,10 +119,11 @@ export default {
       masterGameYears: [],
       changeLog: [],
       error: '',
-      changeLogFields: [
+      baseChangeLogFields: [
         { key: 'timestamp', label: 'Date of Change', thClass: 'bg-primary' },
         { key: 'description', label: 'Description', thClass: 'bg-primary' }
-      ]
+      ],
+      factCheckerChangeLogFields: [{ key: 'changedByUser', label: 'Changed by', thClass: 'bg-primary' }]
     };
   },
   computed: {
@@ -129,8 +133,12 @@ export default {
     ggLink() {
       return this.getGGLinkForGame(this.masterGame);
     },
-    isAdmin() {
-      return this.$store.getters.isAdmin;
+    changeLogFields() {
+      if (this.isFactChecker) {
+        return this.baseChangeLogFields.concat(this.factCheckerChangeLogFields);
+      }
+
+      return this.baseChangeLogFields;
     },
     reversedMasterGameYears() {
       let tempMasterGameYears = _.cloneDeep(this.masterGameYears);
