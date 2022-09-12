@@ -18,12 +18,12 @@
 
         <h2>Data Actions</h2>
         <div>
-          <b-button variant="info" @click="takePostAction('FullDataRefresh')">Full Refresh</b-button>
-          <b-button variant="info" @click="takePostAction('RefreshCriticInfo')">Refresh Critic Scores</b-button>
-          <b-button variant="info" @click="takePostAction('RefreshGGInfo')">Refresh GG Info</b-button>
-          <b-button variant="info" @click="takePostAction('UpdateFantasyPoints')">Update Fantasy Points</b-button>
-          <b-button variant="info" @click="takePostAction('RefreshCaches')">Refresh Caches</b-button>
-          <b-button variant="info" @click="takePostAction('RefreshPatreonInfo')">Refresh Patreon</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'FullDataRefresh')">Full Refresh</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCriticInfo')">Refresh Critic Scores</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshGGInfo')">Refresh GG Info</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'UpdateFantasyPoints')">Update Fantasy Points</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Refresh Caches</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
         </div>
       </div>
 
@@ -32,24 +32,24 @@
         <div>
           <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
           <b-button variant="info" href="/api/Admin/ComparableActionProcessingDryRun">Comparable Action Processing Dry Run</b-button>
-          <b-button variant="warning" @click="takePostAction('TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
-          <b-button variant="info" @click="takePostAction('TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
-          <b-button variant="danger" @click="takePostAction('ProcessActions')">Process Actions</b-button>
-          <b-button variant="danger" @click="takePostAction('ProcessSpecialAuctions')">Process Special Auctions</b-button>
+          <b-button variant="warning" @click="takePostAction('Admin', 'TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
+          <b-button variant="info" @click="takePostAction('Admin', 'TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
+          <b-button variant="danger" @click="takePostAction('Admin', 'ProcessActions')">Process Actions</b-button>
+          <b-button variant="danger" @click="takePostAction('Admin', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
         </div>
 
         <h2>Other</h2>
         <div>
           <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
-          <b-button variant="danger" @click="takePostAction('SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
-          <b-button variant="danger" @click="takePostAction('MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
+          <b-button variant="danger" @click="takePostAction('Admin', 'SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
+          <b-button variant="danger" @click="takePostAction('Admin', 'MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
           <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
         </div>
 
         <h2>Database</h2>
         <div>
           <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
-          <b-button variant="warning" @click="takePostAction('SnapshotDatabase')">Snapshot Database</b-button>
+          <b-button variant="warning" @click="takePostAction('Admin', 'SnapshotDatabase')">Snapshot Database</b-button>
         </div>
       </div>
     </div>
@@ -91,12 +91,12 @@ export default {
     };
   },
   methods: {
-    async takePostAction(endPoint) {
+    async takePostAction(controller, endPoint) {
       this.lastJobFailed = false;
       this.jobAttempted = endPoint;
       this.isBusy = true;
       try {
-        await axios.post(`/api/admin/${endPoint}`);
+        await axios.post(`/api/${controller}/${endPoint}`);
       } catch (error) {
         this.errorInfo = error;
         this.errorResponse = error.response;
@@ -112,7 +112,7 @@ export default {
 
       this.showGrantSuperDrops = false;
       this.superDropConfirmation = null;
-      await this.takePostAction('GrantSuperDrops');
+      await this.takePostAction('Admin', 'GrantSuperDrops');
     },
     getRecentDatabaseSnapshots() {
       this.isBusy = true;

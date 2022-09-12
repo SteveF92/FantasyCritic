@@ -181,7 +181,7 @@ export default {
       };
 
       try {
-        const response = await axios.post('/api/admin/CreateMasterGame', request);
+        const response = await axios.post('/api/factChecker/CreateMasterGame', request);
         this.createdGame = response.data;
         window.scroll({
           top: 0,
@@ -197,7 +197,7 @@ export default {
         if (this.releaseDate || !this.estimatedReleaseDate) {
           return;
         }
-        const response = await axios.get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.estimatedReleaseDate);
+        const response = await axios.get('/api/factChecker/ParseEstimatedDate?estimatedReleaseDate=' + this.estimatedReleaseDate);
         this.minimumReleaseDate = response.data.minimumReleaseDate;
         this.maximumReleaseDate = response.data.maximumReleaseDate;
       } catch (error) {
@@ -211,7 +211,7 @@ export default {
       }
 
       try {
-        const response = await axios.get('/api/admin/GetMasterGameRequest?requestID=' + requestID);
+        const response = await axios.get('/api/factChecker/GetMasterGameRequest?requestID=' + requestID);
         this.request = response.data;
         this.gameName = this.request.gameName;
         this.estimatedReleaseDate = this.request.estimatedReleaseDate;

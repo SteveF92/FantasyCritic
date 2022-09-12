@@ -185,7 +185,7 @@ export default {
       }
 
       try {
-        const response = await axios.get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID);
+        const response = await axios.get('/api/factChecker/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID);
         this.changeRequest = response.data;
       } catch (error) {
         this.errorInfo = error;
@@ -196,7 +196,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate);
+        const response = await axios.get('/api/factChecker/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate);
         this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
         this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
       } catch (error) {
@@ -230,7 +230,7 @@ export default {
       request.tags = tagNames;
 
       try {
-        const response = await axios.post('/api/admin/EditMasterGame', request);
+        const response = await axios.post('/api/factChecker/EditMasterGame', request);
         this.responseInfo = response.data;
         window.scroll({
           top: 0,
