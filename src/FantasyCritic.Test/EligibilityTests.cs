@@ -4,6 +4,7 @@ using System.Linq;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using NodaTime;
 using NodaTime.Text;
 using NUnit.Framework;
@@ -41,7 +42,7 @@ public class EligibilityTests
     private static MasterGame CreateBasicMasterGame(string name, LocalDate releaseDate, MasterGameTag tag)
     {
         return new MasterGame(Guid.NewGuid(), name, releaseDate.ToISOString(), releaseDate, releaseDate, null, null, null,
-            releaseDate, null, null, null, false, "", null, null, null, false, false, false, false, Instant.MinValue, Guid.Empty, 
+            releaseDate, null, null, null, false, "", null, null, null, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }, 
             new List<MasterSubGame>(), new List<MasterGameTag>() { tag });
     }
 
@@ -50,7 +51,7 @@ public class EligibilityTests
     {
         return new MasterGame(Guid.NewGuid(), name, "TBA", minimumReleaseDate, maximumReleaseDate,
             earlyAccessReleaseDate, internationalReleaseDate, announcementDate, null, null, null, null, false, "", null, null, null, false, false, false, false,
-            Instant.MinValue, Guid.Empty, new List<MasterSubGame>(), tags);
+            Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }, new List<MasterSubGame>(), tags);
     }
 
     [Test]
