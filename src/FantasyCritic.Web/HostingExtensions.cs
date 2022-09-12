@@ -154,6 +154,13 @@ public static class HostingExtensions
                 policy.RequireRole("Admin");
             });
 
+            options.AddPolicy("FactChecker", policy =>
+            {
+                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("FactChecker");
+            });
+
             options.AddPolicy("Write", policy =>
             {
                 policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
