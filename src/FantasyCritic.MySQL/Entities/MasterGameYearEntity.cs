@@ -45,6 +45,7 @@ internal class MasterGameYearEntity
         PeakHypeFactor = masterGameStats.PeakHypeFactor;
         LinearRegressionHypeFactor = masterGameStats.LinearRegressionHypeFactor;
         AddedTimestamp = masterGameStats.MasterGame.AddedTimestamp.ToDateTimeUtc();
+        AddedByUserID = masterGameStats.MasterGame.AddedByUser.Id;
     }
 
     public Guid MasterGameID { get; set; }
