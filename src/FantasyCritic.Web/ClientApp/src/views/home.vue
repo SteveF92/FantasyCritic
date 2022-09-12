@@ -28,7 +28,7 @@
             Critics Royale
           </b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
-          <b-button v-show="isAdmin" variant="warning" :to="{ name: 'adminConsole' }" class="main-button">Admin Console</b-button>
+          <b-button v-show="isFactChecker || isAdmin" variant="warning" :to="{ name: 'adminConsole' }" class="main-button">Admin Console</b-button>
         </div>
       </div>
 

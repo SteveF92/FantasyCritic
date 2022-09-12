@@ -8,45 +8,49 @@
       <div v-show="isBusy" class="alert alert-info">Request is processing...</div>
       <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' sucessfully run.</div>
 
-      <h2>Requests</h2>
-      <div>
-        <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
-        <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
-        <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
+      <div v-if="isFactChecker">
+        <h2>Requests</h2>
+        <div>
+          <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
+          <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
+          <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
+        </div>
+
+        <h2>Data Actions</h2>
+        <div>
+          <b-button variant="info" @click="takePostAction('FullDataRefresh')">Full Refresh</b-button>
+          <b-button variant="info" @click="takePostAction('RefreshCriticInfo')">Refresh Critic Scores</b-button>
+          <b-button variant="info" @click="takePostAction('RefreshGGInfo')">Refresh GG Info</b-button>
+          <b-button variant="info" @click="takePostAction('UpdateFantasyPoints')">Update Fantasy Points</b-button>
+          <b-button variant="info" @click="takePostAction('RefreshCaches')">Refresh Caches</b-button>
+          <b-button variant="info" @click="takePostAction('RefreshPatreonInfo')">Refresh Patreon</b-button>
+        </div>
       </div>
 
-      <h2>Data Actions</h2>
-      <div>
-        <b-button variant="info" @click="takePostAction('FullDataRefresh')">Full Refresh</b-button>
-        <b-button variant="info" @click="takePostAction('RefreshCriticInfo')">Refresh Critic Scores</b-button>
-        <b-button variant="info" @click="takePostAction('RefreshGGInfo')">Refresh GG Info</b-button>
-        <b-button variant="info" @click="takePostAction('UpdateFantasyPoints')">Update Fantasy Points</b-button>
-        <b-button variant="info" @click="takePostAction('RefreshCaches')">Refresh Caches</b-button>
-        <b-button variant="info" @click="takePostAction('RefreshPatreonInfo')">Refresh Patreon</b-button>
-      </div>
+      <div v-if="isAdmin">
+        <h2>Bids</h2>
+        <div>
+          <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
+          <b-button variant="info" href="/api/Admin/ComparableActionProcessingDryRun">Comparable Action Processing Dry Run</b-button>
+          <b-button variant="warning" @click="takePostAction('TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
+          <b-button variant="info" @click="takePostAction('TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
+          <b-button variant="danger" @click="takePostAction('ProcessActions')">Process Actions</b-button>
+          <b-button variant="danger" @click="takePostAction('ProcessSpecialAuctions')">Process Special Auctions</b-button>
+        </div>
 
-      <h2>Bids</h2>
-      <div>
-        <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
-        <b-button variant="info" href="/api/Admin/ComparableActionProcessingDryRun">Comparable Action Processing Dry Run</b-button>
-        <b-button variant="warning" @click="takePostAction('TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
-        <b-button variant="info" @click="takePostAction('TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
-        <b-button variant="danger" @click="takePostAction('ProcessActions')">Process Actions</b-button>
-        <b-button variant="danger" @click="takePostAction('ProcessSpecialAuctions')">Process Special Auctions</b-button>
-      </div>
+        <h2>Other</h2>
+        <div>
+          <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
+          <b-button variant="danger" @click="takePostAction('SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
+          <b-button variant="danger" @click="takePostAction('MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
+          <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
+        </div>
 
-      <h2>Other</h2>
-      <div>
-        <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
-        <b-button variant="danger" @click="takePostAction('SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
-        <b-button variant="danger" @click="takePostAction('MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
-        <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
-      </div>
-
-      <h2>Database</h2>
-      <div>
-        <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
-        <b-button variant="warning" @click="takePostAction('SnapshotDatabase')">Snapshot Database</b-button>
+        <h2>Database</h2>
+        <div>
+          <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
+          <b-button variant="warning" @click="takePostAction('SnapshotDatabase')">Snapshot Database</b-button>
+        </div>
       </div>
     </div>
 
