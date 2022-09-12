@@ -127,14 +127,12 @@
 
 <script>
 import axios from 'axios';
-import BasicMixin from '@/mixins/basicMixin';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm';
 
 export default {
   components: {
     CreateRoyalePublisherForm
   },
-  mixins: [BasicMixin],
   props: {
     year: { type: Number, default: null },
     quarter: { type: Number, default: null }

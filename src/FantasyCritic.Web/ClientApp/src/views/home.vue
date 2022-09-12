@@ -107,7 +107,6 @@
 import axios from 'axios';
 import _ from 'lodash';
 
-import BasicMixin from '@/mixins/basicMixin';
 import Tweets from '@/components/tweets';
 import LeagueTable from '@/components/leagueTable';
 import GameNews from '@/components/gameNews';
@@ -118,7 +117,6 @@ export default {
     LeagueTable,
     GameNews
   },
-  mixins: [BasicMixin],
   data() {
     return {
       errorInfo: '',

@@ -17,6 +17,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import vueAwesomeCountdown from 'vue-awesome-countdown';
 
+import BasicMixin from './mixins/basicMixin';
+
 import './registerServiceWorker';
 
 VueClipboard.config.autoSetContainer = true;
@@ -27,6 +29,8 @@ Vue.use(vueAwesomeCountdown, 'vac');
 //Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
+
+Vue.mixin(BasicMixin);
 
 extend('required', {
   ...rules.required

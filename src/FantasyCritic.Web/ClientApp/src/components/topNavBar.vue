@@ -98,15 +98,6 @@
     </b-collapse>
   </b-navbar>
 </template>
-
-<script>
-import BasicMixin from '@/mixins/basicMixin';
-
-export default {
-  mixins: [BasicMixin]
-};
-</script>
-
 <style scoped>
 .main-nav {
   padding-top: 0;

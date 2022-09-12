@@ -1,7 +1,4 @@
-import BasicMixin from '@/mixins/basicMixin';
-
 let publisherMixin = {
-  mixins: [BasicMixin],
   computed: {
     moveMode() {
       return this.$store.getters.moveMode;

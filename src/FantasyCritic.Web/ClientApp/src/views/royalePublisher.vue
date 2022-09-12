@@ -123,7 +123,6 @@ import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePub
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal';
 
 import GlobalFunctions from '@/globalFunctions';
-import BasicMixin from '@/mixins/basicMixin';
 
 export default {
   components: {
@@ -134,7 +133,6 @@ export default {
     SellRoyaleGameModal,
     RoyaleChangePublisherSloganForm
   },
-  mixins: [BasicMixin],
   props: {
     publisherid: { type: String, required: true }
   },
