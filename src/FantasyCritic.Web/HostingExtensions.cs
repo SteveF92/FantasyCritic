@@ -3,6 +3,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -113,10 +114,10 @@ public static class HostingExtensions
         {
             client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
             client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCriticAPIKey);
-            //if (!environment.IsDevelopment())
-            //{
-            //    client.DefaultRequestHeaders.Add("X-RapidAPI-Host", baseAddress);
-            //}
+            if (!environment.IsDevelopment())
+            {
+                client.DefaultRequestHeaders.Add("X-RapidAPI-Host", baseAddress.TrimStart("https://"));
+            }
         });
         services.AddHttpClient<IGGService, GGService>(client =>
         {
