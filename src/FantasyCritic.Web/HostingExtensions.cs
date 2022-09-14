@@ -3,7 +3,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
