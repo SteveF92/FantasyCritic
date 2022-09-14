@@ -50,27 +50,34 @@
       <h1>Games</h1>
       <b-table v-if="publisher.publisherGames.length !== 0" striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(masterGame.gameName)="data">
-          <span class="master-game-popover">
-            <masterGamePopover :master-game="data.item.masterGame" :currently-ineligible="data.item.currentlyIneligible"></masterGamePopover>
-          </span>
+          <template v-if="data.item.masterGame">
+            <span class="master-game-popover">
+              <masterGamePopover :master-game="data.item.masterGame" :currently-ineligible="data.item.currentlyIneligible"></masterGamePopover>
+            </span>
 
-          <span v-if="data.item.currentlyIneligible" class="game-ineligible">
-            Ineligible
-            <font-awesome-icon v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="info-circle" />
-          </span>
+            <span v-if="data.item.currentlyIneligible" class="game-ineligible">
+              Ineligible
+              <font-awesome-icon v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="info-circle" />
+            </span>
+          </template>
+          <span v-else class="hidden-text">Hidden Until Release</span>
         </template>
         <template #cell(masterGame.maximumReleaseDate)="data">
-          {{ getReleaseDate(data.item.masterGame) }}
+          <template v-if="data.item.masterGame">{{ getReleaseDate(data.item.masterGame) }}</template>
+          <template v-else>--</template>
         </template>
         <template #cell(amountSpent)="data">
-          {{ data.item.amountSpent | money }}
+          <template v-if="data.item.masterGame">{{ data.item.amountSpent | money }}</template>
+          <template v-else>--</template>
         </template>
         <template #cell(advertisingMoney)="data">
           {{ data.item.advertisingMoney | money }}
           <b-button v-if="userIsPublisher && !data.item.locked" variant="info" size="sm" @click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template #cell(masterGame.criticScore)="data">
-          {{ data.item.masterGame.criticScore | score(2) }}
+          <template v-if="data.item.masterGame">
+            {{ data.item.masterGame.criticScore | score(2) }}
+          </template>
         </template>
         <template #cell(fantasyPoints)="data">
           {{ data.item.fantasyPoints | score(2) }}
@@ -343,5 +350,9 @@ export default {
 
 .quarter-winner-crown {
   color: #d6993a;
+}
+
+.hidden-text {
+  font-style: italic;
 }
 </style>
