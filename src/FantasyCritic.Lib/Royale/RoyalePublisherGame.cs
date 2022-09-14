@@ -32,7 +32,17 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return false;
         }
 
-        return !MasterGame.MasterGame.IsReleased(currentDate);
+        if (MasterGame.MasterGame.CriticScore.HasValue)
+        {
+            return false;
+        }
+
+        if (MasterGame.MasterGame.IsReleased(currentDate))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public bool CalculateIsCurrentlyIneligible(IEnumerable<MasterGameTag> allMasterGameTags)
