@@ -83,6 +83,7 @@ public class AdminService
 
         var currentDate = _clock.GetToday();
         var masterGamesToUpdate = masterGames.Where(x => x.OpenCriticID.HasValue && !x.DoNotRefreshAnything).ToList();
+        int gamesFetched = 0;
         foreach (var masterGame in masterGamesToUpdate)
         {
             if (masterGame.IsReleased(currentDate) && masterGame.ReleaseDate.HasValue)
@@ -99,6 +100,11 @@ public class AdminService
             if (openCriticGame is not null)
             {
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
+                gamesFetched++;
+                if (gamesFetched % 100 == 0)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
             }
             else
             {
@@ -113,7 +119,6 @@ public class AdminService
                 }
 
                 var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value);
-
                 if (subGameOpenCriticGame is not null)
                 {
                     await _interLeagueService.UpdateCriticStats(subGame, subGameOpenCriticGame);
