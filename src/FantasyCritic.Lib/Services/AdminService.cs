@@ -96,6 +96,11 @@ public class AdminService
                 }
             }
 
+            if (masterGame.OpenCriticID!.Value != 12090)
+            {
+                continue;
+            }
+
             var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID!.Value);
             if (openCriticGame is not null)
             {

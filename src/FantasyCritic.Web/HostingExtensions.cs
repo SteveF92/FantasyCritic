@@ -113,10 +113,10 @@ public static class HostingExtensions
         {
             client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
             client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCriticAPIKey);
-            if (!environment.IsDevelopment())
-            {
-                client.DefaultRequestHeaders.Add("X-RapidAPI-Host", baseAddress);
-            }
+            //if (!environment.IsDevelopment())
+            //{
+            //    client.DefaultRequestHeaders.Add("X-RapidAPI-Host", baseAddress);
+            //}
         });
         services.AddHttpClient<IGGService, GGService>(client =>
         {
