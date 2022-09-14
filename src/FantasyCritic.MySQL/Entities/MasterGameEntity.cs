@@ -38,6 +38,12 @@ internal class MasterGameEntity
         AddedByUserID = masterGame.AddedByUser.Id;
     }
 
+    public MasterGameEntity(MasterGame masterGame, Guid addedByUserIDOverride)
+    : this (masterGame)
+    {
+        AddedByUserID = addedByUserIDOverride;
+    }
+
     public Guid MasterGameID { get; set; }
     public string GameName { get; set; } = null!;
     public string EstimatedReleaseDate { get; set; } = null!;

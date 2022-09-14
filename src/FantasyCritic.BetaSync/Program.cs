@@ -33,6 +33,8 @@ public static class Program
     private static string _localConnectionString = null!;
     private static string _productionRDSName = null!;
     private static string _betaRDSName = null!;
+    private static Guid _addedByUserIDOverride;
+
     private static readonly IClock _clock = SystemClock.Instance;
 
     static async Task Main(string[] args)
@@ -54,6 +56,7 @@ public static class Program
         _localConnectionString = configuration["localConnectionString"];
         _productionRDSName = configuration["productionRDSName"];
         _betaRDSName = configuration["betaRDSName"];
+        _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]);
 
         DapperNodaTimeSetup.Register();
 
@@ -108,7 +111,7 @@ public static class Program
         var localMasterGames = await localMasterGameRepo.GetMasterGames();
         IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
         await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, localMasterGameTags,
-            localMasterGames, productionGamesHaveTagEntities);
+            localMasterGames, productionGamesHaveTagEntities, _addedByUserIDOverride);
         await localAdminService.RefreshCaches();
     }
 
@@ -122,10 +125,10 @@ public static class Program
     private static AdminService GetAdminService()
     {
         FantasyCriticUserManager userManager = null!;
-        RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(_betaConnectionString, _clock);
-        IFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
-        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(betaRepoConfig, betaUserStore);
-        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(betaRepoConfig, betaUserStore, masterGameRepo);
+        RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(_localConnectionString, _clock);
+        IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
+        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
+        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo, _clock);
         GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, leagueMemberService, _clock);
