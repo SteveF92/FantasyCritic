@@ -30,6 +30,7 @@ public static class Program
     private static string _betaBucket = null!;
     private static string _productionReadOnlyConnectionString = null!;
     private static string _betaConnectionString = null!;
+    private static string _localConnectionString = null!;
     private static string _productionRDSName = null!;
     private static string _betaRDSName = null!;
     private static readonly IClock _clock = SystemClock.Instance;
@@ -50,13 +51,29 @@ public static class Program
         _betaBucket = configuration["betaBucket"];
         _productionReadOnlyConnectionString = configuration["productionConnectionString"];
         _betaConnectionString = configuration["betaConnectionString"];
+        _localConnectionString = configuration["localConnectionString"];
         _productionRDSName = configuration["productionRDSName"];
         _betaRDSName = configuration["betaRDSName"];
 
         DapperNodaTimeSetup.Register();
 
-        await RefreshAndCleanDatabase();
-        //await UpdateMasterGames();
+        Console.WriteLine("Select a mode:");
+        Console.WriteLine("1) Update Beta with new Production Snapshot");
+        Console.WriteLine("2) Update Local Master Games");
+        string? selection = Console.ReadLine();
+
+        switch (selection)
+        {
+            case "1":
+                await RefreshAndCleanDatabase();
+                break;
+            case "2":
+                await UpdateMasterGames();
+                break;
+            default:
+                throw new Exception("Invalid Selection.");
+        }
+
     }
 
     private static async Task RefreshAndCleanDatabase()
@@ -76,23 +93,23 @@ public static class Program
     private static async Task UpdateMasterGames()
     {
         RepositoryConfiguration productionRepoConfig = new RepositoryConfiguration(_productionReadOnlyConnectionString, _clock);
-        RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(_betaConnectionString, _clock);
+        RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(_localConnectionString, _clock);
         MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(productionRepoConfig);
-        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
+        MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         MySQLMasterGameRepo productionMasterGameRepo = new MySQLMasterGameRepo(productionRepoConfig, productionUserStore);
-        MySQLMasterGameRepo betaMasterGameRepo = new MySQLMasterGameRepo(betaRepoConfig, betaUserStore);
-        MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_betaConnectionString);
-        AdminService betaAdminService = GetAdminService();
+        MySQLMasterGameRepo localMasterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
+        MySQLBetaCleaner cleaner = new MySQLBetaCleaner(_localConnectionString);
+        AdminService localAdminService = GetAdminService();
 
         Log.Information("Getting master games from production");
         var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
         var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
-        var betaMasterGameTags = await betaMasterGameRepo.GetMasterGameTags();
-        var betaMasterGames = await betaMasterGameRepo.GetMasterGames();
+        var localMasterGameTags = await localMasterGameRepo.GetMasterGameTags();
+        var localMasterGames = await localMasterGameRepo.GetMasterGames();
         IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
-        await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, betaMasterGameTags,
-            betaMasterGames, productionGamesHaveTagEntities);
-        await betaAdminService.RefreshCaches();
+        await cleaner.UpdateMasterGames(productionMasterGameTags, productionMasterGames, localMasterGameTags,
+            localMasterGames, productionGamesHaveTagEntities);
+        await localAdminService.RefreshCaches();
     }
 
     private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
