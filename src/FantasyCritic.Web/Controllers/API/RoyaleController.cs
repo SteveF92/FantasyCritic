@@ -177,7 +177,7 @@ public class RoyaleController : FantasyCriticController
         IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
         var currentDate = _clock.GetToday();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags);
+        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, true);
         return Ok(viewModel);
     }
 
@@ -194,7 +194,14 @@ public class RoyaleController : FantasyCriticController
         IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
         var currentDate = _clock.GetToday();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags);
+        bool thisPlayerIsViewing = false;
+        var currentUserResult = await GetCurrentUser();
+        if (currentUserResult.IsSuccess)
+        {
+            thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.Id;
+        }
+
+        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, thisPlayerIsViewing);
         return Ok(viewModel);
     }
 
@@ -208,6 +215,7 @@ public class RoyaleController : FantasyCriticController
         List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
         IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
+        var currentUserResult = await GetCurrentUser();
         foreach (var publisher in publishersToShow)
         {
             int? thisRanking = null;
@@ -222,8 +230,14 @@ public class RoyaleController : FantasyCriticController
                 winningQuarters = new List<RoyaleYearQuarter>();
             }
 
+            bool thisPlayerIsViewing = false;
+            if (currentUserResult.IsSuccess)
+            {
+                thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.Id;
+            }
+
             var currentDate = _clock.GetToday();
-            var vm = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, masterGameTags);
+            var vm = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, masterGameTags, thisPlayerIsViewing);
             viewModels.Add(vm);
         }
 

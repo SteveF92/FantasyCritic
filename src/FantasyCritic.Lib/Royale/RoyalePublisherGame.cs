@@ -25,6 +25,16 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     public decimal AdvertisingMoney { get; }
     public decimal? FantasyPoints { get; }
 
+    public bool IsHidden(LocalDate currentDate)
+    {
+        if (!YearQuarter.HideUnreleasedGames)
+        {
+            return false;
+        }
+
+        return !MasterGame.MasterGame.IsReleased(currentDate);
+    }
+
     public bool CalculateIsCurrentlyIneligible(IEnumerable<MasterGameTag> allMasterGameTags)
     {
         var royaleTags = LeagueTagExtensions.GetRoyaleEligibilitySettings(allMasterGameTags);
