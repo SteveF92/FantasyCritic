@@ -25,9 +25,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Net.Http.Headers;
 using Serilog;
 using NodaTime.Serialization.JsonNet;
+using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
@@ -44,6 +44,7 @@ public static class HostingExtensions
         var rdsInstanceName = configuration.AssertConfigValue("AWS:rdsInstanceName");
         var awsBucket = configuration.AssertConfigValue("AWS:bucket");
         var mailgunAPIKey = configuration.AssertConfigValue("Mailgun:apiKey");
+        var openCriticAPIKey = configuration.AssertConfigValue("OpenCritic:apiKey");
         var baseAddress = configuration.AssertConfigValue("BaseAddress");
 
         var rootFolder = configuration.AssertConfigValue("LinuxRootFolder");
@@ -110,7 +111,12 @@ public static class HostingExtensions
 
         services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
         {
-            client.BaseAddress = new Uri("https://api.opencritic.com/api/");
+            client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
+            client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCriticAPIKey);
+            if (!environment.IsDevelopment())
+            {
+                client.DefaultRequestHeaders.Add("X-RapidAPI-Host", baseAddress);
+            }
         });
         services.AddHttpClient<IGGService, GGService>(client =>
         {
