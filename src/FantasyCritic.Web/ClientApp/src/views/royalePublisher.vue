@@ -59,6 +59,11 @@
               Ineligible
               <font-awesome-icon v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="info-circle" />
             </span>
+
+            <span v-if="data.item.gameHidden" class="game-ineligible">
+              Hidden
+              <font-awesome-icon v-b-popover.hover.focus="hiddenText" color="white" size="lg" icon="eye-slash" />
+            </span>
           </template>
           <span v-else class="hidden-text">Hidden Until Release</span>
         </template>
@@ -183,6 +188,17 @@ export default {
             "This game's status has changed since you purchased it, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count. <br/> <br/>" +
             'You can drop the game for a full refund.'
           );
+        }
+      };
+    },
+    hiddenText() {
+      return {
+        html: true,
+        title: () => {
+          return 'What does this mean?';
+        },
+        content: () => {
+          return 'This game is hidden from other players. See the Royale home page for more details.';
         }
       };
     },
