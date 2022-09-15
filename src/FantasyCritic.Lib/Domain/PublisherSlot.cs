@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Services;
@@ -39,7 +40,7 @@ public class PublisherSlot
             return new List<ClaimError>();
         }
 
-        return SlotEligibilityService.GetClaimErrorsForSlot(this, eligibilityFactors);
+        return SlotEligibilityFunctions.GetClaimErrorsForSlot(this, eligibilityFactors);
     }
 
     public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues,

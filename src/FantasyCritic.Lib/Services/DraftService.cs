@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
@@ -142,7 +143,7 @@ public class DraftService
                 foreach (var slot in openSlots)
                 {
                     var eligibilityFactors = updatedLeagueYear.GetEligibilityFactorsForMasterGame(availableGame.MasterGame.MasterGame, today);
-                    var claimErrors = SlotEligibilityService.GetClaimErrorsForSlot(slot, eligibilityFactors);
+                    var claimErrors = SlotEligibilityFunctions.GetClaimErrorsForSlot(slot, eligibilityFactors);
                     if (!claimErrors.Any())
                     {
                         availableGamesEligibleInRemainingSlots.Add(availableGame);

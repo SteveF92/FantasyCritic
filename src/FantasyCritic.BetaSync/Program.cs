@@ -131,8 +131,7 @@ public static class Program
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo, _clock);
-        GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, leagueMemberService, _clock);
-        ActionProcessingService actionProcessingService = new ActionProcessingService(gameAcquisitionService);
+        ActionProcessingService actionProcessingService = new ActionProcessingService();
         FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, fantasyCriticRepo, _clock);
         IOpenCriticService openCriticService = null!;
         IGGService ggService = null!;

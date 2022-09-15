@@ -1,8 +1,8 @@
 using FantasyCritic.Lib.Domain.Results;
 
-namespace FantasyCritic.Lib.Services;
+namespace FantasyCritic.Lib.BusinessLogicFunctions;
 
-public static class SlotEligibilityService
+public static class SlotEligibilityFunctions
 {
     public static bool GameIsEligibleInLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
     {

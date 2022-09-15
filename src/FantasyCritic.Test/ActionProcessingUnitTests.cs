@@ -20,7 +20,7 @@ public class ActionProcessingUnitTests
         IClock fakeClock = new FakeClock(InstantPattern.ExtendedIso.Parse("2022-06-19 00:03:02.969549").GetValueOrThrow());
 
         GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, fakeClock);
-        ActionProcessingService actionProcessingService = new ActionProcessingService(gameAcquisitionService);
+        ActionProcessingService actionProcessingService = new ActionProcessingService();
 
     }
 }

@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
@@ -76,7 +77,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public bool GameIsEligibleInAnySlot(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
     {
         var eligibilityFactors = GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
-        return SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
+        return SlotEligibilityFunctions.GameIsEligibleInLeagueYear(eligibilityFactors);
     }
 
     private bool? GetOverriddenEligibility(MasterGame masterGame)

@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
@@ -226,7 +227,7 @@ public class Trade
             var existingPublisherGame = proposerGameDictionary[game];
             var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlotNumbers = allOpenCounterPartySlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-            var slotResult = SlotEligibilityService.GetTradeSlotResult(CounterParty, LeagueYear.Options, game, eligibilityFactors, openSlotNumbers);
+            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(CounterParty, LeagueYear.Options, game, eligibilityFactors, openSlotNumbers);
             if (!slotResult.HasValue)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
@@ -242,7 +243,7 @@ public class Trade
             var existingPublisherGame = counterPartyGameDictionary[game];
             var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlotNumbers = allOpenProposerSlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-            var slotResult = SlotEligibilityService.GetTradeSlotResult(Proposer, LeagueYear.Options, game, eligibilityFactors, openSlotNumbers);
+            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(Proposer, LeagueYear.Options, game, eligibilityFactors, openSlotNumbers);
             if (!slotResult.HasValue)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");

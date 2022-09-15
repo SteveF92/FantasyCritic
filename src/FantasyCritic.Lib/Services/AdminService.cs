@@ -310,7 +310,9 @@ public class AdminService
         var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        FinalizedActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, masterGameYearDictionary);
+        var currentDate = _clock.GetToday();
+
+        FinalizedActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, currentDate, masterGameYearDictionary);
         return results;
     }
 
@@ -339,7 +341,9 @@ public class AdminService
         var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        FinalizedActionProcessingResults results = _actionProcessingService.ProcessSpecialAuctions(systemWideValues, specialAuctionSets, processingTime, masterGameYearDictionary);
+        var currentDate = _clock.GetToday();
+
+        FinalizedActionProcessingResults results = _actionProcessingService.ProcessSpecialAuctions(systemWideValues, specialAuctionSets, processingTime, currentDate, masterGameYearDictionary);
         return results;
     }
 
