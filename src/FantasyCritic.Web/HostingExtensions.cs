@@ -99,7 +99,6 @@ public static class HostingExtensions
         services.AddScoped<InterLeagueService>();
         services.AddScoped<DraftService>();
         services.AddScoped<GameSearchingService>();
-        services.AddScoped<ActionProcessingService>();
         services.AddScoped<TradeService>();
         services.AddScoped<FantasyCriticService>();
         services.AddScoped<RoyaleService>();

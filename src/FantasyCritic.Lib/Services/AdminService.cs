@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -28,11 +29,10 @@ public class AdminService
     private readonly PatreonService _patreonService;
     private readonly IClock _clock;
     private readonly AdminServiceConfiguration _configuration;
-    private readonly ActionProcessingService _actionProcessingService;
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration, ActionProcessingService actionProcessingService)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -47,7 +47,6 @@ public class AdminService
         _royaleService = royaleService;
         _hypeFactorService = hypeFactorService;
         _configuration = configuration;
-        _actionProcessingService = actionProcessingService;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -312,7 +311,7 @@ public class AdminService
 
         var currentDate = _clock.GetToday();
 
-        FinalizedActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, currentDate, masterGameYearDictionary);
+        FinalizedActionProcessingResults results = ActionProcessingFunctions.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, currentDate, masterGameYearDictionary);
         return results;
     }
 
@@ -343,7 +342,7 @@ public class AdminService
 
         var currentDate = _clock.GetToday();
 
-        FinalizedActionProcessingResults results = _actionProcessingService.ProcessSpecialAuctions(systemWideValues, specialAuctionSets, processingTime, currentDate, masterGameYearDictionary);
+        FinalizedActionProcessingResults results = ActionProcessingFunctions.ProcessSpecialAuctions(systemWideValues, specialAuctionSets, processingTime, currentDate, masterGameYearDictionary);
         return results;
     }
 

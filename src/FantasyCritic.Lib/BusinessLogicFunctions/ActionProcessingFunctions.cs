@@ -1,14 +1,13 @@
-using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
-namespace FantasyCritic.Lib.Services;
+namespace FantasyCritic.Lib.BusinessLogicFunctions;
 
-public class ActionProcessingService
+public static class ActionProcessingFunctions
 {
-    public FinalizedActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
+    public static FinalizedActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
         IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> publishers, Instant processingTime, LocalDate currentDate,
         IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
@@ -40,7 +39,7 @@ public class ActionProcessingService
         return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults, new List<SpecialAuction>());
     }
 
-    public FinalizedActionProcessingResults ProcessSpecialAuctions(SystemWideValues systemWideValues, IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions,
+    public static FinalizedActionProcessingResults ProcessSpecialAuctions(SystemWideValues systemWideValues, IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions,
         Instant processingTime, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         var flatSpecialAuctions = leagueYearSpecialAuctions.SelectMany(x => x.SpecialAuctionsWithBids.Select(y => y.SpecialAuction)).ToList();
@@ -58,7 +57,7 @@ public class ActionProcessingService
         return new FinalizedActionProcessingResults(processSetID, processingTime, processName, bidResults, flatSpecialAuctions);
     }
 
-    private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, PublisherStateSet publisherStateSet, Instant processingTime, LocalDate currentDate)
+    private static ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, PublisherStateSet publisherStateSet, Instant processingTime, LocalDate currentDate)
     {
         List<FormerPublisherGame> gamesToDelete = new List<FormerPublisherGame>();
         List<LeagueAction> leagueActions = new List<LeagueAction>();
@@ -95,7 +94,7 @@ public class ActionProcessingService
         return dropProcessingResults;
     }
 
-    private ILookup<LeagueYearKey, PublisherGame> GetConditionalDropsThatWillSucceed(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, Instant processingTime, LocalDate currentDate)
+    private static ILookup<LeagueYearKey, PublisherGame> GetConditionalDropsThatWillSucceed(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, Instant processingTime, LocalDate currentDate)
     {
         List<(LeagueYearKey, PublisherGame)> conditionalDropsThatWillSucceed = new List<(LeagueYearKey, PublisherGame)>();
 
@@ -115,7 +114,7 @@ public class ActionProcessingService
         return conditionalDropsThatWillSucceed.ToLookup(x => x.Item1, y => y.Item2);
     }
 
-    private ActionProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
+    private static ActionProcessingResults ProcessPickupsIteration(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
         ActionProcessingResults existingResults, Instant processingTime, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary,
         ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed)
     {
@@ -149,7 +148,7 @@ public class ActionProcessingService
         return newResults;
     }
 
-    private ActionProcessingResults ProcessSpecialAuctionsInternal(SystemWideValues systemWideValues, IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions,
+    private static ActionProcessingResults ProcessSpecialAuctionsInternal(SystemWideValues systemWideValues, IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions,
         Instant processingTime, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         var allPublishers = leagueYearSpecialAuctions.SelectMany(x => x.LeagueYear.Publishers);
@@ -178,7 +177,7 @@ public class ActionProcessingService
         return bidResults;
     }
 
-    private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
+    private static ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
         PublisherStateSet publisherStateSet, SystemWideValues systemWideValues, Instant processingTime, LocalDate currentDate,
         bool specialAuctions, IReadOnlyList<PublisherGame> conditionalDropsThatWillSucceed)
     {
@@ -296,7 +295,7 @@ public class ActionProcessingService
         return processedSet;
     }
 
-    private IReadOnlyList<SucceededPickupBid> GetWinnableBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
+    private static IReadOnlyList<SucceededPickupBid> GetWinnableBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         List<SucceededPickupBid> winnableBids = new List<SucceededPickupBid>();
         var groupedByGame = activeBidsForLeagueYear.GroupBy(x => x.PickupBid.MasterGame);
@@ -309,7 +308,7 @@ public class ActionProcessingService
         return winnableBids;
     }
 
-    private SucceededPickupBid GetWinningBidForGame(MasterGame masterGame, LeagueYear leagueYear, IEnumerable<ValidPickupBid> bidsForGame, SystemWideValues systemWideValues, LocalDate currentDate)
+    private static SucceededPickupBid GetWinningBidForGame(MasterGame masterGame, LeagueYear leagueYear, IEnumerable<ValidPickupBid> bidsForGame, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         if (bidsForGame.Count() == 1)
         {
