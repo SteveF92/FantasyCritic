@@ -13,12 +13,12 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using NodaTime;
 using FantasyCritic.AWS;
-using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.SharedSerialization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 

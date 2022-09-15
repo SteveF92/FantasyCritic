@@ -6,6 +6,7 @@ using System.Linq;
 using CsvHelper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.SharedSerialization;
 
 namespace FantasyCritic.Test.TestData;
@@ -37,6 +38,32 @@ public static class TestDataService
 
     public static IReadOnlyDictionary<Guid, MasterGameYear> GetMasterGameYears()
     {
-        return new Dictionary<Guid, MasterGameYear>();
+        using var reader = new StreamReader("../../../TestData/MasterGameYears.csv");
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        var masterGameYearEntities = csv.GetRecords<MasterGameYearEntity>().ToList();
+        var tagAssociations = GetTagAssociations();
+        var tagLookup = tagAssociations.ToLookup(x => x.MasterGameID);
+        var domainTags = GetTags();
+
+        var domains = new List<MasterGameYear>();
+        foreach (var entity in masterGameYearEntities)
+        {
+            var tagAssociationsForGame = tagLookup[entity.MasterGameID];
+            var tagNames = tagAssociationsForGame.Select(x => x.TagName).ToHashSet();
+            var tagsForGame = domainTags.Where(x => tagNames.Contains(x.Name));
+            domains.Add(entity.ToDomain(new List<MasterSubGame>(), tagsForGame, FantasyCriticUser.GetFakeUser()));
+        }
+
+        return domains.ToDictionary(x => x.MasterGame.MasterGameID);
+    }
+
+    private static IReadOnlyList<MasterGameHasTagEntity> GetTagAssociations()
+    {
+        return new List<MasterGameHasTagEntity>();
+    }
+
+    private static IReadOnlyList<MasterGameTag> GetTags()
+    {
+        return new List<MasterGameTag>();
     }
 }

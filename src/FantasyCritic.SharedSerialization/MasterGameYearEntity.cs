@@ -1,8 +1,10 @@
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
+using NodaTime;
 
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.SharedSerialization;
 
-internal class MasterGameYearEntity
+public class MasterGameYearEntity
 {
     public MasterGameYearEntity()
     {
@@ -84,7 +86,7 @@ internal class MasterGameYearEntity
     public DateTime AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
-    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, int year, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
+    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
     {
         LocalDate? releaseDate = null;
         if (ReleaseDate.HasValue)
@@ -128,7 +130,7 @@ internal class MasterGameYearEntity
             releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, addedByUser,
             subGames, tags);
 
-        return new MasterGameYear(masterGame, year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
+        return new MasterGameYear(masterGame, Year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
             NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor, LinearRegressionHypeFactor);
     }
 }

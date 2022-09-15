@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.SharedSerialization;
 using Serilog;
 
 namespace FantasyCritic.MySQL;
@@ -86,7 +87,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 .Where(x => tagAssociations.Contains(x.Name))
                 .ToList();
 
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), year, tags, userDictionary[entity.AddedByUserID]);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
             masterGames.Add(domain);
         }
 

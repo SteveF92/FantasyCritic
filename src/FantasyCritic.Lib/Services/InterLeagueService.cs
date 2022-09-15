@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;

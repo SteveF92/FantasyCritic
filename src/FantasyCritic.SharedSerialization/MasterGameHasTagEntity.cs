@@ -1,9 +1,9 @@
-using System.Runtime.CompilerServices;
+using FantasyCritic.Lib.Domain;
+using NodaTime;
 
-[assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.SharedSerialization;
 
-internal class MasterGameHasTagEntity
+public class MasterGameHasTagEntity
 {
     public MasterGameHasTagEntity()
     {

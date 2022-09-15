@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.SharedSerialization;
 using MySqlConnector;
 using Serilog;
 
