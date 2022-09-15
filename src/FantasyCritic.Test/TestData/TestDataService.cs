@@ -1,14 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using CsvHelper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.SharedSerialization;
 
 namespace FantasyCritic.Test.TestData;
 public static class TestDataService
 {
     public static SystemWideValues GetSystemWideValues()
     {
-        return new SystemWideValues(0m, 0m, 0m, new List<AveragePickPositionPoints>());
+        using var reader = new StreamReader("../../../TestData/AveragePositionPoints.csv");
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        var averagePickPositionPointsEntities = csv.GetRecords<AveragePositionPointsEntity>().ToList();
+        var domains = averagePickPositionPointsEntities.Select(x => x.ToDomain());
+        return new SystemWideValues(7.873290541m, 6.921084619m, -4.054802347m, domains);
     }
 
     public static IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> GetActiveBids()

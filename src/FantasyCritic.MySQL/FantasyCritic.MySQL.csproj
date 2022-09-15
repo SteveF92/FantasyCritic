@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
+    <ProjectReference Include="..\FantasyCritic.SharedSerialization\FantasyCritic.SharedSerialization.csproj" />
   </ItemGroup>
 
 </Project>

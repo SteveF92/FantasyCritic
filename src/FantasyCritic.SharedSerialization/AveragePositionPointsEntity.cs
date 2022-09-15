@@ -1,5 +1,8 @@
-namespace FantasyCritic.MySQL.Entities;
-internal class AveragePositionPointsEntity
+using FantasyCritic.Lib.Domain;
+
+namespace FantasyCritic.SharedSerialization;
+
+public class AveragePositionPointsEntity
 {
     public AveragePositionPointsEntity()
     {
