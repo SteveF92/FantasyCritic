@@ -12,7 +12,7 @@ public class ActionProcessingUnitTests
     [Test]
     public void ActionProcess()
     {
-        Instant processingTime = InstantPattern.ExtendedIso.Parse("2022-06-19 00:03:02.969549").GetValueOrThrow();
+        Instant processingTime = InstantPattern.ExtendedIso.Parse("2022-06-19T00:03:02.969549Z").GetValueOrThrow();
         LocalDate currentDate = new LocalDate(2022, 6, 18);
 
         var systemWideValues = TestDataService.GetSystemWideValues();
@@ -22,5 +22,7 @@ public class ActionProcessingUnitTests
         var masterGameYearDictionary = TestDataService.GetMasterGameYears();
 
         var results = ActionProcessingFunctions.ProcessActions(systemWideValues, allActiveBids, allActiveDrops, publishers, processingTime, currentDate, masterGameYearDictionary);
+        Assert.AreEqual(0, results.SpecialAuctionsProcessed.Count);
+        Assert.AreEqual(0, results.Results.LeagueActions.Count);
     }
 }
