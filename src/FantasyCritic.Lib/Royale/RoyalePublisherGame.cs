@@ -32,12 +32,22 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return false;
         }
 
+        if (YearQuarter.Finished)
+        {
+            return false;
+        }
+
         if (MasterGame.MasterGame.CriticScore.HasValue)
         {
             return false;
         }
 
         if (MasterGame.MasterGame.IsReleased(currentDate))
+        {
+            return false;
+        }
+
+        if (!MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter))
         {
             return false;
         }
