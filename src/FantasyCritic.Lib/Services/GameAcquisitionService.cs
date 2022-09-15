@@ -10,14 +10,12 @@ public class GameAcquisitionService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
-    private readonly LeagueMemberService _leagueMemberService;
     private readonly IClock _clock;
 
-    public GameAcquisitionService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, LeagueMemberService leagueMemberService, IClock clock)
+    public GameAcquisitionService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
-        _leagueMemberService = leagueMemberService;
         _clock = clock;
     }
 
