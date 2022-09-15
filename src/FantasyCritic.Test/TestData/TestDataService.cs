@@ -59,11 +59,18 @@ public static class TestDataService
 
     private static IReadOnlyList<MasterGameHasTagEntity> GetTagAssociations()
     {
-        return new List<MasterGameHasTagEntity>();
+        using var reader = new StreamReader("../../../TestData/MasterGameHasTags.csv");
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        var tagAssociations = csv.GetRecords<MasterGameHasTagEntity>().ToList();
+        return tagAssociations;
     }
 
     private static IReadOnlyList<MasterGameTag> GetTags()
     {
-        return new List<MasterGameTag>();
+        using var reader = new StreamReader("../../../TestData/MasterGameTags.csv");
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        var tags = csv.GetRecords<MasterGameTagEntity>().ToList();
+        var domains = tags.Select(x => x.ToDomain()).ToList();
+        return domains;
     }
 }

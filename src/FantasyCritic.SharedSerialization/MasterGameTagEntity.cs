@@ -1,10 +1,9 @@
-using System.Runtime.CompilerServices;
+using FantasyCritic.Lib.Domain;
 using Newtonsoft.Json;
 
-[assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.SharedSerialization;
 
-internal class MasterGameTagEntity
+public class MasterGameTagEntity
 {
     public MasterGameTagEntity()
     {
