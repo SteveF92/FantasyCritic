@@ -85,6 +85,22 @@
         </p>
         <p>If you lose confidence in a game, you can choose to "sell" it, and get back half the money you spent on it. You can't sell a game that has come out, or one that has reviews already.</p>
       </div>
+
+      <h3>New Feature!</h3>
+      <div>
+        <b-alert variant="info" show>
+          <p>New for Q4 of 2022, your games are now hidden from other players until one of the following happens:</p>
+          <ul>
+            <li>The game gets a score from Open Critic.</li>
+            <li>The game releases.</li>
+            <li>The game is delayed out of the quarter.</li>
+            <li>The quarter ends.</li>
+          </ul>
+          <p>In other words, games can't be seen by other players until that game is not available for purchase anymore. The idea of this feature is to force every player to do their own research.</p>
+          <p>This feature is an experiment, and depending on how people like it, it may not stick around past the quarter, or it may be tweaked.</p>
+        </b-alert>
+      </div>
+
       <h3>What's an "advertising budget"?</h3>
       <div class="text-well">
         <p>
