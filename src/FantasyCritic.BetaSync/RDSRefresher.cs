@@ -115,11 +115,10 @@ public class RDSRefresher
     {
         Log.Information("Deleting old instance.");
 
-        string finalSnapshotID = $"beta-final-snap-{SystemClock.Instance.GetToday().ToISOString()}-{Guid.NewGuid().ToString()[0]}";
         var deleteRequest = new DeleteDBInstanceRequest()
         {
             DBInstanceIdentifier = instance.DBInstanceIdentifier,
-            FinalDBSnapshotIdentifier = finalSnapshotID
+            SkipFinalSnapshot = true
         };
         await _rdsClient.DeleteDBInstanceAsync(deleteRequest);
     }
