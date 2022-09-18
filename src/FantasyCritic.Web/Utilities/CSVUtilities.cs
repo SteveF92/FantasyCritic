@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.IO;
 using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace FantasyCritic.Web.Utilities;
 
@@ -10,7 +11,10 @@ public class CSVUtilities
     {
         var memoryStream = new MemoryStream();
         var streamWriter = new StreamWriter(memoryStream);
-        var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
+        var csvWriter = new CsvWriter(streamWriter, new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            ShouldQuote = args => true
+        });
         csvWriter.WriteRecords(records);
         streamWriter.Flush();
         memoryStream.Position = 0;
