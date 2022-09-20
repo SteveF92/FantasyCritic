@@ -1,6 +1,9 @@
-namespace FantasyCritic.MySQL.Entities;
+using FantasyCritic.Lib.Domain;
+using NodaTime;
 
-internal class PublisherGameEntity
+namespace FantasyCritic.SharedSerialization;
+
+public class PublisherGameEntity
 {
     public PublisherGameEntity()
     {

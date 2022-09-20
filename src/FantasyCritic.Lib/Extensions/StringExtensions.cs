@@ -32,4 +32,9 @@ public static class StringExtensions
 
         return source;
     }
+
+    public static string Wrap(this string value, string wrap)
+    {
+        return $"{wrap}{value}{wrap}";
+    }
 }

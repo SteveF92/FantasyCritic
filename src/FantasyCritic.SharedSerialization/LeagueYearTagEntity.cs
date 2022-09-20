@@ -1,6 +1,9 @@
-namespace FantasyCritic.MySQL.Entities;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 
-internal class LeagueYearTagEntity
+namespace FantasyCritic.SharedSerialization;
+
+public class LeagueYearTagEntity
 {
     public LeagueYearTagEntity()
     {

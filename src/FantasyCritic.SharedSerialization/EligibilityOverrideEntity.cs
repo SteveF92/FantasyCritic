@@ -1,6 +1,8 @@
-namespace FantasyCritic.MySQL.Entities;
+using FantasyCritic.Lib.Domain;
 
-internal class EligibilityOverrideEntity
+namespace FantasyCritic.SharedSerialization;
+
+public class EligibilityOverrideEntity
 {
     public EligibilityOverrideEntity()
     {

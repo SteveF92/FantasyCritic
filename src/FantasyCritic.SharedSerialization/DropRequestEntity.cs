@@ -1,6 +1,8 @@
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using NodaTime;
 
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.SharedSerialization;
 
 public class DropRequestEntity
 {

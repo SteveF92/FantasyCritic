@@ -1,9 +1,12 @@
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
+using NodaTime;
 
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.SharedSerialization;
 
-internal class LeagueYearEntity
+public class LeagueYearEntity
 {
     public LeagueYearEntity()
     {

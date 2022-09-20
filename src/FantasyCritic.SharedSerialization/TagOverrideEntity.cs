@@ -1,6 +1,6 @@
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.SharedSerialization;
 
-internal class TagOverrideEntity
+public class TagOverrideEntity
 {
     public Guid LeagueID { get; set; }
     public int Year { get; set; }

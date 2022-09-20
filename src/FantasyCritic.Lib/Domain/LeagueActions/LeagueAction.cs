@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions;

@@ -24,7 +24,7 @@ public class PublisherStateSet
 
     public LeagueYear GetUpdatedLeagueYear(LeagueYear leagueYear)
     {
-        var updatedPublishersInLeague = _leagueLookup[leagueYear.Key];
+        var updatedPublishersInLeague = _leagueLookup[leagueYear.Key].ToList();
         return new LeagueYear(leagueYear.League, leagueYear.SupportedYear, leagueYear.Options,
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, leagueYear.EligibilityOverrides,
             leagueYear.TagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser,

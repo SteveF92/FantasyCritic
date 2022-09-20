@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Domain;
 
@@ -30,7 +29,16 @@ public class LeagueYear : IEquatable<LeagueYear>
         WinningUser = winningUser;
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
-        _managerPublisher = Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id);
+        if (Publishers.FirstOrDefault()?.User.Id != Guid.Empty)
+        {
+            _managerPublisher = Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id);
+        }
+        else
+        {
+            //This handles unit tests, which don't have valid user ids. But managers also don't matter for them.
+            _managerPublisher = Publishers.FirstOrDefault();
+        }
+
         StandardGamesTaken = _publisherDictionary.Values.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
     }
 
