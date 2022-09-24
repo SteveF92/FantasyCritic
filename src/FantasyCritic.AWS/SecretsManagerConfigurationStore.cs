@@ -31,12 +31,14 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
 
     public string? GetConfigValue(string name)
     {
-        if (_environmentsSecretsCache.TryGetValue(name, out var environmentValue))
+        var environmentValue = _environmentsSecretsCache.GetValueOrDefault(name);
+        if (environmentValue is not null)
         {
             return environmentValue;
         }
 
-        if (_sharedSecretsCache.TryGetValue(name, out var sharedValue))
+        var sharedValue = _sharedSecretsCache.GetValueOrDefault(name);
+        if (sharedValue is not null)
         {
             return sharedValue;
         }
