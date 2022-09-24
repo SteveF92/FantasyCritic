@@ -311,7 +311,8 @@ public class AdminService
 
         var currentDate = _clock.GetToday();
 
-        FinalizedActionProcessingResults results = ActionProcessor.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, currentDate, masterGameYearDictionary);
+        var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary);
+        FinalizedActionProcessingResults results = actionProcessor.ProcessActions(leaguesAndBids, leaguesAndDropRequests, publishersInLeagues);
         return results;
     }
 
@@ -342,7 +343,8 @@ public class AdminService
 
         var currentDate = _clock.GetToday();
 
-        FinalizedActionProcessingResults results = ActionProcessor.ProcessSpecialAuctions(systemWideValues, specialAuctionSets, processingTime, currentDate, masterGameYearDictionary);
+        var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary);
+        FinalizedActionProcessingResults results = actionProcessor.ProcessSpecialAuctions(specialAuctionSets);
         return results;
     }
 

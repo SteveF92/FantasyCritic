@@ -29,7 +29,8 @@ public abstract class BaseActionProcessingTests
         var allActiveBids = testDataService.GetActiveBids(leagueYears, masterGameYearDictionary);
         var allActiveDrops = testDataService.GetActiveDrops(leagueYears, masterGameYearDictionary);
 
-        _results = ActionProcessor.ProcessActions(systemWideValues, allActiveBids, allActiveDrops, publishers, processingTime, currentDate, masterGameYearDictionary);
+        var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary);
+        _results = actionProcessor.ProcessActions(allActiveBids, allActiveDrops, publishers);
     }
 
     [Test]
