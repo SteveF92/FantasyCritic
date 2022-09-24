@@ -5,7 +5,7 @@ using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
 
-public static class ActionProcessingFunctions
+public static class ActionProcessor
 {
     public static FinalizedActionProcessingResults ProcessActions(SystemWideValues systemWideValues, IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
         IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> publishers, Instant processingTime, LocalDate currentDate,
