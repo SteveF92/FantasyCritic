@@ -63,10 +63,4 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
         return new FantasyCriticUser(Guid.Empty, "<Non-Existent User>", null, 0, "", "", false, "", "", false, null,
             Instant.MinValue, false);
     }
-
-    public static FantasyCriticUser GetFakeUser(Guid id)
-    {
-        return new FantasyCriticUser(id, "<Non-Existent User>", null, 0, "", "", false, "", "", false, null,
-            Instant.MinValue, false);
-    }
 }

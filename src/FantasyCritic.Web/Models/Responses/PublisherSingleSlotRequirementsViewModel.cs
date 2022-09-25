@@ -20,13 +20,6 @@ public class PublisherSingleSlotRequirementsViewModel
         RequiredTags = new List<string>();
     }
 
-    public PublisherSingleSlotRequirementsViewModel(bool counterPick)
-    {
-        BannedTags = new List<string>();
-        RequiredTags = new List<string>();
-        CounterPick = counterPick;
-    }
-
     public IReadOnlyList<string> BannedTags { get; init; }
     public IReadOnlyList<string> RequiredTags { get; init; }
     public bool CounterPick { get; init; }

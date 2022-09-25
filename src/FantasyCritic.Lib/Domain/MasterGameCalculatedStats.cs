@@ -2,27 +2,6 @@ namespace FantasyCritic.Lib.Domain;
 
 public class MasterGameCalculatedStats
 {
-    public MasterGameCalculatedStats(MasterGame masterGame, MasterGameYear cachedMasterGameYear)
-    {
-        MasterGame = masterGame;
-        Year = cachedMasterGameYear.Year;
-
-        PercentStandardGame = cachedMasterGameYear.PercentStandardGame;
-        PercentCounterPick = cachedMasterGameYear.PercentCounterPick;
-        EligiblePercentStandardGame = cachedMasterGameYear.EligiblePercentStandardGame;
-        AdjustedPercentCounterPick = cachedMasterGameYear.AdjustedPercentCounterPick;
-        NumberOfBids = cachedMasterGameYear.NumberOfBids;
-        TotalBidAmount = cachedMasterGameYear.TotalBidAmount;
-        BidPercentile = cachedMasterGameYear.BidPercentile;
-        AverageDraftPosition = cachedMasterGameYear.AverageDraftPosition;
-        AverageWinningBid = cachedMasterGameYear.AverageWinningBid;
-
-        HypeFactor = cachedMasterGameYear.HypeFactor;
-        DateAdjustedHypeFactor = cachedMasterGameYear.DateAdjustedHypeFactor;
-        PeakHypeFactor = cachedMasterGameYear.PeakHypeFactor;
-        LinearRegressionHypeFactor = cachedMasterGameYear.LinearRegressionHypeFactor;
-    }
-
     public MasterGameCalculatedStats(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame,
         double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid,
         double hypeFactor, double dateAdjustedHypeFactor, double peakHypeFactor, double linearRegressionHypeFactor)
