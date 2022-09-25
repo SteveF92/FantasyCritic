@@ -39,7 +39,7 @@ public static class DraftFunctions
             errors.Add("You cannot have more than 20 players in the league.");
         }
 
-        if (leagueYear.Publishers.Count() != activeUsers.Count())
+        if (leagueYear.Publishers.Count != activeUsers.Count())
         {
             errors.Add("Not every player has created a publisher.");
         }
