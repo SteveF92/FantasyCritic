@@ -43,7 +43,7 @@ public class ResendEmailConfirmationModel : PageModel
             return Page();
         }
 
-        string message = "If you have an account, a verification email has been sent. Please check your email.";
+        const string message = "If you have an account, a verification email has been sent. Please check your email.";
         var user = await _userManager.FindByEmailAsync(Input.Email);
         if (user == null)
         {

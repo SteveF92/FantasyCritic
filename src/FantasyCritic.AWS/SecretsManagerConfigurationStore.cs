@@ -115,7 +115,7 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
         }
     }
 
-    private async Task AddValueToCache(IAmazonSecretsManager client, SecretListEntry secret, string secretWithoutAppName, string environment, Dictionary<string, string> cacheToUse)
+    private static async Task AddValueToCache(IAmazonSecretsManager client, SecretListEntry secret, string secretWithoutAppName, string environment, Dictionary<string, string> cacheToUse)
     {
         var request = new GetSecretValueRequest()
         {

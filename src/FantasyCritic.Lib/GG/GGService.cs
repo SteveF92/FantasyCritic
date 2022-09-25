@@ -21,7 +21,7 @@ public class GGService : IGGService
     {
         try
         {
-            string query = @"query getGameByToken($token: String!) {
+            const string query = @"query getGameByToken($token: String!) {
                                     getGameByToken(token: $token) {
                                         id
                                         name

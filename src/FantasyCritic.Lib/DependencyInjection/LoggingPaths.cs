@@ -4,20 +4,12 @@ namespace FantasyCritic.Lib.DependencyInjection;
 
 public class LoggingPaths
 {
-    private readonly string _windowsBase = @"C:\FantasyCritic\Logs\";
-    private readonly string _linuxBase = @"/var/log/fantasy-critic/";
+    private const string _windowsBase = @"C:\FantasyCritic\Logs\";
+    private const string _linuxBase = @"/var/log/fantasy-critic/";
 
     public string AllLogPath => $"{GetBase()}log-all.txt";
     public string MyLogPath => $"{GetBase()}log-my.txt";
     public string WarnLogPath => $"{GetBase()}log-warning.txt";
 
-    private string GetBase()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return _windowsBase;
-        }
-
-        return _linuxBase;
-    }
+    private static string GetBase() => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? _windowsBase : _linuxBase;
 }

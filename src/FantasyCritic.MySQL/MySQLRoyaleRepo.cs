@@ -26,15 +26,15 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     public async Task CreatePublisher(RoyalePublisher publisher)
     {
         RoyalePublisherEntity entity = new RoyalePublisherEntity(publisher);
-        string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,PublisherIcon,PublisherSlogan,Budget) " +
-                     "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@PublisherIcon,@PublisherSlogan,@Budget)";
+        const string sql = "insert into tbl_royale_publisher (PublisherID,UserID,Year,Quarter,PublisherName,PublisherIcon,PublisherSlogan,Budget) " +
+                           "VALUES (@PublisherID,@UserID,@Year,@Quarter,@PublisherName,@PublisherIcon,@PublisherSlogan,@Budget)";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
     }
 
     public async Task ChangePublisherName(RoyalePublisher publisher, string publisherName)
     {
-        string sql = "UPDATE tbl_royale_publisher SET PublisherName = @publisherName WHERE PublisherID = @publisherID;";
+        const string sql = "UPDATE tbl_royale_publisher SET PublisherName = @publisherName WHERE PublisherID = @publisherID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, new
         {
@@ -45,7 +45,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon)
     {
-        string sql = "UPDATE tbl_royale_publisher SET PublisherIcon = @publisherIcon WHERE PublisherID = @publisherID;";
+        const string sql = "UPDATE tbl_royale_publisher SET PublisherIcon = @publisherIcon WHERE PublisherID = @publisherID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, new
         {
@@ -56,7 +56,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task ChangePublisherSlogan(RoyalePublisher publisher, string? publisherSlogan)
     {
-        string sql = "UPDATE tbl_royale_publisher SET PublisherSlogan = @publisherSlogan WHERE PublisherID = @publisherID;";
+        const string sql = "UPDATE tbl_royale_publisher SET PublisherSlogan = @publisherSlogan WHERE PublisherID = @publisherID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, new
         {
@@ -67,7 +67,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
     {
-        string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
+        const string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
         await using var connection = new MySqlConnection(_connectionString);
         var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(sql,
             new
@@ -88,7 +88,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
     {
-        string sql = "select * from tbl_royale_publisher where PublisherID = @publisherID;";
+        const string sql = "select * from tbl_royale_publisher where PublisherID = @publisherID;";
         await using var connection = new MySqlConnection(_connectionString);
         var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(sql,
             new
@@ -119,7 +119,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var publisherGames = await GetAllPublisherGames(yearQuarter);
         var publisherGameLookup = publisherGames.ToLookup(x => x.PublisherID);
 
-        string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
+        const string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
         await using var connection = new MySqlConnection(_connectionString);
         var entities = await connection.QueryAsync<RoyalePublisherEntity>(sql, new { year, quarter });
 
@@ -155,9 +155,9 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     private async Task<IReadOnlyList<RoyalePublisherGame>> GetAllPublisherGames(RoyaleYearQuarter yearQuarter)
     {
-        string sql = "SELECT * FROM tbl_royale_publishergame " +
-                     "JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID " +
-                     "WHERE tbl_royale_publisher.Year = @year AND tbl_royale_publisher.Quarter = @quarter; ";
+        const string sql = "SELECT * FROM tbl_royale_publishergame " +
+                           "JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID " +
+                           "WHERE tbl_royale_publisher.Year = @year AND tbl_royale_publisher.Quarter = @quarter; ";
 
         await using var connection = new MySqlConnection(_connectionString);
         var entities = await connection.QueryAsync<RoyalePublisherGameEntity>(sql,
@@ -178,17 +178,16 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task PurchaseGame(RoyalePublisherGame game)
     {
-        string gameAddSQL = "INSERT INTO tbl_royale_publishergame(PublisherID,MasterGameID,Timestamp,AmountSpent,AdvertisingMoney,FantasyPoints) VALUES " +
-                            "(@PublisherID,@MasterGameID,@Timestamp,@AmountSpent,@AdvertisingMoney,@FantasyPoints)";
-        string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @amountSpent WHERE PublisherID = @publisherID";
+        const string gameAddSQL = "INSERT INTO tbl_royale_publishergame(PublisherID,MasterGameID,Timestamp,AmountSpent,AdvertisingMoney,FantasyPoints) VALUES " +
+                                  "(@PublisherID,@MasterGameID,@Timestamp,@AmountSpent,@AdvertisingMoney,@FantasyPoints)";
+        const string budgetDecreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @amountSpent WHERE PublisherID = @publisherID";
 
         RoyalePublisherGameEntity entity = new RoyalePublisherGameEntity(game);
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(gameAddSQL, entity, transaction);
-        await connection.ExecuteAsync(budgetDescreaseSQL,
-            new { amountSpent = game.AmountSpent, publisherID = game.PublisherID }, transaction);
+        await connection.ExecuteAsync(budgetDecreaseSQL, new { amountSpent = game.AmountSpent, publisherID = game.PublisherID }, transaction);
         await transaction.CommitAsync();
     }
 
@@ -203,7 +202,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     private async Task<RoyaleYearQuarter?> GetYearQuarter(int year, int quarter)
     {
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
-        string sql = "select * from tbl_royale_supportedquarter where Year = @year and Quarter = @quarter;";
+        const string sql = "select * from tbl_royale_supportedquarter where Year = @year and Quarter = @quarter;";
         await using var connection = new MySqlConnection(_connectionString);
         var entity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(sql, new { year, quarter });
         if (entity is null)
@@ -228,7 +227,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     private async Task<IReadOnlyList<RoyalePublisherGame>> GetGamesForPublisher(Guid publisherID, RoyaleYearQuarter yearQuarter)
     {
-        string sql = "select * from tbl_royale_publishergame where PublisherID = @publisherID;";
+        const string sql = "select * from tbl_royale_publishergame where PublisherID = @publisherID;";
         await using var connection = new MySqlConnection(_connectionString);
         var entities = await connection.QueryAsync<RoyalePublisherGameEntity>(sql,
             new
@@ -253,8 +252,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             refund /= 2;
         }
 
-        string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
-        string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
+        const string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
+        const string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
         var amountGained = refund + publisherGame.AdvertisingMoney;
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -267,15 +266,15 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     public async Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney)
     {
         decimal amountToSpend = advertisingMoney - publisherGame.AdvertisingMoney;
-        string advertisingMoneySetSQL = "UPDATE tbl_royale_publishergame SET AdvertisingMoney = @advertisingMoney WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
-        string budgetDescreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @amountToSpend WHERE PublisherID = @publisherID";
+        const string advertisingMoneySetSQL = "UPDATE tbl_royale_publishergame SET AdvertisingMoney = @advertisingMoney WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
+        const string budgetDecreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget - @amountToSpend WHERE PublisherID = @publisherID";
         var masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID;
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(advertisingMoneySetSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID, masterGameID }, transaction);
-        await connection.ExecuteAsync(budgetDescreaseSQL, new { amountToSpend, publisherID = publisherGame.PublisherID }, transaction);
+        await connection.ExecuteAsync(budgetDecreaseSQL, new { amountToSpend, publisherID = publisherGame.PublisherID }, transaction);
         await transaction.CommitAsync();
     }
 
@@ -293,7 +292,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
     {
         var quarters = await GetYearQuarters();
-        string sql =
+        const string sql =
             "SELECT tbl_royale_publisher.PublisherID, YEAR, QUARTER, SUM(FantasyPoints) AS TotalFantasyPoints FROM tbl_royale_publisher " +
             "JOIN tbl_royale_publishergame ON tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID " +
             "GROUP BY tbl_royale_publisher.PublisherID";
@@ -337,8 +336,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task StartNewQuarter(YearQuarter nextQuarter)
     {
-        string sql = "insert into tbl_royale_supportedquarter (Year,Quarter,OpenForPlay,Finished) " +
-                     "VALUES (@Year,@Quarter,@OpenForPlay,@Finished)";
+        const string sql = "insert into tbl_royale_supportedquarter (Year,Quarter,OpenForPlay,Finished) " +
+                           "VALUES (@Year,@Quarter,@OpenForPlay,@Finished)";
 
         var newQuarterObject = new RoyaleYearQuarterEntity()
         {
@@ -355,7 +354,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task FinishQuarter(RoyaleYearQuarter supportedQuarter)
     {
-        string sql = "UPDATE tbl_royale_supportedquarter SET Finished = 1 WHERE Year = @year AND Quarter = @quarter;";
+        const string sql = "UPDATE tbl_royale_supportedquarter SET Finished = 1 WHERE Year = @year AND Quarter = @quarter;";
 
         var finishObject = new
         {
