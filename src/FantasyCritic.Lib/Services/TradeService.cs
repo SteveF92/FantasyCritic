@@ -8,8 +8,7 @@ public class TradeService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
 
-    public TradeService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService,
-        IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public TradeService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;

@@ -13,7 +13,7 @@ public class CSVUtilities
         var streamWriter = new StreamWriter(memoryStream);
         var csvWriter = new CsvWriter(streamWriter, new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            ShouldQuote = args => true
+            ShouldQuote = _ => true
         });
         csvWriter.WriteRecords(records);
         streamWriter.Flush();

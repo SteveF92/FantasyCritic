@@ -57,12 +57,12 @@ public static class HostingExtensions
 
         // Add application services.
         services.AddHttpClient();
-        services.AddTransient<IClock>(factory => clock);
+        services.AddTransient<IClock>(_ => clock);
 
         //MySQL Repos
         string connectionString = configuration.AssertConnectionString("DefaultConnection");
 
-        services.AddSingleton<RepositoryConfiguration>(factory => new RepositoryConfiguration(connectionString, clock));
+        services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
         AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
         if (environment.IsProduction() || environment.IsStaging())

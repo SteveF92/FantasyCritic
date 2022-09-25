@@ -4,8 +4,8 @@ namespace FantasyCritic.Lib.Domain;
 
 public class Publisher : IEquatable<Publisher>
 {
-    private decimal? _cachedProjectedPoints = null;
-    private decimal? _cachedTotalPoints = null;
+    private decimal? _cachedProjectedPoints;
+    private decimal? _cachedTotalPoints;
 
     public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, string? publisherSlogan,
         int draftPosition, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
