@@ -151,24 +151,22 @@ public class EmailSendingService
 
     public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)
     {
-        string emailAddress = inviteEmail;
         const string emailSubject = "You have been invited to join a FantasyCritic league!";
 
         LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
         var htmlResult = await GetHTMLString("SiteInvite.cshtml", model);
 
-        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        await _emailSender.SendEmailAsync(inviteEmail, emailSubject, htmlResult);
     }
 
     public async Task SendLeagueInviteEmail(string inviteEmail, League league, string baseURL)
     {
-        string emailAddress = inviteEmail;
         const string emailSubject = "You have been invited to join a FantasyCritic league!";
 
         LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
         var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);
 
-        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        await _emailSender.SendEmailAsync(inviteEmail, emailSubject, htmlResult);
     }
 
     private static async Task<string> GetHTMLString(string template, object model)

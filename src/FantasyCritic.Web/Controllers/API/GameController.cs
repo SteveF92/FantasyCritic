@@ -174,13 +174,12 @@ public class GameController : FantasyCriticController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
-        MasterGameRequest? maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
-        if (maybeRequest is null)
+        MasterGameRequest? domainRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
+        if (domainRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();
@@ -196,13 +195,12 @@ public class GameController : FantasyCriticController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
-        MasterGameChangeRequest? maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
-        if (maybeRequest is null)
+        MasterGameChangeRequest? domainRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
+        if (domainRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();
@@ -218,13 +216,12 @@ public class GameController : FantasyCriticController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
-        MasterGameRequest? maybeRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
-        if (maybeRequest is null)
+        MasterGameRequest? domainRequest = await _interLeagueService.GetMasterGameRequest(request.RequestID);
+        if (domainRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();
@@ -240,13 +237,12 @@ public class GameController : FantasyCriticController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
-        MasterGameChangeRequest? maybeRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
-        if (maybeRequest is null)
+        MasterGameChangeRequest? domainRequest = await _interLeagueService.GetMasterGameChangeRequest(request.RequestID);
+        if (domainRequest is null)
         {
             return BadRequest("That request does not exist.");
         }
 
-        var domainRequest = maybeRequest;
         if (domainRequest.User.Id != currentUser.Id)
         {
             return Forbid();

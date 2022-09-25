@@ -658,21 +658,19 @@ public class LeagueController : BaseLeagueController
             return publisherRecord.FailedResult;
         }
         var validResult = publisherRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var maybeBid = await _gameAcquisitionService.GetPickupBid(request.BidID);
-        if (maybeBid is null)
+        var bid = await _gameAcquisitionService.GetPickupBid(request.BidID);
+        if (bid is null)
         {
             return BadRequest("That bid does not exist.");
         }
 
-        if (maybeBid.Publisher.PublisherID != publisher.PublisherID)
+        if (bid.Publisher.PublisherID != publisher.PublisherID)
         {
             return Forbid();
         }
 
-        PickupBid bid = maybeBid;
         Result result = await _gameAcquisitionService.RemovePickupBid(bid);
         if (result.IsFailure)
         {
@@ -1320,7 +1318,6 @@ public class LeagueController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
         var validResult = leagueYearRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
         var trade = await _tradeService.GetTrade(request.TradeID);
@@ -1354,7 +1351,6 @@ public class LeagueController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
         var validResult = leagueYearRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
         var trade = await _tradeService.GetTrade(request.TradeID);

@@ -194,7 +194,6 @@ public class LeagueManagerController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
         var validResult = leagueYearRecord.ValidResult!;
-        var currentUser = validResult.CurrentUser!;
         var leagueYear = validResult.LeagueYear;
 
         var requestValid = request.IsValid();

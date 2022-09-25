@@ -42,12 +42,11 @@ public class TradeService
             return Result.Failure("You must receive something.");
         }
 
-        var counterPartyResult = leagueYear.GetPublisherByID(counterPartyPublisherID);
-        if (counterPartyResult is null)
+        var counterParty = leagueYear.GetPublisherByID(counterPartyPublisherID);
+        if (counterParty is null)
         {
             return Result.Failure("That publisher does not exist");
         }
-        var counterParty = counterPartyResult;
 
         if (!leagueYear.Key.Equals(counterParty.LeagueYearKey))
         {
