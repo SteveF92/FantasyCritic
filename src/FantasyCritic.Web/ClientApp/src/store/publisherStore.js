@@ -72,9 +72,9 @@ export default {
     }
   },
   mutations: {
-    initializeInternal(state, intializeParams) {
-      state.publisher = intializeParams.publisher;
-      state.leagueYear = intializeParams.leagueYear;
+    initializeInternal(state, initializeParams) {
+      state.publisher = initializeParams.publisher;
+      state.leagueYear = initializeParams.leagueYear;
       state.cleanGameSlots = _.cloneDeep(state.publisher.gameSlots);
       state.editableGameSlots = _.cloneDeep(state.publisher.gameSlots);
     },

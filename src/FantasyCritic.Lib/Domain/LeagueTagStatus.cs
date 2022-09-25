@@ -62,10 +62,10 @@ public class LeagueTagStatus : IEquatable<LeagueTagStatus>
         {
             return !hasTag;
         }
-        else if (Status.Equals(TagStatus.Required))
+        if (Status.Equals(TagStatus.Required))
         {
-            var accquiredWhenGameWasUnannounced = masterGame.AnnouncementDate.HasValue && masterGame.AnnouncementDate > dateOfAcquisition;
-            return hasTag || accquiredWhenGameWasUnannounced;
+            var acquiredWhenGameWasUnannounced = masterGame.AnnouncementDate.HasValue && masterGame.AnnouncementDate > dateOfAcquisition;
+            return hasTag || acquiredWhenGameWasUnannounced;
         }
 
         throw new NotImplementedException($"Invalid tag status: {Status}");
@@ -78,10 +78,10 @@ public class LeagueTagStatus : IEquatable<LeagueTagStatus>
         {
             return !hasTag;
         }
-        else if (Status.Equals(TagStatus.Required))
+        if (Status.Equals(TagStatus.Required))
         {
-            var accquiredWhenGameWasPlannedForEarlyAccess = masterGame.EarlyAccessReleaseDate.HasValue && masterGame.EarlyAccessReleaseDate > dateOfAcquisition;
-            return hasTag || accquiredWhenGameWasPlannedForEarlyAccess;
+            var acquiredWhenGameWasPlannedForEarlyAccess = masterGame.EarlyAccessReleaseDate.HasValue && masterGame.EarlyAccessReleaseDate > dateOfAcquisition;
+            return hasTag || acquiredWhenGameWasPlannedForEarlyAccess;
         }
 
         throw new NotImplementedException($"Invalid tag status: {Status}");
@@ -94,10 +94,10 @@ public class LeagueTagStatus : IEquatable<LeagueTagStatus>
         {
             return !hasTag;
         }
-        else if (Status.Equals(TagStatus.Required))
+        if (Status.Equals(TagStatus.Required))
         {
-            var accquiredWhenGameWasWillReleaseInternationallyFirst = masterGame.InternationalReleaseDate.HasValue && masterGame.InternationalReleaseDate > dateOfAcquisition;
-            return hasTag || accquiredWhenGameWasWillReleaseInternationallyFirst;
+            var acquiredWhenGameWasWillReleaseInternationallyFirst = masterGame.InternationalReleaseDate.HasValue && masterGame.InternationalReleaseDate > dateOfAcquisition;
+            return hasTag || acquiredWhenGameWasWillReleaseInternationallyFirst;
         }
 
         throw new NotImplementedException($"Invalid tag status: {Status}");
@@ -108,10 +108,10 @@ public class LeagueTagStatus : IEquatable<LeagueTagStatus>
         bool hasTag = masterGameTags.Any(x => x.Name == "CurrentlyInEarlyAccess");
         if (Status.Equals(TagStatus.Banned))
         {
-            var accquiredWhenGameWasPlannedForEarlyAccess = masterGame.EarlyAccessReleaseDate.HasValue && masterGame.EarlyAccessReleaseDate > dateOfAcquisition;
-            return !hasTag || accquiredWhenGameWasPlannedForEarlyAccess;
+            var acquiredWhenGameWasPlannedForEarlyAccess = masterGame.EarlyAccessReleaseDate.HasValue && masterGame.EarlyAccessReleaseDate > dateOfAcquisition;
+            return !hasTag || acquiredWhenGameWasPlannedForEarlyAccess;
         }
-        else if (Status.Equals(TagStatus.Required))
+        if (Status.Equals(TagStatus.Required))
         {
             return hasTag;
         }
@@ -124,10 +124,10 @@ public class LeagueTagStatus : IEquatable<LeagueTagStatus>
         bool hasTag = masterGameTags.Any(x => x.Name == "ReleasedInternationally");
         if (Status.Equals(TagStatus.Banned))
         {
-            var accquiredWhenGameWasWillReleaseInternationallyFirst = masterGame.InternationalReleaseDate.HasValue && masterGame.InternationalReleaseDate > dateOfAcquisition;
-            return !hasTag || accquiredWhenGameWasWillReleaseInternationallyFirst;
+            var acquiredWhenGameWasWillReleaseInternationallyFirst = masterGame.InternationalReleaseDate.HasValue && masterGame.InternationalReleaseDate > dateOfAcquisition;
+            return !hasTag || acquiredWhenGameWasWillReleaseInternationallyFirst;
         }
-        else if (Status.Equals(TagStatus.Required))
+        if (Status.Equals(TagStatus.Required))
         {
             return hasTag;
         }
