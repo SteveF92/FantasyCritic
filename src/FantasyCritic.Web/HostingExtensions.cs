@@ -81,7 +81,7 @@ public static class HostingExtensions
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
 
-        services.AddScoped<PatreonService>(factory => new PatreonService(
+        services.AddScoped<PatreonService>(_ => new PatreonService(
             configuration.AssertConfigValue("PatreonService:AccessToken"),
             configuration.AssertConfigValue("PatreonService:RefreshToken"),
             configuration.AssertConfigValue("Authentication:Patreon:ClientId"),
@@ -89,8 +89,8 @@ public static class HostingExtensions
         ));
 
         var tempFolder = Path.Combine(rootFolder, "Temp");
-        services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket, tempFolder));
-        services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
+        services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(awsRegion, awsBucket, tempFolder));
+        services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();
         services.AddScoped<GameAcquisitionService>();
@@ -104,7 +104,7 @@ public static class HostingExtensions
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
 
-        services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+        services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
         services.AddScoped<AdminService>();
 
@@ -126,7 +126,7 @@ public static class HostingExtensions
         services.AddSingleton<IScheduledTask, EmailSendingTask>();
         services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
         services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
-        services.AddScheduler((sender, args) =>
+        services.AddScheduler((_, args) =>
         {
             args.SetObserved();
         });

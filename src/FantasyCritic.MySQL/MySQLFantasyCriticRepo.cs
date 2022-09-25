@@ -533,7 +533,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, new { year });
 
-        Dictionary<LeagueYear, List<PickupBid>> pickupBidsByLeagueYear = allLeagueYears.ToDictionary(x => x, y => new List<PickupBid>());
+        Dictionary<LeagueYear, List<PickupBid>> pickupBidsByLeagueYear = allLeagueYears.ToDictionary(x => x, _ => new List<PickupBid>());
 
         foreach (var bidEntity in bidEntities)
         {
@@ -1121,7 +1121,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         var allUsers = await _userStore.GetAllUsers();
-        Dictionary<FantasyCriticUser, List<LeagueYearKey>> userDictionary = allUsers.ToDictionary(x => x, x => new List<LeagueYearKey>());
+        Dictionary<FantasyCriticUser, List<LeagueYearKey>> userDictionary = allUsers.ToDictionary(x => x, _ => new List<LeagueYearKey>());
         var entitiesByUserID = entities.ToLookup(x => x.UserID);
         foreach (var user in allUsers)
         {
@@ -2768,7 +2768,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var dropEntities = await connection.QueryAsync<DropRequestEntity>("select * from vw_league_droprequest where Year = @year and Successful is NULL and IsDeleted = 0", new { year });
 
-        Dictionary<LeagueYear, List<DropRequest>> dropRequestsByLeagueYear = allLeagueYears.ToDictionary(x => x, y => new List<DropRequest>());
+        Dictionary<LeagueYear, List<DropRequest>> dropRequestsByLeagueYear = allLeagueYears.ToDictionary(x => x, _ => new List<DropRequest>());
 
         foreach (var dropEntity in dropEntities)
         {

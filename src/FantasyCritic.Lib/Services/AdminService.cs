@@ -723,7 +723,7 @@ public class AdminService
         var allMasterGames = await _masterGameRepo.GetMasterGames();
         var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);
         var masterGamesWithInternationalDate = allMasterGames.Where(x => x.InternationalReleaseDate.HasValue);
-        Dictionary<MasterGame, List<MasterGameTag>> tagsToAdd = allMasterGames.ToDictionary(x => x, y => new List<MasterGameTag>());
+        Dictionary<MasterGame, List<MasterGameTag>> tagsToAdd = allMasterGames.ToDictionary(x => x, _ => new List<MasterGameTag>());
 
         foreach (var masterGame in masterGamesWithEarlyAccessDate)
         {
