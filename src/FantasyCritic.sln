@@ -29,7 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.DBUtility", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.SharedSerialization", "FantasyCritic.SharedSerialization\FantasyCritic.SharedSerialization.csproj", "{447983E5-6E2A-4D7E-A24D-FAB8C5062B08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.TestDataScrubber", "FantasyCritic.TestDataScrubber\FantasyCritic.TestDataScrubber.csproj", "{27144025-E73E-4010-BE53-FFBCC7AEDCAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.TestDataScrubber", "FantasyCritic.TestDataScrubber\FantasyCritic.TestDataScrubber.csproj", "{27144025-E73E-4010-BE53-FFBCC7AEDCAE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{7BB80223-E4F3-4553-A18E-E066660AC525}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4350DE84-14FB-4278-BDC1-2F803EE756DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalServices", "ExternalServices", "{C91E705F-F0CD-4537-B670-5D2FC2613A74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +90,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7444D90A-040B-41F3-BFE3-CDA0E6F93047} = {4350DE84-14FB-4278-BDC1-2F803EE756DD}
+		{FD9CE006-F47D-4620-8DCF-A25032189044} = {4350DE84-14FB-4278-BDC1-2F803EE756DD}
+		{014CB984-41FE-4C2B-9B8F-2BE3945DD327} = {C91E705F-F0CD-4537-B670-5D2FC2613A74}
+		{77DA11E6-194B-42B9-A0BB-78B5755FD3B4} = {C91E705F-F0CD-4537-B670-5D2FC2613A74}
+		{9718DCF9-CB20-4917-BF8C-2242626696EC} = {7BB80223-E4F3-4553-A18E-E066660AC525}
+		{C7AAA97D-179D-42CE-83E9-9C4900D21DDA} = {7BB80223-E4F3-4553-A18E-E066660AC525}
+		{27144025-E73E-4010-BE53-FFBCC7AEDCAE} = {7BB80223-E4F3-4553-A18E-E066660AC525}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEBD4BD6-299C-48F2-8D24-13F9B53219E2}
