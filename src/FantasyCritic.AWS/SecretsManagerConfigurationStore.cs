@@ -37,13 +37,7 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
             return environmentValue;
         }
 
-        var sharedValue = _sharedSecretsCache.GetValueOrDefault(name);
-        if (sharedValue is not null)
-        {
-            return sharedValue;
-        }
-
-        return null;
+        return _sharedSecretsCache.GetValueOrDefault(name);
     }
 
     public string? GetConnectionString(string name)

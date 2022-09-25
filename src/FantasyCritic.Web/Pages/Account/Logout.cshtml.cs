@@ -32,9 +32,7 @@ public class LogoutModel : PageModel
         {
             return LocalRedirect(returnUrl);
         }
-        else
-        {
-            return RedirectToPage();
-        }
+
+        return RedirectToPage();
     }
 }

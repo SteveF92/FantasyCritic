@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Domain.Trades;
 

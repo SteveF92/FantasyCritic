@@ -205,12 +205,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         const string sql = "select * from tbl_royale_supportedquarter where Year = @year and Quarter = @quarter;";
         await using var connection = new MySqlConnection(_connectionString);
         var entity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(sql, new { year, quarter });
-        if (entity is null)
-        {
-            return null;
-        }
 
-        var domain = entity.ToDomain(supportedYears.Single(x => x.Year == entity.Year));
+        var domain = entity?.ToDomain(supportedYears.Single(x => x.Year == entity.Year));
         return domain;
     }
 

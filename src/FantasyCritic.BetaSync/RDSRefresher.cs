@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.RDS;
 using Amazon.RDS.Model;
-using FantasyCritic.Lib.Extensions;
-using NodaTime;
 using Serilog;
 
 namespace FantasyCritic.BetaSync;

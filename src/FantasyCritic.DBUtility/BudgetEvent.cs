@@ -21,7 +21,7 @@ public class BudgetEvent
         PreviousBudget = previousBudget;
         Timestamp = trade.CompletedTimestamp!.Value;
 
-        string partyString = "";
+        string partyString;
         if (isProposer)
         {
             partyString = "(Prop)";

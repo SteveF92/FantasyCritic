@@ -41,7 +41,7 @@ public class LoginWithRecoveryCodeModel : PageModel
         var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
         if (user == null)
         {
-            throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+            throw new InvalidOperationException("Unable to load two-factor authentication user.");
         }
 
         ReturnUrl = returnUrl;
@@ -59,7 +59,7 @@ public class LoginWithRecoveryCodeModel : PageModel
         var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
         if (user == null)
         {
-            throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+            throw new InvalidOperationException("Unable to load two-factor authentication user.");
         }
 
         var recoveryCode = Input.RecoveryCode.Replace(" ", string.Empty);
@@ -76,11 +76,9 @@ public class LoginWithRecoveryCodeModel : PageModel
             _logger.LogWarning("User with ID '{UserId}' account locked out.", user.Id);
             return RedirectToPage("./Lockout");
         }
-        else
-        {
-            _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", user.Id);
-            ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
-            return Page();
-        }
+
+        _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", user.Id);
+        ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
+        return Page();
     }
 }

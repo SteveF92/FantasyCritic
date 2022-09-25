@@ -46,14 +46,12 @@ public class ResetPasswordModel : PageModel
         {
             return BadRequest("A code must be supplied for password reset.");
         }
-        else
+
+        Input = new InputModel
         {
-            Input = new InputModel
-            {
-                Code = code
-            };
-            return Page();
-        }
+            Code = code
+        };
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()

@@ -2895,13 +2895,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var entity in entities)
         {
             var league = await this.GetLeagueOrThrow(entity.LeagueID);
-            if (league is null)
-            {
-                //League has probably been deleted.
-                _logger.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
-                continue;
-            }
-
             if (entity.UserID.HasValue)
             {
                 FantasyCriticUser user = await _userStore.FindByIdAsync(entity.UserID.Value.ToString(), CancellationToken.None);

@@ -26,6 +26,8 @@ public class MasterGameTag : IEquatable<MasterGameTag>
     public IReadOnlyList<string> Examples { get; }
     public string BadgeColor { get; }
 
+    public override string ToString() => Name;
+
     public bool Equals(MasterGameTag? other)
     {
         if (ReferenceEquals(null, other)) return false;
@@ -38,13 +40,11 @@ public class MasterGameTag : IEquatable<MasterGameTag>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((MasterGameTag)obj);
+        return Equals((MasterGameTag) obj);
     }
 
     public override int GetHashCode()
     {
-        return (Name != null ? Name.GetHashCode() : 0);
+        return Name.GetHashCode();
     }
-
-    public override string ToString() => Name;
 }

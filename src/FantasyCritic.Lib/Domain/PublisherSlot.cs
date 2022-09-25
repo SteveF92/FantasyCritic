@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Domain;
 
