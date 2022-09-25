@@ -647,11 +647,7 @@ public class AdminService
 
                 var bidsForGame = bidsByGame[masterGame];
                 int numberOfBids = bidsForGame.Count();
-                bool hasBids = totalBidAmounts.TryGetValue(masterGame, out long totalBidAmount);
-                if (!hasBids)
-                {
-                    totalBidAmount = 0;
-                }
+                long totalBidAmount = totalBidAmounts.GetValueOrDefault(masterGame);
 
                 var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
                 double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double)cleanMasterGames.Count;
@@ -682,7 +678,8 @@ public class AdminService
                 dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
                 double peakHypeFactor = hypeFactor;
 
-                if (masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame))
+                var cachedMasterGame = masterGameCacheLookup.GetValueOrDefault(masterGame.MasterGameID);
+                if (cachedMasterGame is not null)
                 {
                     if (cachedMasterGame.PeakHypeFactor > peakHypeFactor)
                     {

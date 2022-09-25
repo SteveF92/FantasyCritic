@@ -8,7 +8,7 @@ public static class DictionaryFunctions
         {
             return default;
         }
-        
+
         return dictionary.GetValueOrDefault(key.Value);
     }
 
@@ -20,5 +20,16 @@ public static class DictionaryFunctions
         }
 
         return dictionary.GetValueOrDefault(key);
+    }
+
+    public static TValue GetValueOrThrow<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary, TKey key, string exceptionMessage) where TKey : IEquatable<TKey>
+    {
+        var result =  dictionary.GetValueOrDefault(key);
+        if (result is null)
+        {
+            throw new Exception(exceptionMessage);
+        }
+
+        return result;
     }
 }

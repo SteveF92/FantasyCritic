@@ -169,7 +169,8 @@ public class PublisherService
         var slotDictionary = publisher.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
         foreach (var requestedSlotState in requestedPositionsWithGames)
         {
-            if (!slotDictionary.TryGetValue(requestedSlotState.Key, out var moveIntoSlot))
+            var moveIntoSlot = slotDictionary.GetValueOrDefault(requestedSlotState.Key);
+            if (moveIntoSlot is null)
             {
                 return Result.Failure("Invalid movement.");
             }

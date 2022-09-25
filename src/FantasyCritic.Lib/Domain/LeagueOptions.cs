@@ -85,16 +85,7 @@ public class LeagueOptions
                                FreeDroppableGames == 0 && WillNotReleaseDroppableGames == 0 &&
                                WillReleaseDroppableGames == 0 && !GrantSuperDrops && TradingSystem.Equals(TradingSystem.NoTrades);
 
-    public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
-    {
-        var hasSpecialSlot = _specialSlotDictionary.TryGetValue(slotNumber, out var specialSlot);
-        if (!hasSpecialSlot)
-        {
-            return null;
-        }
-
-        return specialSlot;
-    }
+    public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber) => _specialSlotDictionary.GetValueOrDefault(slotNumber);
 
     public Result Validate()
     {

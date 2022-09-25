@@ -90,13 +90,14 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     private bool? GetOverriddenEligibility(MasterGame masterGame)
     {
-        _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
+        var eligibilityOverride = _eligibilityOverridesDictionary.GetValueOrDefault(masterGame);
         return eligibilityOverride?.Eligible;
     }
 
     private IReadOnlyList<MasterGameTag> GetOverriddenTags(MasterGame masterGame)
     {
-        if (!_tagOverridesDictionary.TryGetValue(masterGame, out var tagOverride))
+        var tagOverride = _tagOverridesDictionary.GetValueOrDefault(masterGame);
+        if (tagOverride is null)
         {
             return new List<MasterGameTag>();
         }
@@ -128,16 +129,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         return Publishers.Where(x => x.PublisherID != publisher.PublisherID).ToList();
     }
 
-    public Publisher? GetPublisherByID(Guid publisherID)
-    {
-        bool hasPublisher = _publisherDictionary.TryGetValue(publisherID, out var publisher);
-        if (!hasPublisher)
-        {
-            return null;
-        }
-
-        return publisher;
-    }
+    public Publisher? GetPublisherByID(Guid publisherID) => _publisherDictionary.GetValueOrDefault(publisherID);
 
     public Publisher GetPublisherByIDOrThrow(Guid publisherID)
     {
@@ -152,12 +144,8 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public Publisher GetPublisherByOrFakePublisher(Guid publisherID)
     {
-        if (!_publisherDictionary.TryGetValue(publisherID, out var publisher))
-        {
-            return Publisher.GetFakePublisher(Key);
-        }
-
-        return publisher;
+        var publisher = _publisherDictionary.GetValueOrDefault(publisherID);
+        return publisher ?? Publisher.GetFakePublisher(Key);
     }
 
     public bool Equals(LeagueYear? other)

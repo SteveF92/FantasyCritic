@@ -49,7 +49,8 @@ public static class TimeFunctions
             if (yearPart.HasValue)
             {
                 var recognizedSubYears = GetRecognizedSubYears(yearPart.Value);
-                if (recognizedSubYears.TryGetValue(splitString.First().ToLower(), out var subYearPart))
+                var subYearPart = recognizedSubYears.GetValueOrDefault(splitString.First().ToLower());
+                if (subYearPart is not null)
                 {
                     return new EstimatedReleaseDateRange(subYearPart.MinimumReleaseDate, subYearPart.MaximumReleaseDate);
                 }

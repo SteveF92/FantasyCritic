@@ -103,8 +103,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             await GetMasterGames();
         }
 
-        _masterGamesCache.TryGetValue(masterGameID, out MasterGame? foundMasterGame);
-        return foundMasterGame;
+        return _masterGamesCache.GetValueOrDefault(masterGameID);
     }
 
     public async Task<MasterGameYear?> GetMasterGameYear(Guid masterGameID, int year)
@@ -114,9 +113,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             await GetMasterGameYears(year);
         }
 
-        var yearCache = _masterGameYearsCache[year];
-        yearCache.TryGetValue(masterGameID, out MasterGameYear? foundMasterGame);
-        return foundMasterGame;
+        return _masterGameYearsCache[year].GetValueOrDefault(masterGameID);
     }
 
     public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)

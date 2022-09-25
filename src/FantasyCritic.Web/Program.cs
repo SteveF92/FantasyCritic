@@ -103,16 +103,9 @@ public class Program
                 config.Filter
                     .ByIncludingOnly(logEvent =>
                     {
-                        if (logEvent.Properties.TryGetValue("SourceContext", out var sourceContext))
-                        {
-                            var sourceContextString = sourceContext?.ToString();
-                            if (sourceContextString is not null && sourceContextString.StartsWith("\"FantasyCritic"))
-                            {
-                                return true;
-                            }
-                        }
-
-                        return false;
+                        var sourceContext = logEvent.Properties.GetValueOrDefault("SourceContext");
+                        var sourceContextString = sourceContext?.ToString();
+                        return sourceContextString != null && sourceContextString.StartsWith("\"FantasyCritic");
                     })
                     .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
             })
@@ -168,16 +161,9 @@ public class Program
                 config.Filter
                     .ByIncludingOnly(logEvent =>
                     {
-                        if (logEvent.Properties.TryGetValue("SourceContext", out var sourceContext))
-                        {
-                            var sourceContextString = sourceContext?.ToString();
-                            if (sourceContextString is not null && sourceContextString.StartsWith("\"FantasyCritic"))
-                            {
-                                return true;
-                            }
-                        }
-
-                        return false;
+                        var sourceContext = logEvent.Properties.GetValueOrDefault("SourceContext");
+                        var sourceContextString = sourceContext?.ToString();
+                        return sourceContextString != null && sourceContextString.StartsWith("\"FantasyCritic");
                     })
                     .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
             })
