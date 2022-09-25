@@ -5,11 +5,14 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using Serilog;
 
 namespace FantasyCritic.Lib.Services;
 
 public class DraftService
 {
+    private static readonly ILogger _logger = Log.ForContext<DraftService>();
+
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
     private readonly GameAcquisitionService _gameAcquisitionService;
@@ -109,86 +112,92 @@ public class DraftService
 
     private async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
     {
-        var today = _clock.GetToday();
-        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League, leagueYear.Year);
-        var draftStatus = DraftFunctions.GetDraftStatus(updatedLeagueYear);
-        if (draftStatus is null)
+        int depth = 0;
+        while (true)
         {
-            return (standardGamesAdded, counterPicksAdded);
-        }
-
-        var nextPublisher = draftStatus.NextDraftPublisher;
-        if (!nextPublisher.AutoDraft)
-        {
-            return (standardGamesAdded, counterPicksAdded);
-        }
-
-        if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
-        {
-            return (standardGamesAdded, counterPicksAdded);
-        }
-        if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
-        {
-            var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher);
-            var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher);
-            var availableGamesEligibleInRemainingSlots = new List<PossibleMasterGameYear>();
-            var openSlots = nextPublisher.GetPublisherSlots(updatedLeagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame is null).ToList();
-            foreach (var availableGame in availableGames)
+            _logger.Debug($"Autodrafting for league: {leagueYear.League} at depth: {depth}");
+            var today = _clock.GetToday();
+            var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League, leagueYear.Year);
+            var draftStatus = DraftFunctions.GetDraftStatus(updatedLeagueYear);
+            if (draftStatus is null)
             {
-                foreach (var slot in openSlots)
+                return (standardGamesAdded, counterPicksAdded);
+            }
+
+            var nextPublisher = draftStatus.NextDraftPublisher;
+            if (!nextPublisher.AutoDraft)
+            {
+                return (standardGamesAdded, counterPicksAdded);
+            }
+
+            if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
+            {
+                return (standardGamesAdded, counterPicksAdded);
+            }
+
+            if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
+            {
+                var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher);
+                var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher);
+                var availableGamesEligibleInRemainingSlots = new List<PossibleMasterGameYear>();
+                var openSlots = nextPublisher.GetPublisherSlots(updatedLeagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame is null).ToList();
+                foreach (var availableGame in availableGames)
                 {
-                    var eligibilityFactors = updatedLeagueYear.GetEligibilityFactorsForMasterGame(availableGame.MasterGame.MasterGame, today);
-                    var claimErrors = SlotEligibilityFunctions.GetClaimErrorsForSlot(slot, eligibilityFactors);
-                    if (!claimErrors.Any())
+                    foreach (var slot in openSlots)
                     {
-                        availableGamesEligibleInRemainingSlots.Add(availableGame);
+                        var eligibilityFactors = updatedLeagueYear.GetEligibilityFactorsForMasterGame(availableGame.MasterGame.MasterGame, today);
+                        var claimErrors = SlotEligibilityFunctions.GetClaimErrorsForSlot(slot, eligibilityFactors);
+                        if (!claimErrors.Any())
+                        {
+                            availableGamesEligibleInRemainingSlots.Add(availableGame);
+                            break;
+                        }
+                    }
+                }
+
+                var gamesToTake = publisherWatchList.OrderBy(x => x.Rank)
+                    .Select(x => x.MasterGame)
+                    .Concat(availableGamesEligibleInRemainingSlots.Select(x => x.MasterGame.MasterGame));
+
+                foreach (var possibleGame in gamesToTake)
+                {
+                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
+                    if (autoDraftResult.Success)
+                    {
+                        standardGamesAdded++;
                         break;
                     }
                 }
             }
-
-            var gamesToTake = publisherWatchList.OrderBy(x => x.Rank).Select(x => x.MasterGame)
-                .Concat(availableGamesEligibleInRemainingSlots.Select(x => x.MasterGame.MasterGame));
-
-            foreach (var possibleGame in gamesToTake)
+            else if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
             {
-                var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
-                if (autoDraftResult.Success)
+                var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher)
+                    .SelectMany(x => x.PublisherGames)
+                    .Where(x => !x.CounterPick)
+                    .Where(x => x.MasterGame is not null);
+                var possibleGames = otherPublisherGames.Select(x => x.MasterGame!)
+                    .Where(x => x.AdjustedPercentCounterPick.HasValue)
+                    .OrderByDescending(x => x.AdjustedPercentCounterPick);
+                foreach (var possibleGame in possibleGames)
                 {
-                    standardGamesAdded++;
-                    break;
+                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
+                    if (autoDraftResult.Success)
+                    {
+                        counterPicksAdded++;
+                        break;
+                    }
                 }
             }
-        }
-        else if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
-        {
-            var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher)
-                .SelectMany(x => x.PublisherGames)
-                .Where(x => !x.CounterPick)
-                .Where(x => x.MasterGame is not null);
-            var possibleGames = otherPublisherGames
-                .Select(x => x.MasterGame!)
-                .Where(x => x.AdjustedPercentCounterPick.HasValue)
-                .OrderByDescending(x => x.AdjustedPercentCounterPick);
-            foreach (var possibleGame in possibleGames)
+            else
             {
-                var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame,
-                    draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
-                if (autoDraftResult.Success)
-                {
-                    counterPicksAdded++;
-                    break;
-                }
+                return (standardGamesAdded, counterPicksAdded);
             }
-        }
-        else
-        {
-            return (standardGamesAdded, counterPicksAdded);
-        }
 
-        return await AutoDraftForLeague(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
+            leagueYear = updatedLeagueYear;
+            depth++;
+        }
     }
 
     public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher publisherMakingCounterPick)
