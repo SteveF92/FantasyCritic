@@ -8,14 +8,12 @@ namespace FantasyCritic.Lib.Services;
 public class PublisherService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
-    private readonly LeagueMemberService _leagueMemberService;
     private readonly IClock _clock;
 
 
-    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, LeagueMemberService leagueMemberService, IClock clock)
+    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
-        _leagueMemberService = leagueMemberService;
         _clock = clock;
     }
 

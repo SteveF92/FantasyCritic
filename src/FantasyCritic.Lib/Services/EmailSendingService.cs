@@ -16,7 +16,6 @@ public class EmailSendingService
     private readonly FantasyCriticUserManager _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InterLeagueService _interLeagueService;
-    private readonly FantasyCriticService _fantasyCriticService;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly string _baseAddress;
@@ -24,14 +23,12 @@ public class EmailSendingService
     private readonly IClock _clock;
 
     public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
-        InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService,
-        GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
-        EmailSendingServiceConfiguration configuration, IClock clock)
+        InterLeagueService interLeagueService, GameAcquisitionService gameAcquisitionService,
+        LeagueMemberService leagueMemberService, EmailSendingServiceConfiguration configuration, IClock clock)
     {
         _userManager = userManager;
         _emailSender = emailSender;
         _interLeagueService = interLeagueService;
-        _fantasyCriticService = fantasyCriticService;
         _gameAcquisitionService = gameAcquisitionService;
         _leagueMemberService = leagueMemberService;
         _baseAddress = configuration.BaseAddress;

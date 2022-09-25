@@ -11,13 +11,11 @@ public class LeagueMemberService
 
     private readonly FantasyCriticUserManager _userManager;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
-    private readonly IClock _clock;
 
-    public LeagueMemberService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public LeagueMemberService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo)
     {
         _userManager = userManager;
         _fantasyCriticRepo = fantasyCriticRepo;
-        _clock = clock;
     }
 
     public async Task<bool> UserIsInLeague(League league, FantasyCriticUser user)

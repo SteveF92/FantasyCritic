@@ -13,21 +13,16 @@ public class DraftService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
     private readonly GameAcquisitionService _gameAcquisitionService;
-    private readonly LeagueMemberService _leagueMemberService;
     private readonly PublisherService _publisherService;
-    private readonly InterLeagueService _interLeagueService;
     private readonly GameSearchingService _gameSearchingService;
 
-    public DraftService(GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
-        PublisherService publisherService, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo,
-        GameSearchingService gameSearchingService, IClock clock)
+    public DraftService(GameAcquisitionService gameAcquisitionService, PublisherService publisherService,
+        IFantasyCriticRepo fantasyCriticRepo, GameSearchingService gameSearchingService, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
 
-        _leagueMemberService = leagueMemberService;
         _publisherService = publisherService;
-        _interLeagueService = interLeagueService;
         _gameAcquisitionService = gameAcquisitionService;
         _gameSearchingService = gameSearchingService;
     }
