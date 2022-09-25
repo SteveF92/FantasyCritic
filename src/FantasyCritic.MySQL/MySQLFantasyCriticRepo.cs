@@ -38,7 +38,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueID = id
         };
 
-        string leagueSQL = "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0;";
+        const string leagueSQL = "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0;";
         LeagueEntity leagueEntity = await connection.QuerySingleOrDefaultAsync<LeagueEntity>(leagueSQL, queryObject);
         if (leagueEntity is null)
         {
@@ -47,7 +47,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         FantasyCriticUser manager = await _userStore.FindByIdAsync(leagueEntity.LeagueManager.ToString(), CancellationToken.None);
 
-        string leagueYearSQL = "select Year from tbl_league_year where LeagueID = @leagueID;";
+        const string leagueYearSQL = "select Year from tbl_league_year where LeagueID = @leagueID;";
         IEnumerable<int> years = await connection.QueryAsync<int>(leagueYearSQL, queryObject);
         League league = leagueEntity.ToDomain(manager, years);
         return league;
@@ -622,8 +622,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        string deleteSQL = "delete from tbl_league_publisherqueue where PublisherID = @PublisherID AND MasterGameID = @MasterGameID";
-        string alterRankSQL = "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority";
+        const string deleteSQL = "delete from tbl_league_publisherqueue where PublisherID = @PublisherID AND MasterGameID = @MasterGameID";
+        const string alterRankSQL = "update tbl_league_pickupbid SET Priority = Priority - 1 where PublisherID = @publisherID and Successful is NULL and Priority > @oldPriority";
         await connection.ExecuteAsync(deleteSQL, new { queuedGame.Publisher.PublisherID, queuedGame.MasterGame.MasterGameID }, transaction);
         await connection.ExecuteAsync(alterRankSQL, new { publisherID = queuedGame.Publisher.PublisherID, oldPriority = queuedGame.Rank }, transaction);
         await transaction.CommitAsync();
@@ -632,7 +632,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
     {
         int tempPosition = queueRanks.Select(x => x.Value).Max() + 1;
-        string updateSQL = "update tbl_league_publisherqueue set `Rank` = @rank where `PublisherID` = @PublisherID AND `MasterGameID` = @MasterGameID;";
+        const string updateSQL = "update tbl_league_publisherqueue set `Rank` = @rank where `PublisherID` = @PublisherID AND `MasterGameID` = @MasterGameID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
@@ -785,7 +785,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task ResetDraft(LeagueYear leagueYear, Instant timestamp)
     {
-        string gameDeleteSQL = "delete from tbl_league_publishergame where PublisherID in @publisherIDs";
+        const string gameDeleteSQL = "delete from tbl_league_publishergame where PublisherID in @publisherIDs";
         string draftResetSQL = $"update tbl_league_year SET PlayStatus = '{PlayStatus.NotStartedDraft.Value}' WHERE LeagueID = @leagueID and Year = @year";
 
         LeagueAction resetDraftAction = new LeagueAction(leagueYear.GetManagerPublisher()!, timestamp, "Draft Reset", "Draft was reset.", true);
@@ -862,11 +862,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<SpecialGameSlotEntity> slotEntities = options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
             new SpecialGameSlotEntity(Guid.NewGuid(), league, initialYear, slot.SpecialSlotPosition, tag)).ToList();
 
-        string createLeagueSQL =
+        const string createLeagueSQL =
             "insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES " +
             "(@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);";
 
-        string createLeagueYearSQL =
+        const string createLeagueYearSQL =
             "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
             "GrantSuperDrops,CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,PlayStatus,DraftOrderSet,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
             "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
@@ -895,15 +895,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<SpecialGameSlotEntity> slotEntities = leagueYear.Options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
             new SpecialGameSlotEntity(Guid.NewGuid(), leagueYear.League, leagueYear.Year, slot.SpecialSlotPosition, tag)).ToList();
 
-        string editLeagueYearSQL =
+        const string editLeagueYearSQL =
             "update tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, CounterPicksToDraft = @CounterPicksToDraft, " +
             "FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames, " +
             "DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem, " +
             "PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem, " +
             "CounterPickDeadlineMonth = @CounterPickDeadlineMonth, CounterPickDeadlineDay = @CounterPickDeadlineDay WHERE LeagueID = @LeagueID and Year = @Year";
 
-        var deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
-        var deleteSpecialSlotsSQL = "delete from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
+        const string deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
+        const string deleteSpecialSlotsSQL = "delete from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -923,7 +923,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, PlayStatus.NotStartedDraft, false);
         var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, year, x));
 
-        string newLeagueYearSQL =
+        const string newLeagueYearSQL =
             "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
             "DraftSystem,PickupSystem,ScoringSystem,TradingSystem,PlayStatus,DraftOrderSet,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
             "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
@@ -973,7 +973,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
     {
-        string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
+        const string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
         var insertObjects = mostRecentActivePlayers.Select(x => new
         {
             leagueID = league.LeagueID,
@@ -988,8 +988,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange)
     {
-        string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";
-        string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
+        const string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";
+        const string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -1310,7 +1310,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
     {
-        string updateSQL = "update tbl_league_hasuser SET Archived = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";
+        const string updateSQL = "update tbl_league_hasuser SET Archived = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";
         var parameters = new { leagueID = league.LeagueID, userID = user.Id, archive };
 
         await using var connection = new MySqlConnection(_connectionString);
@@ -1320,13 +1320,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task FullyRemovePublisher(LeagueYear leagueYear, Publisher deletePublisher)
     {
-        string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";
-        string deleteQueueSQL = "delete from tbl_league_publisherqueue where PublisherID = @publisherID;";
-        string deleteHistorySQL = "delete from tbl_league_action where PublisherID = @publisherID;";
-        string deletePublisherGameSQL = "delete from tbl_league_publishergame WHERE PublisherID = @publisherID;";
-        string deletePublisherBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @publisherID;";
-        string deletePublisherDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @publisherID;";
-        string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
+        const string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";
+        const string deleteQueueSQL = "delete from tbl_league_publisherqueue where PublisherID = @publisherID;";
+        const string deleteHistorySQL = "delete from tbl_league_action where PublisherID = @publisherID;";
+        const string deletePublisherGameSQL = "delete from tbl_league_publishergame WHERE PublisherID = @publisherID;";
+        const string deletePublisherBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @publisherID;";
+        const string deletePublisherDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @publisherID;";
+        const string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
 
         var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher).OrderBy(x => x.DraftPosition).ToList();
         IEnumerable<SetDraftOrderEntity> setDraftOrderEntities = remainingOrderedPublishers.Select((publisher, index) => new SetDraftOrderEntity(publisher.PublisherID, index + 1));
@@ -1351,8 +1351,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
     {
-        string deleteUserSQL = "delete from tbl_league_hasuser where LeagueID = @leagueID and UserID = @userID;";
-        string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and UserID = @userID;";
+        const string deleteUserSQL = "delete from tbl_league_hasuser where LeagueID = @leagueID and UserID = @userID;";
+        const string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and UserID = @userID;";
 
         var userDeleteObject = new
         {
@@ -1385,10 +1385,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task CreatePublisher(Publisher publisher)
     {
-        string publisherCreateSQL =
+        const string publisherCreateSQL =
             "insert into tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,PublisherSlogan,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped,SuperDropsAvailable) VALUES " +
             "(@PublisherID,@PublisherName,@PublisherIcon,@PublisherSlogan,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped,@SuperDropsAvailable);";
-        string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 0 WHERE LeagueID = @LeagueID AND Year = @Year;";
+        const string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 0 WHERE LeagueID = @LeagueID AND Year = @Year;";
 
         var entity = new PublisherEntity(publisher);
         var leagueYearKey = new LeagueYearKeyEntity(publisher.LeagueYearKey);
@@ -1633,7 +1633,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var counterPartyComponents = trade.CounterPartyMasterGames.Select(x => new TradeComponentEntity(trade.TradeID, TradingParty.CounterParty, x)).ToList();
         var allTradeComponents = proposerComponents.Concat(counterPartyComponents).ToList();
 
-        string baseTableSQL = "INSERT INTO tbl_league_trade(TradeID,LeagueID,Year,ProposerPublisherID,CounterPartyPublisherID,ProposerBudgetSendAmount,CounterPartyBudgetSendAmount," +
+        const string baseTableSQL = "INSERT INTO tbl_league_trade(TradeID,LeagueID,Year,ProposerPublisherID,CounterPartyPublisherID,ProposerBudgetSendAmount,CounterPartyBudgetSendAmount," +
                               "Message,ProposedTimestamp,AcceptedTimestamp,CompletedTimestamp,Status) VALUES" +
                               "(@TradeID, @LeagueID, @Year, @ProposerPublisherID, @CounterPartyPublisherID, @ProposerBudgetSendAmount," +
                               "@CounterPartyBudgetSendAmount, @Message, @ProposedTimestamp, @AcceptedTimestamp, @CompletedTimestamp, @Status);";
@@ -1647,13 +1647,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
     {
-        string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @leagueID AND Year = @year;";
-        string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
-                                   "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
-                                   "WHERE LeagueID = @leagueID AND Year = @year;";
-        string voteTableSQL = "select tbl_league_tradevote.* from tbl_league_tradevote " +
-                              "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
-                              "WHERE LeagueID = @leagueID AND Year = @year;";
+        const string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @leagueID AND Year = @year;";
+        const string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
+                                         "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
+                                         "WHERE LeagueID = @leagueID AND Year = @year;";
+        const string voteTableSQL = "select tbl_league_tradevote.* from tbl_league_tradevote " +
+                                    "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
+                                    "WHERE LeagueID = @leagueID AND Year = @year;";
 
         var queryObject = new
         {
@@ -1718,13 +1718,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<Trade?> GetTrade(Guid tradeID)
     {
-        string baseTableSQL = "select * from tbl_league_trade WHERE TradeID = @tradeID;";
-        string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
-                                   "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
-                                   "WHERE tbl_league_trade.TradeID = @tradeID;";
-        string voteTableSQL = "select tbl_league_tradevote.* from tbl_league_tradevote " +
-                              "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
-                              "WHERE tbl_league_trade.TradeID = @tradeID;";
+        const string baseTableSQL = "select * from tbl_league_trade WHERE TradeID = @tradeID;";
+        const string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
+                                         "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
+                                         "WHERE tbl_league_trade.TradeID = @tradeID;";
+        const string voteTableSQL = "select tbl_league_tradevote.* from tbl_league_tradevote " +
+                                    "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
+                                    "WHERE tbl_league_trade.TradeID = @tradeID;";
 
         var queryObject = new
         {
@@ -2086,7 +2086,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame)
     {
-        string mergeSQL =
+        const string mergeSQL =
             "UPDATE tbl_league_droprequest SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_league_eligibilityoverride SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_league_pickupbid SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
@@ -2100,8 +2100,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "UPDATE tbl_mastergame_subgame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_royale_publishergame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;";
 
-        string removeGameSQL = "DELETE FROM tbl_mastergame WHERE MasterGameID = @removeMasterGameID;";
-        string removeTagsSQL = "DELETE FROM tbl_mastergame_hastag WHERE MasterGameID = @removeMasterGameID;";
+        const string removeGameSQL = "DELETE FROM tbl_mastergame WHERE MasterGameID = @removeMasterGameID;";
+        const string removeTagsSQL = "DELETE FROM tbl_mastergame_hastag WHERE MasterGameID = @removeMasterGameID;";
 
         var requestObject = new
         {
@@ -2281,8 +2281,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueAction leagueAction)
     {
-        string updateDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
-        string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 1 WHERE LeagueID = @LeagueID AND Year = @Year;";
+        const string updateDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
+        const string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 1 WHERE LeagueID = @LeagueID AND Year = @Year;";
         var leagueYearKey = new LeagueYearKeyEntity(leagueAction.Publisher.LeagueYearKey);
         var tempPositions = draftPositions.Select(x => new SetDraftOrderEntity(x.Key.PublisherID, x.Value + 100));
         var finalPositions = draftPositions.Select(x => new SetDraftOrderEntity(x.Key.PublisherID, x.Value));
@@ -2480,7 +2480,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags)
     {
-        string deleteSQL = "DELETE from tbl_league_tagoverride where LeagueID = @leagueID AND Year = @year AND MasterGameID = @masterGameID;";
+        const string deleteSQL = "DELETE from tbl_league_tagoverride where LeagueID = @leagueID AND Year = @year AND MasterGameID = @masterGameID;";
 
         var deleteObject = new
         {
@@ -2696,9 +2696,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task UpdateSystemWideValues(SystemWideValues systemWideValues)
     {
-        string deleteSQL = "delete from tbl_caching_systemwidevalues;";
-        string deletePositionsSQL = "delete from tbl_caching_averagepositionpoints;";
-        string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AveragePickupOnlyStandardGamePoints,@AverageCounterPickPoints);";
+        const string deleteSQL = "delete from tbl_caching_systemwidevalues;";
+        const string deletePositionsSQL = "delete from tbl_caching_averagepositionpoints;";
+        const string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AveragePickupOnlyStandardGamePoints,@AverageCounterPickPoints);";
 
         SystemWideValuesEntity entity = new SystemWideValuesEntity(systemWideValues);
         var positionEntities = systemWideValues.AverageStandardGamePointsByPickPosition.Select(x => new AveragePositionPointsEntity(x)).ToList();
@@ -2987,14 +2987,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)
     {
-        var messageSQL = "select * from tbl_league_managermessage where LeagueID = @leagueID AND Year = @year AND Deleted = 0;";
+        const string messageSQL = "select * from tbl_league_managermessage where LeagueID = @leagueID AND Year = @year AND Deleted = 0;";
         var queryObject = new
         {
             leagueID = leagueYear.League.LeagueID,
             year = leagueYear.Year
         };
 
-        var dismissSQL = "select * from tbl_league_managermessagedismissal where MessageID in @messageIDs;";
+        const string dismissSQL = "select * from tbl_league_managermessagedismissal where MessageID in @messageIDs;";
 
         IEnumerable<ManagerMessageEntity> messageEntities;
         IEnumerable<ManagerMessageDismissalEntity> dismissalEntities;

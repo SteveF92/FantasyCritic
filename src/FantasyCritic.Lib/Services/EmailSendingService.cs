@@ -108,7 +108,7 @@ public class EmailSendingService
     private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<EmailPublicBiddingSet> publicBiddingSet)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - This Week's Public Bids";
+        const string emailSubject = "FantasyCritic - This Week's Public Bids";
         PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress, _isProduction);
 
         var htmlResult = await GetHTMLString("PublicBids.cshtml", model);
@@ -119,7 +119,7 @@ public class EmailSendingService
     public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - Confirm your email address.";
+        const string emailSubject = "FantasyCritic - Confirm your email address.";
         ConfirmEmailModel model = new ConfirmEmailModel(user, link);
 
         var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
@@ -130,7 +130,7 @@ public class EmailSendingService
     public async Task SendForgotPasswordEmail(FantasyCriticUser user, string link)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - Reset Your Password.";
+        const string emailSubject = "FantasyCritic - Reset Your Password.";
 
         PasswordResetModel model = new PasswordResetModel(user, link);
         var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
@@ -141,7 +141,7 @@ public class EmailSendingService
     public async Task SendChangeEmail(FantasyCriticUser user, string link)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - Change Your Email.";
+        const string emailSubject = "FantasyCritic - Change Your Email.";
 
         ChangeEmailModel model = new ChangeEmailModel(user, link);
         var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
@@ -152,7 +152,7 @@ public class EmailSendingService
     public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)
     {
         string emailAddress = inviteEmail;
-        string emailSubject = "You have been invited to join a FantasyCritic league!";
+        const string emailSubject = "You have been invited to join a FantasyCritic league!";
 
         LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
         var htmlResult = await GetHTMLString("SiteInvite.cshtml", model);
@@ -163,7 +163,7 @@ public class EmailSendingService
     public async Task SendLeagueInviteEmail(string inviteEmail, League league, string baseURL)
     {
         string emailAddress = inviteEmail;
-        string emailSubject = "You have been invited to join a FantasyCritic league!";
+        const string emailSubject = "You have been invited to join a FantasyCritic league!";
 
         LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
         var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);

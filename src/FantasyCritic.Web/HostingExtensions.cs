@@ -173,9 +173,9 @@ public static class HostingExtensions
         services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
-                var letters = "abcdefghijklmnopqrstuvwxyz";
-                var numbers = "0123456789";
-                var specials = "-._@+ ";
+                const string letters = "abcdefghijklmnopqrstuvwxyz";
+                const string numbers = "0123456789";
+                const string specials = "-._@+ ";
                 options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
             })
             .AddSignInManager<FantasyCriticSignInManager>()
