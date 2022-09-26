@@ -90,7 +90,7 @@ export default {
       return moment(releaseDate).format('MMMM Do, YYYY');
     },
     openCriticLink(game) {
-      return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+      return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     }
   }
 };

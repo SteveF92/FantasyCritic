@@ -161,7 +161,7 @@ export default {
         });
     },
     openCriticLink(openCriticID) {
-      return 'https://opencritic.com/game/' + openCriticID + '/a';
+      return `https://opencritic.com/game/${openCriticID}/a`;
     },
     ggLink(ggToken) {
       return `https://ggapp.io/games/${ggToken}`;

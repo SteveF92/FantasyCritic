@@ -26,6 +26,7 @@ public class MasterGameYearEntity
         OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
         GGToken = masterGameStats.MasterGame.GGToken;
         CriticScore = masterGameStats.MasterGame.CriticScore;
+        OpenCriticSlug = masterGameStats.MasterGame.OpenCriticSlug;
         Notes = masterGameStats.MasterGame.Notes;
         BoxartFileName = masterGameStats.MasterGame.BoxartFileName;
         GGCoverArtFileName = masterGameStats.MasterGame.GGCoverArtFileName;

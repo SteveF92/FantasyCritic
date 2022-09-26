@@ -124,7 +124,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             setFirstTimestamp = ", FirstCriticScoreTimestamp = CURRENT_TIMESTAMP ";
         }
 
-        string sql = $"update tbl_mastergame set CriticScore = @criticScore, HasAnyReviews = @hasAnyReviews {setFirstTimestamp}, Slug = @slug where MasterGameID = @masterGameID";
+        string sql = $"update tbl_mastergame set CriticScore = @criticScore, HasAnyReviews = @hasAnyReviews {setFirstTimestamp}, OpenCriticSlug = @openCriticSlug where MasterGameID = @masterGameID";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
@@ -133,7 +133,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 masterGameID = masterGame.MasterGameID,
                 criticScore = openCriticGame.Score,
                 hasAnyReviews = openCriticGame.HasAnyReviews,
-                slug = openCriticGame.Slug
+                openCriticSlug = openCriticGame.Slug
             });
     }
 

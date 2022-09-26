@@ -115,7 +115,7 @@ export default {
       return moment(this.masterGame.releaseDate).format('MMMM Do, YYYY');
     },
     openCriticLink() {
-      return `https://opencritic.com/game/${this.masterGame.openCriticID}/a`;
+      return `https://opencritic.com/game/${this.masterGame.openCriticID}/${this.masterGame.openCriticSlug ?? 'b'}`;
     }
   }
 };

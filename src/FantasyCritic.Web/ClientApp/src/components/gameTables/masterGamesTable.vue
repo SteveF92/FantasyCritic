@@ -179,7 +179,7 @@ export default {
       return GlobalFunctions.formatMasterGameReleaseDate(game);
     },
     openCriticLink(game) {
-      return 'https://opencritic.com/game/' + game.openCriticID + '/a';
+      return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
