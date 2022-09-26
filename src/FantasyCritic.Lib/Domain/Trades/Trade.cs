@@ -42,6 +42,29 @@ public class Trade
     public IReadOnlyList<TradeVote> TradeVotes { get; }
     public TradeStatus Status { get; }
 
+    public Instant? GetExpirationTime()
+    {
+        if (!Status.IsActive)
+        {
+            return null;
+        }
+
+        List<Instant> actionTimestamps = new List<Instant>()
+        {
+            ProposedTimestamp
+        };
+
+        if (AcceptedTimestamp.HasValue)
+        {
+            actionTimestamps.Add(AcceptedTimestamp.Value);
+        }
+
+        actionTimestamps.AddRange(TradeVotes.Select(x => x.Timestamp));
+
+        var maxTime = actionTimestamps.Max();
+        return maxTime.Plus(Duration.FromDays(7));
+    }
+
     public string? GetTradeError()
     {
         if (Proposer.PublisherID == Guid.Empty || CounterParty.PublisherID == Guid.Empty)

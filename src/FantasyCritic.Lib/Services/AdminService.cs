@@ -9,6 +9,7 @@ using Serilog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.Trades;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -441,6 +442,34 @@ public class AdminService
         }
 
         await _fantasyCriticRepo.GrantSuperDrops(publishersToGrantSuperDrop, superDropActions);
+    }
+
+    public async Task ExpireTrades()
+    {
+        _logger.Information("Expiring trades.");
+        var now = _clock.GetCurrentInstant();
+        var currentDate = now.ToEasternDate();
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
+        IReadOnlyList<Trade> trades = await _fantasyCriticRepo.GetTradesForYear(currentYear!.Year);
+
+        var activeTrades = trades.Where(x => x.Status.IsActive).ToList();
+        List<Trade> tradesToExpire = new List<Trade>();
+        foreach (var trade in activeTrades)
+        {
+            var tradeExpirationTime = trade.GetExpirationTime();
+            if (!tradeExpirationTime.HasValue)
+            {
+                continue;
+            }
+
+            if (now > tradeExpirationTime)
+            {
+                tradesToExpire.Add(trade);
+            }
+        }
+
+        await _fantasyCriticRepo.ExpireTrades(tradesToExpire, now);
     }
 
     public Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)

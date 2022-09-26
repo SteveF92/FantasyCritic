@@ -12,7 +12,6 @@ using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using FantasyCritic.SharedSerialization;
 using Serilog;
-
 namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo
@@ -1716,6 +1715,80 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainTrades;
     }
 
+    public async Task<IReadOnlyList<Trade>> GetTradesForYear(int year)
+    {
+        var leagueYears = await GetLeagueYears(2022);
+        var leagueYearDictionary = leagueYears.ToDictionary(x => x.League.LeagueID);
+
+        const string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @leagueID AND Year = @year;";
+        const string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
+                                         "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
+                                         "WHERE Year = @year;";
+        const string voteTableSQL = "select tbl_league_tradevote.* from tbl_league_tradevote " +
+                                    "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
+                                    "WHERE Year = @year;";
+
+        var queryObject = new
+        {
+            year
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var tradeEntities = await connection.QueryAsync<TradeEntity>(baseTableSQL, queryObject);
+        var componentEntities = await connection.QueryAsync<TradeComponentEntity>(componentTableSQL, queryObject);
+        var voteEntities = await connection.QueryAsync<TradeVoteEntity>(voteTableSQL, queryObject);
+
+        var componentLookup = componentEntities.ToLookup(x => x.TradeID);
+        var voteLookup = voteEntities.ToLookup(x => x.TradeID);
+
+        List<Trade> domainTrades = new List<Trade>();
+        foreach (var tradeEntity in tradeEntities)
+        {
+            var leagueYear = leagueYearDictionary[tradeEntity.LeagueID];
+            Publisher proposer = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.ProposerPublisherID);
+            Publisher counterParty = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.CounterPartyPublisherID);
+
+            var components = componentLookup[tradeEntity.TradeID];
+            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+            foreach (var component in components)
+            {
+                var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Year);
+                if (masterGameYear is null)
+                {
+                    throw new Exception($"Invalid master game when getting trade: {tradeEntity.TradeID}");
+                }
+
+                var domainComponent = new MasterGameYearWithCounterPick(masterGameYear, component.CounterPick);
+                if (component.CurrentParty == TradingParty.Proposer.Value)
+                {
+                    proposerMasterGameYearWithCounterPicks.Add(domainComponent);
+                }
+                else if (component.CurrentParty == TradingParty.CounterParty.Value)
+                {
+                    counterPartyMasterGameYearWithCounterPicks.Add(domainComponent);
+                }
+                else
+                {
+                    throw new Exception($"Invalid party when getting trade: {tradeEntity.TradeID}");
+                }
+            }
+
+            var votes = voteLookup[tradeEntity.TradeID];
+            List<TradeVote> tradeVotes = new List<TradeVote>();
+            foreach (var vote in votes)
+            {
+                var user = await _userStore.FindByIdAsync(vote.UserID.ToString(), CancellationToken.None);
+                var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
+                tradeVotes.Add(domainVote);
+            }
+
+            domainTrades.Add(tradeEntity.ToDomain(leagueYear, proposer, counterParty, proposerMasterGameYearWithCounterPicks, counterPartyMasterGameYearWithCounterPicks, tradeVotes));
+        }
+
+        return domainTrades;
+    }
+
     public async Task<Trade?> GetTrade(Guid tradeID)
     {
         const string baseTableSQL = "select * from tbl_league_trade WHERE TradeID = @tradeID;";
@@ -1798,6 +1871,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         await using var connection = new MySqlConnection(_connectionString);
         await EditTradeStatus(trade, status, acceptedTimestamp, completedTimestamp, connection);
+    }
+
+    public async Task ExpireTrades(List<Trade> tradesToExpire, Instant expireTimestamp)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        string sql = $"update tbl_league_trade set Status = 'Expired', CompletionTimestamp = @expireTimestamp where TradeID IN @tradeIDs";
+        var param = new { tradeIDs = tradesToExpire.Select(x => x.TradeID), expireTimestamp };
+        await connection.ExecuteAsync(sql, param);
     }
 
     private static async Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp, MySqlConnection connection, MySqlTransaction? transaction = null)

@@ -23,6 +23,7 @@ public class TradeViewModel
         CounterPartyBudgetSendAmount = domain.CounterPartyBudgetSendAmount;
         Message = domain.Message;
         ProposedTimestamp = domain.ProposedTimestamp;
+        WillExpireTimestamp = domain.GetExpirationTime();
         AcceptedTimestamp = domain.AcceptedTimestamp;
         CompletedTimestamp = domain.CompletedTimestamp;
         Status = domain.Status.Value;
@@ -45,6 +46,7 @@ public class TradeViewModel
     public uint CounterPartyBudgetSendAmount { get; }
     public string Message { get; }
     public Instant ProposedTimestamp { get; }
+    public Instant? WillExpireTimestamp { get; }
     public Instant? AcceptedTimestamp { get; }
     public Instant? CompletedTimestamp { get; }
     public string Status { get; }

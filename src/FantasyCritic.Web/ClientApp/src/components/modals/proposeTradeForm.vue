@@ -77,7 +77,7 @@
         <div v-show="serverError" class="alert alert-danger">{{ serverError }}</div>
 
         <div slot="modal-footer">
-          <input v-show="counterParty" type="submit" class="btn btn-primary" value="Propose Trade" @click="proposeTrade" />
+          <input v-show="counterParty" type="submit" class="btn btn-primary" value="Propose Trade" :disabled="isBusy" @click="proposeTrade" />
         </div>
       </b-modal>
     </form>
@@ -99,7 +99,8 @@ export default {
       message: '',
       indexer: 0,
       clientError: '',
-      serverError: ''
+      serverError: '',
+      isBusy: false
     };
   },
   computed: {
@@ -157,7 +158,7 @@ export default {
 
       return game.gameName;
     },
-    proposeTrade() {
+    async proposeTrade() {
       this.clientError = this.getTradeError;
       if (this.clientError) {
         return;
@@ -172,16 +173,18 @@ export default {
         counterPartyBudgetSendAmount: this.counterPartyBudgetSendAmount,
         message: this.message
       };
-      axios
-        .post('/api/league/ProposeTrade', request)
-        .then(() => {
-          this.$refs.proposeTradeFormRef.hide();
-          this.notifyAction('You proposed a trade.');
-          this.clearData();
-        })
-        .catch((response) => {
-          this.serverError = response.response.data;
-        });
+
+      this.isBusy = true;
+      try {
+        await axios.post('/api/league/ProposeTrade', request);
+        this.$refs.proposeTradeFormRef.hide();
+        this.notifyAction('You proposed a trade.');
+        this.clearData();
+      } catch (error) {
+        this.serverError = error.response.data;
+      } finally {
+        this.isBusy = false;
+      }
     },
     clearData() {
       this.counterParty = null;
