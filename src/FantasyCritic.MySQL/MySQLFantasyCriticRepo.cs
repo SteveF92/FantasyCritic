@@ -1720,7 +1720,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var leagueYears = await GetLeagueYears(2022);
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.League.LeagueID);
 
-        const string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @leagueID AND Year = @year;";
+        const string baseTableSQL = "select * from tbl_league_trade WHERE Year = @year;";
         const string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
                                          "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
                                          "WHERE Year = @year;";
@@ -1876,7 +1876,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task ExpireTrades(List<Trade> tradesToExpire, Instant expireTimestamp)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        string sql = $"update tbl_league_trade set Status = 'Expired', CompletionTimestamp = @expireTimestamp where TradeID IN @tradeIDs";
+        string sql = $"update tbl_league_trade set Status = 'Expired', CompletedTimestamp = @expireTimestamp where TradeID IN @tradeIDs";
         var param = new { tradeIDs = tradesToExpire.Select(x => x.TradeID), expireTimestamp };
         await connection.ExecuteAsync(sql, param);
     }

@@ -223,4 +223,11 @@ public class AdminController : FantasyCriticController
         await _adminService.GrantSuperDrops();
         return Ok();
     }
+
+    [HttpPost]
+    public async Task<IActionResult> ExpireTrades()
+    {
+        await _adminService.ExpireTrades();
+        return Ok();
+    }
 }
