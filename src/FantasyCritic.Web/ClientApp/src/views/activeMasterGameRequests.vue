@@ -79,7 +79,7 @@ export default {
   methods: {
     fetchMyRequests() {
       axios
-        .get('/api/admin/ActiveMasterGameRequests')
+        .get('/api/factChecker/ActiveMasterGameRequests')
         .then((response) => {
           this.activeRequests = response.data;
         })
@@ -96,7 +96,7 @@ export default {
         masterGameID: this.masterGameID
       };
       axios
-        .post('/api/admin/CompleteMasterGameRequest', request)
+        .post('/api/factChecker/CompleteMasterGameRequest', request)
         .then(() => {
           this.showResponded = true;
         })

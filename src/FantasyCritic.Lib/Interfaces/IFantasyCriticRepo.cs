@@ -92,6 +92,7 @@ public interface IFantasyCriticRepo
 
     Task AddLeagueAction(LeagueAction action);
     Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
+    Task<IReadOnlyList<LeagueAction>> GetLeagueActions(int year);
     Task ChangePublisherName(Publisher publisher, string publisherName);
     Task ChangePublisherIcon(Publisher publisher, string? publisherIcon);
     Task ChangePublisherSlogan(Publisher publisher, string? publisherSlogan);
@@ -133,11 +134,13 @@ public interface IFantasyCriticRepo
     Task<FantasyCriticUser?> GetLeagueYearWinner(Guid leagueID, int year);
     Task CreateTrade(Trade trade);
     Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear);
+    Task<IReadOnlyList<Trade>> GetTradesForYear(int year);
     Task<Trade?> GetTrade(Guid tradeID);
     Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp);
     Task AddTradeVote(TradeVote tradeVote);
     Task DeleteTradeVote(Trade trade, FantasyCriticUser user);
     Task ExecuteTrade(ExecutedTrade executedTrade);
+    Task ExpireTrades(List<Trade> tradesToExpire, Instant expireTimestamp);
     Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions();
     Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear);
     Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action);

@@ -8,14 +8,12 @@ namespace FantasyCritic.Lib.Services;
 public class PublisherService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
-    private readonly LeagueMemberService _leagueMemberService;
     private readonly IClock _clock;
 
 
-    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, LeagueMemberService leagueMemberService, IClock clock)
+    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
-        _leagueMemberService = leagueMemberService;
         _clock = clock;
     }
 
@@ -169,7 +167,8 @@ public class PublisherService
         var slotDictionary = publisher.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
         foreach (var requestedSlotState in requestedPositionsWithGames)
         {
-            if (!slotDictionary.TryGetValue(requestedSlotState.Key, out var moveIntoSlot))
+            var moveIntoSlot = slotDictionary.GetValueOrDefault(requestedSlotState.Key);
+            if (moveIntoSlot is null)
             {
                 return Result.Failure("Invalid movement.");
             }

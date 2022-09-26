@@ -14,6 +14,12 @@ public class FantasyCriticUserViewModel
         EmailConfirmed = user.EmailConfirmed;
     }
 
+    public FantasyCriticUserViewModel(FantasyCriticUser user)
+        : this(user, new List<string>())
+    {
+
+    }
+
     public Guid UserID { get; }
     public string DisplayName { get; }
     public int DisplayNumber { get; }

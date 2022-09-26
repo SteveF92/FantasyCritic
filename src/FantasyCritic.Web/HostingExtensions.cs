@@ -16,19 +16,21 @@ using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.AuthorizationHandlers;
 using FantasyCritic.Web.BackgroundServices;
+using FantasyCritic.Web.Filters;
 using FantasyCritic.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Net.Http.Headers;
 using Serilog;
 using NodaTime.Serialization.JsonNet;
+using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
@@ -45,6 +47,7 @@ public static class HostingExtensions
         var rdsInstanceName = configuration.AssertConfigValue("AWS:rdsInstanceName");
         var awsBucket = configuration.AssertConfigValue("AWS:bucket");
         var mailgunAPIKey = configuration.AssertConfigValue("Mailgun:apiKey");
+        var openCriticAPIKey = configuration.AssertConfigValue("OpenCritic:apiKey");
         var baseAddress = configuration.AssertConfigValue("BaseAddress");
         var discordBotToken = configuration.AssertConfigValue("Discord:BotToken");
 
@@ -58,12 +61,12 @@ public static class HostingExtensions
 
         // Add application services.
         services.AddHttpClient();
-        services.AddTransient<IClock>(factory => clock);
+        services.AddTransient<IClock>(_ => clock);
 
         //MySQL Repos
         string connectionString = configuration.AssertConnectionString("DefaultConnection");
 
-        services.AddSingleton<RepositoryConfiguration>(factory => new RepositoryConfiguration(connectionString, clock));
+        services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
         services.AddSingleton<DiscordConfiguration>(_ => new DiscordConfiguration(discordBotToken));
 
@@ -84,7 +87,7 @@ public static class HostingExtensions
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
 
-        services.AddScoped<PatreonService>(factory => new PatreonService(
+        services.AddScoped<PatreonService>(_ => new PatreonService(
             configuration.AssertConfigValue("PatreonService:AccessToken"),
             configuration.AssertConfigValue("PatreonService:RefreshToken"),
             configuration.AssertConfigValue("Authentication:Patreon:ClientId"),
@@ -92,8 +95,8 @@ public static class HostingExtensions
         ));
 
         var tempFolder = Path.Combine(rootFolder, "Temp");
-        services.AddScoped<IHypeFactorService>(factory => new LambdaHypeFactorService(awsRegion, awsBucket, tempFolder));
-        services.AddScoped<IRDSManager>(factory => new RDSManager(rdsInstanceName));
+        services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(awsRegion, awsBucket, tempFolder));
+        services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();
         services.AddScoped<GameAcquisitionService>();
@@ -102,7 +105,6 @@ public static class HostingExtensions
         services.AddScoped<InterLeagueService>();
         services.AddScoped<DraftService>();
         services.AddScoped<GameSearchingService>();
-        services.AddScoped<ActionProcessingService>();
         services.AddScoped<TradeService>();
         services.AddScoped<FantasyCriticService>();
         services.AddScoped<RoyaleService>();
@@ -110,13 +112,15 @@ public static class HostingExtensions
         services.AddScoped<DiscordPushService>();
         services.AddScoped<DiscordRequestService>();
 
-        services.AddScoped<IEmailSender>(factory => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+        services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
         services.AddScoped<AdminService>();
 
         services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
         {
-            client.BaseAddress = new Uri("https://api.opencritic.com/api/");
+            client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
+            client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCriticAPIKey);
+            client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "opencritic-api.p.rapidapi.com");
         });
         services.AddHttpClient<IGGService, GGService>(client =>
         {
@@ -129,7 +133,9 @@ public static class HostingExtensions
         services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
         services.AddSingleton<IScheduledTask, EmailSendingTask>();
         services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
-        services.AddScheduler((sender, args) =>
+        services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
+        services.AddSingleton<IScheduledTask, ExpireTradesTask>();
+        services.AddScheduler((_, args) =>
         {
             args.SetObserved();
         });
@@ -162,6 +168,13 @@ public static class HostingExtensions
                 policy.RequireRole("Admin");
             });
 
+            options.AddPolicy("FactChecker", policy =>
+            {
+                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("FactChecker");
+            });
+
             options.AddPolicy("Write", policy =>
             {
                 policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
@@ -172,9 +185,9 @@ public static class HostingExtensions
         services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
-                var letters = "abcdefghijklmnopqrstuvwxyz";
-                var numbers = "0123456789";
-                var specials = "-._@+ ";
+                const string letters = "abcdefghijklmnopqrstuvwxyz";
+                const string numbers = "0123456789";
+                const string specials = "-._@+ ";
                 options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
             })
             .AddSignInManager<FantasyCriticSignInManager>()
@@ -227,9 +240,10 @@ public static class HostingExtensions
                 });
         }
 
-        var keysFolder = Path.Combine(rootFolder, "Keys");
+        services.AddSingleton<IXmlRepository, MySQLXmlRepository>();
+        var serviceProvider = services.BuildServiceProvider();
         services.AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo(keysFolder));
+            .AddKeyManagementOptions(options => options.XmlRepository = serviceProvider.GetService<IXmlRepository>());
 
         services.AddHsts(options =>
         {

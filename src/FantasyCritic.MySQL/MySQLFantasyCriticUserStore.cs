@@ -64,18 +64,18 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
         FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
-        string sql = $@"UPDATE tbl_user SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
-                     $"PatreonDonorNameOverride = @{nameof(FantasyCriticUserEntity.PatreonDonorNameOverride)}, " +
-                     $"DisplayNumber = @{nameof(FantasyCriticUserEntity.DisplayNumber)}, " +
-                     $"EmailAddress = @{nameof(FantasyCriticUserEntity.EmailAddress)}, " +
-                     $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
-                     $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
-                     $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
-                     $"LastChangedCredentials = @{nameof(FantasyCriticUserEntity.LastChangedCredentials)}, " +
-                     $"TwoFactorEnabled = @{nameof(FantasyCriticUserEntity.TwoFactorEnabled)}, " +
-                     $"AuthenticatorKey = @{nameof(FantasyCriticUserEntity.AuthenticatorKey)}, " +
-                     $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
-                     $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
+        const string sql = $@"UPDATE tbl_user SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
+                           $"PatreonDonorNameOverride = @{nameof(FantasyCriticUserEntity.PatreonDonorNameOverride)}, " +
+                           $"DisplayNumber = @{nameof(FantasyCriticUserEntity.DisplayNumber)}, " +
+                           $"EmailAddress = @{nameof(FantasyCriticUserEntity.EmailAddress)}, " +
+                           $"NormalizedEmailAddress = @{nameof(FantasyCriticUserEntity.NormalizedEmailAddress)}, " +
+                           $"PasswordHash = @{nameof(FantasyCriticUserEntity.PasswordHash)}, " +
+                           $"EmailConfirmed = @{nameof(FantasyCriticUserEntity.EmailConfirmed)}, " +
+                           $"LastChangedCredentials = @{nameof(FantasyCriticUserEntity.LastChangedCredentials)}, " +
+                           $"TwoFactorEnabled = @{nameof(FantasyCriticUserEntity.TwoFactorEnabled)}, " +
+                           $"AuthenticatorKey = @{nameof(FantasyCriticUserEntity.AuthenticatorKey)}, " +
+                           $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
+                           $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
         await using (var connection = new MySqlConnection(_connectionString))
         {
@@ -143,7 +143,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             return _userCache.ToList();
         }
 
-        string sql = "select * from tbl_user";
+        const string sql = "select * from tbl_user";
         await using var connection = new MySqlConnection(_connectionString);
         var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(sql);
         var results = userResult.Select(x => x.ToDomain()).ToList();
@@ -159,7 +159,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             return _userCache.Where(x => hashSet.Contains(x.Id)).ToList();
         }
 
-        string sql = "select * from tbl_user WHERE UserID IN @userIDs";
+        const string sql = "select * from tbl_user WHERE UserID IN @userIDs";
         var queryObject = new
         {
             userIDs
@@ -309,12 +309,12 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         await using (var connection = new MySqlConnection(_connectionString))
         {
-            string retrieveSQL = "select RoleID from tbl_user_role where Name = @Name";
+            const string retrieveSQL = "select RoleID from tbl_user_role where Name = @Name";
 
             await connection.OpenAsync(cancellationToken);
             var roleID = await connection.QuerySingleAsync<int>(retrieveSQL, new { Name = roleName });
 
-            string insertSQL = "insert ignore into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 0)";
+            const string insertSQL = "insert ignore into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 0)";
             await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
         }
 
@@ -327,12 +327,12 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         await using (var connection = new MySqlConnection(_connectionString))
         {
-            string retrieveSQL = "select RoleID from tbl_user_role where Name = @Name";
+            const string retrieveSQL = "select RoleID from tbl_user_role where Name = @Name";
 
             await connection.OpenAsync(cancellationToken);
             var roleID = await connection.QuerySingleAsync<int>(retrieveSQL, new { Name = roleName });
 
-            string insertSQL = "insert ignore into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 1)";
+            const string insertSQL = "insert ignore into tbl_user_hasrole (UserID, RoleID, ProgrammaticallyAssigned) VALUES (@UserID, @RoleID, 1)";
             await connection.ExecuteAsync(insertSQL, new { UserID = user.Id, RoleID = roleID });
         }
 
@@ -352,12 +352,12 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         await using (var connection = new MySqlConnection(_connectionString))
         {
-            string retrieveSQL = "select ID from tbl_user_role where Name = @Name";
+            const string retrieveSQL = "select ID from tbl_user_role where Name = @Name";
 
             await connection.OpenAsync(cancellationToken);
             var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
 
-            string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID)";
+            const string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID)";
             await connection.ExecuteAsync(deleteSQL, new { UserID = user.Id, RoleID = roleID });
         }
 
@@ -366,28 +366,28 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public async Task DeleteUserAccount(FantasyCriticUser user)
     {
-        string deleteRoyaleGames = "delete tbl_royale_publishergame from tbl_royale_publishergame " +
-                                   "join tbl_royale_publisher on tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID " +
-                                   "where UserID = @userID;";
-        string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
-                                        "where UserID = @userID;";
-        string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
-        string deleteUnprocessedDrops = "DELETE tbl_league_pickupbid FROM tbl_league_pickupbid " +
-                                        "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID " +
-                                        "WHERE UserID = @userID AND Successful IS null;";
-        string deleteUnprocessedBids = "DELETE tbl_league_droprequest FROM tbl_league_droprequest " +
-                                       "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID " +
-                                       "WHERE UserID = @userID AND Successful IS null;";
-        string deleteExternalLogins = "delete from tbl_user_externallogin where UserID = @userID;";
+        const string deleteRoyaleGames = "delete tbl_royale_publishergame from tbl_royale_publishergame " +
+                                         "join tbl_royale_publisher on tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID " +
+                                         "where UserID = @userID;";
+        const string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
+                                              "where UserID = @userID;";
+        const string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
+        const string deleteUnprocessedDrops = "DELETE tbl_league_pickupbid FROM tbl_league_pickupbid " +
+                                              "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID " +
+                                              "WHERE UserID = @userID AND Successful IS null;";
+        const string deleteUnprocessedBids = "DELETE tbl_league_droprequest FROM tbl_league_droprequest " +
+                                             "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID " +
+                                             "WHERE UserID = @userID AND Successful IS null;";
+        const string deleteExternalLogins = "delete from tbl_user_externallogin where UserID = @userID;";
 
-        string updateUserAccount = "UPDATE tbl_user SET " +
-                                   "DisplayName = '<Deleted>', " +
-                                   "EmailAddress = @fakeEmailAddress, " +
-                                   "NormalizedEmailAddress = @fakeEmailAddress, " +
-                                   "PasswordHash = '', " +
-                                   "SecurityStamp = '', " +
-                                   "IsDeleted = 1 " +
-                                   "WHERE UserID = @userID;";
+        const string updateUserAccount = "UPDATE tbl_user SET " +
+                                         "DisplayName = '<Deleted>', " +
+                                         "EmailAddress = @fakeEmailAddress, " +
+                                         "NormalizedEmailAddress = @fakeEmailAddress, " +
+                                         "PasswordHash = '', " +
+                                         "SecurityStamp = '', " +
+                                         "IsDeleted = 1 " +
+                                         "WHERE UserID = @userID;";
 
         var deleteObject = new
         {
@@ -480,7 +480,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var sql = "DELETE from tbl_user_recoverycode where UserID = @UserID and Code = @RecoveryCode";
+        const string sql = "DELETE from tbl_user_recoverycode where UserID = @UserID and Code = @RecoveryCode";
 
         _userCache = null;
 
@@ -494,7 +494,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var sql = "select count(*) from tbl_user_recoverycode where UserID = @userID";
+        const string sql = "select count(*) from tbl_user_recoverycode where UserID = @userID";
 
         var queryObject = new
         {
@@ -521,8 +521,8 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         await using (var connection = new MySqlConnection(_connectionString))
         {
             await connection.OpenAsync(cancellationToken);
-            string insertSQL = "insert into tbl_user_externallogin (LoginProvider,ProviderKey,UserID,ProviderDisplayName) " +
-                               "VALUES (@LoginProvider,@ProviderKey,@UserID,@ProviderDisplayName);";
+            const string insertSQL = "insert into tbl_user_externallogin (LoginProvider,ProviderKey,UserID,ProviderDisplayName) " +
+                                     "VALUES (@LoginProvider,@ProviderKey,@UserID,@ProviderDisplayName);";
             await connection.ExecuteAsync(insertSQL, entity);
         }
 
@@ -533,7 +533,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var sql = "DELETE from tbl_user_externallogin where LoginProvider = @LoginProvider and ProviderKey = @ProviderKey and UserID = @UserID;";
+        const string sql = "DELETE from tbl_user_externallogin where LoginProvider = @LoginProvider and ProviderKey = @ProviderKey and UserID = @UserID;";
 
         var deleteObject = new
         {
@@ -553,7 +553,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     public async Task<IList<UserLoginInfo>> GetLoginsAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        string sql = "select * from tbl_user_externallogin WHERE UserID = @userID;";
+        const string sql = "select * from tbl_user_externallogin WHERE UserID = @userID;";
         var queryObject = new
         {
             userID = user.Id
@@ -569,9 +569,9 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        string sql = "select tbl_user.* from tbl_user JOIN tbl_user_externallogin " +
-                     "ON tbl_user.UserID = tbl_user_externallogin.UserID " +
-                     "WHERE LoginProvider = @loginProvider AND ProviderKey = @providerKey";
+        const string sql = "select tbl_user.* from tbl_user JOIN tbl_user_externallogin " +
+                           "ON tbl_user.UserID = tbl_user_externallogin.UserID " +
+                           "WHERE LoginProvider = @loginProvider AND ProviderKey = @providerKey";
 
         var queryObject = new
         {
@@ -590,9 +590,9 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public async Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider)
     {
-        string sql = "select tbl_user.*, LoginProvider, ProviderKey, tbl_user_externallogin.UserID, ProviderDisplayName, TimeAdded " +
-                     "FROM tbl_user JOIN tbl_user_externallogin ON tbl_user.UserID = tbl_user_externallogin.UserID " +
-                     "WHERE LoginProvider = @provider;";
+        const string sql = "select tbl_user.*, LoginProvider, ProviderKey, tbl_user_externallogin.UserID, ProviderDisplayName, TimeAdded " +
+                           "FROM tbl_user JOIN tbl_user_externallogin ON tbl_user.UserID = tbl_user_externallogin.UserID " +
+                           "WHERE LoginProvider = @provider;";
 
         var queryObject = new
         {
@@ -620,7 +620,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public async Task<IReadOnlyList<FantasyCriticUserWithEmailSettings>> GetAllEmailSettings()
     {
-        string emailSQL = "select * from tbl_user_emailsettings;";
+        const string emailSQL = "select * from tbl_user_emailsettings;";
         ILookup<Guid, FantasyCriticUserEmailSettingEntity> userEmailSettings;
         await using (var connection = new MySqlConnection(_connectionString))
         {
@@ -667,7 +667,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public async Task<IReadOnlyList<EmailType>> GetEmailSettings(FantasyCriticUser user)
     {
-        string emailSQL = "select * from tbl_user_emailsettings where UserID = @userID;";
+        const string emailSQL = "select * from tbl_user_emailsettings where UserID = @userID;";
         var parameters = new
         {
             userID = user.Id

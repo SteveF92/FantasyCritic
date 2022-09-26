@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.Requests.Admin;
 
@@ -29,7 +30,7 @@ public class CreateMasterGameRequest
     public string? GGToken { get; init; }
     public string? Notes { get; init; }
 
-    public Lib.Domain.MasterGame ToDomain(IClock clock, IEnumerable<MasterGameTag> tags)
+    public Lib.Domain.MasterGame ToDomain(IClock clock, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
     {
         var now = clock.GetCurrentInstant();
         LocalDate minimumReleaseDate = now.ToEasternDate().PlusDays(1);
@@ -39,7 +40,7 @@ public class CreateMasterGameRequest
         }
         Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, minimumReleaseDate, MaximumReleaseDate,
             EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, false, Notes, null, null, null,
-            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, now, new List<MasterSubGame>(), tags);
+            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, now, addedByUser, new List<MasterSubGame>(), tags);
         return masterGame;
     }
 }

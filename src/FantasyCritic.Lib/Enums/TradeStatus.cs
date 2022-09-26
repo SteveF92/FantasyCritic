@@ -9,6 +9,7 @@ public class TradeStatus : TypeSafeEnum<TradeStatus>
     public static readonly TradeStatus RejectedByCounterParty = new TradeStatus("RejectedByCounterParty", false);
     public static readonly TradeStatus RejectedByManager = new TradeStatus("RejectedByManager", false);
     public static readonly TradeStatus Executed = new TradeStatus("Executed", false);
+    public static readonly TradeStatus Expired = new TradeStatus("Expired", false);
 
     // Constructor is private: values are defined within this class only!
     private TradeStatus(string value, bool isActive)

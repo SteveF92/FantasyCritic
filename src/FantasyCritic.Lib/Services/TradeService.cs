@@ -8,8 +8,7 @@ public class TradeService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
 
-    public TradeService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService,
-        IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public TradeService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
@@ -43,12 +42,11 @@ public class TradeService
             return Result.Failure("You must receive something.");
         }
 
-        var counterPartyResult = leagueYear.GetPublisherByID(counterPartyPublisherID);
-        if (counterPartyResult is null)
+        var counterParty = leagueYear.GetPublisherByID(counterPartyPublisherID);
+        if (counterParty is null)
         {
             return Result.Failure("That publisher does not exist");
         }
-        var counterParty = counterPartyResult;
 
         if (!leagueYear.Key.Equals(counterParty.LeagueYearKey))
         {

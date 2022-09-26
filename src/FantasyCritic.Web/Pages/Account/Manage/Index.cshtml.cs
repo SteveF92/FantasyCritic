@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FantasyCritic.Web.Pages.Account.Manage;
 
-public partial class IndexModel : PageModel
+public class IndexModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
     private readonly FantasyCriticSignInManager _signInManager;

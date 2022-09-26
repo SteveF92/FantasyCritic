@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -8,6 +9,7 @@ using Serilog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.Trades;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -28,11 +30,10 @@ public class AdminService
     private readonly PatreonService _patreonService;
     private readonly IClock _clock;
     private readonly AdminServiceConfiguration _configuration;
-    private readonly ActionProcessingService _actionProcessingService;
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration, ActionProcessingService actionProcessingService)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -47,7 +48,6 @@ public class AdminService
         _royaleService = royaleService;
         _hypeFactorService = hypeFactorService;
         _configuration = configuration;
-        _actionProcessingService = actionProcessingService;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -83,6 +83,7 @@ public class AdminService
 
         var currentDate = _clock.GetToday();
         var masterGamesToUpdate = masterGames.Where(x => x.OpenCriticID.HasValue && !x.DoNotRefreshAnything).ToList();
+        int gamesFetched = 0;
         foreach (var masterGame in masterGamesToUpdate)
         {
             if (masterGame.IsReleased(currentDate) && masterGame.ReleaseDate.HasValue)
@@ -99,6 +100,11 @@ public class AdminService
             if (openCriticGame is not null)
             {
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
+                gamesFetched++;
+                if (gamesFetched % 100 == 0)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
             }
             else
             {
@@ -113,7 +119,6 @@ public class AdminService
                 }
 
                 var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value);
-
                 if (subGameOpenCriticGame is not null)
                 {
                     await _interLeagueService.UpdateCriticStats(subGame, subGameOpenCriticGame);
@@ -305,7 +310,10 @@ public class AdminService
         var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        FinalizedActionProcessingResults results = _actionProcessingService.ProcessActions(systemWideValues, leaguesAndBids, leaguesAndDropRequests, publishersInLeagues, processingTime, masterGameYearDictionary);
+        var currentDate = _clock.GetToday();
+
+        var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary);
+        FinalizedActionProcessingResults results = actionProcessor.ProcessActions(leaguesAndBids, leaguesAndDropRequests, publishersInLeagues);
         return results;
     }
 
@@ -334,7 +342,10 @@ public class AdminService
         var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        FinalizedActionProcessingResults results = _actionProcessingService.ProcessSpecialAuctions(systemWideValues, specialAuctionSets, processingTime, masterGameYearDictionary);
+        var currentDate = _clock.GetToday();
+
+        var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary);
+        FinalizedActionProcessingResults results = actionProcessor.ProcessSpecialAuctions(specialAuctionSets);
         return results;
     }
 
@@ -387,14 +398,27 @@ public class AdminService
         await _fantasyCriticRepo.ManualMakePublisherGameSlotsConsistent(currentYear!.Year);
     }
 
-    public async Task GrantSuperDrops(SystemWideValues systemWideValues)
+    public async Task GrantSuperDrops()
     {
+        _logger.Information("Granting super drops.");
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(currentYear!.Year);
         var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.Options.GrantSuperDrops);
+
+        var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
+        var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
+        var automatedGrantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop");
+        var manualGrantActions = new List<LeagueAction>();
+        if (currentYear.Is2022)
+        {
+            manualGrantActions = allSuperDropActions.Where(x => x.ActionType == "Publisher Edited" && x.Description.Contains("Changed 'super drops available' to") && x.Timestamp > _clock.GetSuperDropsGrantTime()).ToList();
+        }
+
+        var publishersAlreadyGranted = automatedGrantActions.Concat(manualGrantActions).Select(x => x.Publisher.PublisherID).ToHashSet();
 
         List<Publisher> publishersToGrantSuperDrop = new List<Publisher>();
         List<LeagueAction> superDropActions = new List<LeagueAction>();
@@ -403,12 +427,49 @@ public class AdminService
             var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
             var highestScoringPublisher = publishersWithProjectedPoints.MaxBy(x => x.Value);
             var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < highestScoringPublisher.Value * 0.65m).ToList();
-            var actions = publishersWithLowScores.Select(x => new LeagueAction(x.Key, now, "Granted Super Drop", "Granted one super drop due to league standings.", false));
-            publishersToGrantSuperDrop.AddRange(publishersWithLowScores.Select(x => x.Key));
+            List<LeagueAction> actions = new List<LeagueAction>();
+            foreach (var publisher in publishersWithLowScores)
+            {
+                if (publishersAlreadyGranted.Contains(publisher.Key.PublisherID))
+                {
+                    continue;
+                }
+
+                actions.Add(new LeagueAction(publisher.Key, now, "Granted Super Drop", "Granted one super drop due to league standings.", false));
+                publishersToGrantSuperDrop.Add(publisher.Key);
+            }
             superDropActions.AddRange(actions);
         }
 
         await _fantasyCriticRepo.GrantSuperDrops(publishersToGrantSuperDrop, superDropActions);
+    }
+
+    public async Task ExpireTrades()
+    {
+        _logger.Information("Expiring trades.");
+        var now = _clock.GetCurrentInstant();
+        var currentDate = now.ToEasternDate();
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
+        IReadOnlyList<Trade> trades = await _fantasyCriticRepo.GetTradesForYear(currentYear!.Year);
+
+        var activeTrades = trades.Where(x => x.Status.IsActive).ToList();
+        List<Trade> tradesToExpire = new List<Trade>();
+        foreach (var trade in activeTrades)
+        {
+            var tradeExpirationTime = trade.GetExpirationTime();
+            if (!tradeExpirationTime.HasValue)
+            {
+                continue;
+            }
+
+            if (now > tradeExpirationTime)
+            {
+                tradesToExpire.Add(trade);
+            }
+        }
+
+        await _fantasyCriticRepo.ExpireTrades(tradesToExpire, now);
     }
 
     public Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)
@@ -615,11 +676,7 @@ public class AdminService
 
                 var bidsForGame = bidsByGame[masterGame];
                 int numberOfBids = bidsForGame.Count();
-                bool hasBids = totalBidAmounts.TryGetValue(masterGame, out long totalBidAmount);
-                if (!hasBids)
-                {
-                    totalBidAmount = 0;
-                }
+                long totalBidAmount = totalBidAmounts.GetValueOrDefault(masterGame);
 
                 var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
                 double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double)cleanMasterGames.Count;
@@ -650,7 +707,8 @@ public class AdminService
                 dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
                 double peakHypeFactor = hypeFactor;
 
-                if (masterGameCacheLookup.TryGetValue(masterGame.MasterGameID, out var cachedMasterGame))
+                var cachedMasterGame = masterGameCacheLookup.GetValueOrDefault(masterGame.MasterGameID);
+                if (cachedMasterGame is not null)
                 {
                     if (cachedMasterGame.PeakHypeFactor > peakHypeFactor)
                     {
@@ -694,7 +752,7 @@ public class AdminService
         var allMasterGames = await _masterGameRepo.GetMasterGames();
         var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);
         var masterGamesWithInternationalDate = allMasterGames.Where(x => x.InternationalReleaseDate.HasValue);
-        Dictionary<MasterGame, List<MasterGameTag>> tagsToAdd = allMasterGames.ToDictionary(x => x, y => new List<MasterGameTag>());
+        Dictionary<MasterGame, List<MasterGameTag>> tagsToAdd = allMasterGames.ToDictionary(x => x, _ => new List<MasterGameTag>());
 
         foreach (var masterGame in masterGamesWithEarlyAccessDate)
         {

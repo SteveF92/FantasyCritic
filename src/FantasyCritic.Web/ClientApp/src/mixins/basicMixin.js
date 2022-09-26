@@ -3,7 +3,7 @@ import GlobalFunctions from '@/globalFunctions';
 
 let basicMixin = {
   computed: {
-    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'authIsBusy']),
+    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'authIsBusy']),
     displayName() {
       if (!this.$store.getters.userInfo) {
         return;

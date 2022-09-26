@@ -12,15 +12,42 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NodaTime.Testing" Version="3.1.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
+    <PackageReference Include="NodaTime.Testing" Version="3.1.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="Verify.NUnit" Version="17.10.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
+    <ProjectReference Include="..\FantasyCritic.SharedSerialization\FantasyCritic.SharedSerialization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ActionProcessingTests\BaseActionProcessingTests.SuccessDropsTest.verified.txt">
+      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionProcessingTests\BaseActionProcessingTests.SuccessBidsTest.verified.txt">
+      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionProcessingTests\BaseActionProcessingTests.RemovedPublisherGamesTest.verified.txt">
+      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionProcessingTests\BaseActionProcessingTests.LeagueActionsTest.verified.txt">
+      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionProcessingTests\BaseActionProcessingTests.FailedDropsTest.verified.txt">
+      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionProcessingTests\BaseActionProcessingTests.FailedBidsTest.verified.txt">
+      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionProcessingTests\BaseActionProcessingTests.AddedPublisherGamesTest.verified.txt">
+      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

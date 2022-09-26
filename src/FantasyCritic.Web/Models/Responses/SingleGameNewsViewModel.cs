@@ -13,7 +13,7 @@ public class SingleGameNewsViewModel
 
         if (userMode)
         {
-            if (publishersPairsThatHaveGame.Count() == 1)
+            if (publishersPairsThatHaveGame.Count == 1)
             {
                 var publisherPair = publishersPairsThatHaveGame.Single();
                 LeagueID = publisherPair.LeagueYear.League.LeagueID;
@@ -24,13 +24,13 @@ public class SingleGameNewsViewModel
             }
             else
             {
-                LeagueName = $"{publishersPairsThatHaveGame.Count()} Leagues";
+                LeagueName = $"{publishersPairsThatHaveGame.Count} Leagues";
                 PublisherName = "Multiple";
             }
         }
         else
         {
-            if (publishersPairsThatHaveGame.Count() == 1)
+            if (publishersPairsThatHaveGame.Count == 1)
             {
                 var publisherPair = publishersPairsThatHaveGame.Single();
                 LeagueID = publisherPair.LeagueYear.League.LeagueID;
@@ -39,7 +39,7 @@ public class SingleGameNewsViewModel
                 PublisherID = publisherPair.Publisher.PublisherID;
                 PublisherName = publisherPair.Publisher.PublisherName;
             }
-            else if (publishersPairsThatHaveGame.Count() == 2)
+            else if (publishersPairsThatHaveGame.Count == 2)
             {
                 var standardPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherGames.Where(y => !y.CounterPick).Where(y => y.MasterGame is not null).Any(y => y.MasterGame!.MasterGame.MasterGameID == masterGame.MasterGame.MasterGameID));
                 var counterPickPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherID != standardPublisherPair.Publisher.PublisherID);

@@ -85,16 +85,7 @@ public class LeagueOptions
                                FreeDroppableGames == 0 && WillNotReleaseDroppableGames == 0 &&
                                WillReleaseDroppableGames == 0 && !GrantSuperDrops && TradingSystem.Equals(TradingSystem.NoTrades);
 
-    public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber)
-    {
-        var hasSpecialSlot = _specialSlotDictionary.TryGetValue(slotNumber, out var specialSlot);
-        if (!hasSpecialSlot)
-        {
-            return null;
-        }
-
-        return specialSlot;
-    }
+    public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber) => _specialSlotDictionary.GetValueOrDefault(slotNumber);
 
     public Result Validate()
     {
@@ -184,17 +175,17 @@ public class LeagueOptions
 
         if (FreeDroppableGames != existingOptions.FreeDroppableGames)
         {
-            differences.Add($"Number of 'any unreleased' droppable games per publisher changed from {existingOptions.FreeDroppableGames} to {FreeDroppableGames}.");
+            differences.Add($"Number of 'any unreleased' droppable games per publisher changed from {existingOptions.FreeDroppableGames.ToDroppableString()} to {FreeDroppableGames.ToDroppableString()}.");
         }
 
         if (WillNotReleaseDroppableGames != existingOptions.WillNotReleaseDroppableGames)
         {
-            differences.Add($"Number of 'will not release' droppable games per publisher changed from {existingOptions.WillNotReleaseDroppableGames} to {WillNotReleaseDroppableGames}.");
+            differences.Add($"Number of 'will not release' droppable games per publisher changed from {existingOptions.WillNotReleaseDroppableGames.ToDroppableString()} to {WillNotReleaseDroppableGames.ToDroppableString()}.");
         }
 
         if (WillReleaseDroppableGames != existingOptions.WillReleaseDroppableGames)
         {
-            differences.Add($"Number of 'will release' droppable games per publisher changed from {existingOptions.WillReleaseDroppableGames} to {WillReleaseDroppableGames}.");
+            differences.Add($"Number of 'will release' droppable games per publisher changed from {existingOptions.WillReleaseDroppableGames.ToDroppableString()} to {WillReleaseDroppableGames.ToDroppableString()}.");
         }
 
         if (DropOnlyDraftGames != existingOptions.DropOnlyDraftGames)
@@ -264,6 +255,11 @@ public class LeagueOptions
         if (!differences.Any())
         {
             return null;
+        }
+
+        if (differences.Count == 1)
+        {
+            return differences.Single();
         }
 
         string finalString = string.Join("\n", differences.Select(x => $"• {x}"));

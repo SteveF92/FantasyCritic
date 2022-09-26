@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -10,11 +11,13 @@ public class InterLeagueService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
+    private readonly IClock _clock;
 
-    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo)
+    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
+        _clock = clock;
     }
 
     public Task<SystemWideSettings> GetSystemWideSettings()
@@ -37,9 +40,18 @@ public class InterLeagueService
         return _masterGameRepo.CreateMasterGame(masterGame);
     }
 
-    public Task EditMasterGame(MasterGame masterGame)
+    public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
     {
-        return _masterGameRepo.EditMasterGame(masterGame);
+        var now = _clock.GetCurrentInstant();
+        var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
+        var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
+        await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
+        return Result.Success();
+    }
+
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)
+    {
+        return _masterGameRepo.GetMasterGameChangeLog(masterGame);
     }
 
     public Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
@@ -153,15 +165,15 @@ public class InterLeagueService
     }
 
     public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime,
-        string responseNote, MasterGame? masterGame)
+        string responseNote, FantasyCriticUser responseUser, MasterGame? masterGame)
     {
-        return _masterGameRepo.CompleteMasterGameRequest(masterGameRequest, responseTime, responseNote, masterGame);
+        return _masterGameRepo.CompleteMasterGameRequest(masterGameRequest, responseTime, responseNote, responseUser, masterGame);
     }
 
     public Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
-        string responseNote)
+        string responseNote, FantasyCriticUser responseUser)
     {
-        return _masterGameRepo.CompleteMasterGameChangeRequest(masterGameRequest, responseTime, responseNote);
+        return _masterGameRepo.CompleteMasterGameChangeRequest(masterGameRequest, responseTime, responseUser, responseNote);
     }
 
     public Task DismissMasterGameRequest(MasterGameRequest masterGameRequest)
@@ -192,5 +204,10 @@ public class InterLeagueService
     public Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()
     {
         return _fantasyCriticRepo.GetActionProcessingSets();
+    }
+
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    {
+        return _masterGameRepo.GetRecentMasterGameChanges();
     }
 }

@@ -32,6 +32,7 @@ public class MasterGameViewModel
         BoxartFileName = masterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.GGCoverArtFileName;
         AddedTimestamp = masterGame.AddedTimestamp;
+        AddedByUser = new FantasyCriticUserViewModel(masterGame.AddedByUser);
 
         Error = error;
         NumberOutstandingCorrections = numberOutstandingCorrections;
@@ -51,6 +52,7 @@ public class MasterGameViewModel
         AveragedScore = false;
         OpenCriticID = masterSubGame.OpenCriticID;
         SubGames = null;
+        AddedByUser = null;
         Tags = new List<string>();
     }
 
@@ -79,6 +81,7 @@ public class MasterGameViewModel
     public string? BoxartFileName { get; }
     public string? GGCoverArtFileName { get; }
     public Instant AddedTimestamp { get; }
+    public FantasyCriticUserViewModel? AddedByUser { get; }
     public bool Error { get; }
     public int NumberOutstandingCorrections { get; }
 }

@@ -56,6 +56,7 @@
         </a>
         <span v-else>Not linked to OpenCritic</span>
       </li>
+      <li v-if="isFactChecker">Added by {{ masterGame.addedByUser.displayName }}</li>
     </ul>
     <div v-if="masterGame.tags && masterGame.tags.length > 0" class="long-tag-list">
       <h4>Tags</h4>

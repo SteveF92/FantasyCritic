@@ -11,6 +11,7 @@ import EditLeague from '@/views/editLeague';
 import Publisher from '@/views/publisher';
 import MasterGame from '@/views/masterGame';
 import MasterGames from '@/views/masterGames';
+import RecentMasterGameChanges from '@/views/recentMasterGameChanges';
 import PublicLeagues from '@/views/publicLeagues';
 import LeagueHistory from '@/views/leagueHistory';
 import AdminConsole from '@/views/adminConsole';
@@ -107,6 +108,15 @@ export const routes = [
     name: 'masterGames',
     meta: {
       title: 'Games',
+      isPublic: true
+    }
+  },
+  {
+    path: '/gameChanges',
+    component: RecentMasterGameChanges,
+    name: 'gameChanges',
+    meta: {
+      title: 'Game Changes',
       isPublic: true
     }
   },

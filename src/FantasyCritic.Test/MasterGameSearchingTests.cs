@@ -37,7 +37,7 @@ public class MasterGameSearchingTests
     }
 
     [Test]
-    public async Task MispelledStringSekiroTest()
+    public async Task MisspelledStringSekiroTest()
     {
         var searchResults = await SearchGames("Sakiro: Shadows Die Twice");
 
@@ -46,7 +46,7 @@ public class MasterGameSearchingTests
     }
 
     [Test]
-    public async Task MispelledPartStringSekiroTest()
+    public async Task MisspelledPartStringSekiroTest()
     {
         var searchResults = await SearchGames("Sakiro");
 
@@ -73,7 +73,7 @@ public class MasterGameSearchingTests
     }
 
     [Test]
-    public async Task MispelledStringMetroidTest()
+    public async Task MisspelledStringMetroidTest()
     {
         var searchResults = await SearchGames("Matroid Prime 4");
 
@@ -82,7 +82,7 @@ public class MasterGameSearchingTests
     }
 
     [Test]
-    public async Task MispelledPartStringMetroidTest()
+    public async Task MisspelledPartStringMetroidTest()
     {
         var searchResults = await SearchGames("Matroid");
 
@@ -100,7 +100,7 @@ public class MasterGameSearchingTests
     }
 
     [Test]
-    public async Task SkippedWordMispelledMetroidTest()
+    public async Task SkippedWordMisspelledMetroidTest()
     {
         var searchResults = await SearchGames("Matroid 4");
 

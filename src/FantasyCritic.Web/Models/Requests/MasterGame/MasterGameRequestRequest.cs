@@ -39,6 +39,6 @@ public class MasterGameRequestRequest
         var ggToken = URLParsingExtensions.GetGGTokenFromURL(GGLink);
 
         return new MasterGameRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, GameName, steamID, openCriticID, ggToken,
-            ReleaseDate, EstimatedReleaseDate, false, null, null, null, false);
+            ReleaseDate, EstimatedReleaseDate, false, null, null, null, null, false);
     }
 }

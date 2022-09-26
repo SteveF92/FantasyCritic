@@ -11,7 +11,6 @@ public class ComparableLeagueActionViewModel
         PublisherName = domain.Publisher.PublisherName;
         ActionType = domain.ActionType;
         Description = domain.Description;
-        ManagerAction = domain.ManagerAction;
     }
 
     public Guid LeagueID { get; }
@@ -19,5 +18,4 @@ public class ComparableLeagueActionViewModel
     public string PublisherName { get; }
     public string ActionType { get; }
     public string Description { get; }
-    public bool ManagerAction { get; }
 }

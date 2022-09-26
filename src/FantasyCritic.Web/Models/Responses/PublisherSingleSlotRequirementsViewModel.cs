@@ -20,13 +20,6 @@ public class PublisherSingleSlotRequirementsViewModel
         RequiredTags = new List<string>();
     }
 
-    public PublisherSingleSlotRequirementsViewModel(bool counterPick)
-    {
-        BannedTags = new List<string>();
-        RequiredTags = new List<string>();
-        CounterPick = counterPick;
-    }
-
     public IReadOnlyList<string> BannedTags { get; init; }
     public IReadOnlyList<string> RequiredTags { get; init; }
     public bool CounterPick { get; init; }
@@ -38,7 +31,8 @@ public class PublisherSingleSlotRequirementsViewModel
         var bannedTagsWithoutRequiredTags = BannedTags.Except(RequiredTags);
         foreach (var bannedTag in bannedTagsWithoutRequiredTags)
         {
-            if (!tagDictionary.TryGetValue(bannedTag, out var foundTag))
+            var foundTag = tagDictionary.GetValueOrDefault(bannedTag);
+            if (foundTag is null)
             {
                 continue;
             }
@@ -48,7 +42,8 @@ public class PublisherSingleSlotRequirementsViewModel
 
         foreach (var requiredTag in RequiredTags)
         {
-            if (!tagDictionary.TryGetValue(requiredTag, out var foundTag))
+            var foundTag = tagDictionary.GetValueOrDefault(requiredTag);
+            if (foundTag is null)
             {
                 continue;
             }

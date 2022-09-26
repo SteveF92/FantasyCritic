@@ -20,6 +20,12 @@ public class MasterGameRequestViewModel
         {
             MasterGame = new MasterGameViewModel(domain.MasterGame, currentDate);
         }
+
+        if (domain.ResponseUser is not null)
+        {
+            ResponseUser = new FantasyCriticUserViewModel(domain.ResponseUser);
+        }
+
         Hidden = domain.Hidden;
         RequestNote = domain.RequestNote;
     }
@@ -38,6 +44,7 @@ public class MasterGameRequestViewModel
     public bool Answered { get; }
     public string? ResponseNote { get; }
     public Instant? ResponseTimestamp { get; }
+    public FantasyCriticUserViewModel? ResponseUser { get; }
     public MasterGameViewModel? MasterGame { get; }
     public bool Hidden { get; }
 }

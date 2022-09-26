@@ -147,7 +147,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Equals(MasterGame, other.MasterGame) && Year == other.Year;
+        return MasterGame.Equals(other.MasterGame) && Year == other.Year;
     }
 
     public override bool Equals(object? obj)
@@ -155,14 +155,11 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((MasterGameYear)obj);
+        return Equals((MasterGameYear) obj);
     }
 
     public override int GetHashCode()
     {
-        unchecked
-        {
-            return ((MasterGame != null ? MasterGame.GetHashCode() : 0) * 397) ^ Year;
-        }
+        return HashCode.Combine(MasterGame, Year);
     }
 }

@@ -16,11 +16,14 @@
       </div>
       <hr />
       <div class="row">
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-4">
           <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameRequest' }" class="nav-link request-button">Request new Master Game</b-button>
         </div>
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-4">
           <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameChangeRequest' }" class="nav-link request-button">Suggest a Correction</b-button>
+        </div>
+        <div class="col-12 col-lg-4">
+          <b-button variant="info" :to="{ name: 'gameChanges' }" class="nav-link request-button">See Recent Game Changes</b-button>
         </div>
       </div>
 
@@ -66,13 +69,11 @@
 <script>
 import axios from 'axios';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable';
-import BasicMixin from '@/mixins/basicMixin';
 
 export default {
   components: {
     MasterGamesTable
   },
-  mixins: [BasicMixin],
   data() {
     return {
       isBusy: true,

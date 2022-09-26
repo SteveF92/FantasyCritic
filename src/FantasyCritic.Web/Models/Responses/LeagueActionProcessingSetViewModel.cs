@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueActionProcessingSetViewModel
 {
-    public LeagueActionProcessingSetViewModel(LeagueActionProcessingSet domain, LocalDate currentDate)
+    public LeagueActionProcessingSetViewModel(LeagueActionProcessingSet domain, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         LeagueID = domain.LeagueYear.League.LeagueID;
         LeagueName = domain.LeagueYear.League.LeagueName;
@@ -12,8 +12,8 @@ public class LeagueActionProcessingSetViewModel
         ProcessSetID = domain.ProcessSetID;
         ProcessTime = domain.ProcessTime;
         ProcessName = domain.ProcessName;
-        Drops = domain.Drops.Select(x => new DropGameRequestViewModel(x, currentDate)).ToList();
-        Bids = domain.Bids.Select(x => new PickupBidViewModel(x, currentDate)).ToList();
+        Drops = domain.Drops.Select(x => new DropGameRequestViewModel(x, currentDate, masterGameYearDictionary)).ToList();
+        Bids = domain.Bids.Select(x => new PickupBidViewModel(x, currentDate, masterGameYearDictionary)).ToList();
         IsSpecialAuction = domain.ProcessName.Contains("Special", StringComparison.OrdinalIgnoreCase);
     }
 

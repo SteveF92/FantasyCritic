@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.SharedSerialization;
 using Serilog;
 
 namespace FantasyCritic.MySQL;
@@ -34,6 +35,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var possibleTags = await GetMasterGameTags();
+        var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
 
         await using var connection = new MySqlConnection(_connectionString);
         var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tbl_mastergame;");
@@ -50,7 +53,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 .Where(x => tagAssociations.Contains(x.Name))
                 .ToList();
 
-            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags);
+            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
             masterGames.Add(domain);
         }
 
@@ -66,6 +69,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var possibleTags = await GetMasterGameTags();
+        var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
 
         await using var connection = new MySqlConnection(_connectionString);
         var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_mastergameyear where Year = @year;", new { year });
@@ -82,7 +87,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 .Where(x => tagAssociations.Contains(x.Name))
                 .ToList();
 
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), year, tags);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
             masterGames.Add(domain);
         }
 
@@ -98,8 +103,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             await GetMasterGames();
         }
 
-        _masterGamesCache.TryGetValue(masterGameID, out MasterGame? foundMasterGame);
-        return foundMasterGame;
+        return _masterGamesCache.GetValueOrDefault(masterGameID);
     }
 
     public async Task<MasterGameYear?> GetMasterGameYear(Guid masterGameID, int year)
@@ -109,9 +113,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             await GetMasterGameYears(year);
         }
 
-        var yearCache = _masterGameYearsCache[year];
-        yearCache.TryGetValue(masterGameID, out MasterGameYear? foundMasterGame);
-        return foundMasterGame;
+        return _masterGameYearsCache[year].GetValueOrDefault(masterGameID);
     }
 
     public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
@@ -141,7 +143,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             return;
         }
 
-        string sql = "update tbl_mastergame set GGCoverArtFileName = @ggCoverArtFileName where MasterGameID = @masterGameID;";
+        const string sql = "update tbl_mastergame set GGCoverArtFileName = @ggCoverArtFileName where MasterGameID = @masterGameID;";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
@@ -172,13 +174,14 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task CreateMasterGame(MasterGame masterGame)
     {
-        string masterGameCreateSQL = "insert into tbl_mastergame" +
-                                     "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate," +
-                                     "ReleaseDate,OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
-                                     "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,DelayContention,AddedTimestamp) VALUES " +
-                                     "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate," +
-                                     "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
-                                     "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@DelayContention,@AddedTimestamp);";
+        const string masterGameCreateSQL = "insert into tbl_mastergame" +
+                                           "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate," +
+                                           "ReleaseDate,OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
+                                           "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,DelayContention,AddedTimestamp,AddedByUserID) VALUES " +
+                                           "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate," +
+                                           "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
+                                           "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@DelayContention,@AddedTimestamp,@AddedByUserID);";
+
         var entity = new MasterGameEntity(masterGame);
         var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
         var excludeFields = new List<string>() { "TimeAdded" };
@@ -190,54 +193,88 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await transaction.CommitAsync();
     }
 
-    public async Task EditMasterGame(MasterGame masterGame)
+    public async Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries)
     {
-        string editSQL = "UPDATE tbl_mastergame SET " +
-                         "GameName = @GameName, " +
-                         "EstimatedReleaseDate = @EstimatedReleaseDate, " +
-                         "MinimumReleaseDate = @MinimumReleaseDate, " +
-                         "MaximumReleaseDate = @MaximumReleaseDate, " +
-                         "EarlyAccessReleaseDate = @EarlyAccessReleaseDate, " +
-                         "InternationalReleaseDate = @InternationalReleaseDate, " +
-                         "AnnouncementDate = @AnnouncementDate, " +
-                         "ReleaseDate = @ReleaseDate, " +
-                         "OpenCriticID = @OpenCriticID, " +
-                         "GGToken = @GGToken, " +
-                         "CriticScore = @CriticScore, " +
-                         "Notes = @Notes, " +
-                         "BoxartFileName = @BoxartFileName, " +
-                         "GGCoverArtFileName = @GGCoverArtFileName, " +
-                         "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
-                         "DoNotRefreshDate = @DoNotRefreshDate, " +
-                         "DoNotRefreshAnything = @DoNotRefreshAnything, " +
-                         "EligibilityChanged = @EligibilityChanged, " +
-                         "DelayContention = @DelayContention " +
-                         "WHERE MasterGameID = @MasterGameID;";
+        const string editSQL = "UPDATE tbl_mastergame SET " +
+                               "GameName = @GameName, " +
+                               "EstimatedReleaseDate = @EstimatedReleaseDate, " +
+                               "MinimumReleaseDate = @MinimumReleaseDate, " +
+                               "MaximumReleaseDate = @MaximumReleaseDate, " +
+                               "EarlyAccessReleaseDate = @EarlyAccessReleaseDate, " +
+                               "InternationalReleaseDate = @InternationalReleaseDate, " +
+                               "AnnouncementDate = @AnnouncementDate, " +
+                               "ReleaseDate = @ReleaseDate, " +
+                               "OpenCriticID = @OpenCriticID, " +
+                               "GGToken = @GGToken, " +
+                               "CriticScore = @CriticScore, " +
+                               "Notes = @Notes, " +
+                               "BoxartFileName = @BoxartFileName, " +
+                               "GGCoverArtFileName = @GGCoverArtFileName, " +
+                               "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
+                               "DoNotRefreshDate = @DoNotRefreshDate, " +
+                               "DoNotRefreshAnything = @DoNotRefreshAnything, " +
+                               "EligibilityChanged = @EligibilityChanged, " +
+                               "DelayContention = @DelayContention " +
+                               "WHERE MasterGameID = @MasterGameID;";
 
-        string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";
+        const string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";
 
         var entity = new MasterGameEntity(masterGame);
+        var changeLogEntities = changeLogEntries.Select(x => new MasterGameChangeLogEntity(x)).ToList();
         var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
+
         var excludeFields = new List<string>() { "TimeAdded" };
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(editSQL, entity, transaction);
         await connection.ExecuteAsync(deleteTagsSQL, new { masterGame.MasterGameID }, transaction);
+        await connection.BulkInsertAsync<MasterGameChangeLogEntity>(changeLogEntities, "tbl_mastergame_changelog", 500, transaction);
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
         await transaction.CommitAsync();
     }
 
     public async Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
     {
-        var sql = "select distinct MasterGameID from tbl_league_publishergame " +
-                  "join tbl_league_publisher on(tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID) " +
-                  "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
-                  "where Year = @year and tbl_league.TestLeague = 0 and tbl_league.IsDeleted = 0 and MasterGameID IS NOT NULL;";
+        const string sql = "select distinct MasterGameID from tbl_league_publishergame " +
+                        "join tbl_league_publisher on(tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID) " +
+                        "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
+                        "where Year = @year and tbl_league.TestLeague = 0 and tbl_league.IsDeleted = 0 and MasterGameID IS NOT NULL;";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<Guid> guids = await connection.QueryAsync<Guid>(sql, new { year });
         return guids.ToList();
+    }
+
+    public async Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)
+    {
+        var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
+
+        const string sql = "select * from tbl_mastergame_changelog where MasterGameID = @MasterGameID order by Timestamp";
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql, new { masterGame.MasterGameID } );
+
+        return entities.Select(entity => entity.ToDomain(masterGame, userDictionary[entity.ChangedByUserID])).ToList();
+    }
+
+    public async Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    {
+        var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
+
+        var masterGames = await GetMasterGames();
+        var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
+
+        const string sql = "select * from tbl_mastergame_changelog order by Timestamp desc limit 100";
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql);
+
+        var domains = entities
+            .Select(entity => entity.ToDomain(masterGameDictionary[entity.MasterGameID], userDictionary[entity.ChangedByUserID]))
+            .ToList();
+
+        return domains;
     }
 
     public async Task CreateMasterGameRequest(MasterGameRequest domainRequest)
@@ -247,9 +284,9 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
             "insert into tbl_mastergame_request(RequestID,UserID,RequestTimestamp,RequestNote,GameName,SteamID,OpenCriticID,GGToken,ReleaseDate,EstimatedReleaseDate," +
-            "Answered,ResponseTimestamp,ResponseNote,MasterGameID,Hidden) VALUES " +
+            "Answered,ResponseTimestamp,ResponseNote,ResponseUserID,MasterGameID,Hidden) VALUES " +
             "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@GameName,@SteamID,@OpenCriticID,@GGToken,@ReleaseDate,@EstimatedReleaseDate," +
-            "@Answered,@ResponseTimestamp,@ResponseNote,@MasterGameID,@Hidden);",
+            "@Answered,@ResponseTimestamp,@ResponseNote,@ResponseUserID,@MasterGameID,@Hidden);",
             entity);
     }
 
@@ -259,14 +296,14 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,GGToken,Answered,ResponseTimestamp,ResponseNote,Hidden) VALUES " +
-            "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@GGToken,@Answered,@ResponseTimestamp,@ResponseNote,@Hidden);",
+            "insert into tbl_mastergame_changerequest(RequestID,UserID,RequestTimestamp,RequestNote,MasterGameID,OpenCriticID,GGToken,Answered,ResponseTimestamp,ResponseNote,ResponseUserID,Hidden) VALUES " +
+            "(@RequestID,@UserID,@RequestTimestamp,@RequestNote,@MasterGameID,@OpenCriticID,@GGToken,@Answered,@ResponseTimestamp,@ResponseNote,@ResponseUserID,@Hidden);",
             entity);
     }
 
     public async Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests()
     {
-        var sql = "select * from tbl_mastergame_request where Answered = 0";
+        const string sql = "select * from tbl_mastergame_request where Answered = 0";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql);
@@ -275,7 +312,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests()
     {
-        var sql = "select * from tbl_mastergame_changerequest where Answered = 0";
+        const string sql = "select * from tbl_mastergame_changerequest where Answered = 0";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeRequestEntity> entities = await connection.QueryAsync<MasterGameChangeRequestEntity>(sql);
@@ -284,7 +321,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<int> GetNumberOutstandingCorrections(MasterGame masterGame)
     {
-        var sql = "select count(*) from tbl_mastergame_changerequest where MasterGameID = @masterGameID AND Answered = 0";
+        const string sql = "select count(*) from tbl_mastergame_changerequest where MasterGameID = @masterGameID AND Answered = 0";
 
         var queryObject = new
         {
@@ -296,15 +333,16 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return count;
     }
 
-    public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, MasterGame? masterGame)
+    public async Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime,
+        string responseNote, FantasyCriticUser responseUser, MasterGame? masterGame)
     {
         Guid? masterGameID = null;
         if (masterGame is not null)
         {
             masterGameID = masterGame.MasterGameID;
         }
-        string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, " +
-                     "ResponseNote = @responseNote, MasterGameID = @masterGameID where RequestID = @requestID;";
+        const string sql = "update tbl_mastergame_request set Answered = 1, ResponseTimestamp = @responseTime, " +
+                           "ResponseNote = @responseNote, ResponseUserID = @responseUserID, MasterGameID = @masterGameID where RequestID = @requestID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
             new
@@ -312,27 +350,30 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 requestID = masterGameRequest.RequestID,
                 masterGameID,
                 responseTime = responseTime.ToDateTimeUtc(),
-                responseNote
+                responseNote,
+                responseUserID = responseUser.Id
             });
     }
 
-    public async Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote)
+    public async Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
+        FantasyCriticUser responseUser, string responseNote)
     {
-        string sql = "update tbl_mastergame_changerequest set Answered = 1, ResponseTimestamp = @responseTime, " +
-                     "ResponseNote = @responseNote where RequestID = @requestID;";
+        const string sql = "update tbl_mastergame_changerequest set Answered = 1, ResponseTimestamp = @responseTime, " +
+                           "ResponseNote = @responseNote, ResponseUserID = @responseUserID where RequestID = @requestID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
             new
             {
                 requestID = masterGameRequest.RequestID,
                 responseTime = responseTime.ToDateTimeUtc(),
-                responseNote
+                responseNote,
+                responseUserID = responseUser.Id
             });
     }
 
     public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
     {
-        var sql = "select * from tbl_mastergame_request where UserID = @userID and Hidden = 0";
+        const string sql = "select * from tbl_mastergame_request where UserID = @userID and Hidden = 0";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameRequestEntity> entities = await connection.QueryAsync<MasterGameRequestEntity>(sql, new { userID = user.Id });
@@ -341,7 +382,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<IReadOnlyList<MasterGameChangeRequest>> GetMasterGameChangeRequestsForUser(FantasyCriticUser user)
     {
-        var sql = "select * from tbl_mastergame_changerequest where UserID = @userID and Hidden = 0";
+        const string sql = "select * from tbl_mastergame_changerequest where UserID = @userID and Hidden = 0";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeRequestEntity> entities = await connection.QueryAsync<MasterGameChangeRequestEntity>(sql, new { userID = user.Id });
@@ -352,6 +393,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         var masterGames = await GetMasterGames();
         var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
         List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
         foreach (var entity in entities)
         {
@@ -361,7 +403,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID.Value);
             }
 
-            MasterGameRequest domain = entity.ToDomain(users.Single(x => x.Id == entity.UserID), masterGame);
+            MasterGameRequest domain = entity.ToDomain(userDictionary[entity.UserID], masterGame, entity.ResponseUserID.HasValue ? userDictionary[entity.ResponseUserID.Value] : null);
             domainRequests.Add(domain);
         }
 
@@ -372,11 +414,12 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         var masterGames = await GetMasterGames();
         var users = await _userStore.GetAllUsers();
+        var userDictionary = users.ToDictionary(x => x.Id);
         List<MasterGameChangeRequest> domainRequests = new List<MasterGameChangeRequest>();
         foreach (var entity in entities)
         {
             var masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID);
-            MasterGameChangeRequest domain = entity.ToDomain(users.Single(x => x.Id == entity.UserID), masterGame);
+            MasterGameChangeRequest domain = entity.ToDomain(userDictionary[entity.UserID], masterGame, entity.ResponseUserID.HasValue ? userDictionary[entity.ResponseUserID.Value] : null);
             domainRequests.Add(domain);
         }
 
@@ -385,7 +428,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<MasterGameRequest?> GetMasterGameRequest(Guid requestID)
     {
-        var sql = "select * from tbl_mastergame_request where RequestID = @requestID";
+        const string sql = "select * from tbl_mastergame_request where RequestID = @requestID";
 
         await using var connection = new MySqlConnection(_connectionString);
         MasterGameRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameRequestEntity>(sql, new { requestID });
@@ -401,13 +444,18 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
+        FantasyCriticUser? responseUser = null;
+        if (entity.ResponseUserID.HasValue)
+        {
+            responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
+        }
 
-        return entity.ToDomain(user, masterGame);
+        return entity.ToDomain(user, masterGame, responseUser);
     }
 
     public async Task<MasterGameChangeRequest?> GetMasterGameChangeRequest(Guid requestID)
     {
-        var sql = "select * from tbl_mastergame_changerequest where RequestID = @requestID";
+        const string sql = "select * from tbl_mastergame_changerequest where RequestID = @requestID";
 
         await using var connection = new MySqlConnection(_connectionString);
         MasterGameChangeRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameChangeRequestEntity>(sql, new { requestID });
@@ -424,8 +472,13 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
+        FantasyCriticUser? responseUser = null;
+        if (entity.ResponseUserID.HasValue)
+        {
+            responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
+        }
 
-        return entity.ToDomain(user, masterGame);
+        return entity.ToDomain(user, masterGame, responseUser);
     }
 
     public async Task DeleteMasterGameRequest(MasterGameRequest request)
@@ -512,8 +565,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         _logger.Information("Updating Release Date Estimates");
 
-        var sql = "UPDATE tbl_mastergame SET MinimumReleaseDate = ReleaseDate, MaximumReleaseDate = ReleaseDate, EstimatedReleaseDate = ReleaseDate where ReleaseDate is not NULL;";
-        var sql2 = "UPDATE tbl_mastergame SET MinimumReleaseDate = @tomorrow WHERE MinimumReleaseDate < @tomorrow AND ReleaseDate IS NULL;";
+        const string sql = "UPDATE tbl_mastergame SET MinimumReleaseDate = ReleaseDate, MaximumReleaseDate = ReleaseDate, EstimatedReleaseDate = ReleaseDate where ReleaseDate is not NULL;";
+        const string sql2 = "UPDATE tbl_mastergame SET MinimumReleaseDate = @tomorrow WHERE MinimumReleaseDate < @tomorrow AND ReleaseDate IS NULL;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
@@ -537,7 +590,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags()
     {
-        var sql = "select * from tbl_mastergame_tag;";
+        const string sql = "select * from tbl_mastergame_tag;";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameTagEntity> entities = await connection.QueryAsync<MasterGameTagEntity>(sql);
@@ -552,11 +605,11 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateCodeBasedTags(IReadOnlyDictionary<MasterGame, IReadOnlyList<MasterGameTag>> tagsToAdd)
     {
-        string deleteExistingTagsSQL = "DELETE tbl_mastergame_hastag FROM tbl_mastergame_hastag " +
-                                       "JOIN tbl_mastergame_tag ON tbl_mastergame_hastag.TagName = tbl_mastergame_tag.Name " +
-                                       "JOIN tbl_mastergame ON tbl_mastergame_hastag.MasterGameID = tbl_mastergame.MasterGameID " +
-                                       "WHERE tbl_mastergame_tag.HasCustomCode " +
-                                       "AND (EarlyAccessReleaseDate IS NOT NULL OR InternationalReleaseDate IS NOT NULL)";
+        const string deleteExistingTagsSQL = "DELETE tbl_mastergame_hastag FROM tbl_mastergame_hastag " +
+                                             "JOIN tbl_mastergame_tag ON tbl_mastergame_hastag.TagName = tbl_mastergame_tag.Name " +
+                                             "JOIN tbl_mastergame ON tbl_mastergame_hastag.MasterGameID = tbl_mastergame.MasterGameID " +
+                                             "WHERE tbl_mastergame_tag.HasCustomCode " +
+                                             "AND (EarlyAccessReleaseDate IS NOT NULL OR InternationalReleaseDate IS NOT NULL)";
 
         var tagEntities = tagsToAdd
             .SelectMany(masterGame => masterGame.Value, (masterGame, tag) => new MasterGameHasTagEntity(masterGame.Key, tag))

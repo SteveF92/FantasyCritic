@@ -27,16 +27,29 @@
           <div>
             <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID } }"><strong>Suggest a correction</strong></router-link>
           </div>
-          <div v-if="isAdmin">
+          <div v-if="isFactChecker">
             <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID } }"><strong>Edit Master Game</strong></router-link>
           </div>
           <hr />
+
           <div class="text-well">
             <h2>Details</h2>
             <masterGameDetails :master-game="masterGame"></masterGameDetails>
           </div>
 
-          <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-year-section">
+          <div v-if="changeLog && changeLog.length > 0" class="text-well master-game-section">
+            <h2>Change Log</h2>
+            <b-table :items="changeLog" :fields="changeLogFields" bordered striped responsive small>
+              <template #cell(timestamp)="data">
+                {{ data.item.timestamp | longDate }}
+              </template>
+              <template #cell(changedByUser)="data">
+                {{ data.item.changedByUser.displayName }}
+              </template>
+            </b-table>
+          </div>
+
+          <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-section">
             <h2>Stats for {{ masterGameYear.year }}</h2>
             <ul>
               <li>Drafted or picked up in {{ masterGameYear.eligiblePercentStandardGame | percent(1) }} of leagues where it is eligible.</li>
@@ -104,7 +117,13 @@ export default {
     return {
       masterGame: null,
       masterGameYears: [],
-      error: ''
+      changeLog: [],
+      error: '',
+      baseChangeLogFields: [
+        { key: 'timestamp', label: 'Date of Change', thClass: 'bg-primary' },
+        { key: 'description', label: 'Description', thClass: 'bg-primary' }
+      ],
+      factCheckerChangeLogFields: [{ key: 'changedByUser', label: 'Changed by', thClass: 'bg-primary' }]
     };
   },
   computed: {
@@ -114,8 +133,12 @@ export default {
     ggLink() {
       return this.getGGLinkForGame(this.masterGame);
     },
-    isAdmin() {
-      return this.$store.getters.isAdmin;
+    changeLogFields() {
+      if (this.isFactChecker) {
+        return this.baseChangeLogFields.concat(this.factCheckerChangeLogFields);
+      }
+
+      return this.baseChangeLogFields;
     },
     reversedMasterGameYears() {
       let tempMasterGameYears = _.cloneDeep(this.masterGameYears);
@@ -138,30 +161,41 @@ export default {
     }
   },
   watch: {
-    $route() {
-      this.fetchMasterGame();
+    async $route() {
+      await this.fetchMasterGame();
+      await this.fetchMasterGameChangeLog();
+      await this.fetchMasterGameYears();
     }
   },
-  mounted() {
-    this.fetchMasterGame();
-    this.fetchMasterGameYears();
+  async mounted() {
+    await this.fetchMasterGame();
+    await this.fetchMasterGameChangeLog();
+    await this.fetchMasterGameYears();
   },
   methods: {
-    fetchMasterGame() {
-      axios
-        .get('/api/game/MasterGame/' + this.mastergameid)
-        .then((response) => {
-          this.masterGame = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchMasterGame() {
+      try {
+        const response = await axios.get('/api/game/MasterGame/' + this.mastergameid);
+        this.masterGame = response.data;
+      } catch (error) {
+        this.error = error.data;
+      }
     },
-    fetchMasterGameYears() {
-      axios
-        .get('/api/game/MasterGameYears/' + this.mastergameid)
-        .then((response) => {
-          this.masterGameYears = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchMasterGameChangeLog() {
+      try {
+        const response = await axios.get('/api/game/MasterGameChangeLog/' + this.mastergameid);
+        this.changeLog = response.data;
+      } catch (error) {
+        this.error = error.response.data;
+      }
+    },
+    async fetchMasterGameYears() {
+      try {
+        const response = await axios.get('/api/game/MasterGameYears/' + this.mastergameid);
+        this.masterGameYears = response.data;
+      } catch (error) {
+        this.error = error.response.data;
+      }
     }
   }
 };
@@ -197,7 +231,7 @@ export default {
   align-items: center;
 }
 
-.master-game-year-section {
+.master-game-section {
   margin-top: 10px;
 }
 </style>

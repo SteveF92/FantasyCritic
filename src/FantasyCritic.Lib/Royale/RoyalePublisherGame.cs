@@ -25,6 +25,36 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     public decimal AdvertisingMoney { get; }
     public decimal? FantasyPoints { get; }
 
+    public bool IsHidden(LocalDate currentDate)
+    {
+        if (!YearQuarter.HideUnreleasedGames)
+        {
+            return false;
+        }
+
+        if (YearQuarter.Finished)
+        {
+            return false;
+        }
+
+        if (MasterGame.MasterGame.CriticScore.HasValue)
+        {
+            return false;
+        }
+
+        if (MasterGame.MasterGame.IsReleased(currentDate))
+        {
+            return false;
+        }
+
+        if (!MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public bool CalculateIsCurrentlyIneligible(IEnumerable<MasterGameTag> allMasterGameTags)
     {
         var royaleTags = LeagueTagExtensions.GetRoyaleEligibilitySettings(allMasterGameTags);
@@ -152,7 +182,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return PublisherID.Equals(other.PublisherID) && Equals(MasterGame, other.MasterGame);
+        return PublisherID.Equals(other.PublisherID) && MasterGame.Equals(other.MasterGame);
     }
 
     public override bool Equals(object? obj)
@@ -160,14 +190,11 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((RoyalePublisherGame)obj);
+        return Equals((RoyalePublisherGame) obj);
     }
 
     public override int GetHashCode()
     {
-        unchecked
-        {
-            return (PublisherID.GetHashCode() * 397) ^ (MasterGame != null ? MasterGame.GetHashCode() : 0);
-        }
+        return HashCode.Combine(PublisherID, MasterGame);
     }
 }

@@ -70,6 +70,7 @@
                 <tr class="bg-primary">
                   <th scope="col" class="game-column">Game Name</th>
                   <th scope="col" class="game-column">Note</th>
+                  <th scope="col">Answered By</th>
                   <th scope="col">Response</th>
                   <th scope="col">Response Time</th>
                   <th scope="col"></th>
@@ -82,6 +83,10 @@
                   </td>
                   <td>
                     <span>{{ request.requestNote }}</span>
+                  </td>
+                  <td>
+                    <span v-if="request.responseUser">{{ request.responseUser.displayName }}</span>
+                    <span v-else>&lt;Pending&gt;</span>
                   </td>
                   <td>
                     <span v-if="request.responseNote">{{ request.responseNote }}</span>
@@ -132,24 +137,20 @@ export default {
       }
     };
   },
-  mounted() {
+  async mounted() {
     let masterGameID = this.$route.query.mastergameid;
     if (masterGameID) {
-      this.fetchMasterGame(masterGameID);
+      await this.fetchMasterGame(masterGameID);
     }
 
-    this.fetchMyRequests();
+    await this.fetchMyRequests();
   },
   methods: {
-    fetchMyRequests() {
-      axios
-        .get('/api/game/MyMasterGameChangeRequests')
-        .then((response) => {
-          this.myRequests = response.data;
-        })
-        .catch(() => {});
+    async fetchMyRequests() {
+      const response = await axios.get('/api/game/MyMasterGameChangeRequests');
+      this.myRequests = response.data;
     },
-    sendMasterGameChangeRequestRequest() {
+    async sendMasterGameChangeRequestRequest() {
       if (!this.requestNote && this.openCriticLink) {
         this.requestNote = 'Link to OpenCritic';
       }
@@ -159,57 +160,48 @@ export default {
         openCriticLink: this.openCriticLink,
         ggLink: this.ggLink
       };
-      axios
-        .post('/api/game/CreateMasterGameChangeRequest', request)
-        .then(() => {
-          this.showSent = true;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-          });
-          this.clearData();
-          this.fetchMyRequests();
-        })
-        .catch((error) => {
-          this.errorInfo = error.response;
+
+      try {
+        await axios.post('/api/game/CreateMasterGameChangeRequest', request);
+        this.showSent = true;
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
         });
+        this.clearData();
+        await this.fetchMyRequests();
+      } catch (error) {
+        this.errorInfo = error.response.datga;
+      }
     },
     clearData() {
       this.requestNote = '';
       this.openCriticLink = '';
       this.ggLink = '';
     },
-    cancelRequest(request) {
+    async cancelRequest(request) {
       let model = {
         requestID: request.requestID
       };
-      axios
-        .post('/api/game/DeleteMasterGameChangeRequest', model)
-        .then(() => {
-          this.showDeleted = true;
-          this.fetchMyRequests();
-        })
-        .catch(() => {});
+      await axios.post('/api/game/DeleteMasterGameChangeRequest', model);
+      this.showDeleted = true;
+      await this.fetchMyRequests();
     },
-    dismissRequest(request) {
+    async dismissRequest(request) {
       let model = {
         requestID: request.requestID
       };
-      axios
-        .post('/api/game/DismissMasterGameChangeRequest', model)
-        .then(() => {
-          this.fetchMyRequests();
-        })
-        .catch(() => {});
+      await axios.post('/api/game/DismissMasterGameChangeRequest', model);
+      await this.fetchMyRequests();
     },
-    fetchMasterGame(masterGameID) {
-      axios
-        .get('/api/game/MasterGame/' + masterGameID)
-        .then((response) => {
-          this.masterGame = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchMasterGame(masterGameID) {
+      try {
+        const response = await axios.get('/api/game/MasterGame/' + masterGameID);
+        this.masterGame = response.data;
+      } catch (error) {
+        this.error = error.response.data;
+      }
     }
   }
 };

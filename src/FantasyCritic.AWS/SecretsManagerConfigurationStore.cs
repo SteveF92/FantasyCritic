@@ -31,17 +31,13 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
 
     public string? GetConfigValue(string name)
     {
-        if (_environmentsSecretsCache.TryGetValue(name, out var environmentValue))
+        var environmentValue = _environmentsSecretsCache.GetValueOrDefault(name);
+        if (environmentValue is not null)
         {
             return environmentValue;
         }
 
-        if (_sharedSecretsCache.TryGetValue(name, out var sharedValue))
-        {
-            return sharedValue;
-        }
-
-        return null;
+        return _sharedSecretsCache.GetValueOrDefault(name);
     }
 
     public string? GetConnectionString(string name)
@@ -113,7 +109,7 @@ public class SecretsManagerConfigurationStore : IConfigurationStore
         }
     }
 
-    private async Task AddValueToCache(IAmazonSecretsManager client, SecretListEntry secret, string secretWithoutAppName, string environment, Dictionary<string, string> cacheToUse)
+    private static async Task AddValueToCache(IAmazonSecretsManager client, SecretListEntry secret, string secretWithoutAppName, string environment, Dictionary<string, string> cacheToUse)
     {
         var request = new GetSecretValueRequest()
         {

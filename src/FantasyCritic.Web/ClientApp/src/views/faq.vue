@@ -406,8 +406,10 @@
           </p>
           <p>
             This mechanic is intended to help players that have fallen far behind in their league. League managers can decide to grant a player a super drop manually using the "Edit Publishers"
-            option. Additionally, leagues can also turn on "Automatic Super Drops". If this option is enabled, on September 1st, any player that has less than 65% of the projected points of the player
-            with the most projected points will be given a super drop automatically.
+            option. Additionally, leagues can also turn on "Automatic Super Drops". If this option is enabled, starting September 1st of a given year, any player that has less than 65% of the
+            projected points of the player with the most projected points will be given a super drop automatically. Only one super drop can be granted per player in this way, but it doesn't matter
+            what the current date is when the condition is met, just that it is September 1st or greater. That means that if a player doesn't meet the criteria on September 1st, but then falls further
+            behind, they will get the super drop once they become eligible for it.
           </p>
         </div>
       </collapseCard>

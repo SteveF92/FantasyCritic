@@ -77,7 +77,7 @@ public class EnableAuthenticatorModel : PageModel
             return Page();
         }
 
-        // Strip spaces and hypens
+        // Strip spaces and hyphens
         var verificationCode = Input.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
         var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
@@ -102,10 +102,8 @@ public class EnableAuthenticatorModel : PageModel
             RecoveryCodes = recoveryCodes.ToArray();
             return RedirectToPage("./ShowRecoveryCodes");
         }
-        else
-        {
-            return RedirectToPage("./TwoFactorAuthentication");
-        }
+
+        return RedirectToPage("./TwoFactorAuthentication");
     }
 
     private async Task LoadSharedKeyAndQrCodeUriAsync(FantasyCriticUser user)

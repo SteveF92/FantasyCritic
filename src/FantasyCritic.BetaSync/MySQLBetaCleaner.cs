@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.SharedSerialization;
 using MySqlConnector;
 using Serilog;
 
@@ -51,7 +52,7 @@ public class MySQLBetaCleaner
     }
 
     internal async Task UpdateMasterGames(IEnumerable<MasterGameTag> productionTags, IEnumerable<MasterGame> productionMasterGames,
-        IEnumerable<MasterGameTag> betaTags, IEnumerable<MasterGame> betaMasterGames, IEnumerable<MasterGameHasTagEntity> productionGamesHaveTagEntities)
+        IEnumerable<MasterGameTag> betaTags, IEnumerable<MasterGame> betaMasterGames, IEnumerable<MasterGameHasTagEntity> productionGamesHaveTagEntities, Guid addedByUserIDOverride)
     {
         var tagsOnBetaNotOnProduction = betaTags.Except(productionTags).ToList();
         foreach (var tag in tagsOnBetaNotOnProduction)
@@ -69,7 +70,7 @@ public class MySQLBetaCleaner
         var betaKeepGames = gamesOnBetaNotOnProduction.Select(x => x.MasterGameID);
 
         List<MasterGameTagEntity> tagEntities = productionTags.Select(x => new MasterGameTagEntity(x)).ToList();
-        List<MasterGameEntity> masterGameEntities = productionMasterGames.Select(x => new MasterGameEntity(x)).ToList();
+        List<MasterGameEntity> masterGameEntities = productionMasterGames.Select(x => new MasterGameEntity(x, addedByUserIDOverride)).ToList();
         List<MasterSubGameEntity> masterSubGameEntities = productionMasterGames.SelectMany(x => x.SubGames).Select(x => new MasterSubGameEntity(x)).ToList();
 
         var paramsObject = new

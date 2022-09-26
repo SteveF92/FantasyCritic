@@ -127,7 +127,7 @@ export default {
   methods: {
     fetchMyRequests() {
       axios
-        .get('/api/admin/ActiveMasterGameChangeRequests')
+        .get('/api/factChecker/ActiveMasterGameChangeRequests')
         .then((response) => {
           this.activeRequests = response.data;
         })
@@ -152,7 +152,7 @@ export default {
         responseNote: this.responseNote
       };
       axios
-        .post('/api/admin/CompleteMasterGameChangeRequest', request)
+        .post('/api/factChecker/CompleteMasterGameChangeRequest', request)
         .then(() => {
           this.showResponded = true;
         })
@@ -173,7 +173,7 @@ export default {
       };
 
       axios
-        .post('/api/admin/LinkGameToOpenCritic', linkRequest)
+        .post('/api/factChecker/LinkGameToOpenCritic', linkRequest)
         .then(() => {
           this.linkSuccessType = 'Open Critic';
         })
@@ -188,7 +188,7 @@ export default {
       };
 
       axios
-        .post('/api/admin/LinkGameToGG', linkRequest)
+        .post('/api/factChecker/LinkGameToGG', linkRequest)
         .then(() => {
           this.linkSuccessType = 'GG|';
         })

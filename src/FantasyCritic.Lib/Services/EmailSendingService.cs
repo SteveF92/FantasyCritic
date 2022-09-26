@@ -16,7 +16,6 @@ public class EmailSendingService
     private readonly FantasyCriticUserManager _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InterLeagueService _interLeagueService;
-    private readonly FantasyCriticService _fantasyCriticService;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly string _baseAddress;
@@ -24,14 +23,12 @@ public class EmailSendingService
     private readonly IClock _clock;
 
     public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
-        InterLeagueService interLeagueService, FantasyCriticService fantasyCriticService,
-        GameAcquisitionService gameAcquisitionService, LeagueMemberService leagueMemberService,
-        EmailSendingServiceConfiguration configuration, IClock clock)
+        InterLeagueService interLeagueService, GameAcquisitionService gameAcquisitionService,
+        LeagueMemberService leagueMemberService, EmailSendingServiceConfiguration configuration, IClock clock)
     {
         _userManager = userManager;
         _emailSender = emailSender;
         _interLeagueService = interLeagueService;
-        _fantasyCriticService = fantasyCriticService;
         _gameAcquisitionService = gameAcquisitionService;
         _leagueMemberService = leagueMemberService;
         _baseAddress = configuration.BaseAddress;
@@ -82,7 +79,8 @@ public class EmailSendingService
 
         foreach (var user in usersWithPublicBidEmails)
         {
-            if (!usersWithLeagueYears.TryGetValue(user, out var leagueYearKeys))
+            var leagueYearKeys = usersWithLeagueYears.GetValueOrDefault(user);
+            if (leagueYearKeys is null)
             {
                 continue;
             }
@@ -90,7 +88,8 @@ public class EmailSendingService
             List<EmailPublicBiddingSet> publicBiddingSetsForUser = new List<EmailPublicBiddingSet>();
             foreach (var leagueYearKey in leagueYearKeys)
             {
-                if (publicBiddingSetDictionary.TryGetValue(leagueYearKey, out var publicBiddingSet))
+                var publicBiddingSet = publicBiddingSetDictionary.GetValueOrDefault(leagueYearKey);
+                if (publicBiddingSet is not null)
                 {
                     publicBiddingSetsForUser.Add(publicBiddingSet);
                 }
@@ -106,7 +105,7 @@ public class EmailSendingService
     private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<EmailPublicBiddingSet> publicBiddingSet)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - This Week's Public Bids";
+        const string emailSubject = "FantasyCritic - This Week's Public Bids";
         PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress, _isProduction);
 
         var htmlResult = await GetHTMLString("PublicBids.cshtml", model);
@@ -117,7 +116,7 @@ public class EmailSendingService
     public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - Confirm your email address.";
+        const string emailSubject = "FantasyCritic - Confirm your email address.";
         ConfirmEmailModel model = new ConfirmEmailModel(user, link);
 
         var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
@@ -128,7 +127,7 @@ public class EmailSendingService
     public async Task SendForgotPasswordEmail(FantasyCriticUser user, string link)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - Reset Your Password.";
+        const string emailSubject = "FantasyCritic - Reset Your Password.";
 
         PasswordResetModel model = new PasswordResetModel(user, link);
         var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
@@ -139,7 +138,7 @@ public class EmailSendingService
     public async Task SendChangeEmail(FantasyCriticUser user, string link)
     {
         string emailAddress = user.Email;
-        string emailSubject = "FantasyCritic - Change Your Email.";
+        const string emailSubject = "FantasyCritic - Change Your Email.";
 
         ChangeEmailModel model = new ChangeEmailModel(user, link);
         var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
@@ -149,24 +148,22 @@ public class EmailSendingService
 
     public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)
     {
-        string emailAddress = inviteEmail;
-        string emailSubject = "You have been invited to join a FantasyCritic league!";
+        const string emailSubject = "You have been invited to join a FantasyCritic league!";
 
         LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
         var htmlResult = await GetHTMLString("SiteInvite.cshtml", model);
 
-        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        await _emailSender.SendEmailAsync(inviteEmail, emailSubject, htmlResult);
     }
 
     public async Task SendLeagueInviteEmail(string inviteEmail, League league, string baseURL)
     {
-        string emailAddress = inviteEmail;
-        string emailSubject = "You have been invited to join a FantasyCritic league!";
+        const string emailSubject = "You have been invited to join a FantasyCritic league!";
 
         LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
         var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);
 
-        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        await _emailSender.SendEmailAsync(inviteEmail, emailSubject, htmlResult);
     }
 
     private static async Task<string> GetHTMLString(string template, object model)

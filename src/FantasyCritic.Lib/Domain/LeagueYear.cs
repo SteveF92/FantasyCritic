@@ -1,6 +1,6 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Domain;
 
@@ -29,7 +29,16 @@ public class LeagueYear : IEquatable<LeagueYear>
         WinningUser = winningUser;
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
-        _managerPublisher = Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id);
+        if (Publishers.FirstOrDefault()?.User.Id != Guid.Empty)
+        {
+            _managerPublisher = Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id);
+        }
+        else
+        {
+            //This handles unit tests, which don't have valid user ids. But managers also don't matter for them.
+            _managerPublisher = Publishers.FirstOrDefault();
+        }
+
         StandardGamesTaken = _publisherDictionary.Values.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
     }
 
@@ -76,18 +85,19 @@ public class LeagueYear : IEquatable<LeagueYear>
     public bool GameIsEligibleInAnySlot(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
     {
         var eligibilityFactors = GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
-        return SlotEligibilityService.GameIsEligibleInLeagueYear(eligibilityFactors);
+        return SlotEligibilityFunctions.GameIsEligibleInLeagueYear(eligibilityFactors);
     }
 
     private bool? GetOverriddenEligibility(MasterGame masterGame)
     {
-        _eligibilityOverridesDictionary.TryGetValue(masterGame, out var eligibilityOverride);
+        var eligibilityOverride = _eligibilityOverridesDictionary.GetValueOrDefault(masterGame);
         return eligibilityOverride?.Eligible;
     }
 
     private IReadOnlyList<MasterGameTag> GetOverriddenTags(MasterGame masterGame)
     {
-        if (!_tagOverridesDictionary.TryGetValue(masterGame, out var tagOverride))
+        var tagOverride = _tagOverridesDictionary.GetValueOrDefault(masterGame);
+        if (tagOverride is null)
         {
             return new List<MasterGameTag>();
         }
@@ -119,16 +129,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         return Publishers.Where(x => x.PublisherID != publisher.PublisherID).ToList();
     }
 
-    public Publisher? GetPublisherByID(Guid publisherID)
-    {
-        bool hasPublisher = _publisherDictionary.TryGetValue(publisherID, out var publisher);
-        if (!hasPublisher)
-        {
-            return null;
-        }
-
-        return publisher;
-    }
+    public Publisher? GetPublisherByID(Guid publisherID) => _publisherDictionary.GetValueOrDefault(publisherID);
 
     public Publisher GetPublisherByIDOrThrow(Guid publisherID)
     {
@@ -143,19 +144,17 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public Publisher GetPublisherByOrFakePublisher(Guid publisherID)
     {
-        if (!_publisherDictionary.TryGetValue(publisherID, out var publisher))
-        {
-            return Publisher.GetFakePublisher(Key);
-        }
-
-        return publisher;
+        var publisher = _publisherDictionary.GetValueOrDefault(publisherID);
+        return publisher ?? Publisher.GetFakePublisher(Key);
     }
+
+    public override string ToString() => $"{League}|{Year}";
 
     public bool Equals(LeagueYear? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Equals(League, other.League) && Year == other.Year;
+        return League.Equals(other.League) && Year == other.Year;
     }
 
     public override bool Equals(object? obj)
@@ -163,16 +162,11 @@ public class LeagueYear : IEquatable<LeagueYear>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((LeagueYear)obj);
+        return Equals((LeagueYear) obj);
     }
 
     public override int GetHashCode()
     {
-        unchecked
-        {
-            return ((League != null ? League.GetHashCode() : 0) * 397) ^ Year;
-        }
+        return HashCode.Combine(League, Year);
     }
-
-    public override string ToString() => $"{League}|{Year}";
 }

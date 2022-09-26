@@ -14,10 +14,12 @@ public interface IMasterGameRepo
     Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
 
     Task CreateMasterGame(MasterGame masterGame);
-    Task EditMasterGame(MasterGame masterGame);
+    Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries);
 
     Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
 
+    Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame);
+    Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges();
     Task CreateMasterGameRequest(MasterGameRequest domainRequest);
     Task CreateMasterGameChangeRequest(MasterGameChangeRequest domainRequest);
     Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user);
@@ -31,8 +33,10 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests();
     Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests();
     Task<int> GetNumberOutstandingCorrections(MasterGame masterGame);
-    Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote, MasterGame? masterGame);
-    Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime, string responseNote);
+    Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote,
+        FantasyCriticUser responseUser, MasterGame? masterGame);
+    Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
+        FantasyCriticUser responseUser, string responseNote);
     Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
     Task LinkToGG(MasterGame masterGame, string ggToken);
     Task UpdateReleaseDateEstimates(LocalDate tomorrow);

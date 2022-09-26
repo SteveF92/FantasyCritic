@@ -31,6 +31,17 @@ public abstract class FantasyCriticController : ControllerBase
         return Result.Success(currentUser);
     }
 
+    protected async Task<FantasyCriticUser> GetCurrentUserOrThrow()
+    {
+        var userResult = await GetCurrentUser();
+        if (userResult.IsFailure)
+        {
+            throw new Exception(userResult.Error);
+        }
+
+        return userResult.Value;
+    }
+
     protected static GenericResultRecord<T> GetFailedResult<T>(IActionResult failedResult) where T : class => new GenericResultRecord<T>(null, failedResult);
     protected GenericResultRecord<T> UnauthorizedOrForbid<T>(bool hasUser) where T : class
     {

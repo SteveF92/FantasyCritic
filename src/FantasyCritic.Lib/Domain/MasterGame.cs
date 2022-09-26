@@ -1,3 +1,6 @@
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
+
 namespace FantasyCritic.Lib.Domain;
 
 public class MasterGame : IEquatable<MasterGame>
@@ -5,7 +8,8 @@ public class MasterGame : IEquatable<MasterGame>
     public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
         LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, string? ggToken, decimal? criticScore, bool hasAnyReviews,
         string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
-        bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
+        bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, FantasyCriticUser addedByUser,
+        IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
         MasterGameID = masterGameID;
         GameName = gameName;
@@ -29,6 +33,7 @@ public class MasterGame : IEquatable<MasterGame>
         DoNotRefreshAnything = doNotRefreshAnything;
         EligibilityChanged = eligibilityChanged;
         AddedTimestamp = addedTimestamp;
+        AddedByUser = addedByUser;
         SubGames = subGames.ToList();
         Tags = tags.ToList();
     }
@@ -53,6 +58,7 @@ public class MasterGame : IEquatable<MasterGame>
     public bool DoNotRefreshAnything { get; }
     public bool EligibilityChanged { get; }
     public Instant AddedTimestamp { get; }
+    public FantasyCriticUser AddedByUser { get; }
     public IReadOnlyList<MasterSubGame> SubGames { get; }
     public IReadOnlyList<MasterGameTag> Tags { get; }
 
@@ -147,5 +153,85 @@ public class MasterGame : IEquatable<MasterGame>
     public override int GetHashCode()
     {
         return MasterGameID.GetHashCode();
+    }
+
+    public IReadOnlyList<string> CompareToExistingGame(MasterGame existingMasterGame, LocalDate today)
+    {
+        List<string> differences = new List<string>();
+
+        if (GameName != existingMasterGame.GameName)
+        {
+            differences.Add($"Game name changed from {existingMasterGame.GameName} to {GameName}.");
+        }
+
+        if (ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue && ReleaseDate != existingMasterGame.ReleaseDate)
+        {
+            differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableLongDate("'")} to {ReleaseDate.ToNullableLongDate("'")}.");
+        }
+        else if (EstimatedReleaseDate != existingMasterGame.EstimatedReleaseDate ||
+                 MinimumReleaseDate != existingMasterGame.MinimumReleaseDate ||
+                 MaximumReleaseDate != existingMasterGame.MaximumReleaseDate)
+        {
+            if (ReleaseDate.HasValue && !existingMasterGame.ReleaseDate.HasValue)
+            {
+                differences.Add($"Release date changed from '{existingMasterGame.EstimatedReleaseDate}' to {ReleaseDate.ToNullableLongDate("'")}.");
+            }
+            else if (!ReleaseDate.HasValue && existingMasterGame.ReleaseDate.HasValue)
+            {
+                differences.Add($"Release date changed from {existingMasterGame.ReleaseDate.ToNullableLongDate("'")} to '{EstimatedReleaseDate}'.");
+            }
+            else
+            {
+                differences.Add($"Estimated release date changed from '{existingMasterGame.EstimatedReleaseDate}' to '{EstimatedReleaseDate}'.");
+            }
+        }
+        
+        if (EarlyAccessReleaseDate != existingMasterGame.EarlyAccessReleaseDate)
+        {
+            differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate.ToNullableLongDate("'")} to {EarlyAccessReleaseDate.ToNullableLongDate("'")}.");
+        }
+
+        if (InternationalReleaseDate != existingMasterGame.InternationalReleaseDate)
+        {
+            differences.Add($"International release date changed from {existingMasterGame.InternationalReleaseDate.ToNullableLongDate("'")} to {InternationalReleaseDate.ToNullableLongDate("'")}.");
+        }
+
+        if (AnnouncementDate != existingMasterGame.AnnouncementDate)
+        {
+            differences.Add($"Announcement date changed from {existingMasterGame.AnnouncementDate.ToNullableLongDate("'")} to {AnnouncementDate.ToNullableLongDate("'")}.");
+        }
+
+        if (string.IsNullOrWhiteSpace(Notes) && !string.IsNullOrWhiteSpace(existingMasterGame.Notes))
+        {
+            differences.Add($"Note removed: '{existingMasterGame.Notes}'.");
+        }
+        else if (!string.IsNullOrWhiteSpace(Notes) && string.IsNullOrWhiteSpace(existingMasterGame.Notes))
+        {
+            differences.Add($"Note added: '{Notes}'.");
+        }
+        else if (!string.IsNullOrWhiteSpace(Notes) && !string.IsNullOrWhiteSpace(existingMasterGame.Notes) &&
+                 !Notes.Equals(existingMasterGame.Notes))
+        {
+            differences.Add($"Note removed: '{existingMasterGame.Notes}'.");
+            differences.Add($"Note added: '{Notes}'.");
+        }
+
+        if (DelayContention && !existingMasterGame.DelayContention)
+        {
+            differences.Add("Game set to 'Delay in Contention'.");
+        }
+        else if (!DelayContention && existingMasterGame.DelayContention)
+        {
+            differences.Add("Game is no longer 'Delay in Contention'.");
+        }
+
+        var orderedExistingTags = existingMasterGame.Tags.OrderBy(t => t.Name).ToList();
+        var orderedNewTags = Tags.OrderBy(t => t.Name).ToList();
+        if (!orderedNewTags.SequenceEqual(orderedExistingTags))
+        {
+            differences.Add($"Tags changed from {string.Join(", ", orderedExistingTags.Select(x => x.ReadableName))} to {string.Join(", ", orderedNewTags.Select(x => x.ReadableName))}.");
+        }
+
+        return differences;
     }
 }

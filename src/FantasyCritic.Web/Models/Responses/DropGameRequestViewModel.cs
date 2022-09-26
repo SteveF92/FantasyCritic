@@ -4,14 +4,16 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class DropGameRequestViewModel
 {
-    public DropGameRequestViewModel(DropRequest dropRequest, LocalDate currentDate)
+    public DropGameRequestViewModel(DropRequest dropRequest, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearLookup)
     {
         DropRequestID = dropRequest.DropRequestID;
         PublisherID = dropRequest.Publisher.PublisherID;
         PublisherName = dropRequest.Publisher.PublisherName;
         Timestamp = dropRequest.Timestamp;
         Successful = dropRequest.Successful;
-        MasterGame = new MasterGameViewModel(dropRequest.MasterGame, currentDate);
+
+        var masterGameYear = masterGameYearLookup[dropRequest.MasterGame.MasterGameID];
+        MasterGame = new MasterGameYearViewModel(masterGameYear, currentDate);
     }
 
     public Guid DropRequestID { get; }
@@ -19,5 +21,5 @@ public class DropGameRequestViewModel
     public string PublisherName { get; }
     public Instant Timestamp { get; }
     public bool? Successful { get; }
-    public MasterGameViewModel MasterGame { get; }
+    public MasterGameYearViewModel MasterGame { get; }
 }

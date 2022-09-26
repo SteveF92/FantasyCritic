@@ -21,6 +21,6 @@ public class MasterGameChangeRequestRequest
     {
         int? openCriticID = URLParsingExtensions.GetOpenCriticIDFromURL(OpenCriticLink);
         var ggToken = URLParsingExtensions.GetGGTokenFromURL(GGLink);
-        return new MasterGameChangeRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, masterGame, openCriticID, ggToken, false, null, null, false);
+        return new MasterGameChangeRequest(Guid.NewGuid(), user, requestTimestamp, RequestNote, masterGame, openCriticID, ggToken, false, null, null, null, false);
     }
 }

@@ -99,11 +99,9 @@ public class RegisterModel : PageModel
                 {
                     return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                 }
-                else
-                {
-                    await _signInManager.SignInAsync(fullUser, isPersistent: false);
-                    return LocalRedirect(returnUrl);
-                }
+
+                await _signInManager.SignInAsync(fullUser, isPersistent: false);
+                return LocalRedirect(returnUrl);
             }
             foreach (var error in result.Errors)
             {

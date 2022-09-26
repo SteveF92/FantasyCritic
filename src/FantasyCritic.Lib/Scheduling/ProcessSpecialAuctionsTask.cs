@@ -17,7 +17,7 @@ public class ProcessSpecialAuctionsTask : IScheduledTask
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
 #if DEBUG
-        Console.WriteLine("Not setting time flags - DEBUG version");
+        Console.WriteLine("Not running special auctions - DEBUG version");
         return;
 #endif
 #pragma warning disable CS0162

@@ -1,8 +1,9 @@
+
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities;
 
-internal class PublisherEntity
+public class PublisherEntity
 {
     public PublisherEntity()
     {
@@ -42,9 +43,9 @@ internal class PublisherEntity
     public uint Budget { get; set; }
     public bool AutoDraft { get; set; }
 
-    public Publisher ToDomain(LeagueYearKey leagueYearKey, FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
+    public Publisher ToDomain(FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
     {
-        return new Publisher(PublisherID, leagueYearKey, user, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition,
+        return new Publisher(PublisherID, new LeagueYearKey(LeagueID, Year), user, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition,
             publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraft);
     }
 }

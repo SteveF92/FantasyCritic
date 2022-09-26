@@ -64,12 +64,22 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task EditMasterGame(MasterGame masterGame)
+    public Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries)
     {
         throw new NotImplementedException();
     }
 
     public Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
     {
         throw new NotImplementedException();
     }
@@ -139,13 +149,16 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote,
+    public Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime,
+        string responseNote,
+        FantasyCriticUser fantasyCriticUser,
         MasterGame? masterGame)
     {
         throw new NotImplementedException();
     }
 
     public Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
+        FantasyCriticUser fantasyCriticUser,
         string responseNote)
     {
         throw new NotImplementedException();

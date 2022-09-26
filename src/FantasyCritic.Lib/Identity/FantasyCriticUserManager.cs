@@ -54,11 +54,6 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         return createdUser;
     }
 
-    public Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
-    {
-        return _userStore.GetAllUsers();
-    }
-
     public Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetAllPatreonUsers()
     {
         return _userStore.GetUsersWithExternalLogin("Patreon");

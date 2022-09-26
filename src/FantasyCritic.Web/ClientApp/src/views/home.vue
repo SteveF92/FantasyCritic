@@ -28,7 +28,7 @@
             Critics Royale
           </b-button>
           <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
-          <b-button v-show="isAdmin" variant="warning" :to="{ name: 'adminConsole' }" class="main-button">Admin Console</b-button>
+          <b-button v-show="isFactChecker || isAdmin" variant="warning" :to="{ name: 'adminConsole' }" class="main-button">Admin Console</b-button>
         </div>
       </div>
 
@@ -107,7 +107,6 @@
 import axios from 'axios';
 import _ from 'lodash';
 
-import BasicMixin from '@/mixins/basicMixin';
 import Tweets from '@/components/tweets';
 import LeagueTable from '@/components/leagueTable';
 import GameNews from '@/components/gameNews';
@@ -118,7 +117,6 @@ export default {
     LeagueTable,
     GameNews
   },
-  mixins: [BasicMixin],
   data() {
     return {
       errorInfo: '',

@@ -1,8 +1,6 @@
 import { mapState } from 'vuex';
-import BasicMixin from '@/mixins/basicMixin';
 
 let leagueMixin = {
-  mixins: [BasicMixin],
   computed: {
     ...mapState({
       hasError: (state) => state.league.hasError,

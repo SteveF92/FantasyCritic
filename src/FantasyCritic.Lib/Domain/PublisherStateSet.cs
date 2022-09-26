@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Utilities;
+
 namespace FantasyCritic.Lib.Domain;
 public class PublisherStateSet
 {
@@ -12,19 +14,11 @@ public class PublisherStateSet
 
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
 
-    public Publisher GetPublisher(Guid publisherID)
-    {
-        if (!_publisherDictionary.TryGetValue(publisherID, out var publisher))
-        {
-            throw new Exception($"Cannot find publisher: {publisherID}");
-        }
-
-        return publisher;
-    }
+    public Publisher GetPublisher(Guid publisherID) => _publisherDictionary.GetValueOrThrow(publisherID, $"Cannot find publisher: {publisherID}");
 
     public LeagueYear GetUpdatedLeagueYear(LeagueYear leagueYear)
     {
-        var updatedPublishersInLeague = _leagueLookup[leagueYear.Key];
+        var updatedPublishersInLeague = _leagueLookup[leagueYear.Key].ToList();
         return new LeagueYear(leagueYear.League, leagueYear.SupportedYear, leagueYear.Options,
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, leagueYear.EligibilityOverrides,
             leagueYear.TagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser,

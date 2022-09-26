@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.RDS;
 using Amazon.RDS.Model;
-using FantasyCritic.Lib.Extensions;
-using NodaTime;
 using Serilog;
 
 namespace FantasyCritic.BetaSync;
@@ -115,11 +113,10 @@ public class RDSRefresher
     {
         Log.Information("Deleting old instance.");
 
-        string finalSnapshotID = $"beta-final-snap-{SystemClock.Instance.GetToday().ToISOString()}-{Guid.NewGuid().ToString()[0]}";
         var deleteRequest = new DeleteDBInstanceRequest()
         {
             DBInstanceIdentifier = instance.DBInstanceIdentifier,
-            FinalDBSnapshotIdentifier = finalSnapshotID
+            SkipFinalSnapshot = true
         };
         await _rdsClient.DeleteDBInstanceAsync(deleteRequest);
     }

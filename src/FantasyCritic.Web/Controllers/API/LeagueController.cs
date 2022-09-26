@@ -59,15 +59,9 @@ public class LeagueController : BaseLeagueController
         var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished);
 
         var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
+        if (currentUserResult.IsSuccess)
         {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
-
-        if (currentUser != null)
-        {
-            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
+            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUserResult.Value, "BetaTester");
             if (userIsBetaUser)
             {
                 var betaYears = supportedYears.Where(x => x.OpenForBetaUsers);
@@ -85,12 +79,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<IActionResult> MyLeagues(int? year)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         IReadOnlyList<League> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
 
@@ -118,12 +107,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<IActionResult> FollowedLeagues()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         IReadOnlyList<League> leaguesFollowing = await _fantasyCriticService.GetFollowedLeagues(currentUser);
 
@@ -138,12 +122,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<IActionResult> MyInvites()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
         var viewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
@@ -261,7 +240,9 @@ public class LeagueController : BaseLeagueController
             var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(leagueYear, userPublisher);
             var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(leagueYear, userPublisher);
             var queuedGames = await _publisherService.GetQueuedGames(userPublisher);
-            privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate);
+            var masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+            var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+            privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate, masterGameYearDictionary);
         }
 
         var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
@@ -327,7 +308,9 @@ public class LeagueController : BaseLeagueController
         var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear);
 
         var currentDate = _clock.GetToday();
-        var viewModels = leagueActionSets.Where(x => x.HasActions).Select(x => new LeagueActionProcessingSetViewModel(x, currentDate));
+        var masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+        var viewModels = leagueActionSets.Where(x => x.HasActions).Select(x => new LeagueActionProcessingSetViewModel(x, currentDate, masterGameYearDictionary));
         viewModels = viewModels.OrderByDescending(x => x.ProcessTime);
         return Ok(viewModels);
     }
@@ -569,12 +552,7 @@ public class LeagueController : BaseLeagueController
     [Authorize("Write")]
     public async Task<IActionResult> DeclineInvite([FromBody] DeleteInviteRequest request)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         LeagueInvite? invite = await _leagueMemberService.GetInvite(request.InviteID);
         if (invite is null)
@@ -680,21 +658,19 @@ public class LeagueController : BaseLeagueController
             return publisherRecord.FailedResult;
         }
         var validResult = publisherRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var maybeBid = await _gameAcquisitionService.GetPickupBid(request.BidID);
-        if (maybeBid is null)
+        var bid = await _gameAcquisitionService.GetPickupBid(request.BidID);
+        if (bid is null)
         {
             return BadRequest("That bid does not exist.");
         }
 
-        if (maybeBid.Publisher.PublisherID != publisher.PublisherID)
+        if (bid.Publisher.PublisherID != publisher.PublisherID)
         {
             return Forbid();
         }
 
-        PickupBid bid = maybeBid;
         Result result = await _gameAcquisitionService.RemovePickupBid(bid);
         if (result.IsFailure)
         {
@@ -852,12 +828,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<ActionResult<List<SingleGameNewsViewModel>>> MyUpcomingGames()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
@@ -890,12 +861,7 @@ public class LeagueController : BaseLeagueController
 
     public async Task<ActionResult<GameNewsViewModel>> MyGameNews()
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
@@ -1275,12 +1241,7 @@ public class LeagueController : BaseLeagueController
     [Authorize("Write")]
     public async Task<IActionResult> DismissManagerMessage([FromBody] DismissManagerMessageRequest request)
     {
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsFailure)
-        {
-            return BadRequest(currentUserResult.Error);
-        }
-        var currentUser = currentUserResult.Value;
+        var currentUser = await GetCurrentUserOrThrow();
 
         Result result = await _fantasyCriticService.DismissManagerMessage(request.MessageID, currentUser.Id);
         if (result.IsFailure)
@@ -1357,7 +1318,6 @@ public class LeagueController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
         var validResult = leagueYearRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
         var trade = await _tradeService.GetTrade(request.TradeID);
@@ -1391,7 +1351,6 @@ public class LeagueController : BaseLeagueController
             return leagueYearRecord.FailedResult;
         }
         var validResult = leagueYearRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
         var currentUser = validResult.CurrentUser!;
 
         var trade = await _tradeService.GetTrade(request.TradeID);

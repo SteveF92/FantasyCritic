@@ -59,11 +59,6 @@ public abstract class TypeSafeEnum<TEnum> : TypeSafeEnum where TEnum : TypeSafeE
         }
 
         string paramString = searchName.Replace(" ", "").ToLower();
-        if (_allComparisons.TryGetValue(paramString, out var enumObject))
-        {
-            return enumObject;
-        }
-
-        return null;
+        return _allComparisons.GetValueOrDefault(paramString);
     }
 }

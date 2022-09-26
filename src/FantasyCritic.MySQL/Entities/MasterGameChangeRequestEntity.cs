@@ -22,6 +22,7 @@ internal class MasterGameChangeRequestEntity
         Answered = domain.Answered;
         ResponseTimestamp = domain.ResponseTimestamp;
         ResponseNote = domain.ResponseNote;
+        ResponseUserID = domain.ResponseUser?.Id;
 
         Hidden = domain.Hidden;
     }
@@ -39,11 +40,12 @@ internal class MasterGameChangeRequestEntity
     public bool Answered { get; set; }
     public Instant? ResponseTimestamp { get; set; }
     public string? ResponseNote { get; set; }
+    public Guid? ResponseUserID { get; set; }
 
     public bool Hidden { get; set; }
 
-    public MasterGameChangeRequest ToDomain(FantasyCriticUser user, MasterGame masterGame)
+    public MasterGameChangeRequest ToDomain(FantasyCriticUser user, MasterGame masterGame, FantasyCriticUser? responseUser)
     {
-        return new MasterGameChangeRequest(RequestID, user, RequestTimestamp, RequestNote, masterGame, OpenCriticID, GGToken, Answered, ResponseTimestamp, ResponseNote, Hidden);
+        return new MasterGameChangeRequest(RequestID, user, RequestTimestamp, RequestNote, masterGame, OpenCriticID, GGToken, Answered, ResponseTimestamp, ResponseNote, responseUser, Hidden);
     }
 }

@@ -9,7 +9,7 @@
       </div>
       <hr />
       <div v-if="responseInfo" class="alert alert-success">Master Game edited successfully!</div>
-      <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+      <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request: {{ errorInfo }}</div>
       <div v-if="generatedSQL">
         <h3>Generated SQL</h3>
         <div class="row">
@@ -185,7 +185,7 @@ export default {
       }
 
       try {
-        const response = await axios.get('/api/admin/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID);
+        const response = await axios.get('/api/factChecker/GetMasterGameChangeRequest?changeRequestID=' + changeRequestID);
         this.changeRequest = response.data;
       } catch (error) {
         this.errorInfo = error;
@@ -196,7 +196,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.get('/api/admin/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate);
+        const response = await axios.get('/api/factChecker/ParseEstimatedDate?estimatedReleaseDate=' + this.masterGame.estimatedReleaseDate);
         this.masterGame.minimumReleaseDate = response.data.minimumReleaseDate;
         this.masterGame.maximumReleaseDate = response.data.maximumReleaseDate;
       } catch (error) {
@@ -230,7 +230,7 @@ export default {
       request.tags = tagNames;
 
       try {
-        const response = await axios.post('/api/admin/EditMasterGame', request);
+        const response = await axios.post('/api/factChecker/EditMasterGame', request);
         this.responseInfo = response.data;
         window.scroll({
           top: 0,
@@ -238,7 +238,7 @@ export default {
           behavior: 'smooth'
         });
       } catch (error) {
-        this.errorInfo = error;
+        this.errorInfo = error.response.data;
       }
     },
     generateSQL() {

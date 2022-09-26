@@ -77,7 +77,7 @@
         <div>
           <router-link class="text-primary" :to="{ name: 'masterGameChangeRequest', query: { mastergameid: masterGame.masterGameID } }"><strong>Suggest a correction</strong></router-link>
         </div>
-        <div v-if="isAdmin">
+        <div v-if="isFactChecker">
           <router-link class="text-primary" :to="{ name: 'masterGameEditor', params: { mastergameid: masterGame.masterGameID } }"><strong>Edit Master Game</strong></router-link>
         </div>
       </div>
@@ -110,9 +110,6 @@ export default {
     },
     ggLink() {
       return this.getGGLinkForGame(this.masterGame);
-    },
-    isAdmin() {
-      return this.$store.getters.isAdmin;
     },
     releaseDate() {
       return moment(this.masterGame.releaseDate).format('MMMM Do, YYYY');
