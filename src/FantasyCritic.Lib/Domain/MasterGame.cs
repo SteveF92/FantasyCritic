@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Domain;
 public class MasterGame : IEquatable<MasterGame>
 {
     public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
-        LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, string? ggToken, decimal? criticScore, bool hasAnyReviews,
+        LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, string? ggToken, decimal? criticScore, bool hasAnyReviews, string? openCriticSlug,
         string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
         bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, Instant addedTimestamp, FantasyCriticUser addedByUser,
         IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
@@ -24,6 +24,7 @@ public class MasterGame : IEquatable<MasterGame>
         GGToken = ggToken;
         RawCriticScore = criticScore;
         HasAnyReviews = hasAnyReviews;
+        OpenCriticSlug = openCriticSlug;
         Notes = notes;
         BoxartFileName = boxartFileName;
         GGCoverArtFileName = ggCoverArtFileName;
@@ -66,6 +67,7 @@ public class MasterGame : IEquatable<MasterGame>
 
     public decimal? RawCriticScore { get; }
     public bool HasAnyReviews { get; }
+    public string? OpenCriticSlug { get; }
 
     public decimal? CriticScore
     {

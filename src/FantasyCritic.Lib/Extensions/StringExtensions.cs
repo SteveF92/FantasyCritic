@@ -32,4 +32,15 @@ public static class StringExtensions
 
         return source;
     }
+
+    public static string SubstringStartingFromLastInstanceOf(this string source, string startFrom)
+    {
+        int index = source.LastIndexOf(startFrom);
+        if (index > 0)
+        {
+            source = source.Substring(index + startFrom.Length);
+        }
+
+        return source;
+    }
 }

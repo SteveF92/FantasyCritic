@@ -64,6 +64,7 @@ public class MasterGameYearEntity
     public string? GGToken { get; set; }
     public decimal? CriticScore { get; set; }
     public bool HasAnyReviews { get; set; }
+    public string? OpenCriticSlug { get; set; }
     public string? Notes { get; set; }
     public string? BoxartFileName { get; set; }
     public string? GGCoverArtFileName { get; set; }
@@ -127,7 +128,7 @@ public class MasterGameYearEntity
         var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
         var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
-            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, addedByUser,
+            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, addedByUser,
             subGames, tags);
 
         return new MasterGameYear(masterGame, Year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,

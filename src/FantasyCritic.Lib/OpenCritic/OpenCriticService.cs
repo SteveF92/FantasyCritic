@@ -1,6 +1,7 @@
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
+using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Lib.OpenCritic;
 
@@ -60,7 +61,10 @@ public class OpenCriticService : IOpenCriticService
 
             var numReviews = parsedGameResponse.GetValue("numReviews")?.Value<int?>();
             bool hasAnyReviews = numReviews.HasValue && numReviews > 0;
-            var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate, hasAnyReviews);
+            string? url = parsedGameResponse.GetValue("url")?.Value<string?>();
+            string? slug = url?.SubstringStartingFromLastInstanceOf("/");
+
+            var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate, hasAnyReviews, slug);
             return openCriticGame;
         }
         catch (HttpRequestException httpEx)
