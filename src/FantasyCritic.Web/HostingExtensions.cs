@@ -64,6 +64,7 @@ public static class HostingExtensions
         string connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
+        services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
         AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
         if (environment.IsProduction() || environment.IsStaging())
@@ -81,13 +82,9 @@ public static class HostingExtensions
         services.AddScoped<IMasterGameRepo, MySQLMasterGameRepo>();
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
+        services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
 
-        services.AddScoped<PatreonService>(_ => new PatreonService(
-            configuration["PatreonService:AccessToken"],
-            configuration["PatreonService:RefreshToken"],
-            configuration["Authentication:Patreon:ClientId"],
-            configuration["PatreonService:CampaignID"]
-        ));
+        services.AddScoped<PatreonService>();
 
         var tempFolder = Path.Combine(rootFolder, "Temp");
         services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));

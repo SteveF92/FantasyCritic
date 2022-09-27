@@ -1,5 +1,8 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
 using Patreon.Net;
+using Patreon.Net.Models;
 using Serilog;
 
 namespace FantasyCritic.Lib.Patreon;
@@ -8,17 +11,15 @@ public class PatreonService
 {
     private static readonly ILogger _logger = Log.ForContext<PatreonService>();
 
-    private readonly string _accessToken;
-    private readonly string _refreshToken;
     private readonly string _clientId;
     private readonly string _campaignID;
+    private readonly IPatreonTokensRepo _tokensRepo;
 
-    public PatreonService(string accessToken, string refreshToken, string clientId, string campaignID)
+    public PatreonService(PatreonConfig config, IPatreonTokensRepo tokensRepo)
     {
-        _accessToken = accessToken;
-        _refreshToken = refreshToken;
-        _clientId = clientId;
-        _campaignID = campaignID;
+        _clientId = config.ClientId;
+        _campaignID = config.CampaignID;
+        _tokensRepo = tokensRepo;
     }
 
     public async Task<IReadOnlyList<PatronInfo>> GetPatronInfo(IReadOnlyList<FantasyCriticUserWithExternalLogins> patreonUsers)
@@ -38,8 +39,11 @@ public class PatreonService
 
         _logger.Information($"Found {patreonUserDictionary.Count} patreon users.");
 
+        var tokens = await _tokensRepo.GetMostRecentTokens();
+        using var client = new PatreonClient(tokens.AccessToken, tokens.RefreshToken, _clientId);
+        client.TokensRefreshedAsync += SaveNewTokens;
+        
         List<PatronInfo> patronInfo = new List<PatronInfo>();
-        using var client = new PatreonClient(_accessToken, _refreshToken, _clientId);
         _logger.Information("Making patreon request.");
         var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
         if (campaignMembers != null)
@@ -75,7 +79,10 @@ public class PatreonService
 
     public async Task<bool> UserIsPlusUser(string patreonProviderID)
     {
-        using var client = new PatreonClient(_accessToken, _refreshToken, _clientId);
+        var tokens = await _tokensRepo.GetMostRecentTokens();
+        using var client = new PatreonClient(tokens.AccessToken, tokens.RefreshToken, _clientId);
+        client.TokensRefreshedAsync += SaveNewTokens;
+        
         var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
         if (campaignMembers != null)
         {
@@ -90,7 +97,12 @@ public class PatreonService
                 return isPlusUser;
             }
         }
-
+        
         return false;
+    }
+
+    private Task SaveNewTokens(OAuthToken token)
+    {
+        return _tokensRepo.SaveTokens(new PatreonTokens(token.AccessToken, token.RefreshToken));
     }
 }
