@@ -149,7 +149,7 @@ export default {
   },
   computed: {
     openCriticLink() {
-      return 'https://opencritic.com/game/' + this.openCriticID + '/a';
+      return `https://opencritic.com/game/${this.openCriticID}/a`;
     },
     steamLink() {
       return 'https://store.steampowered.com/app/' + this.steamID;

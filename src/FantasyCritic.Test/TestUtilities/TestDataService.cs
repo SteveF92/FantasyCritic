@@ -107,6 +107,7 @@ public class TestDataService
     {
         using var reader = new StreamReader(Path.Combine(_basePath, "MasterGameYears.csv"));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Context.RegisterClassMap<MasterGameYearEntityMap>();
         var masterGameYearEntities = csv.GetRecords<MasterGameYearEntity>().ToList();
         var tagAssociations = GetTagAssociationEntities();
         var tagLookup = tagAssociations.ToLookup(x => x.MasterGameID);

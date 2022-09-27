@@ -26,6 +26,7 @@ public class MasterGameViewModel
         AveragedScore = masterGame.AveragedScore;
         Notes = masterGame.Notes;
         OpenCriticID = masterGame.OpenCriticID;
+        OpenCriticSlug = masterGame.OpenCriticSlug;
         GGToken = masterGame.GGToken;
         SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
         Tags = masterGame.Tags.Select(x => x.Name).ToList();
@@ -74,6 +75,7 @@ public class MasterGameViewModel
     public decimal? CriticScore { get; }
     public bool AveragedScore { get; }
     public int? OpenCriticID { get; }
+    public string? OpenCriticSlug { get; }
     public string? GGToken { get; }
     public IReadOnlyList<MasterGameViewModel>? SubGames { get; }
     public IReadOnlyList<string> Tags { get; }

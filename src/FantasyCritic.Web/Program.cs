@@ -13,6 +13,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.AwsCloudWatch;
+using System.IO;
 
 namespace FantasyCritic.Web;
 
@@ -42,7 +43,7 @@ public class Program
             var awsRegion = builder.Configuration["AWS:region"];
             var configuration = await GetConfiguration(builder.Environment, awsRegion);
             var app = builder
-                .ConfigureServices(awsRegion, configuration)
+                .ConfigureServices(configuration)
                 .ConfigurePipeline();
 
             if (!app.Environment.IsDevelopment())
@@ -62,18 +63,12 @@ public class Program
         }
     }
 
-    private static async Task<ConfigurationStoreSet> GetConfiguration(IWebHostEnvironment environment, string awsRegion)
+    private static async Task<IConfigurationRoot> GetConfiguration(IWebHostEnvironment environment, string awsRegion)
     {
         var nativeConfig = new ConfigurationBuilder()
             .SetBasePath(environment.ContentRootPath)
             .AddJsonFile("appsettings.json")
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
-            .Build();
-
-        List<IConfigurationStore> stores = new List<IConfigurationStore>()
-        {
-            new NativeConfiguration(nativeConfig)
-        };
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
         if (!environment.IsDevelopment())
         {
@@ -83,11 +78,12 @@ public class Program
                 fixedEnvironmentName = "beta";
             }
             var awsStore = new SecretsManagerConfigurationStore(awsRegion, "fantasyCritic", fixedEnvironmentName);
-            await awsStore.PopulateAllValues();
-            stores.Add(awsStore);
+            var awsString = await awsStore.GetConfiguration();
+
+            nativeConfig.AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(awsString)));
         }
 
-        return new ConfigurationStoreSet(stores);
+        return nativeConfig.Build();
     }
 
     private static void ConfigureLogging(LoggingPaths loggingPaths)

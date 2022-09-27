@@ -31,29 +31,30 @@ using Serilog;
 using NodaTime.Serialization.JsonNet;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
+using Microsoft.Extensions.Configuration;
 
 namespace FantasyCritic.Web;
 
 public static class HostingExtensions
 {
-    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, string awsRegion, ConfigurationStoreSet configuration)
+    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, IConfigurationRoot configuration)
     {
         var services = builder.Services;
         var environment = builder.Environment;
 
         Log.Information($"Startup: Running in {environment} mode.");
 
-        var rdsInstanceName = configuration.AssertConfigValue("AWS:rdsInstanceName");
-        var awsBucket = configuration.AssertConfigValue("AWS:bucket");
-        var mailgunAPIKey = configuration.AssertConfigValue("Mailgun:apiKey");
-        var openCriticAPIKey = configuration.AssertConfigValue("OpenCritic:apiKey");
-        var baseAddress = configuration.AssertConfigValue("BaseAddress");
-        var discordBotToken = configuration.AssertConfigValue("Discord:BotToken");
+        var rdsInstanceName = configuration["AWS:rdsInstanceName"];
+        var awsBucket = configuration["AWS:bucket"];
+        var mailgunAPIKey = configuration["Mailgun:apiKey"];
+        var openCriticAPIKey = configuration["OpenCritic:apiKey"];
+        var baseAddress = configuration["BaseAddress"];
+        var discordBotToken = configuration["Discord:BotToken"];
 
-        var rootFolder = configuration.AssertConfigValue("LinuxRootFolder");
+        var rootFolder = configuration["LinuxRootFolder"];
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            rootFolder = configuration.AssertConfigValue("RootFolder");
+            rootFolder = configuration["RootFolder"];
         }
 
         IClock clock = SystemClock.Instance;
@@ -63,9 +64,10 @@ public static class HostingExtensions
         services.AddTransient<IClock>(_ => clock);
 
         //MySQL Repos
-        string connectionString = configuration.AssertConnectionString("DefaultConnection");
+        string connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
+        services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
         services.AddSingleton<DiscordConfiguration>(_ => new DiscordConfiguration(discordBotToken));
 
@@ -85,16 +87,12 @@ public static class HostingExtensions
         services.AddScoped<IMasterGameRepo, MySQLMasterGameRepo>();
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
+        services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
 
-        services.AddScoped<PatreonService>(_ => new PatreonService(
-            configuration.AssertConfigValue("PatreonService:AccessToken"),
-            configuration.AssertConfigValue("PatreonService:RefreshToken"),
-            configuration.AssertConfigValue("Authentication:Patreon:ClientId"),
-            configuration.AssertConfigValue("PatreonService:CampaignID")
-        ));
+        services.AddScoped<PatreonService>();
 
         var tempFolder = Path.Combine(rootFolder, "Temp");
-        services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(awsRegion, awsBucket, tempFolder));
+        services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();
@@ -212,30 +210,30 @@ public static class HostingExtensions
             authenticationBuilder
                 .AddGoogle(options =>
                 {
-                    options.ClientId = configuration.AssertConfigValue("Authentication:Google:ClientId");
-                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Google:ClientSecret");
+                    options.ClientId = configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
                     microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
                     microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
-                    microsoftOptions.ClientId = configuration.AssertConfigValue("Authentication:Microsoft:ClientId");
-                    microsoftOptions.ClientSecret = configuration.AssertConfigValue("Authentication:Microsoft:ClientSecret");
+                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
                 })
                 .AddTwitch(options =>
                 {
-                    options.ClientId = configuration.AssertConfigValue("Authentication:Twitch:ClientId");
-                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Twitch:ClientSecret");
+                    options.ClientId = configuration["Authentication:Twitch:ClientId"];
+                    options.ClientSecret = configuration["Authentication:Twitch:ClientSecret"];
                 })
                 .AddPatreon(options =>
                 {
-                    options.ClientId = configuration.AssertConfigValue("Authentication:Patreon:ClientId");
-                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Patreon:ClientSecret");
+                    options.ClientId = configuration["Authentication:Patreon:ClientId"];
+                    options.ClientSecret = configuration["Authentication:Patreon:ClientSecret"];
                 })
                 .AddDiscord(options =>
                 {
-                    options.ClientId = configuration.AssertConfigValue("Authentication:Discord:ClientId");
-                    options.ClientSecret = configuration.AssertConfigValue("Authentication:Discord:ClientSecret");
+                    options.ClientId = configuration["Authentication:Discord:ClientId"];
+                    options.ClientSecret = configuration["Authentication:Discord:ClientSecret"];
                 });
         }
 
