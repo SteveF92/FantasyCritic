@@ -1,20 +1,32 @@
+using System.Reflection;
+using Discord;
 using Discord.Net;
+using Discord.WebSocket;
+using FantasyCritic.Discord.Commands;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace FantasyCritic.DiscordBot;
 
-using Discord;
-using Discord.WebSocket;
 using System;
 
 public class Program
 {
     private DiscordSocketClient _client = null!;
+    private readonly List<ICommand> _commandsList = new()
+    {
+        new GetLeagueCommand()
+    };
 
     public static Task Main() => new Program().MainAsync();
     public async Task MainAsync()
     {
-        var botToken = "";
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+            .Build();
+
+        var botToken = configuration["BotToken"];
 
         _client = new DiscordSocketClient();
         _client.Log += Log;
@@ -35,44 +47,38 @@ public class Program
 
     public async Task Client_Ready()
     {
-        var globalCommand = new SlashCommandBuilder()
-            .WithName("list-roles")
-            .WithDescription("Lists all roles of a user")
-            .AddOption("user", ApplicationCommandOptionType.User, "The users whose roles you want to be listed", isRequired:true);
+        foreach (var command in _commandsList)
+        {
+            var globalCommand = new SlashCommandBuilder()
+                .WithName(command.Name)
+                .WithDescription(command.Description);
 
-        try
-        {
-            await _client.CreateGlobalApplicationCommandAsync(globalCommand.Build());
-        }
-        catch (HttpException exception)
-        {
-            var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-            Console.WriteLine(json);
+            if (command.Options.Any())
+            {
+                foreach (var option in command.Options)
+                {
+                    globalCommand.AddOption(option);
+                }
+            }
+
+            try
+            {
+                await _client.CreateGlobalApplicationCommandAsync(globalCommand.Build());
+            }
+            catch (HttpException exception)
+            {
+                var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
+                Console.WriteLine(json);
+            }
         }
     }
 
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
-        switch (command.Data.Name)
+        var commandToHandle = _commandsList.FirstOrDefault(c => c.Name == command.Data.Name);
+        if (commandToHandle != null)
         {
-            case "list-roles":
-                await HandleListRoleCommand(command);
-                break;
+            await commandToHandle.HandleCommand(command);
         }
-    }
-
-    private async Task HandleListRoleCommand(SocketSlashCommand command)
-    {
-        var guildUser = (SocketGuildUser)command.Data.Options.First().Value;
-
-        var roleList = string.Join(",\n", guildUser.Roles.Where(x => !x.IsEveryone).Select(x => x.Mention));
-
-        var embedBuilder = new EmbedBuilder()
-            .WithAuthor(guildUser.ToString(), guildUser.GetAvatarUrl() ?? guildUser.GetDefaultAvatarUrl())
-            .WithTitle("Roles")
-            .WithDescription(roleList)
-            .WithColor(Color.Green)
-            .WithCurrentTimestamp();
-        await command.RespondAsync(embed: embedBuilder.Build(), ephemeral: true);
     }
 }

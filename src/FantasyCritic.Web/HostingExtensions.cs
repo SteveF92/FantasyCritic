@@ -14,7 +14,6 @@ using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
-using FantasyCritic.Web.AuthorizationHandlers;
 using FantasyCritic.Web.BackgroundServices;
 using FantasyCritic.Web.Filters;
 using FantasyCritic.Web.Hubs;
