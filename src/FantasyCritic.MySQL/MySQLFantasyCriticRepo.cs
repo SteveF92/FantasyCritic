@@ -203,7 +203,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string sql = "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;";
         List<PublisherGameUpdateEntity> updateEntities = calculatedStats.Select(x => new PublisherGameUpdateEntity(x)).ToList();
         var updateBatches = updateEntities.Chunk(1000).ToList();
-        await using var connection = new MySqlConnection(_connectionString);
+        var longTimeoutConnectionString = ConnectionStringUtilities.GetLongTimeoutConnectionString(_connectionString, Duration.FromSeconds(60));
+        await using var connection = new MySqlConnection(longTimeoutConnectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         for (var index = 0; index < updateBatches.Count; index++)
