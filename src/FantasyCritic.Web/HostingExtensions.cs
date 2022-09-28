@@ -102,7 +102,7 @@ public static class HostingExtensions
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
 
-        services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+        services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
 
         services.AddScoped<AdminService>();
 
