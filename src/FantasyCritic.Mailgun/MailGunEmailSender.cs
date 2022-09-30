@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Interfaces;
 using FluentEmail.Core;
@@ -31,5 +32,9 @@ public class MailGunEmailSender : IEmailSender
         emailObject.Sender = new MailgunSender(_domain, _apiKey);
 
         var response = await emailObject.SendAsync();
+        if (!response.Successful)
+        {
+            throw new Exception($"Mail failed to send: {string.Join(",", response.ErrorMessages)}");
+        }
     }
 }
