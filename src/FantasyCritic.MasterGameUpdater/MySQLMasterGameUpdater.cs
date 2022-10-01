@@ -24,13 +24,13 @@ public class MySQLMasterGameUpdater
         var tagsOnBetaNotOnProduction = betaTags.Except(productionTags).ToList();
         foreach (var tag in tagsOnBetaNotOnProduction)
         {
-            _logger.Warning($"Tag: {tag.ReadableName} on beta but not production.");
+            _logger.Warning($"Tag: {tag.ReadableName} on local but not production.");
         }
 
         var gamesOnBetaNotOnProduction = betaMasterGames.Except(productionMasterGames).ToList();
         foreach (var game in gamesOnBetaNotOnProduction)
         {
-            _logger.Warning($"Game: {game.GameName} on beta but not production.");
+            _logger.Warning($"Game: {game.GameName} on local but not production.");
         }
 
         var betaKeepTags = tagsOnBetaNotOnProduction.Select(x => x.Name);
