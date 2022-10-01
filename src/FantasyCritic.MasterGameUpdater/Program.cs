@@ -15,6 +15,7 @@ using Serilog;
 using FantasyCritic.Lib.Domain;
 using Newtonsoft.Json;
 using FantasyCritic.SharedSerialization.API;
+using NodaTime.Serialization.JsonNet;
 
 namespace FantasyCritic.MasterGameUpdater;
 
@@ -42,6 +43,7 @@ public static class Program
         _baseAddress = configuration["baseAddress"];
         _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]);
 
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
         DapperNodaTimeSetup.Register();
 
         await UpdateMasterGames();
