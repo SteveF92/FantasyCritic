@@ -42,6 +42,14 @@ public class GameController : FantasyCriticController
         return viewModel;
     }
 
+    public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame()
+    {
+        IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
+        var currentDate = _clock.GetToday();
+        var viewModels = masterGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
+        return viewModels;
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<List<MasterGameChangeLogEntryViewModel>>> MasterGameChangeLog(Guid id)
     {
