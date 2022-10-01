@@ -19,7 +19,7 @@ public class MySQLMasterGameUpdater
     }
 
     public async Task UpdateMasterGames(IEnumerable<MasterGameTag> productionTags, IEnumerable<MasterGame> productionMasterGames,
-        IEnumerable<MasterGameTag> betaTags, IEnumerable<MasterGame> betaMasterGames, IEnumerable<MasterGameHasTagEntity> productionGamesHaveTagEntities, Guid addedByUserIDOverride)
+        IEnumerable<MasterGameTag> betaTags, IEnumerable<MasterGame> betaMasterGames, Guid addedByUserIDOverride)
     {
         var tagsOnBetaNotOnProduction = betaTags.Except(productionTags).ToList();
         foreach (var tag in tagsOnBetaNotOnProduction)
@@ -39,6 +39,20 @@ public class MySQLMasterGameUpdater
         List<MasterGameTagEntity> tagEntities = productionTags.Select(x => new MasterGameTagEntity(x)).ToList();
         List<MasterGameEntity> masterGameEntities = productionMasterGames.Select(x => new MasterGameEntity(x, addedByUserIDOverride)).ToList();
         List<MasterSubGameEntity> masterSubGameEntities = productionMasterGames.SelectMany(x => x.SubGames).Select(x => new MasterSubGameEntity(x)).ToList();
+        List<MasterGameHasTagEntity> productionGamesHaveTagEntities = new List<MasterGameHasTagEntity>();
+        foreach (var masterGame in productionMasterGames)
+        {
+            foreach (var tag in masterGame.Tags)
+            {
+                var gameHasTagEntity = new MasterGameHasTagEntity()
+                {
+                    MasterGameID = masterGame.MasterGameID,
+                    TagName = tag.Name
+                };
+                productionGamesHaveTagEntities.Add(gameHasTagEntity);
+            }
+        }
+
 
         var paramsObject = new
         {

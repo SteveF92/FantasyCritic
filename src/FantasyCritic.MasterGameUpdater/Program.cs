@@ -1,12 +1,10 @@
 using System.Reflection;
-using Dapper;
 using Dapper.NodaTime;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using NodaTime;
-using MySqlConnector;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
@@ -14,18 +12,14 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.SharedSerialization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.MasterGameUpdater;
 
 public static class Program
 {
-    private static string _awsRegion = null!;
-    private static string _betaBucket = null!;
-    private static string _productionReadOnlyConnectionString = null!;
-    private static string _betaConnectionString = null!;
     private static string _localConnectionString = null!;
-    private static string _productionRDSName = null!;
-    private static string _betaRDSName = null!;
+    private static string _baseAddress = null!;
     private static Guid _addedByUserIDOverride;
 
     private static readonly IClock _clock = SystemClock.Instance;
@@ -42,13 +36,8 @@ public static class Program
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
-        _awsRegion = configuration["awsRegion"];
-        _betaBucket = configuration["betaBucket"];
-        _productionReadOnlyConnectionString = configuration["productionConnectionString"];
-        _betaConnectionString = configuration["betaConnectionString"];
         _localConnectionString = configuration["localConnectionString"];
-        _productionRDSName = configuration["productionRDSName"];
-        _betaRDSName = configuration["betaRDSName"];
+        _baseAddress = configuration["baseAddress"];
         _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]);
 
         DapperNodaTimeSetup.Register();
@@ -58,31 +47,32 @@ public static class Program
 
     private static async Task UpdateMasterGames()
     {
-        RepositoryConfiguration productionRepoConfig = new RepositoryConfiguration(_productionReadOnlyConnectionString, _clock);
         RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(_localConnectionString, _clock);
-        MySQLFantasyCriticUserStore productionUserStore = new MySQLFantasyCriticUserStore(productionRepoConfig);
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
-        MySQLMasterGameRepo productionMasterGameRepo = new MySQLMasterGameRepo(productionRepoConfig, productionUserStore);
         MySQLMasterGameRepo localMasterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
         MySQLMasterGameUpdater gameUpdater = new MySQLMasterGameUpdater(_localConnectionString);
         AdminService localAdminService = GetAdminService();
 
         Log.Information("Getting master games from production");
-        var productionMasterGameTags = await productionMasterGameRepo.GetMasterGameTags();
-        var productionMasterGames = await productionMasterGameRepo.GetMasterGames();
+        var productionMasterGameTags = await GetTagsFromAPI();
+        var productionMasterGames = await GetMasterGamesFromAPI();
         var localMasterGameTags = await localMasterGameRepo.GetMasterGameTags();
         var localMasterGames = await localMasterGameRepo.GetMasterGames();
-        IReadOnlyList<MasterGameHasTagEntity> productionGamesHaveTagEntities = await GetProductionGamesHaveTagEntities();
-        await gameUpdater.UpdateMasterGames(productionMasterGameTags, productionMasterGames, localMasterGameTags,
-            localMasterGames, productionGamesHaveTagEntities, _addedByUserIDOverride);
+        await gameUpdater.UpdateMasterGames(productionMasterGameTags, productionMasterGames, localMasterGameTags, localMasterGames, _addedByUserIDOverride);
         await localAdminService.RefreshCaches();
     }
 
-    private static async Task<IReadOnlyList<MasterGameHasTagEntity>> GetProductionGamesHaveTagEntities()
+    private static async Task<IReadOnlyList<MasterGameTag>> GetTagsFromAPI()
     {
-        await using var connection = new MySqlConnection(_productionReadOnlyConnectionString);
-        var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
-        return masterGameTagResults.ToList();
+        HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
+        var tagsString = await client.GetStringAsync("api/Game/GetMasterGameTags");
+
+        return new List<MasterGameTag>();
+    }
+
+    private static async Task<IReadOnlyList<MasterGame>> GetMasterGamesFromAPI()
+    {
+        return new List<MasterGame>();
     }
 
     private static AdminService GetAdminService()
