@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4350DE84
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalServices", "ExternalServices", "{C91E705F-F0CD-4537-B670-5D2FC2613A74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.MasterGameUpdater", "FantasyCritic.MasterGameUpdater\FantasyCritic.MasterGameUpdater.csproj", "{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{27144025-E73E-4010-BE53-FFBCC7AEDCAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27144025-E73E-4010-BE53-FFBCC7AEDCAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27144025-E73E-4010-BE53-FFBCC7AEDCAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,6 +105,7 @@ Global
 		{9718DCF9-CB20-4917-BF8C-2242626696EC} = {7BB80223-E4F3-4553-A18E-E066660AC525}
 		{C7AAA97D-179D-42CE-83E9-9C4900D21DDA} = {7BB80223-E4F3-4553-A18E-E066660AC525}
 		{27144025-E73E-4010-BE53-FFBCC7AEDCAE} = {7BB80223-E4F3-4553-A18E-E066660AC525}
+		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B} = {7BB80223-E4F3-4553-A18E-E066660AC525}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEBD4BD6-299C-48F2-8D24-13F9B53219E2}
