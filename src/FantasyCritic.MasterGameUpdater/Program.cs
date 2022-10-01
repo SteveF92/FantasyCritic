@@ -13,6 +13,8 @@ using FantasyCritic.SharedSerialization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using FantasyCritic.Lib.Domain;
+using Newtonsoft.Json;
+using FantasyCritic.SharedSerialization.API;
 
 namespace FantasyCritic.MasterGameUpdater;
 
@@ -66,8 +68,9 @@ public static class Program
     {
         HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
         var tagsString = await client.GetStringAsync("api/Game/GetMasterGameTags");
-
-        return new List<MasterGameTag>();
+        var objects = JsonConvert.DeserializeObject<List<MasterGameTagViewModel>>(tagsString);
+        var domains = objects!.Select(x => x.ToDomain()).ToList();
+        return domains;
     }
 
     private static async Task<IReadOnlyList<MasterGame>> GetMasterGamesFromAPI()
