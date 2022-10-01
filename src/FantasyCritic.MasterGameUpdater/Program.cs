@@ -57,7 +57,7 @@ public static class Program
 
         Log.Information("Getting master games from production");
         var productionMasterGameTags = await GetTagsFromAPI();
-        var productionMasterGames = await GetMasterGamesFromAPI();
+        var productionMasterGames = await GetMasterGamesFromAPI(productionMasterGameTags);
         var localMasterGameTags = await localMasterGameRepo.GetMasterGameTags();
         var localMasterGames = await localMasterGameRepo.GetMasterGames();
         await gameUpdater.UpdateMasterGames(productionMasterGameTags, productionMasterGames, localMasterGameTags, localMasterGames, _addedByUserIDOverride);
@@ -73,9 +73,14 @@ public static class Program
         return domains;
     }
 
-    private static async Task<IReadOnlyList<MasterGame>> GetMasterGamesFromAPI()
+    private static async Task<IReadOnlyList<MasterGame>> GetMasterGamesFromAPI(IReadOnlyList<MasterGameTag> tags)
     {
-        return new List<MasterGame>();
+        var tagDictionary = tags.ToDictionary(x => x.Name);
+        HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
+        var gamesString = await client.GetStringAsync("api/Game/MasterGame");
+        var objects = JsonConvert.DeserializeObject<List<MasterGameViewModel>>(gamesString);
+        var domains = objects!.Select(x => x.ToDomain(tagDictionary)).ToList();
+        return domains;
     }
 
     private static AdminService GetAdminService()

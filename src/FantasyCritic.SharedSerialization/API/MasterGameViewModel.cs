@@ -1,7 +1,15 @@
-namespace FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Lib.Domain;
+using NodaTime;
+
+namespace FantasyCritic.SharedSerialization.API;
 
 public class MasterGameViewModel
 {
+    public MasterGameViewModel()
+    {
+        
+    }
+
     public MasterGameViewModel(MasterGame masterGame, LocalDate currentDate, bool error = false, int numberOutstandingCorrections = 0)
     {
         MasterGameID = masterGame.MasterGameID;
@@ -57,33 +65,49 @@ public class MasterGameViewModel
         Tags = new List<string>();
     }
 
-    public Guid MasterGameID { get; }
-    public string GameName { get; }
-    public string EstimatedReleaseDate { get; }
-    public LocalDate MinimumReleaseDate { get; }
-    public LocalDate MaximumReleaseDate { get; }
-    public LocalDate? EarlyAccessReleaseDate { get; }
-    public LocalDate? InternationalReleaseDate { get; }
-    public LocalDate? AnnouncementDate { get; }
-    public LocalDate? ReleaseDate { get; }
-    public bool IsReleased { get; }
-    public bool ReleasingToday { get; }
-    public bool DoNotRefreshDate { get; }
-    public bool DoNotRefreshAnything { get; }
-    public bool EligibilityChanged { get; }
-    public bool DelayContention { get; }
-    public decimal? CriticScore { get; }
-    public bool AveragedScore { get; }
-    public int? OpenCriticID { get; }
-    public string? OpenCriticSlug { get; }
-    public string? GGToken { get; }
-    public IReadOnlyList<MasterGameViewModel>? SubGames { get; }
-    public IReadOnlyList<string> Tags { get; }
-    public string? Notes { get; }
-    public string? BoxartFileName { get; }
-    public string? GGCoverArtFileName { get; }
-    public Instant AddedTimestamp { get; }
-    public FantasyCriticUserViewModel? AddedByUser { get; }
-    public bool Error { get; }
-    public int NumberOutstandingCorrections { get; }
+    public Guid MasterGameID { get; init; }
+    public string GameName { get; init; } = null!;
+    public string EstimatedReleaseDate { get; init; } = null!;
+    public LocalDate MinimumReleaseDate { get; init; }
+    public LocalDate MaximumReleaseDate { get; init; }
+    public LocalDate? EarlyAccessReleaseDate { get; init; }
+    public LocalDate? InternationalReleaseDate { get; init; }
+    public LocalDate? AnnouncementDate { get; init; }
+    public LocalDate? ReleaseDate { get; init; }
+    public bool IsReleased { get; init; }
+    public bool ReleasingToday { get; init; }
+    public bool DoNotRefreshDate { get; init; }
+    public bool DoNotRefreshAnything { get; init; }
+    public bool EligibilityChanged { get; init; }
+    public bool DelayContention { get; init; }
+    public decimal? CriticScore { get; init; }
+    public bool AveragedScore { get; init; }
+    public int? OpenCriticID { get; init; }
+    public string? OpenCriticSlug { get; init; }
+    public string? GGToken { get; init; }
+    public IReadOnlyList<MasterGameViewModel>? SubGames { get; init; }
+    public IReadOnlyList<string> Tags { get; init; } = null!;
+    public string? Notes { get; init; }
+    public string? BoxartFileName { get; init; }
+    public string? GGCoverArtFileName { get; init; }
+    public Instant AddedTimestamp { get; init; }
+    public FantasyCriticUserViewModel? AddedByUser { get; init; }
+    public bool Error { get; init; }
+    public int NumberOutstandingCorrections { get; init; }
+
+    public MasterGame ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    {
+        List<MasterGameTag> tags = new List<MasterGameTag>();
+        foreach (var tag in Tags)
+        {
+            if (tagDictionary.TryGetValue(tag, out var masterGameTag))
+            {
+                tags.Add(masterGameTag);
+            }
+        }
+        
+        return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
+            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, AddedTimestamp, DoNotRefreshDate,
+            DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
+    }
 }

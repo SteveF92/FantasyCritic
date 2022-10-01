@@ -1,3 +1,5 @@
+using FantasyCritic.SharedSerialization.API;
+
 namespace FantasyCritic.Web.Models.Responses;
 
 public class MasterGameChangeLogEntryViewModel
