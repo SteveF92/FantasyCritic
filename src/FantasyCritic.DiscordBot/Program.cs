@@ -3,20 +3,21 @@ using Discord;
 using Discord.Net;
 using Discord.WebSocket;
 using FantasyCritic.Discord.Commands;
+using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.MySQL;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using NodaTime;
 
 namespace FantasyCritic.DiscordBot;
 
+using Dapper.NodaTime;
 using System;
 
 public class Program
 {
     private DiscordSocketClient _client = null!;
-    private readonly List<ICommand> _commandsList = new()
-    {
-        new GetLeagueCommand()
-    };
+    private List<ICommand> _commandsList = new();
 
     public static Task Main() => new Program().MainAsync();
     public async Task MainAsync()
@@ -27,6 +28,20 @@ public class Program
             .Build();
 
         var botToken = configuration["BotToken"];
+        var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"], SystemClock.Instance);
+
+        var userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
+        var masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore);
+        var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
+        var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
+        var clock = SystemClock.Instance;
+
+        _commandsList = new List<ICommand>
+        {
+            new GetLeagueCommand(discordRepo, fantasyCriticRepo, clock)
+        };
+
+        DapperNodaTimeSetup.Register();
 
         _client = new DiscordSocketClient();
         _client.Log += Log;
