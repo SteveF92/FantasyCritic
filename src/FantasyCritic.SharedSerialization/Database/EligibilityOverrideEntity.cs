@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Domain;
 
-namespace FantasyCritic.SharedSerialization;
+namespace FantasyCritic.SharedSerialization.Database;
 
 public class EligibilityOverrideEntity
 {

@@ -8,7 +8,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
-using FantasyCritic.SharedSerialization;
+using FantasyCritic.SharedSerialization.Database;
 using NodaTime;
 
 namespace FantasyCritic.Test.TestUtilities;

@@ -1,4 +1,4 @@
-namespace FantasyCritic.SharedSerialization;
+namespace FantasyCritic.SharedSerialization.Database;
 
 public class TagOverrideEntity
 {

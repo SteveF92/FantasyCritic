@@ -2,7 +2,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using NodaTime;
 
-namespace FantasyCritic.SharedSerialization;
+namespace FantasyCritic.SharedSerialization.Database;
 
 public class DropRequestEntity
 {

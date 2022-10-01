@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using NodaTime;
 
-namespace FantasyCritic.SharedSerialization;
+namespace FantasyCritic.SharedSerialization.Database;
 
 public class LeagueYearEntity
 {

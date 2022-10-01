@@ -1,7 +1,7 @@
 using FantasyCritic.Lib.Domain;
 using NodaTime;
 
-namespace FantasyCritic.SharedSerialization;
+namespace FantasyCritic.SharedSerialization.Database;
 
 public class PublisherGameEntity
 {
