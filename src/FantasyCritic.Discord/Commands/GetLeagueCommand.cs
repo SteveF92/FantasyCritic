@@ -22,13 +22,13 @@ public class GetLeagueCommand : ICommand
         Description = "Get league information.";
         Options = new SlashCommandOptionBuilder[]
         {
-            //new()
-            //{
-            //    Name = "user",
-            //    Description = "The users whose roles you want to be listed",
-            //    Type = ApplicationCommandOptionType.User,
-            //    IsRequired = true
-            //}
+            new()
+            {
+                Name = "year",
+                Description = "The year for the league",
+                Type = ApplicationCommandOptionType.Integer,
+                IsRequired = false
+            }
         };
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
@@ -41,17 +41,16 @@ public class GetLeagueCommand : ICommand
         {
             var currentDate = _clock.GetToday();
 
+            var providedYear = command.Data.Options.FirstOrDefault();
+            if (providedYear != null)
+            {
+                var yearValue = (long)providedYear.Value;
+                var convertedYear = Convert.ToInt32(yearValue);
+                currentDate = new LocalDate(convertedYear, 12, 31);
+            }
+
             var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
             var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), currentDate.Year);
-            //var guildUser = (SocketGuildUser)command.Data.Options.First().Value;
-            //var roleList = string.Join(",\n", guildUser.Roles.Where(x => !x.IsEveryone).Select(x => x.Mention));
-            //var embedBuilder = new EmbedBuilder()
-            //    .WithAuthor(guildUser.ToString(), guildUser.GetAvatarUrl() ?? guildUser.GetDefaultAvatarUrl())
-            //    .WithTitle("Roles")
-            //    .WithDescription(roleList)
-            //    .WithColor(Color.Green)
-            //    .WithCurrentTimestamp();
-
             if (leagueChannel == null)
             {
                 await command.RespondAsync("Error: No league configuration found for this channel.");
@@ -78,7 +77,7 @@ public class GetLeagueCommand : ICommand
             var embedBuilder = new EmbedBuilder()
                 .WithTitle($"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}")
                 .WithDescription(string.Join("\n", publisherLines))
-                .WithFooter($"Requested by {command.User.Username}")
+                .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
                 .WithColor(16777215)
                 .WithCurrentTimestamp();
 
@@ -88,19 +87,12 @@ public class GetLeagueCommand : ICommand
         catch (Exception ex)
         {
             Console.WriteLine($"Error retrieving LeagueChannel {ex.Message}");
+            await command.RespondAsync("There was an error executing this command. Please try again.");
         }
     }
 
     private string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate)
     {
-        var dateToCheck = currentDate;
-
-        //TODO: do I need to do this?
-        //if (leagueYear.SupportedYear.Finished)
-        //{
-        //    dateToCheck = new LocalDate(Year, 12, 31);
-        //}
-
         //TODO: is there a way to reuse MinimalPublisherViewModel code for this part?
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
@@ -110,7 +102,7 @@ public class GetLeagueCommand : ICommand
         var gamesReleased = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)
-            .Count(x => x.MasterGame!.MasterGame.IsReleased(dateToCheck));
+            .Count(x => x.MasterGame!.MasterGame.IsReleased(currentDate));
 
         var publisherLine = $"**{rank}**";
         publisherLine += $"{(string.IsNullOrEmpty(publisher.PublisherIcon) ? $"{publisher.PublisherIcon} " : "")}**{publisher.PublisherName}** ";
