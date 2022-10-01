@@ -11,6 +11,7 @@ public class MasterGameTagViewModel
         Description = domain.Description;
         Examples = domain.Examples;
         BadgeColor = domain.BadgeColor;
+        HasCustomCode = domain.HasCustomCode;
         SystemTagOnly = domain.SystemTagOnly;
     }
 
@@ -21,5 +22,6 @@ public class MasterGameTagViewModel
     public string Description { get; }
     public IReadOnlyList<string> Examples { get; }
     public string BadgeColor { get; }
+    public bool HasCustomCode { get; }
     public bool SystemTagOnly { get; }
 }
