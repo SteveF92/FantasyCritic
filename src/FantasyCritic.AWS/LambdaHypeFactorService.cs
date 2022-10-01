@@ -20,7 +20,7 @@ using Serilog;
 
 namespace FantasyCritic.AWS;
 
-public class LambdaHypeFactorService : IHypeFactorService
+public class LambdaHypeFactorService : IExternalHypeFactorService
 {
     private static readonly ILogger _logger = Log.ForContext<LambdaHypeFactorService>();
 

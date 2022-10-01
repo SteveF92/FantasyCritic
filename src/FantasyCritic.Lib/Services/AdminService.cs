@@ -203,7 +203,7 @@ public class AdminService
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
         await UpdateSystemWideValues();
-        HypeConstants hypeConstants = await GetHypeConstants();
+        HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
         await UpdateGameStats(hypeConstants);
         _logger.Information("Done refreshing caches");
     }
@@ -521,30 +521,6 @@ public class AdminService
         var averageStandardGamePointsByPickPosition = pointsForPosition.Select(position => new AveragePickPositionPoints(position.Key, position.Value.Count, position.Value.Average())).ToList();
         var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints, averageStandardGamePointsByPickPosition);
         await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
-    }
-
-    private async Task<HypeConstants> GetHypeConstants()
-    {
-        _logger.Information("Getting Hype Constants");
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
-
-        foreach (var supportedYear in supportedYears)
-        {
-            if (supportedYear.Year < 2019)
-            {
-                continue;
-            }
-
-            var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
-            var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear));
-            allMasterGameYears.AddRange(relevantGames);
-        }
-
-        var hypeConstants = await _hypeFactorService.GetHypeConstants(allMasterGameYears);
-        _logger.Information($"Hype Constants: {hypeConstants}");
-
-        return hypeConstants;
     }
 
     private async Task UpdateGameStats(HypeConstants hypeConstants)

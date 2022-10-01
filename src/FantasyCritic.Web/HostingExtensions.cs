@@ -65,17 +65,7 @@ public static class HostingExtensions
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
-        
-        if (environment.IsProduction() || environment.IsStaging())
-        {
-            var tempFolder = Path.Combine(rootFolder, "Temp");
-            services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
-        }
-        else
-        {
-            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
-        }
-        
+
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IFantasyCriticRoleStore, MySQLFantasyCriticRoleStore>();
@@ -89,7 +79,17 @@ public static class HostingExtensions
 
         services.AddScoped<PatreonService>();
 
-        ;
+        if (environment.IsProduction() || environment.IsStaging())
+        {
+            var tempFolder = Path.Combine(rootFolder, "Temp");
+            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+            services.AddScoped<IHypeFactorService, HypeFactorService>();
+        }
+        else
+        {
+            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
+        }
+
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();
@@ -105,6 +105,16 @@ public static class HostingExtensions
         services.AddScoped<EmailSendingService>();
 
         services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
+
+        if (environment.IsProduction() || environment.IsStaging())
+        {
+            var tempFolder = Path.Combine(rootFolder, "Temp");
+            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+        }
+        else
+        {
+            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
+        }
 
         services.AddScoped<AdminService>();
 
