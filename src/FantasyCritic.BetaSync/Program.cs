@@ -12,7 +12,6 @@ using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using NodaTime;
-using FantasyCritic.AWS;
 using MySqlConnector;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
@@ -137,17 +136,9 @@ public static class Program
         PatreonService patreonService = null!;
         IRDSManager rdsManager = null!;
         RoyaleService royaleService = null!;
-        IHypeFactorService hypeFactorService = new LambdaHypeFactorService(_awsRegion, _betaBucket, "");
-
-        AdminServiceConfiguration configuration = new AdminServiceConfiguration(true);
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        var realHypeConstantsEnvironments = new List<string>() { "STAGING", "PRODUCTION" };
-        if (environment is not null && realHypeConstantsEnvironments.Contains(environment.ToUpper()))
-        {
-            configuration = new AdminServiceConfiguration(false);
-        }
+        IHypeFactorService hypeFactorService = new DefaultHypeFactorService();
 
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
-            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, configuration);
+            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService);
     }
 }

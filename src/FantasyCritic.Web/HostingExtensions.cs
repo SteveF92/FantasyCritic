@@ -11,7 +11,6 @@ using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
-using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Filters;
 using FantasyCritic.Web.Hubs;
@@ -66,13 +65,17 @@ public static class HostingExtensions
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
-        AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
+        
         if (environment.IsProduction() || environment.IsStaging())
         {
-            adminServiceConfiguration = new AdminServiceConfiguration(false);
+            var tempFolder = Path.Combine(rootFolder, "Temp");
+            services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
         }
-        services.AddSingleton<AdminServiceConfiguration>(_ => adminServiceConfiguration);
-
+        else
+        {
+            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
+        }
+        
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IFantasyCriticRoleStore, MySQLFantasyCriticRoleStore>();
@@ -86,8 +89,7 @@ public static class HostingExtensions
 
         services.AddScoped<PatreonService>();
 
-        var tempFolder = Path.Combine(rootFolder, "Temp");
-        services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+        ;
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();

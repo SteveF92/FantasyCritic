@@ -8,7 +8,6 @@ using FantasyCritic.Lib.GG;
 using Serilog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Trades;
 
 namespace FantasyCritic.Lib.Services;
@@ -29,11 +28,10 @@ public class AdminService
     private readonly IGGService _ggService;
     private readonly PatreonService _patreonService;
     private readonly IClock _clock;
-    private readonly AdminServiceConfiguration _configuration;
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -47,7 +45,6 @@ public class AdminService
         _rdsManager = rdsManager;
         _royaleService = royaleService;
         _hypeFactorService = hypeFactorService;
-        _configuration = configuration;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -206,16 +203,7 @@ public class AdminService
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
         await UpdateSystemWideValues();
-        HypeConstants hypeConstants;
-        if (_configuration.DefaultHypeConstants)
-        {
-            _logger.Information("Using default hype constants");
-            hypeConstants = HypeConstants.GetReasonableDefaults();
-        }
-        else
-        {
-            hypeConstants = await GetHypeConstants();
-        }
+        HypeConstants hypeConstants = await GetHypeConstants();
         await UpdateGameStats(hypeConstants);
         _logger.Information("Done refreshing caches");
     }
