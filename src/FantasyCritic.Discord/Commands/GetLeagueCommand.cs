@@ -104,7 +104,7 @@ public class GetLeagueCommand : ICommand
             .Where(x => x.MasterGame is not null)
             .Count(x => x.MasterGame!.MasterGame.IsReleased(currentDate));
 
-        var publisherLine = $"**{rank}**";
+        var publisherLine = $"**{rank}.**";
         publisherLine += $"{(string.IsNullOrEmpty(publisher.PublisherIcon) ? $"{publisher.PublisherIcon} " : "")}**{publisher.PublisherName}** ";
         publisherLine += $"({publisher.User.UserName})\n";
         publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
