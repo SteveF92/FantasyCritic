@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("FantasyCritic.BetaSync")]
+[assembly: InternalsVisibleTo("FantasyCritic.MasterGameUpdater")]
 namespace FantasyCritic.MySQL.Entities;
 
 internal class MasterSubGameEntity

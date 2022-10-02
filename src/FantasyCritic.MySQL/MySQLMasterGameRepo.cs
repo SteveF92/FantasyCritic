@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.MySQL.Entities;
-using FantasyCritic.SharedSerialization;
+using FantasyCritic.SharedSerialization.Database;
 using Serilog;
 
 namespace FantasyCritic.MySQL;

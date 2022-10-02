@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.SharedSerialization.API;
 using FantasyCritic.Web.Models.Requests.MasterGame;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -40,6 +41,14 @@ public class GameController : FantasyCriticController
         var currentDate = _clock.GetToday();
         var viewModel = new MasterGameViewModel(masterGame, currentDate, numberOutstandingCorrections: numberOutstandingCorrections);
         return viewModel;
+    }
+
+    public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame()
+    {
+        IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
+        var currentDate = _clock.GetToday();
+        var viewModels = masterGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
+        return viewModels;
     }
 
     [HttpGet("{id}")]

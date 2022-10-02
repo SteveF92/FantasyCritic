@@ -12,7 +12,6 @@ using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
-using FantasyCritic.Mailgun;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.BackgroundServices;
 using FantasyCritic.Web.Filters;
@@ -69,14 +68,6 @@ public static class HostingExtensions
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
-        services.AddSingleton<DiscordConfiguration>(_ => new DiscordConfiguration(discordBotToken));
-
-        AdminServiceConfiguration adminServiceConfiguration = new AdminServiceConfiguration(true);
-        if (environment.IsProduction() || environment.IsStaging())
-        {
-            adminServiceConfiguration = new AdminServiceConfiguration(false);
-        }
-        services.AddSingleton<AdminServiceConfiguration>(_ => adminServiceConfiguration);
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
@@ -91,8 +82,17 @@ public static class HostingExtensions
 
         services.AddScoped<PatreonService>();
 
-        var tempFolder = Path.Combine(rootFolder, "Temp");
-        services.AddScoped<IHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+        if (environment.IsProduction() || environment.IsStaging())
+        {
+            var tempFolder = Path.Combine(rootFolder, "Temp");
+            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+            services.AddScoped<IHypeFactorService, HypeFactorService>();
+        }
+        else
+        {
+            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
+        }
+
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();
@@ -109,7 +109,17 @@ public static class HostingExtensions
         services.AddScoped<DiscordPushService>();
         services.AddScoped<DiscordRequestService>();
 
-        services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+        services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
+
+        if (environment.IsProduction() || environment.IsStaging())
+        {
+            var tempFolder = Path.Combine(rootFolder, "Temp");
+            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+        }
+        else
+        {
+            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
+        }
 
         services.AddScoped<AdminService>();
 

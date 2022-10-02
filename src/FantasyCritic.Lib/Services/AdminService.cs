@@ -8,7 +8,6 @@ using FantasyCritic.Lib.GG;
 using Serilog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Trades;
 
 namespace FantasyCritic.Lib.Services;
@@ -29,11 +28,10 @@ public class AdminService
     private readonly IGGService _ggService;
     private readonly PatreonService _patreonService;
     private readonly IClock _clock;
-    private readonly AdminServiceConfiguration _configuration;
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, AdminServiceConfiguration configuration)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -47,7 +45,6 @@ public class AdminService
         _rdsManager = rdsManager;
         _royaleService = royaleService;
         _hypeFactorService = hypeFactorService;
-        _configuration = configuration;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -206,16 +203,7 @@ public class AdminService
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
         await UpdateSystemWideValues();
-        HypeConstants hypeConstants;
-        if (_configuration.DefaultHypeConstants)
-        {
-            _logger.Information("Using default hype constants");
-            hypeConstants = HypeConstants.GetReasonableDefaults();
-        }
-        else
-        {
-            hypeConstants = await GetHypeConstants();
-        }
+        HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
         await UpdateGameStats(hypeConstants);
         _logger.Information("Done refreshing caches");
     }
@@ -533,30 +521,6 @@ public class AdminService
         var averageStandardGamePointsByPickPosition = pointsForPosition.Select(position => new AveragePickPositionPoints(position.Key, position.Value.Count, position.Value.Average())).ToList();
         var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints, averageStandardGamePointsByPickPosition);
         await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
-    }
-
-    private async Task<HypeConstants> GetHypeConstants()
-    {
-        _logger.Information("Getting Hype Constants");
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
-
-        foreach (var supportedYear in supportedYears)
-        {
-            if (supportedYear.Year < 2019)
-            {
-                continue;
-            }
-
-            var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
-            var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear));
-            allMasterGameYears.AddRange(relevantGames);
-        }
-
-        var hypeConstants = await _hypeFactorService.GetHypeConstants(allMasterGameYears);
-        _logger.Information($"Hype Constants: {hypeConstants}");
-
-        return hypeConstants;
     }
 
     private async Task UpdateGameStats(HypeConstants hypeConstants)

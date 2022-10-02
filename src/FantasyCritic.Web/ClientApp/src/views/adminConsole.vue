@@ -96,6 +96,7 @@ export default {
       this.lastJobFailed = false;
       this.jobAttempted = endPoint;
       this.isBusy = true;
+
       try {
         await axios.post(`/api/${controller}/${endPoint}`);
       } catch (error) {
@@ -115,35 +116,40 @@ export default {
       this.superDropConfirmation = null;
       await this.takePostAction('Admin', 'GrantSuperDrops');
     },
-    getRecentDatabaseSnapshots() {
+    async getRecentDatabaseSnapshots() {
+      this.lastJobFailed = false;
+      this.jobAttempted = 'Getting snapshots';
       this.isBusy = true;
-      axios
-        .get('/api/admin/GetRecentDatabaseSnapshots')
-        .then((response) => {
-          this.recentSnapshots = response.data;
-          this.isBusy = false;
-          this.jobSuccess = 'Getting snapshots';
-        })
-        .catch((returnedError) => {
-          this.isBusy = false;
-          this.errorInfo = returnedError.response.data;
-        });
+
+      try {
+        const response = await axios.get('/api/admin/GetRecentDatabaseSnapshots');
+        this.recentSnapshots = response.data;
+      } catch (error) {
+        this.errorInfo = error;
+        this.errorResponse = error.response;
+        this.lastJobFailed = true;
+      } finally {
+        this.isBusy = false;
+      }
     },
-    resendConfirmationEmail() {
+    async resendConfirmationEmail() {
+      this.lastJobFailed = false;
+      this.jobAttempted = 'Recent Confirmation Email';
       this.isBusy = true;
+
       let request = {
         UserID: this.resendConfirmationUserID
       };
-      axios
-        .post('/api/admin/ResendConfirmationEmail', request)
-        .then(() => {
-          this.isBusy = false;
-          this.jobSuccess = 'Recent Confirmation Email';
-        })
-        .catch((returnedError) => {
-          this.isBusy = false;
-          this.errorInfo = returnedError.response.data;
-        });
+
+      try {
+        await axios.post('/api/admin/ResendConfirmationEmail', request);
+      } catch (error) {
+        this.errorInfo = error;
+        this.errorResponse = error.response;
+        this.lastJobFailed = true;
+      } finally {
+        this.isBusy = false;
+      }
     }
   }
 };

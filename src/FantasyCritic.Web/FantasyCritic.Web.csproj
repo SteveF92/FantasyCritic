@@ -51,12 +51,7 @@
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
     <ProjectReference Include="..\FantasyCritic.Mailgun\FantasyCritic.Mailgun.csproj" />
     <ProjectReference Include="..\FantasyCritic.MySQL\FantasyCritic.MySQL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\FantasyCritic.SharedSerialization\FantasyCritic.SharedSerialization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

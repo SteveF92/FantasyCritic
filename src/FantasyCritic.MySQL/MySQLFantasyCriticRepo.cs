@@ -10,8 +10,9 @@ using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
-using FantasyCritic.SharedSerialization;
 using Serilog;
+using FantasyCritic.SharedSerialization.Database;
+
 namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo
@@ -203,7 +204,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string sql = "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;";
         List<PublisherGameUpdateEntity> updateEntities = calculatedStats.Select(x => new PublisherGameUpdateEntity(x)).ToList();
         var updateBatches = updateEntities.Chunk(1000).ToList();
-        await using var connection = new MySqlConnection(_connectionString);
+        var longTimeoutConnectionString = ConnectionStringUtilities.GetLongTimeoutConnectionString(_connectionString, Duration.FromSeconds(60));
+        await using var connection = new MySqlConnection(longTimeoutConnectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         for (var index = 0; index < updateBatches.Count; index++)
