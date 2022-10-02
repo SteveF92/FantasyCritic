@@ -70,8 +70,8 @@ public static class Program
     {
         HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
         var tagsString = await client.GetStringAsync("api/Game/GetMasterGameTags");
-        var objects = JsonConvert.DeserializeObject<List<MasterGameTagViewModel>>(tagsString);
-        var domains = objects!.Select(x => x.ToDomain()).ToList();
+        var objects = JsonConvert.DeserializeObject<List<MasterGameTagViewModel>>(tagsString)!;
+        var domains = objects.Select(x => x.ToDomain()).ToList();
         return domains;
     }
 
@@ -80,8 +80,8 @@ public static class Program
         var tagDictionary = tags.ToDictionary(x => x.Name);
         HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
         var gamesString = await client.GetStringAsync("api/Game/MasterGame");
-        var objects = JsonConvert.DeserializeObject<List<MasterGameViewModel>>(gamesString);
-        var domains = objects!.Select(x => x.ToDomain(tagDictionary)).ToList();
+        var objects = JsonConvert.DeserializeObject<List<MasterGameViewModel>>(gamesString)!;
+        var domains = objects.Select(x => x.ToDomain(tagDictionary)).ToList();
         return domains;
     }
 
