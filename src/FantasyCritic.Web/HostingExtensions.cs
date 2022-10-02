@@ -3,7 +3,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -13,7 +12,6 @@ using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
-using FantasyCritic.Web.BackgroundServices;
 using FantasyCritic.Web.Filters;
 using FantasyCritic.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
@@ -106,8 +104,6 @@ public static class HostingExtensions
         services.AddScoped<FantasyCriticService>();
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
-        services.AddScoped<DiscordPushService>();
-        services.AddScoped<DiscordRequestService>();
 
         services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
 
@@ -146,9 +142,6 @@ public static class HostingExtensions
         {
             args.SetObserved();
         });
-
-        //Hosted Services
-        services.AddHostedService<DiscordHostedService>();
 
         services.AddAuthorization(options =>
         {
