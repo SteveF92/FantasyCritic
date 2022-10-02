@@ -6,20 +6,19 @@ using FantasyCritic.Lib.Interfaces;
 using NodaTime;
 
 namespace FantasyCritic.Discord.Commands;
-public class GetLeagueCommand : ICommand
+public class GetLeagueLinkCommand : ICommand
 {
     public string Name { get; set; }
     public string Description { get; set; }
     public SlashCommandOptionBuilder[] Options { get; set; }
 
     private readonly IDiscordRepo _discordRepo;
-    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
 
-    public GetLeagueCommand(IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public GetLeagueLinkCommand(IDiscordRepo discordRepo, IClock clock)
     {
-        Name = "league";
-        Description = "Get league information.";
+        Name = "link";
+        Description = "Get a link to the league.";
         Options = new SlashCommandOptionBuilder[]
         {
             new()
@@ -31,7 +30,6 @@ public class GetLeagueCommand : ICommand
             }
         };
         _discordRepo = discordRepo;
-        _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
     }
 
@@ -49,7 +47,6 @@ public class GetLeagueCommand : ICommand
                 currentDate = new LocalDate(convertedYear, 12, 31);
             }
 
-            var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
             var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), currentDate.Year);
             if (leagueChannel == null)
             {
@@ -57,32 +54,18 @@ public class GetLeagueCommand : ICommand
                 return;
             }
 
-            var rankedPublishers = leagueChannel.LeagueYear.Publishers.OrderBy(p
-                => p.GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options));
-
-            var publisherLines =
-                rankedPublishers
-                    .Select((publisher, index) =>
-                    {
-                        var totalPoints = publisher
-                            .GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options);
-
-                        var projectedPoints = publisher
-                            .GetProjectedFantasyPoints(leagueChannel.LeagueYear,
-                                systemWideValues, currentDate);
-
-                        return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, currentDate);
-                    });
+            var leagueUrl = $"https://www.fantasycritic.games/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
 
             var embedBuilder = new EmbedBuilder()
-                .WithTitle($"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}")
-                .WithDescription(string.Join("\n", publisherLines))
+                .WithTitle($"Click here to visit the site for the league {leagueChannel.LeagueYear.League.LeagueName} ({leagueChannel.LeagueYear.Year})")
+                .WithUrl(leagueUrl)
                 .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
                 .WithColor(16777215)
                 .WithCurrentTimestamp();
 
             await command.RespondAsync(embed: embedBuilder.Build());
 
+            //await command.RespondAsync(leagueUrl);
         }
         catch (Exception ex)
         {

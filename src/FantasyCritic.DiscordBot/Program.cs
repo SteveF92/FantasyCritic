@@ -38,7 +38,8 @@ public class Program
 
         _commandsList = new List<ICommand>
         {
-            new GetLeagueCommand(discordRepo, fantasyCriticRepo, clock)
+            new GetLeagueCommand(discordRepo, fantasyCriticRepo, clock),
+            new GetLeagueLinkCommand(discordRepo, clock)
         };
 
         DapperNodaTimeSetup.Register();
