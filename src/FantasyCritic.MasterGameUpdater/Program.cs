@@ -16,6 +16,7 @@ using FantasyCritic.Lib.Domain;
 using Newtonsoft.Json;
 using FantasyCritic.SharedSerialization.API;
 using NodaTime.Serialization.JsonNet;
+using FantasyCritic.MySQL.SyncingRepos;
 
 namespace FantasyCritic.MasterGameUpdater;
 

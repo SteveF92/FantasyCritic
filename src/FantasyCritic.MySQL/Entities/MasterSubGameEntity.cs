@@ -1,9 +1,9 @@
-using System.Runtime.CompilerServices;
+using FantasyCritic.Lib.Domain;
+using NodaTime;
 
-[assembly: InternalsVisibleTo("FantasyCritic.MasterGameUpdater")]
 namespace FantasyCritic.MySQL.Entities;
 
-internal class MasterSubGameEntity
+public class MasterSubGameEntity
 {
     public MasterSubGameEntity()
     {

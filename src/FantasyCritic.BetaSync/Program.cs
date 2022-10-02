@@ -15,6 +15,7 @@ using NodaTime;
 using FantasyCritic.Lib.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using FantasyCritic.MySQL.SyncingRepos;
 
 namespace FantasyCritic.BetaSync;
 
