@@ -7,7 +7,7 @@ using FantasyCritic.Lib.Identity;
 using MySqlConnector;
 using Serilog;
 
-namespace FantasyCritic.BetaSync;
+namespace FantasyCritic.MySQL.SyncingRepos;
 
 public class MySQLBetaCleaner
 {
@@ -19,7 +19,7 @@ public class MySQLBetaCleaner
     {
         _connectionString = connectionString;
     }
-    
+
     public async Task CleanEmailsAndPasswords(IEnumerable<FantasyCriticUser> allUsers, IEnumerable<FantasyCriticUser> betaUsers)
     {
         var nonBetaUsers = allUsers.Except(betaUsers).ToList();

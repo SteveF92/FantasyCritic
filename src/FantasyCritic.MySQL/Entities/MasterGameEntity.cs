@@ -2,7 +2,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 using NodaTime;
 
-namespace FantasyCritic.SharedSerialization.Database;
+namespace FantasyCritic.MySQL.Entities;
 
 public class MasterGameEntity
 {
