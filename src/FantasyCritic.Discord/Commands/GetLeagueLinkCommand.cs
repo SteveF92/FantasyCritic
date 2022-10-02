@@ -54,18 +54,19 @@ public class GetLeagueLinkCommand : ICommand
                 return;
             }
 
-            var leagueUrl = $"https://www.fantasycritic.games/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
+            var leagueUrl =
+                $"https://www.fantasycritic.games/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
 
             var embedBuilder = new EmbedBuilder()
-                .WithTitle($"Click here to visit the site for the league {leagueChannel.LeagueYear.League.LeagueName} ({leagueChannel.LeagueYear.Year})")
+                .WithTitle(
+                    $"Click here to visit the site for the league {leagueChannel.LeagueYear.League.LeagueName} ({leagueChannel.LeagueYear.Year})")
                 .WithUrl(leagueUrl)
-                .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
+                .WithFooter($"Requested by {command.User.Username}",
+                    command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
                 .WithColor(16777215)
                 .WithCurrentTimestamp();
 
             await command.RespondAsync(embed: embedBuilder.Build());
-
-            //await command.RespondAsync(leagueUrl);
         }
         catch (Exception ex)
         {
