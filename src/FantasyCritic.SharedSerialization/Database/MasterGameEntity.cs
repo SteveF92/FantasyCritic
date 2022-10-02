@@ -1,10 +1,10 @@
-using System.Runtime.CompilerServices;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
+using NodaTime;
 
-[assembly: InternalsVisibleTo("FantasyCritic.MasterGameUpdater")]
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.SharedSerialization.Database;
 
-internal class MasterGameEntity
+public class MasterGameEntity
 {
     public MasterGameEntity()
     {
@@ -39,7 +39,7 @@ internal class MasterGameEntity
     }
 
     public MasterGameEntity(MasterGame masterGame, Guid addedByUserIDOverride)
-    : this (masterGame)
+    : this(masterGame)
     {
         AddedByUserID = addedByUserIDOverride;
     }

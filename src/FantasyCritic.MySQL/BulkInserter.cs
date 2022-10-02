@@ -4,7 +4,7 @@ using Faithlife.Utility.Dapper;
 
 namespace FantasyCritic.MySQL;
 
-internal static class BulkInserter
+public static class BulkInserter
 {
     public static Task BulkInsertAsync<TInsertType>(this DbConnection conn, IEnumerable<TInsertType> objects, string tableName, int batchSize = 0, DbTransaction? transaction = null, IEnumerable<string>? excludedFields = null, bool insertIgnore = false)
     {
