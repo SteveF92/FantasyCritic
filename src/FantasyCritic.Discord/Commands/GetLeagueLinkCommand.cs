@@ -1,6 +1,5 @@
 using Discord;
 using Discord.WebSocket;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
@@ -14,8 +13,9 @@ public class GetLeagueLinkCommand : ICommand
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
+    private readonly IParameterParser _parameterParser;
 
-    public GetLeagueLinkCommand(IDiscordRepo discordRepo, IClock clock)
+    public GetLeagueLinkCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser)
     {
         Name = "link";
         Description = "Get a link to the league.";
@@ -24,33 +24,27 @@ public class GetLeagueLinkCommand : ICommand
             new()
             {
                 Name = "year",
-                Description = "The year for the league.",
+                Description = "The year for the league (if not entered, defaults to the current year).",
                 Type = ApplicationCommandOptionType.Integer,
                 IsRequired = false
             }
         };
         _discordRepo = discordRepo;
         _clock = clock;
+        _parameterParser = parameterParser;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
     {
         try
         {
-            var currentDate = _clock.GetToday();
+            var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == "year");
+            var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
 
-            var providedYear = command.Data.Options.FirstOrDefault();
-            if (providedYear != null)
-            {
-                var yearValue = (long)providedYear.Value;
-                var convertedYear = Convert.ToInt32(yearValue);
-                currentDate = new LocalDate(convertedYear, 12, 31);
-            }
-
-            var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), currentDate.Year);
+            var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
             if (leagueChannel == null)
             {
-                await command.RespondAsync("Error: No league configuration found for this channel.");
+                await command.RespondAsync($"Error: No league configuration found for this channel in {dateToCheck.Year}.");
                 return;
             }
 
@@ -73,28 +67,5 @@ public class GetLeagueLinkCommand : ICommand
             Console.WriteLine($"Error retrieving LeagueChannel {ex.Message}");
             await command.RespondAsync("There was an error executing this command. Please try again.");
         }
-    }
-
-    private string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate)
-    {
-        //TODO: is there a way to reuse MinimalPublisherViewModel code for this part?
-        var allWillRelease = publisher.PublisherGames
-            .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame is not null)
-            .Count(x => x.WillRelease());
-
-        var gamesReleased = publisher.PublisherGames
-            .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame is not null)
-            .Count(x => x.MasterGame!.MasterGame.IsReleased(currentDate));
-
-        var publisherLine = $"**{rank}**";
-        publisherLine += $"{(string.IsNullOrEmpty(publisher.PublisherIcon) ? $"{publisher.PublisherIcon} " : "")}**{publisher.PublisherName}** ";
-        publisherLine += $"({publisher.User.UserName})\n";
-        publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
-        publisherLine += $"*(Projected: {Math.Round(projectedPoints, 1)})*\n";
-        publisherLine += $"> {gamesReleased}/{allWillRelease + gamesReleased} games released";
-
-        return publisherLine;
     }
 }

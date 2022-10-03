@@ -13,26 +13,30 @@ public class DiscordBotService
     private readonly IFantasyCriticRepo _mySQLFantasyCriticRepo;
     private readonly IDiscordRepo _mySQLDiscordRepo;
     private readonly SystemClock _systemClock;
+    private readonly IParameterParser _parameterParser;
     private DiscordSocketClient _client = null!;
     private List<ICommand> _commandsList = new();
 
     public DiscordBotService(string botToken,
         IFantasyCriticRepo mySQLFantasyCriticRepo,
         IDiscordRepo mySQLDiscordRepo,
-        SystemClock systemClock)
+        SystemClock systemClock,
+        IParameterParser parameterParser)
     {
         _botToken = botToken;
         _mySQLFantasyCriticRepo = mySQLFantasyCriticRepo;
         _mySQLDiscordRepo = mySQLDiscordRepo;
         _systemClock = systemClock;
+        _parameterParser = parameterParser;
     }
 
     public async Task InitializeBot()
     {
         _commandsList = new List<ICommand>
         {
-            new GetLeagueCommand(_mySQLDiscordRepo, _mySQLFantasyCriticRepo, _systemClock),
-            new GetLeagueLinkCommand(_mySQLDiscordRepo, _systemClock)
+            new GetLeagueCommand(_mySQLDiscordRepo, _mySQLFantasyCriticRepo, _systemClock, _parameterParser),
+            new GetLeagueLinkCommand(_mySQLDiscordRepo, _systemClock, _parameterParser),
+            new GetPublisherCommand(_mySQLDiscordRepo, _systemClock, _parameterParser)
         };
 
         _client = new DiscordSocketClient();

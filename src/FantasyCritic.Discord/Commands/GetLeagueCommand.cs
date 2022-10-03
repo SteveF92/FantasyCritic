@@ -15,8 +15,9 @@ public class GetLeagueCommand : ICommand
     private readonly IDiscordRepo _discordRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
+    private readonly IParameterParser _parameterParser;
 
-    public GetLeagueCommand(IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public GetLeagueCommand(IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo, IClock clock, IParameterParser parameterParser)
     {
         Name = "league";
         Description = "Get league information.";
@@ -25,7 +26,7 @@ public class GetLeagueCommand : ICommand
             new()
             {
                 Name = "year",
-                Description = "The year for the league.",
+                Description = "The year for the league (if not entered, defaults to the current year).",
                 Type = ApplicationCommandOptionType.Integer,
                 IsRequired = false
             }
@@ -33,27 +34,21 @@ public class GetLeagueCommand : ICommand
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
+        _parameterParser = parameterParser;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
     {
         try
         {
-            var currentDate = _clock.GetToday();
-
-            var providedYear = command.Data.Options.FirstOrDefault();
-            if (providedYear != null)
-            {
-                var yearValue = (long)providedYear.Value;
-                var convertedYear = Convert.ToInt32(yearValue);
-                currentDate = new LocalDate(convertedYear, 12, 31);
-            }
+            var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == "year");
+            var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
 
             var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
-            var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), currentDate.Year);
+            var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
             if (leagueChannel == null)
             {
-                await command.RespondAsync("Error: No league configuration found for this channel.");
+                await command.RespondAsync($"Error: No league configuration found for this channel in {dateToCheck.Year}.");
                 return;
             }
 
@@ -69,9 +64,9 @@ public class GetLeagueCommand : ICommand
 
                         var projectedPoints = publisher
                             .GetProjectedFantasyPoints(leagueChannel.LeagueYear,
-                                systemWideValues, currentDate);
+                                systemWideValues, dateToCheck);
 
-                        return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, currentDate);
+                        return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck);
                     });
 
             var embedBuilder = new EmbedBuilder()
