@@ -11,9 +11,7 @@ namespace FantasyCritic.DiscordBot;
 
 public class Program
 {
-
-    public static Task Main() => new Program().MainAsync();
-    public async Task MainAsync()
+    public static async Task Main(string[] args)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

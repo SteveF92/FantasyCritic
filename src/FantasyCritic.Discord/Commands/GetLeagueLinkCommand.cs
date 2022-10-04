@@ -7,9 +7,18 @@ using NodaTime;
 namespace FantasyCritic.Discord.Commands;
 public class GetLeagueLinkCommand : ICommand
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public SlashCommandOptionBuilder[] Options { get; set; }
+    public string Name => "link";
+    public string Description => "Get a link to the league.";
+    public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
+    {
+        new()
+        {
+            Name = "year",
+            Description = "The year for the league (if not entered, defaults to the current year).",
+            Type = ApplicationCommandOptionType.Integer,
+            IsRequired = false
+        }
+    };
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
@@ -17,18 +26,6 @@ public class GetLeagueLinkCommand : ICommand
 
     public GetLeagueLinkCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser)
     {
-        Name = "link";
-        Description = "Get a link to the league.";
-        Options = new SlashCommandOptionBuilder[]
-        {
-            new()
-            {
-                Name = "year",
-                Description = "The year for the league (if not entered, defaults to the current year).",
-                Type = ApplicationCommandOptionType.Integer,
-                IsRequired = false
-            }
-        };
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;

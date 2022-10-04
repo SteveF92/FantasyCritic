@@ -9,19 +9,9 @@ using FantasyCritic.Lib.Domain;
 namespace FantasyCritic.Discord.Commands;
 public class GetPublisherCommand : ICommand
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public SlashCommandOptionBuilder[] Options { get; set; }
-
-    private readonly IDiscordRepo _discordRepo;
-    private readonly IClock _clock;
-    private readonly IParameterParser _parameterParser;
-
-    public GetPublisherCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser)
-    {
-        Name = "publisher";
-        Description = "Get publisher information. You can search with just a portion of the name.";
-        Options = new SlashCommandOptionBuilder[]
+    public string Name => "publisher";
+    public string Description => "Get publisher information. You can search with just a portion of the name.";
+    public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
         {
             new()
             {
@@ -38,6 +28,13 @@ public class GetPublisherCommand : ICommand
                 IsRequired = false
             }
         };
+
+    private readonly IDiscordRepo _discordRepo;
+    private readonly IClock _clock;
+    private readonly IParameterParser _parameterParser;
+
+    public GetPublisherCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser)
+    {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
@@ -158,6 +155,34 @@ public class GetPublisherCommand : ICommand
         var gamesMessage = string.Join("\n", pickedGames.Select(MakeGameMessage));
         var counterPickMessage = string.Join("\n", counterPickedGames.Select(MakeGameMessage));
 
+        //var willReleaseDroppableGames = publisherFound.PublisherGames
+        //    .Where(g =>
+        //        g.MasterGame != null
+        //        && g.MasterGame.WillRelease()
+        //        && CanDropGame(publisherFound, leagueChannel.LeagueYear, g.MasterGame.MasterGame).Result.IsSuccess);
+
+        //var willNotReleaseDroppableGames = publisherFound.PublisherGames
+        //    .Where(g =>
+        //        g.MasterGame != null
+        //        && !g.MasterGame.WillRelease()
+        //        && CanDropGame(publisherFound, leagueChannel.LeagueYear, g.MasterGame.MasterGame).Result.IsSuccess);
+
+        var leagueOptionWillReleaseDroppableGames = leagueChannel.LeagueYear.Options.WillReleaseDroppableGames;
+        var leagueOptionWillNotReleaseDroppableGames = leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames;
+        var leagueOptionsFreeDroppableGames = leagueChannel.LeagueYear.Options.FreeDroppableGames;
+
+        var remainingWillReleaseDrops = leagueOptionWillReleaseDroppableGames == -1
+            ? "♾️"
+            : (leagueOptionWillReleaseDroppableGames - publisherFound.WillReleaseGamesDropped).ToString();
+
+        var remainingWillNotReleaseDrops = leagueOptionWillNotReleaseDroppableGames == -1
+            ? "♾️"
+            : (leagueOptionWillNotReleaseDroppableGames - publisherFound.WillNotReleaseGamesDropped).ToString();
+
+        var remainingFreeDroppableGames = leagueOptionsFreeDroppableGames == -1
+            ? "️♾️"
+            : (leagueOptionsFreeDroppableGames - publisherFound.FreeGamesDropped).ToString();
+
         var embedBuilder = new EmbedBuilder()
             .WithTitle($"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})")
             .WithFields(new List<EmbedFieldBuilder>
@@ -186,20 +211,20 @@ public class GetPublisherCommand : ICommand
                     Value = publisherFound.Budget,
                     IsInline = false
                 },
-                new ()
+                new()
                 {
                     Name = "'Will Release' Drops Remaining",
-                    Value = 0
+                    Value = MakeDropDisplay(remainingWillReleaseDrops, leagueOptionWillReleaseDroppableGames)
                 },
-                new ()
+                new()
                 {
                     Name = "'Will Not Release' Drops Remaining",
-                    Value = MakeDropDisplay(0,-1)
+                    Value = MakeDropDisplay(remainingWillNotReleaseDrops, leagueOptionWillNotReleaseDroppableGames)
                 },
-                new ()
+                new()
                 {
                     Name = "'Unrestricted' Drops Remaining",
-                    Value = MakeDropDisplay(0,-1)
+                    Value = MakeDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
                 }
             })
             .WithDescription($"[Visit Publisher Page](https://www.fantasycritic.games/publisher/{publisherFound.PublisherID}/)")
@@ -209,7 +234,14 @@ public class GetPublisherCommand : ICommand
         await command.RespondAsync(embed: embedBuilder.Build());
     }
 
-    private string MakeDropDisplay(int remaining, int total)
+    //private DropResult CanDropGame(Publisher publisher, LeagueYear leagueYear, MasterGame masterGame)
+    //{
+    //    DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, leagueYear, masterGame, _clock.GetCurrentInstant(), null, null);
+    //    var dropResult = GameEligibilityFunctions.CanDropGame(dropRequest, leagueYear, publisher, _clock.GetToday());
+    //    return dropResult;
+    //}
+
+    private string MakeDropDisplay(string remaining, int total)
     {
         if (total == 0)
         {

@@ -50,7 +50,7 @@ public class DiscordBotService
 
     private static Task Log(LogMessage msg)
     {
-        Console.WriteLine(msg.ToString());
+        Serilog.Log.Information(msg.ToString());
         return Task.CompletedTask;
     }
 
@@ -77,7 +77,7 @@ public class DiscordBotService
             catch (HttpException exception)
             {
                 var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-                Console.WriteLine(json);
+                Serilog.Log.Error(json);
             }
         }
     }

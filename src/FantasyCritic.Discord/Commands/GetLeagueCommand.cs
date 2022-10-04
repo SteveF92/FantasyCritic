@@ -8,9 +8,18 @@ using NodaTime;
 namespace FantasyCritic.Discord.Commands;
 public class GetLeagueCommand : ICommand
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public SlashCommandOptionBuilder[] Options { get; set; }
+    public string Name => "league";
+    public string Description => "Get league information.";
+    public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
+    {
+        new()
+        {
+            Name = "year",
+            Description = "The year for the league (if not entered, defaults to the current year).",
+            Type = ApplicationCommandOptionType.Integer,
+            IsRequired = false
+        }
+    };
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
@@ -19,18 +28,6 @@ public class GetLeagueCommand : ICommand
 
     public GetLeagueCommand(IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo, IClock clock, IParameterParser parameterParser)
     {
-        Name = "league";
-        Description = "Get league information.";
-        Options = new SlashCommandOptionBuilder[]
-        {
-            new()
-            {
-                Name = "year",
-                Description = "The year for the league (if not entered, defaults to the current year).",
-                Type = ApplicationCommandOptionType.Integer,
-                IsRequired = false
-            }
-        };
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
