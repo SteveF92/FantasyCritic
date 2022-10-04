@@ -32,12 +32,14 @@ public class GetPublisherCommand : ICommand
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IParameterParser _parameterParser;
+    private readonly string _baseUrl;
 
-    public GetPublisherCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser)
+    public GetPublisherCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser, string baseUrl)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
+        _baseUrl = baseUrl;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
@@ -227,7 +229,7 @@ public class GetPublisherCommand : ICommand
                     Value = MakeDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
                 }
             })
-            .WithDescription($"[Visit Publisher Page](https://www.fantasycritic.games/publisher/{publisherFound.PublisherID}/)")
+            .WithDescription($"[Visit Publisher Page]({_baseUrl}publisher/{publisherFound.PublisherID}/)")
             .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
             .WithColor(16777215)
             .WithCurrentTimestamp();

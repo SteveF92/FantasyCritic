@@ -14,6 +14,7 @@ public class DiscordBotService
     private readonly IDiscordRepo _mySQLDiscordRepo;
     private readonly SystemClock _systemClock;
     private readonly IParameterParser _parameterParser;
+    private readonly string _baseUrl;
     private DiscordSocketClient _client = null!;
     private List<ICommand> _commandsList = new();
 
@@ -21,22 +22,24 @@ public class DiscordBotService
         IFantasyCriticRepo mySQLFantasyCriticRepo,
         IDiscordRepo mySQLDiscordRepo,
         SystemClock systemClock,
-        IParameterParser parameterParser)
+        IParameterParser parameterParser,
+        string baseUrl)
     {
         _botToken = botToken;
         _mySQLFantasyCriticRepo = mySQLFantasyCriticRepo;
         _mySQLDiscordRepo = mySQLDiscordRepo;
         _systemClock = systemClock;
         _parameterParser = parameterParser;
+        _baseUrl = baseUrl;
     }
 
     public async Task InitializeBot()
     {
         _commandsList = new List<ICommand>
         {
-            new GetLeagueCommand(_mySQLDiscordRepo, _mySQLFantasyCriticRepo, _systemClock, _parameterParser),
-            new GetLeagueLinkCommand(_mySQLDiscordRepo, _systemClock, _parameterParser),
-            new GetPublisherCommand(_mySQLDiscordRepo, _systemClock, _parameterParser)
+            new GetLeagueCommand(_mySQLDiscordRepo, _mySQLFantasyCriticRepo, _systemClock, _parameterParser, _baseUrl),
+            new GetLeagueLinkCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, _baseUrl),
+            new GetPublisherCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, _baseUrl)
         };
 
         _client = new DiscordSocketClient();
