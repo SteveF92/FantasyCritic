@@ -7,6 +7,8 @@ using NodaTime;
 using Dapper.NodaTime;
 using FantasyCritic.Discord;
 using FantasyCritic.Lib.Services;
+using Serilog;
+using Serilog.Events;
 
 namespace FantasyCritic.DiscordBot;
 
@@ -14,6 +16,8 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        ConfigureLogging();
+        
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
@@ -44,5 +48,14 @@ public class Program
         await discordBotService.InitializeBot();
 
         await Task.Delay(-1);
+    }
+
+    private static void ConfigureLogging()
+    {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateLogger();
     }
 }
