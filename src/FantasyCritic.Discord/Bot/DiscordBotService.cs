@@ -5,6 +5,7 @@ using NodaTime;
 using Discord.Net;
 using Newtonsoft.Json;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Discord.Bot;
 public class DiscordBotService
@@ -13,6 +14,7 @@ public class DiscordBotService
     private readonly IFantasyCriticRepo _mySQLFantasyCriticRepo;
     private readonly IDiscordRepo _mySQLDiscordRepo;
     private readonly SystemClock _systemClock;
+    private readonly InterLeagueService _interLeagueService;
     private readonly IParameterParser _parameterParser;
     private readonly string _baseUrl;
     private DiscordSocketClient _client = null!;
@@ -22,6 +24,7 @@ public class DiscordBotService
         IFantasyCriticRepo mySQLFantasyCriticRepo,
         IDiscordRepo mySQLDiscordRepo,
         SystemClock systemClock,
+        InterLeagueService interLeagueService,
         IParameterParser parameterParser,
         string baseUrl)
     {
@@ -29,6 +32,7 @@ public class DiscordBotService
         _mySQLFantasyCriticRepo = mySQLFantasyCriticRepo;
         _mySQLDiscordRepo = mySQLDiscordRepo;
         _systemClock = systemClock;
+        _interLeagueService = interLeagueService;
         _parameterParser = parameterParser;
         _baseUrl = baseUrl;
     }
@@ -39,7 +43,8 @@ public class DiscordBotService
         {
             new GetLeagueCommand(_mySQLDiscordRepo, _mySQLFantasyCriticRepo, _systemClock, _parameterParser, _baseUrl),
             new GetLeagueLinkCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, _baseUrl),
-            new GetPublisherCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, _baseUrl)
+            new GetPublisherCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, _baseUrl),
+            new GetGameCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, new GameSearchingService(_interLeagueService, _systemClock), _baseUrl)
         };
 
         _client = new DiscordSocketClient();

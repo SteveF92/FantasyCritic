@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using NodaTime;
 using Dapper.NodaTime;
 using FantasyCritic.Discord;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.DiscordBot;
 
@@ -25,13 +26,20 @@ public class Program
         var userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
         var masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore);
         var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
-        var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
         var clock = SystemClock.Instance;
+        var interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, clock);
+        var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
         var parameterParser = new ParameterParser();
 
         DapperNodaTimeSetup.Register();
 
-        var discordBotService = new DiscordBotService(botToken, fantasyCriticRepo, discordRepo, clock, parameterParser, baseUrl);
+        var discordBotService = new DiscordBotService(botToken,
+            fantasyCriticRepo,
+            discordRepo,
+            clock,
+            interLeagueService,
+            parameterParser,
+            baseUrl);
         await discordBotService.InitializeBot();
 
         await Task.Delay(-1);

@@ -42,6 +42,13 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
+    public async Task<IReadOnlyList<MasterGameYear>> SearchAllGames(string searchName, int year)
+    {
+        var masterGames = await _interLeagueService.GetMasterGameYears(year);
+        var matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames);
+        return matchingMasterGames;
+    }
+
     public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, LeagueYear leagueYear, Publisher currentPublisher, int year)
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers

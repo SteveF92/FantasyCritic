@@ -157,18 +157,6 @@ public class GetPublisherCommand : ICommand
         var gamesMessage = string.Join("\n", pickedGames.Select(MakeGameMessage));
         var counterPickMessage = string.Join("\n", counterPickedGames.Select(MakeGameMessage));
 
-        //var willReleaseDroppableGames = publisherFound.PublisherGames
-        //    .Where(g =>
-        //        g.MasterGame != null
-        //        && g.MasterGame.WillRelease()
-        //        && CanDropGame(publisherFound, leagueChannel.LeagueYear, g.MasterGame.MasterGame).Result.IsSuccess);
-
-        //var willNotReleaseDroppableGames = publisherFound.PublisherGames
-        //    .Where(g =>
-        //        g.MasterGame != null
-        //        && !g.MasterGame.WillRelease()
-        //        && CanDropGame(publisherFound, leagueChannel.LeagueYear, g.MasterGame.MasterGame).Result.IsSuccess);
-
         var leagueOptionWillReleaseDroppableGames = leagueChannel.LeagueYear.Options.WillReleaseDroppableGames;
         var leagueOptionWillNotReleaseDroppableGames = leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames;
         var leagueOptionsFreeDroppableGames = leagueChannel.LeagueYear.Options.FreeDroppableGames;
@@ -197,7 +185,7 @@ public class GetPublisherCommand : ICommand
                 },
                 new()
                 {
-                    Name = "Counterpicks",
+                    Name = "Counter Picks",
                     Value =  counterPickMessage,
                     IsInline = false
                 },
@@ -235,13 +223,6 @@ public class GetPublisherCommand : ICommand
             .WithCurrentTimestamp();
         await command.RespondAsync(embed: embedBuilder.Build());
     }
-
-    //private DropResult CanDropGame(Publisher publisher, LeagueYear leagueYear, MasterGame masterGame)
-    //{
-    //    DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, leagueYear, masterGame, _clock.GetCurrentInstant(), null, null);
-    //    var dropResult = GameEligibilityFunctions.CanDropGame(dropRequest, leagueYear, publisher, _clock.GetToday());
-    //    return dropResult;
-    //}
 
     private string MakeDropDisplay(string remaining, int total)
     {
