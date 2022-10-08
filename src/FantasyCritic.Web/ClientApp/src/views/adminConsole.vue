@@ -9,11 +9,12 @@
       <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' sucessfully run.</div>
 
       <div v-if="isFactChecker">
-        <h2>Requests</h2>
+        <h2>Master Game Management</h2>
         <div>
           <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
           <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
           <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
+          <b-button variant="warning" @click="showMergeMasterGame = true">Merge Master Games</b-button>
         </div>
 
         <h2>Data Actions</h2>
@@ -57,6 +58,17 @@
 
     <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered responsive></b-table>
 
+    <div v-show="showMergeMasterGame">
+      <div class="form-group">
+        <label for="removeMasterGameID" class="control-label">Master Game ID (To Remove)</label>
+        <input v-model="removeMasterGameID" type="text" class="form-control input" />
+      </div>
+      <div class="form-group">
+        <label for="mergeIntoMasterGameID" class="control-label">Master Game ID (To Merge Into)</label>
+        <input v-model="mergeIntoMasterGameID" type="text" class="form-control input" />
+      </div>
+      <b-button variant="danger" @click="mergeMasterGame">Merge Games</b-button>
+    </div>
     <div v-show="showRecentConfirmationEmail">
       <div class="form-group">
         <label for="resendConfirmationUserID" class="control-label">User ID</label>
@@ -86,6 +98,9 @@ export default {
       jobAttempted: '',
       recentSnapshots: null,
       showRecentConfirmationEmail: false,
+      showMergeMasterGame: false,
+      removeMasterGameID: null,
+      mergeIntoMasterGameID: null,
       resendConfirmationUserID: null,
       showGrantSuperDrops: false,
       superDropConfirmation: null
@@ -115,6 +130,26 @@ export default {
       this.showGrantSuperDrops = false;
       this.superDropConfirmation = null;
       await this.takePostAction('Admin', 'GrantSuperDrops');
+    },
+    async mergeMasterGame() {
+      this.lastJobFailed = false;
+      this.jobAttempted = 'Merge Master Games';
+      this.isBusy = true;
+
+      let request = {
+        removeMasterGameID: this.removeMasterGameID,
+        mergeIntoMasterGameID: this.mergeIntoMasterGameID
+      };
+
+      try {
+        await axios.post('/api/factchecker/MergeMasterGame', request);
+      } catch (error) {
+        this.errorInfo = error;
+        this.errorResponse = error.response;
+        this.lastJobFailed = true;
+      } finally {
+        this.isBusy = false;
+      }
     },
     async getRecentDatabaseSnapshots() {
       this.lastJobFailed = false;
