@@ -29,6 +29,7 @@ using NodaTime.Serialization.JsonNet;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
+using FantasyCritic.Mailgun;
 
 namespace FantasyCritic.Web;
 
@@ -105,7 +106,8 @@ public static class HostingExtensions
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
 
-        services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
+        //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
+        services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
 
         if (environment.IsProduction() || environment.IsStaging())
         {
