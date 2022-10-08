@@ -1,4 +1,5 @@
 using System.Text;
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
@@ -245,8 +246,8 @@ public class LeagueController : BaseLeagueController
             privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate, masterGameYearDictionary);
         }
 
-        var upcomingGames = GetGameNewsViewModel(leagueYear, false, false).ToList();
-        var recentGames = GetGameNewsViewModel(leagueYear, false, true).ToList();
+        var upcomingGames = GetGameNewsViewModel(leagueYear, false, false, currentDate).ToList();
+        var recentGames = GetGameNewsViewModel(leagueYear, false, true, currentDate).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
         var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager);
 
@@ -855,7 +856,7 @@ public class LeagueController : BaseLeagueController
             }
         }
 
-        var viewModels = GetGameNewsViewModel(myPublishers, true, false).ToList();
+        var viewModels = GetGameNewsViewModel(myPublishers, true, false, _clock.GetToday()).ToList();
         return viewModels;
     }
 
@@ -888,8 +889,9 @@ public class LeagueController : BaseLeagueController
             }
         }
 
-        var upcomingGames = GetGameNewsViewModel(myPublishers, true, false).ToList();
-        var recentGames = GetGameNewsViewModel(myPublishers, true, true).ToList();
+        var currentDate = _clock.GetToday();
+        var upcomingGames = GetGameNewsViewModel(myPublishers, true, false, currentDate).ToList();
+        var recentGames = GetGameNewsViewModel(myPublishers, true, true, currentDate).ToList();
         return new GameNewsViewModel(upcomingGames, recentGames);
     }
 
@@ -911,7 +913,7 @@ public class LeagueController : BaseLeagueController
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
-        var viewModels = GetGameNewsViewModel(leagueYear, false, false).ToList();
+        var viewModels = GetGameNewsViewModel(leagueYear, false, false, _clock.GetToday()).ToList();
         return Ok(viewModels);
     }
 
@@ -1471,41 +1473,17 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
-    private IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(LeagueYear leagueYear, bool userMode, bool recentReleases)
+    private static IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(LeagueYear leagueYear, bool userMode, bool recentReleases, LocalDate currentDate)
     {
-        return GetGameNewsViewModel(leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)), userMode, recentReleases);
+        return GetGameNewsViewModel(leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)), userMode, recentReleases, currentDate);
     }
 
-    private IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(IEnumerable<LeagueYearPublisherPair> publishers, bool userMode, bool recentReleases)
+    private static IReadOnlyList<SingleGameNewsViewModel> GetGameNewsViewModel(IEnumerable<LeagueYearPublisherPair> publishers, bool userMode, bool recentReleases, LocalDate currentDate)
     {
-        var publisherGames = publishers.SelectMany(x => x.Publisher.PublisherGames).Where(x => x.MasterGame is not null);
-        var currentDate = _clock.GetToday();
-        var yesterday = currentDate.PlusDays(-1);
-        var tomorrow = currentDate.PlusDays(1);
-
-        IEnumerable<IGrouping<MasterGameYear, PublisherGame>> orderedByReleaseDate;
-
-        if (recentReleases)
-        {
-            orderedByReleaseDate = publisherGames
-                .Distinct()
-                .Where(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate() < tomorrow)
-                .OrderByDescending(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate())
-                .GroupBy(x => x.MasterGame!)
-                .Take(10);
-        }
-        else
-        {
-            orderedByReleaseDate = publisherGames
-                .Distinct()
-                .Where(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate() > yesterday)
-                .OrderBy(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate())
-                .GroupBy(x => x.MasterGame!)
-                .Take(10);
-        }
+        var gameNews = GameNewsFunctions.GetGameNews(publishers, recentReleases, currentDate);
 
         List<SingleGameNewsViewModel> viewModels = new List<SingleGameNewsViewModel>();
-        foreach (var publisherGameGroup in orderedByReleaseDate)
+        foreach (var publisherGameGroup in gameNews)
         {
             IReadOnlyList<LeagueYearPublisherPair> publishersThatHaveGame = publishers.Where(x => publisherGameGroup.Select(y => y.PublisherID).Contains(x.Publisher.PublisherID)).ToList();
             viewModels.Add(new SingleGameNewsViewModel(publisherGameGroup.Key, publishersThatHaveGame, userMode, currentDate));
