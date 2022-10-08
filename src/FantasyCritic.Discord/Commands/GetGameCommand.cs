@@ -113,7 +113,7 @@ public class GetGameCommand : ICommand
 
     private string BuildGameTitleDisplayWithUrl(MasterGame masterGame)
     {
-        return $"[View Game]({_baseUrl}mastergame/{masterGame.MasterGameID})";
+        return $"[View Game]({_baseUrl}/mastergame/{masterGame.MasterGameID})";
     }
 
     private string BuildGameDisplayText(MatchedGameDisplay matchedGameDisplay, LeagueYear leagueYear, LocalDate dateToCheck)

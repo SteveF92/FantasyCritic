@@ -49,7 +49,7 @@ public class GetLeagueLinkCommand : ICommand
             }
 
             var leagueUrl =
-                $"{_baseUrl}league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
+                $"{_baseUrl}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
 
             var embedBuilder = new EmbedBuilder()
                 .WithTitle(

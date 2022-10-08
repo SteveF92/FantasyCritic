@@ -8,8 +8,8 @@ public class MatchedGameDisplay
     {
         GameFound = gameFound;
     }
-
-    public Publisher? PublisherWhoPicked { get; set; }
-    public Publisher? PublisherWhoCounterPicked { get; set; }
+    
+    public Publisher? PublisherWhoPicked { get; init; }
+    public Publisher? PublisherWhoCounterPicked { get; init; }
     public MasterGameYear GameFound { get; }
 }

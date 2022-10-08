@@ -217,7 +217,7 @@ public class GetPublisherCommand : ICommand
                     Value = MakeDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
                 }
             })
-            .WithDescription($"[Visit Publisher Page]({_baseUrl}publisher/{publisherFound.PublisherID}/)")
+            .WithDescription($"[Visit Publisher Page]({_baseUrl}/publisher/{publisherFound.PublisherID}/)")
             .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
             .WithColor(16777215)
             .WithCurrentTimestamp();
