@@ -16,6 +16,7 @@ public class Program
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
