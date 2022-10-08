@@ -17,8 +17,8 @@ public class DiscordBotService
     private readonly InterLeagueService _interLeagueService;
     private readonly IParameterParser _parameterParser;
     private readonly string _baseUrl;
-    private DiscordSocketClient _client = null!;
-    private List<ICommand> _commandsList = new();
+    private readonly DiscordSocketClient _client;
+    private readonly List<ICommand> _commandsList;
 
     public DiscordBotService(string botToken,
         IFantasyCriticRepo mySQLFantasyCriticRepo,
@@ -35,10 +35,7 @@ public class DiscordBotService
         _interLeagueService = interLeagueService;
         _parameterParser = parameterParser;
         _baseUrl = baseUrl;
-    }
 
-    public async Task InitializeBot()
-    {
         _commandsList = new List<ICommand>
         {
             new GetLeagueCommand(_mySQLDiscordRepo, _mySQLFantasyCriticRepo, _systemClock, _parameterParser, _baseUrl),
@@ -51,7 +48,10 @@ public class DiscordBotService
         _client.Log += Log;
         _client.Ready += Client_Ready;
         _client.SlashCommandExecuted += SlashCommandHandler;
+    }
 
+    public async Task InitializeBot()
+    {
         await _client.LoginAsync(TokenType.Bot, _botToken);
         await _client.StartAsync();
     }
