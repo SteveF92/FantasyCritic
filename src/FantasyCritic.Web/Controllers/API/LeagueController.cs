@@ -933,7 +933,7 @@ public class LeagueController : BaseLeagueController
         }
 
         var currentDate = _clock.GetToday();
-        var matchingGames = await _gameSearchingService.SearchGames(gameName, leagueYear, userPublisher, year);
+        var matchingGames = await _gameSearchingService.SearchGames(gameName, leagueYear, userPublisher);
         var viewModels = matchingGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(50).ToList();
 
         return Ok(viewModels);

@@ -56,6 +56,8 @@ public class GetGameCommand : ICommand
             await command.RespondAsync($"Error: No league configuration found for this channel in {dateToCheck.Year}.");
             return;
         }
+        
+        var leagueYear = leagueChannel.LeagueYear;
 
         var termToSearch = command.Data.Options
             .First(o => o.Name == "game_name")
@@ -72,7 +74,7 @@ public class GetGameCommand : ICommand
 
         // TODO: remove accented characters from strings, Pokemon for example
 
-        var matchingGames = await _gameSearchingService.SearchAllGames(termToSearch, dateToCheck.Year);
+        var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, leagueYear, 3);
 
         if (!matchingGames.Any())
         {
@@ -83,12 +85,9 @@ public class GetGameCommand : ICommand
         var gamesToDisplay = matchingGames
             .Select(game => new MatchedGameDisplay(game)
             {
-                PublisherWhoPicked = FindPublisherWithGame(leagueChannel, game, false),
-                PublisherWhoCounterPicked = FindPublisherWithGame(leagueChannel, game, true)
+                PublisherWhoPicked = FindPublisherWithGame(leagueYear, game, false),
+                PublisherWhoCounterPicked = FindPublisherWithGame(leagueYear, game, true)
             }).ToList();
-
-        // TODO: this is test filtering, get rid of this
-        gamesToDisplay = gamesToDisplay.Take(3).ToList();
 
         var gameEmbeds = gamesToDisplay
             .Select(matchedGameDisplay =>
@@ -160,9 +159,9 @@ public class GetGameCommand : ICommand
         return gameDisplayText;
     }
 
-    private Publisher? FindPublisherWithGame(LeagueChannel leagueChannel, MasterGameYear game, bool lookingForCounterPick)
+    private Publisher? FindPublisherWithGame(LeagueYear leagueYear, MasterGameYear game, bool lookingForCounterPick)
     {
-        return leagueChannel.LeagueYear.Publishers.FirstOrDefault(p =>
+        return leagueYear.Publishers.FirstOrDefault(p =>
             p.PublisherGames.Any(publisherGame =>
                 publisherGame.MasterGame?.MasterGame.MasterGameID == game.MasterGame.MasterGameID
                 && publisherGame.CounterPick == lookingForCounterPick));

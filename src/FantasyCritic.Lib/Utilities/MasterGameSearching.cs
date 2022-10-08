@@ -19,13 +19,22 @@ public static class MasterGameSearching
         return combinedSequences.Distinct().ToList();
     }
 
-    public static IReadOnlyList<MasterGameYear> SearchMasterGameYears(string gameName, IEnumerable<MasterGameYear> masterGames)
+    public static IReadOnlyList<MasterGameYear> SearchMasterGameYears(string gameName, IEnumerable<MasterGameYear> masterGames, bool onlyBestMatches)
     {
         var substringMatches = masterGames
             .Select(x => new Tuple<MasterGameYear, int>(x, GetAbsoluteSubsequenceInCommon(gameName, x.MasterGame.GameName)));
 
         var perfectMatches = substringMatches.Where(x => string.Equals(gameName, x.Item1.MasterGame.GameName, StringComparison.InvariantCultureIgnoreCase));
-        var filteredSubstringMatches = substringMatches.OrderByDescending(x => x.Item2).ThenByDescending(x => x.Item1.DateAdjustedHypeFactor);
+        var filteredSubstringMatches = substringMatches.OrderByDescending(x => x.Item2).ThenByDescending(x => x.Item1.DateAdjustedHypeFactor).ToList();
+
+        if (onlyBestMatches)
+        {
+            var bestMatchCount = filteredSubstringMatches.FirstOrDefault()?.Item2;
+            if (bestMatchCount.HasValue)
+            {
+                filteredSubstringMatches = filteredSubstringMatches.Where(x => x.Item2 == bestMatchCount.Value).ToList();
+            }
+        }
 
         var combinedSequences = perfectMatches
             .Concat(filteredSubstringMatches)

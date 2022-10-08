@@ -169,4 +169,10 @@ public class LeagueYear : IEquatable<LeagueYear>
     {
         return HashCode.Combine(League, Year);
     }
+
+    public IReadOnlySet<MasterGameYear> GetGamesInLeague()
+    {
+        var publisherGames = Publishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame is not null);
+        return publisherGames.Select(x => x.MasterGame!).ToHashSet();
+    }
 }

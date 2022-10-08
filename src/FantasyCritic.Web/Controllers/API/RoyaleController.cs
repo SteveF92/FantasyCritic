@@ -376,7 +376,7 @@ public class RoyaleController : FantasyCriticController
         var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.YearQuarter);
         if (!string.IsNullOrWhiteSpace(gameName))
         {
-            masterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames);
+            masterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames, false);
         }
         else
         {

@@ -42,14 +42,28 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<MasterGameYear>> SearchAllGames(string searchName, int year)
+    public async Task<IReadOnlyList<MasterGameYear>> SearchGamesWithLeaguePriority(string searchName, LeagueYear leagueYear, int maxNonIdealMatches)
     {
-        var masterGames = await _interLeagueService.GetMasterGameYears(year);
-        var matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames);
-        return matchingMasterGames;
+        var masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+        var matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, true);
+        var gamesInLeague = leagueYear.GetGamesInLeague();
+        var matchingGamesInLeague = matchingMasterGames.Where(x => gamesInLeague.Contains(x)).ToList();
+        
+        IReadOnlyList<MasterGameYear> gamesToReturn;
+        if (matchingGamesInLeague.Any())
+        {
+            gamesToReturn = matchingGamesInLeague;
+        }
+        else
+        {
+            gamesToReturn = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, true);
+            gamesToReturn = gamesToReturn.Take(maxNonIdealMatches).ToList();
+        }
+        
+        return gamesToReturn;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, LeagueYear leagueYear, Publisher currentPublisher, int year)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, LeagueYear leagueYear, Publisher currentPublisher)
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
@@ -59,8 +73,8 @@ public class GameSearchingService
 
         HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
 
-        IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
-        IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames);
+        IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+        IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, false);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
         var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
