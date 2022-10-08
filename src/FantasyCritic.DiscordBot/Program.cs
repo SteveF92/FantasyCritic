@@ -27,7 +27,7 @@ public class Program
         // Bot Dependencies
         var botToken = configuration["BotToken"];
         var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"], SystemClock.Instance);
-        var baseUrl = configuration["BaseUrl"];
+        var baseUrl = configuration["BaseAddress"];
         var userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
         var masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore);
         var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);

@@ -75,7 +75,7 @@ public class GetLeagueCommand : ICommand
                 .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
                 .WithColor(16777215)
                 .WithCurrentTimestamp()
-                .WithUrl($"{_baseUrl}league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}");
+                .WithUrl($"{_baseUrl}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}");
 
             await command.RespondAsync(embed: embedBuilder.Build());
         }
