@@ -11,7 +11,7 @@ namespace FantasyCritic.Discord.Commands;
 public class GetGameCommand : ICommand
 {
     public string Name => "game";
-    public string Description => "Get game information. You can search with just a portion of the name.";
+    public string Description => "Get game information. You can search with just a portion of the name. This command will look for games in the league first, and if none are found, it will search the master game list.";
     public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
         {
             new()
@@ -34,15 +34,15 @@ public class GetGameCommand : ICommand
     private readonly IClock _clock;
     private readonly IParameterParser _parameterParser;
     private readonly GameSearchingService _gameSearchingService;
-    private readonly string _baseUrl;
+    private readonly string _baseAddress;
 
-    public GetGameCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser, GameSearchingService gameSearchingService, string baseUrl)
+    public GetGameCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser, GameSearchingService gameSearchingService, string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _gameSearchingService = gameSearchingService;
-        _baseUrl = baseUrl;
+        _baseAddress = baseAddress;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
@@ -112,7 +112,7 @@ public class GetGameCommand : ICommand
 
     private string BuildGameTitleDisplayWithUrl(MasterGame masterGame)
     {
-        return $"[View Game]({_baseUrl}/mastergame/{masterGame.MasterGameID})";
+        return $"[View Game]({_baseAddress}/mastergame/{masterGame.MasterGameID})";
     }
 
     private string BuildGameDisplayText(MatchedGameDisplay matchedGameDisplay, LeagueYear leagueYear, LocalDate dateToCheck)

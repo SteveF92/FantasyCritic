@@ -27,7 +27,7 @@ public class Program
         // Bot Dependencies
         var botToken = configuration["BotToken"];
         var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"], SystemClock.Instance);
-        var baseUrl = configuration["BaseAddress"];
+        var baseAddress = configuration["BaseAddress"];
         var userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
         var masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore);
         var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
@@ -44,7 +44,7 @@ public class Program
             clock,
             interLeagueService,
             parameterParser,
-            baseUrl);
+            baseAddress);
         await discordBotService.InitializeBot();
 
         await Task.Delay(-1);

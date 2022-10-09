@@ -25,16 +25,16 @@ public class GetLeagueCommand : ICommand
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
     private readonly IParameterParser _parameterParser;
-    private readonly string _baseUrl;
+    private readonly string _baseAddress;
 
     public GetLeagueCommand(IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo, IClock clock,
-        IParameterParser parameterParser, string baseUrl)
+        IParameterParser parameterParser, string baseAddress)
     {
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
         _parameterParser = parameterParser;
-        _baseUrl = baseUrl;
+        _baseAddress = baseAddress;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
@@ -75,7 +75,7 @@ public class GetLeagueCommand : ICommand
                 .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
                 .WithColor(16777215)
                 .WithCurrentTimestamp()
-                .WithUrl($"{_baseUrl}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}");
+                .WithUrl($"{_baseAddress}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}");
 
             await command.RespondAsync(embed: embedBuilder.Build());
         }

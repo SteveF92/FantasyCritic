@@ -11,12 +11,6 @@ namespace FantasyCritic.Discord.Bot;
 public class DiscordBotService
 {
     private readonly string _botToken;
-    private readonly IFantasyCriticRepo _mySQLFantasyCriticRepo;
-    private readonly IDiscordRepo _mySQLDiscordRepo;
-    private readonly SystemClock _systemClock;
-    private readonly InterLeagueService _interLeagueService;
-    private readonly IParameterParser _parameterParser;
-    private readonly string _baseUrl;
     private readonly DiscordSocketClient _client;
     private readonly List<ICommand> _commandsList;
 
@@ -26,22 +20,15 @@ public class DiscordBotService
         SystemClock systemClock,
         InterLeagueService interLeagueService,
         IParameterParser parameterParser,
-        string baseUrl)
+        string baseAddress)
     {
         _botToken = botToken;
-        _mySQLFantasyCriticRepo = mySQLFantasyCriticRepo;
-        _mySQLDiscordRepo = mySQLDiscordRepo;
-        _systemClock = systemClock;
-        _interLeagueService = interLeagueService;
-        _parameterParser = parameterParser;
-        _baseUrl = baseUrl;
-
         _commandsList = new List<ICommand>
         {
-            new GetLeagueCommand(_mySQLDiscordRepo, _mySQLFantasyCriticRepo, _systemClock, _parameterParser, _baseUrl),
-            new GetLeagueLinkCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, _baseUrl),
-            new GetPublisherCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, _baseUrl),
-            new GetGameCommand(_mySQLDiscordRepo, _systemClock, _parameterParser, new GameSearchingService(_interLeagueService, _systemClock), _baseUrl)
+            new GetLeagueCommand(mySQLDiscordRepo, mySQLFantasyCriticRepo, systemClock, parameterParser, baseAddress),
+            new GetLeagueLinkCommand(mySQLDiscordRepo, systemClock, parameterParser, baseAddress),
+            new GetPublisherCommand(mySQLDiscordRepo, systemClock, parameterParser, baseAddress),
+            new GetGameCommand(mySQLDiscordRepo, systemClock, parameterParser, new GameSearchingService(interLeagueService, systemClock), baseAddress)
         };
 
         _client = new DiscordSocketClient();

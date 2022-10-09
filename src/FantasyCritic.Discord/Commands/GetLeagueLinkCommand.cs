@@ -23,15 +23,15 @@ public class GetLeagueLinkCommand : ICommand
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IParameterParser _parameterParser;
-    private readonly string _baseUrl;
+    private readonly string _baseAddress;
 
     public GetLeagueLinkCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser,
-        string baseUrl)
+        string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
-        _baseUrl = baseUrl;
+        _baseAddress = baseAddress;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
@@ -49,7 +49,7 @@ public class GetLeagueLinkCommand : ICommand
             }
 
             var leagueUrl =
-                $"{_baseUrl}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
+                $"{_baseAddress}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
 
             var embedBuilder = new EmbedBuilder()
                 .WithTitle(
