@@ -11,7 +11,7 @@ namespace FantasyCritic.Discord.Commands;
 public class GetGameCommand : ICommand
 {
     public string Name => "game";
-    public string Description => "Get game information. You can search with just a portion of the name. This command will look for games in the league first, and if none are found, it will search the master game list.";
+    public string Description => "Get game information. You can search with just a portion of the name.";
     public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
         {
             new()

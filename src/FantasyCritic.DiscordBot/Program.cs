@@ -33,6 +33,7 @@ public class Program
         var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
         var clock = SystemClock.Instance;
         var interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, clock);
+        var gameSearchingService = new GameSearchingService(interLeagueService, clock);
         var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
         var parameterParser = new ParameterParser();
 
@@ -42,7 +43,7 @@ public class Program
             fantasyCriticRepo,
             discordRepo,
             clock,
-            interLeagueService,
+            gameSearchingService,
             parameterParser,
             baseAddress);
         await discordBotService.InitializeBot();

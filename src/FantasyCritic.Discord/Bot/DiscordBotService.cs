@@ -18,7 +18,7 @@ public class DiscordBotService
         IFantasyCriticRepo mySQLFantasyCriticRepo,
         IDiscordRepo mySQLDiscordRepo,
         SystemClock systemClock,
-        InterLeagueService interLeagueService,
+        GameSearchingService gameSearchingService,
         IParameterParser parameterParser,
         string baseAddress)
     {
@@ -28,7 +28,8 @@ public class DiscordBotService
             new GetLeagueCommand(mySQLDiscordRepo, mySQLFantasyCriticRepo, systemClock, parameterParser, baseAddress),
             new GetLeagueLinkCommand(mySQLDiscordRepo, systemClock, parameterParser, baseAddress),
             new GetPublisherCommand(mySQLDiscordRepo, systemClock, parameterParser, baseAddress),
-            new GetGameCommand(mySQLDiscordRepo, systemClock, parameterParser, new GameSearchingService(interLeagueService, systemClock), baseAddress)
+            new GetGameCommand(mySQLDiscordRepo, systemClock, parameterParser, gameSearchingService, baseAddress),
+            new GetUpcomingGamesCommand(mySQLDiscordRepo, systemClock, baseAddress)
         };
 
         _client = new DiscordSocketClient();
