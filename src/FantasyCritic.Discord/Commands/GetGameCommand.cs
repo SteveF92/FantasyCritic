@@ -1,6 +1,8 @@
 using Discord;
 using Discord.WebSocket;
+using FantasyCritic.Discord.Interfaces;
 using FantasyCritic.Discord.Models;
+using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
@@ -32,16 +34,26 @@ public class GetGameCommand : ICommand
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
-    private readonly IParameterParser _parameterParser;
+    private readonly IDiscordParameterParser _parameterParser;
     private readonly GameSearchingService _gameSearchingService;
+    private readonly DiscordSettings _discordSettings;
+    private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public GetGameCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser, GameSearchingService gameSearchingService, string baseAddress)
+    public GetGameCommand(IDiscordRepo discordRepo,
+        IClock clock,
+        IDiscordParameterParser parameterParser,
+        GameSearchingService gameSearchingService,
+        IDiscordFormatter discordFormatter,
+        DiscordSettings discordSettings,
+        string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _gameSearchingService = gameSearchingService;
+        _discordSettings = discordSettings;
+        _discordFormatter = discordFormatter;
         _baseAddress = baseAddress;
     }
 
@@ -104,15 +116,10 @@ public class GetGameCommand : ICommand
         var embedBuilder = new EmbedBuilder()
             .WithTitle(gameEmbeds.Count == 0 ? "No Games Found" : "Games Found")
             .WithFields(gameEmbeds)
-            .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-            .WithColor(16777215)
+            .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
+            .WithColor(_discordSettings.EmbedColors.Regular)
             .WithCurrentTimestamp();
         await command.RespondAsync(embed: embedBuilder.Build());
-    }
-
-    private string BuildGameTitleDisplayWithUrl(MasterGame masterGame)
-    {
-        return $"[View Game]({_baseAddress}/mastergame/{masterGame.MasterGameID})";
     }
 
     private string BuildGameDisplayText(MatchedGameDisplay matchedGameDisplay, LeagueYear leagueYear, LocalDate dateToCheck)
@@ -154,7 +161,8 @@ public class GetGameCommand : ICommand
             }
         }
 
-        gameDisplayText += $"\n{BuildGameTitleDisplayWithUrl(gameFound.MasterGame)}";
+        var gameUrlBuilder = new GameUrlBuilder(_baseAddress, gameFound.MasterGame.MasterGameID);
+        gameDisplayText += $"\n{gameUrlBuilder.BuildUrl("View Game")}";
 
         return gameDisplayText;
     }

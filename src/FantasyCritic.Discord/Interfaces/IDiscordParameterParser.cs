@@ -1,9 +1,9 @@
 using Discord.WebSocket;
 using NodaTime;
 
-namespace FantasyCritic.Discord;
+namespace FantasyCritic.Discord.Interfaces;
 
-public interface IParameterParser
+public interface IDiscordParameterParser
 {
     LocalDate? GetDateFromProvidedYear(SocketSlashCommandDataOption? providedYear);
 }

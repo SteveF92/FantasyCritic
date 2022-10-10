@@ -3,6 +3,9 @@ using Discord;
 using FantasyCritic.Discord.Commands;
 using NodaTime;
 using Discord.Net;
+using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Discord.Models;
+using FantasyCritic.Discord.Utilities;
 using Newtonsoft.Json;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
@@ -19,19 +22,21 @@ public class DiscordBotService
         IDiscordRepo mySQLDiscordRepo,
         SystemClock systemClock,
         GameSearchingService gameSearchingService,
-        IParameterParser parameterParser,
+        IDiscordParameterParser parameterParser,
+        DiscordFormatter discordFormatter,
+        DiscordSettings discordSettings,
         string baseAddress)
     {
         _botToken = botToken;
         _commandsList = new List<ICommand>
         {
-            new GetLeagueCommand(mySQLDiscordRepo, mySQLFantasyCriticRepo, systemClock, parameterParser, baseAddress),
-            new GetLeagueLinkCommand(mySQLDiscordRepo, systemClock, parameterParser, baseAddress),
-            new GetPublisherCommand(mySQLDiscordRepo, systemClock, parameterParser, baseAddress),
-            new GetGameCommand(mySQLDiscordRepo, systemClock, parameterParser, gameSearchingService, baseAddress),
-            new GetUpcomingGamesCommand(mySQLDiscordRepo, systemClock, baseAddress)
+            new GetLeagueCommand(mySQLDiscordRepo, mySQLFantasyCriticRepo, systemClock, parameterParser, discordFormatter, discordSettings, baseAddress),
+            new GetLeagueLinkCommand(mySQLDiscordRepo, systemClock, parameterParser, discordFormatter, discordSettings, baseAddress),
+            new GetPublisherCommand(mySQLDiscordRepo, systemClock, parameterParser, discordFormatter, discordSettings, baseAddress),
+            new GetGameCommand(mySQLDiscordRepo, systemClock, parameterParser, gameSearchingService, discordFormatter, discordSettings, baseAddress),
+            new GetUpcomingGamesCommand(mySQLDiscordRepo, systemClock, discordFormatter, discordSettings, baseAddress)
         };
-
+        
         _client = new DiscordSocketClient();
         _client.Log += Log;
         _client.Ready += Client_Ready;

@@ -5,7 +5,8 @@ using FantasyCritic.MySQL;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
 using Dapper.NodaTime;
-using FantasyCritic.Discord;
+using FantasyCritic.Discord.Models;
+using FantasyCritic.Discord.Utilities;
 using FantasyCritic.Lib.Services;
 using Serilog;
 using Serilog.Events;
@@ -24,6 +25,9 @@ public class Program
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
+        var section = configuration.GetSection("DiscordSettings");
+        var discordSettings = section.Get<DiscordSettings>();
+
         // Bot Dependencies
         var botToken = configuration["BotToken"];
         var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"], SystemClock.Instance);
@@ -35,7 +39,8 @@ public class Program
         var interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, clock);
         var gameSearchingService = new GameSearchingService(interLeagueService, clock);
         var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
-        var parameterParser = new ParameterParser();
+        var parameterParser = new DiscordParameterParser();
+        var discordFormatter = new DiscordFormatter();
 
         DapperNodaTimeSetup.Register();
 
@@ -45,6 +50,8 @@ public class Program
             clock,
             gameSearchingService,
             parameterParser,
+            discordFormatter,
+            discordSettings,
             baseAddress);
         await discordBotService.InitializeBot();
 

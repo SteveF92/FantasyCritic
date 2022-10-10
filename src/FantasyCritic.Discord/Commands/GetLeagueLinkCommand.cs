@@ -1,5 +1,8 @@
 using Discord;
 using Discord.WebSocket;
+using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Discord.Models;
+using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
@@ -22,15 +25,23 @@ public class GetLeagueLinkCommand : ICommand
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
-    private readonly IParameterParser _parameterParser;
+    private readonly IDiscordParameterParser _parameterParser;
+    private readonly IDiscordFormatter _discordFormatter;
+    private readonly DiscordSettings _discordSettings;
     private readonly string _baseAddress;
 
-    public GetLeagueLinkCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser,
+    public GetLeagueLinkCommand(IDiscordRepo discordRepo,
+        IClock clock,
+        IDiscordParameterParser parameterParser,
+        IDiscordFormatter discordFormatter,
+        DiscordSettings discordSettings,
         string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
+        _discordFormatter = discordFormatter;
+        _discordSettings = discordSettings;
         _baseAddress = baseAddress;
     }
 
@@ -48,16 +59,15 @@ public class GetLeagueLinkCommand : ICommand
                 return;
             }
 
-            var leagueUrl =
-                $"{_baseAddress}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}";
+            var leagueUrlBuilder = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID, leagueChannel.LeagueYear.Year);
+            var leagueUrl = leagueUrlBuilder.BuildUrl();
 
             var embedBuilder = new EmbedBuilder()
                 .WithTitle(
                     $"Click here to visit the site for the league {leagueChannel.LeagueYear.League.LeagueName} ({leagueChannel.LeagueYear.Year})")
                 .WithUrl(leagueUrl)
-                .WithFooter($"Requested by {command.User.Username}",
-                    command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                .WithColor(16777215)
+                .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
+                .WithColor(_discordSettings.EmbedColors.Regular)
                 .WithCurrentTimestamp();
 
             await command.RespondAsync(embed: embedBuilder.Build());

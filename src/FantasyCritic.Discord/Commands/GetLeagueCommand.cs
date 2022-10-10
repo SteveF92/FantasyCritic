@@ -1,5 +1,8 @@
 using Discord;
 using Discord.WebSocket;
+using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Discord.Models;
+using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -24,16 +27,25 @@ public class GetLeagueCommand : ICommand
     private readonly IDiscordRepo _discordRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
-    private readonly IParameterParser _parameterParser;
+    private readonly IDiscordParameterParser _parameterParser;
+    private readonly IDiscordFormatter _discordFormatter;
+    private readonly DiscordSettings _discordSettings;
     private readonly string _baseAddress;
 
-    public GetLeagueCommand(IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo, IClock clock,
-        IParameterParser parameterParser, string baseAddress)
+    public GetLeagueCommand(IDiscordRepo discordRepo,
+        IFantasyCriticRepo fantasyCriticRepo,
+        IClock clock,
+        IDiscordParameterParser parameterParser,
+        IDiscordFormatter discordFormatter,
+        DiscordSettings discordSettings,
+        string baseAddress)
     {
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
         _parameterParser = parameterParser;
+        _discordFormatter = discordFormatter;
+        _discordSettings = discordSettings;
         _baseAddress = baseAddress;
     }
 
@@ -69,13 +81,17 @@ public class GetLeagueCommand : ICommand
                         return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck);
                     });
 
+            var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID,
+                leagueChannel.LeagueYear.Year)
+                .BuildUrl();
+
             var embedBuilder = new EmbedBuilder()
                 .WithTitle($"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}")
                 .WithDescription(string.Join("\n", publisherLines))
-                .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                .WithColor(16777215)
+                .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
+                .WithColor(_discordSettings.EmbedColors.Regular)
                 .WithCurrentTimestamp()
-                .WithUrl($"{_baseAddress}/league/{leagueChannel.LeagueYear.League.LeagueID}/{leagueChannel.LeagueYear.Year}");
+                .WithUrl(leagueUrl);
 
             await command.RespondAsync(embed: embedBuilder.Build());
         }
@@ -88,7 +104,6 @@ public class GetLeagueCommand : ICommand
 
     private string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate)
     {
-        //TODO: is there a way to reuse MinimalPublisherViewModel code for this part?
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)

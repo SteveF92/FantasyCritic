@@ -1,6 +1,9 @@
 using System.Globalization;
 using Discord;
 using Discord.WebSocket;
+using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Discord.Models;
+using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
@@ -31,14 +34,23 @@ public class GetPublisherCommand : ICommand
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
-    private readonly IParameterParser _parameterParser;
+    private readonly IDiscordParameterParser _parameterParser;
+    private readonly IDiscordFormatter _discordFormatter;
+    private readonly DiscordSettings _discordSettings;
     private readonly string _baseAddress;
 
-    public GetPublisherCommand(IDiscordRepo discordRepo, IClock clock, IParameterParser parameterParser, string baseAddress)
+    public GetPublisherCommand(IDiscordRepo discordRepo,
+        IClock clock,
+        IDiscordParameterParser parameterParser,
+        IDiscordFormatter discordFormatter,
+        DiscordSettings discordSettings,
+        string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
+        _discordFormatter = discordFormatter;
+        _discordSettings = discordSettings;
         _baseAddress = baseAddress;
     }
 
@@ -78,8 +90,8 @@ public class GetPublisherCommand : ICommand
             var noMatchesEmbedBuilder = new EmbedBuilder()
                 .WithTitle("No Matches Found")
                 .WithDescription("No matches were found for your query.")
-                .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                .WithColor(16777215)
+                .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
+                .WithColor(_discordSettings.EmbedColors.Regular)
                 .WithCurrentTimestamp();
             await command.RespondAsync(embed: noMatchesEmbedBuilder.Build());
             return;
@@ -103,8 +115,8 @@ public class GetPublisherCommand : ICommand
             var multipleMatchesEmbedBuilder = new EmbedBuilder()
                 .WithTitle("Multiple Matches Found")
                 .WithDescription(message)
-                .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                .WithColor(16777215)
+                .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
+                .WithColor(_discordSettings.EmbedColors.Regular)
                 .WithCurrentTimestamp();
             await command.RespondAsync(embed: multipleMatchesEmbedBuilder.Build());
             return;
@@ -124,8 +136,8 @@ public class GetPublisherCommand : ICommand
                 var multipleMatchesEmbedBuilder = new EmbedBuilder()
                     .WithTitle("Multiple Matches Found")
                     .WithDescription(message)
-                    .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-                    .WithColor(16777215)
+                    .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
+                    .WithColor(_discordSettings.EmbedColors.Regular)
                     .WithCurrentTimestamp();
                 await command.RespondAsync(embed: multipleMatchesEmbedBuilder.Build());
                 return;
@@ -173,6 +185,8 @@ public class GetPublisherCommand : ICommand
             ? "️♾️"
             : (leagueOptionsFreeDroppableGames - publisherFound.FreeGamesDropped).ToString();
 
+        var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
+
         var embedBuilder = new EmbedBuilder()
             .WithTitle($"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})")
             .WithFields(new List<EmbedFieldBuilder>
@@ -217,9 +231,9 @@ public class GetPublisherCommand : ICommand
                     Value = MakeDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
                 }
             })
-            .WithDescription($"[Visit Publisher Page]({_baseAddress}/publisher/{publisherFound.PublisherID}/)")
-            .WithFooter($"Requested by {command.User.Username}", command.User.GetAvatarUrl() ?? command.User.GetDefaultAvatarUrl())
-            .WithColor(16777215)
+            .WithDescription(publisherUrlBuilder.BuildUrl("View Publisher"))
+            .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
+            .WithColor(_discordSettings.EmbedColors.Regular)
             .WithCurrentTimestamp();
         await command.RespondAsync(embed: embedBuilder.Build());
     }
