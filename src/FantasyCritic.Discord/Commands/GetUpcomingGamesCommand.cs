@@ -1,7 +1,6 @@
 using Discord;
 using Discord.WebSocket;
 using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
@@ -19,19 +18,16 @@ public class GetUpcomingGamesCommand : ICommand
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
-    private readonly DiscordSettings _discordSettings;
     private readonly string _baseAddress;
 
     public GetUpcomingGamesCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
-        DiscordSettings discordSettings,
         string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
-        _discordSettings = discordSettings;
         _baseAddress = baseAddress;
     }
 
@@ -42,7 +38,10 @@ public class GetUpcomingGamesCommand : ICommand
         var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await command.RespondAsync($"Error: No league configuration found for this channel in {dateToCheck.Year}.");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Upcoming Games",
+                "No league configuration found for this channel.",
+                command.User));
             return;
         }
 
@@ -53,7 +52,10 @@ public class GetUpcomingGamesCommand : ICommand
         var upcomingGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, false, dateToCheck);
         if (upcomingGamesData.Count == 0)
         {
-            await command.RespondAsync("No data found!");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Upcoming Games",
+                "No data found.",
+                command.User));
         }
 
         var message = "";
@@ -66,13 +68,10 @@ public class GetUpcomingGamesCommand : ICommand
             message += upcomingGameMessage;
         }
 
-        var embedBuilder = new EmbedBuilder()
-            .WithTitle("Upcoming Publisher Releases")
-            .WithDescription(message)
-            .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
-            .WithColor(_discordSettings.EmbedColors.Regular)
-            .WithCurrentTimestamp();
-        await command.RespondAsync(embed: embedBuilder.Build());
+        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            "Upcoming Publisher Releases",
+            message,
+            command.User));
     }
 
     private string BuildUpcomingGameMessage(Publisher publisher, MasterGame masterGame)

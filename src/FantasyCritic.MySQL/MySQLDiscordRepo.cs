@@ -25,12 +25,15 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
-    public async Task DeleteLeagueChannel(Guid leagueId, string channelId)
+    public async Task DeleteLeagueChannel(string channelID)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueId, channelId);
-        var sql = "DELETE FROM tbl_discord_leaguechannel WHERE LeagueID=@LeagueID AND ChannelID=@ChannelID";
-        await connection.ExecuteAsync(sql, leagueChannelEntity);
+        var queryObject = new
+        {
+            channelID
+        };
+        var sql = "DELETE FROM tbl_discord_leaguechannel WHERE ChannelID=@ChannelID";
+        await connection.ExecuteAsync(sql, queryObject);
     }
 
     public async Task<LeagueChannel?> GetLeagueChannel(string channelID, int year)

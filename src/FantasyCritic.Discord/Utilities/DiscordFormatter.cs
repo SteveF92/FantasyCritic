@@ -1,5 +1,4 @@
 using Discord;
-using Discord.WebSocket;
 using FantasyCritic.Discord.Interfaces;
 using FantasyCritic.Discord.Models;
 
@@ -13,47 +12,54 @@ public class DiscordFormatter : IDiscordFormatter
         _discordSettings = discordSettings;
     }
 
-    public Embed BuildRegularEmbed(string title, string messageText, SocketUser user, string url = "")
+    public Embed BuildRegularEmbed(string title, string messageText, IUser user, IList<EmbedFieldBuilder>? embedFieldBuilders = null, string url = "")
+    {
+        return BuildEmbed(title, messageText, user, _discordSettings.EmbedColors.Regular, embedFieldBuilders, url).Build();
+    }
+    public Embed BuildErrorEmbed(string title, string messageText, IUser user, IList<EmbedFieldBuilder>? embedFieldBuilders = null, string url = "")
+    {
+        return BuildEmbed(title, messageText, user, _discordSettings.EmbedColors.Error, embedFieldBuilders, url).Build();
+    }
+
+    private EmbedBuilder BuildEmbed(string title,
+        string messageText,
+        IUser user,
+        uint embedColor,
+        IList<EmbedFieldBuilder>? embedFieldBuilders,
+        string url = "")
     {
         var embedBuilder = new EmbedBuilder()
             .WithTitle(title)
             .WithDescription(messageText)
             .WithFooter(BuildEmbedFooter(user))
-            .WithColor(_discordSettings.EmbedColors.Regular)
+            .WithColor(embedColor)
             .WithCurrentTimestamp();
+
+        if (embedFieldBuilders != null && embedFieldBuilders.Any())
+        {
+            embedBuilder.WithFields(embedFieldBuilders);
+        }
         if (!string.IsNullOrEmpty(url))
         {
             embedBuilder.WithUrl(url);
         }
 
-        return embedBuilder.Build();
+        return embedBuilder;
     }
 
-    public Embed BuildErrorEmbed(string title, string text, SocketUser user)
+    public EmbedFooterBuilder BuildEmbedFooter(IUser user)
     {
-        var embedBuilder = new EmbedBuilder()
-            .WithDescription(text)
-            .WithTitle(title)
-            .WithFooter(BuildEmbedFooter(user))
-            .WithColor(_discordSettings.EmbedColors.Error)
-            .WithCurrentTimestamp();
-        return embedBuilder.Build();
-    }
-
-    public EmbedFooterBuilder BuildEmbedFooter(SocketUser user)
-    {
-        var embedFooterBuilder = new EmbedFooterBuilder()
+        return new EmbedFooterBuilder()
             .WithText(GetEmbedFooterText(user))
             .WithIconUrl(GetUserAvatar(user));
-        return embedFooterBuilder;
     }
 
-    private string GetEmbedFooterText(SocketUser user)
+    private string GetEmbedFooterText(IUser user)
     {
         return $"Requested by {user.Username}";
     }
 
-    private string GetUserAvatar(SocketUser user)
+    private string GetUserAvatar(IUser user)
     {
         return user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl();
     }

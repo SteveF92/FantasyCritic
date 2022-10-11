@@ -13,11 +13,12 @@ public class GetLeagueCommand : ICommand
 {
     public string Name => "league";
     public string Description => "Get league information.";
+    private const string YearParameterName = "year";
     public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
     {
         new()
         {
-            Name = "year",
+            Name = YearParameterName,
             Description = "The year for the league (if not entered, defaults to the current year).",
             Type = ApplicationCommandOptionType.Integer,
             IsRequired = false
@@ -51,55 +52,46 @@ public class GetLeagueCommand : ICommand
 
     public async Task HandleCommand(SocketSlashCommand command)
     {
-        try
+        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == YearParameterName);
+        var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
+
+        var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
+        var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
+        if (leagueChannel == null)
         {
-            var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == "year");
-            var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
-
-            var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
-            var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
-            if (leagueChannel == null)
-            {
-                await command.RespondAsync($"Error: No league configuration found for this channel in {dateToCheck.Year}.");
-                return;
-            }
-
-            var rankedPublishers = leagueChannel.LeagueYear.Publishers.OrderBy(p
-                => p.GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options));
-
-            var publisherLines =
-                rankedPublishers
-                    .Select((publisher, index) =>
-                    {
-                        var totalPoints = publisher
-                            .GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options);
-
-                        var projectedPoints = publisher
-                            .GetProjectedFantasyPoints(leagueChannel.LeagueYear,
-                                systemWideValues, dateToCheck);
-
-                        return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck);
-                    });
-
-            var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID,
-                leagueChannel.LeagueYear.Year)
-                .BuildUrl();
-
-            var embedBuilder = new EmbedBuilder()
-                .WithTitle($"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}")
-                .WithDescription(string.Join("\n", publisherLines))
-                .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
-                .WithColor(_discordSettings.EmbedColors.Regular)
-                .WithCurrentTimestamp()
-                .WithUrl(leagueUrl);
-
-            await command.RespondAsync(embed: embedBuilder.Build());
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Finding Game",
+                "No league configuration found for this channel.",
+                command.User));
+            return;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving LeagueChannel {ex.Message}");
-            await command.RespondAsync("There was an error executing this command. Please try again.");
-        }
+
+        var rankedPublishers = leagueChannel.LeagueYear.Publishers.OrderBy(p
+            => p.GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options));
+
+        var publisherLines =
+            rankedPublishers
+                .Select((publisher, index) =>
+                {
+                    var totalPoints = publisher
+                        .GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options);
+
+                    var projectedPoints = publisher
+                        .GetProjectedFantasyPoints(leagueChannel.LeagueYear,
+                            systemWideValues, dateToCheck);
+
+                    return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck);
+                });
+
+        var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID,
+            leagueChannel.LeagueYear.Year)
+            .BuildUrl();
+
+        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            $"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}",
+            string.Join("\n", publisherLines),
+            command.User,
+            url: leagueUrl));
     }
 
     private string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate)

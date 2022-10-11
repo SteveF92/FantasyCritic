@@ -8,9 +8,9 @@ using NodaTime;
 namespace FantasyCritic.Discord.Commands;
 public class SetLeagueChannelCommand : ICommand
 {
-    private const string LeagueIdParameterName = "league_id";
     public string Name => "set-league";
     public string Description => "Sets the league to be associated with the current channel.";
+    private const string LeagueIdParameterName = "league_id";
     public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
     {
         new()
@@ -54,7 +54,7 @@ public class SetLeagueChannelCommand : ICommand
         {
             await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Setting League",
-                "Error: A league ID is required.",
+                "A league ID is required.",
                 command.User));
             return;
         }
@@ -82,8 +82,8 @@ public class SetLeagueChannelCommand : ICommand
         await _discordRepo.SetLeagueChannel(new Guid(leagueId), command.Channel.Id.ToString(), dateToCheck.Year);
 
         await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "Setting Channel League",
-            $"Channel Configured for {league.LeagueName}",
+            "Channel League Configuration Saved",
+            $"Channel configured for League **{league.LeagueName}**.",
             command.User));
     }
 }

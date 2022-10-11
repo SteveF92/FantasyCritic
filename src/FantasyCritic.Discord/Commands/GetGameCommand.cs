@@ -14,18 +14,20 @@ public class GetGameCommand : ICommand
 {
     public string Name => "game";
     public string Description => "Get game information. You can search with just a portion of the name.";
+    private const string GameNameParameterName = "game_name";
+    private const string YearParameterName = "year";
     public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
         {
             new()
             {
-                Name = "game_name",
+                Name = GameNameParameterName,
                 Description = "The game name that you're searching for. You can input only a portion of the name.",
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true
             },
             new()
             {
-                Name = "year",
+                Name = YearParameterName,
                 Description = "The year for the league (if not entered, defaults to the current year).",
                 Type = ApplicationCommandOptionType.Integer,
                 IsRequired = false
@@ -36,7 +38,6 @@ public class GetGameCommand : ICommand
     private readonly IClock _clock;
     private readonly IDiscordParameterParser _parameterParser;
     private readonly GameSearchingService _gameSearchingService;
-    private readonly DiscordSettings _discordSettings;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
@@ -45,34 +46,35 @@ public class GetGameCommand : ICommand
         IDiscordParameterParser parameterParser,
         GameSearchingService gameSearchingService,
         IDiscordFormatter discordFormatter,
-        DiscordSettings discordSettings,
         string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _gameSearchingService = gameSearchingService;
-        _discordSettings = discordSettings;
         _discordFormatter = discordFormatter;
         _baseAddress = baseAddress;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
     {
-        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == "year");
+        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == YearParameterName);
         var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await command.RespondAsync($"Error: No league configuration found for this channel in {dateToCheck.Year}.");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Finding Game",
+                "No league configuration found for this channel.",
+                command.User));
             return;
         }
-        
+
         var leagueYear = leagueChannel.LeagueYear;
 
         var termToSearch = command.Data.Options
-            .First(o => o.Name == "game_name")
+            .First(o => o.Name == GameNameParameterName)
             .Value
             .ToString()!
             .ToLower()
@@ -80,17 +82,22 @@ public class GetGameCommand : ICommand
 
         if (termToSearch.Length < 2)
         {
-            await command.RespondAsync($"Please provide at least 3 characters to search with.");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Finding Game",
+                "Please provide at least 3 characters to search with.",
+                command.User));
             return;
         }
 
         // TODO: remove accented characters from strings, Pokemon for example
 
         var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, leagueYear, 3);
-
         if (!matchingGames.Any())
         {
-            await command.RespondAsync("No games found! Please check your search and try again.");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Finding Game",
+                "No games found! Please check your search and try again.",
+                command.User));
             return;
         }
 
@@ -113,13 +120,11 @@ public class GetGameCommand : ICommand
                 };
             }).ToList();
 
-        var embedBuilder = new EmbedBuilder()
-            .WithTitle(gameEmbeds.Count == 0 ? "No Games Found" : "Games Found")
-            .WithFields(gameEmbeds)
-            .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
-            .WithColor(_discordSettings.EmbedColors.Regular)
-            .WithCurrentTimestamp();
-        await command.RespondAsync(embed: embedBuilder.Build());
+        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            gameEmbeds.Count == 0 ? "No Games Found" : "Games Found",
+            "",
+            command.User,
+            gameEmbeds));
     }
 
     private string BuildGameDisplayText(MatchedGameDisplay matchedGameDisplay, LeagueYear leagueYear, LocalDate dateToCheck)

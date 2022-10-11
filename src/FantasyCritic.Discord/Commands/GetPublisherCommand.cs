@@ -2,7 +2,6 @@ using System.Globalization;
 using Discord;
 using Discord.WebSocket;
 using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -14,18 +13,21 @@ public class GetPublisherCommand : ICommand
 {
     public string Name => "publisher";
     public string Description => "Get publisher information. You can search with just a portion of the name.";
+    private const string PublisherNameParameterName = "publisher_or_player_name";
+    private const string YearParameterName = "year";
+
     public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
         {
             new()
             {
-                Name = "publisher_or_player_name",
+                Name = PublisherNameParameterName,
                 Description = "The name of the publisher or the name of the player. You can input only a portion of the name.",
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true
             },
             new()
             {
-                Name = "year",
+                Name = YearParameterName,
                 Description = "The year for the league (if not entered, defaults to the current year).",
                 Type = ApplicationCommandOptionType.Integer,
                 IsRequired = false
@@ -36,38 +38,38 @@ public class GetPublisherCommand : ICommand
     private readonly IClock _clock;
     private readonly IDiscordParameterParser _parameterParser;
     private readonly IDiscordFormatter _discordFormatter;
-    private readonly DiscordSettings _discordSettings;
     private readonly string _baseAddress;
 
     public GetPublisherCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordParameterParser parameterParser,
         IDiscordFormatter discordFormatter,
-        DiscordSettings discordSettings,
         string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _discordFormatter = discordFormatter;
-        _discordSettings = discordSettings;
         _baseAddress = baseAddress;
     }
 
     public async Task HandleCommand(SocketSlashCommand command)
     {
-        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == "year");
+        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == YearParameterName);
         var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await command.RespondAsync($"Error: No league configuration found for this channel in {dateToCheck.Year}.");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Publisher",
+                "No league configuration found for this channel.",
+                command.User));
             return;
         }
 
         var termToSearch = command.Data.Options
-            .First(o => o.Name == "publisher_or_player_name")
+            .First(o => o.Name == PublisherNameParameterName)
             .Value
             .ToString()!
             .ToLower()
@@ -75,7 +77,10 @@ public class GetPublisherCommand : ICommand
 
         if (termToSearch.Length < 2)
         {
-            await command.RespondAsync($"Please provide at least 3 characters to search with.");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Publisher",
+                "Please provide at least 3 characters to search with.",
+                command.User));
             return;
         }
 
@@ -87,13 +92,10 @@ public class GetPublisherCommand : ICommand
 
         if (!foundByPlayerName.Any() && !foundByPublisherName.Any())
         {
-            var noMatchesEmbedBuilder = new EmbedBuilder()
-                .WithTitle("No Matches Found")
-                .WithDescription("No matches were found for your query.")
-                .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
-                .WithColor(_discordSettings.EmbedColors.Regular)
-                .WithCurrentTimestamp();
-            await command.RespondAsync(embed: noMatchesEmbedBuilder.Build());
+            await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "No Matches Found",
+                "No matches were found for your query.",
+                command.User));
             return;
         }
 
@@ -112,13 +114,10 @@ public class GetPublisherCommand : ICommand
                     $"Match by publisher name: ${string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}";
             }
 
-            var multipleMatchesEmbedBuilder = new EmbedBuilder()
-                .WithTitle("Multiple Matches Found")
-                .WithDescription(message)
-                .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
-                .WithColor(_discordSettings.EmbedColors.Regular)
-                .WithCurrentTimestamp();
-            await command.RespondAsync(embed: multipleMatchesEmbedBuilder.Build());
+            await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "Multiple Matches Found",
+                message,
+                command.User));
             return;
         }
         else if (foundByPlayerName.Any() && foundByPublisherName.Any())
@@ -133,13 +132,10 @@ public class GetPublisherCommand : ICommand
                 var message =
                     $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}\n";
                 message += $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}\n";
-                var multipleMatchesEmbedBuilder = new EmbedBuilder()
-                    .WithTitle("Multiple Matches Found")
-                    .WithDescription(message)
-                    .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
-                    .WithColor(_discordSettings.EmbedColors.Regular)
-                    .WithCurrentTimestamp();
-                await command.RespondAsync(embed: multipleMatchesEmbedBuilder.Build());
+                await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+                    "Multiple Matches Found",
+                    message,
+                    command.User));
                 return;
             }
         }
@@ -159,7 +155,10 @@ public class GetPublisherCommand : ICommand
 
         if (publisherFound == null)
         {
-            await command.RespondAsync("Something went wrong.");
+            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Publisher",
+                "Something went wrong.",
+                command.User));
             return;
         }
 
@@ -187,55 +186,54 @@ public class GetPublisherCommand : ICommand
 
         var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
 
-        var embedBuilder = new EmbedBuilder()
-            .WithTitle($"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})")
-            .WithFields(new List<EmbedFieldBuilder>
+        var embedFieldBuilders = new List<EmbedFieldBuilder>
+        {
+            new()
             {
-                new()
-                {
-                    Name = "Picks",
-                    Value = gamesMessage,
-                    IsInline = false
-                },
-                new()
-                {
-                    Name = "Counter Picks",
-                    Value =  counterPickMessage,
-                    IsInline = false
-                },
-                new()
-                {
-                    Name = "Current Score",
-                    Value = Math.Round(publisherFound.GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options), 1),
-                    IsInline = false
-                },
-                new()
-                {
-                    Name = "Remaining Budget",
-                    Value = publisherFound.Budget,
-                    IsInline = false
-                },
-                new()
-                {
-                    Name = "'Will Release' Drops Remaining",
-                    Value = MakeDropDisplay(remainingWillReleaseDrops, leagueOptionWillReleaseDroppableGames)
-                },
-                new()
-                {
-                    Name = "'Will Not Release' Drops Remaining",
-                    Value = MakeDropDisplay(remainingWillNotReleaseDrops, leagueOptionWillNotReleaseDroppableGames)
-                },
-                new()
-                {
-                    Name = "'Unrestricted' Drops Remaining",
-                    Value = MakeDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
-                }
-            })
-            .WithDescription(publisherUrlBuilder.BuildUrl("View Publisher"))
-            .WithFooter(_discordFormatter.BuildEmbedFooter(command.User))
-            .WithColor(_discordSettings.EmbedColors.Regular)
-            .WithCurrentTimestamp();
-        await command.RespondAsync(embed: embedBuilder.Build());
+                Name = "Picks",
+                Value = gamesMessage,
+                IsInline = false
+            },
+            new()
+            {
+                Name = "Counter Picks",
+                Value =  counterPickMessage,
+                IsInline = false
+            },
+            new()
+            {
+                Name = "Current Score",
+                Value = Math.Round(publisherFound.GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options), 1),
+                IsInline = false
+            },
+            new()
+            {
+                Name = "Remaining Budget",
+                Value = publisherFound.Budget,
+                IsInline = false
+            },
+            new()
+            {
+                Name = "'Will Release' Drops Remaining",
+                Value = MakeDropDisplay(remainingWillReleaseDrops, leagueOptionWillReleaseDroppableGames)
+            },
+            new()
+            {
+                Name = "'Will Not Release' Drops Remaining",
+                Value = MakeDropDisplay(remainingWillNotReleaseDrops, leagueOptionWillNotReleaseDroppableGames)
+            },
+            new()
+            {
+                Name = "'Unrestricted' Drops Remaining",
+                Value = MakeDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
+            }
+        };
+
+        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            $"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})",
+            publisherUrlBuilder.BuildUrl("View Publisher"),
+            command.User,
+            embedFieldBuilders));
     }
 
     private string MakeDropDisplay(string remaining, int total)
