@@ -9,10 +9,10 @@ using NodaTime;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Discord.Commands;
-public class GetUpcomingGamesCommand : ICommand
+public class GetRecentGamesCommand : ICommand
 {
-    public string Name => "upcoming";
-    public string Description => "Get upcoming releases for publishers in the league.";
+    public string Name => "recent";
+    public string Description => "Get recent releases for publishers in the league.";
     public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[] { };
 
     private readonly IDiscordRepo _discordRepo;
@@ -20,7 +20,7 @@ public class GetUpcomingGamesCommand : ICommand
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public GetUpcomingGamesCommand(IDiscordRepo discordRepo,
+    public GetRecentGamesCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         string baseAddress)
@@ -39,7 +39,7 @@ public class GetUpcomingGamesCommand : ICommand
         if (leagueChannel == null)
         {
             await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Getting Upcoming Games",
+                "Error Getting Recent Games",
                 "No league configuration found for this channel.",
                 command.User));
             return;
@@ -49,26 +49,26 @@ public class GetUpcomingGamesCommand : ICommand
 
         var leagueYearPublisherPairs = leagueYear.Publishers.Select(publisher => new LeagueYearPublisherPair(leagueYear, publisher));
 
-        var upcomingGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, false, dateToCheck);
-        if (upcomingGamesData.Count == 0)
+        var recentGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, true, dateToCheck);
+        if (recentGamesData.Count == 0)
         {
             await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Getting Upcoming Games",
+                "Error Getting Recent Games",
                 "No data found.",
                 command.User));
         }
 
         var message = "";
 
-        foreach (var upcomingGame in upcomingGamesData)
+        foreach (var recentGame in recentGamesData)
         {
             var publisher =
-                leagueYear.Publishers.First(p => p.PublisherGames.ContainsGame(upcomingGame.Key.MasterGame));
-            message += BuildGameMessage(publisher, upcomingGame.Key.MasterGame);
+                leagueYear.Publishers.First(p => p.PublisherGames.ContainsGame(recentGame.Key.MasterGame));
+            message += BuildGameMessage(publisher, recentGame.Key.MasterGame);
         }
 
         await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "Upcoming Publisher Releases",
+            "Recent Publisher Releases",
             message,
             command.User));
     }

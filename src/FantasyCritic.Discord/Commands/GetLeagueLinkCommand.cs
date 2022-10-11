@@ -1,7 +1,6 @@
 using Discord;
 using Discord.WebSocket;
 using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -28,21 +27,18 @@ public class GetLeagueLinkCommand : ICommand
     private readonly IClock _clock;
     private readonly IDiscordParameterParser _parameterParser;
     private readonly IDiscordFormatter _discordFormatter;
-    private readonly DiscordSettings _discordSettings;
     private readonly string _baseAddress;
 
     public GetLeagueLinkCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordParameterParser parameterParser,
         IDiscordFormatter discordFormatter,
-        DiscordSettings discordSettings,
         string baseAddress)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _discordFormatter = discordFormatter;
-        _discordSettings = discordSettings;
         _baseAddress = baseAddress;
     }
 

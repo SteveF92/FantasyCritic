@@ -51,7 +51,6 @@ public class Program
             gameSearchingService,
             parameterParser,
             discordFormatter,
-            discordSettings,
             baseAddress);
         await discordBotService.InitializeBot();
 

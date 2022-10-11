@@ -1,7 +1,6 @@
 using Discord;
 using Discord.WebSocket;
 using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
@@ -30,7 +29,6 @@ public class GetLeagueCommand : ICommand
     private readonly IClock _clock;
     private readonly IDiscordParameterParser _parameterParser;
     private readonly IDiscordFormatter _discordFormatter;
-    private readonly DiscordSettings _discordSettings;
     private readonly string _baseAddress;
 
     public GetLeagueCommand(IDiscordRepo discordRepo,
@@ -38,7 +36,6 @@ public class GetLeagueCommand : ICommand
         IClock clock,
         IDiscordParameterParser parameterParser,
         IDiscordFormatter discordFormatter,
-        DiscordSettings discordSettings,
         string baseAddress)
     {
         _discordRepo = discordRepo;
@@ -46,7 +43,6 @@ public class GetLeagueCommand : ICommand
         _clock = clock;
         _parameterParser = parameterParser;
         _discordFormatter = discordFormatter;
-        _discordSettings = discordSettings;
         _baseAddress = baseAddress;
     }
 

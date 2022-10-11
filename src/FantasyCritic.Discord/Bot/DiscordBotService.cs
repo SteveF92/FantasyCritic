@@ -4,7 +4,6 @@ using FantasyCritic.Discord.Commands;
 using NodaTime;
 using Discord.Net;
 using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.Utilities;
 using Newtonsoft.Json;
 using FantasyCritic.Lib.Interfaces;
@@ -25,18 +24,18 @@ public class DiscordBotService
         GameSearchingService gameSearchingService,
         IDiscordParameterParser parameterParser,
         DiscordFormatter discordFormatter,
-        DiscordSettings discordSettings,
         string baseAddress)
     {
         _botToken = botToken;
         _discordFormatter = discordFormatter;
         _commandsList = new List<ICommand>
         {
-            new GetLeagueCommand(mySQLDiscordRepo, mySQLFantasyCriticRepo, systemClock, parameterParser, discordFormatter, discordSettings, baseAddress),
-            new GetLeagueLinkCommand(mySQLDiscordRepo, systemClock, parameterParser, discordFormatter, discordSettings, baseAddress),
+            new GetLeagueCommand(mySQLDiscordRepo, mySQLFantasyCriticRepo, systemClock, parameterParser, discordFormatter, baseAddress),
+            new GetLeagueLinkCommand(mySQLDiscordRepo, systemClock, parameterParser, discordFormatter, baseAddress),
             new GetPublisherCommand(mySQLDiscordRepo, systemClock, parameterParser, discordFormatter, baseAddress),
             new GetGameCommand(mySQLDiscordRepo, systemClock, parameterParser, gameSearchingService, discordFormatter, baseAddress),
             new GetUpcomingGamesCommand(mySQLDiscordRepo, systemClock, discordFormatter, baseAddress),
+            new GetRecentGamesCommand(mySQLDiscordRepo, systemClock, discordFormatter, baseAddress),
             new SetLeagueChannelCommand(mySQLDiscordRepo, systemClock, discordFormatter, mySQLFantasyCriticRepo),
             new RemoveLeagueCommand(mySQLDiscordRepo, systemClock, discordFormatter)
         };
