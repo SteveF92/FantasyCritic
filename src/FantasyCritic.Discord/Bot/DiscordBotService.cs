@@ -34,7 +34,8 @@ public class DiscordBotService
             new GetLeagueLinkCommand(mySQLDiscordRepo, systemClock, parameterParser, discordFormatter, discordSettings, baseAddress),
             new GetPublisherCommand(mySQLDiscordRepo, systemClock, parameterParser, discordFormatter, discordSettings, baseAddress),
             new GetGameCommand(mySQLDiscordRepo, systemClock, parameterParser, gameSearchingService, discordFormatter, discordSettings, baseAddress),
-            new GetUpcomingGamesCommand(mySQLDiscordRepo, systemClock, discordFormatter, discordSettings, baseAddress)
+            new GetUpcomingGamesCommand(mySQLDiscordRepo, systemClock, discordFormatter, discordSettings, baseAddress),
+            new SetLeagueChannelCommand(mySQLDiscordRepo, systemClock, discordFormatter, mySQLFantasyCriticRepo, discordSettings, baseAddress)
         };
         
         _client = new DiscordSocketClient();

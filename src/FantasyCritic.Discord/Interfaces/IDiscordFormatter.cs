@@ -5,5 +5,7 @@ namespace FantasyCritic.Discord.Interfaces;
 
 public interface IDiscordFormatter
 {
-    public EmbedFooterBuilder BuildEmbedFooter(SocketUser user);
+    Embed BuildRegularEmbed(string title, string messageText, SocketUser user, string url = "");
+    Embed BuildErrorEmbed(string title, string text, SocketUser user);
+    EmbedFooterBuilder BuildEmbedFooter(SocketUser user);
 }

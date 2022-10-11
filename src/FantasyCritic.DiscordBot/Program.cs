@@ -40,7 +40,7 @@ public class Program
         var gameSearchingService = new GameSearchingService(interLeagueService, clock);
         var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
         var parameterParser = new DiscordParameterParser();
-        var discordFormatter = new DiscordFormatter();
+        var discordFormatter = new DiscordFormatter(discordSettings);
 
         DapperNodaTimeSetup.Register();
 

@@ -14,6 +14,25 @@ public class MySQLDiscordRepo : IDiscordRepo
         _connectionString = configuration.ConnectionString;
     }
 
+    public async Task SetLeagueChannel(Guid leagueId, string channelId, int year)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueId, channelId);
+        var existingLeague = await GetLeagueChannel(channelId, year);
+        var sql = existingLeague == null
+            ? "INSERT INTO tbl_discord_leaguechannel (LeagueID, ChannelID) VALUES (@LeagueID, @ChannelID)"
+            : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID, ChannelID=@ChannelID";
+        await connection.ExecuteAsync(sql, leagueChannelEntity);
+    }
+
+    public async Task DeleteLeagueChannel(Guid leagueId, string channelId)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueId, channelId);
+        var sql = "DELETE FROM tbl_discord_leaguechannel WHERE LeagueID=@LeagueID AND ChannelID=@ChannelID";
+        await connection.ExecuteAsync(sql, leagueChannelEntity);
+    }
+
     public async Task<LeagueChannel?> GetLeagueChannel(string channelID, int year)
     {
         await using var connection = new MySqlConnection(_connectionString);
