@@ -3,8 +3,8 @@ using FantasyCritic.Discord.Interfaces;
 namespace FantasyCritic.Discord.UrlBuilders;
 public abstract class UrlBuilder : IUrlBuilder
 {
-    public string UrlTemplate { get; init; } = "";
-    public Dictionary<string, string> UrlTemplateKeywordMapping { get; init; } = new();
+    protected string UrlTemplate { get; init; } = "";
+    protected Dictionary<string, string> UrlTemplateKeywordMapping { get; init; } = new();
 
     public string BuildUrl(string displayText = "")
     {
