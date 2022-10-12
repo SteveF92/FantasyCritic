@@ -39,9 +39,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4350DE84
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalServices", "ExternalServices", "{C91E705F-F0CD-4537-B670-5D2FC2613A74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.MasterGameUpdater", "FantasyCritic.MasterGameUpdater\FantasyCritic.MasterGameUpdater.csproj", "{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.MasterGameUpdater", "FantasyCritic.MasterGameUpdater\FantasyCritic.MasterGameUpdater.csproj", "{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.Discord", "FantasyCritic.Discord\FantasyCritic.Discord.csproj", "{DC966801-D778-480B-92D4-CFBA19EA93A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Discord", "FantasyCritic.Discord\FantasyCritic.Discord.csproj", "{DC966801-D778-480B-92D4-CFBA19EA93A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,4 @@
 using Discord;
-using Discord.WebSocket;
 using FantasyCritic.Discord.Interfaces;
 using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
@@ -8,32 +7,12 @@ using FantasyCritic.Lib.Interfaces;
 using NodaTime;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Services;
+using Discord.Interactions;
+using Microsoft.Extensions.Configuration;
 
 namespace FantasyCritic.Discord.Commands;
-public class GetGameCommand : ICommand
+public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
 {
-    public string Name => "game";
-    public string Description => "Get game information. You can search with just a portion of the name.";
-    private const string GameNameParameterName = "game_name";
-    private const string YearParameterName = "year";
-    public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
-        {
-            new()
-            {
-                Name = GameNameParameterName,
-                Description = "The game name that you're searching for. You can input only a portion of the name.",
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true
-            },
-            new()
-            {
-                Name = YearParameterName,
-                Description = "The year for the league (if not entered, defaults to the current year).",
-                Type = ApplicationCommandOptionType.Integer,
-                IsRequired = false
-            }
-        };
-
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordParameterParser _parameterParser;
@@ -46,46 +25,48 @@ public class GetGameCommand : ICommand
         IDiscordParameterParser parameterParser,
         GameSearchingService gameSearchingService,
         IDiscordFormatter discordFormatter,
-        string baseAddress)
+        IConfigurationRoot configuration
+        )
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _gameSearchingService = gameSearchingService;
         _discordFormatter = discordFormatter;
-        _baseAddress = baseAddress;
+        _baseAddress = configuration["BaseAddress"];
     }
 
-    public async Task HandleCommand(SocketSlashCommand command)
-    {
-        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == YearParameterName);
-        var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
+    //[SlashCommand("echotest", "Get game information. You can search with just a portion of the name.")]
+    //public async Task Echo(string echo, [Summary(description: "mention the user")] bool mention = false)
+    //    => await RespondAsync(echo + (mention ? Context.User.Mention : string.Empty));
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
+    [SlashCommand("game", "Get game information. You can search with just a portion of the name.")]
+    public async Task GetGame(
+        [Summary("game_name", "The game name that you're searching for. You can input only a portion of the name.")] string gameName,
+        [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int year = 2022)
+    {
+        var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
+
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Channel.Id.ToString(), dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding Game",
                 "No league configuration found for this channel.",
-                command.User));
+                Context.User));
             return;
         }
 
         var leagueYear = leagueChannel.LeagueYear;
 
-        var termToSearch = command.Data.Options
-            .First(o => o.Name == GameNameParameterName)
-            .Value
-            .ToString()!
-            .ToLower()
-            .Trim();
+        var termToSearch = gameName.ToLower().Trim();
 
         if (termToSearch.Length < 2)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding Game",
                 "Please provide at least 3 characters to search with.",
-                command.User));
+                Context.User));
             return;
         }
 
@@ -94,10 +75,10 @@ public class GetGameCommand : ICommand
         var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, leagueYear, 3);
         if (!matchingGames.Any())
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding Game",
                 "No games found! Please check your search and try again.",
-                command.User));
+                Context.User));
             return;
         }
 
@@ -120,10 +101,10 @@ public class GetGameCommand : ICommand
                 };
             }).ToList();
 
-        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             gameEmbeds.Count == 0 ? "No Games Found" : "Games Found",
             "",
-            command.User,
+            Context.User,
             gameEmbeds));
     }
 
