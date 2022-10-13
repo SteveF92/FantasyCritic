@@ -75,49 +75,72 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        if (foundByPlayerName.Count > 1 || foundByPublisherName.Count > 1)
+        var message = BuildMessageForMultiplePublishersFound(foundByPlayerName, foundByPublisherName);
+        if (message != "")
         {
-            var message = "";
-
-            if (foundByPlayerName.Any())
-            {
-                message +=
-                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}";
-            }
-            if (foundByPublisherName.Any())
-            {
-                message +=
-                    $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}";
-            }
-
             await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "Multiple Matches Found",
                 message,
                 Context.User));
             return;
         }
-        else if (foundByPlayerName.Any() && foundByPublisherName.Any())
-        {
-            var inBothLists = foundByPlayerName
-                .Select(publisher => foundByPublisherName.FirstOrDefault(p => p.PublisherID == publisher.PublisherID))
-                .Where(inOtherList => inOtherList != null)
-                .ToList();
+        
+        var publisherFound = GetPublisherFromFoundLists(foundByPlayerName, foundByPublisherName);
 
-            if (inBothLists.Count != foundByPlayerName.Count)
-            {
-                var message =
-                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}\n";
-                message += $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}\n";
-                await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
-                    "Multiple Matches Found",
-                    message,
-                    Context.User));
-                return;
-            }
+        if (publisherFound == null)
+        {
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Publisher",
+                "Something went wrong.",
+                Context.User));
+            return;
         }
 
-        //after all that, we should have just one publisher found
+        var pickedGames = GetSortedPublisherGames(publisherFound, false);
+        var counterPickedGames = GetSortedPublisherGames(publisherFound, true);
 
+        var remainingWillReleaseDrops =
+            GetDropsRemainingText(leagueChannel.LeagueYear.Options.WillReleaseDroppableGames,
+                publisherFound.WillReleaseGamesDropped);
+        var remainingWillNotReleaseDrops = GetDropsRemainingText(leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames, publisherFound.WillNotReleaseGamesDropped);
+        var remainingFreeDroppableGames = GetDropsRemainingText(leagueChannel.LeagueYear.Options.FreeDroppableGames, publisherFound.FreeGamesDropped);
+
+        var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
+
+        var embedFieldBuilders = BuildEmbedFieldBuilders(
+            string.Join("\n", pickedGames.Select(BuildGameMessage)),
+            string.Join("\n", counterPickedGames.Select(BuildGameMessage)),
+            publisherFound,
+            leagueChannel,
+            remainingWillReleaseDrops,
+            leagueChannel.LeagueYear.Options.WillReleaseDroppableGames,
+            remainingWillNotReleaseDrops,
+            leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames,
+            remainingFreeDroppableGames,
+            leagueChannel.LeagueYear.Options.FreeDroppableGames);
+
+        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            $"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})",
+            publisherUrlBuilder.BuildUrl("View Publisher"),
+            Context.User,
+            embedFieldBuilders));
+    }
+
+    private string GetDropsRemainingText(int numberOfDropsAllowed, int dropsDone)
+    {
+        return numberOfDropsAllowed == -1
+            ? "♾️"
+            : (numberOfDropsAllowed - dropsDone).ToString();
+    }
+
+    private IEnumerable<PublisherGame> GetSortedPublisherGames(Publisher publisherFound, bool isCounterPick)
+    {
+        return publisherFound.PublisherGames.Where(g => g.CounterPick == isCounterPick).OrderBy(g => g.SlotNumber);
+    }
+
+    private static Publisher? GetPublisherFromFoundLists(List<Publisher> foundByPlayerName,
+        List<Publisher> foundByPublisherName)
+    {
         Publisher? publisherFound = null;
 
         if (foundByPlayerName.Count == 1)
@@ -129,40 +152,49 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             publisherFound = foundByPublisherName[0];
         }
 
-        if (publisherFound == null)
+        return publisherFound;
+    }
+
+    private string BuildMessageForMultiplePublishersFound(List<Publisher> foundByPlayerName, List<Publisher> foundByPublisherName)
+    {
+        var message = "";
+
+        if (foundByPlayerName.Count > 1 || foundByPublisherName.Count > 1)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Getting Publisher",
-                "Something went wrong.",
-                Context.User));
-            return;
+            if (foundByPlayerName.Any())
+            {
+                message +=
+                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}";
+            }
+
+            if (foundByPublisherName.Any())
+            {
+                message +=
+                    $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}";
+            }
+        }
+        else if (foundByPlayerName.Any() && foundByPublisherName.Any())
+        {
+            var inBothLists = foundByPlayerName
+                .Select(publisher => foundByPublisherName.FirstOrDefault(p => p.PublisherID == publisher.PublisherID))
+                .Where(inOtherList => inOtherList != null)
+                .ToList();
+
+            if (inBothLists.Count != foundByPlayerName.Count)
+            {
+                message =
+                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}\n";
+                message +=
+                    $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}\n";
+            }
         }
 
-        var pickedGames = publisherFound.PublisherGames.Where(g => !g.CounterPick).OrderBy(g => g.SlotNumber);
-        var counterPickedGames = publisherFound.PublisherGames.Where(g => g.CounterPick).OrderBy(g => g.SlotNumber);
+        return message;
+    }
 
-        var gamesMessage = string.Join("\n", pickedGames.Select(MakeGameMessage));
-        var counterPickMessage = string.Join("\n", counterPickedGames.Select(MakeGameMessage));
-
-        var leagueOptionWillReleaseDroppableGames = leagueChannel.LeagueYear.Options.WillReleaseDroppableGames;
-        var leagueOptionWillNotReleaseDroppableGames = leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames;
-        var leagueOptionsFreeDroppableGames = leagueChannel.LeagueYear.Options.FreeDroppableGames;
-
-        var remainingWillReleaseDrops = leagueOptionWillReleaseDroppableGames == -1
-            ? "♾️"
-            : (leagueOptionWillReleaseDroppableGames - publisherFound.WillReleaseGamesDropped).ToString();
-
-        var remainingWillNotReleaseDrops = leagueOptionWillNotReleaseDroppableGames == -1
-            ? "♾️"
-            : (leagueOptionWillNotReleaseDroppableGames - publisherFound.WillNotReleaseGamesDropped).ToString();
-
-        var remainingFreeDroppableGames = leagueOptionsFreeDroppableGames == -1
-            ? "️♾️"
-            : (leagueOptionsFreeDroppableGames - publisherFound.FreeGamesDropped).ToString();
-
-        var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
-
-        var embedFieldBuilders = new List<EmbedFieldBuilder>
+    private List<EmbedFieldBuilder> BuildEmbedFieldBuilders(string gamesMessage, string counterPickMessage, Publisher publisherFound, LeagueChannel leagueChannel, string remainingWillReleaseDrops, int leagueOptionWillReleaseDroppableGames, string remainingWillNotReleaseDrops, int leagueOptionWillNotReleaseDroppableGames, string remainingFreeDroppableGames, int leagueOptionsFreeDroppableGames)
+    {
+        return new List<EmbedFieldBuilder>
         {
             new()
             {
@@ -191,28 +223,22 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             new()
             {
                 Name = "'Will Release' Drops Remaining",
-                Value = MakeDropDisplay(remainingWillReleaseDrops, leagueOptionWillReleaseDroppableGames)
+                Value = BuildDropDisplay(remainingWillReleaseDrops, leagueOptionWillReleaseDroppableGames)
             },
             new()
             {
                 Name = "'Will Not Release' Drops Remaining",
-                Value = MakeDropDisplay(remainingWillNotReleaseDrops, leagueOptionWillNotReleaseDroppableGames)
+                Value = BuildDropDisplay(remainingWillNotReleaseDrops, leagueOptionWillNotReleaseDroppableGames)
             },
             new()
             {
                 Name = "'Unrestricted' Drops Remaining",
-                Value = MakeDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
+                Value = BuildDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
             }
         };
-
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
-            $"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})",
-            publisherUrlBuilder.BuildUrl("View Publisher"),
-            Context.User,
-            embedFieldBuilders));
     }
 
-    private string MakeDropDisplay(string remaining, int total)
+    private string BuildDropDisplay(string remaining, int total)
     {
         if (total == 0)
         {
@@ -224,7 +250,8 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         }
         return $"{remaining}/{total}";
     }
-    private string MakeGameMessage(PublisherGame g)
+
+    private string BuildGameMessage(PublisherGame g)
     {
         var gameMessage = g.GameName;
         if (g.FantasyPoints != null)
