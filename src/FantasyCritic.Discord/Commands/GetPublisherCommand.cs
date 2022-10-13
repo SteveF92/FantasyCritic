@@ -1,7 +1,8 @@
 using System.Globalization;
 using Discord;
-using Discord.WebSocket;
+using Discord.Interactions;
 using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -9,31 +10,8 @@ using NodaTime;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Discord.Commands;
-public class GetPublisherCommand : ICommand
+public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContext>
 {
-    public string Name => "publisher";
-    public string Description => "Get publisher information. You can search with just a portion of the name.";
-    private const string PublisherNameParameterName = "publisher_or_player_name";
-    private const string YearParameterName = "year";
-
-    public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
-        {
-            new()
-            {
-                Name = PublisherNameParameterName,
-                Description = "The name of the publisher or the name of the player. You can input only a portion of the name.",
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true
-            },
-            new()
-            {
-                Name = YearParameterName,
-                Description = "The year for the league (if not entered, defaults to the current year).",
-                Type = ApplicationCommandOptionType.Integer,
-                IsRequired = false
-            }
-        };
-
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordParameterParser _parameterParser;
@@ -44,43 +22,41 @@ public class GetPublisherCommand : ICommand
         IClock clock,
         IDiscordParameterParser parameterParser,
         IDiscordFormatter discordFormatter,
-        string baseAddress)
+        FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _discordFormatter = discordFormatter;
-        _baseAddress = baseAddress;
+        _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    public async Task HandleCommand(SocketSlashCommand command)
+    [SlashCommand("publisher", "Get publisher information. You can search with just a portion of the name.")]
+    public async Task GetPublisher(
+        [Summary("publisher_or_player_name", "The name of the publisher or the name of the player. You can input only a portion of the name.")] string publisherOrPlayerName,
+        [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
+        )
     {
-        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == YearParameterName);
-        var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
+        var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Channel.Id.ToString(), dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Publisher",
                 "No league configuration found for this channel.",
-                command.User));
+                Context.User));
             return;
         }
 
-        var termToSearch = command.Data.Options
-            .First(o => o.Name == PublisherNameParameterName)
-            .Value
-            .ToString()!
-            .ToLower()
-            .Trim();
+        var termToSearch = publisherOrPlayerName.ToLower().Trim();
 
         if (termToSearch.Length < 2)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Publisher",
                 "Please provide at least 3 characters to search with.",
-                command.User));
+                Context.User));
             return;
         }
 
@@ -92,10 +68,10 @@ public class GetPublisherCommand : ICommand
 
         if (!foundByPlayerName.Any() && !foundByPublisherName.Any())
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "No Matches Found",
                 "No matches were found for your query.",
-                command.User));
+                Context.User));
             return;
         }
 
@@ -106,18 +82,18 @@ public class GetPublisherCommand : ICommand
             if (foundByPlayerName.Any())
             {
                 message +=
-                    $"Match by player name: ${string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}";
+                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}";
             }
             if (foundByPublisherName.Any())
             {
                 message +=
-                    $"Match by publisher name: ${string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}";
+                    $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}";
             }
 
-            await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "Multiple Matches Found",
                 message,
-                command.User));
+                Context.User));
             return;
         }
         else if (foundByPlayerName.Any() && foundByPublisherName.Any())
@@ -132,10 +108,10 @@ public class GetPublisherCommand : ICommand
                 var message =
                     $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}\n";
                 message += $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}\n";
-                await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+                await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
                     "Multiple Matches Found",
                     message,
-                    command.User));
+                    Context.User));
                 return;
             }
         }
@@ -155,10 +131,10 @@ public class GetPublisherCommand : ICommand
 
         if (publisherFound == null)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Publisher",
                 "Something went wrong.",
-                command.User));
+                Context.User));
             return;
         }
 
@@ -229,10 +205,10 @@ public class GetPublisherCommand : ICommand
             }
         };
 
-        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             $"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})",
             publisherUrlBuilder.BuildUrl("View Publisher"),
-            command.User,
+            Context.User,
             embedFieldBuilders));
     }
 

@@ -8,7 +8,6 @@ using NodaTime;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Services;
 using Discord.Interactions;
-using Microsoft.Extensions.Configuration;
 
 namespace FantasyCritic.Discord.Commands;
 public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
@@ -25,7 +24,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         IDiscordParameterParser parameterParser,
         GameSearchingService gameSearchingService,
         IDiscordFormatter discordFormatter,
-        IConfigurationRoot configuration
+        FantasyCriticSettings fantasyCriticSettings
         )
     {
         _discordRepo = discordRepo;
@@ -33,17 +32,13 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         _parameterParser = parameterParser;
         _gameSearchingService = gameSearchingService;
         _discordFormatter = discordFormatter;
-        _baseAddress = configuration["BaseAddress"];
+        _baseAddress = fantasyCriticSettings.BaseAddress;
     }
-
-    //[SlashCommand("echotest", "Get game information. You can search with just a portion of the name.")]
-    //public async Task Echo(string echo, [Summary(description: "mention the user")] bool mention = false)
-    //    => await RespondAsync(echo + (mention ? Context.User.Mention : string.Empty));
 
     [SlashCommand("game", "Get game information. You can search with just a portion of the name.")]
     public async Task GetGame(
         [Summary("game_name", "The game name that you're searching for. You can input only a portion of the name.")] string gameName,
-        [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int year = 2022)
+        [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
         var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
 
@@ -92,7 +87,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         var gameEmbeds = gamesToDisplay
             .Select(matchedGameDisplay =>
             {
-                MasterGameYear masterGameYear = matchedGameDisplay.GameFound;
+                var masterGameYear = matchedGameDisplay.GameFound;
                 return new EmbedFieldBuilder
                 {
                     Name = masterGameYear.MasterGame.GameName,
@@ -102,7 +97,9 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
             }).ToList();
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
-            gameEmbeds.Count == 0 ? "No Games Found" : "Games Found",
+            gameEmbeds.Count == 0
+                ? "No Games Found"
+                : $"{gameEmbeds.Count} Game{(gameEmbeds.Count > 1 ? "(s)" : "")} Found",
             "",
             Context.User,
             gameEmbeds));

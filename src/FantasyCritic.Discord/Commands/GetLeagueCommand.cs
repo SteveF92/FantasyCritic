@@ -1,6 +1,6 @@
-using Discord;
-using Discord.WebSocket;
+using Discord.Interactions;
 using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
@@ -8,22 +8,8 @@ using FantasyCritic.Lib.Interfaces;
 using NodaTime;
 
 namespace FantasyCritic.Discord.Commands;
-public class GetLeagueCommand : ICommand
+public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
-    public string Name => "league";
-    public string Description => "Get league information.";
-    private const string YearParameterName = "year";
-    public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[]
-    {
-        new()
-        {
-            Name = YearParameterName,
-            Description = "The year for the league (if not entered, defaults to the current year).",
-            Type = ApplicationCommandOptionType.Integer,
-            IsRequired = false
-        }
-    };
-
     private readonly IDiscordRepo _discordRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
@@ -36,29 +22,31 @@ public class GetLeagueCommand : ICommand
         IClock clock,
         IDiscordParameterParser parameterParser,
         IDiscordFormatter discordFormatter,
-        string baseAddress)
+        FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
         _parameterParser = parameterParser;
         _discordFormatter = discordFormatter;
-        _baseAddress = baseAddress;
+        _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    public async Task HandleCommand(SocketSlashCommand command)
+    [SlashCommand("league", "Get league information.")]
+    public async Task GetLeague(
+        [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
+        )
     {
-        var providedYear = command.Data.Options.FirstOrDefault(o => o.Name == YearParameterName);
-        var dateToCheck = _parameterParser.GetDateFromProvidedYear(providedYear) ?? _clock.GetToday();
+        var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
 
         var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
-        var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Channel.Id.ToString(), dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding Game",
                 "No league configuration found for this channel.",
-                command.User));
+                Context.User));
             return;
         }
 
@@ -83,10 +71,10 @@ public class GetLeagueCommand : ICommand
             leagueChannel.LeagueYear.Year)
             .BuildUrl();
 
-        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             $"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}",
             string.Join("\n", publisherLines),
-            command.User,
+            Context.User,
             url: leagueUrl));
     }
 

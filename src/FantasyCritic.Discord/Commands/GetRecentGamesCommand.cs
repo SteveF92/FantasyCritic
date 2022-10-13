@@ -1,6 +1,6 @@
-using Discord;
-using Discord.WebSocket;
+using Discord.Interactions;
 using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Discord.Models;
 using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
@@ -9,12 +9,8 @@ using NodaTime;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Discord.Commands;
-public class GetRecentGamesCommand : ICommand
+public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionContext>
 {
-    public string Name => "recent";
-    public string Description => "Get recent releases for publishers in the league.";
-    public SlashCommandOptionBuilder[] Options => new SlashCommandOptionBuilder[] { };
-
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
@@ -23,25 +19,26 @@ public class GetRecentGamesCommand : ICommand
     public GetRecentGamesCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
-        string baseAddress)
+        FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
-        _baseAddress = baseAddress;
+        _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    public async Task HandleCommand(SocketSlashCommand command)
+    [SlashCommand("recent", "Get recent releases for publishers in the league.")]
+    public async Task GetRecentGames()
     {
         var dateToCheck = _clock.GetToday();
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(command.Channel.Id.ToString(), dateToCheck.Year);
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Channel.Id.ToString(), dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Recent Games",
                 "No league configuration found for this channel.",
-                command.User));
+                Context.User));
             return;
         }
 
@@ -52,10 +49,10 @@ public class GetRecentGamesCommand : ICommand
         var recentGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, true, dateToCheck);
         if (recentGamesData.Count == 0)
         {
-            await command.RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Recent Games",
                 "No data found.",
-                command.User));
+                Context.User));
         }
 
         var message = "";
@@ -67,10 +64,10 @@ public class GetRecentGamesCommand : ICommand
             message += BuildGameMessage(publisher, recentGame.Key.MasterGame);
         }
 
-        await command.RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Recent Publisher Releases",
             message,
-            command.User));
+            Context.User));
     }
 
     private string BuildGameMessage(Publisher publisher, MasterGame masterGame)
