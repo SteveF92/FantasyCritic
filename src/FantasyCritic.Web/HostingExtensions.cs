@@ -30,6 +30,7 @@ using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderVal
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
 using FantasyCritic.Mailgun;
+using FantasyCritic.Lib.Discord;
 
 namespace FantasyCritic.Web;
 
@@ -78,6 +79,7 @@ public static class HostingExtensions
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
+        services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
 
         services.AddScoped<PatreonService>();
 
@@ -93,6 +95,7 @@ public static class HostingExtensions
         }
 
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
+        services.AddScoped<DiscordPushService>();
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();
         services.AddScoped<GameAcquisitionService>();

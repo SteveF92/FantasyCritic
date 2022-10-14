@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
@@ -12,12 +13,14 @@ public class InterLeagueService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IClock _clock;
+    private readonly DiscordPushService _discordPushService;
 
-    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
+    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock, DiscordPushService discordPushService)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
         _clock = clock;
+        _discordPushService = discordPushService;
     }
 
     public Task<SystemWideSettings> GetSystemWideSettings()
@@ -46,6 +49,7 @@ public class InterLeagueService
         var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
         var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
         await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
+        await _discordPushService.SendMasterGameEditMessage(editedMasterGame, changes);
         return Result.Success();
     }
 
