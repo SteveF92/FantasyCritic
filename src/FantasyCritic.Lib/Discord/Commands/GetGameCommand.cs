@@ -44,7 +44,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         if (leagueChannel == null)
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Finding Game",
+                "Error Finding League Configuration",
                 "No league configuration found for this channel.",
                 Context.User));
             return;
