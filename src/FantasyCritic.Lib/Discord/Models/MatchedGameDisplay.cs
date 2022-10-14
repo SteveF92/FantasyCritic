@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Domain;
 
-namespace FantasyCritic.Discord.Models;
+namespace FantasyCritic.Lib.Discord.Models;
 
 public class MatchedGameDisplay
 {
@@ -8,7 +8,7 @@ public class MatchedGameDisplay
     {
         GameFound = gameFound;
     }
-    
+
     public Publisher? PublisherWhoPicked { get; init; }
     public Publisher? PublisherWhoCounterPicked { get; init; }
     public MasterGameYear GameFound { get; }

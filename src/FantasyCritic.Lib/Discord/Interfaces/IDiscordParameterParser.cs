@@ -1,7 +1,7 @@
 using Discord.WebSocket;
 using NodaTime;
 
-namespace FantasyCritic.Discord.Interfaces;
+namespace FantasyCritic.Lib.Discord.Interfaces;
 
 public interface IDiscordParameterParser
 {

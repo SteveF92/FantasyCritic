@@ -1,6 +1,6 @@
-using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Lib.Discord.Interfaces;
 
-namespace FantasyCritic.Discord.UrlBuilders;
+namespace FantasyCritic.Lib.Discord.UrlBuilders;
 public abstract class UrlBuilder : IUrlBuilder
 {
     protected string UrlTemplate { get; init; } = "";

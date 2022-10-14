@@ -1,8 +1,8 @@
 using Discord;
-using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
+using FantasyCritic.Lib.Discord.Interfaces;
+using FantasyCritic.Lib.Discord.Models;
 
-namespace FantasyCritic.Discord.Utilities;
+namespace FantasyCritic.Lib.Discord.Utilities;
 public class DiscordFormatter : IDiscordFormatter
 {
     private readonly DiscordSettings _discordSettings;

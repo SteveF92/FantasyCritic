@@ -1,15 +1,13 @@
 using Discord;
-using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
-using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using NodaTime;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Services;
 using Discord.Interactions;
+using FantasyCritic.Lib.Discord.Interfaces;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Discord.UrlBuilders;
 
-namespace FantasyCritic.Discord.Commands;
+namespace FantasyCritic.Lib.Discord.Commands;
 public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;

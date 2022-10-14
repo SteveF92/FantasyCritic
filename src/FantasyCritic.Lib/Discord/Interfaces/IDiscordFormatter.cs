@@ -1,6 +1,6 @@
 using Discord;
 
-namespace FantasyCritic.Discord.Interfaces;
+namespace FantasyCritic.Lib.Discord.Interfaces;
 
 public interface IDiscordFormatter
 {

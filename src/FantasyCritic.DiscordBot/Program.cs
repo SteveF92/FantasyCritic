@@ -1,5 +1,4 @@
 using System.Reflection;
-using FantasyCritic.Discord.Bot;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL;
 using Microsoft.Extensions.Configuration;
@@ -8,9 +7,6 @@ using Dapper.NodaTime;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
-using FantasyCritic.Discord.Utilities;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
@@ -18,6 +14,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
+using FantasyCritic.Lib.Discord.Utilities;
+using FantasyCritic.Lib.Discord.Interfaces;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Discord.Bot;
+
 namespace FantasyCritic.DiscordBot;
 
 public class Program

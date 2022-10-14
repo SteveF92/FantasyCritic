@@ -1,4 +1,4 @@
-namespace FantasyCritic.Discord.Models;
+namespace FantasyCritic.Lib.Discord.Models;
 
 public class EmbedColors
 {

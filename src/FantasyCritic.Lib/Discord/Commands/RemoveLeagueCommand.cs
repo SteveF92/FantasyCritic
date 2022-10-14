@@ -1,10 +1,10 @@
 using Discord.Interactions;
-using FantasyCritic.Discord.Interfaces;
+using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using NodaTime;
 
-namespace FantasyCritic.Discord.Commands;
+namespace FantasyCritic.Lib.Discord.Commands;
 public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;

@@ -41,8 +41,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalServices", "Externa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.MasterGameUpdater", "FantasyCritic.MasterGameUpdater\FantasyCritic.MasterGameUpdater.csproj", "{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Discord", "FantasyCritic.Discord\FantasyCritic.Discord.csproj", "{DC966801-D778-480B-92D4-CFBA19EA93A6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,10 +99,6 @@ Global
 		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC966801-D778-480B-92D4-CFBA19EA93A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC966801-D778-480B-92D4-CFBA19EA93A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC966801-D778-480B-92D4-CFBA19EA93A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC966801-D778-480B-92D4-CFBA19EA93A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

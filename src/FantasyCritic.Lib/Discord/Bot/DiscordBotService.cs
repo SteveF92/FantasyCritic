@@ -3,7 +3,7 @@ using Discord;
 using Discord.Interactions;
 using Microsoft.Extensions.Configuration;
 
-namespace FantasyCritic.Discord.Bot;
+namespace FantasyCritic.Lib.Discord.Bot;
 public class DiscordBotService
 {
     private readonly string _botToken;

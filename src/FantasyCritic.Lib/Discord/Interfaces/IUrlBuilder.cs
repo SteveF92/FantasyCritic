@@ -1,4 +1,4 @@
-namespace FantasyCritic.Discord.Interfaces;
+namespace FantasyCritic.Lib.Discord.Interfaces;
 public interface IUrlBuilder
 {
     string BuildUrl(string displayText);

@@ -1,12 +1,11 @@
 using Discord.Interactions;
-using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
-using FantasyCritic.Discord.UrlBuilders;
+using FantasyCritic.Lib.Discord.Interfaces;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using NodaTime;
 
-namespace FantasyCritic.Discord.Commands;
+namespace FantasyCritic.Lib.Discord.Commands;
 public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
@@ -68,8 +67,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
 
         await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Channel.Id.ToString(), dateToCheck.Year);
 
-        var leagueUrlBuilder =
-            new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
+        var leagueUrlBuilder = new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
         var leagueLink = leagueUrlBuilder.BuildUrl(league.LeagueName);
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(

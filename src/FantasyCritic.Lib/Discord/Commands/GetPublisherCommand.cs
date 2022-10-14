@@ -1,15 +1,13 @@
 using System.Globalization;
 using Discord;
 using Discord.Interactions;
-using FantasyCritic.Discord.Interfaces;
-using FantasyCritic.Discord.Models;
-using FantasyCritic.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using NodaTime;
-using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Discord.Interfaces;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Discord.UrlBuilders;
 
-namespace FantasyCritic.Discord.Commands;
+namespace FantasyCritic.Lib.Discord.Commands;
 public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
@@ -84,7 +82,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
                 Context.User));
             return;
         }
-        
+
         var publisherFound = GetPublisherFromFoundLists(foundByPlayerName, foundByPublisherName);
 
         if (publisherFound == null)

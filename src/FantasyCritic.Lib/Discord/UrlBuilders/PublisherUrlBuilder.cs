@@ -1,4 +1,4 @@
-namespace FantasyCritic.Discord.UrlBuilders;
+namespace FantasyCritic.Lib.Discord.UrlBuilders;
 public class PublisherUrlBuilder : UrlBuilder
 {
     private const string BaseAddressKeyword = "{{BASEADDRESS}}";
