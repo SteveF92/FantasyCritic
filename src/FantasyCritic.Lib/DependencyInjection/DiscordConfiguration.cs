@@ -1,2 +1,2 @@
 namespace FantasyCritic.Lib.DependencyInjection;
-public record DiscordConfiguration(string BotToken);
+public record FantasyCriticDiscordConfiguration(string BotToken);

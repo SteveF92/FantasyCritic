@@ -2,7 +2,6 @@ using Discord.Interactions;
 using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContext>
@@ -25,7 +24,7 @@ public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContex
     {
         var dateToCheck = _clock.GetToday();
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Channel.Id.ToString(), dateToCheck.Year);
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -35,7 +34,7 @@ public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        await _discordRepo.DeleteLeagueChannel(Context.Channel.Id.ToString());
+        await _discordRepo.DeleteLeagueChannel(Context.Guild.Id, Context.Channel.Id);
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Removed League Configuration",

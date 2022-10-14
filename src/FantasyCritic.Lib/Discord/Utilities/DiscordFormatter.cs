@@ -12,29 +12,32 @@ public class DiscordFormatter : IDiscordFormatter
         _discordSettings = discordSettings;
     }
 
-    public Embed BuildRegularEmbed(string title, string messageText, IUser user, IList<EmbedFieldBuilder>? embedFieldBuilders = null, string url = "")
+    public Embed BuildRegularEmbed(string title, string messageText, IUser? user = null, IList<EmbedFieldBuilder>? embedFieldBuilders = null, string url = "")
     {
         return BuildEmbed(title, messageText, user, _discordSettings.EmbedColors.Regular, embedFieldBuilders, url).Build();
     }
-    public Embed BuildErrorEmbed(string title, string messageText, IUser user, IList<EmbedFieldBuilder>? embedFieldBuilders = null, string url = "")
+    public Embed BuildErrorEmbed(string title, string messageText, IUser? user = null, IList<EmbedFieldBuilder>? embedFieldBuilders = null, string url = "")
     {
         return BuildEmbed(title, messageText, user, _discordSettings.EmbedColors.Error, embedFieldBuilders, url).Build();
     }
 
     private EmbedBuilder BuildEmbed(string title,
         string messageText,
-        IUser user,
-        uint embedColor,
-        IList<EmbedFieldBuilder>? embedFieldBuilders,
+        IUser? user = null,
+        uint embedColor = 0,
+        IList<EmbedFieldBuilder>? embedFieldBuilders = null,
         string url = "")
     {
         var embedBuilder = new EmbedBuilder()
             .WithTitle(title)
             .WithDescription(messageText)
-            .WithFooter(BuildEmbedFooter(user))
-            .WithColor(embedColor)
+            .WithColor(embedColor == 0 ? _discordSettings.EmbedColors.Regular : embedColor)
             .WithCurrentTimestamp();
 
+        if (user != null)
+        {
+            embedBuilder.WithFooter(BuildEmbedFooter(user));
+        }
         if (embedFieldBuilders != null && embedFieldBuilders.Any())
         {
             embedBuilder.WithFields(embedFieldBuilders);
@@ -47,7 +50,7 @@ public class DiscordFormatter : IDiscordFormatter
         return embedBuilder;
     }
 
-    public EmbedFooterBuilder BuildEmbedFooter(IUser user)
+    private EmbedFooterBuilder BuildEmbedFooter(IUser user)
     {
         return new EmbedFooterBuilder()
             .WithText(GetEmbedFooterText(user))

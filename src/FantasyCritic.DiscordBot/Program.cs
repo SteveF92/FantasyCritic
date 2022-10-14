@@ -7,6 +7,7 @@ using Dapper.NodaTime;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
@@ -42,12 +43,14 @@ public class Program
 
         var discordSettings = configuration.GetSection("DiscordSettings").Get<DiscordSettings>();
         var fantasyCriticSettings = configuration.GetSection("FantasyCriticSettings").Get<FantasyCriticSettings>();
+        var fantasyCriticDiscordConfiguration = new FantasyCriticDiscordConfiguration("");
 
         var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"], SystemClock.Instance);
 
         _serviceProvider = new ServiceCollection()
             .AddSingleton(configuration)
             .AddSingleton(fantasyCriticSettings)
+            .AddSingleton(fantasyCriticDiscordConfiguration)
             .AddSingleton(discordSettings)
             .AddSingleton(_socketConfig)
             .AddTransient<IClock>(_ => SystemClock.Instance)
@@ -55,6 +58,8 @@ public class Program
             .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
             .AddSingleton<DiscordBotService>()
             .AddSingleton(repositoryConfiguration)
+            .AddScoped<IDiscordRepo, MySQLDiscordRepo>()
+            .AddScoped<DiscordPushService>()
             .AddScoped<IMasterGameRepo, MySQLMasterGameRepo>()
             .AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
             .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
@@ -62,7 +67,6 @@ public class Program
             .AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>()
             .AddScoped<InterLeagueService>()
             .AddScoped<GameSearchingService>()
-            .AddScoped<IDiscordRepo, MySQLDiscordRepo>()
             .AddScoped<IDiscordParameterParser, DiscordParameterParser>()
             .AddScoped<IDiscordFormatter, DiscordFormatter>()
             .BuildServiceProvider();

@@ -38,7 +38,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
 
         var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Channel.Id.ToString(), dateToCheck.Year);
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(

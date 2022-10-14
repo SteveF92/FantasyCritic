@@ -55,7 +55,6 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         }
 
         var league = await _fantasyCriticRepo.GetLeague(leagueGuid);
-
         if (league == null)
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -64,8 +63,17 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
                 Context.User));
             return;
         }
+        if (!league.PublicLeague)
+        {
+            // TODO: validate user for private leagues
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Setting League",
+                $"You do not have access to this league.",
+                Context.User));
+            return;
+        }
 
-        await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Channel.Id.ToString(), dateToCheck.Year);
+        await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
 
         var leagueUrlBuilder = new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
         var leagueLink = leagueUrlBuilder.BuildUrl(league.LeagueName);

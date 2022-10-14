@@ -30,7 +30,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
     {
         var dateToCheck = _clock.GetToday();
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Channel.Id.ToString(), dateToCheck.Year);
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(

@@ -1,8 +1,8 @@
 namespace FantasyCritic.Lib.Interfaces;
 public interface IDiscordRepo
 {
-    Task SetLeagueChannel(Guid leagueId, string channelId, int year);
-    Task DeleteLeagueChannel(string channelId);
-    Task<LeagueChannel?> GetLeagueChannel(string channelID, int year);
-    Task<IReadOnlyList<LeagueChannel>> GetAllLeagueChannels();
+    Task<IReadOnlyList<MinimalLeagueChannel>> GetAllLeagueChannels();
+    Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year);
+    Task DeleteLeagueChannel(ulong guildID, ulong channelID);
+    Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, int year);
 }
