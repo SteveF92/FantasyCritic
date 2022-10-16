@@ -1,2 +1,2 @@
-ALTER TABLE `tbl_league_managermessage`
-	ADD COLUMN `IsGameNewsEnabled` BIT NOT NULL DEFAULT 1 AFTER `LeagueID`;
+ALTER TABLE `tbl_discord_leaguechannel`
+	ADD COLUMN `IsGameNewsEnabled` BIT NOT NULL AFTER `ChannelID`;

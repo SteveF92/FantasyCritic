@@ -49,13 +49,14 @@ public class DiscordPushService
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         foreach (var leagueChannel in allChannels)
         {
-            var channel = _client.GetGuild(leagueChannel.GuildID).GetChannel(leagueChannel.ChannelID) as SocketTextChannel;
-            if (channel == null)
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            var channel = guild.GetChannel(leagueChannel.ChannelID);
+            if (channel is not SocketTextChannel textChannel)
             {
                 continue;
             }
             var changesMessage = string.Join("\n", changes);
-            await channel.SendMessageAsync($"**{game.GameName}**\n{changesMessage}");
+            await textChannel.SendMessageAsync($"**{game.GameName}**\n{changesMessage}");
         }
     }
 

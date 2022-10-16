@@ -1,6 +1,11 @@
 namespace FantasyCritic.MySQL.Entities;
 internal class LeagueChannelEntity
 {
+    public LeagueChannelEntity()
+    {
+        
+    }
+
     public LeagueChannelEntity(Guid leagueID, ulong guildID, ulong channelID, bool isGameNewsEnabled)
     {
         LeagueID = leagueID;
@@ -17,5 +22,10 @@ internal class LeagueChannelEntity
     public LeagueChannel ToDomain(LeagueYear leagueYear)
     {
         return new LeagueChannel(leagueYear, GuildID, ChannelID, IsGameNewsEnabled);
+    }
+
+    public MinimalLeagueChannel ToMinimalDomain()
+    {
+        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, IsGameNewsEnabled);
     }
 }
