@@ -60,7 +60,8 @@ public class DiscordPushService
         }
         
         var allChannels = await _discordRepo.GetAllLeagueChannels();
-        foreach (var leagueChannel in allChannels)
+        var newsEnabledChannels = allChannels.Where(x => x.IsGameNewsEnabled).ToList();
+        foreach (var leagueChannel in newsEnabledChannels)
         {
             var guild = _client.GetGuild(leagueChannel.GuildID);
             var channel = guild.GetChannel(leagueChannel.ChannelID);
