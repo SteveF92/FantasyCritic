@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Interfaces;
 namespace FantasyCritic.Lib.Discord;
 public class DiscordPushService
 {
+    private const int MaxAttempts = 4;
     private readonly string _botToken;
     private readonly IDiscordRepo _discordRepo;
     private readonly DiscordSocketClient _client;
@@ -37,15 +38,27 @@ public class DiscordPushService
         await _client.LoginAsync(TokenType.Bot, _botToken);
         await _client.StartAsync();
 
+        var attempts = 0;
         while (!_botIsReady)
         {
+            if (attempts > MaxAttempts)
+            {
+                break;
+            }
+            
             await Task.Delay(1000);
+            attempts++;
         }
     }
 
     public async Task SendMasterGameEditMessage(MasterGame game, IEnumerable<string> changes)
     {
         await StartBot();
+        if (!_botIsReady)
+        {
+            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+        }
+        
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         foreach (var leagueChannel in allChannels)
         {
