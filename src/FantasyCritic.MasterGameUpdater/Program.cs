@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using FantasyCritic.SharedSerialization.API;
 using NodaTime.Serialization.JsonNet;
 using FantasyCritic.MySQL.SyncingRepos;
+using FantasyCritic.Lib.Discord;
 
 namespace FantasyCritic.MasterGameUpdater;
 
@@ -93,7 +94,8 @@ public static class Program
         IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
-        InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock);
+        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration(""), new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo));
+        InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo);
         FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, fantasyCriticRepo, _clock);
         IOpenCriticService openCriticService = null!;
