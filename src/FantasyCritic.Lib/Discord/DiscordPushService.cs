@@ -57,6 +57,7 @@ public class DiscordPushService
         if (!_botIsReady)
         {
             Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+            return;
         }
         
         var allChannels = await _discordRepo.GetAllLeagueChannels();

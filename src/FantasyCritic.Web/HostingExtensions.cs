@@ -1,6 +1,8 @@
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using DiscordDotNetUtilities;
+using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -32,8 +34,6 @@ using Microsoft.Extensions.Configuration;
 using FantasyCritic.Mailgun;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Discord.Utilities;
 
 namespace FantasyCritic.Web;
 
@@ -52,7 +52,6 @@ public static class HostingExtensions
         var openCriticAPIKey = configuration["OpenCritic:apiKey"];
         var baseAddress = configuration["BaseAddress"];
         var discordBotToken = configuration["Discord:BotToken"];
-        var discordSettings = configuration.GetSection("DiscordSettings").Get<DiscordSettings>();
 
         var rootFolder = configuration["LinuxRootFolder"];
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -73,7 +72,6 @@ public static class HostingExtensions
         services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => new FantasyCriticDiscordConfiguration(configuration["BotToken"]));
-        services.AddSingleton(discordSettings);
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();

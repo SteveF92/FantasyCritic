@@ -7,6 +7,8 @@ using Dapper.NodaTime;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using DiscordDotNetUtilities;
+using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -41,7 +43,6 @@ public class Program
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
-        var discordSettings = configuration.GetSection("DiscordSettings").Get<DiscordSettings>();
         var fantasyCriticSettings = configuration.GetSection("FantasyCriticSettings").Get<FantasyCriticSettings>();
         var fantasyCriticDiscordConfiguration = new FantasyCriticDiscordConfiguration("");
 
@@ -51,7 +52,6 @@ public class Program
             .AddSingleton(configuration)
             .AddSingleton(fantasyCriticSettings)
             .AddSingleton(fantasyCriticDiscordConfiguration)
-            .AddSingleton(discordSettings)
             .AddSingleton(_socketConfig)
             .AddTransient<IClock>(_ => SystemClock.Instance)
             .AddSingleton<DiscordSocketClient>()

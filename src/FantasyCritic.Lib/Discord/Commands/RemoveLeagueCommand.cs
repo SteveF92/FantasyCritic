@@ -1,5 +1,5 @@
 using Discord.Interactions;
-using FantasyCritic.Lib.Discord.Interfaces;
+using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 
