@@ -108,10 +108,16 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
     {
         var gameFound = matchedGameDisplay.GameFound;
 
-        var releaseDate = gameFound.MasterGame.ReleaseDate?.ToString() ??
-                          $"{gameFound.MasterGame.EstimatedReleaseDate} (est)";
-        var gameDisplayText =
-            $"**Release Date:** {releaseDate}";
+        var releaseDateDisplayText = GetReleaseDateText(gameFound, dateToCheck);
+
+        string gameDisplayText = $"**Release Date:** {releaseDateDisplayText}";
+
+        var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false, true);
+
+        gameDisplayText += $"\n**Projected Score:** {Math.Round(projectedScore, 1)}";
+        gameDisplayText += $"\n**Hype Factor:** {gameFound.HypeFactor}";
+        gameDisplayText += $"\n**% Drafted:** {(gameFound.PercentStandardGame == 0 ? "N/A" : $"{gameFound.PercentStandardGame * 100}%")}";
+        gameDisplayText += $"\n**% Counter Picked:** {(gameFound.PercentCounterPick == 0 ? "N/A" : $"{gameFound.PercentCounterPick * 100}%")}";
 
         var publisherWhoPicked = matchedGameDisplay.PublisherWhoPicked;
         if (publisherWhoPicked != null)
@@ -147,6 +153,31 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         gameDisplayText += $"\n{gameUrlBuilder.BuildUrl("View Game")}";
 
         return gameDisplayText;
+    }
+
+    private string GetReleaseDateText(MasterGameYear gameFound, LocalDate dateToCheck)
+    {
+        string releaseDateDisplayText = $"{gameFound.MasterGame.EstimatedReleaseDate} (est)";
+
+        if (gameFound.MasterGame.ReleaseDate != null)
+        {
+            releaseDateDisplayText = $"{gameFound.MasterGame.ReleaseDate?.ToString()}";
+            if (!gameFound.MasterGame.IsReleased(dateToCheck))
+            {
+                var daysUntilRelease = GetDaysUntilRelease(gameFound.MasterGame.ReleaseDate, dateToCheck);
+                if (daysUntilRelease > 0)
+                {
+                    releaseDateDisplayText += $" ({daysUntilRelease} days until release)";
+                };
+            }
+        }
+
+        return releaseDateDisplayText;
+    }
+
+    private int GetDaysUntilRelease(LocalDate? releaseDate, LocalDate dateToCheck)
+    {
+        return releaseDate == null ? -1 : Period.DaysBetween(dateToCheck, releaseDate.Value);
     }
 
     private Publisher? FindPublisherWithGame(LeagueYear leagueYear, MasterGameYear game, bool lookingForCounterPick)
