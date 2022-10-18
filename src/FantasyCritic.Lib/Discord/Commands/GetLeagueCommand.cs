@@ -1,6 +1,5 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
@@ -12,21 +11,18 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IDiscordRepo _discordRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
-    private readonly IDiscordParameterParser _parameterParser;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public GetLeagueCommand(IDiscordRepo discordRepo,
         IFantasyCriticRepo fantasyCriticRepo,
         IClock clock,
-        IDiscordParameterParser parameterParser,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
-        _parameterParser = parameterParser;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
@@ -36,7 +32,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
         )
     {
-        var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);

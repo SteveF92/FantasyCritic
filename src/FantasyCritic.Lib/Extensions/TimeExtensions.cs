@@ -10,6 +10,16 @@ public static class TimeExtensions
         return instant.ToEasternDate();
     }
 
+    public static LocalDate GetGameEffectiveDate(this IClock clock, int? providedYear = null)
+    {
+        var currentDate = clock.GetToday();
+        if (providedYear != null && providedYear != currentDate.Year)
+        {
+            return new LocalDate(providedYear.Value, 12, 31);
+        }
+        return currentDate;
+    }
+
     public static LocalDate ToEasternDate(this Instant instant)
     {
         return instant

@@ -28,7 +28,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
     [SlashCommand("recent", "Get recent releases for publishers in the league.")]
     public async Task GetRecentGames()
     {
-        var dateToCheck = _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)

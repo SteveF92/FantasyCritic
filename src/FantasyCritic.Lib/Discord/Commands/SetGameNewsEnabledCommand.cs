@@ -29,7 +29,7 @@ public class SetGameNewsEnabledCommand : InteractionModuleBase<SocketInteraction
         [Summary("enabled", "Enabled or disabled")] bool isEnabled
         )
     {
-        var dateToCheck = _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)

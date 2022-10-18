@@ -22,7 +22,7 @@ public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContex
     [SlashCommand("remove-league", "Removes the configuration for the league associated with the current channel.")]
     public async Task RemoveLeague()
     {
-        var dateToCheck = _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)

@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
-using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.Bot;
@@ -67,7 +66,6 @@ public class Program
             .AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>()
             .AddScoped<InterLeagueService>()
             .AddScoped<GameSearchingService>()
-            .AddScoped<IDiscordParameterParser, DiscordParameterParser>()
             .AddScoped<IDiscordFormatter, DiscordFormatter>()
             .BuildServiceProvider();
     }

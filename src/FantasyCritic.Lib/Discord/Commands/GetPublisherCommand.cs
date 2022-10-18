@@ -4,7 +4,6 @@ using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 
@@ -13,19 +12,16 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
-    private readonly IDiscordParameterParser _parameterParser;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public GetPublisherCommand(IDiscordRepo discordRepo,
         IClock clock,
-        IDiscordParameterParser parameterParser,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _clock = clock;
-        _parameterParser = parameterParser;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
@@ -36,7 +32,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
         )
     {
-        var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)

@@ -32,7 +32,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam
         )
     {
-        var dateToCheck = _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueId = leagueIdParam.ToLower().Trim();
 

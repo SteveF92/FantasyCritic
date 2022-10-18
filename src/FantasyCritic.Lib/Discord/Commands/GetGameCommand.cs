@@ -4,7 +4,6 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 
@@ -13,14 +12,12 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
-    private readonly IDiscordParameterParser _parameterParser;
     private readonly GameSearchingService _gameSearchingService;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public GetGameCommand(IDiscordRepo discordRepo,
         IClock clock,
-        IDiscordParameterParser parameterParser,
         GameSearchingService gameSearchingService,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings
@@ -28,7 +25,6 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
     {
         _discordRepo = discordRepo;
         _clock = clock;
-        _parameterParser = parameterParser;
         _gameSearchingService = gameSearchingService;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
@@ -39,7 +35,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         [Summary("game_name", "The game name that you're searching for. You can input only a portion of the name.")] string gameName,
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
-        var dateToCheck = _parameterParser.GetDateFromProvidedYear(year) ?? _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
@@ -162,7 +158,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         if (gameFound.MasterGame.ReleaseDate != null)
         {
             releaseDateDisplayText = $"{gameFound.MasterGame.ReleaseDate?.ToString()}";
-            if (!gameFound.MasterGame.IsReleased(dateToCheck))
+            if (!gameFound.MasterGame.IsReleased(dateToCheck) && _clock.GetToday().Year == dateToCheck.Year)
             {
                 var daysUntilRelease = GetDaysUntilRelease(gameFound.MasterGame.ReleaseDate, dateToCheck);
                 if (daysUntilRelease > 0)

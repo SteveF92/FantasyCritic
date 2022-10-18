@@ -58,4 +58,8 @@
     <PackageReference Include="Discord.Net.Core" Version="3.8.1" />
     <PackageReference Include="Discord.Net.WebSocket" Version="3.8.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Discord\Utilities\" />
+  </ItemGroup>
 </Project>

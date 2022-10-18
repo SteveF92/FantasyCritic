@@ -28,7 +28,7 @@ public class GetUpcomingGamesCommand : InteractionModuleBase<SocketInteractionCo
     [SlashCommand("upcoming", "Get upcoming releases for publishers in the league.")]
     public async Task GetUpcomingGames()
     {
-        var dateToCheck = _clock.GetToday();
+        var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
