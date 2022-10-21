@@ -144,7 +144,13 @@ export default {
           return (
             'This is the amount of fantasy points that our algorithm believes this game will result in.' +
             ' If the game already has a critic score, then this was our final projection before the score came in.' +
-            "<br/> The number at the bottom is this player's projected final score."
+            "<br/> The number at the bottom is this player's projected final score, which is not the sum of all the numbers above it." +
+            ' Instead, it is the sum of three things: ' +
+            '<ul>' +
+            '<li>Any real points acquired from games that have already released.</li>' +
+            '<li>Expected points from games releasing soon (games that have a critic score but have not yet released).</li>' +
+            '<li>Projected points for any remaining games.</li>' +
+            '</ul>'
           );
         }
       };

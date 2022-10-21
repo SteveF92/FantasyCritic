@@ -48,7 +48,7 @@ public class MasterGameYearViewModel
         HypeFactor = masterGame.HypeFactor;
         DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
         PeakHypeFactor = masterGame.PeakHypeFactor;
-        ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, false);
+        ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false);
         ProjectedOrRealFantasyPoints = FantasyPoints ?? ProjectedFantasyPoints;
         AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
     }
@@ -90,7 +90,7 @@ public class MasterGameYearViewModel
         HypeFactor = masterGame.HypeFactor;
         DateAdjustedHypeFactor = masterGame.DateAdjustedHypeFactor;
         PeakHypeFactor = masterGame.PeakHypeFactor;
-        ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, false);
+        ProjectedFantasyPoints = masterGame.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false);
         ProjectedOrRealFantasyPoints = FantasyPoints ?? ProjectedFantasyPoints;
         AddedTimestamp = masterGame.MasterGame.AddedTimestamp;
     }

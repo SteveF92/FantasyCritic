@@ -84,7 +84,7 @@ public class RoyaleService
         IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year);
 
         masterGameYears = masterGameYears.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate >= yearQuarter.FirstDateOfQuarter);
-        masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false, true));
+        masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false));
 
         return masterGameYears.ToList();
     }
