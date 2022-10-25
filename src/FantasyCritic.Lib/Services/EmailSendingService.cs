@@ -68,13 +68,15 @@ public class EmailSendingService
             }
         }
 
+        var adminUsers = (await _userManager.GetUsersInRoleAsync("Admin")).ToHashSet();
         var userEmailSettings = await _userManager.GetAllEmailSettings();
         var usersWithPublicBidEmails = userEmailSettings.Where(x => !x.User.IsDeleted && x.User.EmailConfirmed && x.EmailTypes.Contains(EmailType.PublicBids)).Select(x => x.User).ToList();
+        
         if (!_isProduction)
         {
-            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
             usersWithPublicBidEmails = usersWithPublicBidEmails.Intersect(adminUsers).ToList();
         }
+        
         var usersWithLeagueYears = await _leagueMemberService.GetUsersWithLeagueYearsWithPublisher();
 
         foreach (var user in usersWithPublicBidEmails)
@@ -95,7 +97,8 @@ public class EmailSendingService
                 }
             }
 
-            if (publicBiddingSetsForUser.Any() && publicBiddingSetsForUser.Any(x => x.MasterGames.Any()))
+            var userIsAdmin = adminUsers.Contains(user);
+            if (publicBiddingSetsForUser.Any() && publicBiddingSetsForUser.Any(x => x.MasterGames.Any()) || userIsAdmin)
             {
                 await SendPublicBiddingEmailToUser(user, publicBiddingSetsForUser);
             }
