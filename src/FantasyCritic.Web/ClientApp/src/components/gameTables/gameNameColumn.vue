@@ -16,12 +16,11 @@
       <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" v-b-popover.hover.focus="delayContentionText" color="white" size="lg" icon="balance-scale" />
       <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" v-b-popover.hover.focus="counterPickedText" color="white" size="lg" icon="crosshairs" />
       <font-awesome-icon v-if="game.dropBlocked" v-b-popover.hover.focus="gameDropBlockedText" color="white" size="lg" icon="lock" />
-      <font-awesome-icon
-        v-if="game.released && game.linked && !game.criticScore && !supportedYear.finished"
-        v-b-popover.hover.focus="needsMoreReviewsText"
-        color="white"
-        size="lg"
-        icon="hourglass-half" />
+      <template v-if="game.released && game.linked && !supportedYear.finished && !game.criticScore">
+        <font-awesome-icon v-if="!game.masterGame.openCriticID" v-b-popover.hover.focus="needsOpenCriticPage" color="white" size="lg" icon="link-slash" />
+        <font-awesome-icon v-else v-b-popover.hover.focus="needsMoreReviewsText" color="white" size="lg" icon="hourglass-half" />
+      </template>
+
       <font-awesome-icon v-if="game.manualCriticScore" v-b-popover.hover.focus="manuallyScoredText" color="white" size="lg" icon="pen" />
       <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="exclamation-triangle" />
     </span>
@@ -138,6 +137,17 @@ export default {
             'There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release" ' +
             'game for drop purposes, but it cannot be counter picked, just like a "will not release" game cannot be counter picked.'
           );
+        }
+      };
+    },
+    needsOpenCriticPage() {
+      return {
+        html: true,
+        title: () => {
+          return 'Needs Open Critic Link';
+        },
+        content: () => {
+          return "This game has released, but is not linked to an Open Critic page. If one exists, you can 'suggest a correction' and we'll get it fixed.";
         }
       };
     },
