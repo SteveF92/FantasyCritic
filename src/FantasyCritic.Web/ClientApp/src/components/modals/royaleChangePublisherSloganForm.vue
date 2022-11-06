@@ -7,9 +7,9 @@
         <input id="newPublisherSlogan" v-model="newPublisherSlogan" name="newPublisherSlogan" type="text" class="form-control input" />
       </div>
     </div>
-    <div slot="modal-footer">
+    <template #modalFooter>
       <input type="submit" class="btn btn-primary" value="Change Slogan" @click="changePublisherSlogan" />
-    </div>
+    </template>
   </b-modal>
 </template>
 <script>

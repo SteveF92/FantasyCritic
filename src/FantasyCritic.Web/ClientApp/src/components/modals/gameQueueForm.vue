@@ -74,9 +74,9 @@
         </tr>
       </draggable>
     </table>
-    <div slot="modal-footer">
+    <template #modalFooter>
       <input type="submit" class="btn btn-primary" value="Set Rankings" @click="setQueueRankings" />
-    </div>
+    </template>
   </b-modal>
 </template>
 

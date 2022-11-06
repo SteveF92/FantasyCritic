@@ -16,9 +16,9 @@
         <input id="newPublisherIcon" v-model="newPublisherIcon" name="newPublisherIcon" type="text" class="form-control input" />
       </div>
     </div>
-    <div slot="modal-footer">
+    <template #modalFooter>
       <input type="submit" class="btn btn-primary" value="Change Icon" :disabled="!iconIsValid" @click="changePublisherIcon" />
-    </div>
+    </template>
   </b-modal>
 </template>
 <script>

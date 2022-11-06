@@ -1,8 +1,8 @@
 <template>
   <div>
     <collapseCard :default-visible="defaultVisible">
-      <div slot="header">{{ header }}</div>
-      <div slot="body">
+      <template #header>{{ header }}</template>
+      <template #body>
         <div class="row">
           <div class="col-6">
             <h4>{{ trade.proposerPublisherName }}</h4>
@@ -148,7 +148,7 @@
           <h3>Error!</h3>
           {{ errorInfo }}
         </div>
-      </div>
+      </template>
     </collapseCard>
   </div>
 </template>
