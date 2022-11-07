@@ -6,7 +6,9 @@
         <masterGamePopover :master-game="specialAuction.masterGameYear"></masterGamePopover>
         <div>Bids will process for this game only on: {{ scheduledEndTime | dateTimeAt }}</div>
         <vac :end-time="scheduledEndTime" @finish="endTimeElapsed">
-          <span slot="process" slot-scope="{ timeObj }" class="countdown">Time Remaining: {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+          <template #process="{ timeObj }">
+            <span class="countdown">Time Remaining: {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+          </template>
         </vac>
       </div>
       <b-button v-if="league.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>

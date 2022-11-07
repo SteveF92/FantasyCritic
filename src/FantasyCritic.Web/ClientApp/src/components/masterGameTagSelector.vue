@@ -10,7 +10,7 @@
       :options="tagOptions"
       :multiple="true"
       @input="handleInput">
-      <template slot="tag" slot-scope="{ option }">
+      <template #tag="{ option }">
         <masterGameTagBadge :tag-name="option.name"></masterGameTagBadge>
       </template>
     </multiselect>
