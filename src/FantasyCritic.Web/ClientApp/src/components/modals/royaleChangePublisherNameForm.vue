@@ -6,9 +6,9 @@
         <input id="newPublisherName" v-model="newPublisherName" name="newPublisherName" type="text" class="form-control input" />
       </div>
     </div>
-    <div slot="modal-footer">
+    <template #modalFooter>
       <input type="submit" class="btn btn-primary" value="Change Name" :disabled="!newPublisherName" @click="changePublisherName" />
-    </div>
+    </template>
   </b-modal>
 </template>
 <script>

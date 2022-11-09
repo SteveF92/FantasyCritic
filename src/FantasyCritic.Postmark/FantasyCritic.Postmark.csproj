@@ -1,18 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="30.0.0" />
+    <PackageReference Include="Postmark" Version="4.7.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FantasyCritic.Test\FantasyCritic.Test.csproj" />
+    <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,9 +9,9 @@
           </select>
         </div>
       </div>
-      <div slot="modal-footer">
+      <template #modalFooter>
         <input type="submit" class="btn btn-primary" value="Start New Year" :disabled="!selectedYear" @click="addNewLeagueYear" />
-      </div>
+      </template>
     </b-modal>
   </div>
 </template>

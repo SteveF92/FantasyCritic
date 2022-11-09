@@ -53,7 +53,8 @@ import {
   faSquare,
   fa1,
   faCartShopping,
-  faEyeSlash
+  faEyeSlash,
+  faLinkSlash
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faCircle as regCircle, faSquare as regSquare } from '@fortawesome/free-regular-svg-icons';
@@ -124,7 +125,8 @@ library.add(
   fa1,
   faSquare,
   faCartShopping,
-  faEyeSlash
+  faEyeSlash,
+  faLinkSlash
 );
 
 export { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText };

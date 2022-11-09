@@ -31,7 +31,7 @@ using NodaTime.Serialization.JsonNet;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
-using FantasyCritic.Mailgun;
+using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Interfaces;
 
@@ -49,6 +49,7 @@ public static class HostingExtensions
         var rdsInstanceName = configuration["AWS:rdsInstanceName"];
         var awsBucket = configuration["AWS:bucket"];
         var mailgunAPIKey = configuration["Mailgun:apiKey"];
+        var postmarkAPIKey = configuration["Postmark:apiKey"];
         var openCriticAPIKey = configuration["OpenCritic:apiKey"];
         var baseAddress = configuration["BaseAddress"];
         var discordBotToken = configuration["Discord:BotToken"];
@@ -115,7 +116,8 @@ public static class HostingExtensions
         services.AddScoped<EmailSendingService>();
 
         //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
-        services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+        //services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+        services.AddScoped<IEmailSender>(_ => new PostmarkEmailSender(postmarkAPIKey, "noreply@fantasycritic.games"));
 
         if (environment.IsProduction() || environment.IsStaging())
         {

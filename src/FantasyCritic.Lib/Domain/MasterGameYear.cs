@@ -101,13 +101,8 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return true;
     }
 
-    public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick, bool useCriticScoreIfExists)
+    public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
     {
-        if (useCriticScoreIfExists && MasterGame.CriticScore.HasValue)
-        {
-            return scoringSystem.GetPointsForScore(MasterGame.CriticScore.Value, counterPick);
-        }
-
         return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
     }
 
@@ -133,6 +128,21 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         if (!MasterGame.IsReleased(currentDate))
         {
             return null;
+        }
+
+        if (MasterGame.CriticScore.HasValue)
+        {
+            return scoringSystem.GetPointsForScore(MasterGame.CriticScore.Value, counterPick);
+        }
+
+        return null;
+    }
+
+    public decimal? GetRealOrUpcomingFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+    {
+        if (!WillRelease())
+        {
+            return 0m;
         }
 
         if (MasterGame.CriticScore.HasValue)

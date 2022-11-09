@@ -10,9 +10,9 @@
         </div>
       </div>
     </div>
-    <div slot="modal-footer">
+    <template #modalFooter>
       <input type="submit" class="btn btn-primary" value="Post Message" :disabled="!messageText" @click="postNewMessage" />
-    </div>
+    </template>
   </b-modal>
 </template>
 

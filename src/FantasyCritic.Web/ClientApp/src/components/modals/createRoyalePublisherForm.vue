@@ -6,9 +6,9 @@
         <input id="publisherName" v-model="publisherName" name="publisherName" type="text" class="form-control input" />
       </div>
     </div>
-    <div slot="modal-footer">
+    <template #modalFooter>
       <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName" @click="createRoyalePublisher" />
-    </div>
+    </template>
   </b-modal>
 </template>
 <script>

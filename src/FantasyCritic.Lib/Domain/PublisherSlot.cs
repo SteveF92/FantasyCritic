@@ -42,37 +42,16 @@ public class PublisherSlot
         return SlotEligibilityFunctions.GetClaimErrorsForSlot(this, eligibilityFactors);
     }
 
-    public decimal GetProjectedOrRealFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues,
+    public decimal GetRealUpcomingOrProjectedFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, SystemWideValues systemWideValues,
         int standardGamesTaken, int numberOfStandardGames, LocalDate currentDate)
     {
-        var realFantasyPoints = GetFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
-        if (realFantasyPoints.HasValue)
+        var fantasyPoints = GetRealOrUpcomingFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
+        if (fantasyPoints.HasValue)
         {
-            return realFantasyPoints.Value;
+            return fantasyPoints.Value;
         }
 
         return GetProjectedFantasyPoints(scoringSystem, systemWideValues, standardGamesTaken, numberOfStandardGames);
-    }
-
-    public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues,
-        int standardGamesTaken, int numberOfStandardGames)
-    {
-        if (PublisherGame is null)
-        {
-            return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
-        }
-
-        if (PublisherGame.MasterGame is null)
-        {
-            if (PublisherGame.ManualCriticScore.HasValue)
-            {
-                return PublisherGame.ManualCriticScore.Value;
-            }
-
-            return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
-        }
-
-        return PublisherGame.MasterGame.GetProjectedFantasyPoints(scoringSystem, CounterPick, true);
     }
 
     public decimal? GetFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
@@ -102,6 +81,56 @@ public class PublisherSlot
         }
 
         return 0m;
+    }
+
+    public decimal? GetRealOrUpcomingFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
+    {
+        if (PublisherGame is null)
+        {
+            return null;
+        }
+        if (PublisherGame.ManualCriticScore.HasValue)
+        {
+            return scoringSystem.GetPointsForScore(PublisherGame.ManualCriticScore.Value, CounterPick);
+        }
+        if (PublisherGame.MasterGame is null)
+        {
+            return null;
+        }
+
+        var calculatedScore = PublisherGame.MasterGame.GetRealOrUpcomingFantasyPoints(scoringSystem, CounterPick);
+        if (gameIsValidInSlot)
+        {
+            return calculatedScore;
+        }
+
+        if (calculatedScore.HasValue && calculatedScore.Value <= 0m)
+        {
+            return calculatedScore;
+        }
+
+        return 0m;
+    }
+
+    public decimal GetProjectedFantasyPoints(ScoringSystem scoringSystem, SystemWideValues systemWideValues,
+        int standardGamesTaken, int numberOfStandardGames)
+    {
+        if (PublisherGame is null)
+        {
+            return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
+        }
+
+        if (PublisherGame.MasterGame is null)
+        {
+            if (PublisherGame.ManualCriticScore.HasValue)
+            {
+                return PublisherGame.ManualCriticScore.Value;
+            }
+
+            return systemWideValues.GetEmptySlotAveragePoints(CounterPick, standardGamesTaken + 1, numberOfStandardGames);
+        }
+
+        return PublisherGame.MasterGame.GetProjectedFantasyPoints(scoringSystem, CounterPick);
     }
 
     public override string ToString()

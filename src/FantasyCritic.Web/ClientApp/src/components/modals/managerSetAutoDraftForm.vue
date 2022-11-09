@@ -8,9 +8,9 @@
       </b-form-checkbox>
     </b-form-group>
 
-    <div slot="modal-footer">
+    <template #modalFooter>
       <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
-    </div>
+    </template>
   </b-modal>
 </template>
 <script>
