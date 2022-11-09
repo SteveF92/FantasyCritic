@@ -1,6 +1,8 @@
 using Discord;
 using Discord.WebSocket;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Discord;
@@ -72,6 +74,49 @@ public class DiscordPushService
             }
             var changesMessage = string.Join("\n", changes);
             await textChannel.SendMessageAsync($"**{game.GameName}**\n{changesMessage}");
+        }
+    }
+
+    public async Task SendLeagueActionMessage(LeagueAction action)
+    {
+        await StartBot();
+        if (!_botIsReady)
+        {
+            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+            return;
+        }
+
+        var leagueId = action.Publisher.LeagueYearKey.LeagueID;
+        var leagueChannels = await _discordRepo.GetLeagueChannels(leagueId);
+
+        if (leagueChannels is null)
+        {
+            return;
+        }
+
+        foreach (var leagueChannel in leagueChannels)
+        {
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            SocketTextChannel? channel = guild.GetTextChannel(leagueChannel.ChannelID);
+            if (channel is null)
+            {
+                continue;
+            }
+
+            await channel.SendMessageAsync(
+                $"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()}");
+        }
+
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        foreach (var minimalLeagueChannel in allChannels)
+        {
+            var guild = _client.GetGuild(minimalLeagueChannel.GuildID);
+            var channel = guild.GetChannel(minimalLeagueChannel.ChannelID);
+            if (channel is not SocketTextChannel textChannel)
+            {
+                continue;
+            }
+            
         }
     }
 
