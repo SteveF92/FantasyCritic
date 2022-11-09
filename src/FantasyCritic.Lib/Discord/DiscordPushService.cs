@@ -103,20 +103,7 @@ public class DiscordPushService
                 continue;
             }
 
-            await channel.SendMessageAsync(
-                $"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()}");
-        }
-
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
-        foreach (var minimalLeagueChannel in allChannels)
-        {
-            var guild = _client.GetGuild(minimalLeagueChannel.GuildID);
-            var channel = guild.GetChannel(minimalLeagueChannel.ChannelID);
-            if (channel is not SocketTextChannel textChannel)
-            {
-                continue;
-            }
-            
+            await channel.SendMessageAsync($"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()}");
         }
     }
 
