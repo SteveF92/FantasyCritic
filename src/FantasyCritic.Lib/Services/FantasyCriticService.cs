@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
@@ -14,14 +15,16 @@ public class FantasyCriticService
     private readonly IClock _clock;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly InterLeagueService _interLeagueService;
+    private readonly DiscordPushService _discordPushService;
 
-    public FantasyCriticService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService,
+    public FantasyCriticService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService, DiscordPushService discordPushService,
         IFantasyCriticRepo fantasyCriticRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
         _leagueMemberService = leagueMemberService;
         _interLeagueService = interLeagueService;
+        _discordPushService = discordPushService;
     }
 
     public Task<League?> GetLeagueByID(Guid id)
@@ -158,6 +161,7 @@ public class FantasyCriticService
         {
             LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString, true);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
+            await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
         }
 
         return Result.Success();

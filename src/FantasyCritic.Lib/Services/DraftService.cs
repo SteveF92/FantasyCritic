@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
@@ -18,16 +19,18 @@ public class DraftService
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly PublisherService _publisherService;
     private readonly GameSearchingService _gameSearchingService;
+    private readonly DiscordPushService _discordPushService;
 
     public DraftService(GameAcquisitionService gameAcquisitionService, PublisherService publisherService,
-        IFantasyCriticRepo fantasyCriticRepo, GameSearchingService gameSearchingService, IClock clock)
+        IFantasyCriticRepo fantasyCriticRepo, GameSearchingService gameSearchingService, IClock clock,
+        DiscordPushService discordPushService)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
-
         _publisherService = publisherService;
         _gameAcquisitionService = gameAcquisitionService;
         _gameSearchingService = gameSearchingService;
+        _discordPushService = discordPushService;
     }
 
     public async Task<bool> StartDraft(LeagueYear leagueYear)
@@ -79,6 +82,7 @@ public class DraftService
         string draftOrderDescription = string.Join("\n", draftPositions.Select(x => $"• {x.Value}: {x.Key.PublisherName}"));
         string actionDescription = $"{draftOrderType.ActionDescription} \n {draftOrderDescription}";
         LeagueAction draftSetAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription, true);
+        await _discordPushService.SendLeagueActionMessage(draftSetAction);
 
         await _fantasyCriticRepo.SetDraftOrder(draftPositions, draftSetAction);
         return Result.Success();
