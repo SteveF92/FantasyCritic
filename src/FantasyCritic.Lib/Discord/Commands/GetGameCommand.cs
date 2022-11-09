@@ -108,7 +108,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
 
         string gameDisplayText = $"**Release Date:** {releaseDateDisplayText}";
 
-        var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false, true);
+        var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false);
 
         gameDisplayText += $"\n**Projected Score:** {Math.Round(projectedScore, 1)}";
         gameDisplayText += $"\n**Hype Factor:** {gameFound.HypeFactor}";
