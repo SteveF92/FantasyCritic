@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
@@ -146,6 +147,12 @@ public class LeagueYear : IEquatable<LeagueYear>
     {
         var publisher = _publisherDictionary.GetValueOrDefault(publisherID);
         return publisher ?? Publisher.GetFakePublisher(Key);
+    }
+
+    public LeagueYear GetUpdatedLeagueYearWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
+    {
+        var newPublishers = Publishers.Select(x => x.GetUpdatedPublisherWithNewScores(calculatedStats)).ToList();
+        return new LeagueYear(League, SupportedYear, Options, PlayStatus, DraftOrderSet, EligibilityOverrides, TagOverrides, DraftStartedTimestamp, WinningUser, newPublishers);
     }
 
     public override string ToString() => $"{League}|{Year}";

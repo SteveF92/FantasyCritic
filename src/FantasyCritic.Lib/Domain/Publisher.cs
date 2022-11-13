@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain;
@@ -175,6 +176,13 @@ public class Publisher : IEquatable<Publisher>
         return PublisherGames.SingleOrDefault(x => x.PublisherGameID == publisherGameID);
     }
 
+    public Publisher GetUpdatedPublisherWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
+    {
+        var newPublisherGames = PublisherGames.Select(x => x.GetUpdatedPublisherGameWithNewScores(calculatedStats)).ToList();
+        return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition, newPublisherGames,
+            FormerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraft);
+    }
+    
     public HashSet<MasterGame> MyMasterGames => PublisherGames
         .Where(x => x.MasterGame is not null)
         .Select(x => x.MasterGame!.MasterGame)

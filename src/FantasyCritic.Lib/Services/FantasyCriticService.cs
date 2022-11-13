@@ -301,7 +301,7 @@ public class FantasyCriticService
 
         await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats);
 
-        var newLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League, leagueYear.Year);
+        var newLeagueYear = leagueYear.GetUpdatedLeagueYearWithNewScores(calculatedStats);
         var scoreChanges = new LeagueYearScoreChanges(leagueYear, newLeagueYear);
         await _discordPushService.SendLeagueYearScoreUpdateMessage(scoreChanges);
     }

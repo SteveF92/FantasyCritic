@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Domain.Calculations;
+
 namespace FantasyCritic.Lib.Domain;
 
 public class PublisherGame
@@ -51,6 +53,17 @@ public class PublisherGame
         }
 
         return MasterGame.WillRelease();
+    }
+
+    public PublisherGame GetUpdatedPublisherGameWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
+    {
+        if (!calculatedStats.TryGetValue(PublisherGameID, out var stats))
+        {
+            return this;
+        }
+
+        return new PublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
+            stats.FantasyPoints, MasterGame, SlotNumber, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID);
     }
 
     public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
