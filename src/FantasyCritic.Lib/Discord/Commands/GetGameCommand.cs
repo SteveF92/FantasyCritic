@@ -1,3 +1,4 @@
+using System.Text;
 using Discord;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -59,9 +60,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
                 Context.User));
             return;
         }
-
-        // TODO: remove accented characters from strings, Pokemon for example
-
+        
         var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, leagueYear, 3);
         if (!matchingGames.Any())
         {

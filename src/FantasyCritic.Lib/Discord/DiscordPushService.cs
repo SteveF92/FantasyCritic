@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 
@@ -191,6 +192,99 @@ public class DiscordPushService
 
         var messageToSend = $"Publisher **{oldPublisherName}** is now known as **{newPublisherName}**";
         await channel.SendMessageAsync(messageToSend);
+    }
+
+    public async Task SendTradeUpdateMessage(Trade trade)
+    {
+        await StartBot();
+        if (!_botIsReady)
+        {
+            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+            return;
+        }
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == trade.LeagueYear.League.LeagueID);
+        if (leagueChannel is null)
+        {
+            return;
+        }
+
+        var guild = _client.GetGuild(leagueChannel.GuildID);
+        var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+
+        var header = $"The following trade has been **{trade.Status.Value.ToUpper()}**";
+
+        var embedFieldBuilder = new EmbedFieldBuilder
+        {
+            Name = "Trade Details",
+            Value = BuildTradeMessage(trade, "", trade.Status.Equals(TradeStatus.Proposed)),
+            IsInline = false
+        };
+        var embedFieldBuilders = new List<EmbedFieldBuilder>
+        {
+            embedFieldBuilder
+        };
+
+        await channel.SendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+            "Trade Update",
+            header,
+            null,
+            embedFieldBuilders));
+    }
+
+    private string BuildTradeMessage(Trade trade, string header, bool includeMessage)
+    {
+        var message = $"**{trade.Proposer.PublisherName}** will receive: ";
+
+        var counterPartySendGames = BuildGameListText(trade.CounterPartyMasterGames);
+        var hasCounterPartySendGames = !string.IsNullOrEmpty(counterPartySendGames);
+
+        if (hasCounterPartySendGames)
+        {
+            message += counterPartySendGames;
+        }
+
+        if (trade.CounterPartyBudgetSendAmount != default)
+        {
+            if (hasCounterPartySendGames)
+            {
+                message += " and ";
+            }
+            message += $"**${trade.CounterPartyBudgetSendAmount} of budget**";
+        }
+
+        message += $"\n**{trade.CounterParty.PublisherName}** will receive: ";
+
+        var proposerSendGames = BuildGameListText(trade.ProposerMasterGames);
+        var hasProposerSendGames = !string.IsNullOrEmpty(proposerSendGames);
+        if (hasProposerSendGames)
+        {
+            message += proposerSendGames;
+        }
+
+        if (trade.ProposerBudgetSendAmount != default)
+        {
+            if (hasProposerSendGames)
+            {
+                message += " and ";
+            }
+
+            message += $"**${trade.ProposerBudgetSendAmount}** of budget";
+        }
+
+        if (includeMessage)
+        {
+            message += $"\nMessage from ${trade.Proposer.PublisherName}: **{trade.Message}**";
+        }
+
+        return message;
+    }
+
+    private string BuildGameListText(IReadOnlyList<MasterGameYearWithCounterPick> games)
+    {
+        var gameNames = games.Select(g => g.MasterGameYear.MasterGame.GameName);
+        var gameNameString = string.Join(" and ", gameNames);
+        return gameNameString;
     }
 
     public Task Client_Ready()
