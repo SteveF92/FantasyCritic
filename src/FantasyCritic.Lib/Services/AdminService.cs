@@ -9,6 +9,8 @@ using Serilog;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Calculations;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -19,6 +21,8 @@ public class AdminService
     private readonly IRDSManager _rdsManager;
     private readonly RoyaleService _royaleService;
     private readonly IHypeFactorService _hypeFactorService;
+    private readonly DiscordPushService _discordPushService;
+    private readonly IDiscordRepo _discordRepo;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly FantasyCriticUserManager _userManager;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
@@ -31,7 +35,7 @@ public class AdminService
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService, DiscordPushService discordPushService, IDiscordRepo discordRepo)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -45,6 +49,8 @@ public class AdminService
         _rdsManager = rdsManager;
         _royaleService = royaleService;
         _hypeFactorService = hypeFactorService;
+        _discordPushService = discordPushService;
+        _discordRepo = discordRepo;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -165,8 +171,10 @@ public class AdminService
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
         foreach (var activeYear in activeYears)
         {
+            var discordLeagueYears = await GetDiscordLinkedLeagueYears(activeYear);
             var calculatedStats = await _fantasyCriticService.GetCalculatedStatsForYear(activeYear.Year);
             await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats.PublisherGameCalculatedStats);
+            await PushDiscordScoreChangeMessages(discordLeagueYears, calculatedStats.PublisherGameCalculatedStats);
         }
 
         var finishedYears = supportedYears.Where(x => x.Finished);
@@ -745,6 +753,30 @@ public class AdminService
         }
 
         await _masterGameRepo.UpdateCodeBasedTags(tagsToAdd.SealDictionary());
+    }
+
+    private async Task<IReadOnlyList<LeagueYear>> GetDiscordLinkedLeagueYears(SupportedYear year)
+    {
+        var leagueChannels = await _discordRepo.GetAllLeagueChannels();
+        var leagueYears = new List<LeagueYear>();
+        foreach (var leagueChannel in leagueChannels)
+        {
+            var league = await _fantasyCriticRepo.GetLeagueOrThrow(leagueChannel.LeagueID);
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league, year.Year);
+            leagueYears.Add(leagueYear);
+        }
+
+        return leagueYears;
+    }
+
+    private async Task PushDiscordScoreChangeMessages(IReadOnlyList<LeagueYear> oldLeagueYears, IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
+    {
+        foreach (var oldLeagueYear in oldLeagueYears)
+        {
+            var newLeagueYear = oldLeagueYear.GetUpdatedLeagueYearWithNewScores(calculatedStats);
+            var scoreChanges = new LeagueYearScoreChanges(oldLeagueYear, newLeagueYear);
+            await _discordPushService.SendLeagueYearScoreUpdateMessage(scoreChanges);
+        }
     }
 
     private static double FixDouble(double num)
