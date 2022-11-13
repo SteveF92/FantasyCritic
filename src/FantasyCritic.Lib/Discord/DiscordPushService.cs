@@ -147,7 +147,7 @@ public class DiscordPushService
         }
     }
 
-    public async Task SendPublisherNameUpdateMessage(LeagueYear leagueYear, string oldPublisherName, string newPublisherName)
+    public async Task SendPublisherNameUpdateMessage(Publisher publisher, string oldPublisherName, string newPublisherName)
     {
         await StartBot();
         if (!_botIsReady)
@@ -157,7 +157,7 @@ public class DiscordPushService
         }
 
         var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == leagueYear.League.LeagueID);
+        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == publisher.LeagueYearKey.LeagueID);
         if (leagueChannel is null)
         {
             return;

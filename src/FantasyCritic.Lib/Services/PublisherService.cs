@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Identity;
@@ -8,12 +9,14 @@ namespace FantasyCritic.Lib.Services;
 public class PublisherService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
 
 
-    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, DiscordPushService discordPushService, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _discordPushService = discordPushService;
         _clock = clock;
     }
 
@@ -31,9 +34,10 @@ public class PublisherService
         return publisher;
     }
 
-    public Task ChangePublisherName(Publisher publisher, string publisherName)
+    public async Task ChangePublisherName(Publisher publisher, string newPublisherName)
     {
-        return _fantasyCriticRepo.ChangePublisherName(publisher, publisherName);
+        await _fantasyCriticRepo.ChangePublisherName(publisher, newPublisherName);
+        await _discordPushService.SendPublisherNameUpdateMessage(publisher, publisher.PublisherName, newPublisherName);
     }
 
     public Task ChangePublisherIcon(Publisher publisher, string? publisherIcon)
