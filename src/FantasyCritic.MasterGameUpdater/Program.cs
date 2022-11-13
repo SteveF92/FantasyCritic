@@ -94,10 +94,10 @@ public static class Program
         IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
-        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration(""), new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo));
+        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration(""), new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo), fantasyCriticRepo);
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo);
-        FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, fantasyCriticRepo, _clock);
+        FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, discordPushService, fantasyCriticRepo, _clock);
         IOpenCriticService openCriticService = null!;
         IGGService ggService = null!;
         PatreonService patreonService = null!;
