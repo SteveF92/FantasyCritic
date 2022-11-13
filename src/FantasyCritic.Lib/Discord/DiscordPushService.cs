@@ -118,6 +118,12 @@ public class DiscordPushService
             return;
         }
 
+        var changeList = scoreChanges.GetScoreChanges();
+        if (!changeList.AnyChanges)
+        {
+            return;
+        }
+
         throw new NotImplementedException();
 
         //var allChannels = await _discordRepo.GetAllLeagueChannels();

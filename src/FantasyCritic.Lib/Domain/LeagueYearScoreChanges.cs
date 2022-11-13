@@ -13,12 +13,13 @@ public class LeagueYearScoreChanges
     
     public LeagueYear LeagueYear { get; }
 
-    public IReadOnlyList<PublisherScoreChange> GetScoreChanges()
+    public PublisherScoreChangeList GetScoreChanges()
     {
         var publishersOrderedByNewScore = _newPublishers.OrderByDescending(x => x.GetTotalFantasyPoints(LeagueYear.SupportedYear, LeagueYear.Options)).ToList();
         var publishersOrderedByOldScore = _oldPublishers.OrderByDescending(x => x.GetTotalFantasyPoints(LeagueYear.SupportedYear, LeagueYear.Options)).ToList();
         var oldPublisherDictionary = _oldPublishers.ToDictionary(x => x.PublisherID);
 
+        bool anyChanges = false;
         List<PublisherScoreChange> scoreChanges = new List<PublisherScoreChange>();
         for (int newIndex = 0; newIndex < publishersOrderedByNewScore.Count; newIndex++)
         {
@@ -29,11 +30,15 @@ public class LeagueYearScoreChanges
 
             var newScore = newPublisher.GetTotalFantasyPoints(LeagueYear.SupportedYear, LeagueYear.Options);
             var oldScore = oldPublisher.GetTotalFantasyPoints(LeagueYear.SupportedYear, LeagueYear.Options);
+            if (oldScore != newScore)
+            {
+                anyChanges = true;
+            }
 
             scoreChanges.Add(new PublisherScoreChange(newPublisher, oldScore, newScore, oldIndex + 1, newIndex + 1));
         }
 
-        return scoreChanges;
+        return new PublisherScoreChangeList(scoreChanges, anyChanges);
     }
 }
 
@@ -52,3 +57,5 @@ public record PublisherScoreChange(Publisher publisher, decimal oldScore, decima
         }
     }
 }
+
+public record PublisherScoreChangeList(IReadOnlyList<PublisherScoreChange> Changes, bool AnyChanges);
