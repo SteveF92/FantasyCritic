@@ -21,7 +21,7 @@
         </b-form-checkbox>
       </div>
     </div>
-    <template #modalFooter>
+    <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newleagueName" @click="changeleagueName" />
     </template>
   </b-modal>

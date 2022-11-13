@@ -77,7 +77,7 @@
         </ul>
       </div>
     </div>
-    <template #modalFooter>
+    <template #modal-footer>
       <b-button v-if="settingPriority" variant="primary" @click="setBidPriorityOrder()">Set Priority Order</b-button>
     </template>
   </b-modal>

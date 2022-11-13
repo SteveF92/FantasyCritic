@@ -43,7 +43,7 @@
           </div>
         </div>
       </div>
-      <template #modalFooter>
+      <template #modal-footer>
         <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="invalid || !valuesEntered" @click="invitePlayer" />
       </template>
     </b-modal>

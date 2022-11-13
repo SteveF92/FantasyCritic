@@ -10,7 +10,7 @@
     <b-form inline>
       <b-form-checkbox v-model="isAutoDraft" class="mb-2 mr-sm-2 mb-sm-0">Auto Draft</b-form-checkbox>
     </b-form>
-    <template #modalFooter>
+    <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
     </template>
   </b-modal>
