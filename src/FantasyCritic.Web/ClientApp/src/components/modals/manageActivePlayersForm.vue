@@ -20,7 +20,7 @@
         </tr>
       </tbody>
     </table>
-    <template #modalFooter>
+    <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Set Active Players" @click="confirmActivePlayers" />
     </template>
   </b-modal>
