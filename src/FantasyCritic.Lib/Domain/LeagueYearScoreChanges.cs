@@ -3,14 +3,14 @@ public class LeagueYearScoreChanges
 {
     private readonly IReadOnlyList<Publisher> _oldPublishers;
     private readonly IReadOnlyList<Publisher> _newPublishers;
-    
+
     public LeagueYearScoreChanges(LeagueYear oldLeagueYear, LeagueYear newLeagueYear)
     {
         LeagueYear = newLeagueYear;
         _oldPublishers = oldLeagueYear.Publishers;
         _newPublishers = newLeagueYear.Publishers;
     }
-    
+
     public LeagueYear LeagueYear { get; }
 
     public PublisherScoreChangeList GetScoreChanges()
@@ -42,19 +42,36 @@ public class LeagueYearScoreChanges
     }
 }
 
-public record PublisherScoreChange(Publisher publisher, decimal oldScore, decimal newScore, int oldRank, int newRank)
+public record PublisherScoreChange(Publisher Publisher, decimal OldScore, decimal NewScore, int OldRank, int NewRank)
 {
-    public string Direction
+    public string Direction => NewScore > OldScore ? "UP" : "DOWN";
+    public string FormattedOldRank => FormatRank(OldRank);
+    public string FormattedNewRank => FormatRank(NewRank);
+    public decimal RoundedOldScore => RoundScore(OldScore);
+    public decimal RoundedNewScore => RoundScore(NewScore);
+    public bool ScoreChanged => NewScore != OldScore;
+    public bool RankChanged => NewRank != OldRank;
+    private static decimal RoundScore(decimal score) => Math.Round(score, 1);
+    private static string FormatRank(int rankNumber)
     {
-        get
+        var numberToFormat = rankNumber.ToString();
+        var suffix = "th";
+        if (!numberToFormat.EndsWith("11") && !numberToFormat.EndsWith("12") && !numberToFormat.EndsWith("13"))
         {
-            if (newScore > oldScore)
+            if (numberToFormat.EndsWith("1"))
             {
-                return "UP";
+                suffix = "st";
             }
-
-            return "DOWN";
+            else if (numberToFormat.EndsWith("2"))
+            {
+                suffix = "nd";
+            }
+            else if (numberToFormat.EndsWith("3"))
+            {
+                suffix = "rd";
+            }
         }
+        return $"{numberToFormat}{suffix}";
     }
 }
 

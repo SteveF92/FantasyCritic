@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
@@ -11,15 +12,15 @@ public class DiscordPushService
     private const int MaxAttempts = 4;
     private readonly string _botToken;
     private readonly IDiscordRepo _discordRepo;
-    private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IDiscordFormatter _discordFormatter;
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
 
-    public DiscordPushService(FantasyCriticDiscordConfiguration configuration, IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo)
+    public DiscordPushService(FantasyCriticDiscordConfiguration configuration, IDiscordRepo discordRepo, IDiscordFormatter discordFormatter)
     {
         _botToken = configuration.BotToken;
         _discordRepo = discordRepo;
-        _fantasyCriticRepo = fantasyCriticRepo;
+        _discordFormatter = discordFormatter;
         DiscordSocketConfig socketConfig = new()
         {
             GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
@@ -124,35 +125,49 @@ public class DiscordPushService
             return;
         }
 
-        throw new NotImplementedException();
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == scoreChanges.LeagueYear.League.LeagueID);
+        if (leagueChannel is null)
+        {
+            return;
+        }
 
-        //var allChannels = await _discordRepo.GetAllLeagueChannels();
-        //var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == leagueYear.League.LeagueID);
-        //if (leagueChannel is null)
-        //{
-        //    return;
-        //}
+        var guild = _client.GetGuild(leagueChannel.GuildID);
+        var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
+        var embedFieldBuilders = new List<EmbedFieldBuilder>();
 
-        //var guild = _client.GetGuild(leagueChannel.GuildID);
-        //var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+        foreach (var change in changeList.Changes.Where(c => c.RankChanged || c.ScoreChanged))
+        {
+            var changeText = "";
+            if (change.ScoreChanged)
+            {
+                changeText = $"> Score has gone **{change.Direction}** from **{change.RoundedOldScore}** to **{change.RoundedNewScore}**";
+            }
+            if (change.RankChanged)
+            {
+                changeText += $"\n> Moved from **{change.FormattedOldRank}** place to **{change.FormattedNewRank}** place";
+            }
 
-        ////var rankedPublishers = leagueYear.Publishers.OrderBy(p
-        ////    => p.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options));
+            if (!string.IsNullOrEmpty(changeText))
+            {
+                embedFieldBuilders.Add(new EmbedFieldBuilder
+                {
+                    Name = $"{change.Publisher.PublisherName} (Player: {change.Publisher.User.UserName})",
+                    Value = changeText,
+                    IsInline = false
+                });
+            }
+        }
 
-        //// TODO: determine publisher ranking changes
-
-        //var nameToShow = $"{publisher.PublisherName} (Player: {publisher.User.UserName})";
-
-        //var roundedOldScore = Math.Round(oldScore, 1);
-        //var roundedNewScore = Math.Round(newScore, 1);
-        //var scoreDiff = roundedOldScore - roundedNewScore;
-        //if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
-        //{
-        //    var direction = scoreDiff < 0 ? "UP" : "DOWN";
-        //    var messageToSend = $"**{nameToShow}**'s score has gone **{direction}** from **{roundedOldScore}** to **{roundedNewScore}**";
-        //    await channel.SendMessageAsync(messageToSend);
-        //}
+        if (embedFieldBuilders.Any())
+        {
+            await channel.SendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+            "Publisher Score Updates",
+            "",
+            null,
+            embedFieldBuilders));
+        }
     }
 
     public async Task SendPublisherNameUpdateMessage(Publisher publisher, string oldPublisherName, string newPublisherName)

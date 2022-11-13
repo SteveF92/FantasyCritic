@@ -1,5 +1,6 @@
 using System.Reflection;
 using Dapper.NodaTime;
+using DiscordDotNetUtilities;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
@@ -9,7 +10,6 @@ using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.SharedSerialization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using FantasyCritic.Lib.Domain;
@@ -95,7 +95,7 @@ public static class Program
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
         IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo);
-        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration(""), discordRepo, fantasyCriticRepo);
+        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration(""), discordRepo, new DiscordFormatter());
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo);
         FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, discordPushService, fantasyCriticRepo, _clock);
