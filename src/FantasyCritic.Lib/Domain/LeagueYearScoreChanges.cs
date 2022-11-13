@@ -1,14 +1,14 @@
 namespace FantasyCritic.Lib.Domain;
 public class LeagueYearScoreChanges
 {
-    private readonly IEnumerable<Publisher> _oldPublishers;
-    private readonly IEnumerable<Publisher> _newPublishers;
-
-    public LeagueYearScoreChanges(LeagueYear leagueYear, IEnumerable<Publisher> oldPublishers, IEnumerable<Publisher> newPublishers)
+    private readonly IReadOnlyList<Publisher> _oldPublishers;
+    private readonly IReadOnlyList<Publisher> _newPublishers;
+    
+    public LeagueYearScoreChanges(LeagueYear oldLeagueYear, LeagueYear newLeagueYear)
     {
-        LeagueYear = leagueYear;
-        _oldPublishers = oldPublishers;
-        _newPublishers = newPublishers;
+        LeagueYear = newLeagueYear;
+        _oldPublishers = oldLeagueYear.Publishers;
+        _newPublishers = newLeagueYear.Publishers;
     }
     
     public LeagueYear LeagueYear { get; }
@@ -19,7 +19,6 @@ public class LeagueYearScoreChanges
         var publishersOrderedByOldScore = _oldPublishers.OrderByDescending(x => x.GetTotalFantasyPoints(LeagueYear.SupportedYear, LeagueYear.Options)).ToList();
         var oldPublisherDictionary = _oldPublishers.ToDictionary(x => x.PublisherID);
 
-        
         List<PublisherScoreChange> scoreChanges = new List<PublisherScoreChange>();
         for (int newIndex = 0; newIndex < publishersOrderedByNewScore.Count; newIndex++)
         {
