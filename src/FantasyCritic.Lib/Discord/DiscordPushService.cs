@@ -109,7 +109,7 @@ public class DiscordPushService
         }
     }
 
-    public async Task SendPublisherScoreUpdateMessage(LeagueYear leagueYear, Publisher publisher, decimal oldScore, decimal newScore)
+    public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges)
     {
         await StartBot();
         if (!_botIsReady)
@@ -118,33 +118,35 @@ public class DiscordPushService
             return;
         }
 
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == leagueYear.League.LeagueID);
-        if (leagueChannel is null)
-        {
-            return;
-        }
+        throw new NotImplementedException();
+
+        //var allChannels = await _discordRepo.GetAllLeagueChannels();
+        //var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == leagueYear.League.LeagueID);
+        //if (leagueChannel is null)
+        //{
+        //    return;
+        //}
 
 
-        var guild = _client.GetGuild(leagueChannel.GuildID);
-        var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+        //var guild = _client.GetGuild(leagueChannel.GuildID);
+        //var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
-        //var rankedPublishers = leagueYear.Publishers.OrderBy(p
-        //    => p.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options));
+        ////var rankedPublishers = leagueYear.Publishers.OrderBy(p
+        ////    => p.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options));
 
-        // TODO: determine publisher ranking changes
+        //// TODO: determine publisher ranking changes
 
-        var nameToShow = $"{publisher.PublisherName} (Player: {publisher.User.UserName})";
+        //var nameToShow = $"{publisher.PublisherName} (Player: {publisher.User.UserName})";
 
-        var roundedOldScore = Math.Round(oldScore, 1);
-        var roundedNewScore = Math.Round(newScore, 1);
-        var scoreDiff = roundedOldScore - roundedNewScore;
-        if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
-        {
-            var direction = scoreDiff < 0 ? "UP" : "DOWN";
-            var messageToSend = $"**{nameToShow}**'s score has gone **{direction}** from **{roundedOldScore}** to **{roundedNewScore}**";
-            await channel.SendMessageAsync(messageToSend);
-        }
+        //var roundedOldScore = Math.Round(oldScore, 1);
+        //var roundedNewScore = Math.Round(newScore, 1);
+        //var scoreDiff = roundedOldScore - roundedNewScore;
+        //if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
+        //{
+        //    var direction = scoreDiff < 0 ? "UP" : "DOWN";
+        //    var messageToSend = $"**{nameToShow}**'s score has gone **{direction}** from **{roundedOldScore}** to **{roundedNewScore}**";
+        //    await channel.SendMessageAsync(messageToSend);
+        //}
     }
 
     public async Task SendPublisherNameUpdateMessage(Publisher publisher, string oldPublisherName, string newPublisherName)
