@@ -217,7 +217,7 @@ public class DiscordPushService
         var embedFieldBuilder = new EmbedFieldBuilder
         {
             Name = "Trade Details",
-            Value = BuildTradeMessage(trade, "", trade.Status.Equals(TradeStatus.Proposed)),
+            Value = BuildTradeMessage(trade, trade.Status.Equals(TradeStatus.Proposed)),
             IsInline = false
         };
         var embedFieldBuilders = new List<EmbedFieldBuilder>
@@ -232,7 +232,7 @@ public class DiscordPushService
             embedFieldBuilders));
     }
 
-    private string BuildTradeMessage(Trade trade, string header, bool includeMessage)
+    private string BuildTradeMessage(Trade trade, bool includeMessage)
     {
         var message = $"**{trade.Proposer.PublisherName}** will receive: ";
 
