@@ -11,13 +11,15 @@ public class DiscordPushService
     private const int MaxAttempts = 4;
     private readonly string _botToken;
     private readonly IDiscordRepo _discordRepo;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
 
-    public DiscordPushService(FantasyCriticDiscordConfiguration configuration, IDiscordRepo discordRepo)
+    public DiscordPushService(FantasyCriticDiscordConfiguration configuration, IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo)
     {
         _botToken = configuration.BotToken;
         _discordRepo = discordRepo;
+        _fantasyCriticRepo = fantasyCriticRepo;
         DiscordSocketConfig socketConfig = new()
         {
             GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
@@ -36,7 +38,7 @@ public class DiscordPushService
 
         _client.Ready += Client_Ready;
         _client.Log += Log;
-        
+
         await _client.LoginAsync(TokenType.Bot, _botToken);
         await _client.StartAsync();
 
@@ -47,13 +49,13 @@ public class DiscordPushService
             {
                 break;
             }
-            
+
             await Task.Delay(1000);
             attempts++;
         }
     }
 
-    public async Task SendMasterGameEditMessage(MasterGame game, IEnumerable<string> changes)
+    public async Task SendMasterGameEditMessage(MasterGame game, IReadOnlyList<string> changes)
     {
         await StartBot();
         if (!_botIsReady)
@@ -61,7 +63,7 @@ public class DiscordPushService
             Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
             return;
         }
-        
+
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var newsEnabledChannels = allChannels.Where(x => x.IsGameNewsEnabled).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
@@ -105,6 +107,67 @@ public class DiscordPushService
 
             await channel.SendMessageAsync($"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()}");
         }
+    }
+
+    public async Task SendPublisherScoreUpdateMessage(LeagueYear leagueYear, Publisher publisher, decimal oldScore, decimal newScore)
+    {
+        await StartBot();
+        if (!_botIsReady)
+        {
+            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+            return;
+        }
+
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == leagueYear.League.LeagueID);
+        if (leagueChannel is null)
+        {
+            return;
+        }
+
+
+        var guild = _client.GetGuild(leagueChannel.GuildID);
+        var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+
+        //var rankedPublishers = leagueYear.Publishers.OrderBy(p
+        //    => p.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options));
+
+        // TODO: determine publisher ranking changes
+
+        var nameToShow = $"{publisher.PublisherName} (Player: {publisher.User.UserName})";
+
+        var roundedOldScore = Math.Round(oldScore, 1);
+        var roundedNewScore = Math.Round(newScore, 1);
+        var scoreDiff = roundedOldScore - roundedNewScore;
+        if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
+        {
+            var direction = scoreDiff < 0 ? "UP" : "DOWN";
+            var messageToSend = $"**{nameToShow}**'s score has gone **{direction}** from **{roundedOldScore}** to **{roundedNewScore}**";
+            await channel.SendMessageAsync(messageToSend);
+        }
+    }
+
+    public async Task SendPublisherNameUpdateMessage(LeagueYear leagueYear, string oldPublisherName, string newPublisherName)
+    {
+        await StartBot();
+        if (!_botIsReady)
+        {
+            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+            return;
+        }
+
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == leagueYear.League.LeagueID);
+        if (leagueChannel is null)
+        {
+            return;
+        }
+
+        var guild = _client.GetGuild(leagueChannel.GuildID);
+        var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+
+        var messageToSend = $"Publisher **{oldPublisherName}** is now known as **{newPublisherName}**";
+        await channel.SendMessageAsync(messageToSend);
     }
 
     public Task Client_Ready()
