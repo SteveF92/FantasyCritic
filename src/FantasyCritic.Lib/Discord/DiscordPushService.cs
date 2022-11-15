@@ -284,7 +284,7 @@ public class DiscordPushService
 
         if (includeMessage)
         {
-            message += $"\nMessage from ${trade.Proposer.PublisherName}: **{trade.Message}**";
+            message += $"\nMessage from {trade.Proposer.PublisherName}: **{trade.Message}**";
         }
 
         return message;
