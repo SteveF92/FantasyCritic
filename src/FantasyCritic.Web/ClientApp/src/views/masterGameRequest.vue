@@ -18,10 +18,10 @@
 
         <label>Please describe why you are requesting this game:</label>
         <b-form-checkbox v-model="wantToPickup">
-          <span class="checkbox-label">I'm interested in drafting or bidding on this game.</span>
+          <span class="checkbox-label">I want to draft or bid on this game.</span>
         </b-form-checkbox>
         <b-form-checkbox v-model="nearCertainInterested">
-          <span class="checkbox-label">Someone else will likely be interested in drafting or bidding on this game.</span>
+          <span class="checkbox-label">I'm certain someone else wants to draft or bid on this game.</span>
         </b-form-checkbox>
         <br />
         <div class="alert alert-info">
