@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -12,12 +13,14 @@ public class GameAcquisitionService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IClock _clock;
+    private readonly DiscordPushService _discordPushService;
 
-    public GameAcquisitionService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
+    public GameAcquisitionService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock, DiscordPushService discordPushService)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
         _clock = clock;
+        _discordPushService = discordPushService;
     }
 
     public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, bool drafting)
@@ -39,6 +42,7 @@ public class GameAcquisitionService
 
         LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);
+        await _discordPushService.SendLeagueActionMessage(leagueAction);
         await _fantasyCriticRepo.AddPublisherGame(playerGame);
 
         return claimResult;
