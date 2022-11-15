@@ -356,7 +356,7 @@ public class AdminService
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(year);
         var results = await GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
-        var leagueActionSets = results.GetLeagueActionSets(false);
+        var leagueActionSets = results.GetLeagueActionSets();
         await _discordPushService.SendActionProcessingSummary(leagueActionSets);
     }
 

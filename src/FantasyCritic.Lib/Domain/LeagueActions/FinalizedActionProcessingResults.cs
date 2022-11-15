@@ -34,37 +34,28 @@ public class FinalizedActionProcessingResults
         return true;
     }
 
-    public IReadOnlyList<LeagueActionProcessingSet> GetLeagueActionSets(bool dryRun)
+    public IReadOnlyList<LeagueActionProcessingSet> GetLeagueActionSets()
     {
-        List<DropRequest> allDrops;
-        List<PickupBid> allBids;
-        if (!dryRun)
+        List<DropRequest> allDrops = new List<DropRequest>();
+        foreach (var successDrop in Results.SuccessDrops)
         {
-            allDrops = Results.SuccessDrops.Concat(Results.FailedDrops).ToList();
-            allBids = Results.SuccessBids.Select(x => x.PickupBid).Concat(Results.FailedBids.Select(x => x.PickupBid)).ToList();
+            allDrops.Add(successDrop.ToDropWithSuccess(true, ProcessSetID));
         }
-        else
+        foreach (var failedDrop in Results.FailedDrops)
         {
-            allDrops = new List<DropRequest>();
-            foreach (var successDrop in Results.SuccessDrops)
-            {
-                allDrops.Add(successDrop.ToDropWithSuccess(true, ProcessSetID));
-            }
-            foreach (var failedDrop in Results.FailedDrops)
-            {
-                allDrops.Add(failedDrop.ToDropWithSuccess(false, ProcessSetID));
-            }
-
-            allBids = new List<PickupBid>();
-            foreach (var successBid in Results.SuccessBids)
-            {
-                allBids.Add(successBid.ToFlatBid(ProcessSetID));
-            }
-            foreach (var failedBid in Results.FailedBids)
-            {
-                allBids.Add(failedBid.ToFlatBid(ProcessSetID));
-            }
+            allDrops.Add(failedDrop.ToDropWithSuccess(false, ProcessSetID));
         }
+        
+        List<PickupBid> allBids = new List<PickupBid>();
+        foreach (var successBid in Results.SuccessBids)
+        {
+            allBids.Add(successBid.ToFlatBid(ProcessSetID));
+        }
+        foreach (var failedBid in Results.FailedBids)
+        {
+            allBids.Add(failedBid.ToFlatBid(ProcessSetID));
+        }
+        
         var bidsByLeague = allBids.GroupToDictionary(x => x.LeagueYear);
         var dropsByLeague = allDrops.ToLookup(x => x.LeagueYear);
 

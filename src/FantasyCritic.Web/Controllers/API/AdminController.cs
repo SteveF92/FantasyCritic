@@ -81,7 +81,7 @@ public class AdminController : FantasyCriticController
         var leagueYearDictionary = allLeagueYears.ToDictionary(x => x.Key);
         var leagueActionViewModels = actionResults.Results.LeagueActions.Select(x => new LeagueActionViewModel(leagueYearDictionary[x.Publisher.LeagueYearKey], x)).ToList();
 
-        var leagueActionSets = actionResults.GetLeagueActionSets(true);
+        var leagueActionSets = actionResults.GetLeagueActionSets();
         var masterGameYears = await _interLeagueService.GetMasterGameYears(currentYear.Year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
         var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate, masterGameYearDictionary));
