@@ -279,4 +279,10 @@ public class Trade
 
         return newPublisherGames;
     }
+
+    public Trade UpdateTrade(TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp)
+    {
+        return new Trade(TradeID, LeagueYear, Proposer, CounterParty, ProposerMasterGames, CounterPartyMasterGames,
+            ProposerBudgetSendAmount, CounterPartyBudgetSendAmount, Message, ProposedTimestamp, acceptedTimestamp, completedTimestamp, TradeVotes, status);
+    }
 }

@@ -1869,10 +1869,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domain;
     }
 
-    public async Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp)
+    public async Task<Trade> EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        await EditTradeStatus(trade, status, acceptedTimestamp, completedTimestamp, connection);
+        return await EditTradeStatus(trade, status, acceptedTimestamp, completedTimestamp, connection);
     }
 
     public async Task ExpireTrades(List<Trade> tradesToExpire, Instant expireTimestamp)
@@ -1883,7 +1883,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(sql, param);
     }
 
-    private static async Task EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp, MySqlConnection connection, MySqlTransaction? transaction = null)
+    private static async Task<Trade> EditTradeStatus(Trade trade, TradeStatus status, Instant? acceptedTimestamp, Instant? completedTimestamp, MySqlConnection connection, MySqlTransaction? transaction = null)
     {
         string updateSection = "";
         if (acceptedTimestamp.HasValue)
@@ -1904,6 +1904,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             completedTimestamp
         };
         await connection.ExecuteAsync(sql, paramsObject, transaction);
+
+        var updatedTrade = trade.UpdateTrade(status, acceptedTimestamp, completedTimestamp);
+        return updatedTrade;
     }
 
     public async Task AddTradeVote(TradeVote vote)
@@ -1929,12 +1932,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(sql, paramsObject);
     }
 
-    public async Task ExecuteTrade(ExecutedTrade executedTrade)
+    public async Task<Trade> ExecuteTrade(ExecutedTrade executedTrade)
     {
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await EditTradeStatus(executedTrade.Trade, TradeStatus.Executed, null, executedTrade.CompletionTime, connection, transaction);
+        var updatedTrade = await EditTradeStatus(executedTrade.Trade, TradeStatus.Executed, null, executedTrade.CompletionTime, connection, transaction);
         await AddLeagueActions(executedTrade.LeagueActions, connection, transaction);
 
         await UpdatePublisherBudgetsAndDroppedGames(executedTrade.UpdatedPublishers, connection, transaction);
@@ -1946,6 +1949,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await MakePublisherGameSlotsConsistent(executedTrade.Trade.LeagueYear, executedTrade.UpdatedPublishers, connection, transaction);
 
         await transaction.CommitAsync();
+        return updatedTrade;
     }
 
     public async  Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions()

@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -7,11 +8,13 @@ public class TradeService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
+    private readonly DiscordPushService _discordPushService;
 
-    public TradeService(IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public TradeService(IFantasyCriticRepo fantasyCriticRepo, IClock clock, DiscordPushService discordPushService)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
+        _discordPushService = discordPushService;
     }
 
     public async Task<Result> ProposeTrade(LeagueYear leagueYear, Publisher proposer, Guid counterPartyPublisherID, IReadOnlyList<Guid> proposerPublisherGameIDs,
@@ -99,6 +102,7 @@ public class TradeService
         }
 
         await _fantasyCriticRepo.CreateTrade(trade);
+        await _discordPushService.SendTradeUpdateMessage(trade);
 
         return Result.Success();
     }
@@ -137,11 +141,12 @@ public class TradeService
     {
         if (!trade.Status.IsActive)
         {
-            return Result.Failure("That trade cannot be accepted as it is no longer active.");
+            return Result.Failure<Trade>("That trade cannot be accepted as it is no longer active.");
         }
 
         var now = _clock.GetCurrentInstant();
-        await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Accepted, now, null);
+        var updatedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Accepted, now, null);
+        await _discordPushService.SendTradeUpdateMessage(updatedTrade);
         return Result.Success();
     }
 
@@ -215,7 +220,8 @@ public class TradeService
         }
 
         var executedTrade = new ExecutedTrade(trade, completionTime, newPublisherGamesResult.Value);
-        await _fantasyCriticRepo.ExecuteTrade(executedTrade);
+        var finalizedTrade = await _fantasyCriticRepo.ExecuteTrade(executedTrade);
+        await _discordPushService.SendTradeUpdateMessage(finalizedTrade);
         return Result.Success();
     }
 }
