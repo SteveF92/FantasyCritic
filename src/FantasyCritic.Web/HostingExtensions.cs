@@ -33,7 +33,6 @@ using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
 using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Discord.Interfaces;
 
 namespace FantasyCritic.Web;
 

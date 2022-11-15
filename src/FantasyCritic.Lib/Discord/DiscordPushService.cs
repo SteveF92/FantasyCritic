@@ -16,9 +16,11 @@ public class DiscordPushService
     private readonly IDiscordFormatter _discordFormatter;
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
+    private bool _enabled;
 
     public DiscordPushService(FantasyCriticDiscordConfiguration configuration, IDiscordRepo discordRepo, IDiscordFormatter discordFormatter)
     {
+        _enabled = !string.IsNullOrEmpty(configuration.BotToken);
         _botToken = configuration.BotToken;
         _discordRepo = discordRepo;
         _discordFormatter = discordFormatter;
@@ -31,13 +33,17 @@ public class DiscordPushService
         _botIsReady = false;
     }
 
-    public async Task StartBot()
+    private async Task<bool> StartBot()
     {
+        if (!_enabled)
+        {
+            return false;
+        }
+        
         if (_botIsReady)
         {
-            return;
+            return true;
         }
-
         _client.Ready += Client_Ready;
         _client.Log += Log;
 
@@ -55,17 +61,24 @@ public class DiscordPushService
             await Task.Delay(1000);
             attempts++;
         }
+
+        if (!_botIsReady)
+        {
+            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+            return false;
+        }
+
+        return true;
     }
 
     public async Task SendMasterGameEditMessage(MasterGame game, IReadOnlyList<string> changes)
     {
-        await StartBot();
-        if (!_botIsReady)
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
         {
-            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
             return;
         }
-
+        
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var newsEnabledChannels = allChannels.Where(x => x.IsGameNewsEnabled).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
@@ -83,10 +96,9 @@ public class DiscordPushService
 
     public async Task SendLeagueActionMessage(LeagueAction action)
     {
-        await StartBot();
-        if (!_botIsReady)
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
         {
-            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
             return;
         }
 
@@ -113,10 +125,9 @@ public class DiscordPushService
 
     public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges)
     {
-        await StartBot();
-        if (!_botIsReady)
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
         {
-            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
             return;
         }
 
@@ -173,10 +184,9 @@ public class DiscordPushService
 
     public async Task SendPublisherNameUpdateMessage(Publisher publisher, string oldPublisherName, string newPublisherName)
     {
-        await StartBot();
-        if (!_botIsReady)
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
         {
-            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
             return;
         }
 
@@ -196,12 +206,12 @@ public class DiscordPushService
 
     public async Task SendTradeUpdateMessage(Trade trade)
     {
-        await StartBot();
-        if (!_botIsReady)
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
         {
-            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
             return;
         }
+        
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == trade.LeagueYear.League.LeagueID);
         if (leagueChannel is null)
@@ -287,7 +297,7 @@ public class DiscordPushService
         return gameNameString;
     }
 
-    public Task Client_Ready()
+    private Task Client_Ready()
     {
         _botIsReady = true;
         return Task.CompletedTask;
