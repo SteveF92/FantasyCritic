@@ -11,12 +11,13 @@ namespace FantasyCritic.Lib.Discord;
 public class DiscordPushService
 {
     private const int MaxAttempts = 4;
+    private const int MaxMessageLength = 2000;
     private readonly string _botToken;
     private readonly IDiscordRepo _discordRepo;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
-    private bool _enabled;
+    private readonly bool _enabled;
 
     public DiscordPushService(FantasyCriticDiscordConfiguration configuration, IDiscordRepo discordRepo, IDiscordFormatter discordFormatter)
     {
@@ -39,7 +40,7 @@ public class DiscordPushService
         {
             return false;
         }
-        
+
         if (_botIsReady)
         {
             return true;
@@ -78,7 +79,7 @@ public class DiscordPushService
         {
             return;
         }
-        
+
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var newsEnabledChannels = allChannels.Where(x => x.IsGameNewsEnabled).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
@@ -213,18 +214,93 @@ public class DiscordPushService
         }
 
         var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var channelDictionary = allChannels.ToDictionary(x => x.LeagueID);
 
         foreach (var leagueAction in leagueActionSets)
         {
-            var leagueChannel = channelDictionary.GetValueOrDefault(leagueAction.LeagueYear.League.LeagueID);
-            if (leagueChannel is null)
+            var leagueChannels = allChannels.Where(c => c.LeagueID == leagueAction.LeagueYear.League.LeagueID).ToList();
+            if (!leagueChannels.Any())
             {
                 continue;
             }
 
-            //Send league action update
+            var actionMessages = new List<string>();
+            foreach (var drop in leagueAction.Drops)
+            {
+                if (!drop.Successful.HasValue)
+                {
+                    throw new Exception($"Drop {drop.DropRequestID} has a null value in the Successful property.");
+                }
+
+                var nameToUse = $"{drop.Publisher.PublisherName} ({drop.Publisher.User.UserName})";
+
+                var statusMessage = drop.Successful.Value
+                    ? "DROPPED"
+                    : "FAILED TO DROP";
+                var messageToAdd = $"**{nameToUse}** {statusMessage} {drop.MasterGame.GameName}";
+                actionMessages.Add(messageToAdd);
+            }
+
+            foreach (var bid in leagueAction.Bids)
+            {
+                if (!bid.Successful.HasValue)
+                {
+                    throw new Exception($"Bid {bid.BidID} has a null value in the Successful property.");
+                }
+
+                var nameToUse = $"{bid.Publisher.PublisherName} ({bid.Publisher.User.UserName})";
+
+                var statusMessage = bid.Successful.Value
+                    ? "ACQUIRED"
+                    : "FAILED TO ACQUIRE";
+
+                var counterPickMessage = bid.CounterPick ? " (as a Counter Pick) " : "";
+
+                var outcomeMessage = !string.IsNullOrEmpty(bid.Outcome) ? $"- {bid.Outcome}" : "";
+
+                var messageToAdd =
+                    $"**{nameToUse}** {statusMessage} {bid.MasterGame.GameName}{counterPickMessage}with a bid of ${bid.BidAmount} {outcomeMessage}";
+                actionMessages.Add(messageToAdd);
+            }
+
+            var messageListToSend = BuildMessageListFromStringList(actionMessages, MaxMessageLength, "League Action Updates");
+
+            foreach (var leagueChannel in leagueChannels)
+            {
+                foreach (var messageToSend in messageListToSend)
+                {
+                    var guild = _client.GetGuild(leagueChannel.GuildID);
+                    var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+                    await channel.SendMessageAsync(messageToSend);
+                }
+            }
         }
+    }
+
+    private IReadOnlyList<string> BuildMessageListFromStringList(IReadOnlyList<string> messagesToCombine, int maxMessageLength,
+        string firstMessageTitle = "")
+    {
+        var messageList = new List<string>();
+        if (!string.IsNullOrEmpty(firstMessageTitle))
+        {
+            messageList.Add($"**{firstMessageTitle}**\n");
+        }
+
+        var listIndex = 0;
+        foreach (var updateMessage in messagesToCombine)
+        {
+            var messageToAdd = $"{updateMessage}\n";
+            var concatenatedMessage = messageList[listIndex] + messageToAdd;
+            if (concatenatedMessage.Length >= maxMessageLength)
+            {
+                messageList.Add(messageToAdd);
+                listIndex++;
+            }
+            else
+            {
+                messageList[listIndex] += messageToAdd;
+            }
+        }
+        return messageList;
     }
 
     public async Task SendTradeUpdateMessage(Trade trade)
@@ -234,7 +310,7 @@ public class DiscordPushService
         {
             return;
         }
-        
+
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == trade.LeagueYear.League.LeagueID);
         if (leagueChannel is null)
