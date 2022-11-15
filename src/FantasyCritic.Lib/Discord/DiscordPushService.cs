@@ -204,6 +204,29 @@ public class DiscordPushService
         await channel.SendMessageAsync(messageToSend);
     }
 
+    public async Task SendActionProcessingSummary(IEnumerable<LeagueActionProcessingSet> leagueActionSets)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var channelDictionary = allChannels.ToDictionary(x => x.LeagueID);
+
+        foreach (var leagueAction in leagueActionSets)
+        {
+            var leagueChannel = channelDictionary.GetValueOrDefault(leagueAction.LeagueYear.League.LeagueID);
+            if (leagueChannel is null)
+            {
+                continue;
+            }
+
+            //Send league action update
+        }
+    }
+
     public async Task SendTradeUpdateMessage(Trade trade)
     {
         bool shouldRun = await StartBot();
