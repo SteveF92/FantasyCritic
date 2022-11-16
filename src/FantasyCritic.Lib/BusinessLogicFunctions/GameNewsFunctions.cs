@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Domain.Combinations;
+
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
 public static class GameNewsFunctions
 {

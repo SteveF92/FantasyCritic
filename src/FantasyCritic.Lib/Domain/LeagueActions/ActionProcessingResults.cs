@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Domain.Combinations;
+
 namespace FantasyCritic.Lib.Domain.LeagueActions;
 
 public class ActionProcessingResults

@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
@@ -205,6 +206,27 @@ public class DiscordPushService
         await channel.SendMessageAsync(messageToSend);
     }
 
+    public async Task SendPublicBiddingSummary(IEnumerable<LeagueYearPublicBiddingSet> publicBiddingSets)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var channelLookup = allChannels.ToLookup(c => c.LeagueID);
+
+        foreach (var publicBiddingSet in publicBiddingSets)
+        {
+            var leagueChannels = channelLookup[publicBiddingSet.LeagueYear.League.LeagueID].ToList();
+            if (!leagueChannels.Any())
+            {
+                continue;
+            }
+        }
+    }
+
     public async Task SendActionProcessingSummary(IEnumerable<LeagueActionProcessingSet> leagueActionSets)
     {
         bool shouldRun = await StartBot();
@@ -214,10 +236,11 @@ public class DiscordPushService
         }
 
         var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var channelLookup = allChannels.ToLookup(c => c.LeagueID);
 
         foreach (var leagueAction in leagueActionSets)
         {
-            var leagueChannels = allChannels.Where(c => c.LeagueID == leagueAction.LeagueYear.League.LeagueID).ToList();
+            var leagueChannels = channelLookup[leagueAction.LeagueYear.League.LeagueID].ToList();
             if (!leagueChannels.Any())
             {
                 continue;

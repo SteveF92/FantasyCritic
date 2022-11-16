@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Domain.Combinations;
+
 namespace FantasyCritic.Web.Models.Responses;
 
 public class SingleGameNewsViewModel

@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Calculations;
+using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Lib.Domain;
 

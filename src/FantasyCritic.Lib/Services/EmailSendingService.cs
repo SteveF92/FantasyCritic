@@ -6,6 +6,7 @@ using Serilog;
 using RazorLight;
 using System.IO;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -58,7 +59,7 @@ public class EmailSendingService
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
-        var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, EmailPublicBiddingSet>();
+        var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, LeagueYearPublicBiddingSet>();
         foreach (var year in activeYears)
         {
             var publicBiddingSets = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
@@ -87,7 +88,7 @@ public class EmailSendingService
                 continue;
             }
 
-            List<EmailPublicBiddingSet> publicBiddingSetsForUser = new List<EmailPublicBiddingSet>();
+            List<LeagueYearPublicBiddingSet> publicBiddingSetsForUser = new List<LeagueYearPublicBiddingSet>();
             foreach (var leagueYearKey in leagueYearKeys)
             {
                 var publicBiddingSet = publicBiddingSetDictionary.GetValueOrDefault(leagueYearKey);
@@ -105,7 +106,7 @@ public class EmailSendingService
         }
     }
 
-    private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<EmailPublicBiddingSet> publicBiddingSet)
+    private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<LeagueYearPublicBiddingSet> publicBiddingSet)
     {
         string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - This Week's Public Bids";

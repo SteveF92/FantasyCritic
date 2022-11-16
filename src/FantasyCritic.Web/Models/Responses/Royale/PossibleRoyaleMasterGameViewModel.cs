@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.Web.Models.Responses.Royale;

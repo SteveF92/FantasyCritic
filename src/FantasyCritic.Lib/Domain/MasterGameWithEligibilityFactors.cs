@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Lib.Domain;
 

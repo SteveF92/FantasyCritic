@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Domain.Combinations;
+
 namespace FantasyCritic.MySQL.Entities.Trades;
 
 public class TradeComponentEntity

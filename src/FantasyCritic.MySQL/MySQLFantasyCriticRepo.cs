@@ -12,6 +12,7 @@ using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
 using FantasyCritic.SharedSerialization.Database;
+using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.MySQL;
 
