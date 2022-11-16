@@ -258,7 +258,7 @@ public class DiscordPushService
                 var outcomeMessage = !string.IsNullOrEmpty(bid.Outcome) ? $"- {bid.Outcome}" : "";
 
                 var messageToAdd =
-                    $"**{nameToUse}** {statusMessage} {bid.MasterGame.GameName}{counterPickMessage}with a bid of ${bid.BidAmount} {outcomeMessage}";
+                    $"**{nameToUse}** {statusMessage} {bid.MasterGame.GameName}{counterPickMessage} with a bid of ${bid.BidAmount} {outcomeMessage}";
                 actionMessages.Add(messageToAdd);
             }
 
