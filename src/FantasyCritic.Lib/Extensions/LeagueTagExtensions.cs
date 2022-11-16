@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Domain.Results;
 
-namespace FantasyCritic.Lib.Domain;
+namespace FantasyCritic.Lib.Extensions;
 
 public static class LeagueTagExtensions
 {

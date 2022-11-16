@@ -206,9 +206,9 @@ public class DiscordPushService
         await channel.SendMessageAsync(messageToSend);
     }
 
-    public async Task SendPublicBiddingSummary(IEnumerable<LeagueYearPublicBiddingSet> publicBiddingSets)
+    public Task SendPublicBiddingSummary(IEnumerable<LeagueYearPublicBiddingSet> publicBiddingSets)
     {
-        
+        throw new NotImplementedException();
     }
 
     public async Task SendActionProcessingSummary(IEnumerable<LeagueActionProcessingSet> leagueActionSets)

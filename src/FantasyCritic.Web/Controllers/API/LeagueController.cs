@@ -1,5 +1,6 @@
 using System.Text;
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;

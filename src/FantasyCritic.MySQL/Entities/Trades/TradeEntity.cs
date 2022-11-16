@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Trades;
 
 namespace FantasyCritic.MySQL.Entities.Trades;
