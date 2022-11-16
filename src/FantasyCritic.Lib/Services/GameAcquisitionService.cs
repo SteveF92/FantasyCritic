@@ -374,7 +374,7 @@ public class GameAcquisitionService
         }
 
         var specialAuctionGames = activeSpecialAuctions.Select(x => x.MasterGameYear.MasterGame).ToHashSet();
-        var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame);
+        var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
         List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
         foreach (var bid in distinctBids)
         {
@@ -435,7 +435,7 @@ public class GameAcquisitionService
                 bidsToCount = bidsToCount.Where(x => !x.CounterPick).ToList();
             }
 
-            var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame);
+            var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
             List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
             foreach (var bid in distinctBids)
             {
