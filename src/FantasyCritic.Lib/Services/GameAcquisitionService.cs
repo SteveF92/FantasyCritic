@@ -413,7 +413,7 @@ public class GameAcquisitionService
         return publicBiddingMasterGames.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame);
     }
 
-    public async Task<IReadOnlyList<EmailPublicBiddingSet>> GetPublicBiddingGames(int year)
+    public async Task<IReadOnlyList<LeagueYearPublicBiddingSet>> GetPublicBiddingGames(int year)
     {
         var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
         var activeBidsByLeague = await _fantasyCriticRepo.GetActivePickupBids(year, leagueYears);
@@ -421,7 +421,7 @@ public class GameAcquisitionService
         var currentDate = _clock.GetToday();
         var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
-        List<EmailPublicBiddingSet> publicBiddingSets = new List<EmailPublicBiddingSet>();
+        List<LeagueYearPublicBiddingSet> publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
         foreach (var activeBidsForLeague in activeBidsByLeague)
         {
             if (!activeBidsForLeague.Key.PlayStatus.DraftFinished || !activeBidsForLeague.Key.Options.PickupSystem.HasPublicBiddingWindow)
@@ -440,12 +440,12 @@ public class GameAcquisitionService
             foreach (var bid in distinctBids)
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYearOrThrow(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
-                var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year, false, currentDate, dateOfPotentialAcquisition,
-                    bid.CounterPick, false, false, false);
+                var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year,
+                    false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false, false);
                 masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
             }
 
-            publicBiddingSets.Add(new EmailPublicBiddingSet(activeBidsForLeague.Key, masterGameYears));
+            publicBiddingSets.Add(new LeagueYearPublicBiddingSet(activeBidsForLeague.Key, masterGameYears));
         }
 
         return publicBiddingSets;

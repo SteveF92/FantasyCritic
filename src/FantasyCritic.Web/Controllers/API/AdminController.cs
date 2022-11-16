@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -26,10 +28,11 @@ public class AdminController : FantasyCriticController
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly EmailSendingService _emailSendingService;
+    private readonly DiscordPushService _discordPushService;
 
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
-        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService)
+        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService)
         : base(userManager)
     {
         _adminService = adminService;
@@ -40,6 +43,7 @@ public class AdminController : FantasyCriticController
         _gameAcquisitionService = gameAcquisitionService;
         _webHostEnvironment = webHostEnvironment;
         _emailSendingService = emailSendingService;
+        _discordPushService = discordPushService;
     }
 
     [HttpPost]
@@ -229,6 +233,23 @@ public class AdminController : FantasyCriticController
     public async Task<IActionResult> ExpireTrades()
     {
         await _adminService.ExpireTrades();
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> PushPublicBiddingDiscordMessages()
+    {
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
+
+        var publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
+        foreach (var year in activeYears)
+        {
+            var publicBiddingSetsForYear = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
+            publicBiddingSets.AddRange(publicBiddingSetsForYear);
+        }
+
+        await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
         return Ok();
     }
 }
