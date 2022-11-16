@@ -256,10 +256,8 @@ public class DiscordPushService
 
                 var nameToUse = $"{drop.Publisher.PublisherName} ({drop.Publisher.User.UserName})";
 
-                var statusMessage = drop.Successful.Value
-                    ? "DROPPED"
-                    : "FAILED TO DROP";
-                var messageToAdd = $"**{nameToUse}** {statusMessage} {drop.MasterGame.GameName}";
+                var statusMessage = BuildStatusMessage(bid.Successful.Value);
+                var messageToAdd = $"**{nameToUse}**\n> Game: {drop.MasterGame.GameName}\n> Status: {statusMessage}";
                 actionMessages.Add(messageToAdd);
             }
 
@@ -272,16 +270,17 @@ public class DiscordPushService
 
                 var nameToUse = $"{bid.Publisher.PublisherName} ({bid.Publisher.User.UserName})";
 
-                var statusMessage = bid.Successful.Value
-                    ? "ACQUIRED"
-                    : "FAILED TO ACQUIRE";
+                var statusMessage = BuildStatusMessage(bid.Successful.Value);
 
                 var counterPickMessage = bid.CounterPick ? " (as a Counter Pick) " : "";
 
-                var outcomeMessage = !string.IsNullOrEmpty(bid.Outcome) ? $"- {bid.Outcome}" : "";
-
                 var messageToAdd =
-                    $"**{nameToUse}** {statusMessage} {bid.MasterGame.GameName}{counterPickMessage} with a bid of ${bid.BidAmount} {outcomeMessage}";
+                    $"**{nameToUse}**\n> Game: {bid.MasterGame.GameName}{counterPickMessage}\n> Status: {statusMessage}\n> Bid Amount: ${bid.BidAmount}";
+                if (!string.IsNullOrEmpty(bid.Outcome))
+                {
+                    messageToAdd += $"\n> Outcome: {bid.Outcome}";
+                }
+
                 actionMessages.Add(messageToAdd);
             }
 
@@ -297,6 +296,11 @@ public class DiscordPushService
                 }
             }
         }
+    }
+
+    private static string BuildStatusMessage(bool isSuccessful)
+    {
+        return isSuccessful ? "Successful" : "Failed";
     }
 
     private IReadOnlyList<string> BuildMessageListFromStringList(IReadOnlyList<string> messagesToCombine, int maxMessageLength,
