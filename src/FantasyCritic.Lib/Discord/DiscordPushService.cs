@@ -246,70 +246,110 @@ public class DiscordPushService
                 continue;
             }
 
-            var actionMessages = new List<string>();
-            foreach (var drop in leagueAction.Drops)
+            await SendAllDropMessages(leagueAction, leagueChannels);
+            await SendAllBidMessages(leagueAction, leagueChannels);
+        }
+    }
+
+    private async Task SendAllBidMessages(LeagueActionProcessingSet leagueAction, List<MinimalLeagueChannel> leagueChannels)
+    {
+        var bidMessages = new List<string>();
+        var leagueActionDictionaryByGame = new Dictionary<string, List<PickupBid>>();
+
+        foreach (var leagueActionBid in leagueAction.Bids)
+        {
+            if (leagueActionDictionaryByGame.ContainsKey(leagueActionBid.MasterGame.GameName))
             {
-                if (!drop.Successful.HasValue)
-                {
-                    throw new Exception($"Drop {drop.DropRequestID} has a null value in the Successful property.");
-                }
-
-                var nameToUse = $"{drop.Publisher.PublisherName} ({drop.Publisher.User.UserName})";
-
-                var statusMessage = BuildStatusMessage(bid.Successful.Value);
-                var messageToAdd = $"**{nameToUse}**\n> Game: {drop.MasterGame.GameName}\n> Status: {statusMessage}";
-                actionMessages.Add(messageToAdd);
+                leagueActionDictionaryByGame[leagueActionBid.MasterGame.GameName].Add(leagueActionBid);
             }
+            else
+            {
+                leagueActionDictionaryByGame.Add(leagueActionBid.MasterGame.GameName,
+                    new List<PickupBid> { leagueActionBid });
+            }
+        }
 
-            foreach (var bid in leagueAction.Bids)
+        foreach (var bidGameAction in leagueActionDictionaryByGame)
+        {
+            var winningBidAmount = bidGameAction.Value.OrderByDescending(b => b.BidAmount).First().BidAmount;
+
+            var messageToAdd = $"**{bidGameAction.Key}**\n";
+            foreach (var bid in bidGameAction.Value)
             {
                 if (!bid.Successful.HasValue)
                 {
-                    throw new Exception($"Bid {bid.BidID} has a null value in the Successful property.");
+                    throw new Exception($"Bid {bid.BidID} Successful property is null");
                 }
 
-                var nameToUse = $"{bid.Publisher.PublisherName} ({bid.Publisher.User.UserName})";
+                var nameDisplay = $"**{bid.Publisher.PublisherName} ({bid.Publisher.User.UserName})**";
 
-                var statusMessage = BuildStatusMessage(bid.Successful.Value);
-
-                var counterPickMessage = bid.CounterPick ? " (as a Counter Pick) " : "";
-
-                var messageToAdd =
-                    $"**{nameToUse}**\n> Game: {bid.MasterGame.GameName}{counterPickMessage}\n> Status: {statusMessage}\n> Bid Amount: ${bid.BidAmount}";
-                if (!string.IsNullOrEmpty(bid.Outcome))
+                if (bid.Successful.Value)
                 {
-                    messageToAdd += $"\n> Outcome: {bid.Outcome}";
+                    var counterPickMessage = bid.CounterPick ? "(as a Counter Pick)" : "";
+                    messageToAdd += $"- Won by {nameDisplay} with a bid of ${bid.BidAmount} {counterPickMessage}\n";
                 }
-
-                actionMessages.Add(messageToAdd);
+                else
+                {
+                    var lossReason = bid.BidAmount == winningBidAmount
+                        ? "lost on tiebreakers"
+                        : "was outbid";
+                    messageToAdd += $"- {nameDisplay}'s bid of ${bid.BidAmount} {lossReason}\n";
+                }
             }
 
-            var messageListToSend = BuildMessageListFromStringList(actionMessages, MaxMessageLength, "League Action Updates");
+            bidMessages.Add($"{messageToAdd}");
+        }
 
-            foreach (var leagueChannel in leagueChannels)
+        var messageListToSend = BuildMessageListFromStringList(bidMessages, MaxMessageLength, "Bids", 2);
+        await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend);
+    }
+
+    private async Task SendAllDropMessages(LeagueActionProcessingSet leagueAction, List<MinimalLeagueChannel> leagueChannels)
+    {
+        var dropMessages = new List<string>();
+        foreach (var drop in leagueAction.Drops)
+        {
+            if (!drop.Successful.HasValue)
             {
-                foreach (var messageToSend in messageListToSend)
-                {
-                    var guild = _client.GetGuild(leagueChannel.GuildID);
-                    var channel = guild.GetTextChannel(leagueChannel.ChannelID);
-                    await channel.SendMessageAsync(messageToSend);
-                }
+                throw new Exception($"Drop {drop.DropRequestID} Successful property is null");
+            }
+
+            var nameToUse = $"{drop.Publisher.PublisherName} ({drop.Publisher.User.UserName})";
+
+            var statusMessage = drop.Successful.Value ? "Successful" : "Failed";
+            var messageToAdd = $"**{nameToUse}**: {drop.MasterGame.GameName} (Drop {statusMessage})";
+            dropMessages.Add(messageToAdd);
+        }
+
+        var dropMessageListToSend = BuildMessageListFromStringList(dropMessages, MaxMessageLength, "Drops", 2);
+        await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend);
+    }
+
+    private async Task SendAllMessagesToAllLeagueChannels(List<MinimalLeagueChannel> leagueChannels, IReadOnlyList<string> messageListToSend)
+    {
+        foreach (var leagueChannel in leagueChannels)
+        {
+            foreach (var messageToSend in messageListToSend)
+            {
+                var guild = _client.GetGuild(leagueChannel.GuildID);
+                var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+                await channel.SendMessageAsync(messageToSend);
             }
         }
     }
 
-    private static string BuildStatusMessage(bool isSuccessful)
-    {
-        return isSuccessful ? "Successful" : "Failed";
-    }
-
     private IReadOnlyList<string> BuildMessageListFromStringList(IReadOnlyList<string> messagesToCombine, int maxMessageLength,
-        string firstMessageTitle = "")
+        string firstMessageTitle = "", int newLinesAfterFirstMessage = 0)
     {
         var messageList = new List<string>();
         if (!string.IsNullOrEmpty(firstMessageTitle))
         {
-            messageList.Add($"**{firstMessageTitle}**\n");
+            var title = $"**{firstMessageTitle}**";
+            for (var i = 0; i < newLinesAfterFirstMessage; i++)
+            {
+                title += "\n";
+            }
+            messageList.Add(title);
         }
 
         var listIndex = 0;
