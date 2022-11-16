@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
@@ -203,6 +204,11 @@ public class DiscordPushService
 
         var messageToSend = $"Publisher **{oldPublisherName}** is now known as **{newPublisherName}**";
         await channel.SendMessageAsync(messageToSend);
+    }
+
+    public async Task SendPublicBiddingSummary(IEnumerable<LeagueYearPublicBiddingSet> publicBiddingSets)
+    {
+        
     }
 
     public async Task SendActionProcessingSummary(IEnumerable<LeagueActionProcessingSet> leagueActionSets)
