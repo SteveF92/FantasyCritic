@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
@@ -19,11 +20,16 @@ public class DiscordPushService
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
     private readonly bool _enabled;
+    private readonly string _baseAddress;
 
-    public DiscordPushService(FantasyCriticDiscordConfiguration configuration, IDiscordRepo discordRepo, IDiscordFormatter discordFormatter)
+    public DiscordPushService(
+        FantasyCriticDiscordConfiguration configuration,
+        IDiscordRepo discordRepo,
+        IDiscordFormatter discordFormatter)
     {
         _enabled = !string.IsNullOrEmpty(configuration.BotToken);
         _botToken = configuration.BotToken;
+        _baseAddress = configuration.BaseAddress;
         _discordRepo = discordRepo;
         _discordFormatter = discordFormatter;
         DiscordSocketConfig socketConfig = new()
@@ -224,7 +230,51 @@ public class DiscordPushService
             {
                 continue;
             }
+
+            var gameMessages = new List<string>();
+            foreach (var publicBid in publicBiddingSet.MasterGames)
+            {
+                var gameMessage = "";
+                var releaseDate = publicBid.MasterGameYear.MasterGame.EstimatedReleaseDate;
+                gameMessage += $"**{publicBid.MasterGameYear.MasterGame.GameName}**";
+
+                if (publicBid.CounterPick)
+                {
+                    gameMessage += " (🎯 Counter Pick Bid)";
+                }
+
+                gameMessage += "\n";
+                gameMessage += $"> Release Date: {releaseDate}";
+
+                var roundedHypeFactor = Math.Round(publicBid.MasterGameYear.HypeFactor, 1);
+                gameMessage += $" Hype Factor: ${roundedHypeFactor}\n";
+                gameMessages.Add(gameMessage);
+            }
+
+            var leagueLink = new LeagueUrlBuilder(_baseAddress, publicBiddingSet.LeagueYear.League.LeagueID, publicBiddingSet.LeagueYear.Year).BuildUrl();
+            var finalMessage = string.Join("\n", gameMessages);
+            var lastSunday = GetLastSunday();
+            var header = $"Public Bids (Week of {lastSunday:MMMM dd, yyyy})";
+
+            foreach (var leagueChannel in leagueChannels)
+            {
+                var guild = _client.GetGuild(leagueChannel.GuildID);
+                var channel = guild.GetTextChannel(leagueChannel.ChannelID);
+
+                await channel.SendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+                    header,
+                    finalMessage,
+                    url: leagueLink));
+            }
         }
+    }
+
+    private static DateTime GetLastSunday()
+    {
+        var currentDate = DateTime.Now;
+        var currentDayOfWeek = (int)currentDate.DayOfWeek;
+        var lastSundayDate = currentDate.AddDays(-currentDayOfWeek);
+        return lastSundayDate;
     }
 
     public async Task SendActionProcessingSummary(IEnumerable<LeagueActionProcessingSet> leagueActionSets)
@@ -285,7 +335,7 @@ public class DiscordPushService
 
                 if (bid.Successful.Value)
                 {
-                    var counterPickMessage = bid.CounterPick ? "(as a Counter Pick)" : "";
+                    var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
                     messageToAdd += $"- Won by {nameDisplay} with a bid of ${bid.BidAmount} {counterPickMessage}\n";
                 }
                 else
