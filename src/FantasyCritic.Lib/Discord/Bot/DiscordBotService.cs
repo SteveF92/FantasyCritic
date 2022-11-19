@@ -1,27 +1,25 @@
 using Discord.WebSocket;
 using Discord;
 using Discord.Interactions;
-using Microsoft.Extensions.Configuration;
+using FantasyCritic.Lib.DependencyInjection;
 
 namespace FantasyCritic.Lib.Discord.Bot;
 public class DiscordBotService
 {
-    private readonly string _botToken;
     private readonly InteractionService _interactionService;
     private readonly DiscordSocketClient _client;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration _configuration;
+    private readonly FantasyCriticDiscordConfiguration _botConfiguration;
 
     public DiscordBotService(InteractionService interactionService,
         IServiceProvider serviceProvider,
-        IConfigurationRoot configuration,
+        FantasyCriticDiscordConfiguration botConfiguration,
         DiscordSocketClient client)
     {
         _client = client;
-        _configuration = configuration;
-        _botToken = configuration["BotToken"];
         _interactionService = interactionService;
         _serviceProvider = serviceProvider;
+        _botConfiguration = botConfiguration;
     }
 
     public async Task InitializeBotAsync()
@@ -31,7 +29,7 @@ public class DiscordBotService
         await _interactionService.AddModulesAsync(typeof(DiscordBotService).Assembly, _serviceProvider);
         _client.InteractionCreated += HandleInteraction;
 
-        await _client.LoginAsync(TokenType.Bot, _botToken);
+        await _client.LoginAsync(TokenType.Bot, _botConfiguration.BotToken);
         await _client.StartAsync();
     }
 
@@ -43,11 +41,19 @@ public class DiscordBotService
 
     public async Task Client_Ready()
     {
-#if DEBUG
-        await _interactionService.RegisterCommandsToGuildAsync(Convert.ToUInt64(_configuration["DevDiscordServerId"]), true);
-#else
+        if (_botConfiguration.IsDevelopment)
+        {
+            if (_botConfiguration.DevDiscordServerId is null)
+            {
+                throw new Exception("Development Discord server ID is not set.");
+            }
+            
+            await _interactionService.RegisterCommandsToGuildAsync(_botConfiguration.DevDiscordServerId.Value, true);
+        }
+        else
+        {
             await _interactionService.RegisterCommandsGloballyAsync(true);
-#endif
+        }
     }
 
     private async Task HandleInteraction(SocketInteraction interaction)

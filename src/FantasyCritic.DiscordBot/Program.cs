@@ -42,7 +42,9 @@ public class Program
             .Build();
 
         var fantasyCriticSettings = configuration.GetSection("FantasyCriticSettings").Get<FantasyCriticSettings>();
-        var fantasyCriticDiscordConfiguration = new FantasyCriticDiscordConfiguration("");
+        ulong? devDiscordServerID = configuration.GetValue<ulong?>("DevDiscordServerId");
+
+        var fantasyCriticDiscordConfiguration = new FantasyCriticDiscordConfiguration(configuration.GetValue<string>("BotToken"), fantasyCriticSettings.BaseAddress, true, devDiscordServerID);
 
         var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"], SystemClock.Instance);
 

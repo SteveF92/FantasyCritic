@@ -71,7 +71,7 @@ public static class HostingExtensions
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
-        services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => new FantasyCriticDiscordConfiguration(configuration["BotToken"]));
+        services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => new FantasyCriticDiscordConfiguration(configuration["BotToken"], baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
