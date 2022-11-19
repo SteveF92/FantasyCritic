@@ -955,11 +955,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return users;
     }
 
-    public async Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
+    public async Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year)
     {
         var query = new
         {
-            leagueID = league.LeagueID,
+            leagueID,
             year
         };
 

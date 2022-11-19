@@ -238,7 +238,7 @@ public class LeagueMemberService
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
     {
-        return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league, year);
+        return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, year);
     }
 
     private async Task<LeagueInvite?> GetMatchingInvite(League league, string emailAddress)

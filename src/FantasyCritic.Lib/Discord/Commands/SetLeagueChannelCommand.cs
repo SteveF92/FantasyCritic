@@ -1,4 +1,5 @@
 using Discord.Interactions;
+using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
@@ -12,18 +13,21 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IFantasyCriticUserStore _userStore;
     private readonly FantasyCriticSettings _fantasyCriticSettings;
 
     public SetLeagueChannelCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         IFantasyCriticRepo fantasyCriticRepo,
+        IFantasyCriticUserStore userStore,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
         _fantasyCriticRepo = fantasyCriticRepo;
+        _userStore = userStore;
         _fantasyCriticSettings = fantasyCriticSettings;
     }
 
@@ -63,14 +67,38 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
                 Context.User));
             return;
         }
+        
         if (!league.PublicLeague)
         {
-            // TODO: validate user for private leagues
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Setting League",
-                $"You do not have access to this league.",
-                Context.User));
-            return;
+            if (Context.User is null)
+            {
+                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                    "Error Setting League",
+                    "You do not have access to this league.",
+                    Context.User));
+                return;
+            }
+
+            SocketUser discordUser = Context.User!;
+            var fantasyCriticUser = await _userStore.FindByLoginAsync("Discord", discordUser.Id.ToString(), CancellationToken.None);
+            if (fantasyCriticUser is null)
+            {
+                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                    "Error Setting League",
+                    "You do not have access to this league.",
+                    Context.User));
+                return;
+            }
+
+            var usersInLeague = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, dateToCheck.Year);
+            if (!usersInLeague.Contains(fantasyCriticUser))
+            {
+                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                    "Error Setting League",
+                    "You do not have access to this league.",
+                    Context.User));
+                return;
+            }
         }
 
         await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
