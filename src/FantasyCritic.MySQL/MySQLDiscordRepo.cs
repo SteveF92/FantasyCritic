@@ -20,8 +20,8 @@ public class MySQLDiscordRepo : IDiscordRepo
         var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, true);
         var existingLeague = await GetLeagueChannel(guildID, channelID, year);
         var sql = existingLeague == null
-            ? "INSERT INTO tbl_discord_leaguechannel (LeagueID, GuildID, ChannelID, IsGameNewsEnabled) VALUES (@LeagueID, @GuildID, @ChannelID, 1)"
-            : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID, GuildID=@GuildID, ChannelID=@ChannelID, IsGameNewsEnabled = 1";
+            ? "INSERT INTO tbl_discord_leaguechannel (LeagueID, GuildID, ChannelID, IsGameNewsEnabled) VALUES (@LeagueID, @GuildID, @ChannelID, @IsGameNewsEnabled)"
+            : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID, GuildID=@GuildID, ChannelID=@ChannelID, IsGameNewsEnabled=@IsGameNewsEnabled WHERE @ChannelID=@ChannelID AND @GuildID=@GuildID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 

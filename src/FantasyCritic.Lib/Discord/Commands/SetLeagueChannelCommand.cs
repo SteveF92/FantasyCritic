@@ -40,7 +40,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         )
     {
         _logger.Information("Attempting to set up channel {ChannelID} to track league {LeagueID}", Context.Channel.Id, leagueIdParam);
-        
+
         var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueId = leagueIdParam.ToLower().Trim();
@@ -72,7 +72,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
                 Context.User));
             return;
         }
-        
+
         if (!league.PublicLeague)
         {
             string responseMessage = "You do not have access to this league. To link a private league, you must be a member of the league, and you must link your Fantasy Critic and Discord accounts.";
@@ -107,14 +107,32 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
             }
         }
 
-        await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        try
+        {
 
-        var leagueUrlBuilder = new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
-        var leagueLink = leagueUrlBuilder.BuildUrl(league.LeagueName);
+            await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id,
+                dateToCheck.Year);
+
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.ToLower().Contains("duplicate"))
+            {
+                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                    "Error Saving Channel Configuration",
+                    "This channel is already registered to this league.",
+                    Context.User));
+            }
+        }
+        var leagueUrlBuilder =
+            new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
+        var leagueLinkWithName = leagueUrlBuilder.BuildUrl(league.LeagueName);
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Channel League Configuration Saved",
-            $"Channel configured for League {leagueLink}.",
-            Context.User));
+            $"Channel configured for League {leagueLinkWithName}.",
+            Context.User,
+            null,
+            leagueUrlBuilder.GetOnlyUrl()));
     }
 }

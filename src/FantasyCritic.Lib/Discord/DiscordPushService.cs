@@ -242,12 +242,11 @@ public class DiscordPushService
                 {
                     gameMessage += " (🎯 Counter Pick Bid)";
                 }
-
-                gameMessage += "\n";
-                gameMessage += $"> Release Date: {releaseDate}";
+                
+                gameMessage += $"\n> Release Date: {releaseDate}";
 
                 var roundedHypeFactor = Math.Round(publicBid.MasterGameYear.HypeFactor, 1);
-                gameMessage += $" Hype Factor: ${roundedHypeFactor}\n";
+                gameMessage += $"\n> Hype Factor: {roundedHypeFactor}\n";
                 gameMessages.Add(gameMessage);
             }
 
