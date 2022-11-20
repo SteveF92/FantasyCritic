@@ -5,10 +5,13 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using Serilog;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionContext>
 {
+    private static readonly ILogger _logger = Log.ForContext<SetLeagueChannelCommand>();
+
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
@@ -36,6 +39,8 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam
         )
     {
+        _logger.Information("Attempting to set up channel {ChannelID} to track league {LeagueID}", Context.Channel.Id, leagueIdParam);
+        
         var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueId = leagueIdParam.ToLower().Trim();
