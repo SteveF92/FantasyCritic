@@ -144,7 +144,7 @@ public static class HostingExtensions
         services.AddSingleton<IScheduledTask, RefreshDataTask>();
         services.AddSingleton<IScheduledTask, TimeFlagsTask>();
         services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
-        services.AddSingleton<IScheduledTask, EmailSendingTask>();
+        services.AddSingleton<IScheduledTask, PublicBiddingNotificationTask>();
         services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
         services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
         services.AddSingleton<IScheduledTask, ExpireTradesTask>();

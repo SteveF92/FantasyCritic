@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Email.EmailModels;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using Serilog;
 using RazorLight;
@@ -16,58 +15,23 @@ public class EmailSendingService
 
     private readonly FantasyCriticUserManager _userManager;
     private readonly IEmailSender _emailSender;
-    private readonly InterLeagueService _interLeagueService;
-    private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly string _baseAddress;
     private readonly bool _isProduction;
-    private readonly IClock _clock;
 
     public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
-        InterLeagueService interLeagueService, GameAcquisitionService gameAcquisitionService,
-        LeagueMemberService leagueMemberService, EmailSendingServiceConfiguration configuration, IClock clock)
+        LeagueMemberService leagueMemberService, EmailSendingServiceConfiguration configuration)
     {
         _userManager = userManager;
         _emailSender = emailSender;
-        _interLeagueService = interLeagueService;
-        _gameAcquisitionService = gameAcquisitionService;
         _leagueMemberService = leagueMemberService;
         _baseAddress = configuration.BaseAddress;
         _isProduction = configuration.IsProduction;
-        _clock = clock;
     }
 
-    public async Task SendScheduledEmails()
+    public async Task SendPublicBidEmails(IEnumerable<LeagueYearPublicBiddingSet> publicBiddingSets)
     {
-        var now = _clock.GetCurrentInstant();
-        var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
-
-        var dayOfWeek = nycNow.DayOfWeek;
-        var timeOfDay = nycNow.TimeOfDay;
-        var earliestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Minus(Period.FromMinutes(1));
-        var latestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Plus(Period.FromMinutes(1));
-        bool isTimeToSendPublicBidEmails = dayOfWeek == TimeExtensions.PublicBiddingRevealDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet;
-        if (isTimeToSendPublicBidEmails)
-        {
-            _logger.Information($"Sending public bid emails because date/time is: {nycNow}");
-            await SendPublicBidEmails();
-        }
-    }
-
-    public async Task SendPublicBidEmails()
-    {
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
-
-        var publicBiddingSetDictionary = new Dictionary<LeagueYearKey, LeagueYearPublicBiddingSet>();
-        foreach (var year in activeYears)
-        {
-            var publicBiddingSets = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
-            foreach (var publicBiddingSet in publicBiddingSets)
-            {
-                publicBiddingSetDictionary[publicBiddingSet.LeagueYear.Key] = publicBiddingSet;
-            }
-        }
+        var publicBiddingSetDictionary = publicBiddingSets.ToDictionary(x => x.LeagueYear.Key);
 
         var adminUsers = (await _userManager.GetUsersInRoleAsync("Admin")).ToHashSet();
         var userEmailSettings = await _userManager.GetAllEmailSettings();
