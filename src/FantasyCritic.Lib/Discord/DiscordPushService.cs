@@ -27,7 +27,7 @@ public class DiscordPushService
         IDiscordRepo discordRepo,
         IDiscordFormatter discordFormatter)
     {
-        _enabled = !string.IsNullOrEmpty(configuration.BotToken);
+        _enabled = !string.IsNullOrEmpty(configuration.BotToken) && configuration.BotToken != "secret";
         _botToken = configuration.BotToken;
         _baseAddress = configuration.BaseAddress;
         _discordRepo = discordRepo;

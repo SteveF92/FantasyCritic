@@ -160,20 +160,23 @@ public static class HostingExtensions
             args.SetObserved();
         });
 
-        //Discord request service
-        DiscordSocketConfig socketConfig = new()
+        if (!string.IsNullOrWhiteSpace(discordBotToken) && discordBotToken != "secret")
         {
-            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
-            AlwaysDownloadUsers = true,
-        };
-        var fantasyCriticSettings = new FantasyCriticSettings(baseAddress);
-        services.AddSingleton(socketConfig);
-        services.AddSingleton(fantasyCriticSettings);
-        services.AddScoped<DiscordSocketClient>();
-        services.AddScoped(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
-        services.AddScoped<DiscordBotService>();
-        services.AddScoped<IDiscordFormatter, DiscordFormatter>();
-        services.AddHostedService<DiscordHostedService>();
+            //Discord request service
+            DiscordSocketConfig socketConfig = new()
+            {
+                GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
+                AlwaysDownloadUsers = true,
+            };
+            var fantasyCriticSettings = new FantasyCriticSettings(baseAddress);
+            services.AddSingleton(socketConfig);
+            services.AddSingleton(fantasyCriticSettings);
+            services.AddScoped<DiscordSocketClient>();
+            services.AddScoped(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
+            services.AddScoped<DiscordBotService>();
+            services.AddScoped<IDiscordFormatter, DiscordFormatter>();
+            services.AddHostedService<DiscordHostedService>();
+        }
 
         services.AddAuthorization(options =>
         {
