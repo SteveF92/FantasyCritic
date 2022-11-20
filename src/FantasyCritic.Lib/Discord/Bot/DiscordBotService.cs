@@ -63,6 +63,7 @@ public class DiscordBotService
             var context = new SocketInteractionContext(_client, interaction);
             var result = await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
             if (!result.IsSuccess)
+            {
                 switch (result.Error)
                 {
                     case InteractionCommandError.UnmetPrecondition:
@@ -71,6 +72,7 @@ public class DiscordBotService
                     default:
                         break;
                 }
+            }
         }
         catch
         {

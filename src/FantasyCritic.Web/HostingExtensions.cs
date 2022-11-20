@@ -1,6 +1,9 @@
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using Discord;
+using Discord.Interactions;
+using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.AWS;
@@ -33,6 +36,9 @@ using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
 using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Bot;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Web.BackgroundServices;
 
 namespace FantasyCritic.Web;
 
@@ -113,6 +119,7 @@ public static class HostingExtensions
         services.AddScoped<RoyaleService>();
         services.AddScoped<EmailSendingService>();
 
+        //Email Services
         //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
         //services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
         services.AddScoped<IEmailSender>(_ => new PostmarkEmailSender(postmarkAPIKey, "noreply@fantasycritic.games"));
@@ -152,6 +159,21 @@ public static class HostingExtensions
         {
             args.SetObserved();
         });
+
+        //Discord request service
+        DiscordSocketConfig socketConfig = new()
+        {
+            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
+            AlwaysDownloadUsers = true,
+        };
+        var fantasyCriticSettings = new FantasyCriticSettings(baseAddress);
+        services.AddSingleton(socketConfig);
+        services.AddSingleton(fantasyCriticSettings);
+        services.AddScoped<DiscordSocketClient>();
+        services.AddScoped(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
+        services.AddScoped<DiscordBotService>();
+        services.AddScoped<IDiscordFormatter, DiscordFormatter>();
+        services.AddHostedService<DiscordHostedService>();
 
         services.AddAuthorization(options =>
         {

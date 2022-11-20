@@ -1,5 +1,2 @@
 namespace FantasyCritic.Lib.Discord.Models;
-public class FantasyCriticSettings
-{
-    public string BaseAddress { get; set; } = null!;
-}
+public record FantasyCriticSettings(string BaseAddress);
