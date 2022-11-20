@@ -47,11 +47,10 @@ public static class HostingExtensions
 
         var rdsInstanceName = configuration["AWS:rdsInstanceName"];
         var awsBucket = configuration["AWS:bucket"];
-        var mailgunAPIKey = configuration["Mailgun:apiKey"];
         var postmarkAPIKey = configuration["Postmark:apiKey"];
         var openCriticAPIKey = configuration["OpenCritic:apiKey"];
         var baseAddress = configuration["BaseAddress"];
-        var discordBotToken = configuration["Discord:BotToken"];
+        var discordBotToken = configuration["BotToken"];
 
         var rootFolder = configuration["LinuxRootFolder"];
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -71,7 +70,7 @@ public static class HostingExtensions
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
         services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
-        services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => new FantasyCriticDiscordConfiguration(configuration["BotToken"], baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
+        services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();

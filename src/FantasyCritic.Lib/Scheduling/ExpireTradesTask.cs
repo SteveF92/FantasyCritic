@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
