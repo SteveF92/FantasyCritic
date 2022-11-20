@@ -70,11 +70,12 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         
         if (!league.PublicLeague)
         {
+            string responseMessage = "You do not have access to this league. To link a private league, you must be a member of the league, and you must link your Fantasy Critic and Discord accounts.";
             if (Context.User is null)
             {
                 await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Setting League",
-                    "You do not have access to this league.",
+                    responseMessage,
                     Context.User));
                 return;
             }
@@ -85,7 +86,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
             {
                 await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Setting League",
-                    "You do not have access to this league.",
+                    responseMessage,
                     Context.User));
                 return;
             }
@@ -95,7 +96,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
             {
                 await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Setting League",
-                    "You do not have access to this league.",
+                    responseMessage,
                     Context.User));
                 return;
             }
