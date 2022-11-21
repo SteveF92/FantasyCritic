@@ -168,7 +168,10 @@ public static class HostingExtensions
                 GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
                 AlwaysDownloadUsers = true,
             };
-            var fantasyCriticSettings = new FantasyCriticSettings(baseAddress);
+            var fantasyCriticSettings = new FantasyCriticSettings
+            {
+                BaseAddress = baseAddress
+            };
             services.AddSingleton(socketConfig);
             services.AddSingleton(fantasyCriticSettings);
             services.AddScoped<DiscordSocketClient>();
