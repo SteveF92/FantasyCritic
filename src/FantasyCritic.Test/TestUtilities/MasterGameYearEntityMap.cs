@@ -9,5 +9,6 @@ public sealed class MasterGameYearEntityMap : ClassMap<MasterGameYearEntity>
     {
         AutoMap(CultureInfo.InvariantCulture);
         Map(m => m.OpenCriticSlug).Constant(null);
+        Map(m => m.ShowNote).Constant(false);
     }
 }

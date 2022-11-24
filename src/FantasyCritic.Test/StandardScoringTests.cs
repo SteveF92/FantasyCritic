@@ -28,7 +28,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, null, new LocalDate(2018, 7, 13),
-            null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -48,7 +48,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, null, new LocalDate(2018, 7, 13),
-            null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -68,7 +68,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 94.8125m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 94.8125m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -88,7 +88,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -108,7 +108,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 55.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 55.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -128,7 +128,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 45.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 45.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -148,7 +148,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 35.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 35.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -168,7 +168,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 25.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 25.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -188,7 +188,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 15.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 15.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -208,7 +208,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 5.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 5.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -228,7 +228,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 10, 20), new LocalDate(2018, 10, 20), null, null, null, new LocalDate(2018, 10, 20),
-            null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -248,7 +248,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2019, 10, 20), new LocalDate(2019, 10, 20), null, null, null, new LocalDate(2019, 10, 20),
-            null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -268,7 +268,7 @@ public class StandardScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false,
+            null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
