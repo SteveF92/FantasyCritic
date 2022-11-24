@@ -33,7 +33,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
-    public async Task DeleteLeagueChannel(ulong guildID, ulong channelID)
+    public async Task<bool> DeleteLeagueChannel(ulong guildID, ulong channelID)
     {
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
@@ -42,7 +42,8 @@ public class MySQLDiscordRepo : IDiscordRepo
             channelID
         };
         var sql = "DELETE FROM tbl_discord_leaguechannel WHERE GuildID=@guildID AND ChannelID=@channelID";
-        await connection.ExecuteAsync(sql, queryObject);
+        var rowsDeleted = await connection.ExecuteAsync(sql, queryObject);
+        return rowsDeleted >= 1;
     }
 
     public async Task<IReadOnlyList<MinimalLeagueChannel>> GetAllLeagueChannels()
