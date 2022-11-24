@@ -98,7 +98,7 @@ public class DiscordPushService
                 continue;
             }
             var changesMessage = string.Join("\n", changes);
-            await textChannel.SendMessageAsync($"**{game.GameName}**\n{changesMessage}");
+            await textChannel.TrySendMessageAsync($"**{game.GameName}**\n{changesMessage}");
         }
     }
 
@@ -127,7 +127,7 @@ public class DiscordPushService
                 continue;
             }
 
-            await channel.SendMessageAsync($"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()}");
+            await channel.TrySendMessageAsync($"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()}");
         }
     }
 
@@ -182,7 +182,7 @@ public class DiscordPushService
 
         if (embedFieldBuilders.Any())
         {
-            await channel.SendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Publisher Score Updates",
             "",
             null,
@@ -209,7 +209,7 @@ public class DiscordPushService
         var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
         var messageToSend = $"Publisher **{oldPublisherName}** is now known as **{newPublisherName}**";
-        await channel.SendMessageAsync(messageToSend);
+        await channel.TrySendMessageAsync(messageToSend);
     }
 
     public async Task SendPublicBiddingSummary(IEnumerable<LeagueYearPublicBiddingSet> publicBiddingSets)
@@ -260,7 +260,7 @@ public class DiscordPushService
                 var guild = _client.GetGuild(leagueChannel.GuildID);
                 var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
-                await channel.SendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+                await channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
                     header,
                     finalMessage,
                     url: leagueLink));
@@ -382,7 +382,7 @@ public class DiscordPushService
             {
                 var guild = _client.GetGuild(leagueChannel.GuildID);
                 var channel = guild.GetTextChannel(leagueChannel.ChannelID);
-                await channel.SendMessageAsync(messageToSend);
+                await channel.TrySendMessageAsync(messageToSend);
             }
         }
     }
@@ -450,7 +450,7 @@ public class DiscordPushService
             embedFieldBuilder
         };
 
-        await channel.SendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Trade Update",
             header,
             null,
