@@ -12,15 +12,17 @@ namespace FantasyCritic.Lib.Services;
 public class FantasyCriticService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly InterLeagueService _interLeagueService;
     private readonly DiscordPushService _discordPushService;
 
     public FantasyCriticService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService, DiscordPushService discordPushService,
-        IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+        IFantasyCriticRepo fantasyCriticRepo, IDiscordRepo discordRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _discordRepo = discordRepo;
         _clock = clock;
         _leagueMemberService = leagueMemberService;
         _interLeagueService = interLeagueService;
@@ -354,9 +356,14 @@ public class FantasyCriticService
         return processingSets;
     }
 
-    public Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
+    public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
     {
-        return _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);
+        if (!publicLeague && league.PublicLeague)
+        {
+            await _discordRepo.RemoveAllLeagueChannelsForLeague(league.LeagueID);
+        }
+        
+        await _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);
     }
 
     public async Task DeleteLeague(League league)

@@ -102,4 +102,15 @@ public class MySQLDiscordRepo : IDiscordRepo
 
         return leagueChannelEntity.ToDomain(leagueYear);
     }
+
+    public async Task RemoveAllLeagueChannelsForLeague(Guid leagueID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
+        {
+            leagueID
+        };
+        var sql = "DELETE FROM tbl_discord_leaguechannel WHERE LeagueID=@leagueID";
+        await connection.ExecuteAsync(sql, queryObject);
+    }
 }
