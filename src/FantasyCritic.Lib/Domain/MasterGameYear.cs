@@ -81,14 +81,16 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return true;
     }
 
-    public bool IsRelevantInYear(SupportedYear year)
+    public bool IsRelevantInYear() => IsRelevantInYear(Year);
+    
+    public bool IsRelevantInYear(int year)
     {
-        if (MasterGame.AddedTimestamp.InUtc().Year > year.Year)
+        if (MasterGame.AddedTimestamp.InUtc().Year > year)
         {
             return false;
         }
 
-        if (MasterGame.ReleaseDate.HasValue && MasterGame.ReleaseDate.Value.Year < year.Year)
+        if (MasterGame.ReleaseDate.HasValue && MasterGame.ReleaseDate.Value.Year < year)
         {
             return false;
         }

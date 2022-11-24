@@ -16,6 +16,7 @@ public class DiscordPushService
     private const int MaxMessageLength = 2000;
     private readonly string _botToken;
     private readonly IDiscordRepo _discordRepo;
+    private readonly IDiscordSupplementalDataRepo _supplementalDataRepo;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
@@ -25,12 +26,14 @@ public class DiscordPushService
     public DiscordPushService(
         FantasyCriticDiscordConfiguration configuration,
         IDiscordRepo discordRepo,
+        IDiscordSupplementalDataRepo supplementalDataRepo,
         IDiscordFormatter discordFormatter)
     {
         _enabled = !string.IsNullOrEmpty(configuration.BotToken) && configuration.BotToken != "secret";
         _botToken = configuration.BotToken;
         _baseAddress = configuration.BaseAddress;
         _discordRepo = discordRepo;
+        _supplementalDataRepo = supplementalDataRepo;
         _discordFormatter = discordFormatter;
         DiscordSocketConfig socketConfig = new()
         {
@@ -79,7 +82,7 @@ public class DiscordPushService
         return true;
     }
 
-    public async Task SendMasterGameEditMessage(MasterGame game, IReadOnlyList<string> changes)
+    public async Task SendMasterGameEditMessage(MasterGameYear game, IReadOnlyList<string> changes, bool wasReleasingInYear)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -91,6 +94,15 @@ public class DiscordPushService
         var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
         {
+            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
+            {
+                var gameIsRelevant = await GameIsRelevant(game, wasReleasingInYear, leagueChannel);
+                if (!gameIsRelevant)
+                {
+                    continue;
+                }
+            }
+            
             var guild = _client.GetGuild(leagueChannel.GuildID);
             var channel = guild.GetChannel(leagueChannel.ChannelID);
             if (channel is not SocketTextChannel textChannel)
@@ -98,8 +110,24 @@ public class DiscordPushService
                 continue;
             }
             var changesMessage = string.Join("\n", changes);
-            await textChannel.TrySendMessageAsync($"**{game.GameName}**\n{changesMessage}");
+            await textChannel.TrySendMessageAsync($"**{game.MasterGame.GameName}**\n{changesMessage}");
         }
+    }
+
+    private async Task<bool> GameIsRelevant(MasterGameYear masterGameYear, bool wasReleasingInYear, MinimalLeagueChannel channel)
+    {
+        if (wasReleasingInYear)
+        {
+            return true;
+        }
+        
+        if (masterGameYear.IsRelevantInYear())
+        {
+            return true;
+        }
+
+        bool inLeagueOrWasInLeague = await _supplementalDataRepo.GameInLeagueOrFormerlyInLeague(masterGameYear, channel.LeagueID);
+        return inLeagueOrWasInLeague;
     }
 
     public async Task SendLeagueActionMessage(LeagueAction action)

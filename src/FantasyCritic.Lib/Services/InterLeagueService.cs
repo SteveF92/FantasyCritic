@@ -46,12 +46,15 @@ public class InterLeagueService
     public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
     {
         var now = _clock.GetCurrentInstant();
-        var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
+        var currentDate = now.ToEasternDate();
+        var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, currentDate);
         var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
         await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
         if (changes.Any())
         {
-            await _discordPushService.SendMasterGameEditMessage(editedMasterGame, changes);
+            bool wasReleasingInYear = existingMasterGame.MinimumReleaseDate.Year == currentDate.Year;
+            var masterGameYear = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, currentDate.Year);
+            await _discordPushService.SendMasterGameEditMessage(masterGameYear!, changes, wasReleasingInYear);
         }
         return Result.Success();
     }

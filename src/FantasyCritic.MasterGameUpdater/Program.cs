@@ -95,7 +95,8 @@ public static class Program
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
         IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo);
-        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true, null), discordRepo, new DiscordFormatter());
+        IDiscordSupplementalDataRepo discordSupplementalRepo = new MySQLDiscordSupplementalDataRepo(localRepoConfig);
+        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true, null), discordRepo, discordSupplementalRepo, new DiscordFormatter());
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo);
         FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, discordPushService, fantasyCriticRepo, discordRepo, _clock);

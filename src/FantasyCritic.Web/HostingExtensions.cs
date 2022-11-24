@@ -89,6 +89,7 @@ public static class HostingExtensions
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
+        services.AddScoped<IDiscordSupplementalDataRepo, MySQLDiscordSupplementalDataRepo>();
         services.AddScoped<IDiscordFormatter, DiscordFormatter>();
 
         services.AddScoped<PatreonService>();
