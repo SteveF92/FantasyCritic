@@ -82,6 +82,56 @@ public class DiscordPushService
         return true;
     }
 
+    public async Task SendGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
+
+        var messageToSend = "";
+
+        var newCriticScoreRounded = newCriticScore != null ? (decimal?)Math.Round(newCriticScore.Value, 1) : null;
+        var oldCriticScoreRounded = oldCriticScore != null ? (decimal?)Math.Round(oldCriticScore.Value, 1) : null;
+
+        if (newCriticScoreRounded == null)
+        {
+            return;
+        }
+        if (oldCriticScoreRounded == null)
+        {
+            messageToSend = $"**{game.GameName}** now has a critic score of **{newCriticScoreRounded}**";
+        }
+        else
+        {
+            var scoreDiff = oldCriticScoreRounded.Value - newCriticScoreRounded.Value;
+            if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
+            {
+                var direction = scoreDiff < 0 ? "UP" : "DOWN";
+                messageToSend =
+                    $"The critic score for **{game.GameName}** has gone **{direction}** from **{oldCriticScore}** to **{newCriticScoreRounded}**";
+            }
+        }
+
+        if (!string.IsNullOrEmpty(messageToSend))
+        {
+            foreach (var leagueChannel in newsEnabledChannels)
+            {
+                var guild = _client.GetGuild(leagueChannel.GuildID);
+                var channel = guild.GetChannel(leagueChannel.ChannelID);
+                if (channel is not SocketTextChannel textChannel)
+                {
+                    continue;
+                }
+                await textChannel.TrySendMessageAsync(messageToSend);
+            }
+        }
+    }
+
     public async Task SendMasterGameEditMessage(MasterGameYear game, IReadOnlyList<string> changes, bool wasReleasingInYear)
     {
         bool shouldRun = await StartBot();
@@ -102,7 +152,7 @@ public class DiscordPushService
                     continue;
                 }
             }
-            
+
             var guild = _client.GetGuild(leagueChannel.GuildID);
             var channel = guild.GetChannel(leagueChannel.ChannelID);
             if (channel is not SocketTextChannel textChannel)
@@ -120,7 +170,7 @@ public class DiscordPushService
         {
             return true;
         }
-        
+
         if (masterGameYear.IsRelevantInYear(false))
         {
             return true;
@@ -270,7 +320,7 @@ public class DiscordPushService
                 {
                     gameMessage += " (🎯 Counter Pick Bid)";
                 }
-                
+
                 gameMessage += $"\n> Release Date: {releaseDate}";
 
                 var roundedHypeFactor = Math.Round(publicBid.MasterGameYear.HypeFactor, 1);

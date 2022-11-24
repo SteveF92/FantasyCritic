@@ -1,4 +1,3 @@
-using System.Text;
 using Discord;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;

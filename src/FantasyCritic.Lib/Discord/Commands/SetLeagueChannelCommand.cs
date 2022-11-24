@@ -10,7 +10,7 @@ using Serilog;
 namespace FantasyCritic.Lib.Discord.Commands;
 public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionContext>
 {
-    private static readonly ILogger _logger = Log.ForContext<SetLeagueChannelCommand>();
+    private static readonly ILogger Logger = Log.ForContext<SetLeagueChannelCommand>();
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
@@ -39,7 +39,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam
         )
     {
-        _logger.Information("Attempting to set up channel {ChannelID} to track league {LeagueID}", Context.Channel.Id, leagueIdParam);
+        Logger.Information("Attempting to set up channel {ChannelID} to track league {LeagueID}", Context.Channel.Id, leagueIdParam);
 
         var dateToCheck = _clock.GetGameEffectiveDate();
 
