@@ -427,7 +427,7 @@ public class DiscordPushService
             bidMessages.Add($"{messageToAdd}");
         }
 
-        var messageListToSend = BuildMessageListFromStringList(bidMessages, MaxMessageLength, "Bids", 2);
+        var messageListToSend = _discordFormatter.BuildMessageListFromStringList(bidMessages, MaxMessageLength, "Bids", 2);
         await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend);
     }
 
@@ -448,7 +448,7 @@ public class DiscordPushService
             dropMessages.Add(messageToAdd);
         }
 
-        var dropMessageListToSend = BuildMessageListFromStringList(dropMessages, MaxMessageLength, "Drops", 2);
+        var dropMessageListToSend = _discordFormatter.BuildMessageListFromStringList(dropMessages, MaxMessageLength, "Drops", 2);
         await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend);
     }
 
@@ -463,38 +463,6 @@ public class DiscordPushService
                 await channel.TrySendMessageAsync(messageToSend);
             }
         }
-    }
-
-    private IReadOnlyList<string> BuildMessageListFromStringList(IReadOnlyList<string> messagesToCombine, int maxMessageLength,
-        string firstMessageTitle = "", int newLinesAfterFirstMessage = 0)
-    {
-        var messageList = new List<string>();
-        if (!string.IsNullOrEmpty(firstMessageTitle))
-        {
-            var title = $"**{firstMessageTitle}**";
-            for (var i = 0; i < newLinesAfterFirstMessage; i++)
-            {
-                title += "\n";
-            }
-            messageList.Add(title);
-        }
-
-        var listIndex = 0;
-        foreach (var updateMessage in messagesToCombine)
-        {
-            var messageToAdd = $"{updateMessage}\n";
-            var concatenatedMessage = messageList[listIndex] + messageToAdd;
-            if (concatenatedMessage.Length >= maxMessageLength)
-            {
-                messageList.Add(messageToAdd);
-                listIndex++;
-            }
-            else
-            {
-                messageList[listIndex] += messageToAdd;
-            }
-        }
-        return messageList;
     }
 
     public async Task SendTradeUpdateMessage(Trade trade)
