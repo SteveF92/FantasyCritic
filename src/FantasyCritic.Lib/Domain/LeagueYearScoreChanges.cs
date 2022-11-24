@@ -49,7 +49,7 @@ public record PublisherScoreChange(Publisher Publisher, decimal OldScore, decima
     public string FormattedNewRank => FormatRank(NewRank);
     public decimal RoundedOldScore => RoundScore(OldScore);
     public decimal RoundedNewScore => RoundScore(NewScore);
-    public bool ScoreChanged => NewScore != OldScore;
+    public bool ScoreChanged => Math.Abs(NewScore - OldScore) >= 1;
     public bool RankChanged => NewRank != OldRank;
     private static decimal RoundScore(decimal score) => Math.Round(score, 1);
     private static string FormatRank(int rankNumber)
