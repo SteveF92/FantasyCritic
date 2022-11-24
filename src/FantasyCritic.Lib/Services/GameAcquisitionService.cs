@@ -290,7 +290,7 @@ public class GameAcquisitionService
 
         var currentDate = _clock.GetToday();
         MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
-        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear.Options, eligibilityFactors, bid.CounterPick, validDropSlot, false);
+        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear.Options, eligibilityFactors, bid.CounterPick, validDropSlot, false, false);
         if (!slotResult.SlotNumber.HasValue)
         {
             return new ClaimResult(slotResult.ClaimErrors, null);

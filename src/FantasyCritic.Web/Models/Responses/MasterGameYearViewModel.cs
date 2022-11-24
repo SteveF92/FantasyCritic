@@ -24,6 +24,7 @@ public class MasterGameYearViewModel
         CriticScore = masterGame.MasterGame.CriticScore;
         FantasyPoints = masterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
         AveragedScore = masterGame.MasterGame.AveragedScore;
+        Notes = masterGame.MasterGame.Notes;
         OpenCriticID = masterGame.MasterGame.OpenCriticID;
         OpenCriticSlug = masterGame.MasterGame.OpenCriticSlug;
         GGToken = masterGame.MasterGame.GGToken;
@@ -114,6 +115,7 @@ public class MasterGameYearViewModel
     public decimal? CriticScore { get; }
     public decimal? FantasyPoints { get; }
     public bool AveragedScore { get; }
+    public string? Notes { get; }
     public int? OpenCriticID { get; }
     public string? OpenCriticSlug { get; }
     public string? GGToken { get; }

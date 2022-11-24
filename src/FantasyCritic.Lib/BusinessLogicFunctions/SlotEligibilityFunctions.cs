@@ -26,7 +26,7 @@ public static class SlotEligibilityFunctions
     }
 
     public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueOptions leagueOptions, MasterGameWithEligibilityFactors? eligibilityFactors,
-        bool counterPick, int? validDropSlot, bool acquiringNow)
+        bool counterPick, int? validDropSlot, bool acquiringNow, bool managerOverride)
     {
         string filledSpacesText = "User's game spaces are filled.";
         if (counterPick)
@@ -59,10 +59,11 @@ public static class SlotEligibilityFunctions
         }
 
         var leagueYearClaimErrors = GetClaimErrorsForLeagueYear(eligibilityFactors);
-        if (leagueYearClaimErrors.Any())
+        var nonOverriddenErrors = leagueYearClaimErrors.Where(x => !x.Overridable || !managerOverride).ToList();
+        if (nonOverriddenErrors.Any())
         {
             //This game is not eligible in this league at all
-            return new PublisherSlotAcquisitionResult(leagueYearClaimErrors);
+            return new PublisherSlotAcquisitionResult(nonOverriddenErrors);
         }
 
         //At this point, the game is eligible in the league. Does the publisher have an open slot?

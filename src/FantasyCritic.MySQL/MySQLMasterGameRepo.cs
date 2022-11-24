@@ -215,7 +215,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                                "DoNotRefreshDate = @DoNotRefreshDate, " +
                                "DoNotRefreshAnything = @DoNotRefreshAnything, " +
                                "EligibilityChanged = @EligibilityChanged, " +
-                               "DelayContention = @DelayContention " +
+                               "DelayContention = @DelayContention, " +
                                "ShowNote = @ShowNote " +
                                "WHERE MasterGameID = @MasterGameID;";
 

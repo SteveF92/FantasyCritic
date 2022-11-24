@@ -75,7 +75,8 @@ public static class GameEligibilityFunctions
             eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(request.MasterGame, dateOfPotentialAcquisition);
         }
 
-        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(request.Publisher, leagueYear.Options, eligibilityFactors, request.CounterPick, validDropSlot, acquiringNow);
+        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(request.Publisher, leagueYear.Options, eligibilityFactors,
+            request.CounterPick, validDropSlot, acquiringNow, request.ManagerOverride);
         if (!slotResult.SlotNumber.HasValue)
         {
             claimErrors.AddRange(slotResult.ClaimErrors);

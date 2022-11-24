@@ -16,6 +16,7 @@
       <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" v-b-popover.hover.focus="delayContentionText" color="white" size="lg" icon="balance-scale" />
       <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" v-b-popover.hover.focus="counterPickedText" color="white" size="lg" icon="crosshairs" />
       <font-awesome-icon v-if="game.dropBlocked" v-b-popover.hover.focus="gameDropBlockedText" color="white" size="lg" icon="lock" />
+      <font-awesome-icon v-if="game.masterGame.showNote && game.masterGame.notes" v-b-popover.hover.focus="game.masterGame.notes" color="white" size="lg" icon="flag" />
       <template v-if="game.released && game.linked && !supportedYear.finished && !game.criticScore">
         <font-awesome-icon v-if="!game.masterGame.openCriticID" v-b-popover.hover.focus="needsOpenCriticPage" color="white" size="lg" icon="link-slash" />
         <font-awesome-icon v-else v-b-popover.hover.focus="needsMoreReviewsText" color="white" size="lg" icon="hourglass-half" />

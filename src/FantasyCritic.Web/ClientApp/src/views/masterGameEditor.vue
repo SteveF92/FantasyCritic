@@ -118,6 +118,11 @@
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
+                  <b-form-checkbox v-model="masterGame.showNote">
+                    <span class="checkbox-label">Show Note on League Page</span>
+                  </b-form-checkbox>
+                </div>
+                <div class="form-group">
                   <label for="notes" class="control-label">Box Art File Name</label>
                   <input id="boxartFileName" v-model="masterGame.boxartFileName" name="boxartFileName" class="form-control input" />
                 </div>
