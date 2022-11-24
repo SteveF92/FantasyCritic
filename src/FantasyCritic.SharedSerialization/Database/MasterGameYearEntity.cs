@@ -32,6 +32,7 @@ public class MasterGameYearEntity
         GGCoverArtFileName = masterGameStats.MasterGame.GGCoverArtFileName;
         EligibilityChanged = masterGameStats.MasterGame.EligibilityChanged;
         DelayContention = masterGameStats.MasterGame.DelayContention;
+        ShowNote = masterGameStats.MasterGame.ShowNote;
         FirstCriticScoreTimestamp = masterGameStats.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
 
         PercentStandardGame = masterGameStats.PercentStandardGame;
@@ -71,6 +72,7 @@ public class MasterGameYearEntity
     public string? GGCoverArtFileName { get; set; }
     public bool EligibilityChanged { get; set; }
     public bool DelayContention { get; set; }
+    public bool ShowNote { get; set; }
     public DateTimeOffset? FirstCriticScoreTimestamp { get; set; }
     public double PercentStandardGame { get; set; }
     public double PercentCounterPick { get; set; }
@@ -128,9 +130,10 @@ public class MasterGameYearEntity
 
         var addedTimestamp = LocalDateTime.FromDateTime(AddedTimestamp).InZoneStrictly(DateTimeZone.Utc).ToInstant();
 
-        var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate), maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
-            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, addedTimestamp, addedByUser,
-            subGames, tags);
+        var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate),
+            maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
+            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,
+            firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, ShowNote, addedTimestamp, addedByUser, subGames, tags);
 
         return new MasterGameYear(masterGame, Year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
             NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor, LinearRegressionHypeFactor);

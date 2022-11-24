@@ -20,6 +20,7 @@ public class MasterGameYearViewModel
         ReleasingToday = masterGame.MasterGame.ReleaseDate == currentDate;
         WillRelease = masterGame.WillRelease();
         DelayContention = masterGame.MasterGame.DelayContention;
+        ShowNote = masterGame.MasterGame.ShowNote;
         CriticScore = masterGame.MasterGame.CriticScore;
         FantasyPoints = masterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
         AveragedScore = masterGame.MasterGame.AveragedScore;
@@ -109,6 +110,7 @@ public class MasterGameYearViewModel
     public bool ReleasingToday { get; }
     public bool WillRelease { get; }
     public bool DelayContention { get; }
+    public bool ShowNote { get; }
     public decimal? CriticScore { get; }
     public decimal? FantasyPoints { get; }
     public bool AveragedScore { get; }

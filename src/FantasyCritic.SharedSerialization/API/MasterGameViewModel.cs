@@ -29,6 +29,7 @@ public class MasterGameViewModel
         DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
         EligibilityChanged = masterGame.EligibilityChanged;
         DelayContention = masterGame.DelayContention;
+        ShowNote = masterGame.ShowNote;
 
         CriticScore = masterGame.CriticScore;
         AveragedScore = masterGame.AveragedScore;
@@ -80,6 +81,7 @@ public class MasterGameViewModel
     public bool DoNotRefreshAnything { get; init; }
     public bool EligibilityChanged { get; init; }
     public bool DelayContention { get; init; }
+    public bool ShowNote { get; init; }
     public decimal? CriticScore { get; init; }
     public bool AveragedScore { get; init; }
     public int? OpenCriticID { get; init; }
@@ -108,6 +110,6 @@ public class MasterGameViewModel
         
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, AddedTimestamp, DoNotRefreshDate,
-            DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
+            DoNotRefreshAnything, EligibilityChanged, DelayContention, ShowNote, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
     }
 }

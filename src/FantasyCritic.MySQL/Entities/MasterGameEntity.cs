@@ -1,6 +1,4 @@
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
-using NodaTime;
 
 namespace FantasyCritic.MySQL.Entities;
 
@@ -34,6 +32,7 @@ public class MasterGameEntity
         DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
         DelayContention = masterGame.DelayContention;
         EligibilityChanged = masterGame.EligibilityChanged;
+        ShowNote = masterGame.ShowNote;
         AddedTimestamp = masterGame.AddedTimestamp;
         AddedByUserID = masterGame.AddedByUser.Id;
     }
@@ -66,6 +65,7 @@ public class MasterGameEntity
     public bool DoNotRefreshAnything { get; set; }
     public bool EligibilityChanged { get; set; }
     public bool DelayContention { get; set; }
+    public bool ShowNote { get; set; }
     public Instant AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
@@ -73,6 +73,6 @@ public class MasterGameEntity
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
-            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, AddedTimestamp, addedByUser, subGames, tags);
+            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, ShowNote, AddedTimestamp, addedByUser, subGames, tags);
     }
 }

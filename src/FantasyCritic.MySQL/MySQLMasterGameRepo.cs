@@ -178,10 +178,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         const string masterGameCreateSQL = "insert into tbl_mastergame" +
                                            "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate," +
                                            "ReleaseDate,OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
-                                           "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,DelayContention,AddedTimestamp,AddedByUserID) VALUES " +
+                                           "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,DelayContention,ShowNote,AddedTimestamp,AddedByUserID) VALUES " +
                                            "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate," +
                                            "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
-                                           "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@DelayContention,@AddedTimestamp,@AddedByUserID);";
+                                           "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@DelayContention,@ShowNote,@AddedTimestamp,@AddedByUserID);";
 
         var entity = new MasterGameEntity(masterGame);
         var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
@@ -216,6 +216,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                                "DoNotRefreshAnything = @DoNotRefreshAnything, " +
                                "EligibilityChanged = @EligibilityChanged, " +
                                "DelayContention = @DelayContention " +
+                               "ShowNote = @ShowNote " +
                                "WHERE MasterGameID = @MasterGameID;";
 
         const string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";
