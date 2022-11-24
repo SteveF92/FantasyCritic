@@ -76,8 +76,10 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             url: leagueUrl));
     }
 
-    private string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate, FantasyCriticUser? previousYearWinner)
+    private static string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate, FantasyCriticUser? previousYearWinner)
     {
+        var totalGames = publisher.PublisherGames
+            .Count(x => !x.CounterPick);
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)
@@ -95,7 +97,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         }
         publisherLine += $"**{publisher.PublisherName}** ";
 
-        string crownEmoji = "";
+        var crownEmoji = "";
         if (previousYearWinner is not null && publisher.User.Id == previousYearWinner.Id)
         {
             crownEmoji = " 👑";
@@ -104,7 +106,12 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         publisherLine += $"({publisher.User.UserName}){crownEmoji}\n";
         publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
         publisherLine += $"*(Projected: {Math.Round(projectedPoints, 1)})*\n";
-        publisherLine += $"> {gamesReleased}/{allWillRelease + gamesReleased} games released";
+        publisherLine += $"> {gamesReleased}/{allWillRelease} games released";
+        var willNotRelease = totalGames - allWillRelease;
+        if (willNotRelease != 0)
+        {
+            publisherLine += $" (and {willNotRelease} that will not release)";
+        }
 
         return publisherLine;
     }

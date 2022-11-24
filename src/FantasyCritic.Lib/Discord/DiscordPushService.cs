@@ -127,7 +127,7 @@ public class DiscordPushService
                 continue;
             }
 
-            await channel.TrySendMessageAsync($"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()}");
+            await channel.TrySendMessageAsync($"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()})");
         }
     }
 
