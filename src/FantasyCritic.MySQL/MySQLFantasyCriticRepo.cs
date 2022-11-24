@@ -173,7 +173,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             if (!leaguesDictionary.TryGetValue(entity.LeagueID, out var league))
             {
-                _logger.Warning($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
+                _logger.Debug($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
                 continue;
             }
 
