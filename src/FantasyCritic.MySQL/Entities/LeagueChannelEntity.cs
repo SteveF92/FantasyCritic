@@ -6,26 +6,26 @@ internal class LeagueChannelEntity
         
     }
 
-    public LeagueChannelEntity(Guid leagueID, ulong guildID, ulong channelID, bool isGameNewsEnabled)
+    public LeagueChannelEntity(Guid leagueID, ulong guildID, ulong channelID, DiscordGameNewsSetting gameNewsSetting)
     {
         LeagueID = leagueID;
         GuildID = guildID;
         ChannelID = channelID;
-        IsGameNewsEnabled = isGameNewsEnabled;
+        GameNewsSetting = gameNewsSetting.Value;
     }
 
     public Guid LeagueID { get; set; }
     public ulong GuildID { get; set; }
     public ulong ChannelID { get; set; }
-    public bool IsGameNewsEnabled { get; set; }
+    public string GameNewsSetting { get; set; } = null!;
 
     public LeagueChannel ToDomain(LeagueYear leagueYear)
     {
-        return new LeagueChannel(leagueYear, GuildID, ChannelID, IsGameNewsEnabled);
+        return new LeagueChannel(leagueYear, GuildID, ChannelID, DiscordGameNewsSetting.FromValue(GameNewsSetting));
     }
 
     public MinimalLeagueChannel ToMinimalDomain()
     {
-        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, IsGameNewsEnabled);
+        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, DiscordGameNewsSetting.FromValue(GameNewsSetting));
     }
 }

@@ -17,7 +17,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, true);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, DiscordGameNewsSetting.Relevant);
         var existingLeague = await GetLeagueChannel(guildID, channelID, year);
         var sql = existingLeague == null
             ? "INSERT INTO tbl_discord_leaguechannel (LeagueID, GuildID, ChannelID, IsGameNewsEnabled) VALUES (@LeagueID, @GuildID, @ChannelID, @IsGameNewsEnabled)"
@@ -25,10 +25,10 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
-    public async Task SetIsGameNewsEnabled(Guid leagueID, ulong guildID, ulong channelID, bool isGameNewsEnabled)
+    public async Task SetIsGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, DiscordGameNewsSetting gameNewsSetting)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, isGameNewsEnabled);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, gameNewsSetting);
         var sql = "UPDATE tbl_discord_leaguechannel SET IsGameNewsEnabled=@IsGameNewsEnabled WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }

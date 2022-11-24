@@ -24,12 +24,22 @@ public class SetGameNewsEnabledCommand : InteractionModuleBase<SocketInteraction
         _fantasyCriticSettings = fantasyCriticSettings;
     }
 
-    [SlashCommand("set-game-news", "Enables or disables the game news announcements for this channel.")]
-    public async Task SetGameNewsEnabled(
-        [Summary("enabled", "Enabled or disabled")] bool isEnabled
+    [SlashCommand("set-game-news", "Sets what games this channel will get news announcements for.")]
+    public async Task SetGameNews(
+        [Summary("setting", "Off, Relevant, or All")] string setting
         )
     {
         var dateToCheck = _clock.GetGameEffectiveDate();
+
+        var settingEnum = DiscordGameNewsSetting.TryFromValue(setting);
+        if (settingEnum is null)
+        {
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Invalid setting",
+                "Valid settings are Off, Relevant, and All..",
+                Context.User));
+            return;
+        }
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
@@ -43,14 +53,11 @@ public class SetGameNewsEnabledCommand : InteractionModuleBase<SocketInteraction
 
         var league = leagueChannel.LeagueYear.League;
 
-        await _discordRepo.SetIsGameNewsEnabled(league.LeagueID, Context.Guild.Id, Context.Channel.Id, isEnabled);
-
-        var leagueUrlBuilder = new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
-        var leagueLink = leagueUrlBuilder.BuildUrl(league.LeagueName);
+        await _discordRepo.SetIsGameNewsSetting(league.LeagueID, Context.Guild.Id, Context.Channel.Id, settingEnum);
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Channel League Configuration Saved",
-            $"Game News Announcements for this channel are now **{(isEnabled ? "ON" :"OFF")}**.",
+            $"Game News Announcements now set to **{settingEnum.Value}**.",
             Context.User));
     }
 }
