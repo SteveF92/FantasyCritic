@@ -3,6 +3,7 @@ using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -45,7 +46,9 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        var rankedPublishers = leagueChannel.LeagueYear.Publishers.OrderBy(p
+        var previousYearWinner = await _fantasyCriticRepo.GetLeagueYearWinner(leagueChannel.LeagueYear.League.LeagueID, leagueChannel.LeagueYear.Year - 1);
+
+        var rankedPublishers = leagueChannel.LeagueYear.Publishers.OrderByDescending(p
             => p.GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options));
 
         var publisherLines =
@@ -59,7 +62,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
                         .GetProjectedFantasyPoints(leagueChannel.LeagueYear,
                             systemWideValues, dateToCheck);
 
-                    return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck);
+                    return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck, previousYearWinner);
                 });
 
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID,
@@ -73,7 +76,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             url: leagueUrl));
     }
 
-    private string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate)
+    private string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate, FantasyCriticUser? previousYearWinner)
     {
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
@@ -85,9 +88,20 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             .Where(x => x.MasterGame is not null)
             .Count(x => x.MasterGame!.MasterGame.IsReleased(currentDate));
 
-        var publisherLine = $"**{rank}.**";
-        publisherLine += $"{(string.IsNullOrEmpty(publisher.PublisherIcon) ? $"{publisher.PublisherIcon} " : "")}**{publisher.PublisherName}** ";
-        publisherLine += $"({publisher.User.UserName})\n";
+        var publisherLine = $"**{rank}.** ";
+        if (!string.IsNullOrEmpty(publisher.PublisherIcon))
+        {
+            publisherLine += $"{publisher.PublisherIcon} ";
+        }
+        publisherLine += $"**{publisher.PublisherName}** ";
+
+        string crownEmoji = "";
+        if (previousYearWinner is not null && publisher.User.Id == previousYearWinner.Id)
+        {
+            crownEmoji = " 👑";
+        }
+
+        publisherLine += $"({publisher.User.UserName}){crownEmoji}\n";
         publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
         publisherLine += $"*(Projected: {Math.Round(projectedPoints, 1)})*\n";
         publisherLine += $"> {gamesReleased}/{allWillRelease + gamesReleased} games released";
