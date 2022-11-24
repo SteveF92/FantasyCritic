@@ -31,7 +31,7 @@ public class HypeFactorService : IHypeFactorService
             }
 
             var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
-            var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear.Year));
+            var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear.Year, false));
             allMasterGameYears.AddRange(relevantGames);
         }
 

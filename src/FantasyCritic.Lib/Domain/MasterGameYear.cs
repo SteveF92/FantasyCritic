@@ -81,9 +81,9 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return true;
     }
 
-    public bool IsRelevantInYear() => IsRelevantInYear(Year);
+    public bool IsRelevantInYear(bool strict) => IsRelevantInYear(Year, strict);
     
-    public bool IsRelevantInYear(int year)
+    public bool IsRelevantInYear(int year, bool strict)
     {
         if (MasterGame.AddedTimestamp.InUtc().Year > year)
         {
@@ -95,7 +95,13 @@ public class MasterGameYear : IEquatable<MasterGameYear>
             return false;
         }
 
-        if (DateAdjustedHypeFactor == 0)
+        var hypeFactorLimit = 3;
+        if (!strict)
+        {
+            hypeFactorLimit = 0;
+        }
+
+        if (DateAdjustedHypeFactor <= hypeFactorLimit)
         {
             return false;
         }

@@ -121,7 +121,7 @@ public class DiscordPushService
             return true;
         }
         
-        if (masterGameYear.IsRelevantInYear())
+        if (masterGameYear.IsRelevantInYear(false))
         {
             return true;
         }
