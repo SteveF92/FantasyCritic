@@ -49,7 +49,10 @@ public class InterLeagueService
         var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, now.ToEasternDate());
         var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
         await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
-        await _discordPushService.SendMasterGameEditMessage(editedMasterGame, changes);
+        if (changes.Any())
+        {
+            await _discordPushService.SendMasterGameEditMessage(editedMasterGame, changes);
+        }
         return Result.Success();
     }
 
