@@ -24,17 +24,15 @@ public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContex
     {
         var dateToCheck = _clock.GetGameEffectiveDate();
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
-        if (leagueChannel == null)
+        var wasDeleted = await _discordRepo.DeleteLeagueChannel(Context.Guild.Id, Context.Channel.Id);
+        if (!wasDeleted)
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Removing League Configuration",
-                "No league configuration found for this channel.",
+                "Could not remove league configuration. It's possible that it wasn't set up.",
                 Context.User));
             return;
         }
-
-        await _discordRepo.DeleteLeagueChannel(Context.Guild.Id, Context.Channel.Id);
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Removed League Configuration",
