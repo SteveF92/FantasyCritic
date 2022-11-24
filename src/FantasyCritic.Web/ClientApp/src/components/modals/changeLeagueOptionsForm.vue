@@ -21,6 +21,9 @@
         </b-form-checkbox>
       </div>
     </div>
+    <b-alert :show="showDiscordWarning" variant="warning">
+      Changing a public league to a private league will remove it from any Discord servers it may be linked to via the official Discord bot.
+    </b-alert>
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newleagueName" @click="changeleagueName" />
     </template>
@@ -40,6 +43,11 @@ export default {
       errorInfo: '',
       initialTestLeague: false
     };
+  },
+  computed: {
+    showDiscordWarning() {
+      return this.league.publicLeague && !this.publicLeague;
+    }
   },
   mounted() {
     this.newleagueName = this.league.leagueName;
