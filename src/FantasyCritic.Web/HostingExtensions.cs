@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.AWS;
+using FantasyCritic.Lib.BackgroundServices;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
@@ -38,7 +39,6 @@ using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Bot;
 using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Web.BackgroundServices;
 
 namespace FantasyCritic.Web;
 

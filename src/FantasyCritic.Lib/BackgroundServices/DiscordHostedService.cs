@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using FantasyCritic.Lib.Discord.Bot;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace FantasyCritic.Web.BackgroundServices;
+namespace FantasyCritic.Lib.BackgroundServices;
 public class DiscordHostedService : BackgroundService
 {
     private readonly ILogger<DiscordHostedService> _logger;
