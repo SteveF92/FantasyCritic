@@ -118,8 +118,8 @@ public class LeagueMemberService
             return Result.Failure("User is already invited to this league.");
         }
 
-        FantasyCriticUser inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
-        if (inviteUser != null)
+        FantasyCriticUser? inviteUser = await _userManager.FindByEmailAsync(inviteEmail);
+        if (inviteUser is not null)
         {
             bool userInLeague = await UserIsInLeague(league, inviteUser);
             if (userInLeague)
@@ -164,7 +164,7 @@ public class LeagueMemberService
             return Result.Failure("User is already in league.");
         }
 
-        var invite = await GetMatchingInvite(league, inviteUser.Email);
+        var invite = await GetMatchingInvite(league, inviteUser.GetEmail());
         if (invite is null)
         {
             return Result.Failure("User is not invited to this league.");

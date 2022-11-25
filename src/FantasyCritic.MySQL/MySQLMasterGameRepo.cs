@@ -452,7 +452,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
         }
 
-        return entity.ToDomain(user, masterGame, responseUser);
+        return entity.ToDomain(user!, masterGame, responseUser);
     }
 
     public async Task<MasterGameChangeRequest?> GetMasterGameChangeRequest(Guid requestID)
@@ -480,7 +480,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
         }
 
-        return entity.ToDomain(user, masterGame, responseUser);
+        return entity.ToDomain(user!, masterGame, responseUser);
     }
 
     public async Task DeleteMasterGameRequest(MasterGameRequest request)

@@ -10,4 +10,16 @@ public class FantasyCriticRole : IdentityRole<Guid>
         Name = name;
         NormalizedName = normalizedName;
     }
+
+    public new string Name
+    {
+        get => base.Name!;
+        set => base.Name = value;
+    }
+
+    public new string NormalizedName
+    {
+        get => base.NormalizedName!;
+        set => base.NormalizedName = value;
+    }
 }

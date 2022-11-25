@@ -6,7 +6,7 @@ public class ConfirmEmailModel
 {
     public ConfirmEmailModel(FantasyCriticUser user, string link)
     {
-        DisplayName = user.UserName;
+        DisplayName = user.GetUserName();
         Link = link;
     }
 

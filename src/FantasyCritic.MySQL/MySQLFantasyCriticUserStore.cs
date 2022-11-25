@@ -87,7 +87,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return IdentityResult.Success;
     }
 
-    public async Task<FantasyCriticUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+    public async Task<FantasyCriticUser?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -98,11 +98,10 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmail",
             new { normalizedEmail });
         var entity = userResult.SingleOrDefault();
-        //TODO .NET 7 Nullable
-        return entity?.ToDomain()!;
+        return entity?.ToDomain();
     }
 
-    public async Task<FantasyCriticUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
+    public async Task<FantasyCriticUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -118,11 +117,10 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             @"select * from tbl_user WHERE UserID = @userID",
             new { userID = parsedUserID });
         var entity = userResult.SingleOrDefault();
-        //TODO .NET 7 Nullable
-        return entity?.ToDomain()!;
+        return entity?.ToDomain();
     }
 
-    public async Task<FantasyCriticUser> FindByDisplayName(string displayName, int displayNumber)
+    public async Task<FantasyCriticUser?> FindByDisplayName(string displayName, int displayNumber)
     {
         string normalizedDisplayName = displayName.ToUpperInvariant();
         await using var connection = new MySqlConnection(_connectionString);
@@ -132,8 +130,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             @"select * from tbl_user WHERE UPPER(DisplayName) = @normalizedDisplayName and DisplayNumber = @displayNumber;",
             new { normalizedDisplayName, displayNumber });
         var entity = userResult.SingleOrDefault();
-        //TODO .NET 7 Nullable
-        return entity?.ToDomain()!;
+        return entity?.ToDomain();
     }
 
     public async Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers()
@@ -170,7 +167,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return results;
     }
 
-    public async Task<FantasyCriticUser> FindByNameAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
+    public async Task<FantasyCriticUser?> FindByNameAsync(string normalizedEmailAddress, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -181,13 +178,12 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmailAddress",
             new { normalizedEmailAddress });
         var entity = userResult.SingleOrDefault();
-        //TODO .NET 7 Nullable
-        return entity?.ToDomain()!;
+        return entity?.ToDomain();
     }
 
-    public Task<string> GetEmailAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetEmailAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(user.Email);
+        return Task.FromResult<string?>(user.Email);
     }
 
     public Task<bool> GetEmailConfirmedAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -195,17 +191,17 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return Task.FromResult(user.EmailConfirmed);
     }
 
-    public Task<string> GetNormalizedEmailAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetNormalizedEmailAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(user.NormalizedEmail);
+        return Task.FromResult<string?>(user.NormalizedEmail);
     }
 
-    public Task<string> GetNormalizedUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetNormalizedUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
         return Task.FromResult(user.NormalizedUserName);
     }
 
-    public Task<string> GetPasswordHashAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetPasswordHashAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
         return Task.FromResult(user.PasswordHash);
     }
@@ -215,9 +211,9 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return Task.FromResult(user.Id.ToString());
     }
 
-    public Task<string> GetUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetUserNameAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(user.UserName);
+        return Task.FromResult<string?>(user.UserName);
     }
 
     public Task<bool> HasPasswordAsync(FantasyCriticUser user, CancellationToken cancellationToken)
@@ -226,7 +222,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return Task.FromResult(has);
     }
 
-    public Task<string> GetSecurityStampAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetSecurityStampAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
         return Task.FromResult(user.SecurityStamp);
     }
@@ -237,7 +233,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return Task.CompletedTask;
     }
 
-    public Task SetEmailAsync(FantasyCriticUser user, string email, CancellationToken cancellationToken)
+    public Task SetEmailAsync(FantasyCriticUser user, string? email, CancellationToken cancellationToken)
     {
         user.Email = email;
         return Task.CompletedTask;
@@ -249,25 +245,25 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return Task.CompletedTask;
     }
 
-    public Task SetNormalizedEmailAsync(FantasyCriticUser user, string normalizedEmail, CancellationToken cancellationToken)
+    public Task SetNormalizedEmailAsync(FantasyCriticUser user, string? normalizedEmail, CancellationToken cancellationToken)
     {
         user.NormalizedEmail = normalizedEmail;
         return Task.CompletedTask;
     }
 
-    public Task SetNormalizedUserNameAsync(FantasyCriticUser user, string normalizedName, CancellationToken cancellationToken)
+    public Task SetNormalizedUserNameAsync(FantasyCriticUser user, string? normalizedName, CancellationToken cancellationToken)
     {
         user.NormalizedUserName = normalizedName;
         return Task.CompletedTask;
     }
 
-    public Task SetPasswordHashAsync(FantasyCriticUser user, string passwordHash, CancellationToken cancellationToken)
+    public Task SetPasswordHashAsync(FantasyCriticUser user, string? passwordHash, CancellationToken cancellationToken)
     {
         user.PasswordHash = passwordHash;
         return Task.CompletedTask;
     }
 
-    public Task SetUserNameAsync(FantasyCriticUser user, string userName, CancellationToken cancellationToken)
+    public Task SetUserNameAsync(FantasyCriticUser user, string? userName, CancellationToken cancellationToken)
     {
         user.UserName = userName;
         return Task.CompletedTask;
@@ -298,7 +294,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         foreach (Guid userID in userResults)
         {
             var user = await FindByIdAsync(userID.ToString(), cancellationToken);
-            users.Add(user);
+            users.Add(user!);
         }
         return users;
     }
@@ -435,10 +431,9 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return Task.CompletedTask;
     }
 
-    public Task<string> GetAuthenticatorKeyAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetAuthenticatorKeyAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
-        //TODO .NET 7 Nullable
-        return Task.FromResult(user.AuthenticatorKey)!;
+        return Task.FromResult(user.AuthenticatorKey);
     }
 
     public Task SetTwoFactorEnabledAsync(FantasyCriticUser user, bool enabled, CancellationToken cancellationToken)
@@ -565,7 +560,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return logins;
     }
 
-    public async Task<FantasyCriticUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+    public async Task<FantasyCriticUser?> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -584,8 +579,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(sql, queryObject);
         var entity = userResult.SingleOrDefault();
-        //TODO .NET 7 Nullable
-        return entity?.ToDomain()!;
+        return entity?.ToDomain();
     }
 
     public async Task<IReadOnlyList<FantasyCriticUserWithExternalLogins>> GetUsersWithExternalLogin(string provider)
@@ -713,15 +707,14 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return donors.ToList();
     }
 
-    public Task SetPhoneNumberAsync(FantasyCriticUser user, string phoneNumber, CancellationToken cancellationToken)
+    public Task SetPhoneNumberAsync(FantasyCriticUser user, string? phoneNumber, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
-    public Task<string> GetPhoneNumberAsync(FantasyCriticUser user, CancellationToken cancellationToken)
+    public Task<string?> GetPhoneNumberAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
-        //TODO .NET 7 Nullable
-        return Task.FromResult<string>(null!);
+        return Task.FromResult<string?>(null);
     }
 
     public Task<bool> GetPhoneNumberConfirmedAsync(FantasyCriticUser user, CancellationToken cancellationToken)

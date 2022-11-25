@@ -10,7 +10,7 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
     }
 
     public FantasyCriticUser(Guid userID, string displayName, string? patreonDonorNameOverride, int displayNumber, string emailAddress, string normalizedEmailAddress,
-        bool emailConfirmed, string securityStamp, string passwordHash, bool twoFactorEnabled, string? authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
+        bool emailConfirmed, string? securityStamp, string? passwordHash, bool twoFactorEnabled, string? authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
     {
         Id = userID;
         UserName = displayName;
@@ -26,6 +26,10 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
         LastChangedCredentials = lastChangedCredentials;
         IsDeleted = isDeleted;
     }
+
+    public string GetUserName() => UserName!;
+    public string GetEmail() => Email!;
+    public string GetNormalizedEmail() => NormalizedEmail!;
 
     public string? PatreonDonorNameOverride { get; }
     public int DisplayNumber { get; set; }

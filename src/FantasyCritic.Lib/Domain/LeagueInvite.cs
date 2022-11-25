@@ -16,7 +16,7 @@ public class LeagueInvite
     {
         InviteID = inviteID;
         League = league;
-        EmailAddress = user.Email;
+        EmailAddress = user.GetEmail();
         User = user;
     }
 

@@ -13,9 +13,9 @@ public class FantasyCriticUserViewModel
     public FantasyCriticUserViewModel(FantasyCriticUser user, IEnumerable<string> roles)
     {
         UserID = user.Id;
-        DisplayName = user.UserName;
+        DisplayName = user.GetUserName();
         DisplayNumber = user.DisplayNumber;
-        EmailAddress = user.Email;
+        EmailAddress = user.GetEmail();
         Roles = roles;
         EmailConfirmed = user.EmailConfirmed;
     }

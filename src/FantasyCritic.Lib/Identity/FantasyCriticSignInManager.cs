@@ -22,7 +22,7 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
         return base.SignInWithClaimsAsync(user, isPersistent, additionalClaims);
     }
 
-    public override Task SignInWithClaimsAsync(FantasyCriticUser user, AuthenticationProperties authenticationProperties,
+    public override Task SignInWithClaimsAsync(FantasyCriticUser user, AuthenticationProperties? authenticationProperties,
         IEnumerable<Claim> additionalClaims)
     {
         additionalClaims = AddScopes(additionalClaims);

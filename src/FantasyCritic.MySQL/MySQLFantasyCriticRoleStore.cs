@@ -25,12 +25,12 @@ public sealed class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
         throw new NotImplementedException();
     }
 
-    public Task<FantasyCriticRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+    public Task<FantasyCriticRole?> FindByIdAsync(string roleId, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<FantasyCriticRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+    public async Task<FantasyCriticRole?> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -41,11 +41,10 @@ public sealed class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
             @"select * from tbl_user_role WHERE NormalizedName = @normalizedRoleName",
             new { normalizedRoleName });
         var entity = userResult.SingleOrDefault();
-        //TODO .NET 7 Nullable
-        return entity?.ToDomain()!;
+        return entity?.ToDomain();
     }
 
-    public Task<string> GetNormalizedRoleNameAsync(FantasyCriticRole role, CancellationToken cancellationToken)
+    public Task<string?> GetNormalizedRoleNameAsync(FantasyCriticRole role, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
@@ -55,17 +54,17 @@ public sealed class MySQLFantasyCriticRoleStore : IFantasyCriticRoleStore
         throw new NotImplementedException();
     }
 
-    public Task<string> GetRoleNameAsync(FantasyCriticRole role, CancellationToken cancellationToken)
+    public Task<string?> GetRoleNameAsync(FantasyCriticRole role, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public Task SetNormalizedRoleNameAsync(FantasyCriticRole role, string normalizedName, CancellationToken cancellationToken)
+    public Task SetNormalizedRoleNameAsync(FantasyCriticRole role, string? normalizedName, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public Task SetRoleNameAsync(FantasyCriticRole role, string roleName, CancellationToken cancellationToken)
+    public Task SetRoleNameAsync(FantasyCriticRole role, string? roleName, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

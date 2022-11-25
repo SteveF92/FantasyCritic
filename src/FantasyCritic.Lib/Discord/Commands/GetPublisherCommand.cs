@@ -57,7 +57,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         }
 
         var foundByPlayerName =
-            leagueChannel.LeagueYear.Publishers.Where(p => p.User.UserName.ToLower().Contains(termToSearch)).ToList();
+            leagueChannel.LeagueYear.Publishers.Where(p => p.User.GetUserName().ToLower().Contains(termToSearch)).ToList();
 
         var foundByPublisherName =
             leagueChannel.LeagueYear.Publishers.Where(p => p.PublisherName.ToLower().Contains(termToSearch)).ToList();

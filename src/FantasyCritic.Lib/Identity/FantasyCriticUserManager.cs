@@ -24,32 +24,32 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
 
     public override async Task<IdentityResult> CreateAsync(FantasyCriticUser user, string password)
     {
-        var existingAccountWithEmail = await _userStore.FindByEmailAsync(user.Email, CancellationToken.None);
+        var existingAccountWithEmail = await _userStore.FindByEmailAsync(user.GetEmail(), CancellationToken.None);
         if (existingAccountWithEmail is not null)
         {
             return IdentityResult.Failed(new IdentityError() { Code = "Email Taken", Description = "An account with that email address already exists." });
         }
 
-        int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
+        int openUserNumber = await _userStore.GetOpenDisplayNumber(user.GetUserName());
         var now = _clock.GetCurrentInstant();
-        var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,
-            user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
+        var fullUser = new FantasyCriticUser(user.Id, user.GetUserName(), null, openUserNumber, user.GetEmail(),
+            user.GetNormalizedEmail(), user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
         var createdUser = await base.CreateAsync(fullUser, password);
         return createdUser;
     }
 
     public override async Task<IdentityResult> CreateAsync(FantasyCriticUser user)
     {
-        var existingAccountWithEmail = await _userStore.FindByEmailAsync(user.Email, CancellationToken.None);
+        var existingAccountWithEmail = await _userStore.FindByEmailAsync(user.GetEmail(), CancellationToken.None);
         if (existingAccountWithEmail is not null)
         {
             return IdentityResult.Failed(new IdentityError() { Code = "Email Taken", Description = "An account with that email address already exists." });
         }
 
-        int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
+        int openUserNumber = await _userStore.GetOpenDisplayNumber(user.GetUserName());
         var now = _clock.GetCurrentInstant();
-        var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,
-            user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
+        var fullUser = new FantasyCriticUser(user.Id, user.GetUserName(), null, openUserNumber, user.GetEmail(),
+            user.GetNormalizedEmail(), user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
         var createdUser = await base.CreateAsync(fullUser);
         return createdUser;
     }
@@ -59,7 +59,7 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         return _userStore.GetUsersWithExternalLogin("Patreon");
     }
 
-    public Task<FantasyCriticUser> FindByDisplayName(string displayName, int displayNumber)
+    public Task<FantasyCriticUser?> FindByDisplayName(string displayName, int displayNumber)
     {
         return _userStore.FindByDisplayName(displayName, displayNumber);
     }

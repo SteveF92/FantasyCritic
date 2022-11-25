@@ -103,7 +103,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
         var yearQuarter = await GetYearQuarterOrThrow(entity.Year, entity.Quarter);
         var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
-        var domain = entity.ToDomain(yearQuarter, user, publisherGames);
+        var domain = entity.ToDomain(yearQuarter, user!, publisherGames);
         return domain;
     }
 

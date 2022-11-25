@@ -12,11 +12,11 @@ internal class FantasyCriticUserEntity
     public FantasyCriticUserEntity(FantasyCriticUser user)
     {
         UserID = user.Id;
-        DisplayName = user.UserName;
+        DisplayName = user.UserName!;
         PatreonDonorNameOverride = user.PatreonDonorNameOverride;
         DisplayNumber = user.DisplayNumber;
-        EmailAddress = user.Email;
-        NormalizedEmailAddress = user.NormalizedEmail;
+        EmailAddress = user.Email!;
+        NormalizedEmailAddress = user.NormalizedEmail!;
         EmailConfirmed = user.EmailConfirmed;
         SecurityStamp = user.SecurityStamp;
         PasswordHash = user.PasswordHash;
@@ -33,8 +33,8 @@ internal class FantasyCriticUserEntity
     public string EmailAddress { get; set; } = null!;
     public string NormalizedEmailAddress { get; set; } = null!;
     public bool EmailConfirmed { get; set; }
-    public string SecurityStamp { get; set; } = null!;
-    public string PasswordHash { get; set; } = null!;
+    public string? SecurityStamp { get; set; }
+    public string? PasswordHash { get; set; }
     public bool TwoFactorEnabled { get; set; }
     public string? AuthenticatorKey { get; set; }
     public Instant LastChangedCredentials { get; set; }
