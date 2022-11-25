@@ -148,20 +148,23 @@ public static class HostingExtensions
             client.BaseAddress = new Uri("https://api.ggapp.io/");
         });
 
-        //Add scheduled tasks & scheduler
-        services.AddSingleton<IScheduledTask, RefreshDataTask>();
-        services.AddSingleton<IScheduledTask, TimeFlagsTask>();
-        services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
-        services.AddSingleton<IScheduledTask, PublicBiddingNotificationTask>();
-        services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
-        services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
-        services.AddSingleton<IScheduledTask, ExpireTradesTask>();
-        services.AddSingleton<IScheduledTask, GameReleaseNotificationTask>();
-        services.AddScheduler((_, args) =>
+        if (!environment.IsDevelopment())
         {
-            args.SetObserved();
-        });
-
+            //Add scheduled tasks & scheduler
+            services.AddSingleton<IScheduledTask, RefreshDataTask>();
+            services.AddSingleton<IScheduledTask, TimeFlagsTask>();
+            services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
+            services.AddSingleton<IScheduledTask, PublicBiddingNotificationTask>();
+            services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
+            services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
+            services.AddSingleton<IScheduledTask, ExpireTradesTask>();
+            services.AddSingleton<IScheduledTask, GameReleaseNotificationTask>();
+            services.AddScheduler((_, args) =>
+            {
+                args.SetObserved();
+            });
+        }
+        
         if (!string.IsNullOrWhiteSpace(discordBotToken) && discordBotToken != "secret")
         {
             //Discord request service

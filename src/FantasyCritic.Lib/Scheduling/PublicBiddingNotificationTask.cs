@@ -19,11 +19,6 @@ public class PublicBiddingNotificationTask : IScheduledTask
 
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-#if DEBUG
-        Console.WriteLine("Not sending emails - DEBUG version");
-        return;
-#endif
-#pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using var scope = serviceScopeFactory.CreateScope();
@@ -39,10 +34,9 @@ public class PublicBiddingNotificationTask : IScheduledTask
 
         var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
         var discordPushService = scope.ServiceProvider.GetRequiredService<DiscordPushService>();
-        
+
         await emailSendingService.SendPublicBidEmails(publicBiddingSets);
         await discordPushService.SendPublicBiddingSummary(publicBiddingSets);
-#pragma warning restore CS0162
     }
 
     private static bool IsTimeToNotify(Instant now)

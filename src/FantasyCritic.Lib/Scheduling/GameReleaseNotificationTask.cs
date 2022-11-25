@@ -18,11 +18,6 @@ public class GameReleaseNotificationTask : IScheduledTask
 
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-#if DEBUG
-        Console.WriteLine("Not sending public bid notifications - DEBUG version");
-        return;
-#endif
-#pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using var scope = serviceScopeFactory.CreateScope();
@@ -46,7 +41,6 @@ public class GameReleaseNotificationTask : IScheduledTask
         }
 
         await discordPushService.SendGameReleaseUpdates(masterGamesReleasingToday, easternDate.Year);
-#pragma warning restore CS0162
     }
 
     private static bool IsTimeToNotify(Instant now)

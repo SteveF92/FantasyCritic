@@ -16,16 +16,10 @@ public class ProcessSpecialAuctionsTask : IScheduledTask
 
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-#if DEBUG
-        Console.WriteLine("Not running special auctions - DEBUG version");
-        return;
-#endif
-#pragma warning disable CS0162
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using var scope = serviceScopeFactory.CreateScope();
         var adminService = scope.ServiceProvider.GetRequiredService<AdminService>();
         await adminService.ProcessSpecialAuctions();
-#pragma warning restore CS0162
     }
 }
