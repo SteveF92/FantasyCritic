@@ -64,7 +64,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         };
 
         const string leagueChannelSQL =
-            "select LeagueID, GuildID, ChannelID from tbl_discord_leaguechannel WHERE LeagueID = @leagueID";
+            "select * from tbl_discord_leaguechannel WHERE LeagueID = @leagueID";
 
         var leagueChannels = await connection.QueryAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
         return leagueChannels?.Select(l => l.ToMinimalDomain()).ToList();
@@ -80,7 +80,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         };
 
         const string leagueChannelSQL =
-            "select LeagueID, GuildID, ChannelID from tbl_discord_leaguechannel WHERE GuildID = @guildID AND ChannelID = @channelID";
+            "select * from tbl_discord_leaguechannel WHERE GuildID = @guildID AND ChannelID = @channelID";
 
         var leagueChannelEntity = await connection.QuerySingleOrDefaultAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
         if (leagueChannelEntity is null)
