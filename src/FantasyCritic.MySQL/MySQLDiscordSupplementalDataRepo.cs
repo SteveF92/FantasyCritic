@@ -11,26 +11,26 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
         _connectionString = configuration.ConnectionString;
     }
 
-    public async Task<bool> GameInLeagueOrFormerlyInLeague(MasterGameYear masterGameYear, Guid leagueID)
+    public async Task<IReadOnlySet<Guid>> GetLeaguesWithOrFormerlyWithGame(MasterGameYear masterGameYear)
     {
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
         {
             masterGameYear.MasterGame.MasterGameID,
-            masterGameYear.Year,
-            LeagueID = leagueID
+            masterGameYear.Year
         };
 
-        string sql = "SELECT DISTINCT SubQuery.GameExists FROM " +
-                     "(SELECT 1 AS GameExists FROM tbl_league_publisher " +
-                     "JOIN tbl_league_publishergame ON tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID " +
-                     "WHERE LeagueID = @LeagueID AND YEAR = @Year AND MasterGameID = @MasterGameID " +
-                     "UNION " +
-                     "SELECT 1 AS GameExists FROM tbl_league_publisher " +
-                     "JOIN tbl_league_formerpublishergame ON tbl_league_publisher.PublisherID = tbl_league_formerpublishergame.PublisherID " +
-                     "WHERE LeagueID = @LeagueID AND YEAR = @Year AND MasterGameID = @MasterGameID) AS SubQuery";
+        string sql = "SELECT DISTINCT SubQuery.LeagueID FROM " +
+            "(SELECT distinct LeagueID FROM tbl_league_publisher " +
+            "JOIN tbl_league_publishergame ON tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID " +
+            "WHERE YEAR = 2022 AND MasterGameID = @MasterGameID)" +
+            "UNION " +
+            "SELECT distinct LeagueID FROM tbl_league_publisher " +
+            "JOIN tbl_league_formerpublishergame ON tbl_league_publisher.PublisherID = tbl_league_formerpublishergame.PublisherID " +
+            "WHERE YEAR = 2022 AND MasterGameID = @MasterGameID)" +
+            ") AS SubQuery";
 
-        var result = await connection.QuerySingleOrDefaultAsync<int?>(sql, queryObject);
-        return result is not null;
+        var result = await connection.QueryAsync<Guid>(sql, queryObject);
+        return result.ToHashSet();
     }
 }

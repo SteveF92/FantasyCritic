@@ -140,13 +140,14 @@ public class DiscordPushService
             return;
         }
 
+        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(game);
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
         {
             if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
             {
-                var gameIsRelevant = await GameIsRelevant(game, wasReleasingInYear, leagueChannel);
+                var gameIsRelevant = GameIsRelevant(game, wasReleasingInYear, leaguesWithGame, leagueChannel);
                 if (!gameIsRelevant)
                 {
                     continue;
@@ -164,20 +165,19 @@ public class DiscordPushService
         }
     }
 
-    private async Task<bool> GameIsRelevant(MasterGameYear masterGameYear, bool wasReleasingInYear, MinimalLeagueChannel channel)
+    private bool GameIsRelevant(MasterGameYear masterGameYear, bool wasReleasingInYear, IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
     {
         if (wasReleasingInYear)
         {
             return true;
         }
 
-        if (masterGameYear.IsRelevantInYear(false))
+        if (masterGameYear.IsRelevantInYear(true))
         {
             return true;
         }
 
-        bool inLeagueOrWasInLeague = await _supplementalDataRepo.GameInLeagueOrFormerlyInLeague(masterGameYear, channel.LeagueID);
-        return inLeagueOrWasInLeague;
+        return leaguesWithGame.Contains(channel.LeagueID);
     }
 
     public async Task SendLeagueActionMessage(LeagueAction action)
