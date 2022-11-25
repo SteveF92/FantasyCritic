@@ -122,6 +122,11 @@ public class DiscordPushService
             foreach (var leagueChannel in newsEnabledChannels)
             {
                 var guild = _client.GetGuild(leagueChannel.GuildID);
+                if (guild is null)
+                {
+                    continue;
+                }
+
                 var channel = guild.GetChannel(leagueChannel.ChannelID);
                 if (channel is not SocketTextChannel textChannel)
                 {
@@ -155,6 +160,11 @@ public class DiscordPushService
             }
 
             var guild = _client.GetGuild(leagueChannel.GuildID);
+            if (guild is null)
+            {
+                continue;
+            }
+
             var channel = guild.GetChannel(leagueChannel.ChannelID);
             if (channel is not SocketTextChannel textChannel)
             {
@@ -199,6 +209,11 @@ public class DiscordPushService
         foreach (var leagueChannel in leagueChannels)
         {
             var guild = _client.GetGuild(leagueChannel.GuildID);
+            if (guild is null)
+            {
+                continue;
+            }
+
             SocketTextChannel? channel = guild.GetTextChannel(leagueChannel.ChannelID);
             if (channel is null)
             {
@@ -231,6 +246,11 @@ public class DiscordPushService
         }
 
         var guild = _client.GetGuild(leagueChannel.GuildID);
+        if (guild is null)
+        {
+            return;
+        }
+
         var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
         var embedFieldBuilders = new List<EmbedFieldBuilder>();
@@ -284,6 +304,11 @@ public class DiscordPushService
         }
 
         var guild = _client.GetGuild(leagueChannel.GuildID);
+        if (guild is null)
+        {
+            return;
+        }
+
         var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
         var messageToSend = $"Publisher **{oldPublisherName}** is now known as **{newPublisherName}**";
@@ -336,6 +361,11 @@ public class DiscordPushService
             foreach (var leagueChannel in leagueChannels)
             {
                 var guild = _client.GetGuild(leagueChannel.GuildID);
+                if (guild is null)
+                {
+                    continue;
+                }
+
                 var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
                 await channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
@@ -459,6 +489,11 @@ public class DiscordPushService
             foreach (var messageToSend in messageListToSend)
             {
                 var guild = _client.GetGuild(leagueChannel.GuildID);
+                if (guild is null)
+                {
+                    continue;
+                }
+
                 var channel = guild.GetTextChannel(leagueChannel.ChannelID);
                 await channel.TrySendMessageAsync(messageToSend);
             }
@@ -481,6 +516,11 @@ public class DiscordPushService
         }
 
         var guild = _client.GetGuild(leagueChannel.GuildID);
+        if (guild is null)
+        {
+            return;
+        }
+
         var channel = guild.GetTextChannel(leagueChannel.ChannelID);
 
         var header = $"The following trade has been **{trade.Status.Value.ToUpper()}**";

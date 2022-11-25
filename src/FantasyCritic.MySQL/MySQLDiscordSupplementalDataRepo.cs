@@ -20,15 +20,22 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
             masterGameYear.Year
         };
 
-        string sql = "SELECT DISTINCT SubQuery.LeagueID FROM " +
-            "(SELECT distinct LeagueID FROM tbl_league_publisher " +
-            "JOIN tbl_league_publishergame ON tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID " +
-            "WHERE YEAR = 2022 AND MasterGameID = @MasterGameID)" +
-            "UNION " +
-            "SELECT distinct LeagueID FROM tbl_league_publisher " +
-            "JOIN tbl_league_formerpublishergame ON tbl_league_publisher.PublisherID = tbl_league_formerpublishergame.PublisherID " +
-            "WHERE YEAR = 2022 AND MasterGameID = @MasterGameID)" +
-            ") AS SubQuery";
+        string sql = "SELECT DISTINCT SubQuery.leagueid " +
+            "FROM   (SELECT DISTINCT leagueid " +
+            "        FROM   tbl_league_publisher " +
+            "               JOIN tbl_league_publishergame " +
+            "                 ON tbl_league_publisher.publisherid = " +
+            "                    tbl_league_publishergame.publisherid " +
+            "        WHERE  Year = @Year " +
+            "               AND MasterGameID = @MasterGameID " +
+            "       UNION " +
+            "        SELECT DISTINCT leagueid " +
+            "        FROM   tbl_league_publisher " +
+            "               JOIN tbl_league_formerpublishergame " +
+            "                 ON tbl_league_publisher.publisherid = " +
+            "                    tbl_league_formerpublishergame.publisherid " +
+            "       WHERE  Year = @Year " +
+            "               AND MasterGameID = @MasterGameID) AS SubQuery ";
 
         var result = await connection.QueryAsync<Guid>(sql, queryObject);
         return result.ToHashSet();
