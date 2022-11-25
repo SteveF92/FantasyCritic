@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using FantasyCritic.Lib.Identity;
@@ -235,7 +236,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public Task SetEmailAsync(FantasyCriticUser user, string? email, CancellationToken cancellationToken)
     {
-        user.Email = email;
+        user.Email = email!;
         return Task.CompletedTask;
     }
 
@@ -247,7 +248,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public Task SetNormalizedEmailAsync(FantasyCriticUser user, string? normalizedEmail, CancellationToken cancellationToken)
     {
-        user.NormalizedEmail = normalizedEmail;
+        user.NormalizedEmail = normalizedEmail!;
         return Task.CompletedTask;
     }
 
@@ -265,7 +266,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
     public Task SetUserNameAsync(FantasyCriticUser user, string? userName, CancellationToken cancellationToken)
     {
-        user.UserName = userName;
+        user.UserName = userName!;
         return Task.CompletedTask;
     }
 
@@ -293,8 +294,8 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         List<FantasyCriticUser> users = new List<FantasyCriticUser>();
         foreach (Guid userID in userResults)
         {
-            var user = await FindByIdAsync(userID.ToString(), cancellationToken);
-            users.Add(user!);
+            var user = await this.FindByIdAsyncOrThrow(userID, cancellationToken);
+            users.Add(user);
         }
         return users;
     }

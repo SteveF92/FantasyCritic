@@ -6,7 +6,7 @@ public class ChangeEmailModel
 {
     public ChangeEmailModel(FantasyCriticUser user, string link)
     {
-        DisplayName = user.GetUserName();
+        DisplayName = user.UserName;
         Link = link;
     }
 

@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Extensions;
@@ -45,5 +46,36 @@ public static class RepositoryInterfaceExtensions
         }
 
         return masterGameResult;
+    }
+
+    public static Task<FantasyCriticUser?> FindByIdAsync(this IReadOnlyFantasyCriticUserStore repo, Guid id, CancellationToken cancellationToken)
+    {
+        return repo.FindByIdAsync(id.ToString(), cancellationToken);
+    }
+
+    public static async Task<FantasyCriticUser> FindByIdAsyncOrThrow(this IReadOnlyFantasyCriticUserStore repo, Guid id, CancellationToken cancellationToken)
+    {
+        var userResult = await repo.FindByIdAsync(id.ToString(), cancellationToken);
+        if (userResult is null)
+        {
+            throw new Exception($"User not found: {id}");
+        }
+
+        return userResult;
+    }
+
+    public static Task<FantasyCriticUser?> GetUserThatMightExist(this IReadOnlyFantasyCriticUserStore repo, Guid? id, CancellationToken cancellationToken)
+    {
+        if (!id.HasValue)
+        {
+            return Task.FromResult<FantasyCriticUser?>(null);
+        }
+
+        return repo.FindByIdAsync(id.Value.ToString(), cancellationToken);
+    }
+
+    public static Task<FantasyCriticUser?> GetUserThatMightExist(this IReadOnlyFantasyCriticUserStore repo, Guid? id)
+    {
+        return GetUserThatMightExist(repo, id, CancellationToken.None);
     }
 }

@@ -72,7 +72,7 @@ public class EmailSendingService
 
     private async Task SendPublicBiddingEmailToUser(FantasyCriticUser user, IReadOnlyList<LeagueYearPublicBiddingSet> publicBiddingSet)
     {
-        string emailAddress = user.GetEmail();
+        string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - This Week's Public Bids";
         PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress, _isProduction);
 
@@ -83,7 +83,7 @@ public class EmailSendingService
 
     public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
     {
-        string emailAddress = user.GetEmail();
+        string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - Confirm your email address.";
         ConfirmEmailModel model = new ConfirmEmailModel(user, link);
 
@@ -94,7 +94,7 @@ public class EmailSendingService
 
     public async Task SendForgotPasswordEmail(FantasyCriticUser user, string link)
     {
-        string emailAddress = user.GetEmail();
+        string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - Reset Your Password.";
 
         PasswordResetModel model = new PasswordResetModel(user, link);
@@ -105,7 +105,7 @@ public class EmailSendingService
 
     public async Task SendChangeEmail(FantasyCriticUser user, string link)
     {
-        string emailAddress = user.GetEmail();
+        string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - Change Your Email.";
 
         ChangeEmailModel model = new ChangeEmailModel(user, link);

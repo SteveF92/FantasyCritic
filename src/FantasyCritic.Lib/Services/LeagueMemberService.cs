@@ -164,7 +164,7 @@ public class LeagueMemberService
             return Result.Failure("User is already in league.");
         }
 
-        var invite = await GetMatchingInvite(league, inviteUser.GetEmail());
+        var invite = await GetMatchingInvite(league, inviteUser.Email);
         if (invite is null)
         {
             return Result.Failure("User is not invited to this league.");

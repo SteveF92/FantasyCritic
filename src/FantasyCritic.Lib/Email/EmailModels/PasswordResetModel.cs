@@ -6,7 +6,7 @@ public class PasswordResetModel
 {
     public PasswordResetModel(FantasyCriticUser user, string link)
     {
-        DisplayName = user.GetUserName();
+        DisplayName = user.UserName;
         Link = link;
     }
 

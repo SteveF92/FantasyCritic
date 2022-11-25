@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -445,14 +446,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             masterGame = await GetMasterGame(entity.MasterGameID.Value);
         }
 
-        var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
-        FantasyCriticUser? responseUser = null;
-        if (entity.ResponseUserID.HasValue)
-        {
-            responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
-        }
+        var user = await _userStore.FindByIdAsyncOrThrow(entity.UserID, CancellationToken.None);
+        FantasyCriticUser? responseUser = await _userStore.GetUserThatMightExist(entity.ResponseUserID);
 
-        return entity.ToDomain(user!, masterGame, responseUser);
+        return entity.ToDomain(user, masterGame, responseUser);
     }
 
     public async Task<MasterGameChangeRequest?> GetMasterGameChangeRequest(Guid requestID)
@@ -473,14 +470,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             throw new Exception($"Something has gone horribly wrong with master game change requests. ID: {requestID}");
         }
 
-        var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
-        FantasyCriticUser? responseUser = null;
-        if (entity.ResponseUserID.HasValue)
-        {
-            responseUser = await _userStore.FindByIdAsync(entity.ResponseUserID.Value.ToString(), CancellationToken.None);
-        }
+        var user = await _userStore.FindByIdAsyncOrThrow(entity.UserID, CancellationToken.None);
+        FantasyCriticUser? responseUser = await _userStore.GetUserThatMightExist(entity.ResponseUserID);
 
-        return entity.ToDomain(user!, masterGame, responseUser);
+        return entity.ToDomain(user, masterGame, responseUser);
     }
 
     public async Task DeleteMasterGameRequest(MasterGameRequest request)
