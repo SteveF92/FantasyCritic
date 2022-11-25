@@ -88,7 +88,7 @@ public class RDSRefresher
             DBSnapshotIdentifier = snapshot.DBSnapshotIdentifier,
             LicenseModel = instance.LicenseModel,
             DBInstanceClass = instance.DBInstanceClass,
-            MultiAZ = instance.MultiAZ,
+            MultiAZ = false,
             StorageType = instance.StorageType,
 
             DBInstanceIdentifier = instance.DBInstanceIdentifier,
