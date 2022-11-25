@@ -103,6 +103,7 @@ public class AdminService
             if (openCriticGame is not null)
             {
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
+                await _discordPushService.SendGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score);
                 gamesFetched++;
                 if (gamesFetched % 100 == 0)
                 {
