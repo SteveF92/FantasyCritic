@@ -1,9 +1,5 @@
-using Dapper;
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.SharedSerialization.Database;
-using MySqlConnector;
 using Serilog;
 
 namespace FantasyCritic.MySQL.SyncingRepos;

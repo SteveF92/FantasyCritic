@@ -1,5 +1,3 @@
-using FantasyCritic.Lib.Domain;
-
 namespace FantasyCritic.Lib.Discord.Models;
 
 public class MatchedGameDisplay

@@ -1,6 +1,3 @@
-using FantasyCritic.Lib.Domain;
-using NodaTime;
-
 namespace FantasyCritic.MySQL.Entities;
 
 public class MasterSubGameEntity

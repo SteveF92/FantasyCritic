@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Dapper;
 using Dapper.NodaTime;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using NodaTime;
 using FantasyCritic.Lib.DependencyInjection;
@@ -39,9 +32,9 @@ public static class Program
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
-        _betaConnectionString = configuration["betaConnectionString"];
-        _productionRDSName = configuration["productionRDSName"];
-        _betaRDSName = configuration["betaRDSName"];
+        _betaConnectionString = configuration["betaConnectionString"]!;
+        _productionRDSName = configuration["productionRDSName"]!;
+        _betaRDSName = configuration["betaRDSName"]!;
 
         DapperNodaTimeSetup.Register();
 
