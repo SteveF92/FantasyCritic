@@ -181,7 +181,48 @@ public class DiscordPushService
         }
     }
 
-    private bool GameIsRelevant(MasterGameYear masterGameYear, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
+    public async Task SendGameReleaseUpdates(IEnumerable<MasterGameYear> masterGamesReleasingToday, int year)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday, year);
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
+        foreach (var leagueChannel in newsEnabledChannels)
+        {
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            var channel = guild?.GetChannel(leagueChannel.ChannelID);
+            if (channel is not SocketTextChannel textChannel)
+            {
+                continue;
+            }
+
+            IReadOnlyList<MasterGameYear> relevantGamesForLeague;
+            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
+            {
+                relevantGamesForLeague = masterGamesReleasingToday.Where(x => ReleasedGameIsRelevant(x, leagueHasGameLookup, leagueChannel)).ToList();
+            }
+            else
+            {
+                relevantGamesForLeague = masterGamesReleasingToday.ToList();
+            }
+
+            if (!relevantGamesForLeague.Any())
+            {
+                continue;
+            }
+
+            var releaseMessages = relevantGamesForLeague.Select(x => $"**{x.MasterGame.GameName}** has released!");
+            var releaseMessage = string.Join("\n", releaseMessages);
+            await textChannel.TrySendMessageAsync(releaseMessage);
+        }
+    }
+
+    private static bool GameIsRelevant(MasterGameYear masterGameYear, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
     {
         if (releaseStatusChanged)
         {
@@ -194,6 +235,17 @@ public class DiscordPushService
         }
 
         return leaguesWithGame.Contains(channel.LeagueID);
+    }
+
+    private static bool ReleasedGameIsRelevant(MasterGameYear masterGameYear, ILookup<Guid, Guid> leagueHasGameLookup, MinimalLeagueChannel leagueChannel)
+    {
+        if (masterGameYear.IsRelevantInYear(true))
+        {
+            return true;
+        }
+
+        var gameIsOrWasInLeague = leagueHasGameLookup[leagueChannel.LeagueID].Contains(masterGameYear.MasterGame.MasterGameID);
+        return gameIsOrWasInLeague;
     }
 
     public async Task SendLeagueActionMessage(LeagueAction action)

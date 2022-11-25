@@ -156,6 +156,7 @@ public static class HostingExtensions
         services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
         services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
         services.AddSingleton<IScheduledTask, ExpireTradesTask>();
+        services.AddSingleton<IScheduledTask, GameReleaseNotificationTask>();
         services.AddScheduler((_, args) =>
         {
             args.SetObserved();

@@ -4,7 +4,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace FantasyCritic.Lib.Scheduling;
 
@@ -29,7 +28,8 @@ public class PublicBiddingNotificationTask : IScheduledTask
 
         using var scope = serviceScopeFactory.CreateScope();
         var clock = scope.ServiceProvider.GetRequiredService<IClock>();
-        var isTimeToNotify = IsTimeToNotify(scope.ServiceProvider);
+        var now = clock.GetCurrentInstant();
+        var isTimeToNotify = IsTimeToNotify(now);
         if (!isTimeToNotify)
         {
             return;
@@ -45,12 +45,9 @@ public class PublicBiddingNotificationTask : IScheduledTask
 #pragma warning restore CS0162
     }
 
-    private static bool IsTimeToNotify(IServiceProvider serviceProvider)
+    private static bool IsTimeToNotify(Instant now)
     {
-        var clock = serviceProvider.GetRequiredService<IClock>();
-        var now = clock.GetCurrentInstant();
         var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
-
         var dayOfWeek = nycNow.DayOfWeek;
         var timeOfDay = nycNow.TimeOfDay;
         var earliestTimeToSet = TimeExtensions.PublicBiddingRevealTime.Minus(Period.FromMinutes(1));

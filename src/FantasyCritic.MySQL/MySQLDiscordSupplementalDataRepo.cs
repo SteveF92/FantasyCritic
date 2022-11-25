@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.MySQL.Entities;
 
 namespace FantasyCritic.MySQL;
 public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
@@ -20,8 +21,8 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
             masterGameYear.Year
         };
 
-        string sql = "SELECT DISTINCT SubQuery.leagueid " +
-            "FROM   (SELECT DISTINCT leagueid " +
+        string sql = "SELECT DISTINCT SubQuery.LeagueID " +
+            "FROM   (SELECT LeagueID " +
             "        FROM   tbl_league_publisher " +
             "               JOIN tbl_league_publishergame " +
             "                 ON tbl_league_publisher.publisherid = " +
@@ -29,7 +30,7 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
             "        WHERE  Year = @Year " +
             "               AND MasterGameID = @MasterGameID " +
             "       UNION " +
-            "        SELECT DISTINCT leagueid " +
+            "        SELECT LeagueID " +
             "        FROM   tbl_league_publisher " +
             "               JOIN tbl_league_formerpublishergame " +
             "                 ON tbl_league_publisher.publisherid = " +
@@ -39,5 +40,35 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
 
         var result = await connection.QueryAsync<Guid>(sql, queryObject);
         return result.ToHashSet();
+    }
+
+    public async Task<ILookup<Guid, Guid>> GetLeaguesWithOrFormerlyWithGames(IEnumerable<MasterGameYear> masterGamesReleasingToday, int year)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
+        {
+            masterGameIDs = masterGamesReleasingToday.Select(x => x.MasterGame.MasterGameID),
+            year
+        };
+
+        string sql = "SELECT DISTINCT SubQuery.LeagueID, SubQuery.MasterGameID " +
+                     "FROM   (SELECT LeagueID, MasterGameID " +
+                     "        FROM   tbl_league_publisher " +
+                     "               JOIN tbl_league_publishergame " +
+                     "                 ON tbl_league_publisher.publisherid = " +
+                     "                    tbl_league_publishergame.publisherid " +
+                     "        WHERE  Year = @year " +
+                     "               AND MasterGameID IN @masterGameIDs " +
+                     "       UNION " +
+                     "        SELECT SubQuery.LeagueID, SubQuery.MasterGameID " +
+                     "        FROM   tbl_league_publisher " +
+                     "               JOIN tbl_league_formerpublishergame " +
+                     "                 ON tbl_league_publisher.publisherid = " +
+                     "                    tbl_league_formerpublishergame.publisherid " +
+                     "       WHERE  Year = @year " +
+                     "               AND MasterGameID IN @masterGameIDs) AS SubQuery ";
+
+        var result = await connection.QueryAsync<LeagueYearHasGameEntity>(sql, queryObject);
+        return result.ToLookup(x => x.LeagueID, y => y.MasterGameID);
     }
 }
