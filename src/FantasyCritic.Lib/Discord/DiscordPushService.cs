@@ -132,7 +132,7 @@ public class DiscordPushService
         }
     }
 
-    public async Task SendMasterGameEditMessage(MasterGameYear game, IReadOnlyList<string> changes, bool wasReleasingInYear)
+    public async Task SendMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -140,14 +140,16 @@ public class DiscordPushService
             return;
         }
 
-        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(game);
+        bool releaseStatusChanged = existingGame.WillRelease() != editedGame.WillRelease();
+
+        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(editedGame);
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
         {
             if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
             {
-                var gameIsRelevant = GameIsRelevant(game, wasReleasingInYear, leaguesWithGame, leagueChannel);
+                var gameIsRelevant = GameIsRelevant(existingGame, releaseStatusChanged, leaguesWithGame, leagueChannel);
                 if (!gameIsRelevant)
                 {
                     continue;
@@ -160,14 +162,28 @@ public class DiscordPushService
             {
                 continue;
             }
-            var changesMessage = string.Join("\n", changes);
-            await textChannel.TrySendMessageAsync($"**{game.MasterGame.GameName}**\n{changesMessage}");
+
+            var editableChanges = changes.ToList();
+            if (releaseStatusChanged)
+            {
+                if (editedGame.WillRelease())
+                {
+                    editableChanges.Add($"**{editedGame.MasterGame.GameName}** will release this year!");
+                }
+                else
+                {
+                    editableChanges.Add($"**{editedGame.MasterGame.GameName}** will NOT release this year!");
+                }
+            }
+
+            var changesMessage = string.Join("\n", editableChanges);
+            await textChannel.TrySendMessageAsync($"**{editedGame.MasterGame.GameName}**\n{changesMessage}");
         }
     }
 
-    private bool GameIsRelevant(MasterGameYear masterGameYear, bool wasReleasingInYear, IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
+    private bool GameIsRelevant(MasterGameYear masterGameYear, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
     {
-        if (wasReleasingInYear)
+        if (releaseStatusChanged)
         {
             return true;
         }
