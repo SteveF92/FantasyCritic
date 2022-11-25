@@ -60,7 +60,7 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
                      "        WHERE  Year = @year " +
                      "               AND MasterGameID IN @masterGameIDs " +
                      "       UNION " +
-                     "        SELECT SubQuery.LeagueID, SubQuery.MasterGameID " +
+                     "        SELECT LeagueID, MasterGameID " +
                      "        FROM   tbl_league_publisher " +
                      "               JOIN tbl_league_formerpublishergame " +
                      "                 ON tbl_league_publisher.publisherid = " +
@@ -68,7 +68,7 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
                      "       WHERE  Year = @year " +
                      "               AND MasterGameID IN @masterGameIDs) AS SubQuery ";
 
-        var result = await connection.QueryAsync<LeagueYearHasGameEntity>(sql, queryObject);
+        var result = await connection.QueryAsync<CurrentLeagueYearHasGameEntity>(sql, queryObject);
         return result.ToLookup(x => x.LeagueID, y => y.MasterGameID);
     }
 }
