@@ -2,7 +2,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueWithStatusViewModel
 {
-    public LeagueWithStatusViewModel(League league, LeagueYear relevantLeagueYear, bool isManager, bool userIsInLeague, bool userIsFollowingLeague)
+    public LeagueWithStatusViewModel(League league, bool isManager, bool userIsInLeague, bool userIsFollowingLeague)
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
@@ -16,7 +16,7 @@ public class LeagueWithStatusViewModel
         UserIsInLeague = userIsInLeague;
         UserIsFollowingLeague = userIsFollowingLeague;
 
-        OneShotMode = relevantLeagueYear.Options.OneShotMode;
+        OneShotMode = league.MostRecentYearOneShotMode;
     }
 
     public Guid LeagueID { get; }

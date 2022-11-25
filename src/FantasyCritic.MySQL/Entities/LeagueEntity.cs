@@ -27,9 +27,9 @@ internal class LeagueEntity
     public int NumberOfFollowers { get; set; }
     public bool Archived { get; set; }
 
-    public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years)
+    public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years, bool mostRecentYearOneShotMode)
     {
-        League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague, Archived, NumberOfFollowers);
+        League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague, Archived, NumberOfFollowers, mostRecentYearOneShotMode);
         return parameters;
     }
 }

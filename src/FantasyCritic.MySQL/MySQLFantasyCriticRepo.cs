@@ -50,7 +50,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string leagueYearSQL = "select Year from tbl_league_year where LeagueID = @leagueID;";
         IEnumerable<int> years = await connection.QueryAsync<int>(leagueYearSQL, queryObject);
-        League league = leagueEntity.ToDomain(manager, years);
+        var oneShotLeagues = await GetLeaguesWithMostRecentYearOneShot();
+        League league = leagueEntity.ToDomain(manager, years, oneShotLeagues.Contains(leagueEntity.LeagueID));
         return league;
     }
 
@@ -70,11 +71,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<League> leagues = new List<League>();
         var allUsers = await _userStore.GetAllUsers();
         var userDictionary = allUsers.ToDictionary(x => x.Id);
+        var oneShotLeagues = await GetLeaguesWithMostRecentYearOneShot();
         foreach (var leagueEntity in leagueEntities)
         {
             FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(manager, years);
+            League league = leagueEntity.ToDomain(manager, years, oneShotLeagues.Contains(leagueEntity.LeagueID));
             leagues.Add(league);
         }
 
@@ -2235,12 +2237,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<League> leagues = new List<League>();
         IEnumerable<LeagueYearEntity> allLeagueYears = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
         var leagueYearLookup = allLeagueYears.ToLookup(x => x.LeagueID);
+        var oneShotLeagues = await GetLeaguesWithMostRecentYearOneShot();
 
         foreach (var leagueEntity in leagueEntities)
         {
             FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(manager, years);
+            League league = leagueEntity.ToDomain(manager, years, oneShotLeagues.Contains(leagueEntity.LeagueID));
             leagues.Add(league);
         }
 
@@ -3197,5 +3200,26 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             false, null, false, null, conditionalDropGame, 0, null, null, null, null);
 
         return fakePublisherGame;
+    }
+    
+    private async Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
+    {
+        const string sql = "SELECT distinct LeagueID " +
+            "FROM (SELECT LeagueID, YEAR, OneShotMode, ROW_NUMBER() OVER (PARTITION BY LeagueID ORDER BY Year DESC) ranked_order FROM tbl_caching_leagueyear) subQuery " +
+            "WHERE subQuery.ranked_order = 1 AND subQuery.OneShotMode = 1;";
+        await using var connection = new MySqlConnection(_connectionString);
+        var leagueIDs = await connection.QueryAsync<Guid>(sql);
+        return leagueIDs.ToHashSet();
+    }
+
+    public async Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears)
+    {
+        var leagueYearEntities = allLeagueYears.Select(x => new LeagueYearCacheEntity(x));
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync("delete from tbl_caching_leagueyear", transaction: transaction);
+        await connection.BulkInsertAsync<LeagueYearCacheEntity>(leagueYearEntities, "tbl_caching_leagueyear", 500, transaction);
+        await transaction.CommitAsync();
     }
 }

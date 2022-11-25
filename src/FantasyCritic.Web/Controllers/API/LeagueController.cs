@@ -93,15 +93,8 @@ public class LeagueController : BaseLeagueController
                 continue;
             }
 
-            int relevantYear = year ?? league.Years.Max();
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, relevantYear);
-            if (leagueYear is null)
-            {
-                _logger.LogError($"League is missing year: {league.LeagueID} {relevantYear}");
-                continue;
-            }
             bool isManager = (league.LeagueManager.Id == currentUser.Id);
-            viewModels.Add(new LeagueWithStatusViewModel(league, leagueYear, isManager, true, false));
+            viewModels.Add(new LeagueWithStatusViewModel(league, isManager, true, false));
         }
 
         return Ok(viewModels);

@@ -67,7 +67,7 @@ public class FantasyCriticService
         }
 
         IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
-        League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years, parameters.PublicLeague, parameters.TestLeague, false, 0);
+        League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years, parameters.PublicLeague, parameters.TestLeague, false, 0, options.OneShotMode);
         await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newLeague);
     }

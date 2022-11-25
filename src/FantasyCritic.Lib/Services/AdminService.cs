@@ -211,7 +211,16 @@ public class AdminService
         await UpdateCodeBasedTags(today);
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
-        await UpdateSystemWideValues();
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var allLeagueYears = new List<LeagueYear>();
+        foreach (var supportedYear in supportedYears)
+        {
+            var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+            allLeagueYears.AddRange(leagueYears);
+        }
+
+        await UpdateSystemWideValues(allLeagueYears);
+        await _fantasyCriticRepo.UpdateLeagueYearCache(allLeagueYears);
         HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
         await UpdateGameStats(hypeConstants);
         _logger.Information("Done refreshing caches");
@@ -486,26 +495,16 @@ public class AdminService
         return _fantasyCriticRepo.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
     }
 
-    private async Task UpdateSystemWideValues()
+    private async Task UpdateSystemWideValues(IReadOnlyList<LeagueYear> allLeagueYears)
     {
         _logger.Information("Updating system wide values");
 
-        List<PublisherGame> allGamesWithPoints = new List<PublisherGame>();
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var allLeagueYears = new List<LeagueYear>();
-        foreach (var supportedYear in supportedYears)
-        {
-            var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-            var leaguesToCount = leagueYears.Where(x => !x.League.TestLeague && x.PlayStatus.DraftFinished).ToList();
-            allLeagueYears.AddRange(leaguesToCount);
-            var publishers = leaguesToCount.SelectMany(x => x.Publishers).ToList();
-            var publisherGames = publishers.SelectMany(x => x.PublisherGames);
-            var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).ToList();
-            allGamesWithPoints.AddRange(gamesWithPoints);
-        }
+        var leaguesToCount = allLeagueYears.Where(x => !x.League.TestLeague && x.PlayStatus.DraftFinished).ToList();
+        var publisherGames = leaguesToCount.SelectMany(x => x.Publishers).SelectMany(x => x.PublisherGames);
+        var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).ToList();
 
-        var allStandardGamesWithPoints = allGamesWithPoints.Where(x => !x.CounterPick).ToList();
-        var allCounterPicksWithPoints = allGamesWithPoints.Where(x => x.CounterPick).ToList();
+        var allStandardGamesWithPoints = gamesWithPoints.Where(x => !x.CounterPick).ToList();
+        var allCounterPicksWithPoints = gamesWithPoints.Where(x => x.CounterPick).ToList();
 
         var averageStandardPoints = allStandardGamesWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
         var averagePickupOnlyStandardPoints = allStandardGamesWithPoints.Where(x => !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
