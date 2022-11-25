@@ -294,7 +294,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         List<FantasyCriticUser> users = new List<FantasyCriticUser>();
         foreach (Guid userID in userResults)
         {
-            var user = await this.FindByIdAsyncOrThrow(userID, cancellationToken);
+            var user = await this.FindByIdOrThrowAsync(userID, cancellationToken);
             users.Add(user);
         }
         return users;

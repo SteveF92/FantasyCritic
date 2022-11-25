@@ -41,9 +41,9 @@ public static class Program
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
-        _localConnectionString = configuration["localConnectionString"];
-        _baseAddress = configuration["baseAddress"];
-        _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]);
+        _localConnectionString = configuration["localConnectionString"]!;
+        _baseAddress = configuration["baseAddress"]!;
+        _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]!);
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
         DapperNodaTimeSetup.Register();

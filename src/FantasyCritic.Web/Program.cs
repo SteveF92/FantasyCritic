@@ -40,7 +40,7 @@ public class Program
 
             builder.Host.UseSerilog();
 
-            var awsRegion = builder.Configuration["AWS:region"];
+            var awsRegion = builder.Configuration["AWS:region"]!;
             var configuration = await GetConfiguration(builder.Environment, awsRegion);
             var app = builder
                 .ConfigureServices(configuration)

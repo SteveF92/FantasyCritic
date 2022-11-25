@@ -53,7 +53,7 @@ public static class RepositoryInterfaceExtensions
         return repo.FindByIdAsync(id.ToString(), cancellationToken);
     }
 
-    public static async Task<FantasyCriticUser> FindByIdAsyncOrThrow(this IReadOnlyFantasyCriticUserStore repo, Guid id, CancellationToken cancellationToken)
+    public static async Task<FantasyCriticUser> FindByIdOrThrowAsync(this IReadOnlyFantasyCriticUserStore repo, Guid id, CancellationToken cancellationToken)
     {
         var userResult = await repo.FindByIdAsync(id.ToString(), cancellationToken);
         if (userResult is null)

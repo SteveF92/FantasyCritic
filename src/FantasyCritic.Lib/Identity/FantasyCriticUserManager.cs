@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Patreon;
 using Microsoft.AspNetCore.Identity;
@@ -62,6 +63,11 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
     public Task<FantasyCriticUser?> FindByDisplayName(string displayName, int displayNumber)
     {
         return _userStore.FindByDisplayName(displayName, displayNumber);
+    }
+
+    public Task<FantasyCriticUser> FindByIdOrThrowAsync(Guid id)
+    {
+        return _userStore.FindByIdOrThrowAsync(id, CancellationToken.None);
     }
 
     public Task DeleteUserAccount(FantasyCriticUser user)

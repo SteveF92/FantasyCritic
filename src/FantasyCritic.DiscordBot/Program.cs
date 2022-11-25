@@ -41,12 +41,12 @@ public class Program
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
-        var fantasyCriticSettings = configuration.GetSection("FantasyCriticSettings").Get<FantasyCriticSettings>();
+        var fantasyCriticSettings = configuration.GetSection("FantasyCriticSettings").Get<FantasyCriticSettings>()!;
         ulong? devDiscordServerID = configuration.GetValue<ulong?>("DevDiscordServerId");
 
-        var fantasyCriticDiscordConfiguration = new FantasyCriticDiscordConfiguration(configuration.GetValue<string>("BotToken"), fantasyCriticSettings.BaseAddress, true, devDiscordServerID);
+        var fantasyCriticDiscordConfiguration = new FantasyCriticDiscordConfiguration(configuration.GetValue<string>("BotToken")!, fantasyCriticSettings.BaseAddress, true, devDiscordServerID);
 
-        var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"], SystemClock.Instance);
+        var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"]!, SystemClock.Instance);
 
         _serviceProvider = new ServiceCollection()
             .AddSingleton(configuration)

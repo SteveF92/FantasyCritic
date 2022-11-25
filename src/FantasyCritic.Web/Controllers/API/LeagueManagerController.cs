@@ -228,7 +228,7 @@ public class LeagueManagerController : BaseLeagueController
         var league = validResult.League;
 
         string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
-        FantasyCriticUser inviteUser;
+        FantasyCriticUser? inviteUser;
         if (!request.IsDisplayNameInvite())
         {
             if (request.InviteEmail is null)
@@ -967,7 +967,7 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueRecord.ValidResult!;
         var league = validResult.League;
 
-        var newManager = await _userManager.FindByIdAsync(request.NewManagerUserID.ToString());
+        var newManager = await _userManager.FindByIdOrThrowAsync(request.NewManagerUserID);
         var usersInLeague = await _leagueMemberService.GetUsersInLeague(league);
         if (!usersInLeague.Contains(newManager))
         {

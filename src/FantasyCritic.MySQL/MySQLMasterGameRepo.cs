@@ -446,7 +446,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             masterGame = await GetMasterGame(entity.MasterGameID.Value);
         }
 
-        var user = await _userStore.FindByIdAsyncOrThrow(entity.UserID, CancellationToken.None);
+        var user = await _userStore.FindByIdOrThrowAsync(entity.UserID, CancellationToken.None);
         FantasyCriticUser? responseUser = await _userStore.GetUserThatMightExist(entity.ResponseUserID);
 
         return entity.ToDomain(user, masterGame, responseUser);
@@ -470,7 +470,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             throw new Exception($"Something has gone horribly wrong with master game change requests. ID: {requestID}");
         }
 
-        var user = await _userStore.FindByIdAsyncOrThrow(entity.UserID, CancellationToken.None);
+        var user = await _userStore.FindByIdOrThrowAsync(entity.UserID, CancellationToken.None);
         FantasyCriticUser? responseUser = await _userStore.GetUserThatMightExist(entity.ResponseUserID);
 
         return entity.ToDomain(user, masterGame, responseUser);

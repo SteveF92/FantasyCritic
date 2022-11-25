@@ -51,17 +51,17 @@ public static class HostingExtensions
 
         Log.Information($"Startup: Running in {environment} mode.");
 
-        var rdsInstanceName = configuration["AWS:rdsInstanceName"];
-        var awsBucket = configuration["AWS:bucket"];
-        var postmarkAPIKey = configuration["Postmark:apiKey"];
-        var openCriticAPIKey = configuration["OpenCritic:apiKey"];
-        var baseAddress = configuration["BaseAddress"];
-        var discordBotToken = configuration["BotToken"];
+        var rdsInstanceName = configuration["AWS:rdsInstanceName"]!;
+        var awsBucket = configuration["AWS:bucket"]!;
+        var postmarkAPIKey = configuration["Postmark:apiKey"]!;
+        var openCriticAPIKey = configuration["OpenCritic:apiKey"]!;
+        var baseAddress = configuration["BaseAddress"]!;
+        var discordBotToken = configuration["BotToken"]!;
 
-        var rootFolder = configuration["LinuxRootFolder"];
+        var rootFolder = configuration["LinuxRootFolder"]!;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            rootFolder = configuration["RootFolder"];
+            rootFolder = configuration["RootFolder"]!;
         }
 
         IClock clock = SystemClock.Instance;
@@ -71,10 +71,10 @@ public static class HostingExtensions
         services.AddTransient<IClock>(_ => clock);
 
         //MySQL Repos
-        string connectionString = configuration.GetConnectionString("DefaultConnection");
+        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
         services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
-        services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"], configuration["PatreonService:CampaignID"]));
+        services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!));
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
 
@@ -97,7 +97,7 @@ public static class HostingExtensions
         if (environment.IsProduction() || environment.IsStaging())
         {
             var tempFolder = Path.Combine(rootFolder, "Temp");
-            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"]!, awsBucket, tempFolder));
             services.AddScoped<IHypeFactorService, HypeFactorService>();
         }
         else
@@ -128,7 +128,7 @@ public static class HostingExtensions
         if (environment.IsProduction() || environment.IsStaging())
         {
             var tempFolder = Path.Combine(rootFolder, "Temp");
-            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"], awsBucket, tempFolder));
+            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"]!, awsBucket, tempFolder));
         }
         else
         {
@@ -256,30 +256,30 @@ public static class HostingExtensions
             authenticationBuilder
                 .AddGoogle(options =>
                 {
-                    options.ClientId = configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                    options.ClientId = configuration["Authentication:Google:ClientId"]!;
+                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
                     microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
                     microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
-                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
-                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
+                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
                 })
                 .AddTwitch(options =>
                 {
-                    options.ClientId = configuration["Authentication:Twitch:ClientId"];
-                    options.ClientSecret = configuration["Authentication:Twitch:ClientSecret"];
+                    options.ClientId = configuration["Authentication:Twitch:ClientId"]!;
+                    options.ClientSecret = configuration["Authentication:Twitch:ClientSecret"]!;
                 })
                 .AddPatreon(options =>
                 {
-                    options.ClientId = configuration["Authentication:Patreon:ClientId"];
-                    options.ClientSecret = configuration["Authentication:Patreon:ClientSecret"];
+                    options.ClientId = configuration["Authentication:Patreon:ClientId"]!;
+                    options.ClientSecret = configuration["Authentication:Patreon:ClientSecret"]!;
                 })
                 .AddDiscord(options =>
                 {
-                    options.ClientId = configuration["Authentication:Discord:ClientId"];
-                    options.ClientSecret = configuration["Authentication:Discord:ClientSecret"];
+                    options.ClientId = configuration["Authentication:Discord:ClientId"]!;
+                    options.ClientSecret = configuration["Authentication:Discord:ClientSecret"]!;
                 });
         }
 

@@ -46,7 +46,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return null;
         }
 
-        FantasyCriticUser manager = await _userStore.FindByIdAsyncOrThrow(leagueEntity.LeagueManager, CancellationToken.None);
+        FantasyCriticUser manager = await _userStore.FindByIdOrThrowAsync(leagueEntity.LeagueManager, CancellationToken.None);
 
         const string leagueYearSQL = "select Year from tbl_league_year where LeagueID = @leagueID;";
         IEnumerable<int> years = await connection.QueryAsync<int>(leagueYearSQL, queryObject);
@@ -1608,7 +1608,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
         IReadOnlyList<FormerPublisherGame> domainFormerGames = await GetFormerPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
-        var user = await _userStore.FindByIdAsyncOrThrow(publisherEntity.UserID, CancellationToken.None);
+        var user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID, CancellationToken.None);
         var domainPublisher = publisherEntity.ToDomain(user, domainGames, domainFormerGames);
         return domainPublisher;
     }
@@ -1716,7 +1716,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             List<TradeVote> tradeVotes = new List<TradeVote>();
             foreach (var vote in votes)
             {
-                var user = await _userStore.FindByIdAsyncOrThrow(vote.UserID, CancellationToken.None);
+                var user = await _userStore.FindByIdOrThrowAsync(vote.UserID, CancellationToken.None);
                 var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
                 tradeVotes.Add(domainVote);
             }
@@ -1790,7 +1790,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             List<TradeVote> tradeVotes = new List<TradeVote>();
             foreach (var vote in votes)
             {
-                var user = await _userStore.FindByIdAsyncOrThrow(vote.UserID, CancellationToken.None);
+                var user = await _userStore.FindByIdOrThrowAsync(vote.UserID, CancellationToken.None);
                 var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
                 tradeVotes.Add(domainVote);
             }
@@ -1869,7 +1869,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<TradeVote> tradeVotes = new List<TradeVote>();
         foreach (var vote in votes)
         {
-            var user = await _userStore.FindByIdAsyncOrThrow(vote.UserID, CancellationToken.None);
+            var user = await _userStore.FindByIdOrThrowAsync(vote.UserID, CancellationToken.None);
             var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
             tradeVotes.Add(domainVote);
         }
@@ -2995,7 +2995,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var league = await this.GetLeagueOrThrow(entity.LeagueID);
             if (entity.UserID.HasValue)
             {
-                FantasyCriticUser user = await _userStore.FindByIdAsyncOrThrow(entity.UserID.Value, CancellationToken.None);
+                FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
                 leagueInvites.Add(entity.ToDomain(league, user));
             }
             else
@@ -3017,7 +3017,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         if (entity.UserID.HasValue)
         {
-            FantasyCriticUser user = await _userStore.FindByIdAsyncOrThrow(entity.UserID.Value, CancellationToken.None);
+            FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
             return entity.ToDomain(league, user);
         }
 

@@ -29,7 +29,7 @@ class Program
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build();
 
-        _connectionString = configuration["ConnectionString"];
+        _connectionString = configuration["ConnectionString"]!;
 
         DapperNodaTimeSetup.Register();
         await FindBadBudgets();
