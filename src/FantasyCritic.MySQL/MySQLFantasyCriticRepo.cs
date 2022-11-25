@@ -616,7 +616,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task QueueGame(QueuedGame queuedGame)
     {
         var entity = new QueuedGameEntity(queuedGame);
-        const string sql = "insert into tbl_league_publisherqueue(PublisherID,MasterGameID,`Rank`) VALUES (@PublisherID,@MasterGameID,@Rank);";
+        const string sql = "insert into tbl_league_publisherqueue(PublisherID,MasterGameID,`Ranking`) VALUES (@PublisherID,@MasterGameID,@Ranking);";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
     }
@@ -636,7 +636,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
     {
         int tempPosition = queueRanks.Select(x => x.Value).Max() + 1;
-        const string updateSQL = "update tbl_league_publisherqueue set `Rank` = @rank where `PublisherID` = @PublisherID AND `MasterGameID` = @MasterGameID;";
+        const string updateSQL = "update tbl_league_publisherqueue set `Ranking` = @ranking where `PublisherID` = @PublisherID AND `MasterGameID` = @MasterGameID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
@@ -646,7 +646,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 queuedGame.Key.MasterGame.MasterGameID,
                 queuedGame.Key.Publisher.PublisherID,
-                rank = tempPosition
+                ranking = tempPosition
             };
             await connection.ExecuteAsync(updateSQL, tempParams, transaction);
             tempPosition++;
