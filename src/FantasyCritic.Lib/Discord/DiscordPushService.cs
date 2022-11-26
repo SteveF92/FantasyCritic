@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.UrlBuilders;
@@ -507,7 +508,11 @@ public class DiscordPushService
             bidMessages.Add($"{messageToAdd}");
         }
 
-        var messageListToSend = _discordFormatter.BuildMessageListFromStringList(bidMessages, MaxMessageLength, "Bids", 2);
+        var messageListToSend = new MessageListBuilder(bidMessages,
+                MaxMessageLength)
+            .WithTitle("Bids", new[] { TextStyleOption.Bold }, "\n", 2)
+            .WithDivider("\n")
+            .Build();
         await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend);
     }
 
@@ -528,7 +533,11 @@ public class DiscordPushService
             dropMessages.Add(messageToAdd);
         }
 
-        var dropMessageListToSend = _discordFormatter.BuildMessageListFromStringList(dropMessages, MaxMessageLength, "Drops", 2);
+        var dropMessageListToSend = new MessageListBuilder(dropMessages,
+                MaxMessageLength)
+            .WithTitle("Drops", new[] { TextStyleOption.Bold }, "\n", 2)
+            .WithDivider("\n")
+            .Build();
         await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend);
     }
 
