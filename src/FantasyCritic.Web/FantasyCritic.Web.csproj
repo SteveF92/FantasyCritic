@@ -19,18 +19,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Discord" Version="6.0.14" />
-    <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="6.0.14" />
-    <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="6.0.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="6.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.10" />
+    <PackageReference Include="AspNet.Security.OAuth.Discord" Version="7.0.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="7.0.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
     <PackageReference Include="Serilog.Sinks.AwsCloudWatch" Version="4.0.171" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.0" />
   </ItemGroup>
 
   <PropertyGroup>
