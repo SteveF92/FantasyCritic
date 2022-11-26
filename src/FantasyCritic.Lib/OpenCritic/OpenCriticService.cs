@@ -51,7 +51,7 @@ public class OpenCriticService : IOpenCriticService
                 score = parsedGameResponse.GetValue("averageScore")?.Value<decimal?>();
                 if (score != -1m)
                 {
-                    _logger.LogWarning($"Using averageScore for game: {openCriticGameID}");
+                    _logger.LogInformation($"Using averageScore for game: {openCriticGameID}");
                 }
                 else
                 {
