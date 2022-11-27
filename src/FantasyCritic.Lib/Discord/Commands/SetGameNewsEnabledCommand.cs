@@ -10,17 +10,14 @@ public class SetGameNewsEnabledCommand : InteractionModuleBase<SocketInteraction
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
-    private readonly FantasyCriticSettings _fantasyCriticSettings;
 
     public SetGameNewsEnabledCommand(IDiscordRepo discordRepo,
         IClock clock,
-        IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings)
+        IDiscordFormatter discordFormatter)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
-        _fantasyCriticSettings = fantasyCriticSettings;
     }
 
     [SlashCommand("set-game-news", "Sets what games this channel will get news announcements for.")]
