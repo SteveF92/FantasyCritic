@@ -659,7 +659,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 queuedGame.Key.MasterGame.MasterGameID,
                 queuedGame.Key.Publisher.PublisherID,
-                rank = queuedGame.Value
+                ranking = queuedGame.Value
             };
             await connection.ExecuteAsync(updateSQL, realParams, transaction);
         }
