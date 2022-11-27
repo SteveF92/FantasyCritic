@@ -12,7 +12,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
     }
 
     public MasterGameYear(MasterGame masterGame, int year, double percentStandardGame, double percentCounterPick, double eligiblePercentStandardGame,
-        double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageBidAmount,
+        double? adjustedPercentCounterPick, int numberOfBids, int totalBidAmount, double bidPercentile, double? averageDraftPosition, double? averageWinningBid,
         double hypeFactor, double dateAdjustedHypeFactor, double peakHypeFactor, double linearRegressionHypeFactor)
     {
         MasterGame = masterGame;
@@ -25,7 +25,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         TotalBidAmount = totalBidAmount;
         BidPercentile = bidPercentile;
         AverageDraftPosition = averageDraftPosition;
-        AverageWinningBid = averageBidAmount;
+        AverageWinningBid = averageWinningBid;
 
         HypeFactor = hypeFactor;
         DateAdjustedHypeFactor = dateAdjustedHypeFactor;
