@@ -891,7 +891,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await AddPlayerToLeague(league, league.LeagueManager);
     }
 
-    public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction)
+    public Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments) => EditLeagueYearInternal(leagueYear, slotAssignments, null);
+
+    public Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction) => EditLeagueYearInternal(leagueYear, slotAssignments, settingsChangeAction);
+
+    private async Task EditLeagueYearInternal(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction? settingsChangeAction)
     {
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus, leagueYear.DraftOrderSet);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
@@ -918,7 +922,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await OrganizeSlots(leagueYear, slotAssignments, connection, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
-        await AddLeagueAction(settingsChangeAction, connection, transaction);
+        if (settingsChangeAction is not null)
+        {
+            await AddLeagueAction(settingsChangeAction, connection, transaction);
+        }
         await transaction.CommitAsync();
     }
 
@@ -929,9 +936,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string newLeagueYearSQL =
             "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-            "DraftSystem,PickupSystem,ScoringSystem,TradingSystem,PlayStatus,DraftOrderSet,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
+            "DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,PlayStatus,DraftOrderSet,CounterPickDeadlineMonth,CounterPickDeadlineDay) VALUES " +
             "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-            "@DraftSystem,@PickupSystem,@ScoringSystem,@TradingSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay);";
+            "@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay);";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();

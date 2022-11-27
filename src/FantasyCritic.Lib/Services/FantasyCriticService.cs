@@ -157,13 +157,20 @@ public class FantasyCriticService
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
             tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
 
-        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
+        var managerPublisher = leagueYear.GetManagerPublisher();
         var differenceString = options.GetDifferenceString(leagueYear.Options);
         if (differenceString is not null)
         {
-            LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString, true);
-            await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
-            await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
+            if (managerPublisher is not null)
+            {
+                LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString, true);
+                await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
+                await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
+            }
+            else
+            {
+                await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments);
+            }
         }
 
         return Result.Success();
