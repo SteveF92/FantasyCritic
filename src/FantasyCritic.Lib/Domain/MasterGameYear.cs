@@ -161,6 +161,14 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return null;
     }
 
+    public MasterGameYear WithNewMasterGame(MasterGame newMasterGame)
+    {
+        return new MasterGameYear(newMasterGame, Year, PercentStandardGame, PercentCounterPick,
+            EligiblePercentStandardGame, AdjustedPercentCounterPick, NumberOfBids, TotalBidAmount, BidPercentile,
+            AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor,
+            LinearRegressionHypeFactor);
+    }
+
     public bool Equals(MasterGameYear? other)
     {
         if (ReferenceEquals(null, other)) return false;

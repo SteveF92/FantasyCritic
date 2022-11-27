@@ -178,7 +178,7 @@ public class DiscordPushService
             }
 
             var changesMessage = string.Join("\n", editableChanges);
-            await textChannel.TrySendMessageAsync($"**{editedGame.MasterGame.GameName}**\n{changesMessage}");
+            await textChannel.TrySendMessageAsync($"Game Update: **{editedGame.MasterGame.GameName}**\n{changesMessage}");
         }
     }
 

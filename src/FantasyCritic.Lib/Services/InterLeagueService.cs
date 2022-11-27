@@ -47,14 +47,19 @@ public class InterLeagueService
     {
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
-        var existingMasterGameYear = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, currentDate.Year);
         var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, currentDate);
         var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
         await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
         if (changes.Any())
         {
-            var editedMasterGameYear = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, currentDate.Year);
-            await _discordPushService.SendMasterGameEditMessage(existingMasterGameYear!, editedMasterGameYear!, changes);
+            var masterGameYearStats = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, currentDate.Year);
+            if (masterGameYearStats is null)
+            {
+                return Result.Success();
+            }
+            var existingMasterGameYear = masterGameYearStats.WithNewMasterGame(existingMasterGame);
+            var editedMasterGameYear = masterGameYearStats.WithNewMasterGame(editedMasterGame);
+            await _discordPushService.SendMasterGameEditMessage(existingMasterGameYear, editedMasterGameYear, changes);
         }
         return Result.Success();
     }
