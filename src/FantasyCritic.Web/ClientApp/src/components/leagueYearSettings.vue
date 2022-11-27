@@ -97,8 +97,7 @@
         <hr />
         <h3>Bidding Settings</h3>
         <div class="alert alert-info">
-          New for 2022, you can choose the new "public bidding" system. This feature can help balance leagues where some players are more engaged/invested than others. You can read more about it on
-          the
+          Choosing the "public bidding" option can help balance leagues where some players are more engaged/invested than others. You can read more about it on the
           <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ page</a>
           .
           <br />
@@ -111,7 +110,6 @@
       <div v-show="!oneShotMode">
         <hr />
         <h3>Trade Settings</h3>
-        <div class="alert alert-info">New for 2022, you can allow players in your leagues to trade games with each other.</div>
         <label for="tradingSystem" class="control-label">Trading System</label>
         <b-form-select v-model="internalValue.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
       </div>
@@ -219,7 +217,7 @@
       <hr />
       <h3>Special Game Slots</h3>
       <div class="alert alert-info">
-        New for 2022, you can now choose to have certain slots in every player's lineup require certain tags, overriding the rules chosen above.
+        You can use this setting to have certain slots in every player's lineup require certain tags, overriding the rules chosen above.
         <br />
         You can read more in the
         <a href="/faq#drafting" target="_blank" class="text-secondary">FAQ.</a>
