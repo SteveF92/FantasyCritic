@@ -114,7 +114,7 @@ public class DiscordPushService
             {
                 var direction = scoreDiff < 0 ? "UP" : "DOWN";
                 messageToSend =
-                    $"The critic score for **{game.GameName}** has gone **{direction}** from **{oldCriticScore}** to **{newCriticScoreRounded}**";
+                    $"The critic score for **{game.GameName}** has gone **{direction}** from **{oldCriticScoreRounded}** to **{newCriticScoreRounded}**";
             }
         }
 
