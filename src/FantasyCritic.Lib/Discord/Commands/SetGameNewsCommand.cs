@@ -1,17 +1,16 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class SetGameNewsEnabledCommand : InteractionModuleBase<SocketInteractionContext>
+public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
 
-    public SetGameNewsEnabledCommand(IDiscordRepo discordRepo,
+    public SetGameNewsCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter)
     {
@@ -22,7 +21,11 @@ public class SetGameNewsEnabledCommand : InteractionModuleBase<SocketInteraction
 
     [SlashCommand("set-game-news", "Sets what games this channel will get news announcements for.")]
     public async Task SetGameNews(
-        [Summary("setting", "Off, Relevant, or All")] string setting
+        [Summary("setting", "The game news setting. Valid settings are Off, Relevant, or All")]
+        [Choice("Off", "Off")]
+        [Choice("Relevant", "Relevant")]
+        [Choice("All", "All")]
+        string setting
         )
     {
         var dateToCheck = _clock.GetGameEffectiveDate();
@@ -32,7 +35,7 @@ public class SetGameNewsEnabledCommand : InteractionModuleBase<SocketInteraction
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Invalid setting",
-                "Valid settings are Off, Relevant, and All..",
+                "Valid settings are Off, Relevant, and All.",
                 Context.User));
             return;
         }
