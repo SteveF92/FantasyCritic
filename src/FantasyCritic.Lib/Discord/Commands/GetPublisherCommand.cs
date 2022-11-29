@@ -212,7 +212,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             new()
             {
                 Name = "Remaining Budget",
-                Value = publisherFound.Budget,
+                Value = $"{publisherFound.Budget:C}",
                 IsInline = false
             },
             new()

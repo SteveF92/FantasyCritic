@@ -59,7 +59,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
                 Context.User));
             return;
         }
-        
+
         var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, leagueYear, 3);
         if (!matchingGames.Any())
         {
@@ -109,9 +109,9 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false);
 
         gameDisplayText += $"\n**Projected Score:** {Math.Round(projectedScore, 1)}";
-        gameDisplayText += $"\n**Hype Factor:** {gameFound.HypeFactor}";
-        gameDisplayText += $"\n**% Drafted:** {(gameFound.PercentStandardGame == 0 ? "N/A" : $"{gameFound.PercentStandardGame * 100}%")}";
-        gameDisplayText += $"\n**% Counter Picked:** {(gameFound.PercentCounterPick == 0 ? "N/A" : $"{gameFound.PercentCounterPick * 100}%")}";
+        gameDisplayText += $"\n**Hype Factor:** {Math.Round(gameFound.HypeFactor, 1)}";
+        gameDisplayText += $"\n**% Drafted:** {(gameFound.PercentStandardGame == 0 ? "N/A" : $"{Math.Round(gameFound.PercentStandardGame * 100, 0)}%")}";
+        gameDisplayText += $"\n**% Counter Picked:** {(gameFound.PercentCounterPick == 0 ? "N/A" : $"{Math.Round(gameFound.PercentCounterPick * 100, 0)}%")}";
 
         var publisherWhoPicked = matchedGameDisplay.PublisherWhoPicked;
         if (publisherWhoPicked != null)
