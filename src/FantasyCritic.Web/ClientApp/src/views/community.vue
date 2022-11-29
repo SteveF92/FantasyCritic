@@ -119,7 +119,7 @@
               <strong>/set-league</strong>
               command allows you to connect your league to a Discord channel.
               <strong>Note:</strong>
-              If your league is private, you will, then the user setting up the league will need to have their Discord account connected to their Fantasy Critic account on the website.
+              If your league is private, the user setting up the league will need to have their Discord account connected to their Fantasy Critic account on the website.
             </p>
 
             <h5>Remove the League in your Channel</h5>
