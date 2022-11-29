@@ -99,7 +99,7 @@
               exists on the Fantasy Critic site.
             </p>
 
-            <h5>Viuew Upcoming League Releases</h5>
+            <h5>View Upcoming League Releases</h5>
             <p>
               The
               <strong>/upcoming</strong>
@@ -119,7 +119,7 @@
               <strong>/set-league</strong>
               command allows you to connect your league to a Discord channel.
               <strong>Note:</strong>
-              The user setting up the league will need to have their Discord account connected to their Fantasy Critic account on the website.
+              If your league is private, you will, then the user setting up the league will need to have their Discord account connected to their Fantasy Critic account on the website.
             </p>
 
             <h5>Remove the League in your Channel</h5>
@@ -150,6 +150,9 @@
                 - No game news will be posted by the bot.
               </li>
             </ul>
+
+            <h5>And more to come!</h5>
+            <p>This bot will see continued development moving forward. Got an idea for a feature? Give us a shout in the official Fantasy Critic Discord.</p>
           </div>
           <hr />
           <div>
