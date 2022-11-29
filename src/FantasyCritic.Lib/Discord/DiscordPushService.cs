@@ -274,7 +274,7 @@ public class DiscordPushService
                 continue;
             }
 
-            await channel.TrySendMessageAsync($"**{action.Publisher.PublisherName}** {action.Description} (at {action.Timestamp.ToEasternDate()})");
+            await channel.TrySendMessageAsync($"**{action.Publisher.PublisherName}** (Player: {action.Publisher.User.UserName}) {action.Description} (at {action.Timestamp.ToEasternDate()})");
         }
     }
 
@@ -363,7 +363,7 @@ public class DiscordPushService
             return;
         }
 
-        var messageToSend = $"Publisher **{oldPublisherName}** is now known as **{newPublisherName}**";
+        var messageToSend = $"Publisher **{oldPublisherName}** (Player: {publisher.User.UserName}) is now known as **{newPublisherName}**";
         await channel.TrySendMessageAsync(messageToSend);
     }
 
@@ -603,7 +603,7 @@ public class DiscordPushService
 
     private string BuildTradeMessage(Trade trade, bool includeMessage)
     {
-        var message = $"**{trade.Proposer.PublisherName}** will receive: ";
+        var message = $"**{trade.Proposer.PublisherName}** (Player: {trade.Proposer.User.UserName}) will receive: ";
 
         var counterPartySendGames = BuildGameListText(trade.CounterPartyMasterGames);
         var hasCounterPartySendGames = !string.IsNullOrEmpty(counterPartySendGames);
@@ -622,7 +622,7 @@ public class DiscordPushService
             message += $"**${trade.CounterPartyBudgetSendAmount} of budget**";
         }
 
-        message += $"\n**{trade.CounterParty.PublisherName}** will receive: ";
+        message += $"\n**{trade.CounterParty.PublisherName}** (Player: {trade.Proposer.User.UserName}) will receive: ";
 
         var proposerSendGames = BuildGameListText(trade.ProposerMasterGames);
         var hasProposerSendGames = !string.IsNullOrEmpty(proposerSendGames);
