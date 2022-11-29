@@ -48,44 +48,108 @@
             <br />
             <p>
               New for the 2023 season! This bot was co-developed by
-              <a href="https://github.com/rarDevelopment" target="_blank">Robert</a>
-              and myself (Steve Fallon). However, compared to the below bot, this one is truly official and integrated into site itself. Here's a summary of new features above and beyond any of the
-              old bots:
+              <a href="https://github.com/rarDevelopment" target="_blank">Robert (rardk64)</a>
+              and myself (Steve Fallon). However, compared to the below bot, this one is truly official and integrated into the site itself. Here's a summary of the bot's features:
             </p>
 
-            <h4>Game Command</h4>
+            <h4>Setup Instructions</h4>
+            <p>To set up the bot, do the following:</p>
+            <ol>
+              <li>Click the link above to invite the bot to your Discord. It requires all permissions that it requests.</li>
+              <li>Go to the channel(s) where you want the bot to be active and use the /set-league command (see below for details). You will need the league ID from your league's URL.</li>
+              <li>Configure the Game News setting to your liking using the set-game-news command (see below for details).</li>
+            </ol>
+
+            <h4>League News Announcements</h4>
             <p>
-              The /game command previously would only return a game if someone in the league had it. The new /game command will prioritize a game if it's in the league on someone's roster, but if it's
-              not, it'll still return that game's details as it exists on the FC website.
+              Updates to games (configurable with the command mentioned below), league actions, bid results on Saturdays, public bids on Thursdays, publisher name changes, and more will all be
+              announced real-time as they happen on the Fantasy Critic site at their appropriate times.
             </p>
 
-            <h4>Recent Command</h4>
+            <h4>Available Bot Actions</h4>
+
+            <h5>See League Information</h5>
             <p>
-              Previously, the /upcoming command would list out upcoming releases for players in the league. The new /recent command does the opposite - displays games that were recently released for
-              players in the league.
+              The
+              <strong>/league</strong>
+              command will display the list of publishers in the league, ordered by their current rankings from first to last place. It will also display the publishers' current scores, their project
+              scored, and the number of games they have.
             </p>
 
-            <h4>Private Leagues</h4>
+            <h5>Get a Link to the League</h5>
             <p>
-              Private leagues can now be set up with the bot. This was previously unavailable due to the bot being external, but with the new bot being integrated directly into the website, this is
-              much easier. Note: The user setting up the league will need to have their Discord account connected to their Fantasy Critic account on the website.
+              The
+              <strong>/link</strong>
+              command will provide a link to the league's page on the Fantasy Critic site.
             </p>
 
-            <h4>Update Announcements</h4>
+            <h5>See Publisher Information</h5>
             <p>
-              Previously, updates such as score updates, game detail changes, and bid/drop results on Saturday nights would be checked on a predefined schedule and posted when that check ran. Now,
-              however, those updates will be triggered directly by actions on the site. Bid results will be announced as soon as they're run, game and publisher score changes as soon as they're
-              applied, and more.
+              The
+              <strong>/publisher</strong>
+              command will show details on the publisher given their publisher name or player name. This will include their picks, counter picks, current score, remaining budget, and remaining drop
+              details.
             </p>
 
-            <h4>Enable/Disable Game News Announcements</h4>
-            <p>You can now choose whether to turn game news announcements on or off, or you can choose to only recieve updates to games that are relevant to your league.</p>
-
-            <h4>Formatting Improvements</h4>
+            <h5>Search for a Game</h5>
             <p>
-              Most of the formatting of the bot's messages has been kept the same, but there are some that have been updated. You'll notice your user icon in the footer of messages where the bot
-              responds to you (where this applies), and some messages like score updates have been adjusted to account for the new way they're summarized and posted.
+              The
+              <strong>/game</strong>
+              command allows you to search for a game by its name. It will prioritize a game if it's in the league on someone's roster, but if it's not, it'll still return that game's details as it
+              exists on the Fantasy Critic site.
             </p>
+
+            <h5>Viuew Upcoming League Releases</h5>
+            <p>
+              The
+              <strong>/upcoming</strong>
+              command displays upcoming releases for players in the league.
+            </p>
+
+            <h5>View Recent League Releases</h5>
+            <p>
+              The
+              <strong>/recent</strong>
+              command displays games that were recently released on players' rosters in the league.
+            </p>
+
+            <h5>Set Up a League in your Channel</h5>
+            <p>
+              The
+              <strong>/set-league</strong>
+              command allows you to connect your league to a Discord channel.
+              <strong>Note:</strong>
+              The user setting up the league will need to have their Discord account connected to their Fantasy Critic account on the website.
+            </p>
+
+            <h5>Remove the League in your Channel</h5>
+            <p>
+              The
+              <strong>/remove-league</strong>
+              command allows you to remove your league from a Discord channel.
+            </p>
+
+            <h5>Configure Game News Announcement Relevance</h5>
+            <p>
+              The
+              <strong>/set-game-news</strong>
+              command allows you to configure how much game news you want the bot to provide. There are three settings available for this:
+            </p>
+            <ul>
+              <li>
+                <strong>All</strong>
+                - All updates to games on the site will be posted by the bot.
+              </li>
+              <li>
+                <strong>Relevant</strong>
+                - Only game updates that are relevant to your league will be announced. Relevance criteria includes games that are in your league, were previously in your league, are coming out this
+                year, or are just now being delayed out of the current year.
+              </li>
+              <li>
+                <strong>Off</strong>
+                - No game news will be posted by the bot.
+              </li>
+            </ul>
           </div>
           <hr />
           <div>
@@ -99,13 +163,13 @@
             <div>
               <a href="https://github.com/rarDevelopment/fantasy-critic-bot" target="_blank">
                 <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" fixed-width />
-                Github
+                GitHub
               </a>
             </div>
             <br />
             <p>
               Bot created by
-              <a href="https://github.com/rarDevelopment" target="_blank">Robert</a>
+              <a href="https://github.com/rarDevelopment" target="_blank">Robert (rardk64)</a>
               with additional development by me (Steve Fallon). The bot will send automatic updates for:
             </p>
             <ul>
@@ -116,8 +180,8 @@
               <li>Trade proposals</li>
             </ul>
             <p>
-              You can also issue commands to the bot and it will give info such as the current standings for your league. Full instructions are available on Github. This bot is still being worked on
-              and will include more features down the line. One important note: the bot does not work with private leagues, although we may change that down the line.
+              You can also issue commands to the bot and it will give info such as the current standings for your league. Full instructions are available on GitHub. One important note: the bot does
+              not work with private leagues. This bot is fully operational as of the start of the 2023 year, but development efforts going forward will be focused on the official bot above.
             </p>
           </div>
           <hr />
@@ -132,15 +196,15 @@
             <div>
               <a href="https://github.com/drcatdoctor/fcbot" target="_blank">
                 <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" fixed-width />
-                Github
+                GitHub
               </a>
             </div>
             <br />
             <p>
               Bot created by
               <a href="https://github.com/drcatdoctor" target="_blank">drcat.</a>
-              While this bot is still functional, it has not been updated in a while. Full instructions are available on Github, but I can't guarantee full functionality. Notably, the method described
-              on Github to make the bot connect to a private league no longer works.
+              While this bot is still functional, it has not been updated in a while. Full instructions are available on GitHub, but I can't guarantee full functionality. Notably, the method described
+              on GitHub to make the bot connect to a private league no longer works.
             </p>
           </div>
         </div>
