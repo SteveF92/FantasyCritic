@@ -763,8 +763,16 @@ public class AdminService
         var leagueYears = new List<LeagueYear>();
         foreach (var leagueChannel in leagueChannels)
         {
-            var league = await _fantasyCriticRepo.GetLeagueOrThrow(leagueChannel.LeagueID);
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league, year.Year);
+            var league = await _fantasyCriticRepo.GetLeague(leagueChannel.LeagueID);
+            if (league is null)
+            {
+                continue;
+            }
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year.Year);
+            if (leagueYear is null)
+            {
+                continue;
+            }
             leagueYears.Add(leagueYear);
         }
 
