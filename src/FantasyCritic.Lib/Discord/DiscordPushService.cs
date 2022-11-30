@@ -230,12 +230,7 @@ public class DiscordPushService
             return true;
         }
 
-        if (masterGameYear.IsRelevantInYear(true))
-        {
-            return true;
-        }
-
-        return leaguesWithGame.Contains(channel.LeagueID);
+        return masterGameYear.IsRelevantInYear(true) || leaguesWithGame.Contains(channel.LeagueID);
     }
 
     private static bool ReleasedGameIsRelevant(MasterGameYear masterGameYear, ILookup<Guid, Guid> leagueHasGameLookup, MinimalLeagueChannel leagueChannel)
@@ -274,7 +269,7 @@ public class DiscordPushService
                 continue;
             }
 
-            await channel.TrySendMessageAsync($"**{action.Publisher.PublisherName}** (Player: {action.Publisher.User.UserName}) {action.Description} (at {action.Timestamp.ToEasternDate()})");
+            await channel.TrySendMessageAsync($"**{action.Publisher.GetPublisherAndUserDisplayName()}** {action.Description} (at {action.Timestamp.ToEasternDate()})");
         }
     }
 
@@ -292,15 +287,7 @@ public class DiscordPushService
             return;
         }
 
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == scoreChanges.LeagueYear.League.LeagueID);
-        if (leagueChannel is null)
-        {
-            return;
-        }
-
-        var guild = _client.GetGuild(leagueChannel.GuildID);
-        var channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+        var channel = await GetChannelForLeague(scoreChanges.LeagueYear.League.LeagueID);
         if (channel is null)
         {
             return;
@@ -324,7 +311,7 @@ public class DiscordPushService
             {
                 embedFieldBuilders.Add(new EmbedFieldBuilder
                 {
-                    Name = $"{change.Publisher.PublisherName} (Player: {change.Publisher.User.UserName})",
+                    Name = change.Publisher.GetPublisherAndUserDisplayName(),
                     Value = changeText,
                     IsInline = false
                 });
@@ -349,21 +336,31 @@ public class DiscordPushService
             return;
         }
 
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == publisher.LeagueYearKey.LeagueID);
-        if (leagueChannel is null)
-        {
-            return;
-        }
-
-        var guild = _client.GetGuild(leagueChannel.GuildID);
-        var channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+        var channel = await GetChannelForLeague(publisher.LeagueYearKey.LeagueID);
         if (channel is null)
         {
             return;
         }
 
-        var messageToSend = $"Publisher **{oldPublisherName}** (Player: {publisher.User.UserName}) is now known as **{newPublisherName}**";
+        var messageToSend = $"Publisher **{oldPublisherName}** ({publisher.User.UserName}) is now known as **{newPublisherName}**";
+        await channel.TrySendMessageAsync(messageToSend);
+    }
+
+    public async Task SendNewPublisherMessage(Publisher publisher)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var channel = await GetChannelForLeague(publisher.LeagueYearKey.LeagueID);
+        if (channel is null)
+        {
+            return;
+        }
+
+        var messageToSend = $"Publisher **{publisher.GetPublisherAndUserDisplayName()}** has joined the league!";
         await channel.TrySendMessageAsync(messageToSend);
     }
 
@@ -489,19 +486,17 @@ public class DiscordPushService
                     throw new Exception($"Bid {bid.BidID} Successful property is null");
                 }
 
-                var nameDisplay = $"**{bid.Publisher.PublisherName} ({bid.Publisher.User.UserName})**";
-
                 if (bid.Successful.Value)
                 {
                     var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
-                    messageToAdd += $"- Won by {nameDisplay} with a bid of ${bid.BidAmount} {counterPickMessage}\n";
+                    messageToAdd += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}\n";
                 }
                 else
                 {
                     var lossReason = bid.BidAmount == winningBidAmount
                         ? "lost on tiebreakers"
                         : "was outbid";
-                    messageToAdd += $"- {nameDisplay}'s bid of ${bid.BidAmount} {lossReason}\n";
+                    messageToAdd += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} {lossReason}\n";
                 }
             }
 
@@ -526,10 +521,8 @@ public class DiscordPushService
                 throw new Exception($"Drop {drop.DropRequestID} Successful property is null");
             }
 
-            var nameToUse = $"{drop.Publisher.PublisherName} ({drop.Publisher.User.UserName})";
-
             var statusMessage = drop.Successful.Value ? "Successful" : "Failed";
-            var messageToAdd = $"**{nameToUse}**: {drop.MasterGame.GameName} (Drop {statusMessage})";
+            var messageToAdd = $"**{drop.Publisher.GetPublisherAndUserDisplayName()}**: {drop.MasterGame.GameName} (Drop {statusMessage})";
             dropMessages.Add(messageToAdd);
         }
 
@@ -567,15 +560,7 @@ public class DiscordPushService
             return;
         }
 
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == trade.LeagueYear.League.LeagueID);
-        if (leagueChannel is null)
-        {
-            return;
-        }
-
-        var guild = _client.GetGuild(leagueChannel.GuildID);
-        var channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+        var channel = await GetChannelForLeague(trade.LeagueYear.League.LeagueID);
         if (channel is null)
         {
             return;
@@ -601,9 +586,9 @@ public class DiscordPushService
             embedFieldBuilders));
     }
 
-    private string BuildTradeMessage(Trade trade, bool includeMessage)
+    private static string BuildTradeMessage(Trade trade, bool includeMessage)
     {
-        var message = $"**{trade.Proposer.PublisherName}** (Player: {trade.Proposer.User.UserName}) will receive: ";
+        var message = $"**{trade.Proposer.GetPublisherAndUserDisplayName()}** will receive: ";
 
         var counterPartySendGames = BuildGameListText(trade.CounterPartyMasterGames);
         var hasCounterPartySendGames = !string.IsNullOrEmpty(counterPartySendGames);
@@ -619,10 +604,10 @@ public class DiscordPushService
             {
                 message += " and ";
             }
-            message += $"**${trade.CounterPartyBudgetSendAmount} of budget**";
+            message += $"**${trade.CounterPartyBudgetSendAmount}** of budget**";
         }
 
-        message += $"\n**{trade.CounterParty.PublisherName}** (Player: {trade.Proposer.User.UserName}) will receive: ";
+        message += $"\n**{trade.CounterParty.GetPublisherAndUserDisplayName()}** will receive: ";
 
         var proposerSendGames = BuildGameListText(trade.ProposerMasterGames);
         var hasProposerSendGames = !string.IsNullOrEmpty(proposerSendGames);
@@ -643,13 +628,38 @@ public class DiscordPushService
 
         if (includeMessage)
         {
-            message += $"\nMessage from {trade.Proposer.PublisherName}: **{trade.Message}**";
+            message += $"\nMessage from **{trade.Proposer.GetPublisherAndUserDisplayName()}**: **{trade.Message}**";
         }
 
         return message;
     }
 
-    private string BuildGameListText(IReadOnlyList<MasterGameYearWithCounterPick> games)
+    //private static string MakePublisherAndUserDisplayName(Publisher publisher, bool boldPublisherName = false, bool boldUserName = false)
+    //{
+    //    var publisherName = boldPublisherName
+    //        ? $"**{publisher.PublisherName}**"
+    //        : publisher.PublisherName;
+    //    var userName = boldUserName
+    //        ? $"**{publisher.User.UserName}**"
+    //        : publisher.User.UserName;
+    //    return $"{publisherName} ({userName})";
+    //}
+
+    private async Task<SocketTextChannel?> GetChannelForLeague(Guid leagueID)
+    {
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var leagueChannel = allChannels.FirstOrDefault(c => c.LeagueID == leagueID);
+        if (leagueChannel is null)
+        {
+            return null;
+        }
+
+        var guild = _client.GetGuild(leagueChannel.GuildID);
+        var channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+        return channel;
+    }
+
+    private static string BuildGameListText(IEnumerable<MasterGameYearWithCounterPick> games)
     {
         var gameNames = games.Select(g => g.MasterGameYear.MasterGame.GameName);
         var gameNameString = string.Join(" and ", gameNames);

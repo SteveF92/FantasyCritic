@@ -41,7 +41,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding League Configuration",
-                "No league configuration found for this channel.",
+                "No league configuration found for this channel. You may have to specify a year if your league is for an upcoming year.",
                 Context.User));
             return;
         }
@@ -95,15 +95,14 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         {
             publisherLine += $"{publisher.PublisherIcon} ";
         }
-        publisherLine += $"**{publisher.PublisherName}** ";
 
         var crownEmoji = "";
         if (previousYearWinner is not null && publisher.User.Id == previousYearWinner.Id)
         {
             crownEmoji = " 👑";
         }
-
-        publisherLine += $"({publisher.User.UserName}){crownEmoji}\n";
+        
+        publisherLine += $"**{publisher.GetPublisherAndUserDisplayName()}**{crownEmoji}\n";
         publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
         publisherLine += $"*(Projected: {Math.Round(projectedPoints, 1)})*\n";
         publisherLine += $"> {gamesReleased}/{allWillRelease} games released";

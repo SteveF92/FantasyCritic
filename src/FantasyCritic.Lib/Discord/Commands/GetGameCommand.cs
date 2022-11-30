@@ -118,7 +118,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         {
             var score = gameFound.GetFantasyPoints(leagueYear.Options.ScoringSystem, false, dateToCheck);
             gameDisplayText +=
-                $"\n**Picked:** {publisherWhoPicked.PublisherName} ({publisherWhoPicked.User.UserName})";
+                $"\n**Picked:** {publisherWhoPicked.GetPublisherAndUserDisplayName()}";
 
             if (!gameFound.WillRelease())
             {
@@ -135,7 +135,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         {
             var score = gameFound.GetFantasyPoints(leagueYear.Options.ScoringSystem, true, dateToCheck);
             gameDisplayText +=
-                $"\n**Counter Picked:** {publisherWhoCounterPicked.PublisherName} ({publisherWhoCounterPicked.User.UserName})";
+                $"\n**Counter Picked:** {publisherWhoCounterPicked.GetPublisherAndUserDisplayName()}";
 
             if (score.HasValue)
             {

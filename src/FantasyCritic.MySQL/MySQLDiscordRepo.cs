@@ -72,17 +72,7 @@ public class MySQLDiscordRepo : IDiscordRepo
 
     public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, int year)
     {
-        await using var connection = new MySqlConnection(_connectionString);
-        var queryObject = new
-        {
-            guildID,
-            channelID
-        };
-
-        const string leagueChannelSQL =
-            "select * from tbl_discord_leaguechannel WHERE GuildID = @guildID AND ChannelID = @channelID";
-
-        var leagueChannelEntity = await connection.QuerySingleOrDefaultAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
+        var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
         if (leagueChannelEntity is null)
         {
             return null;
@@ -95,12 +85,32 @@ public class MySQLDiscordRepo : IDiscordRepo
         }
 
         var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
-        if (leagueYear is null)
-        {
-            return null;
-        }
+        return leagueYear is null
+            ? null
+            : leagueChannelEntity.ToDomain(leagueYear);
+    }
 
-        return leagueChannelEntity.ToDomain(leagueYear);
+    public async Task<MinimalLeagueChannel?> GetMinimalLeagueChannel(ulong guildID, ulong channelID)
+    {
+        var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
+        return leagueChannelEntity?.ToMinimalDomain();
+    }
+
+    private async Task<LeagueChannelEntity?> GetLeagueChannelEntity(ulong guildID, ulong channelID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
+        {
+            guildID,
+            channelID
+        };
+
+        const string leagueChannelSQL =
+            "select * from tbl_discord_leaguechannel WHERE GuildID = @guildID AND ChannelID = @channelID";
+
+        var leagueChannelEntity =
+            await connection.QuerySingleOrDefaultAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
+        return leagueChannelEntity;
     }
 
     public async Task RemoveAllLeagueChannelsForLeague(Guid leagueID)

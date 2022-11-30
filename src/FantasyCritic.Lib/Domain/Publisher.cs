@@ -251,4 +251,9 @@ public class Publisher : IEquatable<Publisher>
             null,null, 0, new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, false);
     }
+
+    public string GetPublisherAndUserDisplayName()
+    {
+        return $"{PublisherName} ({User.UserName})";
+    }
 }

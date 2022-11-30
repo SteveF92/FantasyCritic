@@ -31,6 +31,7 @@ public class PublisherService
 
         Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear.Key, user, publisherName, null, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, false);
         await _fantasyCriticRepo.CreatePublisher(publisher);
+        await _discordPushService.SendNewPublisherMessage(publisher);
         return publisher;
     }
 

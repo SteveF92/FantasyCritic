@@ -72,6 +72,6 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
     private string BuildGameMessage(Publisher publisher, MasterGame masterGame)
     {
         var gameUrl = new GameUrlBuilder(_baseAddress, masterGame.MasterGameID).BuildUrl(masterGame.GameName);
-        return $"**{masterGame.EstimatedReleaseDate}** - {gameUrl} - {publisher.PublisherName} ({publisher.User.UserName})\n";
+        return $"**{masterGame.EstimatedReleaseDate}** - {gameUrl} - {publisher.GetPublisherAndUserDisplayName()}\n";
     }
 }

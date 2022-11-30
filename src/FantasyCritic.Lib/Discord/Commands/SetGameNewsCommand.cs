@@ -1,6 +1,5 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -28,8 +27,6 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         string setting
         )
     {
-        var dateToCheck = _clock.GetGameEffectiveDate();
-
         var settingEnum = DiscordGameNewsSetting.TryFromValue(setting);
         if (settingEnum is null)
         {
@@ -40,7 +37,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
             return;
         }
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         if (leagueChannel == null)
         {
             await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -50,9 +47,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
             return;
         }
 
-        var league = leagueChannel.LeagueYear.League;
-
-        await _discordRepo.SetIsGameNewsSetting(league.LeagueID, Context.Guild.Id, Context.Channel.Id, settingEnum);
+        await _discordRepo.SetIsGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, settingEnum);
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Channel League Configuration Saved",

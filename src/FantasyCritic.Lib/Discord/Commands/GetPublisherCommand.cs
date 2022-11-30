@@ -115,26 +115,26 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             leagueChannel.LeagueYear.Options.FreeDroppableGames);
 
         await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
-            $"{publisherFound.PublisherName} (Player: {publisherFound.User.UserName})",
+            $"{publisherFound.GetPublisherAndUserDisplayName()}",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,
             embedFieldBuilders));
     }
 
-    private string GetDropsRemainingText(int numberOfDropsAllowed, int dropsDone)
+    private static string GetDropsRemainingText(int numberOfDropsAllowed, int dropsDone)
     {
         return numberOfDropsAllowed == -1
             ? "♾️"
             : (numberOfDropsAllowed - dropsDone).ToString();
     }
 
-    private IEnumerable<PublisherGame> GetSortedPublisherGames(Publisher publisherFound, bool isCounterPick)
+    private static IEnumerable<PublisherGame> GetSortedPublisherGames(Publisher publisherFound, bool isCounterPick)
     {
         return publisherFound.PublisherGames.Where(g => g.CounterPick == isCounterPick).OrderBy(g => g.SlotNumber);
     }
 
-    private static Publisher? GetPublisherFromFoundLists(List<Publisher> foundByPlayerName,
-        List<Publisher> foundByPublisherName)
+    private static Publisher? GetPublisherFromFoundLists(IReadOnlyList<Publisher> foundByPlayerName,
+        IReadOnlyList<Publisher> foundByPublisherName)
     {
         Publisher? publisherFound = null;
 
@@ -150,7 +150,8 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         return publisherFound;
     }
 
-    private string BuildMessageForMultiplePublishersFound(List<Publisher> foundByPlayerName, List<Publisher> foundByPublisherName)
+    private static string BuildMessageForMultiplePublishersFound(IReadOnlyCollection<Publisher> foundByPlayerName,
+        IReadOnlyCollection<Publisher> foundByPublisherName)
     {
         var message = "";
 
@@ -187,7 +188,16 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         return message;
     }
 
-    private List<EmbedFieldBuilder> BuildEmbedFieldBuilders(string gamesMessage, string counterPickMessage, Publisher publisherFound, LeagueChannel leagueChannel, string remainingWillReleaseDrops, int leagueOptionWillReleaseDroppableGames, string remainingWillNotReleaseDrops, int leagueOptionWillNotReleaseDroppableGames, string remainingFreeDroppableGames, int leagueOptionsFreeDroppableGames)
+    private static List<EmbedFieldBuilder> BuildEmbedFieldBuilders(string gamesMessage,
+        string counterPickMessage,
+        Publisher publisherFound,
+        LeagueChannel leagueChannel,
+        string remainingWillReleaseDrops,
+        int leagueOptionWillReleaseDroppableGames,
+        string remainingWillNotReleaseDrops,
+        int leagueOptionWillNotReleaseDroppableGames,
+        string remainingFreeDroppableGames,
+        int leagueOptionsFreeDroppableGames)
     {
         return new List<EmbedFieldBuilder>
         {
@@ -233,20 +243,17 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         };
     }
 
-    private string BuildDropDisplay(string remaining, int total)
+    private static string BuildDropDisplay(string remaining, int total)
     {
-        if (total == 0)
+        return total switch
         {
-            return "N/A";
-        }
-        if (total == -1)
-        {
-            return "♾️";
-        }
-        return $"{remaining}/{total}";
+            0 => "N/A",
+            -1 => "♾️",
+            _ => $"{remaining}/{total}"
+        };
     }
 
-    private string BuildGameMessage(PublisherGame g)
+    private static string BuildGameMessage(PublisherGame g)
     {
         var gameMessage = g.GameName;
         if (g.FantasyPoints != null)
