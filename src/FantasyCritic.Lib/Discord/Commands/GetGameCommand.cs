@@ -169,12 +169,12 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         return releaseDateDisplayText;
     }
 
-    private int GetDaysUntilRelease(LocalDate? releaseDate, LocalDate dateToCheck)
+    private static int GetDaysUntilRelease(LocalDate? releaseDate, LocalDate dateToCheck)
     {
         return releaseDate == null ? -1 : Period.DaysBetween(dateToCheck, releaseDate.Value);
     }
 
-    private Publisher? FindPublisherWithGame(LeagueYear leagueYear, MasterGameYear game, bool lookingForCounterPick)
+    private static Publisher? FindPublisherWithGame(LeagueYear leagueYear, MasterGameYear game, bool lookingForCounterPick)
     {
         return leagueYear.Publishers.FirstOrDefault(p =>
             p.PublisherGames.Any(publisherGame =>

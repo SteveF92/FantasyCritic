@@ -634,17 +634,6 @@ public class DiscordPushService
         return message;
     }
 
-    //private static string MakePublisherAndUserDisplayName(Publisher publisher, bool boldPublisherName = false, bool boldUserName = false)
-    //{
-    //    var publisherName = boldPublisherName
-    //        ? $"**{publisher.PublisherName}**"
-    //        : publisher.PublisherName;
-    //    var userName = boldUserName
-    //        ? $"**{publisher.User.UserName}**"
-    //        : publisher.User.UserName;
-    //    return $"{publisherName} ({userName})";
-    //}
-
     private async Task<SocketTextChannel?> GetChannelForLeague(Guid leagueID)
     {
         var allChannels = await _discordRepo.GetAllLeagueChannels();
