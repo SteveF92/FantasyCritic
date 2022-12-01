@@ -32,12 +32,13 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
         )
     {
+        await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Publisher",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -48,7 +49,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
 
         if (termToSearch.Length < 2)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Publisher",
                 "Please provide at least 3 characters to search with.",
                 Context.User));
@@ -63,7 +64,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
 
         if (!foundByPlayerName.Any() && !foundByPublisherName.Any())
         {
-            await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "No Matches Found",
                 "No matches were found for your query.",
                 Context.User));
@@ -73,7 +74,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         var message = BuildMessageForMultiplePublishersFound(foundByPlayerName, foundByPublisherName);
         if (message != "")
         {
-            await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "Multiple Matches Found",
                 message,
                 Context.User));
@@ -84,7 +85,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
 
         if (publisherFound == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Publisher",
                 "Something went wrong.",
                 Context.User));
@@ -114,7 +115,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             remainingFreeDroppableGames,
             leagueChannel.LeagueYear.Options.FreeDroppableGames);
 
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             $"{publisherFound.GetPublisherAndUserDisplayName()}",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,
@@ -267,16 +268,17 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         }
         else
         {
-            if (g.MasterGame != null)
+            if (g.MasterGame == null)
             {
-                if (g.MasterGame.MasterGame.ReleaseDate != null)
-                {
-                    gameMessage += $" - {g.MasterGame.MasterGame.ReleaseDate?.ToString()[10..]}"; // TODO: why was I using substring here?
-                }
-                else
-                {
-                    gameMessage += $" - {g.MasterGame.MasterGame.EstimatedReleaseDate} (est)";
-                }
+                return gameMessage;
+            }
+            if (g.MasterGame.MasterGame.ReleaseDate != null)
+            {
+                gameMessage += $" - {g.MasterGame.MasterGame.ReleaseDate?.ToString()}";
+            }
+            else
+            {
+                gameMessage += $" - {g.MasterGame.MasterGame.EstimatedReleaseDate} (est)";
             }
         }
 
