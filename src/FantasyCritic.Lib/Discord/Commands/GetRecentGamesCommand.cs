@@ -29,12 +29,13 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
     [SlashCommand("recent", "Get recent releases for publishers in the league.")]
     public async Task GetRecentGames()
     {
+        await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate();
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Recent Games",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -48,7 +49,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
         var recentGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, true, dateToCheck);
         if (recentGamesData.Count == 0)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Recent Games",
                 "No data found.",
                 Context.User));
@@ -56,14 +57,24 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
 
         var message = "";
 
-        foreach (var recentGame in recentGamesData)
+        foreach (var recentGameGrouping in recentGamesData)
         {
+            var publisherGame = recentGameGrouping.FirstOrDefault(p => !p.CounterPick);
+
+            if (publisherGame == null)
+            {
+                continue;
+            }
+
             var publisher =
-                leagueYear.Publishers.First(p => p.PublisherGames.ContainsGame(recentGame.Key.MasterGame));
-            message += BuildGameMessage(publisher, recentGame.Key.MasterGame);
+                leagueYear.Publishers.FirstOrDefault(p => p.PublisherID == publisherGame.PublisherID);
+            if (publisher != null)
+            {
+                message += BuildGameMessage(publisher, recentGameGrouping.Key.MasterGame);
+            }
         }
 
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Recent Publisher Releases",
             message,
             Context.User));
