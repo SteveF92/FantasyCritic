@@ -33,13 +33,14 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
         )
     {
+        await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding League Configuration",
                 "No league configuration found for this channel. You may have to specify a year if your league is for an upcoming year.",
                 Context.User));
@@ -69,7 +70,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             leagueChannel.LeagueYear.Year)
             .BuildUrl();
 
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             $"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}",
             string.Join("\n", publisherLines),
             Context.User,

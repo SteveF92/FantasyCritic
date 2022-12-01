@@ -27,10 +27,11 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         string setting
         )
     {
+        await DeferAsync();
         var settingEnum = DiscordGameNewsSetting.TryFromValue(setting);
         if (settingEnum is null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Invalid setting",
                 "Valid settings are Off, Relevant, and All.",
                 Context.User));
@@ -40,7 +41,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         if (leagueChannel == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding League Configuration",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -49,7 +50,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
 
         await _discordRepo.SetIsGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, settingEnum);
 
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Channel League Configuration Saved",
             $"Game News Announcements now set to **{settingEnum.Value}**.",
             Context.User));

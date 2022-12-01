@@ -29,12 +29,13 @@ public class GetLeagueLinkCommand : InteractionModuleBase<SocketInteractionConte
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
         )
     {
+        await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting League Link",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -44,7 +45,7 @@ public class GetLeagueLinkCommand : InteractionModuleBase<SocketInteractionConte
         var leagueUrlBuilder = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID, leagueChannel.LeagueYear.Year);
         var leagueUrl = leagueUrlBuilder.BuildUrl();
 
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             $"Click here to visit the site for the league {leagueChannel.LeagueYear.League.LeagueName} ({leagueChannel.LeagueYear.Year})",
             "",
             Context.User,

@@ -39,6 +39,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam
         )
     {
+        await DeferAsync();
         Logger.Information("Attempting to set up channel {ChannelID} to track league {LeagueID}", Context.Channel.Id, leagueIdParam);
 
         var dateToCheck = _clock.GetGameEffectiveDate();
@@ -47,7 +48,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
 
         if (string.IsNullOrEmpty(leagueId))
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Setting League",
                 "A league ID is required.",
                 Context.User));
@@ -56,7 +57,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
 
         if (!Guid.TryParse(leagueId, out var leagueGuid))
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Setting League",
                 $"`{leagueId}` is not a valid league ID.",
                 Context.User));
@@ -66,7 +67,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         var league = await _fantasyCriticRepo.GetLeague(leagueGuid);
         if (league == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Setting League",
                 $"No league was found for the league ID `{leagueId}`.",
                 Context.User));
@@ -75,21 +76,21 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
 
         if (!league.PublicLeague)
         {
-            string responseMessage = "You do not have access to this league. To link a private league, you must be a member of the league, and you must link your Fantasy Critic and Discord accounts.";
+            const string responseMessage = "You do not have access to this league. To link a private league, you must be a member of the league, and you must link your Fantasy Critic and Discord accounts.";
             if (Context.User is null)
             {
-                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Setting League",
                     responseMessage,
                     Context.User));
                 return;
             }
 
-            SocketUser discordUser = Context.User!;
+            var discordUser = Context.User!;
             var fantasyCriticUser = await _userStore.FindByLoginAsync("Discord", discordUser.Id.ToString(), CancellationToken.None);
             if (fantasyCriticUser is null)
             {
-                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Setting League",
                     responseMessage,
                     Context.User));
@@ -99,7 +100,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
             var usersInLeague = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, dateToCheck.Year);
             if (!usersInLeague.Contains(fantasyCriticUser))
             {
-                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Setting League",
                     responseMessage,
                     Context.User));
@@ -118,17 +119,18 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
         {
             if (ex.Message.ToLower().Contains("duplicate"))
             {
-                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Saving Channel Configuration",
                     "This channel is already registered to this league.",
                     Context.User));
+                return;
             }
         }
         var leagueUrlBuilder =
             new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
         var leagueLinkWithName = leagueUrlBuilder.BuildUrl(league.LeagueName);
 
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Channel League Configuration Saved",
             $"Channel configured for League {leagueLinkWithName}.",
             Context.User,

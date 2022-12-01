@@ -35,12 +35,13 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         [Summary("game_name", "The game name that you're searching for. You can input only a portion of the name.")] string gameName,
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
+        await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
         if (leagueChannel == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding League Configuration",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -53,7 +54,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (termToSearch.Length < 2)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding Game",
                 "Please provide at least 3 characters to search with.",
                 Context.User));
@@ -63,7 +64,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, leagueYear, 3);
         if (!matchingGames.Any())
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Finding Game",
                 "No games found! Please check your search and try again.",
                 Context.User));
@@ -89,7 +90,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
                 };
             }).ToList();
 
-        await RespondAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             gameEmbeds.Count == 0
                 ? "No Games Found"
                 : $"{gameEmbeds.Count} Game{(gameEmbeds.Count > 1 ? "(s)" : "")} Found",
@@ -104,7 +105,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
 
         var releaseDateDisplayText = GetReleaseDateText(gameFound, dateToCheck);
 
-        string gameDisplayText = $"**Release Date:** {releaseDateDisplayText}";
+        var gameDisplayText = $"**Release Date:** {releaseDateDisplayText}";
 
         var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false);
 
@@ -151,20 +152,22 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
 
     private string GetReleaseDateText(MasterGameYear gameFound, LocalDate dateToCheck)
     {
-        string releaseDateDisplayText = $"{gameFound.MasterGame.EstimatedReleaseDate} (est)";
+        var releaseDateDisplayText = $"{gameFound.MasterGame.EstimatedReleaseDate} (est)";
 
-        if (gameFound.MasterGame.ReleaseDate != null)
+        if (gameFound.MasterGame.ReleaseDate == null)
         {
-            releaseDateDisplayText = $"{gameFound.MasterGame.ReleaseDate?.ToString()}";
-            if (!gameFound.MasterGame.IsReleased(dateToCheck) && _clock.GetToday().Year == dateToCheck.Year)
-            {
-                var daysUntilRelease = GetDaysUntilRelease(gameFound.MasterGame.ReleaseDate, dateToCheck);
-                if (daysUntilRelease > 0)
-                {
-                    releaseDateDisplayText += $" ({daysUntilRelease} days until release)";
-                };
-            }
+            return releaseDateDisplayText;
         }
+        releaseDateDisplayText = $"{gameFound.MasterGame.ReleaseDate?.ToString()}";
+        if (gameFound.MasterGame.IsReleased(dateToCheck) || _clock.GetToday().Year != dateToCheck.Year)
+        {
+            return releaseDateDisplayText;
+        }
+        var daysUntilRelease = GetDaysUntilRelease(gameFound.MasterGame.ReleaseDate, dateToCheck);
+        if (daysUntilRelease > 0)
+        {
+            releaseDateDisplayText += $" ({daysUntilRelease} days until release)";
+        };
 
         return releaseDateDisplayText;
     }
