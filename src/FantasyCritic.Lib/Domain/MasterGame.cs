@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.Lib.Domain;
 
@@ -107,6 +108,49 @@ public class MasterGame : IEquatable<MasterGame>
             return true;
         }
     }
+
+    public WillReleaseStatus WillReleaseInYear(int year)
+    {
+        if (year < MinimumReleaseDate.Year)
+        {
+            return WillReleaseStatus.WillNotRelease;
+        }
+
+        if (Tags.Any(x => x.Name == "Cancelled"))
+        {
+            return WillReleaseStatus.WillNotRelease;
+        }
+
+        if (MaximumReleaseDate.HasValue && MaximumReleaseDate.Value.Year <= year)
+        {
+            return WillReleaseStatus.WillRelease;
+        }
+
+        return WillReleaseStatus.MightRelease;
+    }
+
+    public WillReleaseStatus WillReleaseInQuarter(YearQuarter yearQuarter)
+    {
+        if (ReleaseDate.HasValue && yearQuarter.FirstDateOfQuarter > ReleaseDate.Value)
+        {
+            return WillReleaseStatus.WillNotRelease;
+        }
+
+        if (yearQuarter.LastDateOfQuarter < MinimumReleaseDate)
+        {
+            return WillReleaseStatus.WillNotRelease;
+        }
+
+        if (MaximumReleaseDate.HasValue && MaximumReleaseDate.Value <= yearQuarter.LastDateOfQuarter)
+        {
+            return WillReleaseStatus.WillRelease;
+        }
+
+        return WillReleaseStatus.MightRelease;
+    }
+
+    public bool CouldReleaseInYear(int year) => WillReleaseInYear(year).CountAsWillRelease;
+    public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => WillReleaseInQuarter(yearQuarter).CountAsWillRelease;
 
     public string GetReleaseDateString()
     {

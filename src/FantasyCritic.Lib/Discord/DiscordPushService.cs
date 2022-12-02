@@ -83,6 +83,43 @@ public class DiscordPushService
         return true;
     }
 
+    public async Task SendNewMasterGameMessage(MasterGame masterGame, int year)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
+
+        var messageTasks = new List<Task>();
+        foreach (var leagueChannel in newsEnabledChannels)
+        {
+            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
+            {
+                bool gameIsRelevant = NewGameIsRelevant(masterGame, year);
+                if (!gameIsRelevant)
+                {
+                    continue;
+                }
+            }
+
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            var channel = guild?.GetChannel(leagueChannel.ChannelID);
+            if (channel is not SocketTextChannel textChannel)
+            {
+                continue;
+            }
+
+            var tagsString = string.Join(", ", masterGame.Tags.Select(x => x.ReadableName));
+            messageTasks.Add(textChannel.TrySendMessageAsync($"New Game Added! **{masterGame.GameName}** (Tagged as: **{tagsString}**)"));
+        }
+
+        await Task.WhenAll(messageTasks);
+    }
+
     public async Task SendGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore, int year)
     {
         bool shouldRun = await StartBot();
@@ -236,6 +273,11 @@ public class DiscordPushService
         }
 
         await Task.WhenAll(messageTasks);
+    }
+
+    private bool NewGameIsRelevant(MasterGame masterGame, int year)
+    {
+        return masterGame.CouldReleaseInYear(year);
     }
 
     private static bool GameIsRelevant(MasterGameYear masterGameYear, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)

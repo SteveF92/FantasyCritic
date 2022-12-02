@@ -38,9 +38,10 @@ public class InterLeagueService
         return _fantasyCriticRepo.GetSiteCounts();
     }
 
-    public Task CreateMasterGame(MasterGame masterGame)
+    public async Task CreateMasterGame(MasterGame masterGame)
     {
-        return _masterGameRepo.CreateMasterGame(masterGame);
+        await _masterGameRepo.CreateMasterGame(masterGame);
+        await _discordPushService.SendNewMasterGameMessage(masterGame, _clock.GetToday().Year);
     }
 
     public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)

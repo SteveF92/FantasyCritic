@@ -51,48 +51,10 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public override string ToString() => $"{MasterGame}-{Year}";
 
-    public WillReleaseStatus WillRelease()
-    {
-        if (Year < MasterGame.MinimumReleaseDate.Year)
-        {
-            return WillReleaseStatus.WillNotRelease;
-        }
-
-        if (MasterGame.Tags.Any(x => x.Name == "Cancelled"))
-        {
-            return WillReleaseStatus.WillNotRelease;
-        }
-
-        if (MasterGame.MaximumReleaseDate.HasValue && MasterGame.MaximumReleaseDate.Value.Year <= Year)
-        {
-            return WillReleaseStatus.WillRelease;
-        }
-
-        return WillReleaseStatus.MightRelease;
-    }
-
-    public WillReleaseStatus WillReleaseInQuarter(YearQuarter yearQuarter)
-    {
-        if (MasterGame.ReleaseDate.HasValue && yearQuarter.FirstDateOfQuarter > MasterGame.ReleaseDate.Value)
-        {
-            return WillReleaseStatus.WillNotRelease;
-        }
-
-        if (yearQuarter.LastDateOfQuarter < MasterGame.MinimumReleaseDate)
-        {
-            return WillReleaseStatus.WillNotRelease;
-        }
-
-        if (MasterGame.MaximumReleaseDate.HasValue && MasterGame.MaximumReleaseDate.Value <= yearQuarter.LastDateOfQuarter)
-        {
-            return WillReleaseStatus.WillRelease;
-        }
-
-        return WillReleaseStatus.MightRelease;
-    }
-
-    public bool CouldRelease() => WillRelease().CountAsWillRelease;
-    public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => WillReleaseInQuarter(yearQuarter).CountAsWillRelease;
+    public WillReleaseStatus WillRelease() => MasterGame.WillReleaseInYear(Year);
+    public WillReleaseStatus WillReleaseInQuarter(YearQuarter yearQuarter) => MasterGame.WillReleaseInQuarter(yearQuarter);
+    public bool CouldRelease() => MasterGame.CouldReleaseInYear(Year);
+    public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => MasterGame.CouldReleaseInQuarter(yearQuarter);
 
     public bool IsRelevantInYear(bool strict) => IsRelevantInYear(Year, strict);
     
