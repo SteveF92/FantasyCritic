@@ -43,7 +43,6 @@ public class GetUpcomingGamesCommand : InteractionModuleBase<SocketInteractionCo
         }
 
         var leagueYear = leagueChannel.LeagueYear;
-
         var leagueYearPublisherPairs = leagueYear.Publishers.Select(publisher => new LeagueYearPublisherPair(leagueYear, publisher));
 
         var upcomingGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, false, dateToCheck);
@@ -55,34 +54,26 @@ public class GetUpcomingGamesCommand : InteractionModuleBase<SocketInteractionCo
                 Context.User));
         }
 
-        var message = "";
-
-        foreach (var upcomingGameGrouping in upcomingGamesData)
+        List<string> messages = new List<string>();
+        foreach (var recentGameGrouping in upcomingGamesData)
         {
-            var publisherGame = upcomingGameGrouping.FirstOrDefault(p => !p.CounterPick);
+            var standardGame = recentGameGrouping.FirstOrDefault(p => !p.CounterPick);
+            var counterPick = recentGameGrouping.FirstOrDefault(p => p.CounterPick);
+            var standardPublisher = leagueYear.Publishers.FirstOrDefault(p => standardGame is not null && p.PublisherID == standardGame.PublisherID);
+            var counterPickPublisher = leagueYear.Publishers.FirstOrDefault(p => counterPick is not null && p.PublisherID == counterPick.PublisherID);
 
-            if (publisherGame == null)
+            var gameMessage = DiscordUtilities.BuildGameMessage(standardPublisher, counterPickPublisher, recentGameGrouping.Key.MasterGame, _baseAddress);
+            if (gameMessage is not null)
             {
-                continue;
-            }
-
-            var publisher =
-                leagueYear.Publishers.FirstOrDefault(p => p.PublisherID == publisherGame.PublisherID);
-            if (publisher != null)
-            {
-                message += BuildGameMessage(publisher, upcomingGameGrouping.Key.MasterGame);
+                messages.Add(gameMessage);
             }
         }
+
+        var message = string.Join("\n--------------------------------\n", messages);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Upcoming Publisher Releases",
             message,
             Context.User));
-    }
-
-    private string BuildGameMessage(Publisher publisher, MasterGame masterGame)
-    {
-        var gameUrl = new GameUrlBuilder(_baseAddress, masterGame.MasterGameID).BuildUrl(masterGame.GameName);
-        return $"**{masterGame.EstimatedReleaseDate}** - {gameUrl} - {publisher.GetPublisherAndUserDisplayName()}\n";
     }
 }
