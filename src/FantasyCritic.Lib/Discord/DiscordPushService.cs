@@ -192,8 +192,8 @@ public class DiscordPushService
                 }
             }
 
-            var changesMessage = string.Join("\n", editableChanges);
-            messageTasks.Add(textChannel.TrySendMessageAsync($"Game Update: **{editedGame.MasterGame.GameName}**\n{changesMessage}"));
+            var changesMessage = string.Join('\n', editableChanges.Select(x => $"> {x}"));
+            messageTasks.Add(textChannel.TrySendMessageAsync($"> Game Update: **{editedGame.MasterGame.GameName}**\n {changesMessage}"));
         }
 
         await Task.WhenAll(messageTasks);
