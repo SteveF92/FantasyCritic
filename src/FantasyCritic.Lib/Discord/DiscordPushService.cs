@@ -182,14 +182,8 @@ public class DiscordPushService
             var editableChanges = changes.ToList();
             if (releaseStatusChanged)
             {
-                if (editedGame.CouldRelease())
-                {
-                    editableChanges.Add($"**{editedGame.MasterGame.GameName}** will release this year!");
-                }
-                else
-                {
-                    editableChanges.Add($"**{editedGame.MasterGame.GameName}** will NOT release this year!");
-                }
+                var willReleaseStatus = editedGame.WillRelease();
+                editableChanges.Add($"**{editedGame.MasterGame.GameName}** {willReleaseStatus.DiscordText} this year!");
             }
 
             var changesMessage = string.Join('\n', editableChanges.Select(x => $"> {x}"));
