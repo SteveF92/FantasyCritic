@@ -83,7 +83,7 @@ public class DiscordPushService
         return true;
     }
 
-    public async Task SendGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore)
+    public async Task SendGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore, int year)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -92,6 +92,7 @@ public class DiscordPushService
         }
 
         var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(game, year);
         var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
 
         var messageToSend = "";
@@ -118,18 +119,27 @@ public class DiscordPushService
             }
         }
 
-        if (!string.IsNullOrEmpty(messageToSend))
+        if (string.IsNullOrEmpty(messageToSend))
         {
-            foreach (var leagueChannel in newsEnabledChannels)
+            return;
+        }
+
+        foreach (var leagueChannel in newsEnabledChannels)
+        {
+            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant &&
+                !LeagueHasGame(leaguesWithGame, leagueChannel))
             {
-                var guild = _client.GetGuild(leagueChannel.GuildID);
-                var channel = guild?.GetChannel(leagueChannel.ChannelID);
-                if (channel is not SocketTextChannel textChannel)
-                {
-                    continue;
-                }
-                await textChannel.TrySendMessageAsync(messageToSend);
+                continue;
             }
+
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            var channel = guild?.GetChannel(leagueChannel.ChannelID);
+            if (channel is not SocketTextChannel textChannel)
+            {
+                continue;
+            }
+
+            await textChannel.TrySendMessageAsync(messageToSend);
         }
     }
 
@@ -143,7 +153,7 @@ public class DiscordPushService
 
         bool releaseStatusChanged = existingGame.WillRelease() != editedGame.WillRelease();
 
-        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(editedGame);
+        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(editedGame.MasterGame, existingGame.Year);
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
@@ -190,7 +200,7 @@ public class DiscordPushService
             return;
         }
 
-        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday, year);
+        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday.Select(x => x.MasterGame), year);
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
         foreach (var leagueChannel in newsEnabledChannels)
@@ -205,7 +215,7 @@ public class DiscordPushService
             IReadOnlyList<MasterGameYear> relevantGamesForLeague;
             if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
             {
-                relevantGamesForLeague = masterGamesReleasingToday.Where(x => ReleasedGameIsRelevant(x, leagueHasGameLookup, leagueChannel)).ToList();
+                relevantGamesForLeague = masterGamesReleasingToday.Where(x => GameIsInLeague(x.MasterGame, leagueHasGameLookup, leagueChannel)).ToList();
             }
             else
             {
@@ -230,18 +240,17 @@ public class DiscordPushService
             return true;
         }
 
-        return masterGameYear.IsRelevantInYear(true) || leaguesWithGame.Contains(channel.LeagueID);
+        return masterGameYear.IsRelevantInYear(true) || LeagueHasGame(leaguesWithGame, channel);
     }
 
-    private static bool ReleasedGameIsRelevant(MasterGameYear masterGameYear, ILookup<Guid, Guid> leagueHasGameLookup, MinimalLeagueChannel leagueChannel)
+    private static bool LeagueHasGame(IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
     {
-        if (masterGameYear.IsRelevantInYear(true))
-        {
-            return true;
-        }
+        return leaguesWithGame.Contains(channel.LeagueID);
+    }
 
-        var gameIsOrWasInLeague = leagueHasGameLookup[leagueChannel.LeagueID].Contains(masterGameYear.MasterGame.MasterGameID);
-        return gameIsOrWasInLeague;
+    private static bool GameIsInLeague(MasterGame masterGame, ILookup<Guid, Guid> leagueHasGameLookup, MinimalLeagueChannel leagueChannel)
+    {
+        return leagueHasGameLookup[leagueChannel.LeagueID].Contains(masterGame.MasterGameID);
     }
 
     public async Task SendLeagueActionMessage(LeagueAction action)

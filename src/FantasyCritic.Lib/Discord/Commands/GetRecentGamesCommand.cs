@@ -4,9 +4,7 @@ using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain.Combinations;
-using Microsoft.Extensions.Primitives;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionContext>
