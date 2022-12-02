@@ -47,7 +47,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return false;
         }
 
-        if (!MasterGame.WillReleaseInQuarter(YearQuarter.YearQuarter))
+        if (!MasterGame.CouldReleaseInQuarter(YearQuarter.YearQuarter))
         {
             return false;
         }

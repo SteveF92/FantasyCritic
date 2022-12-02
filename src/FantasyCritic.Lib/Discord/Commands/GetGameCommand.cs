@@ -121,7 +121,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
             gameDisplayText +=
                 $"\n**Picked:** {publisherWhoPicked.GetPublisherAndUserDisplayName()}";
 
-            if (!gameFound.WillRelease())
+            if (!gameFound.CouldRelease())
             {
                 gameDisplayText += " (Will Not Release This Year)";
             }

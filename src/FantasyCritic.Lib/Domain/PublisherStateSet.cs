@@ -55,7 +55,7 @@ public class PublisherStateSet
             }
             throw new Exception("Publisher does not have any super drops.");
         }
-        if (publisherGame.WillRelease())
+        if (publisherGame.CouldRelease())
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > publisherToEdit.WillReleaseGamesDropped)
             {

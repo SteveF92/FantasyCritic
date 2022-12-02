@@ -41,20 +41,22 @@ public class PublisherGame
 
     public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
-    public bool WillRelease()
+    public WillReleaseStatus WillRelease()
     {
         if (ManualWillNotRelease)
         {
-            return false;
+            return WillReleaseStatus.WillNotRelease;
         }
 
         if (MasterGame is null)
         {
-            return false;
+            return WillReleaseStatus.WillRelease;
         }
 
         return MasterGame.WillRelease();
     }
+
+    public bool CouldRelease() => WillRelease().CountAsWillRelease;
 
     public PublisherGame GetUpdatedPublisherGameWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {

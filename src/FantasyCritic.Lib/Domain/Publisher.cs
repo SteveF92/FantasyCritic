@@ -211,7 +211,7 @@ public class Publisher : IEquatable<Publisher>
 
     public override string ToString() => $"{PublisherID}|{PublisherName}";
 
-    public Result CanDropGame(bool willRelease, LeagueOptions leagueOptions, bool superDrop)
+    public Result CanDropGame(bool couldRelease, LeagueOptions leagueOptions, bool superDrop)
     {
         if (superDrop)
         {
@@ -221,7 +221,7 @@ public class Publisher : IEquatable<Publisher>
             }
             return Result.Failure("Publisher does not have any super drops.");
         }
-        if (willRelease)
+        if (couldRelease)
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > WillReleaseGamesDropped)
             {

@@ -198,11 +198,11 @@ public class GameSearchingService
         bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
         bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
         bool isReleased = masterGame.MasterGame.IsReleased(currentDate);
-        bool willRelease = masterGame.WillRelease();
+        WillReleaseStatus willReleaseStatus = masterGame.WillRelease();
         bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
         bool isEligibleInOpenSlot = SlotEligibilityFunctions.GameIsEligibleInOpenSlot(openNonCounterPickSlots, eligibilityFactors);
 
-        PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isEligibleInOpenSlot, isReleased, willRelease, hasScore);
+        PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isEligibleInOpenSlot, isReleased, willReleaseStatus, hasScore);
         return possibleMasterGame;
     }
 
@@ -216,11 +216,11 @@ public class GameSearchingService
         bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
         bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
         bool isReleased = masterGame.MasterGame.IsReleased(currentDate);
-        bool willRelease = masterGame.WillRelease();
+        WillReleaseStatus willReleaseStatus = masterGame.WillRelease();
         bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
         bool isEligibleInOpenSlot = SlotEligibilityFunctions.GameIsEligibleInOpenSlot(openNonCounterPickSlots, eligibilityFactors);
 
-        PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isEligibleInOpenSlot, isReleased, willRelease, hasScore);
+        PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isEligibleInOpenSlot, isReleased, willReleaseStatus, hasScore);
         return possibleMasterGame;
     }
 }

@@ -19,7 +19,7 @@ public class MasterGameYearScriptInput
         {
             CriticScore = masterGameYear.MasterGame.CriticScore.Value;
         }
-        else if (!masterGameYear.WillRelease())
+        else if (!masterGameYear.CouldRelease())
         {
             CriticScore = 70m;
         }

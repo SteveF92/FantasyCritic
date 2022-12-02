@@ -128,8 +128,8 @@ public static class GameEligibilityFunctions
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        bool gameWillRelease = publisherGame.WillRelease();
-        var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options, false);
+        bool gameCouldRelease = publisherGame.CouldRelease();
+        var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);
         return new DropResult(dropResult);
     }
 
@@ -181,8 +181,8 @@ public static class GameEligibilityFunctions
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        bool gameWillRelease = publisherGame.WillRelease();
-        var dropResult = publisher.CanDropGame(gameWillRelease, leagueYear.Options, false);
+        bool gameCouldRelease = publisherGame.CouldRelease();
+        var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);
         return new DropResult(dropResult);
     }
 

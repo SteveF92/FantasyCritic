@@ -84,7 +84,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)
-            .Count(x => x.WillRelease());
+            .Count(x => x.CouldRelease());
 
         var gamesReleased = publisher.PublisherGames
             .Where(x => !x.CounterPick)

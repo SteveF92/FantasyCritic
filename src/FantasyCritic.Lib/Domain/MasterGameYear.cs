@@ -51,35 +51,48 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public override string ToString() => $"{MasterGame}-{Year}";
 
-    public bool WillRelease()
+    public WillReleaseStatus WillRelease()
     {
         if (Year < MasterGame.MinimumReleaseDate.Year)
         {
-            return false;
+            return WillReleaseStatus.WillNotRelease;
         }
 
         if (MasterGame.Tags.Any(x => x.Name == "Cancelled"))
         {
-            return false;
+            return WillReleaseStatus.WillNotRelease;
         }
 
-        return true;
+        if (MasterGame.MaximumReleaseDate.HasValue && MasterGame.MaximumReleaseDate.Value.Year <= Year)
+        {
+            return WillReleaseStatus.WillRelease;
+        }
+
+        return WillReleaseStatus.MightRelease;
     }
 
-    public bool WillReleaseInQuarter(YearQuarter yearQuarter)
+    public WillReleaseStatus WillReleaseInQuarter(YearQuarter yearQuarter)
     {
         if (MasterGame.ReleaseDate.HasValue && yearQuarter.FirstDateOfQuarter > MasterGame.ReleaseDate.Value)
         {
-            return false;
+            return WillReleaseStatus.WillNotRelease;
         }
 
         if (yearQuarter.LastDateOfQuarter < MasterGame.MinimumReleaseDate)
         {
-            return false;
+            return WillReleaseStatus.WillNotRelease;
         }
 
-        return true;
+        if (MasterGame.MaximumReleaseDate.HasValue && MasterGame.MaximumReleaseDate.Value <= yearQuarter.LastDateOfQuarter)
+        {
+            return WillReleaseStatus.WillRelease;
+        }
+
+        return WillReleaseStatus.MightRelease;
     }
+
+    public bool CouldRelease() => WillRelease().CountAsWillRelease;
+    public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => WillReleaseInQuarter(yearQuarter).CountAsWillRelease;
 
     public bool IsRelevantInYear(bool strict) => IsRelevantInYear(Year, strict);
     
@@ -128,7 +141,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public decimal? GetFantasyPoints(ScoringSystem scoringSystem, bool counterPick, LocalDate currentDate)
     {
-        if (!WillRelease())
+        if (!CouldRelease())
         {
             return 0m;
         }
@@ -148,7 +161,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public decimal? GetRealOrUpcomingFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
     {
-        if (!WillRelease())
+        if (!CouldRelease())
         {
             return 0m;
         }

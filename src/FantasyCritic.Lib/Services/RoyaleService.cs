@@ -99,7 +99,7 @@ public class RoyaleService
         {
             return new ClaimResult("Publisher already has that game.");
         }
-        if (!masterGame.WillReleaseInQuarter(publisher.YearQuarter.YearQuarter))
+        if (!masterGame.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter))
         {
             return new ClaimResult("Game will not release this quarter.");
         }

@@ -3,7 +3,7 @@ namespace FantasyCritic.Lib.Domain;
 public class PossibleMasterGameYear
 {
     public PossibleMasterGameYear(MasterGameYear masterGame, bool taken, bool alreadyOwned, bool isEligible, bool isEligibleInOpenSlot,
-        bool isReleased, bool willRelease, bool hasScore)
+        bool isReleased, WillReleaseStatus willReleaseStatus, bool hasScore)
     {
         MasterGame = masterGame;
         Taken = taken;
@@ -11,7 +11,7 @@ public class PossibleMasterGameYear
         IsEligible = isEligible;
         IsEligibleInOpenSlot = isEligibleInOpenSlot;
         IsReleased = isReleased;
-        WillRelease = willRelease;
+        WillReleaseStatus = willReleaseStatus;
         HasScore = hasScore;
     }
 
@@ -21,8 +21,8 @@ public class PossibleMasterGameYear
     public bool IsEligible { get; }
     public bool IsEligibleInOpenSlot { get; }
     public bool IsReleased { get; }
-    public bool WillRelease { get; }
+    public WillReleaseStatus WillReleaseStatus { get; }
     public bool HasScore { get; }
 
-    public bool IsAvailable => !Taken && !AlreadyOwned && IsEligible && !IsReleased && WillRelease && !HasScore;
+    public bool IsAvailable => !Taken && !AlreadyOwned && IsEligible && !IsReleased && WillReleaseStatus.CountAsWillRelease && !HasScore;
 }
