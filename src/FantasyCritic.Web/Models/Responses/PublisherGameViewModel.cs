@@ -35,7 +35,7 @@ public class PublisherGameViewModel
             ManualCriticScore = true;
         }
 
-        WillRelease = publisherGame.WillRelease();
+        WillRelease = publisherGame.CouldRelease();
         ManualWillNotRelease = publisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.OverallDraftPosition;
         BidAmount = publisherGame.BidAmount;
@@ -78,7 +78,7 @@ public class PublisherGameViewModel
             ManualCriticScore = true;
         }
 
-        WillRelease = publisherGame.PublisherGame.WillRelease();
+        WillRelease = publisherGame.PublisherGame.CouldRelease();
         ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
         BidAmount = publisherGame.PublisherGame.BidAmount;

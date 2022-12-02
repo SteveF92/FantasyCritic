@@ -381,7 +381,7 @@ public class RoyaleController : FantasyCriticController
         else
         {
             masterGames = masterGames
-                .Where(x => x.WillReleaseInQuarter(yearQuarter.YearQuarter))
+                .Where(x => x.CouldReleaseInQuarter(yearQuarter.YearQuarter))
                 .Where(x => !x.MasterGame.IsReleased(currentDate))
                 .Where(x => !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, x.MasterGame, currentDate).Any())
                 .Take(1000)

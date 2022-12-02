@@ -8,7 +8,7 @@ public class PossibleRoyaleMasterGameViewModel
     public PossibleRoyaleMasterGameViewModel(MasterGameYear masterGame, LocalDate currentDate, RoyaleYearQuarter yearQuarter, bool alreadyOwned, IEnumerable<MasterGameTag> masterGameTags)
     {
         MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
-        WillReleaseInQuarter = masterGame.WillReleaseInQuarter(yearQuarter.YearQuarter);
+        WillReleaseInQuarter = masterGame.CouldReleaseInQuarter(yearQuarter.YearQuarter);
         AlreadyOwned = alreadyOwned;
         IsEligible = !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate).Any();
         IsReleased = masterGame.MasterGame.IsReleased(currentDate);

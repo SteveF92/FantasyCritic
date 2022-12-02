@@ -10,7 +10,7 @@ public class PossibleMasterGameYearViewModel
         IsEligible = masterGame.IsEligible;
         IsEligibleInOpenSlot = masterGame.IsEligibleInOpenSlot;
         IsReleased = masterGame.IsReleased;
-        WillRelease = masterGame.WillRelease;
+        WillRelease = masterGame.WillReleaseStatus.CountAsWillRelease;
         HasScore = masterGame.HasScore;
         IsAvailable = masterGame.IsAvailable;
     }
