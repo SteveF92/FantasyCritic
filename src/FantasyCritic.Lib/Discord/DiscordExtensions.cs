@@ -5,21 +5,21 @@ using Discord.WebSocket;
 namespace FantasyCritic.Lib.Discord;
 public static class DiscordExtensions
 {
-    public static async Task<RestUserMessage?> TrySendMessageAsync(this SocketTextChannel channel, string messageToSend)
+    public static Task<RestUserMessage?> TrySendMessageAsync(this SocketTextChannel channel, string messageToSend)
     {
         try
         {
-            return await channel.SendMessageAsync(messageToSend);
+            return channel.SendMessageAsync(messageToSend);
         }
         catch (Exception e)
         {
             Serilog.Log.Error(e, "Error sending message to channel {ChannelID} {ChannelName}", channel.Id, channel.Name);
         }
 
-        return null;
+        return Task.FromResult<RestUserMessage?>(null);
     }
 
-    public static async Task<RestUserMessage?> TrySendMessageAsync(
+    public static Task<RestUserMessage?> TrySendMessageAsync(
         this SocketTextChannel channel,
         string? text = null,
         bool isTTS = false,
@@ -34,13 +34,14 @@ public static class DiscordExtensions
     {
         try
         {
-            return await channel.SendMessageAsync(text, isTTS, embed, options, allowedMentions, messageReference, components, stickers, embeds, flags);
+            return channel.SendMessageAsync(text, isTTS, embed, options, allowedMentions, messageReference, components, stickers, embeds, flags);
         }
         catch (Exception e)
         {
             Serilog.Log.Error(e, "Error sending message to channel {ChannelID} {ChannelName}", channel.Id, channel.Name);
         }
 
-        return null;
+        return Task.FromResult<RestUserMessage?>(null);
+
     }
 }

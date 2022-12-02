@@ -55,7 +55,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
-    public async Task<IReadOnlyList<MinimalLeagueChannel>?> GetLeagueChannels(Guid leagueID)
+    public async Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID)
     {
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
@@ -67,7 +67,7 @@ public class MySQLDiscordRepo : IDiscordRepo
             "select * from tbl_discord_leaguechannel WHERE LeagueID = @leagueID";
 
         var leagueChannels = await connection.QueryAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
-        return leagueChannels?.Select(l => l.ToMinimalDomain()).ToList();
+        return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
     public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, int year)
