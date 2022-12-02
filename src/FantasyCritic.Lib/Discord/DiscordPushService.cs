@@ -377,6 +377,11 @@ public class DiscordPushService
 
         foreach (var publicBiddingSet in publicBiddingSets)
         {
+            if (!publicBiddingSet.MasterGames.Any())
+            {
+                continue;
+            }
+
             var leagueChannels = channelLookup[publicBiddingSet.LeagueYear.League.LeagueID].ToList();
             if (!leagueChannels.Any())
             {
