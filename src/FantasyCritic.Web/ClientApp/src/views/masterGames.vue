@@ -137,12 +137,8 @@ export default {
         .get('/api/game/SupportedYears')
         .then((response) => {
           let supportedYears = response.data;
-          let openYears = _.filter(supportedYears, { openForPlay: true });
-          let finishedYears = _.filter(supportedYears, { finished: true });
-          this.supportedYears = openYears.concat(finishedYears).map(function (v) {
-            return v.year;
-          });
-          this.selectedYear = this.supportedYears[0];
+          this.supportedYears = supportedYears.map((x) => x.year);
+          this.selectedYear = supportedYears.filter((x) => x.openForPlay)[0].year;
           this.fetchGamesForYear();
           this.fetchMyLeaguesForYear();
         })
