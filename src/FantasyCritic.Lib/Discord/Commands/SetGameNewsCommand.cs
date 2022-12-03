@@ -6,15 +6,12 @@ namespace FantasyCritic.Lib.Discord.Commands;
 public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
-    private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
 
     public SetGameNewsCommand(IDiscordRepo discordRepo,
-        IClock clock,
         IDiscordFormatter discordFormatter)
     {
         _discordRepo = discordRepo;
-        _clock = clock;
         _discordFormatter = discordFormatter;
     }
 
@@ -24,20 +21,10 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         [Choice("Off", "Off")]
         [Choice("Relevant", "Relevant")]
         [Choice("All", "All")]
-        string setting
+        string setting = ""
         )
     {
         await DeferAsync();
-        var settingEnum = DiscordGameNewsSetting.TryFromValue(setting);
-        if (settingEnum is null)
-        {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Invalid setting",
-                "Valid settings are Off, Relevant, and All.",
-                Context.User));
-            return;
-        }
-
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         if (leagueChannel == null)
         {
@@ -48,10 +35,20 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
             return;
         }
 
+        var settingEnum = DiscordGameNewsSetting.TryFromValue(setting ?? "");
+        if (settingEnum is null)
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "No Change Made to Game News Configuration",
+                $"No option was selected.\nThe current Game News Announcements setting is still **{leagueChannel.GameNewsSetting}**.",
+                Context.User));
+            return;
+        }
+
         await _discordRepo.SetIsGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, settingEnum);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "Channel League Configuration Saved",
+            "Game News Configuration Saved",
             $"Game News Announcements now set to **{settingEnum.Value}**.",
             Context.User));
     }
