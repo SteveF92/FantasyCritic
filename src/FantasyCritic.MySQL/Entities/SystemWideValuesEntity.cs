@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace FantasyCritic.MySQL.Entities;
 
 public class SystemWideValuesEntity
@@ -7,6 +9,7 @@ public class SystemWideValuesEntity
 
     }
 
+    [SetsRequiredMembers]
     public SystemWideValuesEntity(SystemWideValues domain)
     {
         AverageStandardGamePoints = domain.AverageStandardGamePoints;
@@ -14,9 +17,9 @@ public class SystemWideValuesEntity
         AverageCounterPickPoints = domain.AverageCounterPickPoints;
     }
 
-    public decimal AverageStandardGamePoints { get; set; }
-    public decimal AveragePickupOnlyStandardGamePoints { get; set; }
-    public decimal AverageCounterPickPoints { get; set; }
+    public required decimal AverageStandardGamePoints { get; init; }
+    public required decimal AveragePickupOnlyStandardGamePoints { get; init; }
+    public required decimal AverageCounterPickPoints { get; init; }
 
     public SystemWideValues ToDomain(IEnumerable<AveragePickPositionPoints> averageStandardGamePointsByPickPosition)
     {

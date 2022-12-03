@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.SharedSerialization.Database;
@@ -9,6 +10,7 @@ public class AveragePositionPointsEntity
 
     }
 
+    [SetsRequiredMembers]
     public AveragePositionPointsEntity(AveragePickPositionPoints domain)
     {
         PickPosition = domain.PickPosition;
@@ -16,9 +18,9 @@ public class AveragePositionPointsEntity
         AveragePoints = domain.AveragePoints;
     }
 
-    public int PickPosition { get; set; }
-    public int DataPoints { get; set; }
-    public decimal AveragePoints { get; set; }
+    public required int PickPosition { get; init; }
+    public required int DataPoints { get; init; }
+    public required decimal AveragePoints { get; init; }
 
     public AveragePickPositionPoints ToDomain() =>
         new AveragePickPositionPoints(PickPosition, DataPoints, AveragePoints);

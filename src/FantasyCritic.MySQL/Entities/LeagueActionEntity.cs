@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using FantasyCritic.Lib.Domain.LeagueActions;
 
 namespace FantasyCritic.MySQL.Entities;
@@ -9,6 +10,7 @@ internal class LeagueActionEntity
 
     }
 
+    [SetsRequiredMembers]
     public LeagueActionEntity(LeagueAction action)
     {
         PublisherID = action.Publisher.PublisherID;
@@ -18,11 +20,11 @@ internal class LeagueActionEntity
         ManagerAction = action.ManagerAction;
     }
 
-    public Guid PublisherID { get; set; }
-    public Instant Timestamp { get; set; }
-    public string ActionType { get; set; } = null!;
-    public string Description { get; set; } = null!;
-    public bool ManagerAction { get; set; }
+    public required Guid PublisherID { get; init; }
+    public required Instant Timestamp { get; init; }
+    public required string ActionType { get; init; }
+    public required string Description { get; init; }
+    public required bool ManagerAction { get; init; }
 
     public LeagueAction ToDomain(Publisher publisher)
     {
