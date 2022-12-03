@@ -298,8 +298,8 @@ public static class GameEligibilityFunctions
             claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
         }
 
-        bool willRelease = masterGame.MinimumReleaseDate.Year == year && !counterPickedGameIsManualWillNotRelease;
-        if (!dropping && !released && !willRelease && !manuallyEligible)
+        bool couldRelease = masterGame.CouldReleaseInYear(year) && !counterPickedGameIsManualWillNotRelease;
+        if (!dropping && !released && !couldRelease && !manuallyEligible)
         {
             claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
         }
@@ -313,7 +313,7 @@ public static class GameEligibilityFunctions
 
             bool confirmedWillRelease = masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year == year;
             bool acquiringAfterDeadline = dateOfPotentialAcquisition >= leagueYear.CounterPickDeadline;
-            if (!confirmedWillRelease && acquiringAfterDeadline && willRelease)
+            if (!confirmedWillRelease && acquiringAfterDeadline && couldRelease)
             {
                 claimErrors.Add(new ClaimError($"That game does not have a confirmed release date in {year}, and the 'counter pick deadline' has already passed (or will have by the time bids process).", false));
             }
