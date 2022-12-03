@@ -79,20 +79,26 @@
         <span v-else>--</span>
       </template>
       <template #cell(dateAdjustedHypeFactor)="data">
-        {{ data.item.dateAdjustedHypeFactor | score(1) }}
+        <span v-if="yearOpenForPlay">{{ data.item.dateAdjustedHypeFactor | score(1) }}</span>
+        <span v-if="!yearOpenForPlay">--</span>
       </template>
       <template #cell(projectedOrRealFantasyPoints)="data">
         <span v-if="data.item.fantasyPoints">{{ data.item.fantasyPoints | score(1) }}</span>
-        <span v-if="!data.item.fantasyPoints" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
+        <span v-if="!data.item.fantasyPoints && yearOpenForPlay" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
+        <span v-if="!data.item.fantasyPoints && !yearOpenForPlay" class="projected-text">--</span>
       </template>
       <template #cell(eligiblePercentStandardGame)="data">
-        {{ data.item.eligiblePercentStandardGame | percent(1) }}
+        <span v-if="yearOpenForPlay">{{ data.item.eligiblePercentStandardGame | percent(1) }}</span>
+        <span v-if="!yearOpenForPlay">--</span>
       </template>
       <template #cell(adjustedPercentCounterPick)="data">
-        <span v-if="data.item.adjustedPercentCounterPick !== null">
-          {{ data.item.adjustedPercentCounterPick | percent(1) }}
-        </span>
-        <span v-else>N/A</span>
+        <template v-if="yearOpenForPlay">
+          <span v-if="data.item.adjustedPercentCounterPick !== null">
+            {{ data.item.adjustedPercentCounterPick | percent(1) }}
+          </span>
+          <span v-else>N/A</span>
+        </template>
+        <span v-if="!yearOpenForPlay">--</span>
       </template>
       <template #cell(addedTimestamp)="data">
         {{ data.item.addedTimestamp | date }}
@@ -117,7 +123,8 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    masterGames: { type: Array, required: true }
+    masterGames: { type: Array, required: true },
+    yearOpenForPlay: { type: Boolean, required: true }
   },
   data() {
     return {

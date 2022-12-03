@@ -9,7 +9,7 @@
             </div>
 
             <div class="selector-area">
-              <b-form-select v-model="selectedYear" :options="supportedYears" class="year-selector" @change="changeYear" />
+              <b-form-select v-model="selectedYear" :options="selectableYears" class="year-selector" @change="changeYear" />
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
       </div>
 
       <div v-if="showGames">
-        <masterGamesTable :master-games="gamesToShow"></masterGamesTable>
+        <masterGamesTable :master-games="gamesToShow" :year-open-for-play="selectedYearIsOpenForPlay"></masterGamesTable>
       </div>
 
       <div v-else class="spinner">
@@ -81,6 +81,7 @@ export default {
       eligibilityFilter: null,
       takenStatusFilter: null,
       unreleasedOnlyFilter: false,
+      selectableYears: [],
       supportedYears: [],
       flatMasterGameYears: null,
       possibleMasterGameYears: null,
@@ -126,6 +127,9 @@ export default {
     },
     showGames() {
       return this.gamesToShow && !this.isBusy;
+    },
+    selectedYearIsOpenForPlay() {
+      return this.supportedYears.filter((x) => x.year === this.selectedYear)[0].openForPlay;
     }
   },
   mounted() {
@@ -136,9 +140,9 @@ export default {
       axios
         .get('/api/game/SupportedYears')
         .then((response) => {
-          let supportedYears = response.data;
-          this.supportedYears = supportedYears.map((x) => x.year);
-          this.selectedYear = supportedYears.filter((x) => x.openForPlay)[0].year;
+          this.supportedYears = response.data;
+          this.selectableYears = this.supportedYears.map((x) => x.year);
+          this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
           this.fetchGamesForYear();
           this.fetchMyLeaguesForYear();
         })
