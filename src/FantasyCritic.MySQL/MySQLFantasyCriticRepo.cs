@@ -679,16 +679,28 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
     {
+        string sql =
+            """
+            select tbl_league_action.PublisherID,
+                   tbl_league_action.Timestamp,
+                   tbl_league_action.ActionType,
+                   tbl_league_action.Description,
+                   tbl_league_action.ManagerAction
+            from   tbl_league_action
+                   join tbl_league_publisher
+                     on ( tbl_league_action.PublisherID = tbl_league_publisher.PublisherID )
+            where  tbl_league_publisher.LeagueID = @leagueID
+                   and tbl_league_publisher.Year = @leagueYear; 
+            """;
+
+        var param = new
+        {
+            leagueID = leagueYear.League.LeagueID,
+            leagueYear = leagueYear.Year
+        };
+
         await using var connection = new MySqlConnection(_connectionString);
-        var entities = await connection.QueryAsync<LeagueActionEntity>(
-            "select tbl_league_action.PublisherID, tbl_league_action.Timestamp, tbl_league_action.ActionType, tbl_league_action.Description, tbl_league_action.ManagerAction from tbl_league_action " +
-            "join tbl_league_publisher on (tbl_league_action.PublisherID = tbl_league_publisher.PublisherID) " +
-            "where tbl_league_publisher.LeagueID = @leagueID and tbl_league_publisher.Year = @leagueYear;",
-            new
-            {
-                leagueID = leagueYear.League.LeagueID,
-                leagueYear = leagueYear.Year
-            });
+        var entities = await connection.QueryAsync<LeagueActionEntity>(sql, param);
 
         List<LeagueAction> leagueActions = entities.Select(x => x.ToDomain(leagueYear.GetPublisherByOrFakePublisher(x.PublisherID))).ToList();
         return leagueActions;
