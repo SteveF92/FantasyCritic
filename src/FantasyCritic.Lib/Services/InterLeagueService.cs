@@ -226,4 +226,14 @@ public class InterLeagueService
     {
         return _masterGameRepo.GetRecentMasterGameChanges();
     }
+
+    public void ClearMasterGameCache()
+    {
+        _masterGameRepo.ClearMasterGameCache();
+    }
+
+    public void ClearMasterGameYearCache()
+    {
+        _masterGameRepo.ClearMasterGameYearCache();
+    }
 }

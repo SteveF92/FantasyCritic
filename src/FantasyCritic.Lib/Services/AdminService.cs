@@ -130,6 +130,8 @@ public class AdminService
             }
         }
 
+        _interLeagueService.ClearMasterGameCache();
+
         _logger.Information("Done refreshing critic scores");
     }
 
@@ -223,6 +225,8 @@ public class AdminService
         await _fantasyCriticRepo.UpdateLeagueYearCache(allLeagueYears);
         HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
         await UpdateGameStats(hypeConstants);
+        _interLeagueService.ClearMasterGameCache();
+        _interLeagueService.ClearMasterGameYearCache();
         _logger.Information("Done refreshing caches");
     }
 

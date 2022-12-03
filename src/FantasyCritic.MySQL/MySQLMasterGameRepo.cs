@@ -15,16 +15,26 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     private static readonly ILogger _logger = Log.ForContext<MySQLMasterGameRepo>();
 
     private readonly string _connectionString;
-    private readonly Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
 
     private Dictionary<Guid, MasterGame> _masterGamesCache;
+    private Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
 
     public MySQLMasterGameRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore)
     {
         _connectionString = configuration.ConnectionString;
         _userStore = userStore;
         _masterGamesCache = new Dictionary<Guid, MasterGame>();
+        _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
+    }
+
+    public void ClearMasterGameCache()
+    {
+        _masterGamesCache = new Dictionary<Guid, MasterGame>();
+    }
+
+    public void ClearMasterGameYearCache()
+    {
         _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
     }
 

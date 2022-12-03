@@ -21,6 +21,14 @@ public class FakeMasterGameRepo : IMasterGameRepo
         _masterGames = MasterGameFactory.GetMasterGames();
     }
 
+    public void ClearMasterGameCache()
+    {
+    }
+
+    public void ClearMasterGameYearCache()
+    {
+    }
+
     public Task<IReadOnlyList<MasterGame>> GetMasterGames()
     {
         return Task.FromResult<IReadOnlyList<MasterGame>>(_masterGames);

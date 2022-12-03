@@ -6,6 +6,8 @@ namespace FantasyCritic.Lib.Interfaces;
 
 public interface IMasterGameRepo
 {
+    void ClearMasterGameCache();
+    void ClearMasterGameYearCache();
     Task<IReadOnlyList<MasterGame>> GetMasterGames();
     Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year);
     Task<MasterGame?> GetMasterGame(Guid masterGameID);
