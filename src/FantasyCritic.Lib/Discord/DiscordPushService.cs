@@ -591,12 +591,15 @@ public class DiscordPushService
             bidMessages.Add($"{messageToAdd}");
         }
 
-        var messageListToSend = new MessageListBuilder(bidMessages,
+        if (bidMessages.Any())
+        {
+            var messageListToSend = new MessageListBuilder(bidMessages,
                 MaxMessageLength)
-            .WithTitle("Bids", new[] { TextStyleOption.Bold }, "\n", 2)
+            .WithTitle("Bids", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
             .WithDivider("\n")
             .Build();
-        await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend);
+            await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend);
+        }
     }
 
     private async Task SendAllDropMessages(LeagueActionProcessingSet leagueAction, IEnumerable<MinimalLeagueChannel> leagueChannels)
@@ -614,17 +617,20 @@ public class DiscordPushService
             dropMessages.Add(messageToAdd);
         }
 
-        var dropMessageListToSend = new MessageListBuilder(dropMessages,
+        if (dropMessages.Any())
+        {
+            var dropMessageListToSend = new MessageListBuilder(dropMessages,
                 MaxMessageLength)
-            .WithTitle("Drops", new[] { TextStyleOption.Bold }, "\n", 2)
+            .WithTitle("Drops", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
             .WithDivider("\n")
             .Build();
-        await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend);
+            await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend);
+        }
     }
 
     private async Task SendAllMessagesToAllLeagueChannels(IEnumerable<MinimalLeagueChannel> leagueChannels, IReadOnlyList<string> messageListToSend)
     {
-        List<Task> messageTasks = new List<Task>();
+        var messageTasks = new List<Task>();
         foreach (var leagueChannel in leagueChannels)
         {
             foreach (var messageToSend in messageListToSend)
@@ -741,7 +747,7 @@ public class DiscordPushService
                 channels.Add(channel);
             }
         }
-        
+
         return channels;
     }
 
