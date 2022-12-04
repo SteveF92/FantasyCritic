@@ -1,4 +1,5 @@
 using System.Globalization;
+using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
@@ -10,19 +11,16 @@ namespace FantasyCritic.Lib.Discord.Commands;
 public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
-    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public GetLeagueOptionsCommand(IDiscordRepo discordRepo,
-        IFantasyCriticRepo fantasyCriticRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
-        _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
@@ -48,31 +46,40 @@ public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionCo
 
         var leagueYearOptions = leagueChannel.LeagueYear.Options;
 
-        var message = $"**Total Standard Games:** {leagueYearOptions.StandardGames}\n";
-        message += $"**Games to Draft:** {leagueYearOptions.GamesToDraft}\n";
-        message += $"**Pickup Games:** {leagueYearOptions.StandardGames - leagueYearOptions.GamesToDraft}\n";
-        message += $"**Total Counter Picks:** {leagueYearOptions.CounterPicks}\n";
-        message += $"**Counter Picks to Draft:** {leagueYearOptions.CounterPicksToDraft}\n";
-
+        var picksCounterPicksMessage = $"Total Standard Games: **{leagueYearOptions.StandardGames}**\n";
+        picksCounterPicksMessage += $"Games to Draft: **{leagueYearOptions.GamesToDraft}**\n";
+        picksCounterPicksMessage += $"Pickup Games: **{leagueYearOptions.StandardGames - leagueYearOptions.GamesToDraft}**\n";
+        picksCounterPicksMessage += $"Total Counter Picks: **{leagueYearOptions.CounterPicks}**\n";
+        picksCounterPicksMessage += $"Counter Picks to Draft: **{leagueYearOptions.CounterPicksToDraft}**\n";
         if (!leagueYearOptions.CounterPickDeadline.Equals(new AnnualDate(12, 31)))
         {
-            message += $"**Counter Pick Deadline:** {leagueYearOptions.CounterPickDeadline.ToString("MMMM d", new DateTimeFormatInfo())}\n";
+            picksCounterPicksMessage += $"Counter Pick Deadline: **{leagueYearOptions.CounterPickDeadline.ToString("MMMM d", new DateTimeFormatInfo())}**\n";
         }
+        picksCounterPicksMessage += $"Special Game Slots: **{(leagueYearOptions.HasSpecialSlots && leagueYearOptions.SpecialGameSlots.Count > 0 ? leagueYearOptions.SpecialGameSlots.Count : "None")}**\n";
 
-        message += $"**Minimum Bid Amount:** {leagueYearOptions.MinimumBidAmount}\n";
-        message += $"**\"Any Unreleased\" Droppable Games:**: {(leagueYearOptions.FreeDroppableGames == -1 ? "Unlimited" : leagueYearOptions.FreeDroppableGames)}\n";
-        message += $"**\"Will Not Release\" Droppable Games:** {(leagueYearOptions.WillNotReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillNotReleaseDroppableGames)}\n";
-        message += $"**\"Will Release\" Droppable Games:** {(leagueYearOptions.WillReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillReleaseDroppableGames)}\n";
-        message += $"**Drop Only Draft Games:** {YesOrNo(leagueYearOptions.DropOnlyDraftGames)}\n";
-        message += $"**Automatic Super Drops:** {(YesOrNo(leagueYearOptions.GrantSuperDrops))}\n";
-        message += $"**Counter Picks Block Drops:** {(YesOrNo(leagueYearOptions.GrantSuperDrops))}\n";
-        message += $"**Bidding System:** {leagueYearOptions.PickupSystem.ReadableName}\n";
-        message += $"**Tiebreak System:** {leagueYearOptions.TiebreakSystem}\n";
-        message += $"**Trading System:** {leagueYearOptions.TradingSystem.ReadableName}\n";
-        message += $"**Banned Tags:** {BuildBannedTagsList(leagueYearOptions)}\n";
-        message += $"**Special Game Slots:** {(leagueYearOptions.HasSpecialSlots && leagueYearOptions.SpecialGameSlots.Count > 0 ? leagueYearOptions.SpecialGameSlots.Count : "None")}\n";
-        message += $"**Public League:** {(YesOrNo(leagueChannel.LeagueYear.League.PublicLeague))}\n";
-        message += $"**Test League:** {YesOrNo(leagueChannel.LeagueYear.League.TestLeague)}\n";
+        var bidsAndDropsMessage = $"Minimum Bid Amount: **{leagueYearOptions.MinimumBidAmount}**\n";
+        bidsAndDropsMessage += $"\"Any Unreleased\" Droppable Games: **{(leagueYearOptions.FreeDroppableGames == -1 ? "Unlimited" : leagueYearOptions.FreeDroppableGames)}**\n";
+        bidsAndDropsMessage += $"\"Will Not Release\" Droppable Games: **{(leagueYearOptions.WillNotReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillNotReleaseDroppableGames)}**\n";
+        bidsAndDropsMessage += $"\"Will Release\" Droppable Games: **{(leagueYearOptions.WillReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillReleaseDroppableGames)}**\n";
+        bidsAndDropsMessage += $"Drop Only Draft Games: **{YesOrNo(leagueYearOptions.DropOnlyDraftGames)}**\n";
+        bidsAndDropsMessage += $"Automatic Super Drops: **{(YesOrNo(leagueYearOptions.GrantSuperDrops))}**\n";
+        bidsAndDropsMessage += $"Counter Picks Block Drops: **{(YesOrNo(leagueYearOptions.GrantSuperDrops))}**\n";
+
+        var systemBasedOptionsMessage = $"Bidding System: **{leagueYearOptions.PickupSystem.ReadableName}**\n";
+        systemBasedOptionsMessage += $"Tiebreak System: **{leagueYearOptions.TiebreakSystem}**\n";
+        systemBasedOptionsMessage += $"Trading System: **{leagueYearOptions.TradingSystem.ReadableName}**\n";
+
+        var leagueVisibilityMessage = $"Public League: **{YesOrNo(leagueChannel.LeagueYear.League.PublicLeague)}**\n";
+        leagueVisibilityMessage += $"Test League: **{YesOrNo(leagueChannel.LeagueYear.League.TestLeague)}**\n";
+
+        var embedFieldBuilders = new List<EmbedFieldBuilder>
+        {
+            BuildEmbedFieldBuilder("Picks & Counter Picks", picksCounterPicksMessage),
+            BuildEmbedFieldBuilder("Bids & Drops", bidsAndDropsMessage),
+            BuildEmbedFieldBuilder("Banned Tags", BuildBannedTagsList(leagueYearOptions)),
+            BuildEmbedFieldBuilder("System-Based Options", systemBasedOptionsMessage),
+            BuildEmbedFieldBuilder("League Visibility", leagueVisibilityMessage)
+        };
 
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID,
             leagueChannel.LeagueYear.Year)
@@ -80,9 +87,20 @@ public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionCo
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             $"League Options for {leagueChannel.LeagueYear.Year}",
-            message,
+            "",
             Context.User,
-            url: leagueUrl));
+            embedFieldBuilders,
+            leagueUrl));
+    }
+
+    private static EmbedFieldBuilder BuildEmbedFieldBuilder(string title, string message)
+    {
+        return new EmbedFieldBuilder
+        {
+            Name = title,
+            Value = message,
+            IsInline = false
+        };
     }
 
     private static string YesOrNo(bool flagToCheck)
