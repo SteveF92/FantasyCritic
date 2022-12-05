@@ -3,7 +3,7 @@ using Discord;
 using Discord.Interactions;
 using FantasyCritic.Lib.DependencyInjection;
 
-namespace FantasyCritic.Lib.Discord.Bot;
+namespace FantasyCritic.Lib.Discord;
 public class DiscordBotService
 {
     private readonly InteractionService _interactionService;
@@ -47,7 +47,7 @@ public class DiscordBotService
             {
                 throw new Exception("Development Discord server ID is not set.");
             }
-            
+
             await _interactionService.RegisterCommandsToGuildAsync(_botConfiguration.DevDiscordServerId.Value, true);
         }
         else

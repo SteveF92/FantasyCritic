@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Discord.Bot;
+using FantasyCritic.Lib.Discord;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

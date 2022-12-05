@@ -2,7 +2,7 @@ using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 
-namespace FantasyCritic.Lib.Discord;
+namespace FantasyCritic.Lib.Discord.Utilities;
 public static class DiscordExtensions
 {
     public static async Task<RestUserMessage?> TrySendMessageAsync(this SocketTextChannel channel, string messageToSend)

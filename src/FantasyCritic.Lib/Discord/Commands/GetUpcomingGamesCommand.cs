@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Discord.Utilities;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GetUpcomingGamesCommand : InteractionModuleBase<SocketInteractionContext>

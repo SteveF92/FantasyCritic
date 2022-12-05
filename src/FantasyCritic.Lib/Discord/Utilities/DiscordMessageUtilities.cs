@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Discord.UrlBuilders;
 
-namespace FantasyCritic.Lib.Discord;
+namespace FantasyCritic.Lib.Discord.Utilities;
 public static class DiscordMessageUtilities
 {
     public static string? BuildGameMessage(Publisher? standardPublisher, Publisher? counterPickPublisher, MasterGame masterGame, string baseAddress)
