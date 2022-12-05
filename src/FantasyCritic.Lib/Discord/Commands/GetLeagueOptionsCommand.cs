@@ -66,7 +66,7 @@ public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionCo
         bidsAndDropsMessage += $"Counter Picks Block Drops: **{(YesOrNo(leagueYearOptions.GrantSuperDrops))}**\n";
 
         var systemBasedOptionsMessage = $"Bidding System: **{leagueYearOptions.PickupSystem.ReadableName}**\n";
-        systemBasedOptionsMessage += $"Tiebreak System: **{leagueYearOptions.TiebreakSystem}**\n";
+        systemBasedOptionsMessage += $"Tiebreak System: **{leagueYearOptions.TiebreakSystem.ReadableName}**\n";
         systemBasedOptionsMessage += $"Trading System: **{leagueYearOptions.TradingSystem.ReadableName}**\n";
 
         var leagueVisibilityMessage = $"Public League: **{YesOrNo(leagueChannel.LeagueYear.League.PublicLeague)}**\n";
