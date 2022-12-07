@@ -62,8 +62,8 @@ public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionCo
         bidsAndDropsMessage += $"\"Will Not Release\" Droppable Games: **{(leagueYearOptions.WillNotReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillNotReleaseDroppableGames)}**\n";
         bidsAndDropsMessage += $"\"Will Release\" Droppable Games: **{(leagueYearOptions.WillReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillReleaseDroppableGames)}**\n";
         bidsAndDropsMessage += $"Drop Only Draft Games: **{YesOrNo(leagueYearOptions.DropOnlyDraftGames)}**\n";
-        bidsAndDropsMessage += $"Automatic Super Drops: **{(YesOrNo(leagueYearOptions.GrantSuperDrops))}**\n";
-        bidsAndDropsMessage += $"Counter Picks Block Drops: **{(YesOrNo(leagueYearOptions.GrantSuperDrops))}**\n";
+        bidsAndDropsMessage += $"Automatic Super Drops: **{YesOrNo(leagueYearOptions.GrantSuperDrops)}**\n";
+        bidsAndDropsMessage += $"Counter Picks Block Drops: **{YesOrNo(leagueYearOptions.CounterPicksBlockDrops)}**\n";
 
         var systemBasedOptionsMessage = $"Bidding System: **{leagueYearOptions.PickupSystem.ReadableName}**\n";
         systemBasedOptionsMessage += $"Tiebreak System: **{leagueYearOptions.TiebreakSystem.ReadableName}**\n";
