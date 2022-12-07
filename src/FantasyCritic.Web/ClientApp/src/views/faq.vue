@@ -724,12 +724,15 @@
       <collapseCard>
         <div slot="header">How are "re-releases" of games that were never released in North America handled?</div>
         <div slot="body">
+          <div class="alert alert-info">
+            Note: This rule has been changed for the 2023 season. The below text reflects the new rule, and games that came out in 2022 and earlier may be classified differently than this text would
+            suggest.
+          </div>
           <p>
             This one is complicated. For example, if a game came out in Japan, but not North America, and then some time later, the game is updated with a new release in Japan and
             <em>that</em>
-            release comes out in North America, the tags on the "updated release" will vary based upon how much the updated release differs from the original release. As a general rule, a game cannot
-            be a "remake" or a "remaster" of a game that never released in North America, so all of these will be "New Game" or "New Gaming Franchise". However, if a game only has minor updates over
-            the original, then it will get the "Released Internationally" tag. One way to think about this is, what would be the tags on the game if Fantasy Critic was a Japan-based site?
+            release comes out in North America, the tags on the "updated release" will reflect the fact that "this version" of the game has not released anywhere yet, and therefore will not have a
+            "Released Internationally" tag.
           </p>
 
           <p>Here are some examples for clarity:</p>
@@ -738,17 +741,13 @@
             <thead>
               <tr class="bg-primary">
                 <th>Game Name</th>
-                <th>Tags in Japanese Context</th>
-                <th>Tags in North American Context</th>
+                <th>Tags</th>
                 <th>Notes</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Rune Factory 5</td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
-                </td>
                 <td>
                   <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
                   <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
@@ -762,11 +761,6 @@
                 <td>The Legend of Heroes: Trails from Zero</td>
                 <td>
                   <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
-                  <br />
-                  (For the PS4/Switch game)
-                </td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
                   <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
@@ -780,9 +774,8 @@
                     <li>On Switch in Japan in 2021</li>
                   </ul>
 
-                  It will release world wide, including in North America, in Fall of 2022 on PC, PS4, and Switch. This world wide release can be considered a remaster of the original PSP game. Since
-                  this game has never been released in North America, it is considered a "New Game". However, this version is already released elsewhere, and it's not "different enough" to lose the
-                  "Released Internationally" tag anyway.
+                  It will release world wide, including in North America, in Fall of 2022 on PC, PS4, and Switch. This world wide release can be considered a remaster of the original PSP game.
+                  However, this version is already released elsewhere, it is consider both a remaster and "released internationally".
                 </td>
               </tr>
               <tr>
@@ -790,55 +783,32 @@
                 <td>
                   <masterGameTagBadge tag-name="Port"></masterGameTagBadge>
                 </td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
-                </td>
-                <td>This is a port of Mother 1 for the Famicom to the Wii U. This version is not "enough of remake" to consider it a game that "has not been released internationally".</td>
+                <td>This is a port of Mother 1 for the Famicom to the Wii U.</td>
               </tr>
               <tr>
                 <td>River City Girls Zero</td>
                 <td>
                   <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
                 </td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
-                </td>
-                <td>
-                  This game was originally released on the Super Famicom in 1994, now remastered for modern platforms. This version is not "enough of remake" to consider it a game that "has not been
-                  released internationally".
-                </td>
+                <td>This game was originally released on the Super Famicom in 1994, now remastered for modern platforms.</td>
               </tr>
               <tr>
                 <td>The Great Ace Attorney Chronicles</td>
                 <td>
                   <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
                 </td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGame"></masterGameTagBadge>
-                  <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
-                </td>
-                <td>
-                  This game is a compilation of two Nintendo 3DS games that never came out in North America, remastered for Nintendo Switch. It is not "enough of remake" to consider it a game that
-                  "has not been released internationally".
-                </td>
+                <td>This game is a compilation of two Nintendo 3DS games that never came out in North America, remastered for Nintendo Switch.</td>
               </tr>
               <tr>
                 <td>Bravely Default</td>
                 <td>
                   <masterGameTagBadge tag-name="DirectorsCut"></masterGameTagBadge>
-                </td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGamingFranchise"></masterGameTagBadge>
                   <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
                 </td>
                 <td>
                   Bravely Default was originally a Japan-only 3DS game called "Bravely Default: Flying Fairy", released in 2012. In 2013, an expanded version was released, again only in Japan, called
-                  "Bravely Default: For The Sequel". In a Japanese context, we would consider this a "Director's Cut". Then, in 2014, "Bravely Default: For The Sequel" was released in North America as
-                  "Bravely Default". Both the original version and the expanded version had previously released outside North America, and the expanded version is not "enough of a remake" to consider
-                  it a "different game" anyway, so this would be tagged as a "New Gaming Franchise" and "Released Internationally". It's worth noting that the tags would be the same even if the second
-                  version released in Japan and North America at the same time.
+                  "Bravely Default: For The Sequel". Then, in 2014, "Bravely Default: For The Sequel" was released in North America as "Bravely Default". This version is best described as a
+                  "Director's Cut" of the original.
                 </td>
               </tr>
               <tr>
@@ -846,32 +816,14 @@
                 <td>
                   <masterGameTagBadge tag-name="Remake"></masterGameTagBadge>
                 </td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGamingFranchise"></masterGameTagBadge>
-                </td>
-                <td>
-                  This was originally released as two seperate Famicom games, never released in North America. This game is "more of a remake" with respect to the original game, compared to the games
-                  above. It's not fair to call the original Famicom game as the "same game", meaning that
-                  <em>this</em>
-                  game has never released anywhere, and therefore it does not get a "Released Internationally" tag. In addition, there are no games in this franchise previously released in North
-                  America, so it gets the "New Gaming Franchise" tag.
-                </td>
+                <td>This was originally released as two seperate Famicom games, never released in North America. It's a fairly substantial remake over the original.</td>
               </tr>
               <tr>
                 <td>Live A Live</td>
                 <td>
                   <masterGameTagBadge tag-name="Remake"></masterGameTagBadge>
                 </td>
-                <td>
-                  <masterGameTagBadge tag-name="NewGamingFranchise"></masterGameTagBadge>
-                </td>
-                <td>
-                  This was originally a Super Famicom game, never released in North America. Like Famicom Dective Club, this game is "more of a remake" with respect to the original game, compared to
-                  the games above. It's not fair to call the original Super Famicom game as the "same game", meaning that
-                  <em>this</em>
-                  game has never released anywhere, and therefore it does not get a "Released Internationally" tag. In addition, there are no games in this franchise previously released in North
-                  America, so it gets the "New Gaming Franchise" tag.
-                </td>
+                <td>This was originally a Super Famicom game, never released in North America.</td>
               </tr>
             </tbody>
           </table>
