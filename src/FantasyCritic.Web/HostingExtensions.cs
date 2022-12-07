@@ -72,10 +72,15 @@ public static class HostingExtensions
         //MySQL Repos
         string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
-        services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(connectionString, clock));
-        services.AddSingleton<PatreonConfig>(_ => new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!));
-        services.AddSingleton<EmailSendingServiceConfiguration>(_ => new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction()));
-        services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
+        var repoConfiguration = new RepositoryConfiguration(connectionString, clock);
+        var patreonConfig = new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!);
+        var emailSendingConfig = new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction());
+        var discordConfiguration = new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId"));
+        services.AddSingleton<RepositoryConfiguration>(_ => repoConfiguration);
+        services.AddSingleton<PatreonConfig>(_ => patreonConfig);
+        services.AddSingleton<EmailSendingServiceConfiguration>(_ => emailSendingConfig);
+        services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
+        services.AddSingleton<DiscordPushService>(_ => GetDiscordPushService(discordConfiguration, repoConfiguration));
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
@@ -105,7 +110,6 @@ public static class HostingExtensions
         }
 
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
-        services.AddScoped<DiscordPushService>();
         services.AddScoped<FantasyCriticUserManager>();
         services.AddScoped<FantasyCriticRoleManager>();
         services.AddScoped<GameAcquisitionService>();
@@ -376,5 +380,15 @@ public static class HostingExtensions
         app.MapFallbackToFile("index.html");
 
         return app;
+    }
+
+    private static DiscordPushService GetDiscordPushService(FantasyCriticDiscordConfiguration discordConfiguration, RepositoryConfiguration repositoryConfiguration)
+    {
+        var userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
+        var masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore);
+        var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
+        var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
+        var supplementalDataRepo = new MySQLDiscordSupplementalDataRepo(repositoryConfiguration);
+        return new DiscordPushService(discordConfiguration, discordRepo, supplementalDataRepo, new DiscordFormatter());
     }
 }
