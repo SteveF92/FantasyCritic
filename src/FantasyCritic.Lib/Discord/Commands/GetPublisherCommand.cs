@@ -1,6 +1,7 @@
 using System.Globalization;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -13,24 +14,31 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
+    private readonly IFantasyCriticUserStore _userStore;
     private readonly string _baseAddress;
 
     public GetPublisherCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
+        IFantasyCriticUserStore userStore,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
+        _userStore = userStore;
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
     [SlashCommand("publisher", "Get publisher information. You can search with just a portion of the name.")]
-    public async Task GetPublisher(
-        [Summary("publisher_or_player_name", "The name of the publisher or the name of the player. You can input only a portion of the name.")] string publisherOrPlayerName,
-        [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
-        )
+    public async Task GetPublisherSlashCommand(
+        [Summary("publisher_or_player_name",
+            "The name of the publisher or the name of the player. You can input only a portion of the name.")]
+        [MinLength(2)]
+        string publisherOrPlayerName = "",
+        [Summary("year", "The year for the league (if not entered, defaults to the current year).")]
+        int? year = null
+    )
     {
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
@@ -45,9 +53,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        var termToSearch = publisherOrPlayerName.ToLower().Trim();
-
-        if (termToSearch.Length < 2)
+        if (publisherOrPlayerName != "" && publisherOrPlayerName.Trim() == "")
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Error Getting Publisher",
@@ -56,22 +62,21 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        var foundByPlayerName =
-            leagueChannel.LeagueYear.Publishers.Where(p => p.User.UserName.ToLower().Contains(termToSearch)).ToList();
+        var publisherSearchResults = await FindPublishers(publisherOrPlayerName.ToLower().Trim(), Context.User, leagueChannel);
 
-        var foundByPublisherName =
-            leagueChannel.LeagueYear.Publishers.Where(p => p.PublisherName.ToLower().Contains(termToSearch)).ToList();
-
-        if (!foundByPlayerName.Any() && !foundByPublisherName.Any())
+        if (!publisherSearchResults.HasAnyResults())
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "No Matches Found",
-                "No matches were found for your query.",
+                "No matches were found.",
                 Context.User));
             return;
         }
 
-        var message = BuildMessageForMultiplePublishersFound(foundByPlayerName, foundByPublisherName);
+        var message = BuildMessageForMultiplePublishersFound(
+            publisherSearchResults.FoundByPlayerName,
+            publisherSearchResults.FoundByPublisherName);
+
         if (message != "")
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
@@ -81,7 +86,16 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        var publisherFound = GetPublisherFromFoundLists(foundByPlayerName, foundByPublisherName);
+        Publisher? publisherFound;
+        if (publisherOrPlayerName == "" && publisherSearchResults.PublisherFoundForDiscordUser != null)
+        {
+            publisherFound = publisherSearchResults.PublisherFoundForDiscordUser;
+        }
+        else
+        {
+            publisherFound = GetPublisherFromFoundLists(publisherSearchResults.FoundByPlayerName,
+                publisherSearchResults.FoundByPublisherName);
+        }
 
         if (publisherFound == null)
         {
@@ -92,16 +106,137 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
+        var embedFieldBuilders = BuildPublisherEmbedFieldBuilders(publisherFound, leagueChannel);
+
+        var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
+
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            $"{publisherFound.GetPublisherAndUserDisplayName()}",
+            publisherUrlBuilder.BuildUrl("View Publisher"),
+            Context.User,
+            embedFieldBuilders));
+    }
+
+    [MessageCommand("FC Publisher")]
+    public async Task GetPublisherMessageCommand(SocketMessage message)
+    {
+        await DeferAsync();
+        var dateToCheck = _clock.GetCurrentInstant().ToEasternDate(); // TODO: when we revamp how years are handled, there should be a better way than this
+
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        if (leagueChannel == null)
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Publisher",
+                "No league configuration found for this channel.",
+                Context.User));
+            return;
+        }
+
+        var publisherSearchResults = await FindPublishers("", message.Author, leagueChannel);
+
+        if (publisherSearchResults.PublisherFoundForDiscordUser == null)
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "No Matches Found",
+                "No matches were found.",
+                Context.User));
+            return;
+        }
+
+        var embedFieldBuilders = BuildPublisherEmbedFieldBuilders(publisherSearchResults.PublisherFoundForDiscordUser, leagueChannel);
+
+        var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherSearchResults.PublisherFoundForDiscordUser.PublisherID);
+
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()}",
+            publisherUrlBuilder.BuildUrl("View Publisher"),
+            Context.User,
+            embedFieldBuilders));
+    }
+
+    [UserCommand("FC Publisher")]
+    public async Task GetPublisherUserCommand(SocketUser user)
+    {
+        await DeferAsync();
+        var dateToCheck = _clock.GetCurrentInstant().ToEasternDate(); // TODO: when we revamp how years are handled, there should be a better way than this
+
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        if (leagueChannel == null)
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Getting Publisher",
+                "No league configuration found for this channel.",
+                Context.User));
+            return;
+        }
+
+        var publisherSearchResults = await FindPublishers("", user, leagueChannel);
+
+        if (publisherSearchResults.PublisherFoundForDiscordUser == null)
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "No Matches Found",
+                "No matches were found.",
+                Context.User));
+            return;
+        }
+
+        var embedFieldBuilders = BuildPublisherEmbedFieldBuilders(publisherSearchResults.PublisherFoundForDiscordUser, leagueChannel);
+
+        var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherSearchResults.PublisherFoundForDiscordUser.PublisherID);
+
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()}",
+            publisherUrlBuilder.BuildUrl("View Publisher"),
+            Context.User,
+            embedFieldBuilders));
+    }
+
+    private async Task<PublisherSearchResults> FindPublishers(string publisherOrPlayerName, SocketUser user,
+        LeagueChannel leagueChannel)
+    {
+        var searchResults = new PublisherSearchResults();
+
+        if (string.IsNullOrEmpty(publisherOrPlayerName)) // find by discord user
+        {
+            var discordUserId = user.Id.ToString();
+            var publisherForUser = await GetPublisherForDiscordUser(discordUserId, leagueChannel);
+            if (publisherForUser != null)
+            {
+                searchResults.PublisherFoundForDiscordUser = publisherForUser;
+            }
+        }
+        else // find by publisher search
+        {
+            var termToSearch = publisherOrPlayerName.ToLower().Trim();
+
+            searchResults.FoundByPlayerName = leagueChannel.LeagueYear.Publishers.Where(p => p.User.UserName
+                    .ToLower()
+                    .Contains(termToSearch))
+                .ToList();
+            searchResults.FoundByPublisherName = leagueChannel.LeagueYear.Publishers.Where(p => p.PublisherName
+                    .ToLower()
+                    .Contains(termToSearch))
+                .ToList();
+        }
+
+        return searchResults;
+    }
+
+    private static List<EmbedFieldBuilder> BuildPublisherEmbedFieldBuilders(Publisher publisherFound, LeagueChannel leagueChannel)
+    {
         var pickedGames = GetSortedPublisherGames(publisherFound, false);
         var counterPickedGames = GetSortedPublisherGames(publisherFound, true);
 
         var remainingWillReleaseDrops =
             GetDropsRemainingText(leagueChannel.LeagueYear.Options.WillReleaseDroppableGames,
                 publisherFound.WillReleaseGamesDropped);
-        var remainingWillNotReleaseDrops = GetDropsRemainingText(leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames, publisherFound.WillNotReleaseGamesDropped);
-        var remainingFreeDroppableGames = GetDropsRemainingText(leagueChannel.LeagueYear.Options.FreeDroppableGames, publisherFound.FreeGamesDropped);
+        var remainingWillNotReleaseDrops = GetDropsRemainingText(
+            leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames, publisherFound.WillNotReleaseGamesDropped);
+        var remainingFreeDroppableGames = GetDropsRemainingText(leagueChannel.LeagueYear.Options.FreeDroppableGames,
+            publisherFound.FreeGamesDropped);
 
-        var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
 
         var embedFieldBuilders = BuildEmbedFieldBuilders(
             string.Join("\n", pickedGames.Select(BuildGameMessage)),
@@ -114,12 +249,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames,
             remainingFreeDroppableGames,
             leagueChannel.LeagueYear.Options.FreeDroppableGames);
-
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            $"{publisherFound.GetPublisherAndUserDisplayName()}",
-            publisherUrlBuilder.BuildUrl("View Publisher"),
-            Context.User,
-            embedFieldBuilders));
+        return embedFieldBuilders;
     }
 
     private static string GetDropsRemainingText(int numberOfDropsAllowed, int dropsDone)
@@ -284,4 +414,18 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
 
         return gameMessage;
     }
+
+    private async Task<Publisher?> GetPublisherForDiscordUser(string discordUserId, LeagueChannel leagueChannel)
+    {
+        Publisher? publisherFound = null;
+        var fantasyCriticUser = await _userStore.FindByLoginAsync("Discord", discordUserId, CancellationToken.None);
+        if (fantasyCriticUser != null)
+        {
+            publisherFound =
+                leagueChannel.LeagueYear.Publishers.FirstOrDefault(p => p.User.Id == fantasyCriticUser.Id);
+        }
+
+        return publisherFound;
+    }
+
 }
