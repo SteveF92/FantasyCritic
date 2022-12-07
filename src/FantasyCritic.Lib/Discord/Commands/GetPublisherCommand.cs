@@ -16,6 +16,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IFantasyCriticUserStore _userStore;
     private readonly string _baseAddress;
+    private const string NotFoundByUserErrorMessage = "No matches were found for that user. They may not have their Discord account linked to their Fantasy Critic account, or you might not be in the right channel for their league.";
 
     public GetPublisherCommand(IDiscordRepo discordRepo,
         IClock clock,
@@ -62,7 +63,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        var publisherSearchResults = await FindPublishers(publisherOrPlayerName.ToLower().Trim(), Context.User, leagueChannel);
+        var publisherSearchResults = await FindPublishers(publisherOrPlayerName.ToLower().Trim(), Context.User, leagueChannel, Context.Channel.Id);
 
         if (!publisherSearchResults.HasAnyResults())
         {
@@ -133,13 +134,13 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        var publisherSearchResults = await FindPublishers("", message.Author, leagueChannel);
+        var publisherSearchResults = await FindPublishers("", message.Author, leagueChannel, Context.Channel.Id);
 
         if (publisherSearchResults.PublisherFoundForDiscordUser == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "No Matches Found",
-                "No matches were found.",
+                NotFoundByUserErrorMessage,
                 Context.User));
             return;
         }
@@ -171,13 +172,13 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             return;
         }
 
-        var publisherSearchResults = await FindPublishers("", user, leagueChannel);
+        var publisherSearchResults = await FindPublishers("", user, leagueChannel, Context.Channel.Id);
 
         if (publisherSearchResults.PublisherFoundForDiscordUser == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "No Matches Found",
-                "No matches were found.",
+                NotFoundByUserErrorMessage,
                 Context.User));
             return;
         }
@@ -194,14 +195,14 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     }
 
     private async Task<PublisherSearchResults> FindPublishers(string publisherOrPlayerName, SocketUser user,
-        LeagueChannel leagueChannel)
+        LeagueChannel leagueChannel, ulong channelId)
     {
         var searchResults = new PublisherSearchResults();
 
         if (string.IsNullOrEmpty(publisherOrPlayerName)) // find by discord user
         {
             var discordUserId = user.Id.ToString();
-            var publisherForUser = await GetPublisherForDiscordUser(discordUserId, leagueChannel);
+            var publisherForUser = await GetPublisherForDiscordUser(discordUserId, leagueChannel, channelId);
             if (publisherForUser != null)
             {
                 searchResults.PublisherFoundForDiscordUser = publisherForUser;
@@ -415,14 +416,16 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         return gameMessage;
     }
 
-    private async Task<Publisher?> GetPublisherForDiscordUser(string discordUserId, LeagueChannel leagueChannel)
+    private async Task<Publisher?> GetPublisherForDiscordUser(string discordUserId, LeagueChannel leagueChannel,
+        ulong channelId)
     {
         Publisher? publisherFound = null;
         var fantasyCriticUser = await _userStore.FindByLoginAsync("Discord", discordUserId, CancellationToken.None);
         if (fantasyCriticUser != null)
         {
             publisherFound =
-                leagueChannel.LeagueYear.Publishers.FirstOrDefault(p => p.User.Id == fantasyCriticUser.Id);
+                leagueChannel.LeagueYear.Publishers.FirstOrDefault(p => p.User.Id == fantasyCriticUser.Id
+                && leagueChannel.ChannelID == channelId);
         }
 
         return publisherFound;
