@@ -2201,6 +2201,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "UPDATE tbl_league_pickupbid SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_league_pickupbid SET ConditionalDropMasterGameID = @mergeIntoMasterGameID WHERE ConditionalDropMasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_league_publishergame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+            "UPDATE tbl_league_formerpublishergame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_league_publisherqueue SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_league_tradecomponent SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_league_specialauction SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
@@ -2220,7 +2221,29 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
+
+        const string queueSQL = "select * from tbl_league_publisherqueue where MasterGameID in @masterGameIDs;";
+        var queueQueryParam = new
+        {
+            masterGameIDs = new List<Guid>()
+            {
+                removeMasterGame.MasterGameID,
+                mergeIntoMasterGame.MasterGameID
+            }
+        };
+
+        var queueEntities = await connection.QueryAsync<QueuedGameEntity>(queueSQL, queueQueryParam);
+        var groupedByPublisher = queueEntities.GroupBy(x => x.PublisherID);
+        var publishersIDsWithBothGames = groupedByPublisher.Where(x => x.Count() == 2).Select(x => x.Key);
+        const string fixQueueSQL = "DELETE FROM tbl_league_publisherqueue where MasterGameID = @removeMasterGameID AND PublisherID IN @publishersIDsWithBothGames";
+        var fixQueueObject = new
+        {
+            removeMasterGameID = removeMasterGame.MasterGameID,
+            publishersIDsWithBothGames
+        };
+
         await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(fixQueueSQL, fixQueueObject, transaction);
         await connection.ExecuteAsync(mergeSQL, requestObject, transaction);
         await connection.ExecuteAsync(removeTagsSQL, requestObject, transaction);
         await connection.ExecuteAsync(removeGameSQL, requestObject, transaction);
