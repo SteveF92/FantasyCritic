@@ -75,7 +75,12 @@
               command will display the list of publishers in the league, ordered by their current rankings from first to last place. It will also display the publishers' current scores, their project
               scored, and the number of games they have.
             </p>
-
+            <h5>See League Options</h5>
+            <p>
+              The
+              <strong>/league-options</strong>
+              command will display the options chosen for that league year, including the number of picks and counter picks, settings related to bids and drops, banned tags, and more.
+            </p>
             <h5>Get a Link to the League</h5>
             <p>
               The
