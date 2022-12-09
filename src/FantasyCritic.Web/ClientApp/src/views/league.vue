@@ -19,6 +19,9 @@
                     <font-awesome-icon icon="square" :style="{ color: '#d6993a' }" />
                     <font-awesome-icon icon="1" size="xs" :style="{ color: 'white' }" />
                   </font-awesome-layers>
+                  <span v-clipboard:copy="leagueid" v-clipboard:success="leagueIDCopied">
+                    <font-awesome-icon v-b-popover.hover.focus="'Copy League ID to Clipboard'" :icon="['far', 'copy']" size="xs" class="fake-link" />
+                  </span>
                 </h1>
               </div>
 
@@ -409,6 +412,9 @@ export default {
       hubConnection.onclose(async () => {
         await this.startHubConnection();
       });
+    },
+    leagueIDCopied() {
+      this.makeToast('League ID copied to clipboard.');
     }
   }
 };
