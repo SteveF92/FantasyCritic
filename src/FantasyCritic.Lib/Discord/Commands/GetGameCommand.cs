@@ -13,12 +13,14 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly GameSearchingService _gameSearchingService;
+    private readonly InterLeagueService _interLeagueService;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public GetGameCommand(IDiscordRepo discordRepo,
         IClock clock,
         GameSearchingService gameSearchingService,
+        InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings
         )
@@ -26,6 +28,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         _discordRepo = discordRepo;
         _clock = clock;
         _gameSearchingService = gameSearchingService;
+        _interLeagueService = interLeagueService;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
@@ -38,7 +41,8 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -47,8 +51,6 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
                 Context.User));
             return;
         }
-
-        var leagueYear = leagueChannel.LeagueYear;
 
         var termToSearch = gameName.ToLower().Trim();
 
@@ -61,7 +63,8 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, leagueYear, 3);
+        var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch,
+            leagueChannel.LeagueYear, 3);
         if (!matchingGames.Any())
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -74,8 +77,8 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         var gamesToDisplay = matchingGames
             .Select(game => new MatchedGameDisplay(game)
             {
-                PublisherWhoPicked = FindPublisherWithGame(leagueYear, game, false),
-                PublisherWhoCounterPicked = FindPublisherWithGame(leagueYear, game, true)
+                PublisherWhoPicked = FindPublisherWithGame(leagueChannel.LeagueYear, game, false),
+                PublisherWhoCounterPicked = FindPublisherWithGame(leagueChannel.LeagueYear, game, true)
             }).ToList();
 
         var gameEmbeds = gamesToDisplay

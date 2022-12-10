@@ -6,21 +6,25 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
+    private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public GetLeagueOptionsCommand(IDiscordRepo discordRepo,
+        InterLeagueService interLeagueService,
         IClock clock,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
+        _interLeagueService = interLeagueService;
         _clock = clock;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
@@ -34,7 +38,8 @@ public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionCo
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(

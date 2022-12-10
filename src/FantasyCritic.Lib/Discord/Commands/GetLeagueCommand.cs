@@ -5,24 +5,28 @@ using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public GetLeagueCommand(IDiscordRepo discordRepo,
         IFantasyCriticRepo fantasyCriticRepo,
+        InterLeagueService interLeagueService,
         IClock clock,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
+        _interLeagueService = interLeagueService;
         _clock = clock;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
@@ -37,7 +41,8 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(

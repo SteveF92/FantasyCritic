@@ -7,11 +7,13 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
+    private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IFantasyCriticUserStore _userStore;
@@ -19,12 +21,14 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     private const string NotFoundByUserErrorMessage = "No matches were found for that user. They may not have their Discord account linked to their Fantasy Critic account, or you might not be in the right channel for their league.";
 
     public GetPublisherCommand(IDiscordRepo discordRepo,
+        InterLeagueService interLeagueService,
         IClock clock,
         IDiscordFormatter discordFormatter,
         IFantasyCriticUserStore userStore,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
+        _interLeagueService = interLeagueService;
         _clock = clock;
         _discordFormatter = discordFormatter;
         _userStore = userStore;
@@ -44,7 +48,8 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(

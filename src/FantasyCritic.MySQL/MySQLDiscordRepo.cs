@@ -70,6 +70,35 @@ public class MySQLDiscordRepo : IDiscordRepo
         return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
+    public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears)
+    {
+        var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
+        if (leagueChannelEntity is null)
+        {
+            return null;
+        }
+
+        var league = await _fantasyCriticRepo.GetLeague(leagueChannelEntity.LeagueID);
+        if (league is null)
+        {
+            return null;
+        }
+
+        var supportedYear = supportedYears
+            .OrderBy(y => y.Year)
+            .FirstOrDefault(y => !y.Finished && league.Years.Contains(y.Year));
+        if (supportedYear == null)
+        {
+            return null;
+        }
+
+        var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, supportedYear.Year);
+
+        return leagueYear is null
+            ? null
+            : leagueChannelEntity.ToDomain(leagueYear);
+    }
+
     public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, int year)
     {
         var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
