@@ -23,6 +23,7 @@ public class MasterGameEntity
         OpenCriticID = masterGame.OpenCriticID;
         GGToken = masterGame.GGToken;
         CriticScore = masterGame.CriticScore;
+        HasAnyReviews = masterGame.HasAnyReviews;
         Notes = masterGame.Notes;
         BoxartFileName = masterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.GGCoverArtFileName;

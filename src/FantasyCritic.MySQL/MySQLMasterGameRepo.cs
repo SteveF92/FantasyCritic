@@ -188,10 +188,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         const string masterGameCreateSQL = "insert into tbl_mastergame" +
                                            "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate," +
-                                           "ReleaseDate,OpenCriticID,GGToken,CriticScore,Notes,BoxartFileName,GGCoverArtFileName," +
+                                           "ReleaseDate,OpenCriticID,GGToken,CriticScore,HasAnyReviews,Notes,BoxartFileName,GGCoverArtFileName," +
                                            "FirstCriticScoreTimestamp,DoNotRefreshDate,DoNotRefreshAnything,EligibilityChanged,DelayContention,ShowNote,AddedTimestamp,AddedByUserID) VALUES " +
                                            "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate," +
-                                           "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@Notes,@BoxartFileName,@GGCoverArtFileName," +
+                                           "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@HasAnyReviews,@Notes,@BoxartFileName,@GGCoverArtFileName," +
                                            "@FirstCriticScoreTimestamp,@DoNotRefreshDate,@DoNotRefreshAnything,@EligibilityChanged,@DelayContention,@ShowNote,@AddedTimestamp,@AddedByUserID);";
 
         var entity = new MasterGameEntity(masterGame);
