@@ -59,7 +59,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
                 Context.User));
         }
 
-        var message = "";
+        List<string> messages = new List<string>();
         foreach (var recentGameGrouping in recentGamesData)
         {
             var standardGame = recentGameGrouping.FirstOrDefault(p => !p.CounterPick);
@@ -70,9 +70,11 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
             var gameMessage = DiscordMessageUtilities.BuildGameMessage(standardPublisher, counterPickPublisher, recentGameGrouping.Key.MasterGame, _baseAddress);
             if (gameMessage is not null)
             {
-                message += gameMessage;
+                messages.Add(gameMessage);
             }
         }
+
+        var message = string.Join("\n--------------------------------\n", messages);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Recent Publisher Releases",
