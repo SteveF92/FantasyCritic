@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Discord.GameNewsSettings;
+
 namespace FantasyCritic.MySQL.Entities;
 internal class LeagueChannelEntity
 {
@@ -11,7 +13,7 @@ internal class LeagueChannelEntity
         LeagueID = leagueID;
         GuildID = guildID;
         ChannelID = channelID;
-        GameNewsSetting = gameNewsSetting.Value;
+        GameNewsSetting = gameNewsSetting.Name;
     }
 
     public Guid LeagueID { get; set; }
@@ -21,11 +23,11 @@ internal class LeagueChannelEntity
 
     public LeagueChannel ToDomain(LeagueYear leagueYear)
     {
-        return new LeagueChannel(leagueYear, GuildID, ChannelID, DiscordGameNewsSetting.FromValue(GameNewsSetting));
+        return new LeagueChannel(leagueYear, GuildID, ChannelID, DiscordGameNewsSetting.FromName(GameNewsSetting));
     }
 
     public MinimalLeagueChannel ToMinimalDomain()
     {
-        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, DiscordGameNewsSetting.FromValue(GameNewsSetting));
+        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, DiscordGameNewsSetting.FromName(GameNewsSetting));
     }
 }

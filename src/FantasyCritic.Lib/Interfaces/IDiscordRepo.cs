@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Discord.GameNewsSettings;
+
 namespace FantasyCritic.Lib.Interfaces;
 public interface IDiscordRepo
 {

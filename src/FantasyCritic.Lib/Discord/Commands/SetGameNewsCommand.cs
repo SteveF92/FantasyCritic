@@ -1,5 +1,6 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.Discord.GameNewsSettings;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -19,6 +20,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
     public async Task SetGameNews(
         [Summary("setting", "The game news setting. Valid settings are Off, Relevant, or All")]
         [Choice("Off", "Off")]
+        [Choice("League Games Only", "LeagueGamesOnly")]
         [Choice("Relevant", "Relevant")]
         [Choice("All", "All")]
         string setting = ""
@@ -35,17 +37,17 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
             return;
         }
 
-        var settingEnum = DiscordGameNewsSetting.TryFromValue(setting ?? "");
-        if (settingEnum is null)
+        var settingEnum = DiscordGameNewsSetting.TryFromName(setting);
+        if (settingEnum.IsFailure)
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "No Change Made to Game News Configuration",
-                $"No option was selected.\nThe current Game News Announcements setting is still **{leagueChannel.GameNewsSetting}**.",
+                $"No valid option was selected.\nThe current Game News Announcements setting is still **{leagueChannel.GameNewsSetting.Name}**.",
                 Context.User));
             return;
         }
 
-        await _discordRepo.SetIsGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, settingEnum);
+        await _discordRepo.SetIsGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, settingEnum.Value);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Game News Configuration Saved",

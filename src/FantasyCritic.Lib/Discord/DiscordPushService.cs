@@ -93,18 +93,14 @@ public class DiscordPushService
         }
 
         var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
 
         var messageTasks = new List<Task>();
-        foreach (var leagueChannel in newsEnabledChannels)
+        foreach (var leagueChannel in allChannels)
         {
-            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
+            bool shouldSend = leagueChannel.GameNewsSetting.NewGameIsRelevant(masterGame, year);
+            if (!shouldSend)
             {
-                bool gameIsRelevant = NewGameIsRelevant(masterGame, year);
-                if (!gameIsRelevant)
-                {
-                    continue;
-                }
+                continue;
             }
 
             var guild = _client.GetGuild(leagueChannel.GuildID);
@@ -131,7 +127,6 @@ public class DiscordPushService
 
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(game, year);
-        var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
 
         var messageToSend = "";
 
@@ -163,10 +158,10 @@ public class DiscordPushService
         }
 
         var messageTasks = new List<Task>();
-        foreach (var leagueChannel in newsEnabledChannels)
+        foreach (var leagueChannel in allChannels)
         {
-            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant &&
-                !LeagueHasGame(leaguesWithGame, leagueChannel))
+            bool shouldSend = leagueChannel.GameNewsSetting.ScoredOrReleasedGameIsRelevant(leaguesWithGame, leagueChannel);
+            if (!shouldSend)
             {
                 continue;
             }
@@ -196,18 +191,14 @@ public class DiscordPushService
 
         var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(editedGame.MasterGame, existingGame.Year);
         var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
 
         var messageTasks = new List<Task>();
-        foreach (var leagueChannel in newsEnabledChannels)
+        foreach (var leagueChannel in allChannels)
         {
-            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
+            bool shouldSend = leagueChannel.GameNewsSetting.ExistingGameIsRelevant(existingGame, releaseStatusChanged, leaguesWithGame, leagueChannel);
+            if (!shouldSend)
             {
-                var gameIsRelevant = GameIsRelevant(existingGame, releaseStatusChanged, leaguesWithGame, leagueChannel);
-                if (!gameIsRelevant)
-                {
-                    continue;
-                }
+                continue;
             }
 
             var guild = _client.GetGuild(leagueChannel.GuildID);
@@ -241,10 +232,9 @@ public class DiscordPushService
 
         var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday.Select(x => x.MasterGame), year);
         var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var newsEnabledChannels = allChannels.Where(x => x.GameNewsSetting != DiscordGameNewsSetting.Off).ToList();
 
         var messageTasks = new List<Task>();
-        foreach (var leagueChannel in newsEnabledChannels)
+        foreach (var leagueChannel in allChannels)
         {
             var guild = _client.GetGuild(leagueChannel.GuildID);
             var channel = guild?.GetChannel(leagueChannel.ChannelID);
@@ -253,16 +243,9 @@ public class DiscordPushService
                 continue;
             }
 
-            IReadOnlyList<MasterGameYear> relevantGamesForLeague;
-            if (leagueChannel.GameNewsSetting == DiscordGameNewsSetting.Relevant)
-            {
-                relevantGamesForLeague = masterGamesReleasingToday.Where(x => GameIsInLeague(x.MasterGame, leagueHasGameLookup, leagueChannel)).ToList();
-            }
-            else
-            {
-                relevantGamesForLeague = masterGamesReleasingToday.ToList();
-            }
-
+            IReadOnlyList<MasterGameYear> relevantGamesForLeague = masterGamesReleasingToday
+                .Where(x => leagueChannel.GameNewsSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.MasterGame.MasterGameID].ToHashSet(), leagueChannel))
+                .ToList();
             if (!relevantGamesForLeague.Any())
             {
                 continue;
@@ -274,31 +257,6 @@ public class DiscordPushService
         }
 
         await Task.WhenAll(messageTasks);
-    }
-
-    private bool NewGameIsRelevant(MasterGame masterGame, int year)
-    {
-        return masterGame.CouldReleaseInYear(year);
-    }
-
-    private static bool GameIsRelevant(MasterGameYear masterGameYear, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
-    {
-        if (releaseStatusChanged)
-        {
-            return true;
-        }
-
-        return masterGameYear.IsRelevantInYear(true) || LeagueHasGame(leaguesWithGame, channel);
-    }
-
-    private static bool LeagueHasGame(IReadOnlySet<Guid> leaguesWithGame, MinimalLeagueChannel channel)
-    {
-        return leaguesWithGame.Contains(channel.LeagueID);
-    }
-
-    private static bool GameIsInLeague(MasterGame masterGame, ILookup<Guid, Guid> leagueHasGameLookup, MinimalLeagueChannel leagueChannel)
-    {
-        return leagueHasGameLookup[leagueChannel.LeagueID].Contains(masterGame.MasterGameID);
     }
 
     public async Task SendLeagueActionMessage(LeagueAction action)

@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord.GameNewsSettings;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities;
 
@@ -17,7 +18,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, DiscordGameNewsSetting.Relevant);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting());
         var existingLeague = await GetLeagueChannel(guildID, channelID, year);
         var sql = existingLeague == null
             ? "INSERT INTO tbl_discord_leaguechannel (LeagueID, GuildID, ChannelID, GameNewsSetting) VALUES (@LeagueID, @GuildID, @ChannelID, @GameNewsSetting)"
