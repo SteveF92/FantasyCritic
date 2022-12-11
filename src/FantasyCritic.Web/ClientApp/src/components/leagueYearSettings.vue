@@ -241,7 +241,21 @@
           <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
         </div>
         <div class="form-group">
-          <label for="tiebreakSystem" class="control-label">Counter Pick Deadline</label>
+          <label for="releaseSystem" class="control-label">Game Release Rule</label>
+          <b-form-select v-model="internalValue.releaseSystem" :options="possibleLeagueOptions.releaseSystems"></b-form-select>
+          <p>
+            This setting handles whether or not a game must be officially released in order to get points. By default, they do. However, recently, more and more games have had "strange" release
+            situations such as
+            <em>Overwatch 2</em>
+            and
+            <em>Multiversus</em>
+            . This option will allow a player to get points as soon as a game has an Open Critic score, regardless of it's release status. This also means that Early Access games
+            <em>will</em>
+            count for points while they are in early access.
+          </p>
+        </div>
+        <div class="form-group">
+          <label for="counterPickDeadline" class="control-label">Counter Pick Deadline</label>
           <b-form-datepicker v-model="internalValue.counterPickDeadline" class="form-control"></b-form-datepicker>
           <p>
             After this date, a game without a confirmed release date can no longer be counter picked. This is only relevant if your league has "pickup counter picks". The intention for this is to
@@ -249,6 +263,17 @@
           </p>
           <p>A 'confirmed release date' means a single date, like "December 12th, 2022". A release date of "2022" does not count.</p>
           <p>If you set this to December 31st, it will effectively have no relevance.</p>
+        </div>
+        <div class="form-group">
+          <label for="mightReleaseDroppableDate" class="control-label">Might Release Droppable Date</label>
+          <div class="clearable-date">
+            <b-form-datepicker v-model="internalValue.mightReleaseDroppableDate" class="form-control"></b-form-datepicker>
+            <b-button variant="warning" size="sm" @click="internalValue.mightReleaseDroppableDate = null">Clear</b-button>
+          </div>
+
+          <p>If you enable this option, then after this date, a game that is consider "might release" will be treated like a "will not release" game for dropping and counter-picking purposes.</p>
+          <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific "2023" date, then it will still be counter as "Will Release" for 2023.</p>
+          <p>In more technical terms, this is based on the "Maximum Release Date" that you can see on the Master Game page.</p>
         </div>
       </b-collapse>
     </div>
@@ -501,5 +526,10 @@ label {
 
 .drop-number {
   width: 100px;
+}
+
+.clearable-date {
+  display: flex;
+  gap: 5px;
 }
 </style>

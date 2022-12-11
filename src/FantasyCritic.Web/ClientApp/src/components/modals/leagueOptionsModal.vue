@@ -27,6 +27,10 @@
             <th class="bg-primary">Counter Pick Deadline</th>
             <td>{{ formatLongDate(leagueYearOptions.counterPickDeadline) }}</td>
           </tr>
+          <tr v-if="leagueYearOptions.mightReleaseDroppableDate">
+            <th class="bg-primary">Might Release Droppable Date</th>
+            <td>{{ formatLongDate(leagueYearOptions.mightReleaseDroppableDate) }}</td>
+          </tr>
           <tr>
             <th class="bg-primary">Minimum Bid Amount</th>
             <td>{{ leagueYearOptions.minimumBidAmount }}</td>
@@ -69,6 +73,10 @@
           <tr>
             <th class="bg-primary">Trading System</th>
             <td>{{ leagueYearOptions.tradingSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tradingSystems) }}</td>
+          </tr>
+          <tr>
+            <th class="bg-primary">Game Release Rule</th>
+            <td>{{ leagueYearOptions.releaseSystem | selectTextFromPossibleOptions(possibleLeagueOptions.releaseSystems) }}</td>
           </tr>
 
           <tr>

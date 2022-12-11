@@ -8,7 +8,8 @@ public class LeagueOptionsViewModel
 {
     public LeagueOptionsViewModel(IEnumerable<int> openYears, IEnumerable<DraftSystem> draftSystems,
         IEnumerable<PickupSystem> pickupSystems, IEnumerable<TiebreakSystem> tiebreakSystems,
-        IEnumerable<ScoringSystem> scoringSystems, IEnumerable<TradingSystem> tradingSystems)
+        IEnumerable<ScoringSystem> scoringSystems, IEnumerable<TradingSystem> tradingSystems,
+        IEnumerable<ReleaseSystem> releaseSystems)
     {
         OpenYears = openYears.ToList();
         DraftSystems = draftSystems.Select(x => x.Value).ToList();
@@ -16,6 +17,7 @@ public class LeagueOptionsViewModel
         TiebreakSystems = tiebreakSystems.Select(x => new SelectOptionViewModel(x.Value, x.Value.CamelCaseToSpaces())).ToList();
         ScoringSystems = scoringSystems.Select(x => x.Name).ToList();
         TradingSystems = tradingSystems.Select(x => new SelectOptionViewModel(x.Value, x.ReadableName)).ToList();
+        ReleaseSystems = releaseSystems.Select(x => new SelectOptionViewModel(x.Value, x.ReadableName)).ToList();
     }
 
     public IReadOnlyList<int> OpenYears { get; }
@@ -24,4 +26,5 @@ public class LeagueOptionsViewModel
     public IReadOnlyList<SelectOptionViewModel> TiebreakSystems { get; }
     public IReadOnlyList<string> ScoringSystems { get; }
     public IReadOnlyList<SelectOptionViewModel> TradingSystems { get; }
+    public IReadOnlyList<SelectOptionViewModel> ReleaseSystems { get; }
 }

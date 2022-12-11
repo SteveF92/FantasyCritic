@@ -74,7 +74,8 @@ public class LeagueController : BaseLeagueController
         var openYearInts = openYears.Select(x => x.Year);
         LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYearInts, DraftSystem.GetAllPossibleValues(),
             PickupSystem.GetAllPossibleValues(), TiebreakSystem.GetAllPossibleValues(),
-            ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues());
+            ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues(),
+            ReleaseSystem.GetAllPossibleValues());
 
         return Ok(viewModel);
     }

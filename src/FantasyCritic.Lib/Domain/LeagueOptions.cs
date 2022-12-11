@@ -235,9 +235,19 @@ public class LeagueOptions
             differences.Add($"Trading System changed from {existingOptions.TradingSystem.ReadableName} to {TradingSystem.ReadableName}.");
         }
 
+        if (!ReleaseSystem.Equals(existingOptions.ReleaseSystem))
+        {
+            differences.Add($"Game Release Rule changed from {existingOptions.ReleaseSystem.ReadableName} to {ReleaseSystem.ReadableName}.");
+        }
+
         if (!CounterPickDeadline.Equals(existingOptions.CounterPickDeadline))
         {
-            differences.Add($"Counter pick deadline changed from {existingOptions.CounterPickDeadline} to {CounterPickDeadline}.");
+            differences.Add($"Counter pick deadline changed from {existingOptions.CounterPickDeadline.ToReadableString()} to {CounterPickDeadline.ToReadableString()}.");
+        }
+
+        if (!Equals(MightReleaseDroppableDate, existingOptions.MightReleaseDroppableDate))
+        {
+            differences.Add($"'Might Release Droppable Date' changed from {existingOptions.MightReleaseDroppableDate.ToReadableString()} to {MightReleaseDroppableDate.ToReadableString()}.");
         }
 
         if (GrantSuperDrops != existingOptions.GrantSuperDrops)
