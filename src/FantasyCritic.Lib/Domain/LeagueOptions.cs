@@ -10,7 +10,8 @@ public class LeagueOptions
 
     public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
         bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, AnnualDate counterPickDeadline)
+        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
+        AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
     {
         StandardGames = standardGames;
         GamesToDraft = gamesToDraft;
@@ -30,7 +31,9 @@ public class LeagueOptions
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
+        ReleaseSystem = releaseSystem;
         CounterPickDeadline = counterPickDeadline;
+        MightReleaseDroppableDate = mightReleaseDroppableDate;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -55,7 +58,9 @@ public class LeagueOptions
         ScoringSystem = parameters.ScoringSystem;
         TradingSystem = parameters.TradingSystem;
         TiebreakSystem = parameters.TiebreakSystem;
+        ReleaseSystem = parameters.ReleaseSystem;
         CounterPickDeadline = parameters.CounterPickDeadline;
+        MightReleaseDroppableDate = parameters.MightReleaseDroppableDate;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -78,7 +83,9 @@ public class LeagueOptions
     public ScoringSystem ScoringSystem { get; }
     public TradingSystem TradingSystem { get; }
     public TiebreakSystem TiebreakSystem { get; }
+    public ReleaseSystem ReleaseSystem { get; }
     public AnnualDate CounterPickDeadline { get; }
+    public AnnualDate? MightReleaseDroppableDate { get; }
     public bool HasSpecialSlots => SpecialGameSlots.Any();
 
     public bool OneShotMode => StandardGames == GamesToDraft && CounterPicks == CounterPicksToDraft &&
@@ -270,7 +277,8 @@ public class LeagueOptions
     {
         var newScoringSystem = ScoringSystem.GetDefaultScoringSystem(requestYear);
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, CounterPickDeadline);
+            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem,
+            CounterPickDeadline, MightReleaseDroppableDate);
         return options;
     }
 }

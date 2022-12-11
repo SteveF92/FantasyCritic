@@ -58,6 +58,19 @@ public class LeagueYear : IEquatable<LeagueYear>
     public int TotalNumberOfStandardGames => Options.StandardGames * Publishers.Count;
     public LocalDate CounterPickDeadline => new LocalDate(Year, Options.CounterPickDeadline.Month, Options.CounterPickDeadline.Day);
 
+    public LocalDate? MightReleaseDroppableDate
+    {
+        get
+        {
+            if (!Options.MightReleaseDroppableDate.HasValue)
+            {
+                return null;
+            }
+
+            return new LocalDate(Year, Options.MightReleaseDroppableDate.Value.Month, Options.MightReleaseDroppableDate.Value.Day);
+        }
+    }
+
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
     public string GetGroupName => $"{League.LeagueID}|{Year}";

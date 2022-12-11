@@ -11,8 +11,8 @@ public class LeagueYearSettingsViewModel
     public LeagueYearSettingsViewModel(Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks,
         int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedFreeDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops,
-        int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem,
-        LocalDate counterPickDeadline, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
+        int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
+        LocalDate counterPickDeadline, LocalDate? mightReleaseDroppableDate, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
     {
         LeagueID = leagueID;
         Year = year;
@@ -35,7 +35,9 @@ public class LeagueYearSettingsViewModel
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
+        ReleaseSystem = releaseSystem;
         CounterPickDeadline = counterPickDeadline;
+        MightReleaseDroppableDate = mightReleaseDroppableDate;
 
         Tags = tags;
         SpecialGameSlots = specialGameSlots;
@@ -78,7 +80,9 @@ public class LeagueYearSettingsViewModel
         TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
         ScoringSystem = leagueYear.Options.ScoringSystem.Name;
         TradingSystem = leagueYear.Options.TradingSystem.Value;
+        ReleaseSystem = leagueYear.Options.ReleaseSystem.Value;
         CounterPickDeadline = leagueYear.CounterPickDeadline;
+        MightReleaseDroppableDate = leagueYear.MightReleaseDroppableDate;
 
         var bannedTags = leagueYear.Options.LeagueTags
             .Where(x => x.Status == TagStatus.Banned)
@@ -124,7 +128,9 @@ public class LeagueYearSettingsViewModel
     public string ScoringSystem { get; }
     public string TradingSystem { get; }
     public string TiebreakSystem { get; }
+    public string ReleaseSystem { get; }
     public LocalDate CounterPickDeadline { get; }
+    public LocalDate? MightReleaseDroppableDate { get; }
 
     public LeagueTagOptionsViewModel Tags { get; }
     public List<SpecialGameSlotViewModel> SpecialGameSlots { get; }
@@ -150,6 +156,7 @@ public class LeagueYearSettingsViewModel
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
         TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
         TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
+        ReleaseSystem releaseSystem = Lib.Enums.ReleaseSystem.FromValue(ReleaseSystem);
         ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
         int freeDroppableGames = FreeDroppableGames;
@@ -169,13 +176,18 @@ public class LeagueYearSettingsViewModel
         }
 
         var counterPickDeadline = new AnnualDate(CounterPickDeadline.Month, CounterPickDeadline.Day);
+        AnnualDate? mightReleaseDroppableDate = null;
+        if (MightReleaseDroppableDate.HasValue)
+        {
+            mightReleaseDroppableDate = new AnnualDate(MightReleaseDroppableDate.Value.Month, MightReleaseDroppableDate.Value.Day);
+        }
 
         var leagueTags = Tags.ToDomain(tagDictionary);
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
         LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
             freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount,
-            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, counterPickDeadline);
+            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, counterPickDeadline, mightReleaseDroppableDate);
         return parameters;
     }
 }

@@ -31,12 +31,15 @@ public class LeagueYearEntity
         MinimumBidAmount = options.MinimumBidAmount;
         CounterPickDeadlineMonth = options.CounterPickDeadline.Month;
         CounterPickDeadlineDay = options.CounterPickDeadline.Day;
+        MightReleaseDroppableMonth = options.MightReleaseDroppableDate?.Month;
+        MightReleaseDroppableDay = options.MightReleaseDroppableDate?.Day;
 
         DraftSystem = options.DraftSystem.Value;
         PickupSystem = options.PickupSystem.Value;
         TiebreakSystem = options.TiebreakSystem.Value;
         ScoringSystem = options.ScoringSystem.Name;
         TradingSystem = options.TradingSystem.Value;
+        ReleaseSystem = options.ReleaseSystem.Value;
         PlayStatus = playStatus.Value;
         DraftOrderSet = draftOrderSet;
     }
@@ -59,10 +62,13 @@ public class LeagueYearEntity
     public string TiebreakSystem { get; set; } = null!;
     public string ScoringSystem { get; set; } = null!;
     public string TradingSystem { get; set; } = null!;
+    public string ReleaseSystem { get; set; } = null!;
     public string PlayStatus { get; set; } = null!;
     public bool DraftOrderSet { get; set; }
     public int CounterPickDeadlineMonth { get; set; }
     public int CounterPickDeadlineDay { get; set; }
+    public int? MightReleaseDroppableMonth { get; set; }
+    public int? MightReleaseDroppableDay { get; set; }
     public Instant? DraftStartedTimestamp { get; set; }
     public Guid? WinningUserID { get; set; }
 
@@ -74,12 +80,20 @@ public class LeagueYearEntity
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
         TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
         TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
+        ReleaseSystem releaseSystem = Lib.Enums.ReleaseSystem.FromValue(ReleaseSystem);
         ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
         AnnualDate counterPickDeadline = new AnnualDate(CounterPickDeadlineMonth, CounterPickDeadlineDay);
 
+        AnnualDate? mightReleaseDroppableDate = null;
+        if (MightReleaseDroppableMonth.HasValue && MightReleaseDroppableDay.HasValue)
+        {
+            mightReleaseDroppableDate = new AnnualDate(MightReleaseDroppableMonth.Value, MightReleaseDroppableDay.Value);
+        }
+        
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, counterPickDeadline);
+            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem,
+            counterPickDeadline, mightReleaseDroppableDate);
 
         return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser, publishersInLeague);
     }
