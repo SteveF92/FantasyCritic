@@ -18,7 +18,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
 
     [SlashCommand("set-game-news", "Sets what games this channel will get news announcements for.")]
     public async Task SetGameNews(
-        [Summary("setting", "The game news setting. Valid settings are Off, Relevant, or All")]
+        [Summary("setting", "The game news setting. Valid settings are Off, League Games Only, Relevant, or All")]
         [Choice("Off", "Off")]
         [Choice("League Games Only", "LeagueGamesOnly")]
         [Choice("Relevant", "Relevant")]

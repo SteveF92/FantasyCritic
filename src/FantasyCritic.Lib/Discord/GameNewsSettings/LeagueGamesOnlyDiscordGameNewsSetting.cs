@@ -3,7 +3,7 @@ namespace FantasyCritic.Lib.Discord.GameNewsSettings;
 
 public class LeagueGamesOnlyDiscordGameNewsSetting : DiscordGameNewsSetting
 {
-    public override string Name => "On";
+    public override string Name => "LeagueGamesOnly";
 
     public override bool NewGameIsRelevant(MasterGame masterGame, int year)
     {

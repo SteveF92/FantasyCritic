@@ -7,7 +7,7 @@ public abstract class DiscordGameNewsSetting : IEquatable<DiscordGameNewsSetting
         return name switch
         {
             "Off" => new OffDiscordGameNewsSetting(),
-            "On" => new OnDiscordGameNewsSetting(),
+            "All" => new AllDiscordGameNewsSetting(),
             "Relevant" => new RelevantDiscordGameNewsSetting(),
             "LeagueGamesOnly" => new LeagueGamesOnlyDiscordGameNewsSetting(),
             _ => Result.Failure<DiscordGameNewsSetting>("No matching setting")
