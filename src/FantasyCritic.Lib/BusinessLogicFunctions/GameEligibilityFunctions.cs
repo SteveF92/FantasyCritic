@@ -128,7 +128,13 @@ public static class GameEligibilityFunctions
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        bool gameCouldRelease = publisherGame.CouldRelease();
+        var releaseStatus = publisherGame.WillRelease();
+        bool gameCouldRelease = releaseStatus.CountAsWillRelease;
+        if (releaseStatus == WillReleaseStatus.MightRelease && leagueYear.Options.MightReleaseDroppableDate.HasValue)
+        {
+            gameCouldRelease = leagueYear.Options.MightReleaseDroppableDate.Value.InYear(currentDate.Year) <= currentDate;
+        }
+
         var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);
         return new DropResult(dropResult);
     }
@@ -181,7 +187,13 @@ public static class GameEligibilityFunctions
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        bool gameCouldRelease = publisherGame.CouldRelease();
+        var releaseStatus = publisherGame.WillRelease();
+        bool gameCouldRelease = releaseStatus.CountAsWillRelease;
+        if (releaseStatus == WillReleaseStatus.MightRelease && leagueYear.Options.MightReleaseDroppableDate.HasValue)
+        {
+            gameCouldRelease = leagueYear.Options.MightReleaseDroppableDate.Value.InYear(currentDate.Year) <= currentDate;
+        }
+
         var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);
         return new DropResult(dropResult);
     }
