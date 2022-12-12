@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using NodaTime;
@@ -14,6 +15,7 @@ namespace FantasyCritic.Test;
 [TestFixture]
 public class DiminishingScoringTests
 {
+    private static readonly ReleaseSystem _releaseSystem = ReleaseSystem.MustBeReleased;
     private static readonly ScoringSystem _scoringSystem = ScoringSystem.GetScoringSystem("Diminishing");
 
     private static readonly FantasyCriticUser EmptyUser = new FantasyCriticUser() { Id = Guid.Empty };
@@ -33,7 +35,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(14.8095m, fantasyPoints);
     }
@@ -53,7 +55,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(13.8095m, fantasyPoints);
     }
@@ -73,7 +75,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(29.625m, fantasyPoints);
     }
@@ -93,7 +95,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-4.1441m, fantasyPoints);
     }
@@ -113,7 +115,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-12.5m, fantasyPoints);
     }
@@ -133,7 +135,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-16.25m, fantasyPoints);
     }
@@ -153,7 +155,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-18.125m, fantasyPoints);
     }
@@ -173,7 +175,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-19.0625m, fantasyPoints);
     }
@@ -193,7 +195,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-19.53125m, fantasyPoints);
     }
@@ -213,7 +215,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-19.765625m, fantasyPoints);
     }
@@ -233,7 +235,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(-19.84375m, fantasyPoints);
     }
@@ -253,7 +255,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(null, fantasyPoints);
     }
@@ -273,7 +275,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(0m, fantasyPoints);
     }
@@ -293,7 +295,7 @@ public class DiminishingScoringTests
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
         PublisherSlot testSlot = new PublisherSlot(1, 1, true, null, testGame);
-        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _scoringSystem, fakeToday);
+        decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
         Assert.AreEqual(4.1441m, fantasyPoints);
     }

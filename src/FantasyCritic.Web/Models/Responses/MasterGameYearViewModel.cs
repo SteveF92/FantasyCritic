@@ -22,7 +22,7 @@ public class MasterGameYearViewModel
         DelayContention = masterGame.MasterGame.DelayContention;
         ShowNote = masterGame.MasterGame.ShowNote;
         CriticScore = masterGame.MasterGame.CriticScore;
-        FantasyPoints = masterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
+        FantasyPoints = masterGame.GetFantasyPoints(ReleaseSystem.MustBeReleased, ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
         AveragedScore = masterGame.MasterGame.AveragedScore;
         Notes = masterGame.MasterGame.Notes;
         OpenCriticID = masterGame.MasterGame.OpenCriticID;
@@ -68,7 +68,7 @@ public class MasterGameYearViewModel
         ReleasingToday = masterSubGame.ReleaseDate == currentDate;
         WillRelease = masterGame.CouldRelease();
         CriticScore = masterSubGame.CriticScore;
-        FantasyPoints = masterGame.GetFantasyPoints(ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
+        FantasyPoints = masterGame.GetFantasyPoints(ReleaseSystem.MustBeReleased, ScoringSystem.GetDefaultScoringSystem(Year), false, currentDate);
         AveragedScore = false;
         OpenCriticID = masterSubGame.OpenCriticID;
         SubGames = null;

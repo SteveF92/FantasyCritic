@@ -29,7 +29,6 @@ public class PossibleRoyaleMasterGameViewModel
     {
         get
         {
-
             if (AlreadyOwned)
             {
                 return "Already Owned";

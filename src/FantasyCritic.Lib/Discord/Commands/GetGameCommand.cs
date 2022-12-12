@@ -120,7 +120,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         var publisherWhoPicked = matchedGameDisplay.PublisherWhoPicked;
         if (publisherWhoPicked != null)
         {
-            var score = gameFound.GetFantasyPoints(leagueYear.Options.ScoringSystem, false, dateToCheck);
+            var score = gameFound.GetFantasyPoints(leagueYear.Options.ReleaseSystem, leagueYear.Options.ScoringSystem, false, dateToCheck);
             gameDisplayText +=
                 $"\n**Picked:** {publisherWhoPicked.GetPublisherAndUserDisplayName()}";
 
@@ -137,7 +137,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         var publisherWhoCounterPicked = matchedGameDisplay.PublisherWhoCounterPicked;
         if (publisherWhoCounterPicked != null)
         {
-            var score = gameFound.GetFantasyPoints(leagueYear.Options.ScoringSystem, true, dateToCheck);
+            var score = gameFound.GetFantasyPoints(leagueYear.Options.ReleaseSystem, leagueYear.Options.ScoringSystem, true, dateToCheck);
             gameDisplayText +=
                 $"\n**Counter Picked:** {publisherWhoCounterPicked.GetPublisherAndUserDisplayName()}";
 

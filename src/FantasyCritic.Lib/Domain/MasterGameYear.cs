@@ -101,16 +101,19 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return projectedPoints;
     }
 
-    public decimal? GetFantasyPoints(ScoringSystem scoringSystem, bool counterPick, LocalDate currentDate)
+    public decimal? GetFantasyPoints(ReleaseSystem releaseSystem, ScoringSystem scoringSystem, bool counterPick, LocalDate currentDate)
     {
         if (!CouldRelease())
         {
             return 0m;
         }
 
-        if (!MasterGame.IsReleased(currentDate))
+        if (releaseSystem == ReleaseSystem.MustBeReleased)
         {
-            return null;
+            if (!MasterGame.IsReleased(currentDate))
+            {
+                return null;
+            }
         }
 
         if (MasterGame.CriticScore.HasValue)

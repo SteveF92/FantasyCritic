@@ -54,7 +54,7 @@ public class PublisherSlot
         return GetProjectedFantasyPoints(scoringSystem, systemWideValues, standardGamesTaken, numberOfStandardGames);
     }
 
-    public decimal? GetFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
+    public decimal? GetFantasyPoints(bool gameIsValidInSlot, ReleaseSystem releaseSystem, ScoringSystem scoringSystem, LocalDate currentDate)
     {
         if (PublisherGame is null)
         {
@@ -69,7 +69,7 @@ public class PublisherSlot
             return null;
         }
 
-        var calculatedScore = PublisherGame.MasterGame.GetFantasyPoints(scoringSystem, CounterPick, currentDate);
+        var calculatedScore = PublisherGame.MasterGame.GetFantasyPoints(releaseSystem, scoringSystem, CounterPick, currentDate);
         if (gameIsValidInSlot)
         {
             return calculatedScore;
