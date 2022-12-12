@@ -103,7 +103,7 @@ public class AdminService
             if (openCriticGame is not null)
             {
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
-                await _discordPushService.SendGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score, currentDate.Year);
+                _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score, currentDate.Year);
                 gamesFetched++;
                 if (gamesFetched % 100 == 0)
                 {
@@ -227,6 +227,7 @@ public class AdminService
         await UpdateGameStats(hypeConstants);
         _interLeagueService.ClearMasterGameCache();
         _interLeagueService.ClearMasterGameYearCache();
+        await _discordPushService.SendBatchedMasterGameUpdates();
         _logger.Information("Done refreshing caches");
     }
 

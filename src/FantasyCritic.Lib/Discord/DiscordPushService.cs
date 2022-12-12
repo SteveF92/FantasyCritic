@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -24,6 +25,10 @@ public class DiscordPushService
     private bool _botIsReady;
     private readonly bool _enabled;
     private readonly string _baseAddress;
+
+    private readonly List<NewMasterGameMessage> _newMasterGameMessages = new List<NewMasterGameMessage>();
+    private readonly List<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = new List<GameCriticScoreUpdateMessage>();
+    private readonly List<MasterGameEditMessage> _masterGameEditMessages = new List<MasterGameEditMessage>();
 
     public DiscordPushService(
         FantasyCriticDiscordConfiguration configuration,
@@ -84,102 +89,22 @@ public class DiscordPushService
         return true;
     }
 
-    public async Task SendNewMasterGameMessage(MasterGame masterGame, int year)
+    public void QueueNewMasterGameMessage(MasterGame masterGame, int year)
     {
-        bool shouldRun = await StartBot();
-        if (!shouldRun)
-        {
-            return;
-        }
-
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
-
-        var messageTasks = new List<Task>();
-        foreach (var leagueChannel in allChannels)
-        {
-            bool shouldSend = leagueChannel.GameNewsSetting.NewGameIsRelevant(masterGame, year);
-            if (!shouldSend)
-            {
-                continue;
-            }
-
-            var guild = _client.GetGuild(leagueChannel.GuildID);
-            var channel = guild?.GetChannel(leagueChannel.ChannelID);
-            if (channel is not SocketTextChannel textChannel)
-            {
-                continue;
-            }
-
-            var tagsString = string.Join(", ", masterGame.Tags.Select(x => x.ReadableName));
-            messageTasks.Add(textChannel.TrySendMessageAsync($"New Game Added! **{masterGame.GameName}** (Tagged as: **{tagsString}**)"));
-        }
-
-        await Task.WhenAll(messageTasks);
+        _newMasterGameMessages.Add(new NewMasterGameMessage(masterGame, year));
     }
 
-    public async Task SendGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore, int year)
+    public void QueueGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore, int year)
     {
-        bool shouldRun = await StartBot();
-        if (!shouldRun)
-        {
-            return;
-        }
-
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
-        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(game, year);
-
-        var messageToSend = "";
-
-        var newCriticScoreRounded = newCriticScore != null ? (decimal?)Math.Round(newCriticScore.Value, 1) : null;
-        var oldCriticScoreRounded = oldCriticScore != null ? (decimal?)Math.Round(oldCriticScore.Value, 1) : null;
-
-        if (newCriticScoreRounded == null)
-        {
-            return;
-        }
-        if (oldCriticScoreRounded == null)
-        {
-            messageToSend = $"**{game.GameName}** now has a critic score of **{newCriticScoreRounded}**";
-        }
-        else
-        {
-            var scoreDiff = oldCriticScoreRounded.Value - newCriticScoreRounded.Value;
-            if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
-            {
-                var direction = scoreDiff < 0 ? "UP" : "DOWN";
-                messageToSend =
-                    $"The critic score for **{game.GameName}** has gone **{direction}** from **{oldCriticScoreRounded}** to **{newCriticScoreRounded}**";
-            }
-        }
-
-        if (string.IsNullOrEmpty(messageToSend))
-        {
-            return;
-        }
-
-        var messageTasks = new List<Task>();
-        foreach (var leagueChannel in allChannels)
-        {
-            bool shouldSend = leagueChannel.GameNewsSetting.ScoredOrReleasedGameIsRelevant(leaguesWithGame, leagueChannel);
-            if (!shouldSend)
-            {
-                continue;
-            }
-
-            var guild = _client.GetGuild(leagueChannel.GuildID);
-            var channel = guild?.GetChannel(leagueChannel.ChannelID);
-            if (channel is not SocketTextChannel textChannel)
-            {
-                continue;
-            }
-
-            messageTasks.Add(textChannel.TrySendMessageAsync(messageToSend));
-        }
-
-        await Task.WhenAll(messageTasks);
+        _gameCriticScoreUpdateMessages.Add(new GameCriticScoreUpdateMessage(game, oldCriticScore, newCriticScore, year));
     }
 
-    public async Task SendMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes)
+    public void QueueMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes)
+    {
+        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame, editedGame, changes));
+    }
+
+    public async Task SendBatchedMasterGameUpdates()
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -187,20 +112,18 @@ public class DiscordPushService
             return;
         }
 
-        bool releaseStatusChanged = existingGame.WillRelease() != editedGame.WillRelease();
+        var allMasterGameIDs = _newMasterGameMessages.Select(x => x.MasterGame.MasterGameID)
+            .Concat(_gameCriticScoreUpdateMessages.Select(x => x.Game.MasterGameID))
+            .Concat(_masterGameEditMessages.Select(x => x.EditedGame.MasterGame.MasterGameID))
+            .ToList();
 
-        var leaguesWithGame = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGame(editedGame.MasterGame, existingGame.Year);
+        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGamesInUnfinishedYears(allMasterGameIDs);
+
         var allChannels = await _discordRepo.GetAllLeagueChannels();
-
         var messageTasks = new List<Task>();
+
         foreach (var leagueChannel in allChannels)
         {
-            bool shouldSend = leagueChannel.GameNewsSetting.ExistingGameIsRelevant(existingGame, releaseStatusChanged, leaguesWithGame, leagueChannel);
-            if (!shouldSend)
-            {
-                continue;
-            }
-
             var guild = _client.GetGuild(leagueChannel.GuildID);
             var channel = guild?.GetChannel(leagueChannel.ChannelID);
             if (channel is not SocketTextChannel textChannel)
@@ -208,18 +131,24 @@ public class DiscordPushService
                 continue;
             }
 
-            var editableChanges = changes.ToList();
-            if (releaseStatusChanged)
-            {
-                var willReleaseStatus = editedGame.WillRelease();
-                editableChanges.Add($"**{editedGame.MasterGame.GameName}** {willReleaseStatus.DiscordText} this year!");
-            }
+            var newMasterGamesToSend = _newMasterGameMessages
+                .Where(x => leagueChannel.GameNewsSetting.NewGameIsRelevant(x.MasterGame, x.Year))
+                .ToList();
+            var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
+                .Where(x => leagueChannel.GameNewsSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.Game.MasterGameID].ToHashSet(), leagueChannel))
+                .ToList();
+            var editsToSend = _masterGameEditMessages
+                .Where(x => leagueChannel.GameNewsSetting.ExistingGameIsRelevant(x.ExistingGame, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(), leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), leagueChannel))
+                .ToList();
 
-            var changesMessage = string.Join('\n', editableChanges.Select(x => $"> {x}"));
-            messageTasks.Add(textChannel.TrySendMessageAsync($"> Game Update: **{editedGame.MasterGame.GameName}**\n {changesMessage}"));
+            messageTasks.Add(textChannel.TrySendMessageAsync($"{newMasterGamesToSend.Count} new master games, {scoreUpdatesToSend.Count} score updates, {editsToSend.Count} edits"));
         }
 
         await Task.WhenAll(messageTasks);
+
+        _newMasterGameMessages.Clear();
+        _gameCriticScoreUpdateMessages.Clear();
+        _masterGameEditMessages.Clear();
     }
 
     public async Task SendGameReleaseUpdates(IEnumerable<MasterGameYear> masterGamesReleasingToday, int year)
@@ -230,7 +159,7 @@ public class DiscordPushService
             return;
         }
 
-        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday.Select(x => x.MasterGame), year);
+        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday.Select(x => x.MasterGame.MasterGameID), year);
         var allChannels = await _discordRepo.GetAllLeagueChannels();
 
         var messageTasks = new List<Task>();

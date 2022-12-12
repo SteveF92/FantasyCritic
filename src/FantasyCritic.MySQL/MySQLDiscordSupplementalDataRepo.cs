@@ -21,52 +21,81 @@ public class MySQLDiscordSupplementalDataRepo : IDiscordSupplementalDataRepo
             year
         };
 
-        string sql = "SELECT DISTINCT SubQuery.LeagueID " +
-            "FROM   (SELECT LeagueID " +
-            "        FROM   tbl_league_publisher " +
-            "               JOIN tbl_league_publishergame " +
-            "                 ON tbl_league_publisher.publisherid = " +
-            "                    tbl_league_publishergame.publisherid " +
-            "        WHERE  Year = @year " +
-            "               AND MasterGameID = @MasterGameID " +
-            "       UNION " +
-            "        SELECT LeagueID " +
-            "        FROM   tbl_league_publisher " +
-            "               JOIN tbl_league_formerpublishergame " +
-            "                 ON tbl_league_publisher.publisherid = " +
-            "                    tbl_league_formerpublishergame.publisherid " +
-            "       WHERE  Year = @year " +
-            "               AND MasterGameID = @MasterGameID) AS SubQuery ";
+        const string sql = """
+                           SELECT DISTINCT SubQuery.LeagueID
+                           FROM   (SELECT LeagueID
+                                   FROM   tbl_league_publisher
+                                          JOIN tbl_league_publishergame
+                                            ON tbl_league_publisher.publisherid = tbl_league_publishergame.publisherid
+                                   WHERE  Year = @year
+                                          AND MasterGameID = @MasterGameID
+                                  UNION
+                                   SELECT LeagueID
+                                   FROM   tbl_league_publisher
+                                          JOIN tbl_league_formerpublishergame
+                                            ON tbl_league_publisher.publisherid = tbl_league_formerpublishergame.publisherid
+                                  WHERE  Year = @year
+                                          AND MasterGameID = @MasterGameID) AS SubQuery
+                           """;
 
         var result = await connection.QueryAsync<Guid>(sql, queryObject);
         return result.ToHashSet();
     }
 
-    public async Task<ILookup<Guid, Guid>> GetLeaguesWithOrFormerlyWithGames(IEnumerable<MasterGame> masterGamesReleasingToday, int year)
+    public async Task<ILookup<Guid, Guid>> GetLeaguesWithOrFormerlyWithGames(IEnumerable<Guid> masterGameIDs, int year)
     {
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
         {
-            masterGameIDs = masterGamesReleasingToday.Select(x => x.MasterGameID),
+            masterGameIDs,
             year
         };
 
-        string sql = "SELECT DISTINCT SubQuery.LeagueID, SubQuery.MasterGameID " +
-                     "FROM   (SELECT LeagueID, MasterGameID " +
-                     "        FROM   tbl_league_publisher " +
-                     "               JOIN tbl_league_publishergame " +
-                     "                 ON tbl_league_publisher.publisherid = " +
-                     "                    tbl_league_publishergame.publisherid " +
-                     "        WHERE  Year = @year " +
-                     "               AND MasterGameID IN @masterGameIDs " +
-                     "       UNION " +
-                     "        SELECT LeagueID, MasterGameID " +
-                     "        FROM   tbl_league_publisher " +
-                     "               JOIN tbl_league_formerpublishergame " +
-                     "                 ON tbl_league_publisher.publisherid = " +
-                     "                    tbl_league_formerpublishergame.publisherid " +
-                     "       WHERE  Year = @year " +
-                     "               AND MasterGameID IN @masterGameIDs) AS SubQuery ";
+        const string sql = """
+                     SELECT DISTINCT SubQuery.LeagueID, SubQuery.MasterGameID
+                     FROM   (SELECT LeagueID, MasterGameID
+                             FROM   tbl_league_publisher
+                                    JOIN tbl_league_publishergame
+                                      ON tbl_league_publisher.publisherid = tbl_league_publishergame.publisherid
+                             WHERE  Year = @year
+                                    AND MasterGameID IN @masterGameIDs
+                            UNION
+                             SELECT LeagueID, MasterGameID
+                             FROM   tbl_league_publisher
+                                    JOIN tbl_league_formerpublishergame
+                                      ON tbl_league_publisher.publisherid = tbl_league_formerpublishergame.publisherid
+                            WHERE  Year = @year
+                                    AND MasterGameID IN @masterGameIDs) AS SubQuery
+                     """;
+
+        var result = await connection.QueryAsync<CurrentLeagueYearHasGameEntity>(sql, queryObject);
+        return result.ToLookup(x => x.LeagueID, y => y.MasterGameID);
+    }
+
+    public async Task<ILookup<Guid, Guid>> GetLeaguesWithOrFormerlyWithGamesInUnfinishedYears(IEnumerable<Guid> masterGameIDs)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
+        {
+            masterGameIDs,
+        };
+
+        const string sql = """
+                     SELECT DISTINCT SubQuery.LeagueID, SubQuery.MasterGameID
+                     FROM   (SELECT LeagueID, MasterGameID
+                             FROM   tbl_league_publisher
+                                    JOIN tbl_league_publishergame
+                                      ON tbl_league_publisher.publisherid = tbl_league_publishergame.publisherid
+                             WHERE  Year in (select Year from tbl_meta_supportedyear where Finished = 0)
+                                    AND MasterGameID IN @masterGameIDs
+                            UNION
+                             SELECT LeagueID, MasterGameID 
+                             FROM   tbl_league_publisher
+                                    JOIN tbl_league_formerpublishergame
+                                      ON tbl_league_publisher.publisherid = tbl_league_formerpublishergame.publisherid
+                            WHERE  Year in (select Year from tbl_meta_supportedyear where Finished = 0)
+                                    AND MasterGameID IN @masterGameIDs) AS SubQuery
+                     """;
 
         var result = await connection.QueryAsync<CurrentLeagueYearHasGameEntity>(sql, queryObject);
         return result.ToLookup(x => x.LeagueID, y => y.MasterGameID);
