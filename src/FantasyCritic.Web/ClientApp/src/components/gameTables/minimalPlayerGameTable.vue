@@ -42,11 +42,11 @@
             <span v-else id="total-description-text">Projected Fantasy Points</span>
           </td>
           <template v-if="!showProjections">
-            <td id="total-column" class="bg-success" colspan="2">{{ publisher.totalFantasyPoints | score }}</td>
+            <td id="total-column" class="bg-success" colspan="2">{{ publisher.totalFantasyPoints | score(1) }}</td>
           </template>
           <template v-else>
             <td id="total-column" class="bg-info" colspan="2">
-              <em>~{{ publisher.totalProjectedPoints | score }}</em>
+              <em>~{{ publisher.totalProjectedPoints | score(1) }}</em>
             </td>
           </template>
         </tr>

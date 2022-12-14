@@ -5,14 +5,14 @@
     </td>
     <td class="score-column">
       <template v-if="game">
-        {{ game.criticScore | score }}
+        {{ game.criticScore | score(1) }}
       </template>
     </td>
 
     <td class="score-column" :class="{ 'projected-text': showProjectedScore }">
-      <template v-if="scoreColumnMode === 'RealScore'">{{ game.fantasyPoints | score }}</template>
-      <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ gameSlot.projectedFantasyPoints | score }}</template>
-      <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore | score }}</template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ game.fantasyPoints | score(1) }}</template>
+      <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ gameSlot.projectedFantasyPoints | score(1) }}</template>
+      <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore | score(1) }}</template>
     </td>
   </tr>
 </template>
