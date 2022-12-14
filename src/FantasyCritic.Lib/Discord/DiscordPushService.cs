@@ -141,7 +141,66 @@ public class DiscordPushService
                 .Where(x => leagueChannel.GameNewsSetting.ExistingGameIsRelevant(x.ExistingGame, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(), leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), leagueChannel))
                 .ToList();
 
-            messageTasks.Add(textChannel.TrySendMessageAsync($"{newMasterGamesToSend.Count} new master games, {scoreUpdatesToSend.Count} score updates, {editsToSend.Count} edits"));
+            if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())
+            {
+                continue;
+            }
+
+            var messagesToSend = new List<string>();
+
+            foreach (var newMasterGameMessage in newMasterGamesToSend)
+            {
+                var tagNames = newMasterGameMessage.MasterGame.Tags.Select(t => t.ReadableName);
+                messagesToSend.Add($"New Game Added! **{newMasterGameMessage.MasterGame.GameName}** (Tagged as: {string.Join(", ", tagNames)}) (Releases: {newMasterGameMessage.MasterGame.GetReleaseDateString()})");
+            }
+
+            foreach (var scoreUpdate in scoreUpdatesToSend)
+            {
+                if (scoreUpdate.NewCriticScore == null && scoreUpdate.OldCriticScore == null)
+                {
+                    continue;
+                }
+
+                var messageToSend = "";
+                if (scoreUpdate.NewCriticScore == null)
+                {
+                    messageToSend += $"**{scoreUpdate.Game.GameName}**'s score has been removed.";
+                }
+                else if (scoreUpdate.OldCriticScore == null)
+                {
+                    messageToSend = $"**{scoreUpdate.Game.GameName}** now has a score of **{scoreUpdate.NewCriticScore}**";
+                }
+                else
+                {
+                    var scoreDiff = scoreUpdate.NewCriticScore.Value - scoreUpdate.OldCriticScore.Value;
+                    if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
+                    {
+                        var direction = scoreDiff < 0 ? "UP" : "DOWN";
+                        messageToSend = $"**{scoreUpdate.Game.GameName}** has gone **{direction}** from **{scoreUpdate.OldCriticScore}** to **{scoreUpdate.NewCriticScore}**";
+                    }
+                }
+                messagesToSend.Add(messageToSend);
+            }
+
+            foreach (var gameEdit in editsToSend)
+            {
+                var messageToSend = $"**{gameEdit.EditedGame.MasterGame.GameName}**\n";
+                var changeMessages = gameEdit.Changes.Select(c => $"> {c}");
+                messageToSend += string.Join("\n", changeMessages);
+                messagesToSend.Add(messageToSend);
+            }
+
+            var messagesToActuallySend = new MessageListBuilder(messagesToSend,
+                    MaxMessageLength)
+                .WithTitle("Game Updates", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
+                .WithDivider("\n")
+                .Build();
+
+            foreach (var messageToSend in messagesToActuallySend)
+            {
+                messageTasks.Add(textChannel.TrySendMessageAsync(messageToSend));
+            }
+
         }
 
         await Task.WhenAll(messageTasks);
