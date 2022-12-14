@@ -6,7 +6,8 @@ using FantasyCritic.Lib.Extensions;
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
 public static class GameEligibilityFunctions
 {
-    public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting, bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate)
+    public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting,
+        bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate)
     {
         var dateOfPotentialAcquisition = currentDate;
         if (nextBidTime.HasValue)
@@ -92,14 +93,20 @@ public static class GameEligibilityFunctions
         return result;
     }
 
-    public static DropResult CanDropGame(DropRequest request, LeagueYear leagueYear, Publisher publisher, LocalDate currentDate)
+    public static DropResult CanDropGame(DropRequest request, LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, Instant? nextDropTime)
     {
+        var dateOfPotentialDrop = currentDate;
+        if (nextDropTime.HasValue)
+        {
+            dateOfPotentialDrop = nextDropTime.Value.ToEasternDate();
+        }
+
         List<ClaimError> dropErrors = new List<ClaimError>();
 
         var basicErrors = GetBasicErrors(leagueYear.League, publisher);
         dropErrors.AddRange(basicErrors);
 
-        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, currentDate, currentDate, false, false, false, false);
+        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, currentDate, dateOfPotentialDrop, false, false, false, false);
         dropErrors.AddRange(masterGameErrors);
 
         //Drop limits
@@ -130,9 +137,13 @@ public static class GameEligibilityFunctions
 
         var releaseStatus = publisherGame.WillRelease();
         bool gameCouldRelease = releaseStatus.CountAsWillRelease;
-        if (releaseStatus == WillReleaseStatus.MightRelease && leagueYear.Options.MightReleaseDroppableDate.HasValue)
+        if (releaseStatus == WillReleaseStatus.MightRelease)
         {
-            gameCouldRelease = leagueYear.Options.MightReleaseDroppableDate.Value.InYear(currentDate.Year) <= currentDate;
+            if (leagueYear.Options.MightReleaseDroppableDate.HasValue && dateOfPotentialDrop >=
+                leagueYear.Options.MightReleaseDroppableDate.Value.InYear(dateOfPotentialDrop.Year))
+            {
+                gameCouldRelease = false;
+            }
         }
 
         var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);
@@ -146,10 +157,10 @@ public static class GameEligibilityFunctions
         var basicErrors = GetBasicErrors(leagueYear.League, publisher);
         dropErrors.AddRange(basicErrors);
 
-        var dateOfPotentialAcquisition = currentDate;
+        var dateOfPotentialDrop = currentDate;
         if (nextBidTime.HasValue)
         {
-            dateOfPotentialAcquisition = nextBidTime.Value.ToEasternDate();
+            dateOfPotentialDrop = nextBidTime.Value.ToEasternDate();
         }
 
         if (request.ConditionalDropPublisherGame?.MasterGame is null)
@@ -158,7 +169,7 @@ public static class GameEligibilityFunctions
         }
 
         var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.MasterGame.MasterGame, leagueYear.Year,
-            true, currentDate, dateOfPotentialAcquisition, false, false, false, false);
+            true, currentDate, dateOfPotentialDrop, false, false, false, false);
         dropErrors.AddRange(masterGameErrors);
 
         //Drop limits
@@ -189,9 +200,13 @@ public static class GameEligibilityFunctions
 
         var releaseStatus = publisherGame.WillRelease();
         bool gameCouldRelease = releaseStatus.CountAsWillRelease;
-        if (releaseStatus == WillReleaseStatus.MightRelease && leagueYear.Options.MightReleaseDroppableDate.HasValue)
+        if (releaseStatus == WillReleaseStatus.MightRelease)
         {
-            gameCouldRelease = leagueYear.Options.MightReleaseDroppableDate.Value.InYear(currentDate.Year) <= currentDate;
+            if (leagueYear.Options.MightReleaseDroppableDate.HasValue && dateOfPotentialDrop >=
+                leagueYear.Options.MightReleaseDroppableDate.Value.InYear(dateOfPotentialDrop.Year))
+            {
+                gameCouldRelease = false;
+            }
         }
 
         var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);

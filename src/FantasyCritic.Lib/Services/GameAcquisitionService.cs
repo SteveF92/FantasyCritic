@@ -187,7 +187,7 @@ public class GameAcquisitionService
         }
 
         DropRequest dropRequest = new DropRequest(Guid.NewGuid(), publisher, leagueYear, masterGame, _clock.GetCurrentInstant(), null, null);
-        var dropResult = GameEligibilityFunctions.CanDropGame(dropRequest, leagueYear, publisher, _clock.GetToday());
+        var dropResult = GameEligibilityFunctions.CanDropGame(dropRequest, leagueYear, publisher, _clock.GetToday(), _clock.GetNextBidTime());
         if (dropResult.Result.IsFailure)
         {
             return dropResult;

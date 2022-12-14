@@ -80,7 +80,7 @@ public class ActionProcessor
             foreach (var dropRequest in leagueYearGroup.Value)
             {
                 var affectedPublisher = publisherStateSet.GetPublisher(dropRequest.Publisher.PublisherID);
-                var dropResult = GameEligibilityFunctions.CanDropGame(dropRequest, leagueYearGroup.Key, affectedPublisher, _currentDate);
+                var dropResult = GameEligibilityFunctions.CanDropGame(dropRequest, leagueYearGroup.Key, affectedPublisher, _currentDate, null);
                 if (dropResult.Result.IsSuccess)
                 {
                     successDrops.Add(dropRequest);
