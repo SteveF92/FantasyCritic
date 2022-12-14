@@ -338,6 +338,16 @@ public static class GameEligibilityFunctions
                 claimErrors.Add(new ClaimError("That game is in 'delay contention', and therefore cannot be counter picked.", false));
             }
 
+            var releaseStatus = masterGame.WillReleaseInYear(year);
+            if (releaseStatus == WillReleaseStatus.MightRelease)
+            {
+                if (leagueYear.Options.MightReleaseDroppableDate.HasValue && dateOfPotentialAcquisition >=
+                    leagueYear.Options.MightReleaseDroppableDate.Value.InYear(dateOfPotentialAcquisition.Year))
+                {
+                    claimErrors.Add(new ClaimError($"That game may not release in {year}, and your league is past the 'might release droppable' date, therefore this game cannot be counter picked.", false));
+                }
+            }
+
             bool confirmedWillRelease = masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year == year;
             bool acquiringAfterDeadline = dateOfPotentialAcquisition >= leagueYear.CounterPickDeadline;
             if (!confirmedWillRelease && acquiringAfterDeadline && couldRelease)
