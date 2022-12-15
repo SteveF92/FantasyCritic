@@ -174,16 +174,17 @@ public class AdminService
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
         foreach (var activeYear in activeYears)
         {
-            var discordLeagueYears = await GetDiscordLinkedLeagueYears(activeYear);
-            var calculatedStats = await _fantasyCriticService.GetCalculatedStatsForYear(activeYear.Year);
+            IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(activeYear.Year);
+            var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(activeYear.Year, leagueYears);
             await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats.PublisherGameCalculatedStats);
-            await PushDiscordScoreChangeMessages(discordLeagueYears, calculatedStats.PublisherGameCalculatedStats);
+            await PushDiscordScoreChangeMessages(leagueYears, calculatedStats.PublisherGameCalculatedStats);
         }
 
         var finishedYears = supportedYears.Where(x => x.Finished);
         foreach (var finishedYear in finishedYears)
         {
-            var calculatedStats = await _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year);
+            IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(finishedYear.Year);
+            var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year, leagueYears);
             await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers);
         }
 
@@ -762,35 +763,21 @@ public class AdminService
         await _masterGameRepo.UpdateCodeBasedTags(tagsToAdd.SealDictionary());
     }
 
-    private async Task<IReadOnlyList<LeagueYear>> GetDiscordLinkedLeagueYears(SupportedYear year)
-    {
-        var leagueChannels = await _discordRepo.GetAllLeagueChannels();
-        var leagueYears = new List<LeagueYear>();
-        foreach (var leagueChannel in leagueChannels)
-        {
-            var league = await _fantasyCriticRepo.GetLeague(leagueChannel.LeagueID);
-            if (league is null)
-            {
-                continue;
-            }
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year.Year);
-            if (leagueYear is null)
-            {
-                continue;
-            }
-            leagueYears.Add(leagueYear);
-        }
-
-        return leagueYears;
-    }
-
     private async Task PushDiscordScoreChangeMessages(IReadOnlyList<LeagueYear> oldLeagueYears, IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
+        var leagueChannels = await _discordRepo.GetAllLeagueChannels();
+        var channelLookup = leagueChannels.ToLookup(x => x.LeagueID);
+
         foreach (var oldLeagueYear in oldLeagueYears)
         {
+            var channels = channelLookup[oldLeagueYear.Key.LeagueID].ToList();
+            if (!channels.Any())
+            {
+                continue;
+            }
             var newLeagueYear = oldLeagueYear.GetUpdatedLeagueYearWithNewScores(calculatedStats);
             var scoreChanges = new LeagueYearScoreChanges(oldLeagueYear, newLeagueYear);
-            await _discordPushService.SendLeagueYearScoreUpdateMessage(scoreChanges);
+            await _discordPushService.SendLeagueYearScoreUpdateMessage(scoreChanges, channels);
         }
     }
 

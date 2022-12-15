@@ -260,11 +260,6 @@ public class DiscordPushService
         var leagueId = action.Publisher.LeagueYearKey.LeagueID;
         var leagueChannels = await _discordRepo.GetLeagueChannels(leagueId);
 
-        if (leagueChannels is null)
-        {
-            return;
-        }
-
         var messageTasks = new List<Task>();
         foreach (var leagueChannel in leagueChannels)
         {
@@ -283,6 +278,12 @@ public class DiscordPushService
 
     public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges)
     {
+        var leagueChannels = await _discordRepo.GetLeagueChannels(scoreChanges.LeagueYear.League.LeagueID);
+        await SendLeagueYearScoreUpdateMessage(scoreChanges, leagueChannels);
+    }
+
+    public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges, IEnumerable<MinimalLeagueChannel> leagueChannels)
+    {
         bool shouldRun = await StartBot();
         if (!shouldRun)
         {
@@ -295,7 +296,7 @@ public class DiscordPushService
             return;
         }
 
-        var channels = await GetChannelsForLeague(scoreChanges.LeagueYear.League.LeagueID);
+        var channels = GetSocketTextChannels(leagueChannels);
         if (!channels.Any())
         {
             return;
@@ -685,7 +686,11 @@ public class DiscordPushService
     private async Task<IReadOnlyList<SocketTextChannel>> GetChannelsForLeague(Guid leagueID)
     {
         var leagueChannels = await _discordRepo.GetLeagueChannels(leagueID);
+        return GetSocketTextChannels(leagueChannels);
+    }
 
+    private IReadOnlyList<SocketTextChannel> GetSocketTextChannels(IEnumerable<MinimalLeagueChannel> leagueChannels)
+    {
         List<SocketTextChannel> channels = new List<SocketTextChannel>();
         foreach (var leagueChannel in leagueChannels)
         {

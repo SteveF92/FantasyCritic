@@ -240,10 +240,9 @@ public class FantasyCriticService
         await _fantasyCriticRepo.SetPlayersActive(league, year, mostRecentActivePlayers);
     }
 
-    public async Task<YearCalculatedStatsSet> GetCalculatedStatsForYear(int year)
+    public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears)
     {
         Dictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
-        IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
         IReadOnlyList<Publisher> allPublishersForYear = leagueYears.SelectMany(x => x.Publishers).ToList();
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
 
