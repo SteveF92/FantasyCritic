@@ -181,7 +181,7 @@ public class DiscordPushService
                     var scoreDiff = scoreUpdate.NewCriticScore.Value - scoreUpdate.OldCriticScore.Value;
                     if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
                     {
-                        var direction = scoreDiff < 0 ? "UP" : "DOWN";
+                        var direction = scoreDiff > 0 ? "UP" : "DOWN";
                         messageToSend = $"**{scoreUpdate.Game.GameName}** has gone **{direction}** from **{oldCriticScoreRounded}** to **{newCriticScoreRounded}**";
                     }
                 }
