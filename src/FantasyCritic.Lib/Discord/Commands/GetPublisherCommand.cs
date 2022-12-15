@@ -46,7 +46,6 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     )
     {
         await DeferAsync();
-        var dateToCheck = _clock.GetGameEffectiveDate(year);
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);

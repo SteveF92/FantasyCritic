@@ -16,13 +16,14 @@ using Serilog;
 namespace FantasyCritic.Lib.Discord;
 public class DiscordPushService
 {
-    private static readonly ILogger _logger = Log.ForContext<DiscordPushService>();
+    private static readonly ILogger Logger = Log.ForContext<DiscordPushService>();
 
     private const int MaxAttempts = 4;
     private const int MaxMessageLength = 2000;
     private readonly string _botToken;
     private readonly IDiscordRepo _discordRepo;
     private readonly IDiscordSupplementalDataRepo _supplementalDataRepo;
+    private readonly IFantasyCriticUserStore _userStore;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
@@ -37,6 +38,7 @@ public class DiscordPushService
         FantasyCriticDiscordConfiguration configuration,
         IDiscordRepo discordRepo,
         IDiscordSupplementalDataRepo supplementalDataRepo,
+        IFantasyCriticUserStore userStore,
         IDiscordFormatter discordFormatter)
     {
         _enabled = !string.IsNullOrEmpty(configuration.BotToken) && configuration.BotToken != "secret";
@@ -44,6 +46,7 @@ public class DiscordPushService
         _baseAddress = configuration.BaseAddress;
         _discordRepo = discordRepo;
         _supplementalDataRepo = supplementalDataRepo;
+        _userStore = userStore;
         _discordFormatter = discordFormatter;
         DiscordSocketConfig socketConfig = new()
         {
@@ -85,7 +88,7 @@ public class DiscordPushService
 
         if (!_botIsReady)
         {
-            Serilog.Log.Warning("Discord bot is not ready, cannot send message.");
+            Log.Warning("Discord bot is not ready, cannot send message.");
             return false;
         }
 
@@ -205,7 +208,7 @@ public class DiscordPushService
                 continue;
             }
 
-            _logger.Information("Building a master game update with {gameUpdatesPerChannel} messages.", messagesToSend.Count);
+            Logger.Information("Building a master game update with {gameUpdatesPerChannel} messages.", messagesToSend.Count);
             var messagesToActuallySend = new MessageListBuilder(messagesToSend,
                     MaxMessageLength)
                 .WithTitle("Game Updates", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
@@ -218,7 +221,7 @@ public class DiscordPushService
             }
         }
 
-        _logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", messageTasks.Count);
+        Logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", messageTasks.Count);
         await Task.WhenAll(messageTasks);
 
         _newMasterGameMessages.Clear();
@@ -649,6 +652,30 @@ public class DiscordPushService
         await Task.WhenAll(messageTasks);
     }
 
+    public async Task SendLeagueManagerMessage(LeagueYear leagueYear, string message)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var channels = await GetChannelsForLeague(leagueYear.League.LeagueID);
+        if (!channels.Any())
+        {
+            return;
+        }
+
+        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+            "New Message from the League Manager",
+            message)));
+
+        await Task.WhenAll(messageTasks);
+
+        messageTasks = channels.Select(channel => channel.TrySendMessageAsync($"New Message from the League Manager:\n**{message}**"));
+        await Task.WhenAll(messageTasks);
+    }
+
     private static string BuildTradeMessage(Trade trade, bool includeMessage)
     {
         var message = $"**{trade.Proposer.GetPublisherAndUserDisplayName()}** will receive: ";
@@ -705,7 +732,7 @@ public class DiscordPushService
 
     private IReadOnlyList<SocketTextChannel> GetSocketTextChannels(IEnumerable<MinimalLeagueChannel> leagueChannels)
     {
-        List<SocketTextChannel> channels = new List<SocketTextChannel>();
+        var channels = new List<SocketTextChannel>();
         foreach (var leagueChannel in leagueChannels)
         {
             var guild = _client.GetGuild(leagueChannel.GuildID);
@@ -734,7 +761,7 @@ public class DiscordPushService
 
     private static Task LogMessage(LogMessage msg)
     {
-        _logger.Information(msg.ToString());
+        Logger.Information(msg.ToString());
         return Task.CompletedTask;
     }
 }
