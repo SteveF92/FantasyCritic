@@ -193,6 +193,11 @@ public class DiscordPushService
                 messagesToSend.Add(messageToSend);
             }
 
+            if (!messagesToSend.Any())
+            {
+                continue;
+            }
+
             var messagesToActuallySend = new MessageListBuilder(messagesToSend,
                     MaxMessageLength)
                 .WithTitle("Game Updates", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
