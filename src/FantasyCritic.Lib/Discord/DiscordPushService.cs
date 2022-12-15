@@ -185,7 +185,11 @@ public class DiscordPushService
                         messageToSend = $"**{scoreUpdate.Game.GameName}** has gone **{direction}** from **{oldCriticScoreRounded}** to **{newCriticScoreRounded}**";
                     }
                 }
-                messagesToSend.Add(messageToSend);
+
+                if (!string.IsNullOrWhiteSpace(messageToSend))
+                {
+                    messagesToSend.Add(messageToSend);
+                }
             }
 
             foreach (var gameEdit in editsToSend)
