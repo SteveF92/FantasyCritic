@@ -161,6 +161,9 @@ public class DiscordPushService
                     continue;
                 }
 
+                var newCriticScoreRounded = scoreUpdate.NewCriticScore != null ? (decimal?)Math.Round(scoreUpdate.NewCriticScore.Value, 1) : null;
+                var oldCriticScoreRounded = scoreUpdate.OldCriticScore != null ? (decimal?)Math.Round(scoreUpdate.OldCriticScore.Value, 1) : null;
+
                 var messageToSend = "";
                 if (scoreUpdate.NewCriticScore == null)
                 {
@@ -168,7 +171,7 @@ public class DiscordPushService
                 }
                 else if (scoreUpdate.OldCriticScore == null)
                 {
-                    messageToSend = $"**{scoreUpdate.Game.GameName}** now has a score of **{scoreUpdate.NewCriticScore}**";
+                    messageToSend = $"**{scoreUpdate.Game.GameName}** now has a score of **{newCriticScoreRounded}**";
                 }
                 else
                 {
@@ -176,7 +179,7 @@ public class DiscordPushService
                     if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
                     {
                         var direction = scoreDiff < 0 ? "UP" : "DOWN";
-                        messageToSend = $"**{scoreUpdate.Game.GameName}** has gone **{direction}** from **{scoreUpdate.OldCriticScore}** to **{scoreUpdate.NewCriticScore}**";
+                        messageToSend = $"**{scoreUpdate.Game.GameName}** has gone **{direction}** from **{oldCriticScoreRounded}** to **{newCriticScoreRounded}**";
                     }
                 }
                 messagesToSend.Add(messageToSend);
@@ -200,7 +203,6 @@ public class DiscordPushService
             {
                 messageTasks.Add(textChannel.TrySendMessageAsync(messageToSend));
             }
-
         }
 
         await Task.WhenAll(messageTasks);
