@@ -271,7 +271,7 @@
             <b-button variant="warning" size="sm" @click="internalValue.mightReleaseDroppableDate = null">Clear</b-button>
           </div>
 
-          <p>If you enable this option, then after this date, a game that is consider "might release" will be treated like a "will not release" game for dropping and counter-picking purposes.</p>
+          <p>If you enable this option, then after this date, a game that is considered "might release" will be treated like a "will not release" game for dropping and counter-picking purposes.</p>
           <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific "2023" date, then it will still be counter as "Will Release" for 2023.</p>
           <p>In more technical terms, this is based on the "Maximum Release Date" that you can see on the Master Game page.</p>
         </div>
