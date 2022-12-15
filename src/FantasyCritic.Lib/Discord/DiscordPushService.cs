@@ -11,10 +11,13 @@ using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using Serilog;
 
 namespace FantasyCritic.Lib.Discord;
 public class DiscordPushService
 {
+    private static readonly ILogger _logger = Log.ForContext<DiscordPushService>();
+
     private const int MaxAttempts = 4;
     private const int MaxMessageLength = 2000;
     private readonly string _botToken;
@@ -63,7 +66,7 @@ public class DiscordPushService
             return true;
         }
         _client.Ready += Client_Ready;
-        _client.Log += Log;
+        _client.Log += LogMessage;
 
         await _client.LoginAsync(TokenType.Bot, _botToken);
         await _client.StartAsync();
@@ -198,6 +201,7 @@ public class DiscordPushService
                 continue;
             }
 
+            _logger.Information("Building a master game update with {gameUpdatesPerChannel} messages.", messagesToSend.Count);
             var messagesToActuallySend = new MessageListBuilder(messagesToSend,
                     MaxMessageLength)
                 .WithTitle("Game Updates", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
@@ -210,6 +214,7 @@ public class DiscordPushService
             }
         }
 
+        _logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", messageTasks.Count);
         await Task.WhenAll(messageTasks);
 
         _newMasterGameMessages.Clear();
@@ -723,9 +728,9 @@ public class DiscordPushService
         return Task.CompletedTask;
     }
 
-    private static Task Log(LogMessage msg)
+    private static Task LogMessage(LogMessage msg)
     {
-        Serilog.Log.Information(msg.ToString());
+        _logger.Information(msg.ToString());
         return Task.CompletedTask;
     }
 }
