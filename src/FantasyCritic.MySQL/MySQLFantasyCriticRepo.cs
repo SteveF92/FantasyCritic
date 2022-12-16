@@ -879,14 +879,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             new SpecialGameSlotEntity(Guid.NewGuid(), league, initialYear, slot.SpecialSlotPosition, tag)).ToList();
 
         const string createLeagueSQL =
-            "insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES " +
-            "(@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);";
+            """
+            insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES
+            (@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);
+            """;
 
         const string createLeagueYearSQL =
-            "insert into tbl_league_year(LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames," +
-            "GrantSuperDrops,CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,ReleaseSystem,ScoringSystem,TradingSystem,TiebreakSystem,PlayStatus,DraftOrderSet,CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay) VALUES " +
-            "(@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,@DropOnlyDraftGames," +
-            "@GrantSuperDrops,@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,@ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay);";
+            """
+            insert into tbl_league_year
+            (LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
+            GrantSuperDrops,CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,PlayStatus,DraftOrderSet,
+            CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay) VALUES
+            (@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
+            @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
+            @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay);
+            """;
 
         await using (var connection = new MySqlConnection(_connectionString))
         {

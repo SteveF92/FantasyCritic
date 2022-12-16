@@ -131,6 +131,7 @@ export default {
       tradingSystem: 'Standard',
       draftSystem: 'Flexible',
       scoringSystem: 'Diminishing',
+      releaseSystem: 'MustBeReleased',
       specialGameSlots: [],
       tags: { banned: [], allowed: [], required: [] }
     };
