@@ -10,6 +10,7 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using Serilog;
 
@@ -30,9 +31,9 @@ public class DiscordPushService
     private readonly bool _enabled;
     private readonly string _baseAddress;
 
-    private readonly List<NewMasterGameMessage> _newMasterGameMessages = new List<NewMasterGameMessage>();
-    private readonly List<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = new List<GameCriticScoreUpdateMessage>();
-    private readonly List<MasterGameEditMessage> _masterGameEditMessages = new List<MasterGameEditMessage>();
+    private readonly List<NewMasterGameMessage> _newMasterGameMessages = new();
+    private readonly List<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = new();
+    private readonly List<MasterGameEditMessage> _masterGameEditMessages = new();
 
     public DiscordPushService(
         FantasyCriticDiscordConfiguration configuration,
@@ -666,14 +667,32 @@ public class DiscordPushService
             return;
         }
 
+        SocketUser? user = null;
+        var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(leagueYear.League.LeagueManager);
+        if (leagueManagerDiscordUser != null)
+        {
+            user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
+        }
+
         var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
             "New Message from the League Manager",
-            message)));
+            message,
+            user)));
 
         await Task.WhenAll(messageTasks);
+    }
 
-        messageTasks = channels.Select(channel => channel.TrySendMessageAsync($"New Message from the League Manager:\n**{message}**"));
-        await Task.WhenAll(messageTasks);
+    private async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser)
+    {
+        var externalLogins = await _userStore.GetLoginsAsync(fantasyCriticUser, CancellationToken.None);
+        var discordProviderKey = externalLogins.SingleOrDefault(x => x.LoginProvider == "discord")?.ProviderKey;
+        if (discordProviderKey is not null)
+        {
+            return ulong.TryParse(discordProviderKey, out var discordUserId)
+                ? discordUserId
+                : null;
+        }
+        return null;
     }
 
     private static string BuildTradeMessage(Trade trade, bool includeMessage)
