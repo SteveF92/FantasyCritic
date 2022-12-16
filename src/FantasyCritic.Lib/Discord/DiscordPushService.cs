@@ -161,47 +161,47 @@ public class DiscordPushService
                 messagesToSend.Add($"New Game Added! **{newMasterGameMessage.MasterGame.GameName}** (Tagged as: {string.Join(", ", tagNames)}) (Releases: {newMasterGameMessage.MasterGame.GetReleaseDateString()})");
             }
 
-            foreach (var scoreUpdate in scoreUpdatesToSend)
+            var scoreUpdateDictionary = scoreUpdatesToSend.ToDictionary(x => x.Game.MasterGameID);
+            var editsDictionary = editsToSend.ToDictionary(x => x.EditedGame.MasterGame.MasterGameID);
+            var existingGames = scoreUpdatesToSend.Select(x => x.Game).Concat(editsToSend.Select(x => x.EditedGame.MasterGame)).Distinct().ToList();
+            foreach (var existingGame in existingGames)
             {
-                if (scoreUpdate.NewCriticScore == null && scoreUpdate.OldCriticScore == null)
+                List<string> changeMessages = new List<string>();
+                var scoreUpdate = scoreUpdateDictionary.GetValueOrDefault(existingGame.MasterGameID);
+                if (scoreUpdate is not null && (scoreUpdate.NewCriticScore is not null || scoreUpdate.OldCriticScore is not null))
                 {
-                    continue;
-                }
+                    var newCriticScoreRounded = scoreUpdate.NewCriticScore != null ? (decimal?)Math.Round(scoreUpdate.NewCriticScore.Value, 1) : null;
+                    var oldCriticScoreRounded = scoreUpdate.OldCriticScore != null ? (decimal?)Math.Round(scoreUpdate.OldCriticScore.Value, 1) : null;
 
-                var newCriticScoreRounded = scoreUpdate.NewCriticScore != null ? (decimal?)Math.Round(scoreUpdate.NewCriticScore.Value, 1) : null;
-                var oldCriticScoreRounded = scoreUpdate.OldCriticScore != null ? (decimal?)Math.Round(scoreUpdate.OldCriticScore.Value, 1) : null;
-
-                var messageToSend = "";
-                if (scoreUpdate.NewCriticScore == null)
-                {
-                    messageToSend += $"**{scoreUpdate.Game.GameName}**'s score has been removed.";
-                }
-                else if (scoreUpdate.OldCriticScore == null)
-                {
-                    messageToSend = $"**{scoreUpdate.Game.GameName}** now has a score of **{newCriticScoreRounded}**";
-                }
-                else
-                {
-                    var scoreDiff = scoreUpdate.NewCriticScore.Value - scoreUpdate.OldCriticScore.Value;
-                    if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
+                    if (scoreUpdate.NewCriticScore == null)
                     {
-                        var direction = scoreDiff > 0 ? "UP" : "DOWN";
-                        messageToSend = $"**{scoreUpdate.Game.GameName}** has gone **{direction}** from **{oldCriticScoreRounded}** to **{newCriticScoreRounded}**";
+                        changeMessages.Add("Score has been removed.");
+                    }
+                    else if (scoreUpdate.OldCriticScore == null)
+                    {
+                        changeMessages.Add($"Now has a score of **{newCriticScoreRounded}**");
+                    }
+                    else
+                    {
+                        var scoreDiff = scoreUpdate.NewCriticScore.Value - scoreUpdate.OldCriticScore.Value;
+                        if (scoreDiff != 0 && Math.Abs(scoreDiff) >= 1)
+                        {
+                            var direction = scoreDiff > 0 ? "UP" : "DOWN";
+                            changeMessages.Add($"Score has gone **{direction}** from **{oldCriticScoreRounded}** to **{newCriticScoreRounded}**");
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(messageToSend))
+                var gameEdit = editsDictionary.GetValueOrDefault(existingGame.MasterGameID);
+                if (gameEdit is not null)
                 {
-                    messagesToSend.Add(messageToSend);
+                    changeMessages.AddRange(gameEdit.Changes);
                 }
-            }
 
-            foreach (var gameEdit in editsToSend)
-            {
-                var messageToSend = $"**{gameEdit.EditedGame.MasterGame.GameName}**\n";
-                var changeMessages = gameEdit.Changes.Select(c => $"> {c}");
-                messageToSend += string.Join("\n", changeMessages);
-                messagesToSend.Add(messageToSend);
+                if (changeMessages.Any())
+                {
+                    messagesToSend.Add($"**{existingGame.GameName}**\n{string.Join("\n", changeMessages.Select(c => $"> {c}"))}");
+                }
             }
 
             if (!messagesToSend.Any())
