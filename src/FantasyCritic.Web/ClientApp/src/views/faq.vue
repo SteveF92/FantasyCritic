@@ -431,7 +431,7 @@
 
           <p>
             However, there are special rules to make certain points worth more or less. If a game scores above a 90, every point above 90 is worth two points. So if a game gets a 94, you get 20 points
-            for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94.
+            for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94. However, starting in 2023, these "bonus" points can be turned off if you wish.
           </p>
 
           Another special rule is that there are diminishing returns on how much a very bad game hurts you. Each point from 60 through 70 loses you one point, but every 10 point range below that, each

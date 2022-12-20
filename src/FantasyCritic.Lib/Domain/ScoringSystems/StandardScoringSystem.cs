@@ -5,6 +5,11 @@ public class StandardScoringSystem : ScoringSystem
     public static string StaticName => "Standard";
     public override string Name => StaticName;
 
+    public override bool SupportedInYear(int year)
+    {
+        return year >= 2021;
+    }
+
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
     {
         decimal fantasyPoints;

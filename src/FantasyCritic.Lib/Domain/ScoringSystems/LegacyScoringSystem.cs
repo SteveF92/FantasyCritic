@@ -5,6 +5,11 @@ public class LegacyScoringSystem : ScoringSystem
     public static string StaticName => "Legacy";
     public override string Name => StaticName;
 
+    public override bool SupportedInYear(int year)
+    {
+        return year < 2021;
+    }
+
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
     {
         decimal fantasyPoints = 0m;

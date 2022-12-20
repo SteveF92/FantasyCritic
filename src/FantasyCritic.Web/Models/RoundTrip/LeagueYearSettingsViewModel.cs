@@ -147,6 +147,11 @@ public class LeagueYearSettingsViewModel
             return Result.Failure($"The counter pick deadline must be in {Year}.");
         }
 
+        if (MightReleaseDroppableDate.HasValue && MightReleaseDroppableDate.Value.Year != Year)
+        {
+            return Result.Failure($"The 'might release droppable date' must be in {Year}.");
+        }
+
         return Result.Success();
     }
 

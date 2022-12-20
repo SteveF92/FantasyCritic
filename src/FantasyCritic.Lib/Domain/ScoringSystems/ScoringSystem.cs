@@ -38,6 +38,7 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
     }
 
     public abstract string Name { get; }
+    public abstract bool SupportedInYear(int year);
 
     public abstract decimal GetPointsForScore(decimal criticScore, bool counterPick);
 

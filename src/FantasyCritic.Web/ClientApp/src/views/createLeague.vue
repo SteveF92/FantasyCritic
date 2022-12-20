@@ -130,7 +130,7 @@ export default {
       tiebreakSystem: 'LowestProjectedPoints',
       tradingSystem: 'Standard',
       draftSystem: 'Flexible',
-      scoringSystem: 'Diminishing',
+      scoringSystem: 'Standard',
       releaseSystem: 'MustBeReleased',
       specialGameSlots: [],
       tags: { banned: [], allowed: [], required: [] }

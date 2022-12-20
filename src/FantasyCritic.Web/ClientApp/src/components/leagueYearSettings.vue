@@ -235,6 +235,12 @@
       </h3>
       <b-collapse id="advanced-settings-collapse">
         <div class="alert alert-info">We recommend you keep these settings to the default options.</div>
+        <div v-if="year >= 2023">
+          <b-form-checkbox v-model="bonusPointsNinety">
+            <span class="checkbox-label">Double Points for Critic Scores above 90</span>
+            <p>From 2018-2022, this option being on was the only way to play. Now, in 2023, we're giving the option to turn this off. If you uncheck this, a 95 will give 25 points, instead of 30.</p>
+          </b-form-checkbox>
+        </div>
         <div class="form-group">
           <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
           <b-form-select v-model="internalValue.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
@@ -302,7 +308,8 @@ export default {
       intendedNumberOfPlayersEverValid: false,
       gameMode: 'Standard',
       gameModeOptions: ['One Shot', 'Beginner', 'Standard', 'Advanced'],
-      internalValue: null
+      internalValue: null,
+      bonusPointsNinety: true
     };
   },
   computed: {
@@ -318,6 +325,13 @@ export default {
     },
     internalValue: function () {
       this.updateInternalValue();
+    },
+    bonusPointsNinety: function (newValue) {
+      if (newValue) {
+        this.internalValue.scoringSystem = 'Standard';
+      } else {
+        this.internalValue.scoringSystem = 'LinearPositive';
+      }
     }
   },
   mounted() {
@@ -329,6 +343,11 @@ export default {
   },
   methods: {
     updateInternalValue() {
+      if (this.internalValue.scoringSystem === 'Standard') {
+        this.bonusPointsNinety = true;
+      } else if (this.internalValue.scoringSystem === 'LinearPositive') {
+        this.bonusPointsNinety = false;
+      }
       this.$emit('input', this.internalValue);
     },
     fullAutoUpdate() {

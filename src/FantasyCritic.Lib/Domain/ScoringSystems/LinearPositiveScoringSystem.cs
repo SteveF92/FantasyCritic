@@ -5,6 +5,11 @@ public class LinearPositiveScoringSystem : ScoringSystem
     public static string StaticName => "LinearPositive";
     public override string Name => StaticName;
 
+    public override bool SupportedInYear(int year)
+    {
+        return year >= 2023;
+    }
+
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
     {
         decimal fantasyPoints;

@@ -2,7 +2,6 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -61,7 +60,7 @@ public class FantasyCriticService
             return Result.Failure<League>(validateOptions.Error);
         }
 
-        if (parameters.LeagueYearParameters.ScoringSystem.Name != StandardScoringSystem.StaticName)
+        if (!parameters.LeagueYearParameters.ScoringSystem.SupportedInYear(parameters.LeagueYearParameters.Year))
         {
             return Result.Failure<League>("That scoring mode is no longer supported.");
         }
@@ -87,7 +86,7 @@ public class FantasyCriticService
             return Result.Failure(validateOptions.Error);
         }
 
-        if (parameters.ScoringSystem.Name != StandardScoringSystem.StaticName)
+        if (!parameters.ScoringSystem.SupportedInYear(leagueYear.Year))
         {
             return Result.Failure("That scoring mode is no longer supported.");
         }
