@@ -4,22 +4,14 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
 {
     public static ScoringSystem GetScoringSystem(string scoringSystemName)
     {
-        if (scoringSystemName == "Legacy")
+        return scoringSystemName switch
         {
-            return new LegacyScoringSystem();
-        }
-
-        if (scoringSystemName == "Standard")
-        {
-            return new StandardScoringSystem();
-        }
-
-        if (scoringSystemName == "LinearPositive")
-        {
-            return new LinearPositiveScoringSystem();
-        }
-
-        throw new Exception($"Scoring system not implemented: {scoringSystemName}");
+            "Legacy" => new LegacyScoringSystem(),
+            "Standard" => new StandardScoringSystem(),
+            "LinearPositive" => new LinearPositiveScoringSystem(),
+            "HalfBonus" => new HalfBonusScoringSystem(),
+            _ => throw new Exception($"Scoring system not implemented: {scoringSystemName}")
+        };
     }
 
     public static ScoringSystem GetDefaultScoringSystem(int year)
@@ -34,7 +26,7 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
 
     public static IReadOnlyList<ScoringSystem> GetAllPossibleValues()
     {
-        return new List<ScoringSystem>() { new LegacyScoringSystem(), new StandardScoringSystem(), new LinearPositiveScoringSystem() };
+        return new List<ScoringSystem>() { new LegacyScoringSystem(), new StandardScoringSystem(), new LinearPositiveScoringSystem(), new HalfBonusScoringSystem() };
     }
 
     public abstract string Name { get; }
