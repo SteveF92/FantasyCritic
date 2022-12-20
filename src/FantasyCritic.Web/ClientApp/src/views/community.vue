@@ -151,6 +151,10 @@
                 year, or are just now being delayed out of the current year.
               </li>
               <li>
+                <strong>League Games Only</strong>
+                - Game updates will only be announced if they are for a game that is in your league or was previously in your league.
+              </li>
+              <li>
                 <strong>Off</strong>
                 - No game news will be posted by the bot.
               </li>
