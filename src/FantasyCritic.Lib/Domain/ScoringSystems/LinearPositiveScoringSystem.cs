@@ -1,8 +1,8 @@
 namespace FantasyCritic.Lib.Domain.ScoringSystems;
 
-public class DiminishingScoringSystem : ScoringSystem
+public class LinearPositiveScoringSystem : ScoringSystem
 {
-    public static string StaticName => "Diminishing";
+    public static string StaticName => "LinearPositive";
     public override string Name => StaticName;
 
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
@@ -32,13 +32,9 @@ public class DiminishingScoringSystem : ScoringSystem
         {
             fantasyPoints = (1m / 2m) * (criticScore - 60) - 10;
         }
-        else if (criticScore < 90m)
-        {
-            fantasyPoints = criticScore - 70;
-        }
         else
         {
-            fantasyPoints = 2 * (criticScore - 90) + 20;
+            fantasyPoints = criticScore - 70;
         }
 
         if (counterPick)

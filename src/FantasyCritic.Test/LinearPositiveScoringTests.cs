@@ -13,10 +13,10 @@ using NUnit.Framework;
 namespace FantasyCritic.Test;
 
 [TestFixture]
-public class DiminishingScoringTests
+public class LinearPositiveScoringTests
 {
     private static readonly ReleaseSystem _releaseSystem = ReleaseSystem.MustBeReleased;
-    private static readonly ScoringSystem _scoringSystem = ScoringSystem.GetScoringSystem("Diminishing");
+    private static readonly ScoringSystem _scoringSystem = ScoringSystem.GetScoringSystem("LinearPositive");
 
     private static readonly FantasyCriticUser EmptyUser = new FantasyCriticUser() { Id = Guid.Empty };
 
@@ -77,7 +77,7 @@ public class DiminishingScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(29.625m, fantasyPoints);
+        Assert.AreEqual(24.8125m, fantasyPoints);
     }
 
     [Test]

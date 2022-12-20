@@ -4,14 +4,19 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
 {
     public static ScoringSystem GetScoringSystem(string scoringSystemName)
     {
+        if (scoringSystemName == "Legacy")
+        {
+            return new LegacyScoringSystem();
+        }
+
         if (scoringSystemName == "Standard")
         {
             return new StandardScoringSystem();
         }
 
-        if (scoringSystemName == "Diminishing")
+        if (scoringSystemName == "LinearPositive")
         {
-            return new DiminishingScoringSystem();
+            return new LinearPositiveScoringSystem();
         }
 
         throw new Exception($"Scoring system not implemented: {scoringSystemName}");
@@ -21,15 +26,15 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
     {
         if (year < 2021)
         {
-            return new StandardScoringSystem();
+            return new LegacyScoringSystem();
         }
 
-        return new DiminishingScoringSystem();
+        return new StandardScoringSystem();
     }
 
     public static IReadOnlyList<ScoringSystem> GetAllPossibleValues()
     {
-        return new List<ScoringSystem>() { new StandardScoringSystem(), new DiminishingScoringSystem() };
+        return new List<ScoringSystem>() { new LegacyScoringSystem(), new StandardScoringSystem(), new LinearPositiveScoringSystem() };
     }
 
     public abstract string Name { get; }

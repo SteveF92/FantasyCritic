@@ -61,7 +61,7 @@ public class FantasyCriticService
             return Result.Failure<League>(validateOptions.Error);
         }
 
-        if (parameters.LeagueYearParameters.ScoringSystem.Name != DiminishingScoringSystem.StaticName)
+        if (parameters.LeagueYearParameters.ScoringSystem.Name != StandardScoringSystem.StaticName)
         {
             return Result.Failure<League>("That scoring mode is no longer supported.");
         }
@@ -87,7 +87,7 @@ public class FantasyCriticService
             return Result.Failure(validateOptions.Error);
         }
 
-        if (parameters.ScoringSystem.Name != DiminishingScoringSystem.StaticName)
+        if (parameters.ScoringSystem.Name != StandardScoringSystem.StaticName)
         {
             return Result.Failure("That scoring mode is no longer supported.");
         }
