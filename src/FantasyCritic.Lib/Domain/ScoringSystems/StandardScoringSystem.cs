@@ -10,6 +10,8 @@ public class StandardScoringSystem : ScoringSystem
         return year >= 2021;
     }
 
+    public override bool SupportedForNewLeagues() => true;
+
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
     {
         decimal fantasyPoints;
@@ -53,4 +55,6 @@ public class StandardScoringSystem : ScoringSystem
 
         return fantasyPoints;
     }
+
+    public override string GetReadableString() => "2";
 }

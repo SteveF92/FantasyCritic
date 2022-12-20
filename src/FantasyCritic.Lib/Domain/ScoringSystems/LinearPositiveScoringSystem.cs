@@ -10,6 +10,8 @@ public class LinearPositiveScoringSystem : ScoringSystem
         return year >= 2023;
     }
 
+    public override bool SupportedForNewLeagues() => true;
+
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
     {
         decimal fantasyPoints;
@@ -49,4 +51,6 @@ public class LinearPositiveScoringSystem : ScoringSystem
 
         return fantasyPoints;
     }
+
+    public override string GetReadableString() => "1";
 }

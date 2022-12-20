@@ -10,6 +10,8 @@ public class LegacyScoringSystem : ScoringSystem
         return year < 2021;
     }
 
+    public override bool SupportedForNewLeagues() => false;
+
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
     {
         decimal fantasyPoints = 0m;
@@ -29,4 +31,6 @@ public class LegacyScoringSystem : ScoringSystem
 
         return fantasyPoints;
     }
+
+    public override string GetReadableString() => "Legacy";
 }

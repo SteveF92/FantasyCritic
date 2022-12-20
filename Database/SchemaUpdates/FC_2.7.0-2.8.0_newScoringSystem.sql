@@ -1,4 +1,5 @@
 INSERT INTO `tbl_settings_scoringsystem` (`ScoringSystem`) VALUES ('LinearPositive');
+INSERT INTO `tbl_settings_scoringsystem` (`ScoringSystem`) VALUES ('HalfBonus');
 INSERT INTO `tbl_settings_scoringsystem` (`ScoringSystem`) VALUES ('Legacy');
 
 START TRANSACTION;

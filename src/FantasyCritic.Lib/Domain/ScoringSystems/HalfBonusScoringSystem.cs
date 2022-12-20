@@ -10,6 +10,8 @@ public class HalfBonusScoringSystem : ScoringSystem
         return year >= 2023;
     }
 
+    public override bool SupportedForNewLeagues() => true;
+
     public override decimal GetPointsForScore(decimal criticScore, bool counterPick)
     {
         decimal fantasyPoints;
@@ -53,4 +55,6 @@ public class HalfBonusScoringSystem : ScoringSystem
 
         return fantasyPoints;
     }
+
+    public override string GetReadableString() => "1.5";
 }

@@ -26,15 +26,17 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
 
     public static IReadOnlyList<ScoringSystem> GetAllPossibleValues()
     {
-        return new List<ScoringSystem>() { new LegacyScoringSystem(), new StandardScoringSystem(), new LinearPositiveScoringSystem(), new HalfBonusScoringSystem() };
+        return new List<ScoringSystem>() { new LegacyScoringSystem(), new StandardScoringSystem(), new HalfBonusScoringSystem(), new LinearPositiveScoringSystem() };
     }
 
     public abstract string Name { get; }
     public abstract bool SupportedInYear(int year);
+    public abstract bool SupportedForNewLeagues();
 
     public abstract decimal GetPointsForScore(decimal criticScore, bool counterPick);
 
     public override string ToString() => Name;
+    public abstract string GetReadableString();
 
     public bool Equals(ScoringSystem? other)
     {
