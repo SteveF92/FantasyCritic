@@ -52,5 +52,5 @@ public class LinearPositiveScoringSystem : ScoringSystem
         return fantasyPoints;
     }
 
-    public override string GetReadableString() => "1";
+    public override string GetReadableString() => "1 Point per Point over 90";
 }

@@ -56,5 +56,5 @@ public class StandardScoringSystem : ScoringSystem
         return fantasyPoints;
     }
 
-    public override string GetReadableString() => "2";
+    public override string GetReadableString() => "2 Points per Point over 90";
 }

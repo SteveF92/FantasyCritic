@@ -56,5 +56,5 @@ public class HalfBonusScoringSystem : ScoringSystem
         return fantasyPoints;
     }
 
-    public override string GetReadableString() => "1.5";
+    public override string GetReadableString() => "1.5 Points per Point over 90";
 }
