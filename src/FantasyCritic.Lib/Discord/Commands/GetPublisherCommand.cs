@@ -3,7 +3,6 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
@@ -48,7 +47,15 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         await DeferAsync();
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
+        if (year != null && supportedYears.All(y => y.Year != year.Value))
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Finding League Configuration",
+                $"That year was not found for this league. Are you sure a league year is started for {year.Value}?",
+                Context.User));
+            return;
+        }
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -116,7 +123,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            $"{publisherFound.GetPublisherAndUserDisplayName()}",
+            $"{publisherFound.GetPublisherAndUserDisplayName()} ({leagueChannel.LeagueYear.Year})",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,
             embedFieldBuilders));
@@ -126,9 +133,9 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     public async Task GetPublisherMessageCommand(SocketMessage message)
     {
         await DeferAsync();
-        var dateToCheck = _clock.GetCurrentInstant().ToEasternDate(); // TODO: when we revamp how years are handled, there should be a better way than this
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -154,7 +161,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherSearchResults.PublisherFoundForDiscordUser.PublisherID);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()}",
+            $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()} ({leagueChannel.LeagueYear.Year})",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,
             embedFieldBuilders));
@@ -164,9 +171,9 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     public async Task GetPublisherUserCommand(SocketUser user)
     {
         await DeferAsync();
-        var dateToCheck = _clock.GetCurrentInstant().ToEasternDate(); // TODO: when we revamp how years are handled, there should be a better way than this
 
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, dateToCheck.Year);
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -192,7 +199,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
         var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherSearchResults.PublisherFoundForDiscordUser.PublisherID);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()}",
+            $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()} ({leagueChannel.LeagueYear.Year})",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,
             embedFieldBuilders));

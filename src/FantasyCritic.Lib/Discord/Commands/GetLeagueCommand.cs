@@ -42,7 +42,15 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
+        if (year != null && supportedYears.All(y => y.Year != year.Value))
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Finding League Configuration",
+                $"That year was not found for this league. Are you sure a league year is started for {year.Value}?",
+                Context.User));
+            return;
+        }
+        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
@@ -107,7 +115,7 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         {
             crownEmoji = " 👑";
         }
-        
+
         publisherLine += $"**{publisher.GetPublisherAndUserDisplayName()}**{crownEmoji}\n";
         publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
         publisherLine += $"*(Projected: {Math.Round(projectedPoints, 1)})*\n";
