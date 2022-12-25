@@ -79,6 +79,21 @@ public class RoyaleService
         return _royaleRepo.GetAllPublishers(year, quarter);
     }
 
+    public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year)
+    {
+        var quarters = await GetYearQuarters();
+        var quartersInYear = quarters.Where(x => x.Year.Year == year);
+
+        List<RoyalePublisher> allPublishers = new List<RoyalePublisher>();
+        foreach (var quarter in quartersInYear)
+        {
+            var publishers = await GetAllPublishers(year, quarter.YearQuarter.Quarter);
+            allPublishers.AddRange(publishers);
+        }
+
+        return allPublishers;
+    }
+
     public async Task<IReadOnlyList<MasterGameYear>> GetMasterGamesForYearQuarter(YearQuarter yearQuarter)
     {
         IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year);
