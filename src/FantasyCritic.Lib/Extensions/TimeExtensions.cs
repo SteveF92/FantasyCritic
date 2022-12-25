@@ -12,11 +12,22 @@ public static class TimeExtensions
 
     public static LocalDate GetGameEffectiveDate(this IClock clock, int? providedYear = null)
     {
+        // TODO: revisit this method and why it's needed
         var currentDate = clock.GetToday();
-        if (providedYear != null && providedYear != currentDate.Year)
+        if (providedYear == null || providedYear == currentDate.Year)
+        {
+            return currentDate;
+        }
+
+        if (providedYear < currentDate.Year)
         {
             return new LocalDate(providedYear.Value, 12, 31);
         }
+        if (providedYear > currentDate.Year)
+        {
+            return new LocalDate(providedYear.Value, 1, 1);
+        }
+
         return currentDate;
     }
 
