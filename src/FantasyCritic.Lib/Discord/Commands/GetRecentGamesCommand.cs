@@ -59,7 +59,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
                 Context.User));
         }
 
-        List<string> messages = new List<string>();
+        var messages = new List<string>();
         foreach (var recentGameGrouping in recentGamesData)
         {
             var standardGame = recentGameGrouping.FirstOrDefault(p => !p.CounterPick);

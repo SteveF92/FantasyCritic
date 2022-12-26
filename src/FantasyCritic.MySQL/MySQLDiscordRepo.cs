@@ -71,7 +71,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
-    public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears)
+    public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null)
     {
         var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
         if (leagueChannelEntity is null)
@@ -85,15 +85,24 @@ public class MySQLDiscordRepo : IDiscordRepo
             return null;
         }
 
-        var supportedYear = supportedYears
-            .OrderBy(y => y.Year)
-            .FirstOrDefault(y => !y.Finished && league.Years.Contains(y.Year));
-        if (supportedYear == null)
-        {
-            return null;
-        }
+        LeagueYear? leagueYear = null;
 
-        var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, supportedYear.Year);
+        if (year != null)
+        {
+            leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year.Value);
+        }
+        else
+        {
+            var supportedYear = supportedYears
+                .OrderBy(y => y.Year)
+                .FirstOrDefault(y => !y.Finished && league.Years.Contains(y.Year));
+            if (supportedYear == null)
+            {
+                return null;
+            }
+
+            leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, supportedYear.Year);
+        }
 
         return leagueYear is null
             ? null

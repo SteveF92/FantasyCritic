@@ -557,6 +557,8 @@ public class AdminService
             IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+            var royalePublishers = await _royaleService.GetAllPublishers(supportedYear.Year);
+            var royalePublisherMasterGames = royalePublishers.SelectMany(x => x.PublisherGames.Select(x => x.MasterGame.MasterGame)).ToHashSet();
             var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
             IReadOnlyList<Publisher> allPublishers = leagueYears.SelectMany(x => x.Publishers).ToList();
             List<Publisher> publishersInCompleteLeagues = new List<Publisher>();
@@ -618,16 +620,19 @@ public class AdminService
 
             foreach (var masterGame in cleanMasterGames)
             {
-                if (masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year < supportedYear.Year)
-                {
-                    continue;
-                }
+                bool releasedBeforeYear = masterGame.ReleaseDate.HasValue &&
+                                          masterGame.ReleaseDate.Value.Year < supportedYear.Year;
 
                 //Basic Stats
                 var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
                 var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
                 var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
                 List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligibleInAnySlot(masterGame, currentDate)).ToList();
+
+                if (releasedBeforeYear && leaguesWithGame == 0 && !royalePublisherMasterGames.Contains(masterGame))
+                {
+                    continue;
+                }
 
                 List<LeagueYear> timeAdjustedLeagues;
                 var scoreOrReleaseTime = masterGame.FirstCriticScoreTimestamp ?? masterGame.ReleaseDate?.AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();
