@@ -153,21 +153,33 @@ public class DiscordPushService
                 continue;
             }
 
-            var messagesToSend = new List<string>();
+            var gameUpdateMessages = new Dictionary<MasterGame, List<string>>();
 
+            //master games
             foreach (var newMasterGameMessage in newMasterGamesToSend)
             {
+                if (!gameUpdateMessages.ContainsKey(newMasterGameMessage.MasterGame))
+                {
+                    gameUpdateMessages.Add(newMasterGameMessage.MasterGame, new List<string>());
+                }
+                gameUpdateMessages[newMasterGameMessage.MasterGame].Add("Just added!");
                 var tagNames = newMasterGameMessage.MasterGame.Tags.Select(t => t.ReadableName);
-                messagesToSend.Add($"New Game Added! **{newMasterGameMessage.MasterGame.GameName}** (Tagged as: {string.Join(", ", tagNames)}) (Releases: {newMasterGameMessage.MasterGame.GetReleaseDateString()})");
+                gameUpdateMessages[newMasterGameMessage.MasterGame].Add($"Tags: {string.Join(", ", tagNames)}");
+                gameUpdateMessages[newMasterGameMessage.MasterGame].Add($"Release Date: {newMasterGameMessage.MasterGame.GetReleaseDateString()}");
+                if (!string.IsNullOrEmpty(newMasterGameMessage.MasterGame.Notes))
+                {
+                    gameUpdateMessages[newMasterGameMessage.MasterGame].Add($"Note: {newMasterGameMessage.MasterGame.Notes}");
+                }
             }
 
-            var scoreUpdateDictionary = scoreUpdatesToSend.ToDictionary(x => x.Game.MasterGameID);
-            var editsDictionary = editsToSend.ToDictionary(x => x.EditedGame.MasterGame.MasterGameID);
+            //score updates
+            var scoreUpdateDictionary = scoreUpdatesToSend.ToDictionary(x => x.Game);
+            var editsDictionary = editsToSend.ToDictionary(x => x.EditedGame.MasterGame);
             var existingGames = scoreUpdatesToSend.Select(x => x.Game).Concat(editsToSend.Select(x => x.EditedGame.MasterGame)).Distinct().ToList();
             foreach (var existingGame in existingGames)
             {
-                List<string> changeMessages = new List<string>();
-                var scoreUpdate = scoreUpdateDictionary.GetValueOrDefault(existingGame.MasterGameID);
+                var changeMessages = new List<string>();
+                var scoreUpdate = scoreUpdateDictionary.GetValueOrDefault(existingGame);
                 if (scoreUpdate is not null && (scoreUpdate.NewCriticScore is not null || scoreUpdate.OldCriticScore is not null))
                 {
                     var newCriticScoreRounded = scoreUpdate.NewCriticScore != null ? (decimal?)Math.Round(scoreUpdate.NewCriticScore.Value, 1) : null;
@@ -192,7 +204,7 @@ public class DiscordPushService
                     }
                 }
 
-                var gameEdit = editsDictionary.GetValueOrDefault(existingGame.MasterGameID);
+                var gameEdit = editsDictionary.GetValueOrDefault(existingGame);
                 if (gameEdit is not null)
                 {
                     changeMessages.AddRange(gameEdit.Changes);
@@ -200,9 +212,22 @@ public class DiscordPushService
 
                 if (changeMessages.Any())
                 {
-                    messagesToSend.Add($"**{existingGame.GameName}**\n{string.Join("\n", changeMessages.Select(c => $"> {c}"))}");
+                    if (!gameUpdateMessages.ContainsKey(existingGame))
+                    {
+                        gameUpdateMessages.Add(existingGame, new List<string>());
+                    }
+                    foreach (var changeMessage in changeMessages)
+                    {
+                        gameUpdateMessages[existingGame].Add(changeMessage);
+                    }
                 }
             }
+
+            var messagesToSend =
+                gameUpdateMessages
+                    .Select(gameUpdateMessage
+                        => $"**{gameUpdateMessage.Key.GameName}**\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}")
+                    .ToList();
 
             if (!messagesToSend.Any())
             {
@@ -212,14 +237,10 @@ public class DiscordPushService
             Logger.Information("Building a master game update with {gameUpdatesPerChannel} messages.", messagesToSend.Count);
             var messagesToActuallySend = new MessageListBuilder(messagesToSend,
                     MaxMessageLength)
-                .WithTitle("Game Updates", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
                 .WithDivider("\n")
                 .Build();
 
-            foreach (var messageToSend in messagesToActuallySend)
-            {
-                messageTasks.Add(textChannel.TrySendMessageAsync(messageToSend));
-            }
+            messageTasks.AddRange(messagesToActuallySend.Select(textChannel.TrySendMessageAsync));
         }
 
         Logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", messageTasks.Count);
@@ -472,7 +493,7 @@ public class DiscordPushService
         return lastSundayDate;
     }
 
-    public async Task SendActionProcessingSummary(IEnumerable<LeagueActionProcessingSet> leagueActionSets)
+    public async Task SendActionProcessingSummary(IReadOnlyList<LeagueActionProcessingSet> leagueActionSets)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -483,7 +504,7 @@ public class DiscordPushService
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var channelLookup = allChannels.ToLookup(c => c.LeagueID);
 
-        List<Task> dropTasks = new List<Task>();
+        var dropTasks = new List<Task>();
         foreach (var leagueAction in leagueActionSets)
         {
             var leagueChannels = channelLookup[leagueAction.LeagueYear.League.LeagueID].ToList();
@@ -497,7 +518,7 @@ public class DiscordPushService
 
         await Task.WhenAll(dropTasks);
 
-        List<Task> bidTasks = new List<Task>();
+        var bidTasks = new List<Task>();
         foreach (var leagueAction in leagueActionSets)
         {
             var leagueChannels = channelLookup[leagueAction.LeagueYear.League.LeagueID].ToList();
