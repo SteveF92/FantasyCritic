@@ -124,6 +124,11 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
                     Context.User));
                 return;
             }
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                "Error Saving Channel Configuration",
+                "There was an error saving this league configuration.",
+                Context.User));
+            return;
         }
         var leagueUrlBuilder =
             new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);

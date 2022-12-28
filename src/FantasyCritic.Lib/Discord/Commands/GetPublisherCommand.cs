@@ -250,9 +250,12 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
             publisherFound.FreeGamesDropped);
 
 
+        var pickedGamesMessage = string.Join("\n", pickedGames.Select(BuildGameMessage));
+        var counterPickedGamesMessage = string.Join("\n", counterPickedGames.Select(BuildGameMessage));
+
         var embedFieldBuilders = BuildEmbedFieldBuilders(
-            string.Join("\n", pickedGames.Select(BuildGameMessage)),
-            string.Join("\n", counterPickedGames.Select(BuildGameMessage)),
+            string.Join("\n", !string.IsNullOrEmpty(pickedGamesMessage) ? pickedGamesMessage : "No games on roster yet"),
+            string.Join("\n", !string.IsNullOrEmpty(counterPickedGamesMessage) ? counterPickedGamesMessage : "No counter picks on roster yet"),
             publisherFound,
             leagueChannel,
             remainingWillReleaseDrops,
