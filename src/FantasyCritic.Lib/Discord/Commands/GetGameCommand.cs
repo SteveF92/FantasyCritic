@@ -117,6 +117,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
         var releaseDateDisplayText = GetReleaseDateText(gameFound, dateToCheck);
 
         var gameDisplayText = $"**Release Date:** {releaseDateDisplayText}";
+        gameDisplayText += $"\n**Release Status (for {dateToCheck.Year}):** {(gameFound.MasterGame.IsReleased(dateToCheck) ? "Released" : gameFound.WillRelease().ReadableName)}";
 
         var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false);
 
