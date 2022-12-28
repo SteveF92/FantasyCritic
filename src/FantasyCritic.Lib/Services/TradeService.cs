@@ -133,7 +133,8 @@ public class TradeService
         }
 
         var now = _clock.GetCurrentInstant();
-        await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Rescinded, null, now);
+        var rescindedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Rescinded, null, now);
+        await _discordPushService.SendTradeUpdateMessage(rescindedTrade);
         return Result.Success();
     }
 
@@ -158,7 +159,8 @@ public class TradeService
         }
 
         var now = _clock.GetCurrentInstant();
-        await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByCounterParty, null, now);
+        var rejectedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByCounterParty, null, now);
+        await _discordPushService.SendTradeUpdateMessage(rejectedTrade);
         return Result.Success();
     }
 
@@ -170,7 +172,8 @@ public class TradeService
         }
 
         var now = _clock.GetCurrentInstant();
-        await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByManager, null, now);
+        var rejectedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByManager, null, now);
+        await _discordPushService.SendTradeUpdateMessage(rejectedTrade);
         return Result.Success();
     }
 

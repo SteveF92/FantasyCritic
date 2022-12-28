@@ -652,7 +652,7 @@ public class DiscordPushService
             return;
         }
 
-        var header = $"The following trade has been **{trade.Status.Value.ToUpper()}**";
+        var header = $"The following trade has been **{trade.Status.ReadableName.ToUpper()}**";
 
         var embedFieldBuilder = new EmbedFieldBuilder
         {
@@ -734,7 +734,7 @@ public class DiscordPushService
             {
                 message += " and ";
             }
-            message += $"**${trade.CounterPartyBudgetSendAmount}** of budget**";
+            message += $"**${trade.CounterPartyBudgetSendAmount}** of budget";
         }
 
         message += $"\n**{trade.CounterParty.GetPublisherAndUserDisplayName()}** will receive: ";
