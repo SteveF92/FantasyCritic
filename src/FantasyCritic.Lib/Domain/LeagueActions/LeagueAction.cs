@@ -28,7 +28,7 @@ public class LeagueAction
                 if (action.CounterPick)
                 {
                     ActionType = "Publisher Counterpick Drafted";
-                    Description = $"Drafted game: '{action.GameName}'";
+                    Description = $"Drafted counter pick: '{action.GameName}'";
                 }
                 else
                 {
@@ -41,7 +41,7 @@ public class LeagueAction
                 if (action.CounterPick)
                 {
                     ActionType = "Publisher Counterpick Auto Drafted";
-                    Description = $"Auto Drafted game: '{action.GameName}'";
+                    Description = $"Auto Drafted counter pick: '{action.GameName}'";
                 }
                 else
                 {
@@ -55,7 +55,7 @@ public class LeagueAction
             if (action.CounterPick)
             {
                 ActionType = "Publisher Counterpick Claimed";
-                Description = $"Claimed game: '{action.GameName}'";
+                Description = $"Claimed counter pick: '{action.GameName}'";
             }
             else
             {
