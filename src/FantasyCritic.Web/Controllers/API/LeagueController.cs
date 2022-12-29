@@ -98,7 +98,8 @@ public class LeagueController : BaseLeagueController
             viewModels.Add(new LeagueWithStatusViewModel(league, isManager, true, false));
         }
 
-        return Ok(viewModels);
+        var sortedViewModels = viewModels.OrderBy(l => l.LeagueName);
+        return Ok(sortedViewModels);
     }
 
     public async Task<IActionResult> FollowedLeagues()
