@@ -173,13 +173,13 @@ public class DiscordPushService
             }
 
             //score updates
-            var scoreUpdateDictionary = scoreUpdatesToSend.ToDictionary(x => x.Game);
-            var editsDictionary = editsToSend.ToDictionary(x => x.EditedGame.MasterGame);
+            var scoreUpdateLookup = scoreUpdatesToSend.ToLookup(x => x.Game);
+            var editsLookup = editsToSend.ToLookup(x => x.EditedGame.MasterGame);
             var existingGames = scoreUpdatesToSend.Select(x => x.Game).Concat(editsToSend.Select(x => x.EditedGame.MasterGame)).Distinct().ToList();
             foreach (var existingGame in existingGames)
             {
                 var changeMessages = new List<string>();
-                var scoreUpdate = scoreUpdateDictionary.GetValueOrDefault(existingGame);
+                var scoreUpdate = scoreUpdateLookup[existingGame].LastOrDefault();
                 if (scoreUpdate is not null && (scoreUpdate.NewCriticScore is not null || scoreUpdate.OldCriticScore is not null))
                 {
                     var newCriticScoreRounded = scoreUpdate.NewCriticScore != null ? (decimal?)Math.Round(scoreUpdate.NewCriticScore.Value, 1) : null;
@@ -204,10 +204,10 @@ public class DiscordPushService
                     }
                 }
 
-                var gameEdit = editsDictionary.GetValueOrDefault(existingGame);
-                if (gameEdit is not null)
+                var gameEdits = editsLookup[existingGame];
+                if (gameEdits.Any())
                 {
-                    changeMessages.AddRange(gameEdit.Changes);
+                    changeMessages.AddRange(gameEdits.SelectMany(x => x.Changes));
                 }
 
                 if (changeMessages.Any())
