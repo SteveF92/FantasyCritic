@@ -51,7 +51,7 @@ public class DiscordPushService
         _discordFormatter = discordFormatter;
         DiscordSocketConfig socketConfig = new()
         {
-            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
+            GatewayIntents = GatewayIntents.AllUnprivileged,
             AlwaysDownloadUsers = true,
         };
         _client = new DiscordSocketClient(socketConfig);

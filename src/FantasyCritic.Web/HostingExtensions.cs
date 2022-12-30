@@ -173,7 +173,7 @@ public static class HostingExtensions
             //Discord request service
             DiscordSocketConfig socketConfig = new()
             {
-                GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
+                GatewayIntents = GatewayIntents.AllUnprivileged,
                 AlwaysDownloadUsers = true,
             };
             var fantasyCriticSettings = new FantasyCriticSettings
