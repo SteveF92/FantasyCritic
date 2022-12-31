@@ -562,6 +562,19 @@ public class AdminService
             IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+            var publisherMasterGames = new HashSet<MasterGame>();
+            foreach (var leagueYear in leagueYears)
+            {
+                foreach (var publisher in leagueYear.Publishers)
+                {
+                    var currentGames = publisher.MyMasterGames;
+                    var formerGames = publisher.FormerPublisherGames.Where(x => x.PublisherGame.MasterGame is not null)
+                        .Select(x => x.PublisherGame.MasterGame!.MasterGame);
+                    publisherMasterGames.UnionWith(currentGames);
+                    publisherMasterGames.UnionWith(formerGames);
+                }
+            }
+
             var royalePublishers = await _royaleService.GetAllPublishers(supportedYear.Year);
             var royalePublisherMasterGames = royalePublishers.SelectMany(x => x.PublisherGames.Select(x => x.MasterGame.MasterGame)).ToHashSet();
             var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
@@ -634,7 +647,9 @@ public class AdminService
                 var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
                 List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligibleInAnySlot(masterGame, currentDate)).ToList();
 
-                if (releasedBeforeYear && leaguesWithGame == 0 && !royalePublisherMasterGames.Contains(masterGame))
+                bool wasEverPartOfYear = publisherMasterGames.Contains(masterGame) || royalePublisherMasterGames.Contains(masterGame);
+
+                if (releasedBeforeYear && !wasEverPartOfYear)
                 {
                     continue;
                 }
