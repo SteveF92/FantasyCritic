@@ -4,9 +4,12 @@
       <div class="form-horizontal">
         <div class="form-group">
           <label for="selectedYear" class="control-label">New Year to Play</label>
-          <select id="selectedYear" v-model="selectedYear" class="form-control">
+          <b-form-select id="selectedYear" v-model="selectedYear" class="form-control">
+            <template #first>
+              <option value="">Select a Year</option>
+            </template>
             <option v-for="possibleYear in availableYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>
-          </select>
+          </b-form-select>
         </div>
       </div>
       <template #modal-footer>
