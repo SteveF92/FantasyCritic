@@ -144,6 +144,7 @@ public class AdminService
             return;
         }
 
+        _logger.Information("Refreshing GG Info. Deep:{deepRefresh}", deepRefresh);
         var masterGames = await _interLeagueService.GetMasterGames();
 
         var masterGamesToUpdate = masterGames.Where(x => x.GGToken is not null && !x.DoNotRefreshAnything).ToList();
@@ -164,6 +165,8 @@ public class AdminService
                 _logger.Warning($"Getting an GG| game failed (empty return): {masterGame.GameName} | [{masterGame.GGToken}]");
             }
         }
+
+        _logger.Information("Done Refreshing GG Info");
     }
 
     public async Task UpdateFantasyPoints()
