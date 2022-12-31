@@ -262,6 +262,8 @@ public class AdminService
             {
                 _logger.Information($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
                 await _interLeagueService.FinishYear(supportedYear);
+                var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+                await _discordPushService.SendFinalYearStandings(leagueYears);
             }
         }
 

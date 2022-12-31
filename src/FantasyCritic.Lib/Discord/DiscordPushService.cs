@@ -703,6 +703,11 @@ public class DiscordPushService
         await Task.WhenAll(messageTasks);
     }
 
+    public Task SendFinalYearStandings(IReadOnlyList<LeagueYear> leagueYears)
+    {
+        return Task.CompletedTask;
+    }
+
     private async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser)
     {
         var externalLogins = await _userStore.GetLoginsAsync(fantasyCriticUser, CancellationToken.None);
