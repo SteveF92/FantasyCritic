@@ -46,7 +46,7 @@
           <b-button variant="danger" @click="takePostAction('Admin', 'MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
           <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'ExpireTrades')">Expire Trades</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
+          <b-button variant="danger" @click="takePostAction('Admin', 'PushYearEndDiscordMessages')">Push Year End Discord Messages</b-button>
         </div>
 
         <h2>Database</h2>

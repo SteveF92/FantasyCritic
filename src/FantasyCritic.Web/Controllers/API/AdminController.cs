@@ -247,19 +247,11 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> PushPublicBiddingDiscordMessages()
+    public async Task<IActionResult> PushYearEndDiscordMessages()
     {
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
-
-        var publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
-        foreach (var year in activeYears)
-        {
-            var publicBiddingSetsForYear = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
-            publicBiddingSets.AddRange(publicBiddingSetsForYear);
-        }
-
-        await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
+        var currentDate = _clock.GetToday();
+        var leagueYears = await _fantasyCriticService.GetLeagueYears(currentDate.Year);
+        await _discordPushService.SendFinalYearStandings(leagueYears);
         return Ok();
     }
 }
