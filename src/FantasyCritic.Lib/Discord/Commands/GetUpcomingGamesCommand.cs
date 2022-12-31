@@ -67,7 +67,7 @@ public class GetUpcomingGamesCommand : InteractionModuleBase<SocketInteractionCo
             var standardPublisher = leagueYear.Publishers.FirstOrDefault(p => standardGame is not null && p.PublisherID == standardGame.PublisherID);
             var counterPickPublisher = leagueYear.Publishers.FirstOrDefault(p => counterPick is not null && p.PublisherID == counterPick.PublisherID);
 
-            var gameMessage = DiscordSharedUtilities.BuildGameMessage(standardPublisher, counterPickPublisher, recentGameGrouping.Key.MasterGame, _baseAddress);
+            var gameMessage = DiscordSharedMessageUtilities.BuildGameMessage(standardPublisher, counterPickPublisher, recentGameGrouping.Key.MasterGame, _baseAddress);
             if (gameMessage is not null)
             {
                 messages.Add(gameMessage);

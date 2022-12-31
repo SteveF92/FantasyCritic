@@ -721,13 +721,12 @@ public class DiscordPushService
         {
             var previousYearWinner = await _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, leagueYear.Year - 1);
             var leagueChannels = await _discordRepo.GetLeagueChannels(leagueYear.League.LeagueID);
-            var publisherLines = DiscordSharedUtilities.RankLeaguePublishers(leagueYear, previousYearWinner, systemWideValues, dateToCheck);
+            var publisherLines = DiscordSharedMessageUtilities.RankLeaguePublishers(leagueYear, previousYearWinner, systemWideValues, dateToCheck, true);
             if (publisherLines.Count == 0)
             {
                 continue;
             }
 
-            publisherLines[0] = $"**{publisherLines[0]}** 🏆";
             var publisherStrings = string.Join("\n", publisherLines);
 
             var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
@@ -744,7 +743,7 @@ public class DiscordPushService
                 }
 
                 messageTasks.Add(textChannel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-                    $"Final Standings for {leagueYear.Year}",
+                    $"Final Standings for {leagueYear.League.LeagueName} ({leagueYear.Year})",
                     publisherStrings,
                     url: leagueUrl)));
             }

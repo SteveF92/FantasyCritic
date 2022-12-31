@@ -251,7 +251,7 @@ public class AdminController : FantasyCriticController
     {
         var currentDate = _clock.GetToday();
         var leagueYears = await _fantasyCriticService.GetLeagueYears(currentDate.Year);
-        await _discordPushService.SendFinalYearStandings(leagueYears);
+        await _discordPushService.SendFinalYearStandings(leagueYears, currentDate);
         return Ok();
     }
 }
