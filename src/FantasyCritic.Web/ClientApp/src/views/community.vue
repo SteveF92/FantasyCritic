@@ -167,12 +167,6 @@
           <div>
             <h3>fantasy-critic-bot</h3>
             <div>
-              <a href="https://discord.com/api/oauth2/authorize?client_id=936106026695028807&permissions=139586914368&scope=bot" target="_blank">
-                <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
-                Add To Your Discord Server
-              </a>
-            </div>
-            <div>
               <a href="https://github.com/rarDevelopment/fantasy-critic-bot" target="_blank">
                 <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" fixed-width />
                 GitHub
@@ -193,18 +187,12 @@
             </ul>
             <p>
               You can also issue commands to the bot and it will give info such as the current standings for your league. Full instructions are available on GitHub. One important note: the bot does
-              not work with private leagues. This bot is fully operational as of the start of the 2023 year, but development efforts going forward will be focused on the official bot above.
+              not work with private leagues. Note that while this bot is still operational for now, development efforts going forward will be focused on the official bot above.
             </p>
           </div>
           <hr />
           <div>
             <h3>fcbot</h3>
-            <div>
-              <a href="https://discord.com/api/oauth2/authorize?client_id=671814513967890459&permissions=2048&scope=bot" target="_blank">
-                <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
-                Add To Your Discord Server
-              </a>
-            </div>
             <div>
               <a href="https://github.com/drcatdoctor/fcbot" target="_blank">
                 <font-awesome-icon :icon="['fab', 'github']" size="lg" class="github-icon" fixed-width />
