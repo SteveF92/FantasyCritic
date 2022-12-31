@@ -103,6 +103,11 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public decimal? GetFantasyPoints(ReleaseSystem releaseSystem, ScoringSystem scoringSystem, bool counterPick, LocalDate currentDate)
     {
+        if (MasterGame.ReleaseDate.HasValue && MasterGame.ReleaseDate.Value.Year < Year)
+        {
+            return 0m;
+        }
+
         if (!CouldRelease())
         {
             return 0m;

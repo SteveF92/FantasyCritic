@@ -135,6 +135,12 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public decimal? CalculateFantasyPoints(LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
     {
+        if (MasterGame.MasterGame.ReleaseDate.HasValue && !YearQuarter.YearQuarter.ToDateInterval()
+                .Contains(MasterGame.MasterGame.ReleaseDate.Value))
+        {
+            return 0m;
+        }
+
         if (!MasterGame.MasterGame.IsReleased(currentDate))
         {
             return 0m;

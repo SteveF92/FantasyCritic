@@ -44,6 +44,8 @@ public class YearQuarter : IEquatable<YearQuarter>, IComparable<YearQuarter>
         }
     }
 
+    public DateInterval ToDateInterval() => new DateInterval(FirstDateOfQuarter, LastDateOfQuarter);
+
     public bool Equals(YearQuarter? other)
     {
         if (ReferenceEquals(null, other)) return false;
