@@ -25,6 +25,7 @@ public class DiscordPushService
     private readonly IDiscordRepo _discordRepo;
     private readonly IDiscordSupplementalDataRepo _supplementalDataRepo;
     private readonly IFantasyCriticUserStore _userStore;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly DiscordSocketClient _client;
     private bool _botIsReady;
@@ -40,6 +41,7 @@ public class DiscordPushService
         IDiscordRepo discordRepo,
         IDiscordSupplementalDataRepo supplementalDataRepo,
         IFantasyCriticUserStore userStore,
+        IFantasyCriticRepo fantasyCriticRepo,
         IDiscordFormatter discordFormatter)
     {
         _enabled = !string.IsNullOrEmpty(configuration.BotToken) && configuration.BotToken != "secret";
@@ -48,6 +50,7 @@ public class DiscordPushService
         _discordRepo = discordRepo;
         _supplementalDataRepo = supplementalDataRepo;
         _userStore = userStore;
+        _fantasyCriticRepo = fantasyCriticRepo;
         _discordFormatter = discordFormatter;
         DiscordSocketConfig socketConfig = new()
         {
@@ -87,13 +90,13 @@ public class DiscordPushService
             attempts++;
         }
 
-        if (!_botIsReady)
+        if (_botIsReady)
         {
-            Log.Warning("Discord bot is not ready, cannot send message.");
-            return false;
+            return true;
         }
+        Log.Warning("Discord bot is not ready, cannot send message.");
+        return false;
 
-        return true;
     }
 
     public void QueueNewMasterGameMessage(MasterGame masterGame, int year)
@@ -251,7 +254,7 @@ public class DiscordPushService
         _masterGameEditMessages.Clear();
     }
 
-    public async Task SendGameReleaseUpdates(IEnumerable<MasterGameYear> masterGamesReleasingToday, int year)
+    public async Task SendGameReleaseUpdates(IReadOnlyList<MasterGameYear> masterGamesReleasingToday, int year)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -703,9 +706,51 @@ public class DiscordPushService
         await Task.WhenAll(messageTasks);
     }
 
-    public Task SendFinalYearStandings(IReadOnlyList<LeagueYear> leagueYears)
+    public async Task SendFinalYearStandings(IReadOnlyList<LeagueYear> leagueYears, LocalDate dateToCheck)
     {
-        return Task.CompletedTask;
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
+
+        var messageTasks = new List<Task>();
+        foreach (var leagueYear in leagueYears)
+        {
+            var previousYearWinner = await _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, leagueYear.Year - 1);
+            var leagueChannels = await _discordRepo.GetLeagueChannels(leagueYear.League.LeagueID);
+            var publisherLines = DiscordSharedUtilities.RankLeaguePublishers(leagueYear, previousYearWinner, systemWideValues, dateToCheck);
+            if (publisherLines.Count == 0)
+            {
+                continue;
+            }
+
+            publisherLines[0] = $"**{publisherLines[0]}** 🏆";
+            var publisherStrings = string.Join("\n", publisherLines);
+
+            var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
+                    leagueYear.Year)
+                .BuildUrl();
+
+            foreach (var minimalLeagueChannel in leagueChannels)
+            {
+                var guild = _client.GetGuild(minimalLeagueChannel.GuildID);
+                var channel = guild?.GetChannel(minimalLeagueChannel.ChannelID);
+                if (channel is not SocketTextChannel textChannel)
+                {
+                    continue;
+                }
+
+                messageTasks.Add(textChannel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+                    $"Final Standings for {leagueYear.Year}",
+                    publisherStrings,
+                    url: leagueUrl)));
+            }
+        }
+
+        await Task.WhenAll(messageTasks);
     }
 
     private async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser)

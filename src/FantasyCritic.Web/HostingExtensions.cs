@@ -389,6 +389,6 @@ public static class HostingExtensions
         var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
         var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
         var supplementalDataRepo = new MySQLDiscordSupplementalDataRepo(repositoryConfiguration);
-        return new DiscordPushService(discordConfiguration, discordRepo, supplementalDataRepo, userStore, new DiscordFormatter());
+        return new DiscordPushService(discordConfiguration, discordRepo, supplementalDataRepo, userStore, fantasyCriticRepo, new DiscordFormatter());
     }
 }

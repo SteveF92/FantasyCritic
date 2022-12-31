@@ -2,8 +2,8 @@ using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
+using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 
@@ -60,72 +60,21 @@ public class GetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        var previousYearWinner = await _fantasyCriticRepo.GetLeagueYearWinner(leagueChannel.LeagueYear.League.LeagueID, leagueChannel.LeagueYear.Year - 1);
+        var leagueYear = leagueChannel.LeagueYear;
 
-        var rankedPublishers = leagueChannel.LeagueYear.Publishers.OrderByDescending(p
-            => p.GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options));
+        var previousYearWinner = await _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID,
+            leagueYear.Year - 1);
 
-        var publisherLines =
-            rankedPublishers
-                .Select((publisher, index) =>
-                {
-                    var totalPoints = publisher
-                        .GetTotalFantasyPoints(leagueChannel.LeagueYear.SupportedYear, leagueChannel.LeagueYear.Options);
+        var publisherLines = DiscordSharedUtilities.RankLeaguePublishers(leagueYear, previousYearWinner, systemWideValues, dateToCheck);
 
-                    var projectedPoints = publisher
-                        .GetProjectedFantasyPoints(leagueChannel.LeagueYear,
-                            systemWideValues, dateToCheck);
-
-                    return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck, previousYearWinner);
-                });
-
-        var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID,
-            leagueChannel.LeagueYear.Year)
+        var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
+            leagueYear.Year)
             .BuildUrl();
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            $"{leagueChannel.LeagueYear.League.LeagueName} {leagueChannel.LeagueYear.Year}",
+            $"{leagueYear.League.LeagueName} {leagueYear.Year}",
             string.Join("\n", publisherLines),
             Context.User,
             url: leagueUrl));
-    }
-
-    private static string BuildPublisherLine(int rank, Publisher publisher, decimal totalPoints, decimal projectedPoints, LocalDate currentDate, FantasyCriticUser? previousYearWinner)
-    {
-        var totalGames = publisher.PublisherGames
-            .Count(x => !x.CounterPick);
-        var allWillRelease = publisher.PublisherGames
-            .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame is not null)
-            .Count(x => x.CouldRelease());
-
-        var gamesReleased = publisher.PublisherGames
-            .Where(x => !x.CounterPick)
-            .Where(x => x.MasterGame is not null)
-            .Count(x => x.MasterGame!.MasterGame.IsReleased(currentDate));
-
-        var publisherLine = $"**{rank}.** ";
-        if (!string.IsNullOrEmpty(publisher.PublisherIcon))
-        {
-            publisherLine += $"{publisher.PublisherIcon} ";
-        }
-
-        var crownEmoji = "";
-        if (previousYearWinner is not null && publisher.User.Id == previousYearWinner.Id)
-        {
-            crownEmoji = " 👑";
-        }
-
-        publisherLine += $"**{publisher.GetPublisherAndUserDisplayName()}**{crownEmoji}\n";
-        publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
-        publisherLine += $"*(Projected: {Math.Round(projectedPoints, 1)})*\n";
-        publisherLine += $"> {gamesReleased}/{allWillRelease} games released";
-        var willNotRelease = totalGames - allWillRelease;
-        if (willNotRelease != 0)
-        {
-            publisherLine += $" (and {willNotRelease} that will not release)";
-        }
-
-        return publisherLine;
     }
 }

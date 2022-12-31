@@ -34,7 +34,7 @@ public class GameReleaseNotificationTask : IScheduledTask
 
         var easternDate = now.ToEasternDate();
         var allMasterGames = await interLeagueService.GetMasterGameYears(easternDate.Year);
-        var masterGamesReleasingToday = allMasterGames.Where(x => x.MasterGame.ReleaseDate == easternDate);
+        var masterGamesReleasingToday = allMasterGames.Where(x => x.MasterGame.ReleaseDate == easternDate).ToList();
         if (!masterGamesReleasingToday.Any())
         {
             return;
