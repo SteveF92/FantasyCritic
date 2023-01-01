@@ -648,7 +648,6 @@ public class AdminService
                 List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligibleInAnySlot(masterGame, currentDate)).ToList();
 
                 bool wasEverPartOfYear = publisherMasterGames.Contains(masterGame) || royalePublisherMasterGames.Contains(masterGame);
-
                 if (releasedBeforeYear && !wasEverPartOfYear)
                 {
                     continue;
