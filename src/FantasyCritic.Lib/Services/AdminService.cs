@@ -715,7 +715,8 @@ public class AdminService
                 var cachedMasterGame = masterGameCacheLookup.GetValueOrDefault(masterGame.MasterGameID);
                 if (cachedMasterGame is not null)
                 {
-                    if (cachedMasterGame.PeakHypeFactor > peakHypeFactor)
+                    var bigEnoughSampleSize = leaguesWithGame > 5 && allLeagueYears.Count > 20;
+                    if (bigEnoughSampleSize && cachedMasterGame.PeakHypeFactor > peakHypeFactor)
                     {
                         peakHypeFactor = cachedMasterGame.PeakHypeFactor;
                     }
