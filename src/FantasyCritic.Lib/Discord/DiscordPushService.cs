@@ -243,7 +243,7 @@ public class DiscordPushService
                 .WithDivider("\n")
                 .Build();
 
-            messageTasks.AddRange(messagesToActuallySend.Select(textChannel.TrySendMessageAsync));
+            messageTasks.AddRange(messagesToActuallySend.Select(message => textChannel.TrySendMessageAsync(message, flags: MessageFlags.SuppressEmbeds)));
         }
 
         Logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", messageTasks.Count);
