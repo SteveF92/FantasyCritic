@@ -66,7 +66,7 @@ public class SetPublicBidAlertRoleCommand : InteractionModuleBase<SocketInteract
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Public Bid Alert Role Configuration Saved",
-            $"Public Bid updates will now mention {roleInGuild.Mention} - Make sure this role is mentionable!",
+            $"Public Bid updates will now mention {roleInGuild.Mention}.",
             Context.User));
     }
 }
