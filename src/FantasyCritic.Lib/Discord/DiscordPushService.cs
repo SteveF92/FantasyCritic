@@ -478,19 +478,17 @@ public class DiscordPushService
                     continue;
                 }
 
-                messageTasks.Add(channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+                SocketRole? roleToMention = null;
+                if (leagueChannel.PublicBidAlertRoleID != null)
+                {
+                    roleToMention =
+                        channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.PublicBidAlertRoleID);
+                }
+
+                messageTasks.Add(channel.TrySendMessageAsync(roleToMention?.Mention ?? "", embed: _discordFormatter.BuildRegularEmbed(
                     header,
                     finalMessage,
                     url: leagueLink)));
-                if (leagueChannel.PublicBidAlertRoleID == null)
-                {
-                    continue;
-                }
-                var roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.PublicBidAlertRoleID);
-                if (roleToMention != null)
-                {
-                    messageTasks.Add(channel.TrySendMessageAsync(roleToMention.Mention));
-                }
             }
         }
 
