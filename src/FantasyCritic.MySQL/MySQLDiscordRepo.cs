@@ -18,7 +18,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting());
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting(), null);
         var existingLeague = await GetLeagueChannel(guildID, channelID, year);
         var sql = existingLeague == null
             ? "INSERT INTO tbl_discord_leaguechannel (LeagueID, GuildID, ChannelID, GameNewsSetting) VALUES (@LeagueID, @GuildID, @ChannelID, @GameNewsSetting)"
@@ -29,8 +29,16 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetIsGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, DiscordGameNewsSetting gameNewsSetting)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, gameNewsSetting);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, gameNewsSetting, null);
         var sql = "UPDATE tbl_discord_leaguechannel SET GameNewsSetting=@GameNewsSetting WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+        await connection.ExecuteAsync(sql, leagueChannelEntity);
+    }
+
+    public async Task SetPublicBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? publicBidAlertRoleID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting(), publicBidAlertRoleID);
+        var sql = "UPDATE tbl_discord_leaguechannel SET PublicBidAlertRoleID=@PublicBidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 

@@ -431,7 +431,7 @@ public class DiscordPushService
         var allChannels = await _discordRepo.GetAllLeagueChannels();
         var channelLookup = allChannels.ToLookup(c => c.LeagueID);
 
-        List<Task> messageTasks = new List<Task>();
+        var messageTasks = new List<Task>();
         foreach (var publicBiddingSet in publicBiddingSets)
         {
             if (!publicBiddingSet.MasterGames.Any())
@@ -482,6 +482,15 @@ public class DiscordPushService
                     header,
                     finalMessage,
                     url: leagueLink)));
+                if (leagueChannel.PublicBidAlertRoleID == null)
+                {
+                    continue;
+                }
+                var roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.PublicBidAlertRoleID);
+                if (roleToMention != null)
+                {
+                    messageTasks.Add(channel.TrySendMessageAsync(roleToMention.Mention));
+                }
             }
         }
 

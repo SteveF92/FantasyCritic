@@ -40,7 +40,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         var settingEnum = DiscordGameNewsSetting.TryFromName(setting);
         if (settingEnum.IsFailure)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "No Change Made to Game News Configuration",
                 $"No valid option was selected.\nThe current Game News Announcements setting is still **{leagueChannel.GameNewsSetting.Name}**.",
                 Context.User));

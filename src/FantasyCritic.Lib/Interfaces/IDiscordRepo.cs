@@ -5,6 +5,7 @@ public interface IDiscordRepo
 {
     Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year);
     Task SetIsGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, DiscordGameNewsSetting gameNewsSetting);
+    Task SetPublicBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? publicBidAlertRoleID);
     Task<bool> DeleteLeagueChannel(ulong guildID, ulong channelID);
     Task<IReadOnlyList<MinimalLeagueChannel>> GetAllLeagueChannels();
     Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID);
