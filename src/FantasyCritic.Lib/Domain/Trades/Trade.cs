@@ -43,6 +43,15 @@ public class Trade
     public IReadOnlyList<TradeVote> TradeVotes { get; }
     public TradeStatus Status { get; }
 
+    public IReadOnlyList<Guid> GetPublisherIDs()
+    {
+        return new List<Guid>()
+        {
+            Proposer.PublisherID,
+            CounterParty.PublisherID
+        };
+    }
+
     public Instant? GetExpirationTime()
     {
         if (!Status.IsActive)
@@ -140,7 +149,7 @@ public class Trade
         return resultingNumberOfGames;
     }
 
-    public IReadOnlyList<Publisher> GetUpdatedPublishers()
+    public IReadOnlyList<Publisher> GetUpdatedPublishers(IEnumerable<PublisherGame> newPublisherGames)
     {
         var publisherStateSet = new PublisherStateSet(new List<Publisher>()
         {
@@ -152,6 +161,12 @@ public class Trade
         publisherStateSet.SpendBudgetForPublisher(Proposer, ProposerBudgetSendAmount);
         publisherStateSet.ObtainBudgetForPublisher(CounterParty, ProposerBudgetSendAmount);
         publisherStateSet.SpendBudgetForPublisher(CounterParty, CounterPartyBudgetSendAmount);
+
+        var newProposerPublisherGames = newPublisherGames.Where(x => x.PublisherID == Proposer.PublisherID).ToList();
+        var newCounterPartyPublisherGames = newPublisherGames.Where(x => x.PublisherID == CounterParty.PublisherID).ToList();
+
+        publisherStateSet.UpdateGamesForPublisher(Proposer, ProposerMasterGames, newProposerPublisherGames);
+        publisherStateSet.UpdateGamesForPublisher(CounterParty, CounterPartyMasterGames, newCounterPartyPublisherGames);
 
         return publisherStateSet.Publishers;
     }

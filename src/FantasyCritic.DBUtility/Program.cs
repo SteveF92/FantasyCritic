@@ -57,12 +57,12 @@ class Program
                 var nonDraftActions = leagueActions.Where(x => !x.Description.ToLower().Contains("draft")).ToList();
                 var processedBids = await fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
                 var successBids = processedBids.Where(x => x.Successful.HasValue && x.Successful.Value).ToList();
-                var publisherIDs = executedTrades.SelectMany(x => x.GetUpdatedPublishers()).Select(x => x.PublisherID).Distinct().ToList();
+                var publisherIDs = executedTrades.SelectMany(x => x.GetPublisherIDs()).Distinct().ToList();
                 foreach (var publisherID in publisherIDs)
                 {
                     var publisher = leagueYear.GetPublisherByIDOrThrow(publisherID);
                     var leagueActionsForPublisher = nonDraftActions.Where(x => x.Publisher.PublisherID == publisher.PublisherID).ToList();
-                    var tradesInvolvingPublisher = executedTrades.Where(x => x.GetUpdatedPublishers().Select(y => y.PublisherID).Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
+                    var tradesInvolvingPublisher = executedTrades.Where(x => x.GetPublisherIDs().Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
                     var successfulBidsForPublisher = successBids.Where(x => x.Publisher.PublisherID == publisher.PublisherID).OrderBy(x => x.Timestamp).ToList();
                     PrintStatsForPublisher(leagueYear, publisher, leagueActionsForPublisher, tradesInvolvingPublisher, successfulBidsForPublisher);
                 }

@@ -88,7 +88,7 @@ public class GameAcquisitionService
         bool counterPickedGameIsManualWillNotRelease = false;
         if (counterPick)
         {
-            var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame))
+            var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame, false))
                 .Where(x => x is not null && !x.CounterPick).SelectNotNull().ToList();
 
             if (gameBeingCounterPickedOptions.Count != 1)

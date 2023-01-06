@@ -9,7 +9,8 @@ public class ExecutedTrade
         Trade = trade;
         CompletionTime = completionTime;
         LeagueActions = trade.GetActions(completionTime);
-        UpdatedPublishers = trade.GetUpdatedPublishers();
+
+        UpdatedPublishers = trade.GetUpdatedPublishers(addedPublisherGames);
         AddedPublisherGames = addedPublisherGames.ToList();
         RemovedPublisherGames = trade.GetRemovedPublisherGames(completionTime);
     }

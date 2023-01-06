@@ -110,7 +110,7 @@ public static class GameEligibilityFunctions
         dropErrors.AddRange(masterGameErrors);
 
         //Drop limits
-        var publisherGame = publisher.GetPublisherGame(request.MasterGame);
+        var publisherGame = publisher.GetPublisherGame(request.MasterGame, false);
         if (publisherGame is null)
         {
             return new DropResult(Result.Failure("Cannot drop a game that you do not have"));

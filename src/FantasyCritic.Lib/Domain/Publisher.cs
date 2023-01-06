@@ -154,10 +154,10 @@ public class Publisher : IEquatable<Publisher>
         return publisherSlots;
     }
 
-    public PublisherGame? GetPublisherGame(MasterGame masterGame) => GetPublisherGameByMasterGameID(masterGame.MasterGameID);
-    public PublisherGame GetPublisherGameOrThrow(MasterGame masterGame)
+    public PublisherGame? GetPublisherGame(MasterGame masterGame, bool counterPick) => GetPublisherGameByMasterGameID(masterGame.MasterGameID, counterPick);
+    public PublisherGame GetPublisherGameOrThrow(MasterGame masterGame, bool counterPick)
     {
-        var publisherGame = GetPublisherGameByMasterGameID(masterGame.MasterGameID);
+        var publisherGame = GetPublisherGameByMasterGameID(masterGame.MasterGameID, counterPick);
         if (publisherGame is null)
         {
             throw new Exception($"Publisher: {PublisherID} does not have master game: {masterGame.GameName}");
@@ -166,9 +166,9 @@ public class Publisher : IEquatable<Publisher>
         return publisherGame;
     }
 
-    public PublisherGame? GetPublisherGameByMasterGameID(Guid masterGameID)
+    public PublisherGame? GetPublisherGameByMasterGameID(Guid masterGameID, bool counterPick)
     {
-        return PublisherGames.SingleOrDefault(x => x.MasterGame is not null && x.MasterGame.MasterGame.MasterGameID == masterGameID);
+        return PublisherGames.SingleOrDefault(x => x.CounterPick == counterPick && x.MasterGame is not null && x.MasterGame.MasterGame.MasterGameID == masterGameID);
     }
 
     public PublisherGame? GetPublisherGameByPublisherGameID(Guid publisherGameID)

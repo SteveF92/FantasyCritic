@@ -84,7 +84,7 @@ public class ActionProcessor
                 if (dropResult.Result.IsSuccess)
                 {
                     successDrops.Add(dropRequest);
-                    var publisherGame = dropRequest.Publisher.GetPublisherGameOrThrow(dropRequest.MasterGame);
+                    var publisherGame = dropRequest.Publisher.GetPublisherGameOrThrow(dropRequest.MasterGame, false);
                     var formerPublisherGame = publisherGame.GetFormerPublisherGame(_processingTime, "Dropped by player");
                     gamesToDelete.Add(formerPublisherGame);
                     LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, _processingTime);

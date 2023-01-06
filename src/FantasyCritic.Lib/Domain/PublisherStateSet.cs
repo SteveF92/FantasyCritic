@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain;
@@ -81,6 +82,22 @@ public class PublisherStateSet
             return;
         }
         throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
+    }
+
+    public void UpdateGamesForPublisher(Publisher publisher, IReadOnlyList<MasterGameYearWithCounterPick> removeGames, IReadOnlyList<PublisherGame> addGames)
+    {
+        foreach (var removeGame in removeGames)
+        {
+            var publisherGameToRemove = publisher.GetPublisherGameOrThrow(removeGame.MasterGameYear.MasterGame, removeGame.CounterPick);
+            var updatedPublisher = GetPublisher(publisher.PublisherID);
+            UpdatePublisher(updatedPublisher, null, publisherGameToRemove, 0, null);
+        }
+
+        foreach (var addGame in addGames)
+        {
+            var updatedPublisher = GetPublisher(publisher.PublisherID);
+            UpdatePublisher(updatedPublisher, addGame, null, 0, null);
+        }
     }
 
     private void UpdatePublisher(Publisher publisherToEdit, PublisherGame? addGame, PublisherGame? removeGame, int budgetChange, DropType? dropType)
