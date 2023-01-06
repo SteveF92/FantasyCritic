@@ -23,19 +23,27 @@ public class RDSRefresher
     public async Task CopySourceToDestination()
     {
         Log.Information("Starting up copy process.");
-        DBInstance destinationDB = await GetDBInstanceByIdentifier(_destinationRdsName);
-        Log.Information($"Destination Database: {destinationDB.DBInstanceIdentifier}");
 
         DBSnapshot snapshotChosen = await SelectDBSnapshot(_sourceRdsName);
-
         Log.Information($"Source Snapshot: {snapshotChosen.DBSnapshotIdentifier}");
 
-        string newNameForOldServer = await RenameOldInstance(destinationDB);
+        DBInstance? destinationDB = await GetDBInstanceByIdentifier(_destinationRdsName);
+        if (destinationDB is not null)
+        {
+            Log.Information($"Destination Database: {destinationDB.DBInstanceIdentifier}");
+            string newNameForOldServer = await RenameOldInstance(destinationDB);
 
-        await RestoreFromSnapshot(destinationDB, snapshotChosen);
+            await RestoreFromSnapshot(destinationDB, snapshotChosen);
 
-        DBInstance oldServer = await GetDBInstanceByIdentifier(newNameForOldServer);
-        await DeleteInstance(oldServer);
+            DBInstance oldServer = await AssertDBInstanceByIdentifier(newNameForOldServer);
+            await DeleteInstance(oldServer);
+        }
+        else
+        {
+            Log.Information($"Restoring Snapshot without deleting an instance: {snapshotChosen.DBSnapshotIdentifier}");
+            DBInstance productionDB = await AssertDBInstanceByIdentifier(_sourceRdsName);
+            await RestoreFromSnapshot(productionDB, snapshotChosen, _destinationRdsName);
+        }
 
         Log.Information("Process Complete.");
     }
@@ -80,8 +88,13 @@ public class RDSRefresher
         return newName;
     }
 
-    private async Task<DBInstance> RestoreFromSnapshot(DBInstance instance, DBSnapshot snapshot)
+    private async Task<DBInstance> RestoreFromSnapshot(DBInstance instance, DBSnapshot snapshot, string? newDBName = null)
     {
+        if (newDBName == null)
+        {
+            newDBName = instance.DBInstanceIdentifier;
+        }
+
         Log.Information("Creating new instance from snapshot.");
         RestoreDBInstanceFromDBSnapshotRequest restoreRequest = new RestoreDBInstanceFromDBSnapshotRequest()
         {
@@ -91,7 +104,7 @@ public class RDSRefresher
             MultiAZ = false,
             StorageType = instance.StorageType,
 
-            DBInstanceIdentifier = instance.DBInstanceIdentifier,
+            DBInstanceIdentifier = newDBName,
 
             DBSubnetGroupName = instance.DBSubnetGroup.DBSubnetGroupName,
             AvailabilityZone = instance.AvailabilityZone,
@@ -121,7 +134,7 @@ public class RDSRefresher
         await _rdsClient.DeleteDBInstanceAsync(deleteRequest);
     }
 
-    private async Task<DBInstance> GetDBInstanceByIdentifier(string identifier)
+    private async Task<DBInstance> AssertDBInstanceByIdentifier(string identifier)
     {
         var instanceResponse = await _rdsClient.DescribeDBInstancesAsync();
 
@@ -131,6 +144,14 @@ public class RDSRefresher
             throw new Exception($"RDS instance not found: {identifier}");
         }
 
+        return instanceChosen;
+    }
+
+    private async Task<DBInstance?> GetDBInstanceByIdentifier(string identifier)
+    {
+        var instanceResponse = await _rdsClient.DescribeDBInstancesAsync();
+
+        DBInstance? instanceChosen = instanceResponse.DBInstances.SingleOrDefault(x => x.DBInstanceIdentifier == identifier);
         return instanceChosen;
     }
 
