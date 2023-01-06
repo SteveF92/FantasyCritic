@@ -11,7 +11,7 @@ public class PublicBidEmailModel
         User = user;
         PublicBiddingSets = publicBiddingSets;
         BaseAddress = baseAddress;
-        PublicBiddingSetsByYear = publicBiddingSets.GroupToDictionary(x => x.LeagueYear.Year);
+        PublicBiddingSetsByYear = publicBiddingSets.GroupToDictionaryAndOrderBy(x => x.LeagueYear.Year, x => x.LeagueYear.League.LeagueName);
         IsProduction = isProduction;
     }
 

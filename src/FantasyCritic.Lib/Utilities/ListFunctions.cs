@@ -11,4 +11,12 @@ public static class ListFunctions
     {
         return source.GroupBy(keySelector).ToDictionary(x => x.Key, y => (IReadOnlyList<TSource>)y.ToList());
     }
+
+    public static IReadOnlyDictionary<TKey, IReadOnlyList<TSource>> GroupToDictionaryAndOrderBy<TKey, TSource, TOrderKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+        Func<TSource, TOrderKey> orderKeySelector)
+        where TKey : notnull
+        where TOrderKey : notnull
+    {
+        return source.GroupBy(keySelector).ToDictionary(x => x.Key, y => (IReadOnlyList<TSource>)y.OrderBy(orderKeySelector).ToList());
+    }
 }
