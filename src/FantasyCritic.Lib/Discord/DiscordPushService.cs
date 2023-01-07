@@ -479,10 +479,10 @@ public class DiscordPushService
                 }
 
                 SocketRole? roleToMention = null;
-                if (leagueChannel.PublicBidAlertRoleID != null)
+                if (leagueChannel.BidAlertRoleID != null)
                 {
                     roleToMention =
-                        channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.PublicBidAlertRoleID);
+                        channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
                 }
 
                 messageTasks.Add(channel.TrySendMessageAsync(roleToMention?.Mention ?? "", embed: _discordFormatter.BuildRegularEmbed(
@@ -543,7 +543,7 @@ public class DiscordPushService
         await Task.WhenAll(bidTasks);
     }
 
-    private async Task SendAllBidMessages(LeagueActionProcessingSet leagueAction, List<MinimalLeagueChannel> leagueChannels)
+    private async Task SendAllBidMessages(LeagueActionProcessingSet leagueAction, IEnumerable<MinimalLeagueChannel> leagueChannels)
     {
         var bidMessages = new List<string>();
         var leagueActionDictionaryByGame = new Dictionary<string, List<PickupBid>>();
@@ -597,7 +597,7 @@ public class DiscordPushService
             .WithTitle("Bids", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
             .WithDivider("\n")
             .Build();
-            await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend);
+            await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend, true);
         }
     }
 
@@ -623,25 +623,29 @@ public class DiscordPushService
             .WithTitle("Drops", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
             .WithDivider("\n")
             .Build();
-            await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend);
+            await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend, false);
         }
     }
 
-    private async Task SendAllMessagesToAllLeagueChannels(IEnumerable<MinimalLeagueChannel> leagueChannels, IReadOnlyList<string> messageListToSend)
+    private async Task SendAllMessagesToAllLeagueChannels(IEnumerable<MinimalLeagueChannel> leagueChannels, IReadOnlyList<string> messageListToSend, bool mentionRole = false)
     {
         var messageTasks = new List<Task>();
         foreach (var leagueChannel in leagueChannels)
         {
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            var channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+            if (channel is null)
+            {
+                continue;
+            }
+
+            var roleToMention = mentionRole && leagueChannel.BidAlertRoleID != null
+                ? channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID)
+                : null;
+
             foreach (var messageToSend in messageListToSend)
             {
-                var guild = _client.GetGuild(leagueChannel.GuildID);
-                var channel = guild?.GetTextChannel(leagueChannel.ChannelID);
-                if (channel is null)
-                {
-                    continue;
-                }
-
-                messageTasks.Add(channel.TrySendMessageAsync(messageToSend));
+                messageTasks.Add(channel.TrySendMessageAsync($"{roleToMention?.Mention ?? ""}\n{messageToSend}"));
             }
         }
 

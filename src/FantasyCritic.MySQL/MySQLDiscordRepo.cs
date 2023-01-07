@@ -34,11 +34,11 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
-    public async Task SetPublicBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? publicBidAlertRoleID)
+    public async Task SetBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? bidAlertRoleID)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting(), publicBidAlertRoleID);
-        var sql = "UPDATE tbl_discord_leaguechannel SET PublicBidAlertRoleID=@PublicBidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting(), bidAlertRoleID);
+        var sql = "UPDATE tbl_discord_leaguechannel SET BidAlertRoleID=@BidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 

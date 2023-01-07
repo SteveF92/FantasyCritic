@@ -4,21 +4,21 @@ using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class SetPublicBidAlertRoleCommand : InteractionModuleBase<SocketInteractionContext>
+public class SetBidAlertRoleCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IDiscordFormatter _discordFormatter;
 
-    public SetPublicBidAlertRoleCommand(IDiscordRepo discordRepo,
+    public SetBidAlertRoleCommand(IDiscordRepo discordRepo,
         IDiscordFormatter discordFormatter)
     {
         _discordRepo = discordRepo;
         _discordFormatter = discordFormatter;
     }
 
-    [SlashCommand("set-public-bid-role", "Set a role to mention when public bids are posted.")]
-    public async Task SetPublicBidAlertRole(
-        [Summary("role", "The role to mention when public bids are posted")] IRole? role = null
+    [SlashCommand("set-bid-alert-role", "Set a role to mention when bid information is posted.")]
+    public async Task SetBidAlertRole(
+        [Summary("role", "The role to mention when bid information is posted")] IRole? role = null
         )
     {
         await DeferAsync();
@@ -34,11 +34,11 @@ public class SetPublicBidAlertRoleCommand : InteractionModuleBase<SocketInteract
 
         if (role == null)
         {
-            await _discordRepo.SetPublicBidAlertRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, null);
+            await _discordRepo.SetBidAlertRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, null);
 
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-                "Public Bid Alert Role Configuration Removed",
-                "Public Bid updates will no longer mention any role.",
+                "Bid Information Alert Role Configuration Removed",
+                "Bid information updates will no longer mention any role.",
                 Context.User));
             return;
         }
@@ -73,11 +73,11 @@ public class SetPublicBidAlertRoleCommand : InteractionModuleBase<SocketInteract
             return;
         }
 
-        await _discordRepo.SetPublicBidAlertRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, roleInGuild.Id);
+        await _discordRepo.SetBidAlertRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, roleInGuild.Id);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "Public Bid Alert Role Configuration Saved",
-            $"Public Bid updates will now mention {roleInGuild.Mention}.",
+            "Bid Information Alert Role Configuration Saved",
+            $"Bid information updates will now mention {roleInGuild.Mention}.",
             Context.User));
     }
 }
