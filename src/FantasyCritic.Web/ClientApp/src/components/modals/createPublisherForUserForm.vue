@@ -39,7 +39,8 @@ export default {
     playersWithoutPublishers() {
       let playersToReturn = [];
       let userIDsWithPublishers = this.leagueYear.publishers.map((x) => x.userID);
-      for (const player of this.leagueYear.players) {
+      let playersWithUsers = this.leagueYear.players.filter((x) => !!x.user);
+      for (const player of playersWithUsers) {
         if (userIDsWithPublishers.includes(player.user.userID)) {
           continue;
         }

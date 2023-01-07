@@ -81,34 +81,37 @@ public class LeagueYearViewModel
             }
         }
 
-        foreach (var invitedPlayer in invitedPlayers)
+        if (Year == leagueYear.League.Years.Max())
         {
-            allPublishersMade = false;
+            foreach (var invitedPlayer in invitedPlayers)
+            {
+                allPublishersMade = false;
 
-            if (invitedPlayer.User is not null)
-            {
-                playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.UserName));
-            }
-            else
-            {
-                if (accessingUser is not null)
+                if (invitedPlayer.User is not null)
                 {
-                    if (userIsManager || string.Equals(invitedPlayer.EmailAddress, accessingUser.Email, StringComparison.OrdinalIgnoreCase))
+                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.UserName));
+                }
+                else
+                {
+                    if (accessingUser is not null)
                     {
-                        playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.EmailAddress));
+                        if (userIsManager || string.Equals(invitedPlayer.EmailAddress, accessingUser.Email, StringComparison.OrdinalIgnoreCase))
+                        {
+                            playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.EmailAddress));
+                        }
+                        else
+                        {
+                            playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, "<Email Address Hidden>"));
+                        }
                     }
                     else
                     {
                         playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, "<Email Address Hidden>"));
                     }
                 }
-                else
-                {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, "<Email Address Hidden>"));
-                }
             }
         }
-
+        
         Players = allPublishersMade ? playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList() : playerVMs;
         PlayStatus = new PlayStatusViewModel(completePlayStatus);
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();

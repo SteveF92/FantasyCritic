@@ -22,7 +22,7 @@
       <div class="form-group">
         <label for="playerToRemove" class="control-label">Player to Remove</label>
         <b-form-select v-model="playerToRemove">
-          <option v-for="player in players" :key="player.user.userID" :value="player">
+          <option v-for="player in playersWithUsers" :key="player.user.userID" :value="player">
             {{ player.user.displayName }}
           </option>
         </b-form-select>
@@ -83,9 +83,14 @@ export default {
       removeConfirmation: ''
     };
   },
+  computed: {
+    playersWithUsers() {
+      return this.players.filter((x) => !!x.user);
+    }
+  },
   methods: {
     playerIsSafelyRemoveable(player) {
-      let matchingLeagueLevelPlayer = _.find(this.league.players, function (item) {
+      let matchingLeagueLevelPlayer = _.find(this.playersWithUsers, function (item) {
         return item.userID === player.user.userID;
       });
 
