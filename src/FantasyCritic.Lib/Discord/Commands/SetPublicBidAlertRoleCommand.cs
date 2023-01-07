@@ -53,7 +53,18 @@ public class SetPublicBidAlertRoleCommand : InteractionModuleBase<SocketInteract
             return;
         }
 
-        if (!roleInGuild.IsMentionable)
+        if (roleInGuild == Context.Guild.EveryoneRole)
+        {
+            if (!(Context.User as IGuildUser)?.GuildPermissions.MentionEveryone == true)
+            {
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                    "The @everyone role is not Mentionable",
+                    "You do not have permission to use the @everyone role. Please ask someone with the appropriate permissions to make this role mentionable and try again, or try a different role.",
+                    Context.User));
+                return;
+            }
+        }
+        else if (!roleInGuild.IsMentionable)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "Role is not Mentionable",
