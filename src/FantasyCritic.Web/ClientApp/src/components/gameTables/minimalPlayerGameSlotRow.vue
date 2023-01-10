@@ -4,15 +4,14 @@
       <gameNameColumn :game-slot="gameSlot" :has-special-slots="hasSpecialSlots" :supported-year="supportedYear" :counter-pick-deadline="leagueYear.counterPickDeadline"></gameNameColumn>
     </td>
     <td class="score-column">
-      <template v-if="game">
-        {{ game.criticScore | score(1) }}
-      </template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ game.criticScore | score(1) }}</template>
+      <template v-if="scoreColumnMode === 'Empty'"></template>
     </td>
 
     <td class="score-column" :class="{ 'projected-text': showProjectedScore }">
       <template v-if="scoreColumnMode === 'RealScore'">{{ game.fantasyPoints | score(1) }}</template>
       <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ gameSlot.projectedFantasyPoints | score(1) }}</template>
-      <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore | score(1) }}</template>
+      <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore }}</template>
     </td>
   </tr>
 </template>
@@ -33,7 +32,7 @@ export default {
       return this.gameSlot.publisherGame;
     },
     scoreColumnMode() {
-      if (this.game && (this.game.fantasyPoints || !this.game.willRelease)) {
+      if (this.game && (this.game.fantasyPoints || !this.game.willRelease || this.game.released)) {
         return 'RealScore';
       }
       if (this.showProjections) {
@@ -46,7 +45,7 @@ export default {
       return this.showProjections && !(this.game && (this.game.fantasyPoints || !this.game.willRelease));
     },
     emptySlotScore() {
-      if (this.gameSlot.counterPick && this.yearFinished) {
+      if (this.gameSlot.counterPick && this.supportedYear.finished) {
         return '-15';
       }
 

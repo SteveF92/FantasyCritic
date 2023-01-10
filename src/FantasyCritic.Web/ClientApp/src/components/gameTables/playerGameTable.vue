@@ -48,6 +48,7 @@
         <template v-if="data.item.publisherGame">
           {{ data.item.publisherGame.fantasyPoints | score(2) }}
         </template>
+        <template v-if="!data.item.publisherGame && data.item.counterPick && leagueYear.supportedYear.finished">-15</template>
       </template>
 
       <template #cell(publisherGame.timestamp)="data">

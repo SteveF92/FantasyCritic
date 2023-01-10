@@ -27,8 +27,13 @@
     </span>
 
     <span v-if="gameSlot.counterPick && !game" class="game-status">
-      Warning!
-      <font-awesome-icon v-b-popover.hover.focus="emptyCounterpickText" color="white" size="lg" icon="exclamation-triangle" />
+      <template v-if="!supportedYear.finished">
+        Warning!
+        <font-awesome-icon v-b-popover.hover.focus="emptyCounterpickText" color="white" size="lg" icon="exclamation-triangle" />
+      </template>
+      <template v-else>
+        <font-awesome-icon v-b-popover.hover.focus="emptyCounterpickFinalText" color="white" size="lg" icon="exclamation-triangle" />
+      </template>
     </span>
   </span>
 </template>
@@ -214,6 +219,17 @@ export default {
           }
           finalString += finalPart;
           return finalString;
+        }
+      };
+    },
+    emptyCounterpickFinalText() {
+      return {
+        html: true,
+        title: () => {
+          return 'Woops!';
+        },
+        content: () => {
+          return 'Since this slot was not filled, it counts as -15 points.';
         }
       };
     }
