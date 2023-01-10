@@ -19,7 +19,7 @@ public class PrivatePublisherDataViewModel
         HashSet<MasterGame> myPublisherMasterGames = userPublisher.MyMasterGames;
 
         QueuedGames = queuedGames.Select(x =>
-            new QueuedGameViewModel(x, currentDate, publisherMasterGames.Contains(x.MasterGame),
+            new QueuedGameViewModel(x, masterGameYearDictionary[x.MasterGame.MasterGameID], currentDate, publisherMasterGames.Contains(x.MasterGame),
                 myPublisherMasterGames.Contains(x.MasterGame)
             )).OrderBy(x => x.Rank).ToList();
     }

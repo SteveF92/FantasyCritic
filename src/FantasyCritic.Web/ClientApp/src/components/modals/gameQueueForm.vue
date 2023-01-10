@@ -56,6 +56,7 @@
           <th scope="col"></th>
           <th scope="col" class="game-column">Game</th>
           <th scope="col" class="game-column">Release Date</th>
+          <th scope="col">Hype Factor</th>
           <th scope="col">Ranking</th>
           <th scope="col">Status</th>
           <th scope="col"></th>
@@ -64,11 +65,12 @@
       <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
         <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
           <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
-          <td>{{ queuedGame.masterGame.gameName }}</td>
+          <td><masterGamePopover :master-game="queuedGame.masterGame"></masterGamePopover></td>
           <td>
             <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
             <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
           </td>
+          <td>{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
           <td>{{ queuedGame.rank }}</td>
           <td>
             <statusBadge :possible-master-game="queuedGame"></statusBadge>
@@ -93,13 +95,15 @@ import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
 import StatusBadge from '@/components/statusBadge';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
 import LeagueMixin from '@/mixins/leagueMixin';
+import MasterGamePopover from '@/components/masterGamePopover';
 
 export default {
   components: {
     draggable,
     PossibleMasterGamesTable,
     StatusBadge,
-    SearchSlotTypeBadge
+    SearchSlotTypeBadge,
+    MasterGamePopover
   },
   mixins: [LeagueMixin],
   data() {

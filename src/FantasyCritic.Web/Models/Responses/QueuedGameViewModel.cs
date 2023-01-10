@@ -1,18 +1,16 @@
-using FantasyCritic.SharedSerialization.API;
-
 namespace FantasyCritic.Web.Models.Responses;
 
 public class QueuedGameViewModel
 {
-    public QueuedGameViewModel(QueuedGame queuedGame, LocalDate currentDate, bool taken, bool alreadyOwned)
+    public QueuedGameViewModel(QueuedGame queuedGame, MasterGameYear masterGameYear, LocalDate currentDate, bool taken, bool alreadyOwned)
     {
-        MasterGame = new MasterGameViewModel(queuedGame.MasterGame, currentDate);
+        MasterGame = new MasterGameYearViewModel(masterGameYear, currentDate);
         Rank = queuedGame.Rank;
         Taken = taken;
         AlreadyOwned = alreadyOwned;
     }
 
-    public MasterGameViewModel MasterGame { get; }
+    public MasterGameYearViewModel MasterGame { get; }
     public int Rank { get; }
     public bool Taken { get; }
     public bool AlreadyOwned { get; }
