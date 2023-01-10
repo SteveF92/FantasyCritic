@@ -91,10 +91,10 @@ export default {
   methods: {
     playerIsSafelyRemoveable(player) {
       let matchingLeagueLevelPlayer = _.find(this.playersWithUsers, function (item) {
-        return item.userID === player.user.userID;
+        return item.user.userID === player.user.userID;
       });
 
-      return matchingLeagueLevelPlayer.removable;
+      return matchingLeagueLevelPlayer.user.removable;
     },
     removeConfirmed(player) {
       //This "password" isn't a security concern, it's just to protect the user from doing something they really don't want to do. If you've dug through the code and found this, you probably do know what you are doing.
