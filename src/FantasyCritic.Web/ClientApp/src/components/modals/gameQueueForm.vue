@@ -17,13 +17,18 @@
     <div v-else>
       <h5 class="text-black">Top Available by Slot</h5>
       <span class="search-tags">
-        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
-        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click.native="getTopGames"></searchSlotTypeBadge>
         <searchSlotTypeBadge
-          v-for="specialSlot in leagueYear.slotInfo.specialSlots"
+          :game-slot="leagueYear.slotInfo.regularSlot"
+          name="REG"
+          :selected="selectedSlotIndex === 1"
+          @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+        <searchSlotTypeBadge
+          v-for="(specialSlot, index) in leagueYear.slotInfo.specialSlots"
           :key="specialSlot.overallSlotNumber"
           :game-slot="specialSlot"
-          @click.native="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+          :selected="selectedSlotIndex === 2 + index"
+          @click.native="getGamesForSlot(specialSlot, 2 + index)"></searchSlotTypeBadge>
       </span>
     </div>
 
@@ -105,7 +110,8 @@ export default {
       desiredQueueRanks: [],
       gameToQueue: null,
       showingTopAvailable: false,
-      isBusy: false
+      isBusy: false,
+      selectedSlotIndex: 0
     };
   },
   mounted() {
@@ -131,6 +137,7 @@ export default {
     },
     getTopGames() {
       this.clearDataExceptSearch();
+      this.selectedSlotIndex = 0;
       this.isBusy = true;
 
       axios
@@ -144,8 +151,9 @@ export default {
           this.isBusy = false;
         });
     },
-    getGamesForSlot(slotInfo) {
+    getGamesForSlot(slotInfo, slotIndex) {
       this.clearDataExceptSearch();
+      this.selectedSlotIndex = slotIndex;
       this.isBusy = true;
       let slotJSON = JSON.stringify(slotInfo);
       let base64Slot = btoa(slotJSON);

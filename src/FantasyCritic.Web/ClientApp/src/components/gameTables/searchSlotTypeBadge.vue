@@ -1,19 +1,16 @@
 <template>
-  <span>
-    <span v-if="gameSlot.counterPick">
-      <span class="badge tag-badge counter-pick-badge flex-badge search-tag">CPK</span>
-    </span>
-    <span v-if="!gameSlot.counterPick && name">
-      <span class="badge tag-badge regular-slot-badge flex-badge search-tag">
+  <span class="highlight-area" :class="{ highlight: selected }">
+    <span v-if="name">
+      <span class="badge tag-badge regular-slot-badge search-tag">
         {{ name }}
       </span>
     </span>
-    <span v-if="!gameSlot.counterPick && !name">
+    <span v-if="!name">
       <template v-if="gameSlot.requiredTags.length === 1">
-        <masterGameTagBadge :tag-name="gameSlot.requiredTags[0]" short no-popover class="flex-real-badge search-tag"></masterGameTagBadge>
+        <masterGameTagBadge :tag-name="gameSlot.requiredTags[0]" short no-popover class="search-tag"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span class="badge tag-badge flex-badge search-tag" :style="getMultiBadgeColor(gameSlot.requiredTags)">FLX</span>
+        <span class="badge tag-badge search-tag" :style="getMultiBadgeColor(gameSlot.requiredTags)">FLX</span>
       </template>
     </span>
   </span>
@@ -27,7 +24,8 @@ export default {
   },
   props: {
     gameSlot: { type: Object, required: true },
-    name: { type: String, default: null }
+    name: { type: String, default: null },
+    selected: { type: Boolean, default: false }
   },
   methods: {
     getTag(tagName) {
@@ -75,23 +73,10 @@ export default {
   color: black;
 }
 
-.flex-real-badge {
-  margin-right: 5px;
-}
-
-.flex-badge {
-  margin-right: 8px;
-}
-
 .regular-slot-badge {
   color: #ffffff;
   text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
   background-color: #cccccc;
-}
-
-.counter-pick-badge {
-  background-color: #aa1e1e;
-  color: white;
 }
 
 .search-tag {
@@ -100,5 +85,17 @@ export default {
 
 .search-tag:hover {
   opacity: 0.8;
+}
+
+.highlight-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.highlight {
+  background-color: #000000;
 }
 </style>
