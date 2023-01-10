@@ -47,10 +47,10 @@
         </div>
 
         <div v-show="searched && !draftMasterGame" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
-          <div class="row">
-            <span v-show="possibleMasterGames.length > 0" class="col-12 col-md-7">Don't see the game you are looking for?</span>
-            <span v-show="possibleMasterGames.length === 0" class="col-12 col-md-7">No games were found.</span>
-            <b-button variant="primary" size="sm" class="col-12 col-md-5" @click="showUnlistedField">Select unlisted game</b-button>
+          <div>
+            <span v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
+            <span v-show="possibleMasterGames.length === 0">No games were found.</span>
+            <b-button variant="primary" size="sm" class="unlisted-button" @click="showUnlistedField">Select unlisted game</b-button>
           </div>
 
           <div v-if="showingUnlistedField">
@@ -244,5 +244,9 @@ export default {
 }
 .show-top-button {
   margin-bottom: 10px;
+}
+
+.unlisted-button {
+  margin-left: 10px;
 }
 </style>
