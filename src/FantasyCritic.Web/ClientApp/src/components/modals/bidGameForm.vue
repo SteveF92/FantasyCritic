@@ -1,5 +1,5 @@
 <template>
-  <b-modal :id="modalID" :ref="modalRef" size="lg" title="Make a Bid" hide-footer @hidden="clearData">
+  <b-modal :id="modalID" :ref="modalRef" size="lg" title="Make a Bid" hide-footer @hidden="clearData" @show="getTopGames">
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
@@ -33,7 +33,7 @@
       </div>
       <div v-else>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <h5 class="text-black">Search by Slot</h5>
+        <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
           <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
           <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
@@ -299,11 +299,7 @@ export default {
   text-align: center;
 }
 
-.search-tags {
-  display: flex;
-  padding: 5px;
-  background: rgba(50, 50, 50, 0.7);
-  border-radius: 5px;
-  justify-content: space-around;
+.show-top-button {
+  margin-bottom: 10px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
+  <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData" @show="getTopGames">
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <label for="searchGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
@@ -15,7 +15,7 @@
       </div>
       <div v-else>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <h5 class="text-black">Search by Slot</h5>
+        <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
           <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
           <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
@@ -28,6 +28,10 @@
       </div>
 
       <div v-if="!draftMasterGame">
+        <div v-if="isBusy" class="game-list-spinner">
+          <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
+        </div>
+
         <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
         <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
         <h3 v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
@@ -251,13 +255,5 @@ export default {
 
 .show-top-button {
   margin-bottom: 10px;
-}
-
-.search-tags {
-  display: flex;
-  padding: 5px;
-  background: rgba(50, 50, 50, 0.7);
-  border-radius: 5px;
-  justify-content: space-around;
 }
 </style>

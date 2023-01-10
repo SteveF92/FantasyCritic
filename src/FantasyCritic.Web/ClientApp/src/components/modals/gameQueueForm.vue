@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearAllData">
+  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearAllData" @show="getTopGames">
     <div class="form-group">
       <h3 class="text-black">Add Game to Watchlist</h3>
       <label for="searchGameName" class="control-label">Game Name</label>
@@ -15,7 +15,7 @@
       <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
     </div>
     <div v-else>
-      <h5 class="text-black">Search by Slot</h5>
+      <h5 class="text-black">Top Available by Slot</h5>
       <span class="search-tags">
         <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
         <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
@@ -226,16 +226,12 @@ export default {
   text-align: center;
 }
 
-.search-tags {
-  display: flex;
-  padding: 5px;
-  background: rgba(50, 50, 50, 0.7);
-  border-radius: 5px;
-  justify-content: space-around;
-}
-
 .spinner {
   margin-top: 20px;
   text-align: center;
+}
+
+.show-top-button {
+  margin-bottom: 10px;
 }
 </style>

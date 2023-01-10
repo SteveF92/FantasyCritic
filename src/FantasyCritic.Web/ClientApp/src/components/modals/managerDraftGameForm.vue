@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData">
+  <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData" @show="getTopGames">
     <div class="alert alert-info">
       This form will allow you to draft a game for another player. You can use this if you are running a draft off of one computer, for example. If you are just looking to draft your own games, you
       should use "Draft Game" under "Player Actions"
@@ -24,7 +24,7 @@
           <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
         </div>
         <div v-else>
-          <h5 class="text-black">Search by Slot</h5>
+          <h5 class="text-black">Top Available by Slot</h5>
           <span class="search-tags">
             <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" @click.native="getTopGames"></searchSlotTypeBadge>
             <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.regularSlot" name="REG" @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
@@ -37,6 +37,10 @@
         </div>
 
         <div v-if="!draftMasterGame">
+          <div v-if="isBusy" class="game-list-spinner">
+            <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
+          </div>
+
           <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
           <h3 v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
           <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
@@ -240,13 +244,5 @@ export default {
 }
 .show-top-button {
   margin-bottom: 10px;
-}
-
-.search-tags {
-  display: flex;
-  padding: 5px;
-  background: rgba(50, 50, 50, 0.7);
-  border-radius: 5px;
-  justify-content: space-around;
 }
 </style>

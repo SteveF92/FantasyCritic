@@ -247,3 +247,17 @@ img.critic-royale-nav {
 .text-bold {
   font-weight: bold;
 }
+
+.game-list-spinner {
+  display: flex;
+  justify-content: center;
+}
+
+.search-tags {
+  display: flex;
+  padding: 5px;
+  background: rgba(50, 50, 50, 0.7);
+  border-radius: 5px;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
