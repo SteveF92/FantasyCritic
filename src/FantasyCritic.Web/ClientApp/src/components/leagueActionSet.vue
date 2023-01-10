@@ -35,6 +35,7 @@
         </template>
         <template #cell(masterGame)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
+          <span v-if="data.item.counterPick">(Counter Pick)</span>
         </template>
         <template #cell(counterPick)="data">
           {{ data.item.counterPick | yesNo }}
@@ -67,21 +68,20 @@ export default {
   data() {
     return {
       dropFields: [
-        { key: 'publisherName', label: 'Publisher Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'publisherName', label: 'Publisher', sortable: true, thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame', label: 'Master Game', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' }
       ],
       bidFields: [
-        { key: 'publisherName', label: 'Publisher Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame', label: 'Master Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'counterPick', label: 'Counter Pick', sortable: true, thClass: 'bg-primary' },
-        { key: 'priority', label: 'Priority', sortable: true, thClass: 'bg-primary' },
-        { key: 'bidAmount', label: 'Bid Amount', sortable: true, thClass: 'bg-primary' },
-        { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
-        { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary' },
+        { key: 'publisherName', label: 'Publisher', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' },
+        { key: 'bidAmount', label: 'Bid Amount', sortable: true, thClass: 'bg-primary' },
+        { key: 'priority', label: 'Priority', sortable: true, thClass: 'bg-primary' },
+        { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
+        { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary' },
+        { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
         { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' }
       ],
       sortBy: 'timestamp',
