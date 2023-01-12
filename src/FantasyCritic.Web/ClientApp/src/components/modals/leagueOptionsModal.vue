@@ -78,6 +78,10 @@
             <th class="bg-primary">Game Release Rule</th>
             <td>{{ leagueYearOptions.releaseSystem | selectTextFromPossibleOptions(possibleLeagueOptions.releaseSystems) }}</td>
           </tr>
+          <tr>
+            <th class="bg-primary">Scoring Rule</th>
+            <td>{{ leagueYearOptions.scoringSystem | selectTextFromPossibleOptions(possibleLeagueOptions.scoringSystems) }}</td>
+          </tr>
 
           <tr>
             <th class="bg-primary">Banned Tags</th>
