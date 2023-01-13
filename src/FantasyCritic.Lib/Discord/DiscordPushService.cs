@@ -23,6 +23,7 @@ public class DiscordPushService
     private const int MaxAttempts = 4;
     private const int MaxMessageLength = 2000;
     private readonly string _botToken;
+    private readonly IClock _clock;
     private readonly IDiscordRepo _discordRepo;
     private readonly IDiscordSupplementalDataRepo _supplementalDataRepo;
     private readonly IFantasyCriticUserStore _userStore;
@@ -39,6 +40,7 @@ public class DiscordPushService
 
     public DiscordPushService(
         FantasyCriticDiscordConfiguration configuration,
+        IClock clock,
         IDiscordRepo discordRepo,
         IDiscordSupplementalDataRepo supplementalDataRepo,
         IFantasyCriticUserStore userStore,
@@ -48,6 +50,7 @@ public class DiscordPushService
         _enabled = !string.IsNullOrEmpty(configuration.BotToken) && configuration.BotToken != "secret";
         _botToken = configuration.BotToken;
         _baseAddress = configuration.BaseAddress;
+        _clock = clock;
         _discordRepo = discordRepo;
         _supplementalDataRepo = supplementalDataRepo;
         _userStore = userStore;
@@ -866,7 +869,7 @@ public class DiscordPushService
         return Task.CompletedTask;
     }
 
-    public async Task SendSpecialAuctionCreatedMessage(SpecialAuction specialAuction)
+    public async Task SendSpecialAuctionMessage(SpecialAuction specialAuction, string specialAuctionAction)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -879,7 +882,6 @@ public class DiscordPushService
         {
             return;
         }
-
 
         var messageTasks = new List<Task>();
 
@@ -901,25 +903,58 @@ public class DiscordPushService
                     channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
             }
 
+            var currentInstant = _clock.GetCurrentInstant();
+            var duration = specialAuction.ScheduledEndTime - currentInstant;
+
+            var title = "";
+
+            var embedFieldBuilders = new List<EmbedFieldBuilder>();
+
+            switch (specialAuctionAction)
+            {
+                case "create":
+                    title = "Special Auction Created";
+                    embedFieldBuilders = new List<EmbedFieldBuilder>
+                    {
+                        new()
+                        {
+                            Name = "Game To Bid On",
+                            Value = specialAuction.MasterGameYear.MasterGame.GameName,
+                            IsInline = false
+                        },
+                        new()
+                        {
+                            Name = "Time Until Auction Ends",
+                            Value =
+                                $"{(duration.Days > 0 ? $"{duration.Days} days, " : "")}{(duration.Hours > 0 ? $"{duration.Hours} hours, " : "")}{duration.Minutes} minutes",
+                            IsInline = false
+                        }
+                    };
+                    break;
+                case "cancel":
+                    title = "Special Auction Cancelled";
+                    embedFieldBuilders = new List<EmbedFieldBuilder>
+                    {
+                        new()
+                        {
+                            Name = "Game That Was Being Bid On",
+                            Value = specialAuction.MasterGameYear.MasterGame.GameName,
+                            IsInline = false
+                        }
+                    };
+                    break;
+            }
+
+            if (!embedFieldBuilders.Any())
+            {
+                continue;
+            }
+
             messageTasks.Add(textChannel.TrySendMessageAsync(roleToMention?.Mention ?? "", embed: _discordFormatter.BuildRegularEmbed(
-            "Special Auction Created",
+            title,
             "",
             null,
-            new List<EmbedFieldBuilder>
-            {
-                new()
-                {
-                    Name = "Game To Bid On",
-                    Value=specialAuction.MasterGameYear.MasterGame.GameName,
-                    IsInline = false
-                },
-                new()
-                {
-                    Name = "Auction End Date & Time",
-                    Value = specialAuction.ScheduledEndTime.ToString(),
-                    IsInline = false
-                }
-            },
+            embedFieldBuilders,
             leagueLink)));
         }
 

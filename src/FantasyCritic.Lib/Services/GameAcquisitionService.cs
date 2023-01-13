@@ -559,7 +559,7 @@ public class GameAcquisitionService
 
         await _fantasyCriticRepo.CreateSpecialAuction(specialAuction, action);
 
-        await _discordPushService.SendSpecialAuctionCreatedMessage(specialAuction);
+        await _discordPushService.SendSpecialAuctionMessage(specialAuction, "create");
 
         return Result.Success();
     }
@@ -601,6 +601,7 @@ public class GameAcquisitionService
         LeagueAction action = new LeagueAction(managerPublisher, now, "Cancelled Special Auction", actionDescription, true);
 
         await _fantasyCriticRepo.CancelSpecialAuction(specialAuction, action);
+        await _discordPushService.SendSpecialAuctionMessage(specialAuction, "cancel");
         return Result.Success();
     }
 }

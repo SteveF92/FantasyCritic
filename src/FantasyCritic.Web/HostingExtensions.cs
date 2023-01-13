@@ -80,7 +80,7 @@ public static class HostingExtensions
         services.AddSingleton<PatreonConfig>(_ => patreonConfig);
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => emailSendingConfig);
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
-        services.AddSingleton<DiscordPushService>(_ => GetDiscordPushService(discordConfiguration, repoConfiguration));
+        services.AddSingleton<DiscordPushService>(_ => GetDiscordPushService(discordConfiguration, repoConfiguration, clock));
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
@@ -382,13 +382,14 @@ public static class HostingExtensions
         return app;
     }
 
-    private static DiscordPushService GetDiscordPushService(FantasyCriticDiscordConfiguration discordConfiguration, RepositoryConfiguration repositoryConfiguration)
+    private static DiscordPushService GetDiscordPushService(FantasyCriticDiscordConfiguration discordConfiguration,
+        RepositoryConfiguration repositoryConfiguration, IClock clock)
     {
         var userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
         var masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore);
         var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
         var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo);
         var supplementalDataRepo = new MySQLDiscordSupplementalDataRepo(repositoryConfiguration);
-        return new DiscordPushService(discordConfiguration, discordRepo, supplementalDataRepo, userStore, fantasyCriticRepo, new DiscordFormatter());
+        return new DiscordPushService(discordConfiguration, clock, discordRepo, supplementalDataRepo, userStore, fantasyCriticRepo, new DiscordFormatter());
     }
 }
