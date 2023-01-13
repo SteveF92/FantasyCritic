@@ -1359,8 +1359,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string deleteQueueSQL = "delete from tbl_league_publisherqueue where PublisherID = @publisherID;";
         const string deleteHistorySQL = "delete from tbl_league_action where PublisherID = @publisherID;";
         const string deletePublisherGameSQL = "delete from tbl_league_publishergame WHERE PublisherID = @publisherID;";
+        const string deleteFormerPublisherGameSQL = "delete from tbl_league_formerpublishergame WHERE PublisherID = @publisherID;";
         const string deletePublisherBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @publisherID;";
         const string deletePublisherDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @publisherID;";
+        const string deleteTradesSQL = "delete from tbl_league_trade WHERE ProposerPublisherID = @publisherID OR CounterPartyPublisherID = @publisherID;";
         const string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
 
         var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher).OrderBy(x => x.DraftPosition).ToList();
@@ -1377,8 +1379,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(deleteQueueSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deleteHistorySQL, deleteObject, transaction);
         await connection.ExecuteAsync(deletePublisherGameSQL, deleteObject, transaction);
+        await connection.ExecuteAsync(deleteFormerPublisherGameSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deletePublisherBidsSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deletePublisherDropsSQL, deleteObject, transaction);
+        await connection.ExecuteAsync(deleteTradesSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
         await connection.ExecuteAsync(fixDraftOrderSQL, setDraftOrderEntities, transaction);
         await transaction.CommitAsync();
