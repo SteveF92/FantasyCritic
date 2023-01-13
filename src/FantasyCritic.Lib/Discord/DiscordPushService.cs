@@ -916,7 +916,7 @@ public class DiscordPushService
                 new()
                 {
                     Name = "Auction End Date & Time",
-                    Value = specialAuction.ScheduledEndTime.ToEasternDate().ToString(),
+                    Value = specialAuction.ScheduledEndTime.ToString(),
                     IsInline = false
                 }
             },
