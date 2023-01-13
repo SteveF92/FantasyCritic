@@ -559,6 +559,8 @@ public class GameAcquisitionService
 
         await _fantasyCriticRepo.CreateSpecialAuction(specialAuction, action);
 
+        await _discordPushService.SendSpecialAuctionCreatedMessage(specialAuction);
+
         return Result.Success();
     }
 

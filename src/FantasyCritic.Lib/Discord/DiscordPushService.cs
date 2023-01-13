@@ -6,6 +6,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
@@ -863,5 +864,65 @@ public class DiscordPushService
     {
         Logger.Information(msg.ToString());
         return Task.CompletedTask;
+    }
+
+    public async Task SendSpecialAuctionCreatedMessage(SpecialAuction specialAuction)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var leagueChannels = await _discordRepo.GetLeagueChannels(specialAuction.LeagueYearKey.LeagueID);
+        if (!leagueChannels.Any())
+        {
+            return;
+        }
+
+
+        var messageTasks = new List<Task>();
+
+        var leagueLink = new LeagueUrlBuilder(_baseAddress, specialAuction.LeagueYearKey.LeagueID, specialAuction.LeagueYearKey.Year).BuildUrl();
+
+        foreach (var leagueChannel in leagueChannels)
+        {
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            var channel = guild?.GetChannel(leagueChannel.ChannelID);
+            if (channel is not SocketTextChannel textChannel)
+            {
+                continue;
+            }
+
+            SocketRole? roleToMention = null;
+            if (leagueChannel.BidAlertRoleID != null)
+            {
+                roleToMention =
+                    channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
+            }
+
+            messageTasks.Add(textChannel.TrySendMessageAsync(roleToMention?.Mention ?? "", embed: _discordFormatter.BuildRegularEmbed(
+            "Special Auction Created",
+            "",
+            null,
+            new List<EmbedFieldBuilder>
+            {
+                new()
+                {
+                    Name = "Game To Bid On",
+                    Value=specialAuction.MasterGameYear.MasterGame.GameName,
+                    IsInline = false
+                },
+                new()
+                {
+                    Name = "Auction End Date & Time",
+                    Value = specialAuction.ScheduledEndTime.ToEasternDate().ToString(),
+                    IsInline = false
+                }
+            },
+            leagueLink)));
+        }
+
+        await Task.WhenAll(messageTasks);
     }
 }

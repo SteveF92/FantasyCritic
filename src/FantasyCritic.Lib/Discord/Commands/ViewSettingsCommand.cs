@@ -61,7 +61,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
 
             var publicBiddingRoleDisplay =
                 GetPublicBiddingRoleDisplayText(leagueChannel.LeagueYear.Options.PickupSystem,
-                    leagueChannel.PublicBidAlertRoleID);
+                    leagueChannel.BidAlertRoleID);
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
                 Name = "Public Bid Role",
