@@ -408,6 +408,7 @@ public class AdminService
         }
 
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
+        await _discordPushService.SendActionProcessingSummary(results.GetLeagueActionSets());
     }
 
     public async Task MakePublisherSlotsConsistent()
