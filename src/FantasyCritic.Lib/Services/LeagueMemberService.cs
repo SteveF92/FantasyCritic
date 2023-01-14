@@ -282,9 +282,23 @@ public class LeagueMemberService
         return _fantasyCriticRepo.SetArchiveStatusForUser(league, archive, user);
     }
 
-    public Task TransferLeagueManager(League league, FantasyCriticUser newManager)
+    public async Task<Result> TransferLeagueManager(League league, FantasyCriticUser newManager)
     {
-        return _fantasyCriticRepo.TransferLeagueManager(league, newManager);
+        var usersInLeague = await GetUsersInLeague(league);
+        if (!usersInLeague.Contains(newManager))
+        {
+            return Result.Failure("That player is not in the league.");
+        }
+
+        var mostRecentYear = league.Years.Max();
+        var activePlayersInYear = await GetActivePlayersForLeagueYear(league, mostRecentYear);
+        if (!activePlayersInYear.Contains(newManager))
+        {
+            return Result.Failure("You can't promote an inactive player to manager.");
+        }
+
+        await _fantasyCriticRepo.TransferLeagueManager(league, newManager);
+        return Result.Success();
     }
 
     public Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()

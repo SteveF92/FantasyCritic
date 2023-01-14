@@ -968,13 +968,12 @@ public class LeagueManagerController : BaseLeagueController
         var league = validResult.League;
 
         var newManager = await _userManager.FindByIdOrThrowAsync(request.NewManagerUserID);
-        var usersInLeague = await _leagueMemberService.GetUsersInLeague(league);
-        if (!usersInLeague.Contains(newManager))
+        
+        var transferResult = await _leagueMemberService.TransferLeagueManager(league, newManager);
+        if (transferResult.IsFailure)
         {
-            return BadRequest();
+            return BadRequest(transferResult.Error);
         }
-
-        await _leagueMemberService.TransferLeagueManager(league, newManager);
 
         return Ok();
     }
