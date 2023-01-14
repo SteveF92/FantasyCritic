@@ -449,28 +449,11 @@ public class DiscordPushService
                 continue;
             }
 
-            var gameMessages = new List<string>();
-            foreach (var publicBid in publicBiddingSet.MasterGames)
-            {
-                var gameMessage = "";
-                var releaseDate = publicBid.MasterGameYear.MasterGame.EstimatedReleaseDate;
-                gameMessage += $"**{publicBid.MasterGameYear.MasterGame.GameName}**";
-
-                if (publicBid.CounterPick)
-                {
-                    gameMessage += " (🎯 Counter Pick Bid)";
-                }
-
-                gameMessage += $"\n> Release Date: {releaseDate}";
-
-                var roundedHypeFactor = Math.Round(publicBid.MasterGameYear.HypeFactor, 1);
-                gameMessage += $"\n> Hype Factor: {roundedHypeFactor}\n";
-                gameMessages.Add(gameMessage);
-            }
+            var gameMessages = publicBiddingSet.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
 
             var leagueLink = new LeagueUrlBuilder(_baseAddress, publicBiddingSet.LeagueYear.League.LeagueID, publicBiddingSet.LeagueYear.Year).BuildUrl();
             var finalMessage = string.Join("\n", gameMessages);
-            var lastSunday = GetLastSunday();
+            var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
             var header = $"Public Bids (Week of {lastSunday:MMMM dd, yyyy})";
 
             foreach (var leagueChannel in leagueChannels)
@@ -497,14 +480,6 @@ public class DiscordPushService
         }
 
         await Task.WhenAll(messageTasks);
-    }
-
-    private static DateTime GetLastSunday()
-    {
-        var currentDate = DateTime.Now;
-        var currentDayOfWeek = (int)currentDate.DayOfWeek;
-        var lastSundayDate = currentDate.AddDays(-currentDayOfWeek);
-        return lastSundayDate;
     }
 
     public async Task SendActionProcessingSummary(IReadOnlyList<LeagueActionProcessingSet> leagueActionSets)

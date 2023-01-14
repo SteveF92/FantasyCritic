@@ -67,6 +67,7 @@ public class Program
             .AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>()
             .AddScoped<InterLeagueService>()
             .AddScoped<GameSearchingService>()
+            .AddScoped<GameAcquisitionService>()
             .AddScoped<IDiscordFormatter, DiscordFormatter>()
             .BuildServiceProvider();
     }

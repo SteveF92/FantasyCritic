@@ -117,4 +117,30 @@ public static class DiscordSharedMessageUtilities
         }
         return rank == 1;
     }
+
+    public static string BuildPublicBidGameMessage(PublicBiddingMasterGame publicBid)
+    {
+        var gameMessage = "";
+        var releaseDate = publicBid.MasterGameYear.MasterGame.EstimatedReleaseDate;
+        gameMessage += $"**{publicBid.MasterGameYear.MasterGame.GameName}**";
+
+        if (publicBid.CounterPick)
+        {
+            gameMessage += " (🎯 Counter Pick Bid)";
+        }
+
+        gameMessage += $"\n> Release Date: {releaseDate}";
+
+        var roundedHypeFactor = Math.Round(publicBid.MasterGameYear.HypeFactor, 1);
+        gameMessage += $"\n> Hype Factor: {roundedHypeFactor}\n";
+        return gameMessage;
+    }
+
+    public static DateTime GetLastSunday()
+    {
+        var currentDate = DateTime.Now;
+        var currentDayOfWeek = (int)currentDate.DayOfWeek;
+        var lastSundayDate = currentDate.AddDays(-currentDayOfWeek);
+        return lastSundayDate;
+    }
 }
