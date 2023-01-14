@@ -100,6 +100,7 @@ public static class Program
                 _baseAddress,
                 true,
                 null),
+            _clock,
             discordRepo,
             discordSupplementalRepo,
             localUserStore,
