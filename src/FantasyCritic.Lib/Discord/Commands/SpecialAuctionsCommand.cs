@@ -8,7 +8,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
+public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
@@ -18,7 +18,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public PublicBidsCommand(IDiscordRepo discordRepo,
+    public SpecialAuctionsCommand(IDiscordRepo discordRepo,
         IFantasyCriticRepo fantasyCriticRepo,
         InterLeagueService interLeagueService,
         GameAcquisitionService gameAcquisitionService,
@@ -35,12 +35,13 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    [SlashCommand("public-bids", "View the current public bids for this week.")]
-    public async Task GetPublicBids(
+    [SlashCommand("special-auctions", "View the special auctions that are currently active.")]
+    public async Task GetSpecialAuctions(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
+        
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
@@ -62,40 +63,35 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
 
         var leagueYear = leagueChannel.LeagueYear;
 
-        if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SecretBidding))
-        {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Bidding is Secret",
-                "This league does not use public bidding.",
-                Context.User));
-            return;
-        }
+        var specialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
 
-        var allPublicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(dateToCheck.Year);
-
-        var leagueYearPublicBids =
-            allPublicBiddingGames.FirstOrDefault(g => g.LeagueYear.League.LeagueID == leagueYear.League.LeagueID)?.MasterGames;
-
-        if (leagueYearPublicBids == null || !leagueYearPublicBids.Any())
+        if (specialAuctions == null || !specialAuctions.Any())
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-                "No Public Bids",
-                "No public bids were found for this week.",
+                "No Special Auctions",
+                "There are no special auctions running currently.",
                 Context.User));
             return;
         }
 
-        var gameMessages = leagueYearPublicBids.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
-        var finalMessage = string.Join("\n", gameMessages);
-        var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
-        var header = $"Public Bids (Week of {lastSunday:MMMM dd, yyyy})";
-
+        var specialAuctionMessages = new List<string>();
+        foreach (var specialAuction in specialAuctions)
+        {
+            var specialAuctionMessage = $"**{specialAuction.MasterGameYear.MasterGame.GameName}**";
+            var currentInstant = _clock.GetCurrentInstant();
+            var duration = specialAuction.ScheduledEndTime - currentInstant;
+            specialAuctionMessage += $"\n> Time Until Auction Ends: {DiscordSharedMessageUtilities.BuildRemainingTimeMessage(duration)}";
+            specialAuctionMessages.Add(specialAuctionMessage);
+        }
+        
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
             leagueYear.Year)
             .BuildUrl();
 
+        var finalMessage = string.Join("\n", specialAuctionMessages);
+
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            header,
+            "Special Auction(s)",
             finalMessage,
             Context.User,
             url: leagueUrl));

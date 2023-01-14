@@ -900,8 +900,7 @@ public class DiscordPushService
                         new()
                         {
                             Name = "Time Until Auction Ends",
-                            Value =
-                                $"{(duration.Days > 0 ? $"{duration.Days} days, " : "")}{(duration.Hours > 0 ? $"{duration.Hours} hours, " : "")}{duration.Minutes} minutes",
+                            Value = DiscordSharedMessageUtilities.BuildRemainingTimeMessage(duration),
                             IsInline = false
                         }
                     };
