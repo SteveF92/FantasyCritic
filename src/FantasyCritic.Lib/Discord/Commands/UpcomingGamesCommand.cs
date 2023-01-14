@@ -9,7 +9,7 @@ using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionContext>
+public class UpcomingGamesCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
@@ -17,7 +17,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public GetRecentGamesCommand(IDiscordRepo discordRepo,
+    public UpcomingGamesCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
         IClock clock,
         IDiscordFormatter discordFormatter,
@@ -30,8 +30,8 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    [SlashCommand("recent", "Get recent releases for publishers in the league.")]
-    public async Task GetRecentGames()
+    [SlashCommand("upcoming", "Get upcoming releases for publishers in the league.")]
+    public async Task GetUpcomingGames()
     {
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate();
@@ -41,7 +41,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Getting Recent Games",
+                "Error Getting Upcoming Games",
                 "No league configuration found for this channel.",
                 Context.User));
             return;
@@ -50,17 +50,17 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
         var leagueYear = leagueChannel.LeagueYear;
         var leagueYearPublisherPairs = leagueYear.Publishers.Select(publisher => new LeagueYearPublisherPair(leagueYear, publisher));
 
-        var recentGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, true, dateToCheck);
-        if (recentGamesData.Count == 0)
+        var upcomingGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, false, dateToCheck);
+        if (upcomingGamesData.Count == 0)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Getting Recent Games",
+                "Error Getting Upcoming Games",
                 "No data found.",
                 Context.User));
         }
 
-        var messages = new List<string>();
-        foreach (var recentGameGrouping in recentGamesData)
+        List<string> messages = new List<string>();
+        foreach (var recentGameGrouping in upcomingGamesData)
         {
             var standardGame = recentGameGrouping.FirstOrDefault(p => !p.CounterPick);
             var counterPick = recentGameGrouping.FirstOrDefault(p => p.CounterPick);
@@ -77,7 +77,7 @@ public class GetRecentGamesCommand : InteractionModuleBase<SocketInteractionCont
         var message = string.Join("\n--------------------------------\n", messages);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "Recent Publisher Releases",
+            "Upcoming Publisher Releases",
             message,
             Context.User));
     }

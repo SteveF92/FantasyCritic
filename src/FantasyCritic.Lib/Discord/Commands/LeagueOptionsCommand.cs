@@ -8,14 +8,14 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class GetLeagueOptionsCommand : InteractionModuleBase<SocketInteractionContext>
+public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public GetLeagueOptionsCommand(IDiscordRepo discordRepo,
+    public LeagueOptionsCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)

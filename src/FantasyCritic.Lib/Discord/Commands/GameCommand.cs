@@ -8,7 +8,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
+public class GameCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
@@ -17,7 +17,7 @@ public class GetGameCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public GetGameCommand(IDiscordRepo discordRepo,
+    public GameCommand(IDiscordRepo discordRepo,
         IClock clock,
         GameSearchingService gameSearchingService,
         InterLeagueService interLeagueService,

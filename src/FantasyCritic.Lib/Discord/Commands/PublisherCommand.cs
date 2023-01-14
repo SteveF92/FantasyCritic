@@ -9,7 +9,7 @@ using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContext>
+public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
@@ -19,7 +19,7 @@ public class GetPublisherCommand : InteractionModuleBase<SocketInteractionContex
     private readonly string _baseAddress;
     private const string NotFoundByUserErrorMessage = "No matches were found for that user. They may not have their Discord account linked to their Fantasy Critic account, or you might not be in the right channel for their league.";
 
-    public GetPublisherCommand(IDiscordRepo discordRepo,
+    public PublisherCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
         IClock clock,
         IDiscordFormatter discordFormatter,

@@ -7,9 +7,9 @@ using FantasyCritic.Lib.Interfaces;
 using Serilog;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionContext>
+public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
-    private static readonly ILogger Logger = Log.ForContext<SetLeagueChannelCommand>();
+    private static readonly ILogger Logger = Log.ForContext<SetLeagueCommand>();
 
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
@@ -18,7 +18,7 @@ public class SetLeagueChannelCommand : InteractionModuleBase<SocketInteractionCo
     private readonly IFantasyCriticUserStore _userStore;
     private readonly FantasyCriticSettings _fantasyCriticSettings;
 
-    public SetLeagueChannelCommand(IDiscordRepo discordRepo,
+    public SetLeagueCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         IFantasyCriticRepo fantasyCriticRepo,

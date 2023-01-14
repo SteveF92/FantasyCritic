@@ -6,14 +6,14 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class GetLeagueLinkCommand : InteractionModuleBase<SocketInteractionContext>
+public class LeagueLinkCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public GetLeagueLinkCommand(IDiscordRepo discordRepo,
+    public LeagueLinkCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
