@@ -1362,7 +1362,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string deleteFormerPublisherGameSQL = "delete from tbl_league_formerpublishergame WHERE PublisherID = @publisherID;";
         const string deletePublisherBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @publisherID;";
         const string deletePublisherDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @publisherID;";
-        const string deleteTradesSQL = "delete from tbl_league_trade WHERE ProposerPublisherID = @publisherID OR CounterPartyPublisherID = @publisherID;";
+        const string updateProposerTradeSQL = "UPDATE tbl_league_trade SET ProposerPublisherID = null WHERE ProposerPublisherID = @publisherID;";
+        const string updateCounterPartyTradeSQL = "UPDATE tbl_league_trade SET CounterPartyPublisherID = null WHERE CounterPartyPublisherID = @publisherID;";
         const string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
 
         var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher).OrderBy(x => x.DraftPosition).ToList();
@@ -1382,7 +1383,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(deleteFormerPublisherGameSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deletePublisherBidsSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deletePublisherDropsSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deleteTradesSQL, deleteObject, transaction);
+        await connection.ExecuteAsync(updateProposerTradeSQL, deleteObject, transaction);
+        await connection.ExecuteAsync(updateCounterPartyTradeSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
         await connection.ExecuteAsync(fixDraftOrderSQL, setDraftOrderEntities, transaction);
         await transaction.CommitAsync();

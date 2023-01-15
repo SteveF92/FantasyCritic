@@ -156,9 +156,14 @@ public class LeagueYear : IEquatable<LeagueYear>
         return publisher;
     }
 
-    public Publisher GetPublisherByIDOrFakePublisher(Guid publisherID)
+    public Publisher GetPublisherByIDOrFakePublisher(Guid? publisherID)
     {
-        var publisher = _publisherDictionary.GetValueOrDefault(publisherID);
+        if (publisherID is null)
+        {
+            return Publisher.GetFakePublisher(Key);
+        }
+
+        var publisher = _publisherDictionary.GetValueOrDefault(publisherID.Value);
         return publisher ?? Publisher.GetFakePublisher(Key);
     }
 

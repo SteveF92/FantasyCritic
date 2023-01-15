@@ -29,8 +29,8 @@ public class TradeEntity
     public Guid TradeID { get; set; }
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
-    public Guid ProposerPublisherID { get; set; }
-    public Guid CounterPartyPublisherID { get; set; }
+    public Guid? ProposerPublisherID { get; set; }
+    public Guid? CounterPartyPublisherID { get; set; }
     public uint ProposerBudgetSendAmount { get; set; }
     public uint CounterPartyBudgetSendAmount { get; set; }
     public string Message { get; set; } = null!;
