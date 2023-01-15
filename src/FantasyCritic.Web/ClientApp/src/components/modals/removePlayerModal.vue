@@ -1,9 +1,8 @@
 <template>
   <b-modal id="removePlayerForm" ref="removePlayerFormRef" size="lg" title="Remove Player" hide-footer @hidden="clearData">
-    <label>Use this option to remove a player.</label>
     <div class="alert alert-info">
       This option will allow you to remove any player, even after the draft, midway through the year. You should not do this lightly, as it will invariably affect the experience of your other players.
-      This affects all years of your league, not just the current one. It cannot easily be reversed either. Proceed at your own risk.
+      It cannot be reversed. Proceed at your own risk.
     </div>
     <div class="form-group">
       <label for="playerToRemove" class="control-label">Player to Remove</label>
@@ -12,46 +11,35 @@
           {{ player.user.displayName }}
         </option>
       </b-form-select>
-    </div>
 
-    <div v-show="playerToRemove && playerIsSafelyRemoveable(playerToRemove)" class="alert alert-info">
-      This player can be safely removed without any issues. Please type
-      <strong>REMOVE PLAYER</strong>
-      into the box below and click the button.
-    </div>
-    <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
-      This will affect prior years of this league, not only the current one. Removing a player for the current year in this way will delete their publishers from prior years. If you just want to
-      remove a player because they won't be participating in the league anymore, you should use the "Manage Active Players" feature. You can do that after you start the new league year.
-    </div>
-    <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
-      If you delete a user's publishers, all of their games will become available for pickup. This is not reverseable. You should be really, really, sure that this is what you want.
-    </div>
-    <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
-      I'm so confident that you
-      <em>almost certainly</em>
-      do not want to do this that I'm going to be very annoying about it. In order you remove this player, you must type the "secret phase".
-      <br />
-      You can get the "secret phase" in two ways:
-      <ul>
-        <li>Ask me on Discord/Twitter, with an explanation of the situation.</li>
-        <li>Look through the site's source code on GitHub. It's in there, in the file that controls this dialog box.</li>
-      </ul>
-      Once you have it, type it into the box below and click the button.
-    </div>
-    <div v-show="playerToRemove && !playerIsSafelyRemoveable(playerToRemove) && !playerIsLeagueManager(playerToRemove)" class="alert alert-danger">
-      The only reason I can think of to use this feature is if a player has been a "problem" in some way, and you need to forcibly remove them from the league, and are you okay with the consequences.
-      Again, if you just need to remove a player that played last year, but will not be playing this year,
-      <em>do not use this feature.</em>
-      Use "Manage Active Players" after starting the new year.
-    </div>
+      <template v-if="playerToRemove">
+        <div v-show="playerIsLeagueManager(playerToRemove)" class="alert alert-danger">You cannot remove yourself!</div>
+        <div v-show="!playerIsLeagueManager(playerToRemove)">
+          <b-form-checkbox v-model="removeFromAllYears">
+            <span class="checkbox-label">Remove from previous years</span>
+          </b-form-checkbox>
 
-    <div v-show="playerToRemove && playerIsLeagueManager(playerToRemove)" class="alert alert-danger">You cannot remove yourself!</div>
+          <template v-if="!removeFromAllYears && !playerIsLeagueManager(playerToRemove)">
+            <div v-show="leagueYear.playStatus.playStarted" class="alert alert-danger">
+              If you delete this user, all of their games will become available for pickup. This is not reverseable. You should be really, really, sure that this is what you want.
+            </div>
 
-    <input v-show="playerToRemove && !playerIsLeagueManager(playerToRemove)" v-model="removeConfirmation" type="text" class="form-control input" />
+            <div v-show="!leagueYear.playStatus.playStarted && !playerToRemove.inPreviousYears" class="alert alert-info">
+              Since the draft has not been started, this player can be safely removed. As they are not in any previous years, they will be fully removed from the league.
+            </div>
 
-    <b-button v-if="playerToRemove && !playerIsLeagueManager(playerToRemove)" variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">
-      Remove Player
-    </b-button>
+            <div v-show="!leagueYear.playStatus.playStarted && playerToRemove.inPreviousYears" class="alert alert-info">
+              Since the draft has not been started, this player can be safely removed. Because they played in previous years, they will be marked as "inactive" this year, and previous years will not
+              be affected.
+            </div>
+          </template>
+
+          <b-button v-if="playerToRemove && !playerIsLeagueManager(playerToRemove)" variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">
+            Remove Player
+          </b-button>
+        </div>
+      </template>
+    </div>
   </b-modal>
 </template>
 
@@ -63,8 +51,8 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      publisherToRemove: null,
       playerToRemove: null,
+      removeFromAllYears: false,
       removeConfirmation: ''
     };
   },
