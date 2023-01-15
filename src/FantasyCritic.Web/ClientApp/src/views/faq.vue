@@ -11,6 +11,7 @@
         <li><router-link :to="{ hash: '#drafting' }">Drafting</router-link></li>
         <li><router-link :to="{ hash: '#bidding-system' }">Bidding System</router-link></li>
         <li><router-link :to="{ hash: '#dropping-games' }">Dropping Games</router-link></li>
+        <li><router-link :to="{ hash: '#trades' }">Trades</router-link></li>
         <li><router-link :to="{ hash: '#scoring' }">Scoring</router-link></li>
         <li><router-link :to="{ hash: '#eligibility' }">Eligibility</router-link></li>
         <li><router-link :to="{ hash: '#winning' }">Winning</router-link></li>
@@ -414,6 +415,54 @@
         </div>
       </collapseCard>
       <br />
+
+      <h2><a id="trades">Trades</a></h2>
+      <collapseCard>
+        <div slot="header">How do trades work?</div>
+        <div slot="body">
+          Your league can chose whether or not to allow trades. If allowed, trades become available after the draft is over. The following rules apply:
+          <ul>
+            <li>Trades are always between 2 players.</li>
+            <li>Each side can include any number of games as well as any budget ($) they have available.</li>
+            <li>Each side must include something in the trade.</li>
+            <li>Trades do not have to be "even", you can trade 2 games for one, or 5 games for 1 if you really want.</li>
+            <li>Any game is tradeable, including counter picks and games that have already released.</li>
+            <li>You can't trade anything outside of the current year (no trading for next year's draft picks, for example).</li>
+          </ul>
+          This is how the process of a trade works:
+          <ul>
+            <li>One player in your league proposes a trade with another player.</li>
+            <li>That player can chose to accept or decline.</li>
+            <li>If the trade is accepted, other players in the league get a chance to "vote" on whether or not they want the trade to be accepted.</li>
+            <li>If the league agrees that the trade is a fair trade, then the league manager can "execute" the trade, and the games and money will change hands.</li>
+          </ul>
+          Note that the "votes" by the league members are not "votes" in the democracy sense. League managers should weigh them when deciding what to do with the trade, but ultimately, they have full
+          control.
+        </div>
+      </collapseCard>
+      <collapseCard>
+        <div slot="header">What is a "fair trade"?</div>
+        <div slot="body">
+          When a trade in your league is under consideration, you should ask "is this trade reasonable?" A reasonable trade is beneficial to both parties. The following situations are cases where
+          trades should not be approved:
+          <ul>
+            <li>A player is already losing and has agreed to a bad trade to help the other player beat a third player not involved in the trade.</li>
+            <li>A player is taking a bad trade this year with the understanding that they will be 'paid back' next year.</li>
+            <li>You suspect that there is some other "shady deal" going on, such as real money being exchanged behind the scenes.</li>
+          </ul>
+          However, you should
+          <em>not</em>
+          be considering whether or not this trade is good for
+          <em>you.</em>
+        </div>
+      </collapseCard>
+      <collapseCard>
+        <div slot="header">Can you trade for a game that you have already counter picked?</div>
+        <div slot="body">
+          The system will let you do it. This would mean you would have a game as both a standard game and a counter pick, which is guarunteed to get you exactly 0 points no matter what. Your league
+          might want to decide that this isn't allowed in your league though.
+        </div>
+      </collapseCard>
 
       <h2><a id="scoring">Scoring</a></h2>
       <collapseCard>
