@@ -118,6 +118,20 @@
               command displays games that were recently released on players' rosters in the league.
             </p>
 
+            <h5>View Public Bids for the Current Week</h5>
+            <p>
+              The
+              <strong>/public-bids</strong>
+              command displays the current public bids for that week. This only applies to leagues that aren't using Secret Bidding, and only during the Public Bidding window.
+            </p>
+
+            <h5>View Special Auctions</h5>
+            <p>
+              The
+              <strong>/special-auctions</strong>
+              command displays the currently running special auctions, if there are any.
+            </p>
+
             <h5>Set Up a League in your Channel</h5>
             <p>
               The
@@ -132,6 +146,14 @@
               The
               <strong>/remove-league</strong>
               command allows you to remove your league from a Discord channel.
+            </p>
+
+            <h5>Set a Role to Alert for Bid Information</h5>
+            <p>
+              The
+              <strong>/set-bid-alert-role</strong>
+              command set a role to tag when bid updates are posted. This includes the Saturday night bid results, as well as the Thursday night public bid updates (if your league using Public
+              Bidding).
             </p>
 
             <h5>Configure Game News Announcement Relevance</h5>
@@ -159,6 +181,13 @@
                 - No game news will be posted by the bot.
               </li>
             </ul>
+
+            <h5>View Bot Settings</h5>
+            <p>
+              If you're not sure what the current settings for the bot look like, use the
+              <strong>/view-settings</strong>
+              command to see what things look like.
+            </p>
 
             <h5>And more to come!</h5>
             <p>This bot will see continued development moving forward. Got an idea for a feature? Give us a shout in the official Fantasy Critic Discord.</p>
