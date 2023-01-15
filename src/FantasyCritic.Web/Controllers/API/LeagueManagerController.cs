@@ -405,6 +405,10 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var leagueYearResult = leagueYearRecord.ValidResult!;
+        if (leagueYearResult.LeagueYear.SupportedYear.Finished)
+        {
+            return BadRequest("You can't remove a player from a year that is finished");
+        }
 
         await _leagueMemberService.RemovePlayerFromLeagueYear(leagueYearResult.LeagueYear, leagueYearResult.PlayersInLeague, leagueYearResult.ActiveUsers, removeUser);
         return Ok();
