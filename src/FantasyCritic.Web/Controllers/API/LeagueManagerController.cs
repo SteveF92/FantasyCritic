@@ -391,8 +391,22 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("That user is not in that league.");
         }
 
-        await _leagueMemberService.FullyRemovePlayerFromLeague(league, removeUser);
+        var mostRecentLeagueYear = league.Years.Max();
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, mostRecentLeagueYear, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
 
+        if (request.AllYears)
+        {
+            await _leagueMemberService.FullyRemovePlayerFromLeague(league, removeUser);
+            return Ok();
+        }
+
+        var leagueYearResult = leagueYearRecord.ValidResult!;
+
+        await _leagueMemberService.RemovePlayerFromLeagueYear(leagueYearResult.LeagueYear, leagueYearResult.PlayersInLeague, leagueYearResult.ActiveUsers, removeUser);
         return Ok();
     }
 
@@ -470,6 +484,11 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearPublisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
+
+        if (leagueYear.PlayStatus.PlayStarted)
+        {
+            return BadRequest("""Once the draft is started, you need to use "Remove Player".""");
+        }
 
         await _publisherService.FullyRemovePublisher(leagueYear, publisher);
 

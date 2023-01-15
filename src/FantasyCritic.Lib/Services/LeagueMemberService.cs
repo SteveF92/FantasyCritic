@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -234,6 +235,24 @@ public class LeagueMemberService
         }
 
         await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
+    }
+
+    public async Task RemovePlayerFromLeagueYear(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUserRemovable> playersInLeague,
+        IReadOnlyList<FantasyCriticUser> activeUsers, FantasyCriticUser removeUser)
+    {
+        var publisherForUser = leagueYear.GetUserPublisher(removeUser);
+        if (publisherForUser is not null)
+        {
+            await _fantasyCriticRepo.FullyRemovePublisher(leagueYear, publisherForUser);
+        }
+
+        var activeUsersDictionary = playersInLeague.ToDictionary(x => x.User, x => false);
+        foreach (var activeUser in activeUsers)
+        {
+            activeUsersDictionary[activeUser] = true;
+        }
+        activeUsersDictionary[removeUser] = false;
+        await SetPlayerActiveStatus(leagueYear, activeUsersDictionary);
     }
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
