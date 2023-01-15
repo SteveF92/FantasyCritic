@@ -702,7 +702,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var entities = await connection.QueryAsync<LeagueActionEntity>(sql, param);
 
-        List<LeagueAction> leagueActions = entities.Select(x => x.ToDomain(leagueYear.GetPublisherByOrFakePublisher(x.PublisherID))).ToList();
+        List<LeagueAction> leagueActions = entities.Select(x => x.ToDomain(leagueYear.GetPublisherByIDOrFakePublisher(x.PublisherID))).ToList();
         return leagueActions;
     }
 
@@ -1711,8 +1711,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<Trade> domainTrades = new List<Trade>();
         foreach (var tradeEntity in tradeEntities)
         {
-            Publisher proposer = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.ProposerPublisherID);
-            Publisher counterParty = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.CounterPartyPublisherID);
+            Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
+            Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
             var components = componentLookup[tradeEntity.TradeID];
             List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
@@ -1785,8 +1785,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var tradeEntity in tradeEntities)
         {
             var leagueYear = leagueYearDictionary[tradeEntity.LeagueID];
-            Publisher proposer = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.ProposerPublisherID);
-            Publisher counterParty = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.CounterPartyPublisherID);
+            Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
+            Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
             var components = componentLookup[tradeEntity.TradeID];
             List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
@@ -1864,8 +1864,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         var leagueYear = await this.GetLeagueYearOrThrow(league, tradeEntity.Year);
-        Publisher proposer = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.ProposerPublisherID);
-        Publisher counterParty = leagueYear.GetPublisherByOrFakePublisher(tradeEntity.CounterPartyPublisherID);
+        Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
+        Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
         var components = componentLookup[tradeEntity.TradeID];
         List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
