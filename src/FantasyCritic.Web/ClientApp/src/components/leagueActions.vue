@@ -89,6 +89,7 @@
             <li v-b-modal="'managerMessageForm'" class="fake-link action">Post new Message to League</li>
             <li v-show="!playStarted" v-b-modal="'invitePlayer'" class="fake-link action">Invite a Player</li>
             <li v-show="!playStarted" v-b-modal="'createPublisherForUserForm'" class="fake-link action">Create Publisher For User</li>
+            <li v-show="!playStarted" v-b-modal="'removePublisherForm'" class="fake-link action">Delete A User's Publisher</li>
             <li v-show="!playStarted" v-b-modal="'manageActivePlayers'" class="fake-link action">Manage Active Players</li>
             <li v-show="readyToSetDraftOrder && !playStarted" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
             <li v-show="!draftFinished" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
@@ -159,6 +160,7 @@
         <manageEligibilityOverridesModal></manageEligibilityOverridesModal>
         <manageTagOverridesModal></manageTagOverridesModal>
         <removePlayerModal></removePlayerModal>
+        <removePublisherModal></removePublisherModal>
         <transferManagerModal></transferManagerModal>
         <managerMessageModal></managerMessageModal>
         <specialAuctionsModal></specialAuctionsModal>
@@ -210,6 +212,7 @@ import LeagueOptionsModal from '@/components/modals/leagueOptionsModal';
 import ManageEligibilityOverridesModal from '@/components/modals/manageEligibilityOverridesModal';
 import ManageTagOverridesModal from '@/components/modals/manageTagOverridesModal';
 import RemovePlayerModal from '@/components/modals/removePlayerModal';
+import RemovePublisherModal from '@/components/modals/removePublisherModal';
 import ManagerMessageModal from '@/components/modals/managerMessageModal';
 import TransferManagerModal from '@/components/modals/transferManagerModal';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal';
@@ -254,6 +257,7 @@ export default {
     ManageEligibilityOverridesModal,
     ManageTagOverridesModal,
     RemovePlayerModal,
+    RemovePublisherModal,
     ManagerMessageModal,
     TransferManagerModal,
     CreatePublisherForUserForm,
