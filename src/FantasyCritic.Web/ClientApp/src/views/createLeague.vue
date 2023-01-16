@@ -52,12 +52,30 @@
                 </b-form-checkbox>
               </div>
               <div>
+                <b-form-checkbox v-model="customRulesLeague">
+                  <span class="checkbox-label">Custom Rules League</span>
+                  <p>
+                    If checked, this league won't affect the site's overall stats. Please use this if you are running a "highly custom" league, such as a league where you are picking the
+                    <em>worst</em>
+                    games of the year. If you want to change a custom rules league into a regular league, you'll need to contact us.
+                  </p>
+                </b-form-checkbox>
+              </div>
+              <div>
                 <b-form-checkbox v-model="testLeague">
                   <span class="checkbox-label">Test League</span>
                   <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
                 </b-form-checkbox>
               </div>
             </div>
+
+            <b-alert variant="info">
+              The difference between a "Custom Rules League" and a "Test League" is that a "Custom Rules League" will still be listed alongside your normal leagues and you will see upcoming games for
+              that league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. The "Custom Rules League" option
+              is new as of 2023, and you
+              <em>are</em>
+              allowed to change your "Test League" into a "Custom Rules League", since neither affect the site's stats.
+            </b-alert>
 
             <hr />
             <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
@@ -90,6 +108,7 @@ export default {
       leagueYearSettings: null,
       publicLeague: true,
       testLeague: false,
+      customRulesLeague: false,
       leagueYearEverValid: false
     };
   },

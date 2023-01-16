@@ -102,6 +102,10 @@
             <td>{{ league.publicLeague | yesNo }}</td>
           </tr>
           <tr>
+            <th class="bg-primary">Custom Rules League</th>
+            <td>{{ league.customRulesLeague | yesNo }}</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Test League</th>
             <td>{{ league.testLeague | yesNo }}</td>
           </tr>

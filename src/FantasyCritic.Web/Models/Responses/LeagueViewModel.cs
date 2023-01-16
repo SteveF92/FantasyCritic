@@ -39,6 +39,7 @@ public class LeagueViewModel
         Players = players.Select(x => new PlayerViewModel(league, x.User, x.Removable)).ToList();
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
+        CustomRulesLeague = league.CustomRulesLeague;
         UserIsInLeague = userIsInLeague;
         UserIsFollowingLeague = userIsFollowingLeague;
         NumberOfFollowers = league.NumberOfFollowers;
@@ -54,6 +55,7 @@ public class LeagueViewModel
     public int ActiveYear { get; }
     public bool PublicLeague { get; }
     public bool TestLeague { get; }
+    public bool CustomRulesLeague { get; }
     public bool Archived { get; }
     public bool UserIsInLeague { get; }
     public bool UserIsFollowingLeague { get; }

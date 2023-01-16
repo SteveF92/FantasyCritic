@@ -12,7 +12,17 @@
         </b-form-checkbox>
       </div>
       <div class="form-group">
-        <b-form-checkbox v-model="testLeague" :disabled="initialTestLeague">
+        <b-form-checkbox v-model="customRulesLeague">
+          <span class="checkbox-label">Custom Rules League</span>
+          <p>
+            If checked, this league won't affect the site's overall stats. Please use this if you are running a "highly custom" league, such as a league where you are picking the
+            <em>worst</em>
+            games of the year. If you want to change a custom rules league into a regular league, you'll need to contact us.
+          </p>
+        </b-form-checkbox>
+      </div>
+      <div class="form-group">
+        <b-form-checkbox v-model="testLeague">
           <span class="checkbox-label">Test League</span>
           <p>
             If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site. If you want to change a test league into a regular league, you'll
@@ -20,6 +30,13 @@
           </p>
         </b-form-checkbox>
       </div>
+      <b-alert variant="info">
+        The difference between a "Custom Rules League" and a "Test League" is that a "Custom Rules League" will still be listed alongside your normal leagues and you will see upcoming games for that
+        league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. The "Custom Rules League" option is new as
+        of 2023, and you
+        <em>are</em>
+        allowed to change your "Test League" into a "Custom Rules League", since neither affect the site's stats.
+      </b-alert>
     </div>
     <b-alert :show="showDiscordWarning" variant="warning">
       Changing a public league to a private league will remove it from any Discord servers it may be linked to via the official Discord bot.
@@ -40,8 +57,8 @@ export default {
       newleagueName: '',
       publicLeague: true,
       testLeague: false,
-      errorInfo: '',
-      initialTestLeague: false
+      customRulesLeague: false,
+      errorInfo: ''
     };
   },
   computed: {
@@ -53,7 +70,7 @@ export default {
     this.newleagueName = this.league.leagueName;
     this.publicLeague = this.league.publicLeague;
     this.testLeague = this.league.testLeague;
-    this.initialTestLeague = this.league.testLeague;
+    this.customRulesLeague = this.league.customRulesLeague;
   },
   methods: {
     changeleagueName() {
@@ -61,7 +78,8 @@ export default {
         leagueID: this.league.leagueID,
         leagueName: this.newleagueName,
         publicLeague: this.publicLeague,
-        testLeague: this.testLeague
+        testLeague: this.testLeague,
+        customRulesLeague: this.customRulesLeague
       };
       axios
         .post('/api/leagueManager/ChangeLeagueOptions', model)

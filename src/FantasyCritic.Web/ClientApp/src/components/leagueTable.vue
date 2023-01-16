@@ -5,16 +5,27 @@
         <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-icon">
           <font-awesome-icon v-if="leagueIcon !== 'user'" :icon="leagueIcon" size="2x" />
           <template v-else>
-            <template v-if="!data.item.oneShotMode">
-              <font-awesome-icon v-if="data.item.isManager" icon="user-cog" size="2x" />
-              <font-awesome-icon v-else icon="user" size="2x" />
+            <template v-if="data.item.customRulesLeague">
+              <font-awesome-layers v-if="data.item.isManager">
+                <font-awesome-icon icon="cog" transform="right-26 down-15" />
+                <font-awesome-icon icon="book" size="2x" transform="left-1 down-2" />
+              </font-awesome-layers>
+              <font-awesome-icon v-else icon="book" size="2x" transform="right-4" />
             </template>
             <template v-else>
-              <font-awesome-layers v-if="data.item.isManager">
-                <font-awesome-icon icon="cog" transform="right-16 down-5" />
-                <font-awesome-icon icon="1" size="2x" transform="right-2 down-2" />
-              </font-awesome-layers>
-              <font-awesome-icon v-else icon="1" size="2x" transform="right-4" />
+              <template v-if="data.item.oneShotMode">
+                <font-awesome-layers v-if="data.item.isManager">
+                  <font-awesome-icon icon="cog" transform="right-16 down-5" />
+                  <font-awesome-icon icon="1" size="2x" transform="right-2 down-2" />
+                </font-awesome-layers>
+                <font-awesome-icon v-else icon="1" size="2x" transform="right-4" />
+              </template>
+              <template v-else>
+                <template v-if="!data.item.oneShotMode">
+                  <font-awesome-icon v-if="data.item.isManager" icon="user-cog" size="2x" />
+                  <font-awesome-icon v-else icon="user" size="2x" />
+                </template>
+              </template>
             </template>
           </template>
         </router-link>
