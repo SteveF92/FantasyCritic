@@ -24,9 +24,7 @@ public class PublisherSlotViewModel
         EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();
         GameMeetsSlotCriteria = !EligibilityErrors.Any();
 
-        bool ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots;
-        bool countSlotAsValid = ineligiblePointsShouldCount || slot.SlotIsValid(leagueYear);
-        ProjectedFantasyPoints = slot.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, systemWideValues,
+        ProjectedFantasyPoints = slot.GetProjectedFantasyPoints(leagueYear.SupportedYear, leagueYear.Options.ScoringSystem, systemWideValues,
             leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames);
     }
 
