@@ -65,11 +65,18 @@ export default {
   },
   computed: {
     standingFields() {
-      if (!this.oneShotMode) {
-        return this.standingFieldsInternal;
+      let fieldsToUse = this.standingFieldsInternal;
+      if (this.oneShotMode) {
+        fieldsToUse = fieldsToUse.slice(0, -1);
       }
 
-      return this.standingFieldsInternal.slice(0, -1);
+      if (this.leagueYear.supportedYear.finished) {
+        fieldsToUse = fieldsToUse.slice(0, 2).concat(fieldsToUse.slice(2 + 1));
+        fieldsToUse = fieldsToUse.slice(0, 4).concat(fieldsToUse.slice(4 + 1));
+        fieldsToUse[2].label = 'Points';
+      }
+
+      return fieldsToUse;
     },
     standings() {
       let standings = this.leagueYear.players;
