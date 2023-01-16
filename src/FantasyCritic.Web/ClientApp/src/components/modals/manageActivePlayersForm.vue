@@ -91,6 +91,7 @@ export default {
         });
     },
     setData() {
+      this.errorInfo = '';
       this.setCurrentActivePlayers();
     }
   }

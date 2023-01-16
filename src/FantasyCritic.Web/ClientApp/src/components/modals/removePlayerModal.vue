@@ -39,30 +39,32 @@
               Use "Manage Active Players" after starting the new year.
             </div>
           </template>
-        </div>
 
-        <div v-if="playerIsSafelyRemoveable(playerToRemove)" class="alert alert-info">
-          This player can be safely removed without any issues. Please type
-          <strong>REMOVE PLAYER</strong>
-          into the box below and click the button.
+          <div v-if="!leagueYear.playStatus.playStarted" class="alert alert-info">
+            Please type
+            <strong>REMOVE PLAYER</strong>
+            into the box below and click the button.
+          </div>
+          <template v-else>
+            <div class="alert alert-danger">
+              I'm so confident that you
+              <em>almost certainly</em>
+              do not want to do this that I'm going to be very annoying about it. In order you remove this player, you must type the "secret phase". The reason I do this is because there have been
+              many people who have accidently deleted history from their league just because a player decided not to return the following year.
+              <br />
+              You can get the "secret phase" in two ways:
+              <ul>
+                <li>Ask me on Discord/Twitter, with an explanation of the situation.</li>
+                <li>Look through the site's source code on GitHub. It's in there, in the file that controls this dialog box.</li>
+              </ul>
+              Once you have it, type it into the box below and click the button.
+            </div>
+          </template>
         </div>
-        <template v-else>
-          I'm so confident that you
-          <em>almost certainly</em>
-          do not want to do this that I'm going to be very annoying about it. In order you remove this player, you must type the "secret phase". The reason I do this is because there have been many
-          people who have accidently deleted history from their league just because a player decided not to return the following year.
-          <br />
-          You can get the "secret phase" in two ways:
-          <ul>
-            <li>Ask me on Discord/Twitter, with an explanation of the situation.</li>
-            <li>Look through the site's source code on GitHub. It's in there, in the file that controls this dialog box.</li>
-          </ul>
-          Once you have it, type it into the box below and click the button.
-        </template>
 
         <input v-show="!playerIsLeagueManager(playerToRemove)" v-model="removeConfirmation" type="text" class="form-control input" />
 
-        <b-button variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">Remove Player</b-button>
+        <b-button variant="danger" class="remove-button" :disabled="!removeConfirmed" @click="removePlayer">Remove Player</b-button>
       </template>
     </div>
   </b-modal>
@@ -83,25 +85,18 @@ export default {
   computed: {
     playersWithUsers() {
       return this.players.filter((x) => !!x.user);
-    }
-  },
-  methods: {
-    playerIsSafelyRemoveable(player) {
-      let matchingLeagueLevelPlayer = _.find(this.playersWithUsers, function (item) {
-        return item.user.userID === player.user.userID;
-      });
-
-      return matchingLeagueLevelPlayer.user.removable;
     },
-    removeConfirmed(player) {
+    removeConfirmed() {
       //This "password" isn't a security concern, it's just to protect the user from doing something they really don't want to do. If you've dug through the code and found this, you probably do know what you are doing.
       let passphase = 'REMOVE PLAYER';
-      if (!this.playerIsSafelyRemoveable(player)) {
+      if (this.leagueYear.playStatus.playStarted) {
         passphase = 'I AM SURE I KNOW WHAT I AM DOING';
       }
       let upperCase = this.removeConfirmation.toUpperCase();
       return upperCase === passphase;
-    },
+    }
+  },
+  methods: {
     playerIsLeagueManager(player) {
       return player.user.userID === this.league.leagueManager.userID;
     },
