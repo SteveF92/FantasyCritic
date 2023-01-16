@@ -170,6 +170,7 @@ export default {
         leagueName: this.leagueName,
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
+        customRulesLeague: this.customRulesLeague,
         leagueYearSettings: this.leagueYearSettings
       };
 
