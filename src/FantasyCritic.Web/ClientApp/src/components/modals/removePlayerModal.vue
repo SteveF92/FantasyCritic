@@ -30,10 +30,10 @@
 
           <template v-if="leagueYear.playStatus.playStarted">
             <div class="alert alert-danger">
-              If you delete this user, all of their games will become available for pickup. This is not reverseable. You should be really, really, sure that this is what you want.
+              If you delete this user, all of their games will become available for pickup. This is not reversible. You should be really, really, sure that this is what you want.
             </div>
             <div class="alert alert-danger">
-              The only reason I can think of to use this feature is if a player has been a "problem" in some way, and you need to forcibly remove them from the league, and are you okay with the
+              The only reason I can think of to use this feature is if a player has been a "problem" in some way, and you need to forcibly remove them from the league, and you are okay with the
               consequences. Again, if you just need to remove a player that played last year, but will not be playing this year,
               <em>do not use this feature.</em>
               Use "Manage Active Players" after starting the new year.
@@ -49,10 +49,10 @@
             <div class="alert alert-danger">
               I'm so confident that you
               <em>almost certainly</em>
-              do not want to do this that I'm going to be very annoying about it. In order you remove this player, you must type the "secret phase". The reason I do this is because there have been
-              many people who have accidently deleted history from their league just because a player decided not to return the following year.
+              do not want to do this that I'm going to be very annoying about it. In order for you to remove this player, you must type the "secret phrase". The reason I do this is because there have been
+              many people who have accidentally deleted history from their league just because a player decided not to return the following year.
               <br />
-              You can get the "secret phase" in two ways:
+              You can get the "secret phrase" in two ways:
               <ul>
                 <li>Ask me on Discord/Twitter, with an explanation of the situation.</li>
                 <li>Look through the site's source code on GitHub. It's in there, in the file that controls this dialog box.</li>
@@ -88,12 +88,12 @@ export default {
     },
     removeConfirmed() {
       //This "password" isn't a security concern, it's just to protect the user from doing something they really don't want to do. If you've dug through the code and found this, you probably do know what you are doing.
-      let passphase = 'REMOVE PLAYER';
+      let passphrase = 'REMOVE PLAYER';
       if (this.leagueYear.playStatus.playStarted) {
-        passphase = 'I AM SURE I KNOW WHAT I AM DOING';
+        passphrase = 'I AM SURE I KNOW WHAT I AM DOING';
       }
       let upperCase = this.removeConfirmation.toUpperCase();
-      return upperCase === passphase;
+      return upperCase === passphrase;
     }
   },
   methods: {
