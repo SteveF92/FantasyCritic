@@ -1,9 +1,5 @@
 <template>
   <b-modal id="removePlayerForm" ref="removePlayerFormRef" size="lg" title="Remove Player" hide-footer @hidden="clearData">
-    <div class="alert alert-info">
-      This option will allow you to remove any player, even after the draft, midway through the year. You should not do this lightly, as it will invariably affect the experience of your other players.
-      It cannot be reversed. Proceed at your own risk.
-    </div>
     <div class="form-group">
       <label for="playerToRemove" class="control-label">Player to Remove</label>
       <b-form-select v-model="playerToRemove">
@@ -19,24 +15,27 @@
             <span class="checkbox-label">Remove from previous years</span>
           </b-form-checkbox>
 
-          <template v-if="!removeFromAllYears && !playerIsLeagueManager(playerToRemove)">
+          <template v-if="!removeFromAllYears">
             <div v-show="leagueYear.playStatus.playStarted" class="alert alert-danger">
               If you delete this user, all of their games will become available for pickup. This is not reverseable. You should be really, really, sure that this is what you want.
             </div>
 
-            <div v-show="!leagueYear.playStatus.playStarted && !playerToRemove.inPreviousYears" class="alert alert-info">
-              Since the draft has not been started, this player can be safely removed. As they are not in any previous years, they will be fully removed from the league.
+            <div v-show="!leagueYear.playStatus.playStarted && playerToRemove.removable" class="alert alert-info">
+              Since the draft has not been started, this player can be safely removed. They did not play in any previous years, so they will be fully removed from the league.
             </div>
 
-            <div v-show="!leagueYear.playStatus.playStarted && playerToRemove.inPreviousYears" class="alert alert-info">
+            <div v-show="!leagueYear.playStatus.playStarted && !playerToRemove.removable" class="alert alert-info">
               Since the draft has not been started, this player can be safely removed. Because they played in previous years, they will be marked as "inactive" this year, and previous years will not
               be affected.
             </div>
           </template>
+          <template v-else>
+            <div v-show="!leagueYear.playStatus.playStarted && playerToRemove.removable" class="alert alert-info">
+              Since the draft has not been started, this player can be safely removed. They did not play in any previous years, so they will be fully removed from the league.
+            </div>
+          </template>
 
-          <b-button v-if="playerToRemove && !playerIsLeagueManager(playerToRemove)" variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">
-            Remove Player
-          </b-button>
+          <b-button variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">Remove Player</b-button>
         </div>
       </template>
     </div>
