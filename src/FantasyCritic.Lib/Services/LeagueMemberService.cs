@@ -218,7 +218,7 @@ public class LeagueMemberService
         return _fantasyCriticRepo.DeleteInvite(invite);
     }
 
-    public async Task FullyRemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
+    public async Task<Result<string>> FullyRemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
     {
         foreach (var year in league.Years)
         {
@@ -234,15 +234,22 @@ public class LeagueMemberService
         }
 
         await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
+        return Result.Success("Player has been fully removed from the league.");
     }
 
-    public async Task RemovePlayerFromLeagueYear(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUserRemovable> playersInLeague,
+    public async Task<Result<string>> RemovePlayerFromLeagueYear(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUserRemovable> playersInLeague,
         IReadOnlyList<FantasyCriticUser> activeUsers, FantasyCriticUser removeUser)
     {
+        string message;
         var publisherForUser = leagueYear.GetUserPublisher(removeUser);
         if (publisherForUser is not null)
         {
             await _fantasyCriticRepo.FullyRemovePublisher(leagueYear, publisherForUser);
+            message = "Player's publisher has been deleted and they have been marked as inactive in this year.";
+        }
+        else
+        {
+            message = "Player has been marked as inactive in this year.";
         }
 
         var activeUsersDictionary = playersInLeague.ToDictionary(x => x.User, x => false);
@@ -252,6 +259,8 @@ public class LeagueMemberService
         }
         activeUsersDictionary[removeUser] = false;
         await SetPlayerActiveStatus(leagueYear, activeUsersDictionary);
+
+        return Result.Success(message);
     }
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)

@@ -404,8 +404,23 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("You can't remove a player from a year that is finished.");
         }
 
-        await _leagueMemberService.RemovePlayerFromLeagueYear(leagueYearResult.LeagueYear, leagueYearResult.PlayersInLeague, leagueYearResult.ActiveUsers, removeUser);
-        return Ok();
+        Result<string> result;
+        var playerIsFullyRemovable = validResult.PlayersInLeague.Single(x => x.User.Id == removeUser.Id).Removable;
+        if (playerIsFullyRemovable)
+        {
+            result = await _leagueMemberService.FullyRemovePlayerFromLeague(league, removeUser);
+        }
+        else
+        {
+            result = await _leagueMemberService.RemovePlayerFromLeagueYear(leagueYearResult.LeagueYear, leagueYearResult.PlayersInLeague, leagueYearResult.ActiveUsers, removeUser);
+        }
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Value);
     }
 
     [HttpPost]

@@ -100,18 +100,19 @@ export default {
     playerIsLeagueManager(player) {
       return player.user.userID === this.league.leagueManager.userID;
     },
-    removePlayer() {
+    async removePlayer() {
       var model = {
         leagueID: this.leagueYear.leagueID,
         userID: this.playerToRemove.user.userID
       };
-      axios
-        .post('/api/leagueManager/RemovePlayer', model)
-        .then(() => {
-          this.notifyAction('Player ' + this.playerToRemove.user.displayName + ' has been removed from the league.');
-          this.clearData();
-        })
-        .catch(() => {});
+
+      try {
+        const response = await axios.post('/api/leagueManager/RemovePlayer', model);
+        this.notifyAction(response.data);
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
     clearData() {
       this.publisherToRemove = null;
