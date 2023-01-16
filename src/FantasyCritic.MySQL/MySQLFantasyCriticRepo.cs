@@ -881,8 +881,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string createLeagueSQL =
             """
-            insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague) VALUES
-            (@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague);
+            insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague,CustomRulesLeague) VALUES
+            (@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague,@CustomRulesLeague);
             """;
 
         const string createLeagueYearSQL =
