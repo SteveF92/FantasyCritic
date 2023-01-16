@@ -49,8 +49,8 @@
             <div class="alert alert-danger">
               I'm so confident that you
               <em>almost certainly</em>
-              do not want to do this that I'm going to be very annoying about it. In order for you to remove this player, you must type the "secret phrase". The reason I do this is because there have been
-              many people who have accidentally deleted history from their league just because a player decided not to return the following year.
+              do not want to do this that I'm going to be very annoying about it. In order for you to remove this player, you must type the "secret phrase". The reason I do this is because there have
+              been many people who have accidentally deleted history from their league just because a player decided not to return the following year.
               <br />
               You can get the "secret phrase" in two ways:
               <ul>
