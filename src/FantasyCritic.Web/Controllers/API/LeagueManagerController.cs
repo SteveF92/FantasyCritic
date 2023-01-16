@@ -173,14 +173,14 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("You cannot have a blank league name.");
         }
 
-        bool testLeague = request.TestLeague;
-        if (league.TestLeague)
+        bool currentlyAffectsStats = !(league.TestLeague || league.CustomRulesLeague);
+        bool requestedToAffectStats = !(request.TestLeague || request.CustomRulesLeague);
+        if (!currentlyAffectsStats && requestedToAffectStats)
         {
-            //Users can't change a test league to a non test.
-            testLeague = true;
+            return BadRequest("You cannot convert a league from a league that does not affect the site's stats into one that does. Contact us for assistance if you believe this is a special case.");
         }
 
-        await _fantasyCriticService.ChangeLeagueOptions(league, request.LeagueName, request.PublicLeague, testLeague);
+        await _fantasyCriticService.ChangeLeagueOptions(league, request.LeagueName, request.PublicLeague, request.TestLeague, request.CustomRulesLeague);
         return Ok();
     }
 

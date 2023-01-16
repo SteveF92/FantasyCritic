@@ -16,6 +16,7 @@ internal class LeagueEntity
         LeagueManager = league.LeagueManager.Id;
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
+        CustomRulesLeague = league.CustomRulesLeague;
         NumberOfFollowers = league.NumberOfFollowers;
     }
 
@@ -24,12 +25,13 @@ internal class LeagueEntity
     public Guid LeagueManager { get; set; }
     public bool PublicLeague { get; set; }
     public bool TestLeague { get; set; }
+    public bool CustomRulesLeague { get; set; }
     public int NumberOfFollowers { get; set; }
     public bool Archived { get; set; }
 
     public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years, bool mostRecentYearOneShotMode)
     {
-        League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague, Archived, NumberOfFollowers, mostRecentYearOneShotMode);
+        League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague, CustomRulesLeague, Archived, NumberOfFollowers, mostRecentYearOneShotMode);
         return parameters;
     }
 }

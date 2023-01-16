@@ -81,6 +81,7 @@ public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionConte
 
         var leagueVisibilityMessage = $"Public League: **{YesOrNo(leagueChannel.LeagueYear.League.PublicLeague)}**\n";
         leagueVisibilityMessage += $"Test League: **{YesOrNo(leagueChannel.LeagueYear.League.TestLeague)}**\n";
+        leagueVisibilityMessage += $"Custom Rules League: **{YesOrNo(leagueChannel.LeagueYear.League.CustomRulesLeague)}**\n";
 
         var embedFieldBuilders = new List<EmbedFieldBuilder>
         {

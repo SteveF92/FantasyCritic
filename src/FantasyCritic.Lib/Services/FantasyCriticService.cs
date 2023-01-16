@@ -71,7 +71,7 @@ public class FantasyCriticService
         }
 
         IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
-        League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years, parameters.PublicLeague, parameters.TestLeague, false, 0, options.OneShotMode);
+        League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0, options.OneShotMode);
         await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newLeague);
     }
@@ -366,14 +366,14 @@ public class FantasyCriticService
         return processingSets;
     }
 
-    public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
+    public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague)
     {
         if (!publicLeague && league.PublicLeague)
         {
             await _discordRepo.RemoveAllLeagueChannelsForLeague(league.LeagueID);
         }
         
-        await _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague);
+        await _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague, customRulesLeague);
     }
 
     public async Task DeleteLeague(League league)

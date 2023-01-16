@@ -768,11 +768,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             new { publisherID = publisher.PublisherID, autoDraft });
     }
 
-    public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague)
+    public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague)
     {
+        string sql = "update tbl_league SET LeagueName = @leagueName, PublicLeague = @publicLeague, TestLeague = @testLeague, CustomRulesLeague = @customRulesLeague where LeagueID = @leagueID;";
+        var param = new {leagueID = league.LeagueID, leagueName, publicLeague, testLeague, customRulesLeague};
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync("update tbl_league SET LeagueName = @leagueName, PublicLeague = @publicLeague, TestLeague = @testLeague where LeagueID = @leagueID;",
-            new { leagueID = league.LeagueID, leagueName, publicLeague, testLeague });
+        await connection.ExecuteAsync(sql, param);
     }
 
     public async Task StartDraft(LeagueYear leagueYear)

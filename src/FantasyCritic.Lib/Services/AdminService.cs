@@ -511,7 +511,7 @@ public class AdminService
     {
         _logger.Information("Updating system wide values");
 
-        var leaguesToCount = allLeagueYears.Where(x => !x.League.TestLeague && x.PlayStatus.DraftFinished).ToList();
+        var leaguesToCount = allLeagueYears.Where(x => x.League.AffectsStats && x.PlayStatus.DraftFinished).ToList();
         var publisherGames = leaguesToCount.SelectMany(x => x.Publishers).SelectMany(x => x.PublisherGames);
         var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).ToList();
 
@@ -584,7 +584,7 @@ public class AdminService
             foreach (var publisher in allPublishers)
             {
                 var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
-                if (leagueYear.League.TestLeague || !leagueYear.PlayStatus.DraftFinished)
+                if (!leagueYear.League.AffectsStats || !leagueYear.PlayStatus.DraftFinished)
                 {
                     continue;
                 }

@@ -148,7 +148,7 @@ public class TestDataService
         foreach (var leagueYear in leagueYearEntities)
         {
             var leagueYearKey = new LeagueYearKey(leagueYear.LeagueID, leagueYear.Year);
-            var league = new League(leagueYear.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser(), new List<int>() {leagueYear.Year}, false, false, false, 0, false);
+            var league = new League(leagueYear.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser(), new List<int>() {leagueYear.Year}, false, false, false, false, 0, false);
             var supportedYear = new SupportedYear(leagueYear.Year, true, true, true, new LocalDate(leagueYear.Year, 1, 1), false);
 
             var publishersInLeague = publisherLookup[leagueYearKey].ToList();
