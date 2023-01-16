@@ -1,5 +1,12 @@
 <template>
   <b-modal id="removePlayerForm" ref="removePlayerFormRef" size="lg" title="Remove Player" hide-footer @hidden="clearData">
+    <div class="alert alert-info">
+      This option will allow you to remove any player, even after the draft, midway through the year. You should not do this lightly, as it will invariably affect the experience of your other players.
+      It cannot be reversed either. Proceed at your own risk.
+    </div>
+    <div class="alert alert-info">
+      If you are just looking to remove a player that played in previous years but will not be playing this year, please use the "Manage Active Players" option instead.
+    </div>
     <div class="form-group">
       <label for="playerToRemove" class="control-label">Player to Remove</label>
       <b-form-select v-model="playerToRemove">
@@ -9,34 +16,53 @@
       </b-form-select>
 
       <template v-if="playerToRemove">
+        <hr />
         <div v-show="playerIsLeagueManager(playerToRemove)" class="alert alert-danger">You cannot remove yourself!</div>
         <div v-show="!playerIsLeagueManager(playerToRemove)">
-          <b-form-checkbox v-model="removeFromAllYears">
-            <span class="checkbox-label">Remove from previous years</span>
-          </b-form-checkbox>
+          <div v-show="!leagueYear.playStatus.playStarted && playerToRemove.removable" class="alert alert-info">
+            Since the draft has not been started, this player can be safely removed. They did not play in any previous years, so they will be fully removed from the league.
+          </div>
 
-          <template v-if="!removeFromAllYears">
-            <div v-show="leagueYear.playStatus.playStarted" class="alert alert-danger">
+          <div v-show="!leagueYear.playStatus.playStarted && !playerToRemove.removable" class="alert alert-info">
+            Since the draft has not been started, this player can be safely removed. Because they played in previous years, they will be marked as "inactive" this year, and previous years will not be
+            affected.
+          </div>
+
+          <template v-if="leagueYear.playStatus.playStarted">
+            <div class="alert alert-danger">
               If you delete this user, all of their games will become available for pickup. This is not reverseable. You should be really, really, sure that this is what you want.
             </div>
-
-            <div v-show="!leagueYear.playStatus.playStarted && playerToRemove.removable" class="alert alert-info">
-              Since the draft has not been started, this player can be safely removed. They did not play in any previous years, so they will be fully removed from the league.
-            </div>
-
-            <div v-show="!leagueYear.playStatus.playStarted && !playerToRemove.removable" class="alert alert-info">
-              Since the draft has not been started, this player can be safely removed. Because they played in previous years, they will be marked as "inactive" this year, and previous years will not
-              be affected.
+            <div class="alert alert-danger">
+              The only reason I can think of to use this feature is if a player has been a "problem" in some way, and you need to forcibly remove them from the league, and are you okay with the
+              consequences. Again, if you just need to remove a player that played last year, but will not be playing this year,
+              <em>do not use this feature.</em>
+              Use "Manage Active Players" after starting the new year.
             </div>
           </template>
-          <template v-else>
-            <div v-show="!leagueYear.playStatus.playStarted && playerToRemove.removable" class="alert alert-info">
-              Since the draft has not been started, this player can be safely removed. They did not play in any previous years, so they will be fully removed from the league.
-            </div>
-          </template>
-
-          <b-button variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">Remove Player</b-button>
         </div>
+
+        <div v-if="playerIsSafelyRemoveable(playerToRemove)" class="alert alert-info">
+          This player can be safely removed without any issues. Please type
+          <strong>REMOVE PLAYER</strong>
+          into the box below and click the button.
+        </div>
+        <template v-else>
+          I'm so confident that you
+          <em>almost certainly</em>
+          do not want to do this that I'm going to be very annoying about it. In order you remove this player, you must type the "secret phase". The reason I do this is because there have been many
+          people who have accidently deleted history from their league just because a player decided not to return the following year.
+          <br />
+          You can get the "secret phase" in two ways:
+          <ul>
+            <li>Ask me on Discord/Twitter, with an explanation of the situation.</li>
+            <li>Look through the site's source code on GitHub. It's in there, in the file that controls this dialog box.</li>
+          </ul>
+          Once you have it, type it into the box below and click the button.
+        </template>
+
+        <input v-show="!playerIsLeagueManager(playerToRemove)" v-model="removeConfirmation" type="text" class="form-control input" />
+
+        <b-button variant="danger" class="remove-button" :disabled="!removeConfirmed(playerToRemove)" @click="removePlayer">Remove Player</b-button>
       </template>
     </div>
   </b-modal>
@@ -51,7 +77,6 @@ export default {
   data() {
     return {
       playerToRemove: null,
-      removeFromAllYears: false,
       removeConfirmation: ''
     };
   },
@@ -89,18 +114,6 @@ export default {
         .post('/api/leagueManager/RemovePlayer', model)
         .then(() => {
           this.notifyAction('Player ' + this.playerToRemove.user.displayName + ' has been removed from the league.');
-          this.clearData();
-        })
-        .catch(() => {});
-    },
-    removePublisher() {
-      var model = {
-        publisherID: this.publisherToRemove.publisherID
-      };
-      axios
-        .post('/api/leagueManager/RemovePublisher', model)
-        .then(() => {
-          this.notifyAction('Publisher ' + this.publisherToRemove.publisherName + ' has been removed from the league.');
           this.clearData();
         })
         .catch(() => {});
