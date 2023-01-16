@@ -41,6 +41,9 @@
     <b-alert :show="showDiscordWarning" variant="warning">
       Changing a public league to a private league will remove it from any Discord servers it may be linked to via the official Discord bot.
     </b-alert>
+
+    <b-alert variant="danger" :show="!!errorInfo">{{ errorInfo }}</b-alert>
+
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newleagueName" @click="changeleagueName" />
     </template>
@@ -58,7 +61,7 @@ export default {
       publicLeague: true,
       testLeague: false,
       customRulesLeague: false,
-      errorInfo: ''
+      errorInfo: null
     };
   },
   computed: {
@@ -73,7 +76,7 @@ export default {
     this.customRulesLeague = this.league.customRulesLeague;
   },
   methods: {
-    changeleagueName() {
+    async changeleagueName() {
       var model = {
         leagueID: this.league.leagueID,
         leagueName: this.newleagueName,
@@ -81,14 +84,14 @@ export default {
         testLeague: this.testLeague,
         customRulesLeague: this.customRulesLeague
       };
-      axios
-        .post('/api/leagueManager/ChangeLeagueOptions', model)
-        .then(() => {
-          this.$refs.changeLeagueOptionsFormRef.hide();
-          this.notifyAction('League options have been updated.');
-          this.newleagueName = '';
-        })
-        .catch(() => {});
+
+      try {
+        await axios.post('/api/leagueManager/ChangeLeagueOptions', model);
+        this.$refs.changeLeagueOptionsFormRef.hide();
+        this.notifyAction('League options have been updated.');
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
     clearData() {
       this.newleagueName = this.league.leagueName;
