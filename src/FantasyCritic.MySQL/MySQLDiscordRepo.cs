@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities;
 
@@ -17,7 +18,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting(), null);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, true, null);
         var existingLeague = await GetLeagueChannel(guildID, channelID, year);
         var sql = existingLeague == null
             ? "INSERT INTO tbl_discord_leaguechannel (LeagueID, GuildID, ChannelID, GameNewsSetting) VALUES (@LeagueID, @GuildID, @ChannelID, @GameNewsSetting)"
@@ -25,18 +26,26 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
-    public async Task SetIsGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, DiscordGameNewsSetting gameNewsSetting)
+    public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, gameNewsSetting, null);
-        var sql = "UPDATE tbl_discord_leaguechannel SET GameNewsSetting=@GameNewsSetting WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, sendLeagueMasterGameUpdates, null);
+        var sql = "UPDATE tbl_discord_leaguechannel SET SendLeagueMasterGameUpdates=@SendLeagueMasterGameUpdates WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
+    }
+
+    public async Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var gameNewsChannelEntity = new GameNewsChannelEntity(guildID, channelID, gameNewsSetting);
+        var sql = "UPDATE tbl_discord_gamenewschannel SET GameNewsSetting=@GameNewsSetting WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+        await connection.ExecuteAsync(sql, gameNewsChannelEntity);
     }
 
     public async Task SetBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? bidAlertRoleID)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, new RelevantDiscordGameNewsSetting(), bidAlertRoleID);
+        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, true, bidAlertRoleID);
         var sql = "UPDATE tbl_discord_leaguechannel SET BidAlertRoleID=@BidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
@@ -61,6 +70,41 @@ public class MySQLDiscordRepo : IDiscordRepo
 
         var leagueChannels = await connection.QueryAsync<LeagueChannelEntity>(sql);
         return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
+    }
+
+    public async Task<IReadOnlyList<GameNewsChannel>> GetAllGameNewsChannels()
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        const string sql = "select * from tbl_discord_gamenewschannel";
+
+        var entities = await connection.QueryAsync<GameNewsChannelEntity>(sql);
+        return entities.Select(x => x.ToDomain()).ToList();
+    }
+
+    public async Task<IReadOnlyList<CombinedChannel>> GetAllCombinedChannels()
+    {
+        var leagueChannelsTask = GetAllLeagueChannels();
+        var gameNewsChannelsTask = GetAllGameNewsChannels();
+        await Task.WhenAll(leagueChannelsTask, gameNewsChannelsTask);
+
+        var leagueChannels = await leagueChannelsTask;
+        var gameNewsChannels = await gameNewsChannelsTask;
+
+        var leagueChannelDictionary = leagueChannels.ToDictionary(x => x.ChannelKey);
+        var gameNewsChannelDictionary = gameNewsChannels.ToDictionary(x => x.ChannelKey);
+
+        var channelKeys = leagueChannels.Select(x => x.ChannelKey)
+            .Concat(gameNewsChannels.Select(x => x.ChannelKey)).Distinct().ToList();
+
+        List<CombinedChannel> combinedChannels = new List<CombinedChannel>();
+        foreach (var channelKey in channelKeys)
+        {
+            var leagueChannel = leagueChannelDictionary.GetValueOrDefault(channelKey);
+            var gameNewsChannel = gameNewsChannelDictionary.GetValueOrDefault(channelKey);
+            combinedChannels.Add(new CombinedChannel(leagueChannel, gameNewsChannel));
+        }
+
+        return combinedChannels;
     }
 
     public async Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID)
@@ -134,6 +178,11 @@ public class MySQLDiscordRepo : IDiscordRepo
         return leagueYear is null
             ? null
             : leagueChannelEntity.ToDomain(leagueYear);
+    }
+
+    public Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<MinimalLeagueChannel?> GetMinimalLeagueChannel(ulong guildID, ulong channelID)
