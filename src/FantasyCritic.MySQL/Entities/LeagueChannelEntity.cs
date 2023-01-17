@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Discord.GameNewsSettings;
+using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.MySQL.Entities;
 internal class LeagueChannelEntity
@@ -8,28 +8,28 @@ internal class LeagueChannelEntity
 
     }
 
-    public LeagueChannelEntity(Guid leagueID, ulong guildID, ulong channelID, DiscordGameNewsSetting gameNewsSetting, ulong? bidAlertRoleID)
+    public LeagueChannelEntity(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates, ulong? bidAlertRoleID)
     {
         LeagueID = leagueID;
         GuildID = guildID;
         ChannelID = channelID;
-        GameNewsSetting = gameNewsSetting.Name;
+        SendLeagueMasterGameUpdates = sendLeagueMasterGameUpdates;
         BidAlertRoleID = bidAlertRoleID;
     }
 
     public Guid LeagueID { get; set; }
     public ulong GuildID { get; set; }
     public ulong ChannelID { get; set; }
-    public string GameNewsSetting { get; set; } = null!;
+    public bool SendLeagueMasterGameUpdates { get; set; }
     public ulong? BidAlertRoleID { get; set; }
 
     public LeagueChannel ToDomain(LeagueYear leagueYear)
     {
-        return new LeagueChannel(leagueYear, GuildID, ChannelID, DiscordGameNewsSetting.FromName(GameNewsSetting), BidAlertRoleID);
+        return new LeagueChannel(leagueYear, GuildID, ChannelID, SendLeagueMasterGameUpdates, BidAlertRoleID);
     }
 
     public MinimalLeagueChannel ToMinimalDomain()
     {
-        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, DiscordGameNewsSetting.FromName(GameNewsSetting), BidAlertRoleID);
+        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, SendLeagueMasterGameUpdates, BidAlertRoleID);
     }
 }

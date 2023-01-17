@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Discord.GameNewsSettings;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities;
 

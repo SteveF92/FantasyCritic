@@ -32,6 +32,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
+        var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
 
         var embedFieldBuilders = new List<EmbedFieldBuilder>();
 
@@ -54,7 +55,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
                 Name = "Game News",
-                Value = leagueChannel.GameNewsSetting.Name,
+                Value = GetGameNewsSettingDescription(leagueChannel.SendLeagueMasterGameUpdates, gameNewsChannel?.GameNewsSetting),
                 IsInline = false
             });
 
@@ -76,12 +77,45 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             embedFieldBuilders));
     }
 
+    private static string GetGameNewsSettingDescription(bool sendLeagueMasterGameUpdates, GameNewsSetting? gameNewsSetting)
+    {
+        List<string> parts = new List<string>();
+        if (sendLeagueMasterGameUpdates)
+        {
+            parts.Add("League Master Game Updates");
+        }
+        else
+        {
+            parts.Add("No League Master Game Updates");
+        }
+
+        if (gameNewsSetting is null)
+        {
+            parts.Add("No Non-League Master Game Updates");
+        }
+        else if (gameNewsSetting.Equals(GameNewsSetting.All))
+        {
+            parts.Add("All Master Game Updates");
+        }
+        else if (gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+        {
+            parts.Add("Any 'Might Release' Master Game Updates");
+        }
+        else if (gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
+        {
+            parts.Add("Any 'Will Release' Master Game Updates");
+        }
+        
+        return string.Join(',', parts);
+    }
+
     private string GetPublicBiddingRoleDisplayText(PickupSystem pickupSystem, ulong? publicBiddingAlertRoleId)
     {
         if (pickupSystem.Equals(PickupSystem.SecretBidding))
         {
             return "N/A (Bidding is Secret in this league)";
         }
+
         if (publicBiddingAlertRoleId != null)
         {
             var roleToMention = Context.Guild.Roles.FirstOrDefault(r => r.Id == publicBiddingAlertRoleId);
@@ -90,6 +124,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
                 return roleToMention.Mention;
             }
         }
+
         return "No role is set for alerting on public bids. You may use `/set-public-bid-role` to set up a role to mention with public bid announcements. Make sure that role is mentionable!";
     }
 }
