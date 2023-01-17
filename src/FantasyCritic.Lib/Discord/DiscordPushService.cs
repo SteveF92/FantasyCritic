@@ -132,26 +132,27 @@ public class DiscordPushService
 
         var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGamesInUnfinishedYears(allMasterGameIDs);
 
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var allChannels = await _discordRepo.GetAllCombinedChannels();
         var messageTasks = new List<Task>();
 
-        foreach (var leagueChannel in allChannels)
+        foreach (var combinedChannel in allChannels)
         {
-            var guild = _client.GetGuild(leagueChannel.GuildID);
-            var channel = guild?.GetChannel(leagueChannel.ChannelID);
+            var guild = _client.GetGuild(combinedChannel.GuildID);
+            var channel = guild?.GetChannel(combinedChannel.ChannelID);
             if (channel is not SocketTextChannel textChannel)
             {
                 continue;
             }
 
             var newMasterGamesToSend = _newMasterGameMessages
-                .Where(x => leagueChannel.GameNewsSetting.NewGameIsRelevant(x.MasterGame, x.Year))
+                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, x.Year))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
-                .Where(x => leagueChannel.GameNewsSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.Game.MasterGameID].ToHashSet(), leagueChannel))
+                .Where(x => combinedChannel.CombinedSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.Game.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => leagueChannel.GameNewsSetting.ExistingGameIsRelevant(x.ExistingGame, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(), leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), leagueChannel))
+                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(),
+                    leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
 
             if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())
@@ -266,20 +267,20 @@ public class DiscordPushService
         }
 
         var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday.Select(x => x.MasterGame.MasterGameID), year);
-        var allChannels = await _discordRepo.GetAllLeagueChannels();
+        var allChannels = await _discordRepo.GetAllCombinedChannels();
 
         var messageTasks = new List<Task>();
-        foreach (var leagueChannel in allChannels)
+        foreach (var combinedChannel in allChannels)
         {
-            var guild = _client.GetGuild(leagueChannel.GuildID);
-            var channel = guild?.GetChannel(leagueChannel.ChannelID);
+            var guild = _client.GetGuild(combinedChannel.GuildID);
+            var channel = guild?.GetChannel(combinedChannel.ChannelID);
             if (channel is not SocketTextChannel textChannel)
             {
                 continue;
             }
 
             IReadOnlyList<MasterGameYear> relevantGamesForLeague = masterGamesReleasingToday
-                .Where(x => leagueChannel.GameNewsSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.MasterGame.MasterGameID].ToHashSet(), leagueChannel))
+                .Where(x => combinedChannel.CombinedSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.MasterGame.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
             if (!relevantGamesForLeague.Any())
             {
