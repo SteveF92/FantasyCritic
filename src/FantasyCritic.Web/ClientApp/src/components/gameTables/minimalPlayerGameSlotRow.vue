@@ -32,7 +32,7 @@ export default {
       return this.gameSlot.publisherGame;
     },
     scoreColumnMode() {
-      if (this.game && (this.game.fantasyPoints || !this.game.willRelease || this.game.released)) {
+      if (this.game && (this.game.fantasyPoints || !this.game.willRelease || this.game.criticScore || this.game.released)) {
         return 'RealScore';
       }
       if (this.showProjections) {
