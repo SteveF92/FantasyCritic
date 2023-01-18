@@ -6,4 +6,9 @@ public static class BooleanExtensions
     {
         return value ? "Yes" : "No";
     }
+
+    public static string ToOnOffString(this bool value)
+    {
+        return value ? "On" : "Off";
+    }
 }
