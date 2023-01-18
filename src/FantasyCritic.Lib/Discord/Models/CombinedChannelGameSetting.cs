@@ -12,17 +12,70 @@ public class CombinedChannelGameSetting
 
     public bool NewGameIsRelevant(MasterGame masterGame, int year)
     {
-        throw new NotImplementedException();
+        if (_gameNewsSetting is null)
+        {
+            return false;
+        }
+        if (_gameNewsSetting.Equals(GameNewsSetting.All))
+        {
+            return true;
+        }
+        if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
+        {
+            return masterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease);
+        }
+        if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+        {
+            return masterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease) || masterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.MightRelease);
+        }
+        
+        throw new Exception($"Invalid game news value: {_gameNewsSetting}");
     }
 
-    public bool ExistingGameIsRelevant(MasterGameYear masterGameYear, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
+    public bool ExistingGameIsRelevant(MasterGameYear masterGameYear, int year, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
     {
-        throw new NotImplementedException();
+        if (_sendLeagueMasterGameUpdates && leagueID.HasValue && leaguesWithGame.Contains(leagueID.Value))
+        {
+            return true;
+        }
+
+        if (_gameNewsSetting is null)
+        {
+            return false;
+        }
+        if (_gameNewsSetting.Equals(GameNewsSetting.All))
+        {
+            return true;
+        }
+        if (releaseStatusChanged)
+        {
+            return true;
+        }
+        if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
+        {
+            return masterGameYear.MasterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease);
+        }
+        if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+        {
+            return masterGameYear.MasterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease) || masterGameYear.MasterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.MightRelease);
+        }
+
+        throw new Exception($"Invalid game news value: {_gameNewsSetting}");
     }
 
     public bool ScoredOrReleasedGameIsRelevant(IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
     {
-        throw new NotImplementedException();
+        if (_sendLeagueMasterGameUpdates && leagueID.HasValue && leaguesWithGame.Contains(leagueID.Value))
+        {
+            return true;
+        }
+
+        if (_gameNewsSetting is null)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public override string ToString()

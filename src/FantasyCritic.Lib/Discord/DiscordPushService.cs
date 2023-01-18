@@ -112,9 +112,9 @@ public class DiscordPushService
         _gameCriticScoreUpdateMessages.Add(new GameCriticScoreUpdateMessage(game, oldCriticScore, newCriticScore, year));
     }
 
-    public void QueueMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes)
+    public void QueueMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes, int year)
     {
-        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame, editedGame, changes));
+        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame, editedGame, changes, year));
     }
 
     public async Task SendBatchedMasterGameUpdates()
@@ -151,7 +151,7 @@ public class DiscordPushService
                 .Where(x => combinedChannel.CombinedSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.Game.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(),
+                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, x.Year, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(),
                     leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
 

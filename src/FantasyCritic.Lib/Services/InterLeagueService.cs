@@ -60,7 +60,7 @@ public class InterLeagueService
             }
             var existingMasterGameYear = masterGameYearStats.WithNewMasterGame(existingMasterGame);
             var editedMasterGameYear = masterGameYearStats.WithNewMasterGame(editedMasterGame);
-            _discordPushService.QueueMasterGameEditMessage(existingMasterGameYear, editedMasterGameYear, changes);
+            _discordPushService.QueueMasterGameEditMessage(existingMasterGameYear, editedMasterGameYear, changes, _clock.GetToday().Year);
         }
         return Result.Success();
     }
