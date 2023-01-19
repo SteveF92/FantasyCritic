@@ -13,7 +13,6 @@ public interface IDiscordRepo
     Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID);
     Task<MinimalLeagueChannel?> GetMinimalLeagueChannel(ulong guildID, ulong channelID);
     Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null);
-    Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, int year);
     Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID);
     Task RemoveAllLeagueChannelsForLeague(Guid leagueID);
 }

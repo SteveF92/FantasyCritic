@@ -53,7 +53,7 @@ public class PublisherGame
             return WillReleaseStatus.WillRelease;
         }
 
-        return MasterGame.WillRelease();
+        return MasterGame.GetWillReleaseStatus();
     }
 
     public bool CouldRelease() => WillRelease().CountAsWillRelease;

@@ -198,7 +198,7 @@ public class GameSearchingService
         bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
         bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
         bool isReleased = masterGame.MasterGame.IsReleased(currentDate);
-        WillReleaseStatus willReleaseStatus = masterGame.WillRelease();
+        WillReleaseStatus willReleaseStatus = masterGame.GetWillReleaseStatus();
         bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
         bool isEligibleInOpenSlot = SlotEligibilityFunctions.GameIsEligibleInOpenSlot(openNonCounterPickSlots, eligibilityFactors);
 
@@ -216,7 +216,7 @@ public class GameSearchingService
         bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
         bool alreadyOwned = myPublisherMasterGames.Contains(masterGame.MasterGame);
         bool isReleased = masterGame.MasterGame.IsReleased(currentDate);
-        WillReleaseStatus willReleaseStatus = masterGame.WillRelease();
+        WillReleaseStatus willReleaseStatus = masterGame.GetWillReleaseStatus();
         bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
         bool isEligibleInOpenSlot = SlotEligibilityFunctions.GameIsEligibleInOpenSlot(openNonCounterPickSlots, eligibilityFactors);
 

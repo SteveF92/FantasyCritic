@@ -338,7 +338,7 @@ public static class GameEligibilityFunctions
                 claimErrors.Add(new ClaimError("That game is in 'delay contention', and therefore cannot be counter picked.", false));
             }
 
-            var releaseStatus = masterGame.WillReleaseInYear(year);
+            var releaseStatus = masterGame.GetWillReleaseStatus(year);
             if (releaseStatus == WillReleaseStatus.MightRelease)
             {
                 if (leagueYear.Options.MightReleaseDroppableDate.HasValue && dateOfPotentialAcquisition >=

@@ -51,8 +51,8 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public override string ToString() => $"{MasterGame}-{Year}";
 
-    public WillReleaseStatus WillRelease() => MasterGame.WillReleaseInYear(Year);
-    public WillReleaseStatus WillReleaseInQuarter(YearQuarter yearQuarter) => MasterGame.WillReleaseInQuarter(yearQuarter);
+    public WillReleaseStatus GetWillReleaseStatus() => MasterGame.GetWillReleaseStatus(Year);
+    public WillReleaseStatus GetWillReleaseStatus(YearQuarter yearQuarter) => MasterGame.GetWillReleaseStatus(yearQuarter);
     public bool CouldRelease() => MasterGame.CouldReleaseInYear(Year);
     public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => MasterGame.CouldReleaseInQuarter(yearQuarter);
 

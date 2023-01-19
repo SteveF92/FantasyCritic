@@ -135,6 +135,7 @@ public class DiscordPushService
         var allChannels = await _discordRepo.GetAllCombinedChannels();
         var messageTasks = new List<Task>();
 
+        var today = _clock.GetToday();
         foreach (var combinedChannel in allChannels)
         {
             var guild = _client.GetGuild(combinedChannel.GuildID);
@@ -145,13 +146,13 @@ public class DiscordPushService
             }
 
             var newMasterGamesToSend = _newMasterGameMessages
-                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveYears))
+                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveYears, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
                 .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(leagueHasGameLookup[x.Game.MasterGameID].ToHashSet(), combinedChannel.LeagueID, combinedChannel.SendNotableMisses, x.NewCriticScore))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, combinedChannel.ActiveYears, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(),
+                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, combinedChannel.ActiveYears, x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(),
                     leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
 

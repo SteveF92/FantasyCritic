@@ -1,6 +1,10 @@
+using Serilog;
+
 namespace FantasyCritic.Lib.Discord.Models;
 public class CombinedChannelGameSetting
 {
+    private static readonly ILogger Logger = Log.ForContext<CombinedChannelGameSetting>();
+
     private readonly bool _sendLeagueMasterGameUpdates;
     private readonly GameNewsSetting? _gameNewsSetting;
 
@@ -10,26 +14,52 @@ public class CombinedChannelGameSetting
         _gameNewsSetting = gameNewsSetting;
     }
 
-    public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<int> activeYears)
+    public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<int> activeYears, IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
     {
         if (_gameNewsSetting is null)
         {
+            //This is by definition not a game in your league (it was just added), so if you don't want general game news, then you don't want this.
             return false;
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.All))
         {
             return true;
         }
-        if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
+
+        if (activeLeagueYears is not null)
         {
-            return masterGame.WillReleaseInYears(activeYears);
+            foreach (var leagueYear in activeLeagueYears)
+            {
+                bool eligible = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
+                if (!eligible)
+                {
+                    continue;
+                }
+
+                if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
+                {
+                    return masterGame.WillReleaseInYear(leagueYear.Year);
+                }
+                if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+                {
+                    return masterGame.WillOrMightReleaseInYear(leagueYear.Year);
+                }
+            }
         }
-        if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+        else
         {
-            return masterGame.WillOrMightReleaseInYears(activeYears);
+            if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
+            {
+                return masterGame.WillReleaseInYears(activeYears);
+            }
+            if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+            {
+                return masterGame.WillOrMightReleaseInYears(activeYears);
+            }
         }
-        
-        throw new Exception($"Invalid game news value: {_gameNewsSetting}");
+
+        Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, channelKey);
+        return false;
     }
 
     public bool ExistingGameIsRelevant(MasterGameYear masterGameYear, IReadOnlyList<int> activeYears, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)

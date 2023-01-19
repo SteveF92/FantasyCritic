@@ -109,7 +109,7 @@ public class MasterGame : IEquatable<MasterGame>
         }
     }
 
-    public WillReleaseStatus WillReleaseInYear(int year)
+    public WillReleaseStatus GetWillReleaseStatus(int year)
     {
         if (year < MinimumReleaseDate.Year)
         {
@@ -129,17 +129,28 @@ public class MasterGame : IEquatable<MasterGame>
         return WillReleaseStatus.MightRelease;
     }
 
+    public bool WillReleaseInYear(int year)
+    {
+        return GetWillReleaseStatus(year).Equals(WillReleaseStatus.WillRelease);
+    }
+
+    public bool WillOrMightReleaseInYear(int year)
+    {
+        return GetWillReleaseStatus(year).Equals(WillReleaseStatus.WillRelease) ||
+               GetWillReleaseStatus(year).Equals(WillReleaseStatus.MightRelease);
+    }
+
     public bool WillReleaseInYears(IEnumerable<int> years)
     {
-        return years.Any(x => WillReleaseInYear(x).Equals(WillReleaseStatus.WillRelease));
+        return years.Any(WillReleaseInYear);
     }
 
     public bool WillOrMightReleaseInYears(IEnumerable<int> years)
     {
-        return years.Any(x => WillReleaseInYear(x).Equals(WillReleaseStatus.WillRelease) || WillReleaseInYear(x).Equals(WillReleaseStatus.MightRelease));
+        return years.Any(WillOrMightReleaseInYear);
     }
 
-    public WillReleaseStatus WillReleaseInQuarter(YearQuarter yearQuarter)
+    public WillReleaseStatus GetWillReleaseStatus(YearQuarter yearQuarter)
     {
         if (ReleaseDate.HasValue && yearQuarter.FirstDateOfQuarter > ReleaseDate.Value)
         {
@@ -159,8 +170,8 @@ public class MasterGame : IEquatable<MasterGame>
         return WillReleaseStatus.MightRelease;
     }
 
-    public bool CouldReleaseInYear(int year) => WillReleaseInYear(year).CountAsWillRelease;
-    public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => WillReleaseInQuarter(yearQuarter).CountAsWillRelease;
+    public bool CouldReleaseInYear(int year) => GetWillReleaseStatus(year).CountAsWillRelease;
+    public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => GetWillReleaseStatus(yearQuarter).CountAsWillRelease;
 
     public string GetReleaseDateString()
     {
