@@ -129,6 +129,16 @@ public class MasterGame : IEquatable<MasterGame>
         return WillReleaseStatus.MightRelease;
     }
 
+    public bool WillReleaseInYears(IEnumerable<int> years)
+    {
+        return years.Any(x => WillReleaseInYear(x).Equals(WillReleaseStatus.WillRelease));
+    }
+
+    public bool WillOrMightReleaseInYears(IEnumerable<int> years)
+    {
+        return years.Any(x => WillReleaseInYear(x).Equals(WillReleaseStatus.WillRelease) || WillReleaseInYear(x).Equals(WillReleaseStatus.MightRelease));
+    }
+
     public WillReleaseStatus WillReleaseInQuarter(YearQuarter yearQuarter)
     {
         if (ReleaseDate.HasValue && yearQuarter.FirstDateOfQuarter > ReleaseDate.Value)

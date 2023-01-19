@@ -94,7 +94,7 @@ public static class Program
         IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
-        IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo);
+        IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo, _clock);
         IDiscordSupplementalDataRepo discordSupplementalRepo = new MySQLDiscordSupplementalDataRepo(localRepoConfig);
         DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("",
                 _baseAddress,

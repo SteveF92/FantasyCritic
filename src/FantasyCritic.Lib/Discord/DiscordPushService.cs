@@ -102,19 +102,19 @@ public class DiscordPushService
 
     }
 
-    public void QueueNewMasterGameMessage(MasterGame masterGame, int year)
+    public void QueueNewMasterGameMessage(MasterGame masterGame)
     {
-        _newMasterGameMessages.Add(new NewMasterGameMessage(masterGame, year));
+        _newMasterGameMessages.Add(new NewMasterGameMessage(masterGame));
     }
 
-    public void QueueGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore, int year)
+    public void QueueGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore)
     {
-        _gameCriticScoreUpdateMessages.Add(new GameCriticScoreUpdateMessage(game, oldCriticScore, newCriticScore, year));
+        _gameCriticScoreUpdateMessages.Add(new GameCriticScoreUpdateMessage(game, oldCriticScore, newCriticScore));
     }
 
-    public void QueueMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes, int year)
+    public void QueueMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes)
     {
-        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame, editedGame, changes, year));
+        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame, editedGame, changes));
     }
 
     public async Task SendBatchedMasterGameUpdates()
@@ -145,13 +145,13 @@ public class DiscordPushService
             }
 
             var newMasterGamesToSend = _newMasterGameMessages
-                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, x.Year))
+                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveYears))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
                 .Where(x => combinedChannel.CombinedSetting.ScoredOrReleasedGameIsRelevant(leagueHasGameLookup[x.Game.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, x.Year, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(),
+                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, combinedChannel.ActiveYears, x.ExistingGame.WillRelease() != x.EditedGame.WillRelease(),
                     leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
                 .ToList();
 

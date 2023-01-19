@@ -10,7 +10,7 @@ public class CombinedChannelGameSetting
         _gameNewsSetting = gameNewsSetting;
     }
 
-    public bool NewGameIsRelevant(MasterGame masterGame, int year)
+    public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<int> activeYears)
     {
         if (_gameNewsSetting is null)
         {
@@ -22,17 +22,17 @@ public class CombinedChannelGameSetting
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
-            return masterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease);
+            return masterGame.WillReleaseInYears(activeYears);
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
         {
-            return masterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease) || masterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.MightRelease);
+            return masterGame.WillOrMightReleaseInYears(activeYears);
         }
         
         throw new Exception($"Invalid game news value: {_gameNewsSetting}");
     }
 
-    public bool ExistingGameIsRelevant(MasterGameYear masterGameYear, int year, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
+    public bool ExistingGameIsRelevant(MasterGameYear masterGameYear, IReadOnlyList<int> activeYears, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
     {
         if (_sendLeagueMasterGameUpdates && leagueID.HasValue && leaguesWithGame.Contains(leagueID.Value))
         {
@@ -53,11 +53,11 @@ public class CombinedChannelGameSetting
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
-            return masterGameYear.MasterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease);
+            return masterGameYear.MasterGame.WillReleaseInYears(activeYears);
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
         {
-            return masterGameYear.MasterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.WillRelease) || masterGameYear.MasterGame.WillReleaseInYear(year).Equals(WillReleaseStatus.MightRelease);
+            return masterGameYear.MasterGame.WillOrMightReleaseInYears(activeYears);
         }
 
         throw new Exception($"Invalid game news value: {_gameNewsSetting}");

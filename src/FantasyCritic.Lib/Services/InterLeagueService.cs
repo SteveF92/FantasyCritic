@@ -41,7 +41,7 @@ public class InterLeagueService
     public async Task CreateMasterGame(MasterGame masterGame)
     {
         await _masterGameRepo.CreateMasterGame(masterGame);
-        _discordPushService.QueueNewMasterGameMessage(masterGame, _clock.GetToday().Year);
+        _discordPushService.QueueNewMasterGameMessage(masterGame);
     }
 
     public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
@@ -60,7 +60,7 @@ public class InterLeagueService
             }
             var existingMasterGameYear = masterGameYearStats.WithNewMasterGame(existingMasterGame);
             var editedMasterGameYear = masterGameYearStats.WithNewMasterGame(editedMasterGame);
-            _discordPushService.QueueMasterGameEditMessage(existingMasterGameYear, editedMasterGameYear, changes, _clock.GetToday().Year);
+            _discordPushService.QueueMasterGameEditMessage(existingMasterGameYear, editedMasterGameYear, changes);
         }
         return Result.Success();
     }

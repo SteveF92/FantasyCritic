@@ -1,5 +1,3 @@
-using FantasyCritic.Lib.Discord.Models;
-
 namespace FantasyCritic.MySQL.Entities;
 internal class LeagueChannelEntity
 {
@@ -21,6 +19,7 @@ internal class LeagueChannelEntity
     public ulong GuildID { get; set; }
     public ulong ChannelID { get; set; }
     public bool SendLeagueMasterGameUpdates { get; set; }
+    public int MinimumLeagueYear { get; set; }
     public ulong? BidAlertRoleID { get; set; }
 
     public LeagueChannel ToDomain(LeagueYear leagueYear)
@@ -28,8 +27,8 @@ internal class LeagueChannelEntity
         return new LeagueChannel(leagueYear, GuildID, ChannelID, SendLeagueMasterGameUpdates, BidAlertRoleID);
     }
 
-    public MinimalLeagueChannel ToMinimalDomain()
+    public MinimalLeagueChannel ToMinimalDomain(IReadOnlyList<int> activeYears)
     {
-        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, SendLeagueMasterGameUpdates, BidAlertRoleID);
+        return new MinimalLeagueChannel(LeagueID, activeYears.Where(x => x >= MinimumLeagueYear).ToList(), GuildID, ChannelID, SendLeagueMasterGameUpdates, BidAlertRoleID);
     }
 }
