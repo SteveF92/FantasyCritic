@@ -109,10 +109,8 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         try
         {
-
             await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id,
                 dateToCheck.Year);
-
         }
         catch (Exception ex)
         {

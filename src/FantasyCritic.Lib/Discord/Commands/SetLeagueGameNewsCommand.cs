@@ -52,7 +52,9 @@ public class SetLeagueGameNewsCommand : InteractionModuleBase<SocketInteractionC
                 return;
         }
 
-        await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, settingBool);
+        bool sendNotableMisses = true; //TODO how to set this?
+
+        await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, settingBool, sendNotableMisses);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Game News Configuration Saved",
