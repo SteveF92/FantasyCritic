@@ -1,9 +1,9 @@
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Lib.Domain;
-public record LeagueChannel(LeagueYear LeagueYear, ulong GuildID, ulong ChannelID, bool SendLeagueMasterGameUpdates, ulong? BidAlertRoleID);
+public record LeagueChannel(LeagueYear LeagueYear, ulong GuildID, ulong ChannelID, bool SendLeagueMasterGameUpdates, bool SendNotableMisses, ulong? BidAlertRoleID);
 
-public record MinimalLeagueChannel(Guid LeagueID, IReadOnlyList<int> ActiveYears, ulong GuildID, ulong ChannelID, bool SendLeagueMasterGameUpdates, ulong? BidAlertRoleID)
+public record MinimalLeagueChannel(Guid LeagueID, IReadOnlyList<int> ActiveYears, ulong GuildID, ulong ChannelID, bool SendLeagueMasterGameUpdates, bool SendNotableMisses, ulong? BidAlertRoleID)
 {
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 }
@@ -29,6 +29,7 @@ public class CombinedChannel
             LeagueID = leagueChannel.LeagueID;
             ActiveYears = leagueChannel.ActiveYears.ToList();
             SendLeagueMasterGameUpdates = leagueChannel.SendLeagueMasterGameUpdates;
+            SendNotableMisses = leagueChannel.SendNotableMisses;
         }
         else
         {
@@ -48,6 +49,7 @@ public class CombinedChannel
     public Guid? LeagueID { get; }
     public IReadOnlyList<int> ActiveYears { get; }
     public bool SendLeagueMasterGameUpdates { get; }
+    public bool SendNotableMisses { get; }
     public GameNewsSetting? GameNewsSetting { get; }
 
     public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(SendLeagueMasterGameUpdates, GameNewsSetting);

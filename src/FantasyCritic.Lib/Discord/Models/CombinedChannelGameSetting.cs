@@ -63,11 +63,46 @@ public class CombinedChannelGameSetting
         throw new Exception($"Invalid game news value: {_gameNewsSetting}");
     }
 
-    public bool ScoredOrReleasedGameIsRelevant(IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
+    public bool ReleasedGameIsRelevant(IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
     {
-        if (_sendLeagueMasterGameUpdates && leagueID.HasValue && leaguesWithGame.Contains(leagueID.Value))
+        if (leagueID.HasValue)
         {
-            return true;
+            if (!_sendLeagueMasterGameUpdates)
+            {
+                return false;
+            }
+
+            return leaguesWithGame.Contains(leagueID.Value);
+        }
+
+        if (_gameNewsSetting is null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool ScoredGameIsRelevant(IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID, bool sendNotableMisses, decimal? criticScore)
+    {
+        if (leagueID.HasValue)
+        {
+            if (!_sendLeagueMasterGameUpdates)
+            {
+                return false;
+            }
+
+            if (leaguesWithGame.Contains(leagueID.Value))
+            {
+                return true;
+            }
+
+            if (sendNotableMisses && criticScore is >= 83m)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         if (_gameNewsSetting is null)

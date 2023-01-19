@@ -31,4 +31,7 @@ DELETE FROM `fantasycritic`.`tbl_discord_gamenewsoptions` WHERE  `Name`='Relevan
 
 COMMIT;
 
-CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_discord_leaguechannel` AS select `tbl_discord_leaguechannel`.`LeagueID` AS `LeagueID`,`tbl_discord_leaguechannel`.`GuildID` AS `GuildID`,`tbl_discord_leaguechannel`.`ChannelID` AS `ChannelID`,`tbl_discord_leaguechannel`.`SendLeagueMasterGameUpdates` AS `SendLeagueMasterGameUpdates`,`tbl_discord_leaguechannel`.`BidAlertRoleID` AS `BidAlertRoleID`,min(`tbl_league_year`.`Year`) AS `MinimumLeagueYear` from (`tbl_discord_leaguechannel` join `tbl_league_year` on((`tbl_discord_leaguechannel`.`LeagueID` = `tbl_league_year`.`LeagueID`))) group by `tbl_discord_leaguechannel`.`LeagueID`,`tbl_discord_leaguechannel`.`GuildID`,`tbl_discord_leaguechannel`.`ChannelID`;
+ALTER TABLE `tbl_discord_leaguechannel`
+	ADD COLUMN `SendNotableMisses` BIT(1) NOT NULL DEFAULT 1 AFTER `SendLeagueMasterGameUpdates`;
+
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_discord_leaguechannel` AS select `tbl_discord_leaguechannel`.`LeagueID` AS `LeagueID`,`tbl_discord_leaguechannel`.`GuildID` AS `GuildID`,`tbl_discord_leaguechannel`.`ChannelID` AS `ChannelID`,`tbl_discord_leaguechannel`.`SendLeagueMasterGameUpdates` AS `SendLeagueMasterGameUpdates`,`tbl_discord_leaguechannel`.`SendNotableMisses` AS `SendNotableMisses`,`tbl_discord_leaguechannel`.`BidAlertRoleID` AS `BidAlertRoleID`,min(`tbl_league_year`.`Year`) AS `MinimumLeagueYear` from (`tbl_discord_leaguechannel` join `tbl_league_year` on((`tbl_discord_leaguechannel`.`LeagueID` = `tbl_league_year`.`LeagueID`))) group by `tbl_discord_leaguechannel`.`LeagueID`,`tbl_discord_leaguechannel`.`GuildID`,`tbl_discord_leaguechannel`.`ChannelID`;
