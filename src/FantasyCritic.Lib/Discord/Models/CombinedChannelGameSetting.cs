@@ -14,7 +14,7 @@ public class CombinedChannelGameSetting
         _gameNewsSetting = gameNewsSetting;
     }
 
-    public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<int> activeYears, IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
+    public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
     {
         if (_gameNewsSetting is null)
         {
@@ -51,19 +51,19 @@ public class CombinedChannelGameSetting
 
         if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
-            return masterGame.WillReleaseInYears(activeYears);
+            return masterGame.WillReleaseInYear(currentDate.Year);
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
         {
-            return masterGame.WillOrMightReleaseInYears(activeYears);
+            return masterGame.WillOrMightReleaseInYear(currentDate.Year);
         }
 
         Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, channelKey);
         return false;
     }
 
-    public bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, IReadOnlyList<int> activeYears,
-        IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
+    public bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, IReadOnlyList<LeagueYear>? activeLeagueYears,
+        DiscordChannelKey channelKey, LocalDate currentDate)
     {
         if (activeLeagueYears is not null)
         {
@@ -108,11 +108,11 @@ public class CombinedChannelGameSetting
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
-            return masterGame.WillReleaseInYears(activeYears);
+            return masterGame.WillReleaseInYear(currentDate.Year);
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
         {
-            return masterGame.WillOrMightReleaseInYears(activeYears);
+            return masterGame.WillOrMightReleaseInYear(currentDate.Year);
         }
 
         Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, channelKey);

@@ -139,14 +139,14 @@ public class DiscordPushService
             }
 
             var newMasterGamesToSend = _newMasterGameMessages
-                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveYears, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
+                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
                 .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, combinedChannel.SendNotableMisses, x.NewCriticScore))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame.MasterGame, x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(),
-                        combinedChannel.ActiveYears, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
+                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame.MasterGame,
+                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(), combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
                 .ToList();
 
             if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())
@@ -958,7 +958,7 @@ public class DiscordPushService
                 multiYearLeagueChannel = leagueChannel.ToMultiYearLeagueChannel(activeLeagueYears);
             }
 
-            combinedChannels.Add(new CombinedChannel(multiYearLeagueChannel, gameNewsChannel, _clock.GetToday().Year));
+            combinedChannels.Add(new CombinedChannel(multiYearLeagueChannel, gameNewsChannel));
         }
 
         return combinedChannels;

@@ -21,7 +21,7 @@ public record GameNewsChannel(ulong GuildID, ulong ChannelID, GameNewsSetting Ga
 
 public class CombinedChannel
 {
-    public CombinedChannel(MultiYearLeagueChannel? leagueChannel, GameNewsChannel? gameNewsChannel, int currentYear)
+    public CombinedChannel(MultiYearLeagueChannel? leagueChannel, GameNewsChannel? gameNewsChannel)
     {
         if (leagueChannel is null && gameNewsChannel is null)
         {
@@ -33,14 +33,9 @@ public class CombinedChannel
             GuildID = leagueChannel.GuildID;
             ChannelID = leagueChannel.ChannelID;
             LeagueID = leagueChannel.LeagueID;
-            ActiveYears = leagueChannel.ActiveLeagueYears.Select(x => x.Year).ToList();
             SendLeagueMasterGameUpdates = leagueChannel.SendLeagueMasterGameUpdates;
             SendNotableMisses = leagueChannel.SendNotableMisses;
             ActiveLeagueYears = leagueChannel.ActiveLeagueYears;
-        }
-        else
-        {
-            ActiveYears = new List<int>() { currentYear };
         }
 
         if (gameNewsChannel is not null)
@@ -54,7 +49,6 @@ public class CombinedChannel
     public ulong GuildID { get; }
     public ulong ChannelID { get; }
     public Guid? LeagueID { get; }
-    public IReadOnlyList<int> ActiveYears { get; }
     public IReadOnlyList<LeagueYear>? ActiveLeagueYears { get; }
     public bool SendLeagueMasterGameUpdates { get; }
     public bool SendNotableMisses { get; }
