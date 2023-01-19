@@ -125,14 +125,7 @@ public class DiscordPushService
             return;
         }
 
-        var allMasterGameIDs = _newMasterGameMessages.Select(x => x.MasterGame.MasterGameID)
-            .Concat(_gameCriticScoreUpdateMessages.Select(x => x.Game.MasterGameID))
-            .Concat(_masterGameEditMessages.Select(x => x.EditedGame.MasterGame.MasterGameID))
-            .ToList();
-
-        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGamesInUnfinishedYears(allMasterGameIDs);
-
-        var allChannels = await _discordRepo.GetAllCombinedChannels();
+        var allChannels = await GetAllCombinedChannels();
         var messageTasks = new List<Task>();
 
         var today = _clock.GetToday();
@@ -149,11 +142,11 @@ public class DiscordPushService
                 .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveYears, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
-                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(leagueHasGameLookup[x.Game.MasterGameID].ToHashSet(), combinedChannel.LeagueID, combinedChannel.SendNotableMisses, x.NewCriticScore))
+                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, combinedChannel.SendNotableMisses, x.NewCriticScore))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame, combinedChannel.ActiveYears, x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(),
-                    leagueHasGameLookup[x.EditedGame.MasterGame.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
+                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame.MasterGame, x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(),
+                        combinedChannel.ActiveYears, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
                 .ToList();
 
             if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())
@@ -267,9 +260,7 @@ public class DiscordPushService
             return;
         }
 
-        var leagueHasGameLookup = await _supplementalDataRepo.GetLeaguesWithOrFormerlyWithGames(masterGamesReleasingToday.Select(x => x.MasterGame.MasterGameID), year);
-        var allChannels = await _discordRepo.GetAllCombinedChannels();
-
+        var allChannels = await GetAllCombinedChannels();
         var messageTasks = new List<Task>();
         foreach (var combinedChannel in allChannels)
         {
@@ -281,7 +272,7 @@ public class DiscordPushService
             }
 
             IReadOnlyList<MasterGameYear> relevantGamesForLeague = masterGamesReleasingToday
-                .Where(x => combinedChannel.CombinedSetting.ReleasedGameIsRelevant(leagueHasGameLookup[x.MasterGame.MasterGameID].ToHashSet(), combinedChannel.LeagueID))
+                .Where(x => combinedChannel.CombinedSetting.ReleasedGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears))
                 .ToList();
             if (!relevantGamesForLeague.Any())
             {
@@ -934,5 +925,42 @@ public class DiscordPushService
         }
 
         await Task.WhenAll(messageTasks);
+    }
+
+    private async Task<IReadOnlyList<CombinedChannel>> GetAllCombinedChannels()
+    {
+        var leagueChannelsTask = _discordRepo.GetAllLeagueChannels();
+        var gameNewsChannelsTask = _discordRepo.GetAllGameNewsChannels();
+        await Task.WhenAll(leagueChannelsTask, gameNewsChannelsTask);
+
+        var leagueChannels = await leagueChannelsTask;
+        var gameNewsChannels = await gameNewsChannelsTask;
+
+        var leagueIDs = leagueChannels.Select(x => x.LeagueID).Distinct().ToList();
+        var leagueYears = await _fantasyCriticRepo.GetActiveLeagueYears(leagueIDs);
+        var leagueYearLookup = leagueYears.ToLookup(x => x.League.LeagueID);
+
+        var leagueChannelDictionary = leagueChannels.ToDictionary(x => x.ChannelKey);
+        var gameNewsChannelDictionary = gameNewsChannels.ToDictionary(x => x.ChannelKey);
+
+        var channelKeys = leagueChannels.Select(x => x.ChannelKey)
+            .Concat(gameNewsChannels.Select(x => x.ChannelKey)).Distinct().ToList();
+
+        List<CombinedChannel> combinedChannels = new List<CombinedChannel>();
+        foreach (var channelKey in channelKeys)
+        {
+            var leagueChannel = leagueChannelDictionary.GetValueOrDefault(channelKey);
+            var gameNewsChannel = gameNewsChannelDictionary.GetValueOrDefault(channelKey);
+            MultiYearLeagueChannel? multiYearLeagueChannel = null;
+            if (leagueChannel is not null)
+            {
+                var activeLeagueYears = leagueYearLookup[leagueChannel.LeagueID].ToList();
+                multiYearLeagueChannel = leagueChannel.ToMultiYearLeagueChannel(activeLeagueYears);
+            }
+
+            combinedChannels.Add(new CombinedChannel(multiYearLeagueChannel, gameNewsChannel, _clock.GetToday().Year));
+        }
+
+        return combinedChannels;
     }
 }

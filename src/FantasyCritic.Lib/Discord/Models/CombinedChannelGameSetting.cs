@@ -45,28 +45,57 @@ public class CombinedChannelGameSetting
                     return masterGame.WillOrMightReleaseInYear(leagueYear.Year);
                 }
             }
+
+            return false;
         }
-        else
+
+        if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
-            if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
-            {
-                return masterGame.WillReleaseInYears(activeYears);
-            }
-            if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
-            {
-                return masterGame.WillOrMightReleaseInYears(activeYears);
-            }
+            return masterGame.WillReleaseInYears(activeYears);
+        }
+        if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+        {
+            return masterGame.WillOrMightReleaseInYears(activeYears);
         }
 
         Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, channelKey);
         return false;
     }
 
-    public bool ExistingGameIsRelevant(MasterGameYear masterGameYear, IReadOnlyList<int> activeYears, bool releaseStatusChanged, IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
+    public bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, IReadOnlyList<int> activeYears,
+        IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
     {
-        if (_sendLeagueMasterGameUpdates && leagueID.HasValue && leaguesWithGame.Contains(leagueID.Value))
+        if (activeLeagueYears is not null)
         {
-            return true;
+            foreach (var leagueYear in activeLeagueYears)
+            {
+                bool inLeagueYear = leagueYear.Publishers.Any(x => x.MyMasterGames.Contains(masterGame));
+                if (inLeagueYear)
+                {
+                    return true;
+                }
+
+                if (_gameNewsSetting is null)
+                {
+                    continue;
+                }
+
+                bool eligible = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
+                if (!eligible)
+                {
+                    continue;
+                }
+
+                bool willReleaseRelevance = _gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear) && masterGame.WillReleaseInYear(leagueYear.Year);
+                bool mightReleaseRelevance = _gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear) && masterGame.WillOrMightReleaseInYear(leagueYear.Year);
+                bool releaseRelevance = releaseStatusChanged || willReleaseRelevance || mightReleaseRelevance;
+                if (releaseRelevance)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         if (_gameNewsSetting is null)
@@ -77,52 +106,50 @@ public class CombinedChannelGameSetting
         {
             return true;
         }
-        if (releaseStatusChanged)
-        {
-            return true;
-        }
         if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
-            return masterGameYear.MasterGame.WillReleaseInYears(activeYears);
+            return masterGame.WillReleaseInYears(activeYears);
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
         {
-            return masterGameYear.MasterGame.WillOrMightReleaseInYears(activeYears);
+            return masterGame.WillOrMightReleaseInYears(activeYears);
         }
 
-        throw new Exception($"Invalid game news value: {_gameNewsSetting}");
+        Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, channelKey);
+        return false;
     }
 
-    public bool ReleasedGameIsRelevant(IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID)
+    public bool ReleasedGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
     {
-        if (leagueID.HasValue)
+        if (activeLeagueYears is not null)
         {
-            if (!_sendLeagueMasterGameUpdates)
+            foreach (var leagueYear in activeLeagueYears)
             {
-                return false;
+                bool inLeagueYear = leagueYear.Publishers.Any(x => x.MyMasterGames.Contains(masterGame));
+                if (inLeagueYear)
+                {
+                    return true;
+                }
             }
-
-            return leaguesWithGame.Contains(leagueID.Value);
         }
 
-        if (_gameNewsSetting is null)
-        {
-            return false;
-        }
-
-        return true;
+        return _gameNewsSetting is not null;
     }
 
-    public bool ScoredGameIsRelevant(IReadOnlySet<Guid> leaguesWithGame, Guid? leagueID, bool sendNotableMisses, decimal? criticScore)
+    public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, bool sendNotableMisses, decimal? criticScore)
     {
-        if (leagueID.HasValue)
+        if (activeLeagueYears is not null)
         {
-            if (!_sendLeagueMasterGameUpdates)
+            foreach (var leagueYear in activeLeagueYears)
             {
-                return false;
+                bool inLeagueYear = leagueYear.Publishers.Any(x => x.MyMasterGames.Contains(masterGame));
+                if (inLeagueYear)
+                {
+                    return true;
+                }
             }
 
-            if (leaguesWithGame.Contains(leagueID.Value))
+            if (_gameNewsSetting is not null)
             {
                 return true;
             }
@@ -135,12 +162,7 @@ public class CombinedChannelGameSetting
             return false;
         }
 
-        if (_gameNewsSetting is null)
-        {
-            return false;
-        }
-
-        return true;
+        return _gameNewsSetting is not null;
     }
 
     public override string ToString()

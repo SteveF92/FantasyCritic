@@ -28,8 +28,8 @@ internal class LeagueChannelEntity
         return new LeagueChannel(leagueYear, GuildID, ChannelID, SendLeagueMasterGameUpdates, SendNotableMisses, BidAlertRoleID);
     }
 
-    public MinimalLeagueChannel ToMinimalDomain(IReadOnlyList<int> activeYears)
+    public MinimalLeagueChannel ToMinimalDomain()
     {
-        return new MinimalLeagueChannel(LeagueID, activeYears.Where(x => x >= MinimumLeagueYear).ToList(), GuildID, ChannelID, SendLeagueMasterGameUpdates, SendNotableMisses, BidAlertRoleID);
+        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, SendLeagueMasterGameUpdates, SendNotableMisses, BidAlertRoleID);
     }
 }

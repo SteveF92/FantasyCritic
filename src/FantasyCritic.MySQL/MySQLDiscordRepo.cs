@@ -71,9 +71,8 @@ public class MySQLDiscordRepo : IDiscordRepo
         await using var connection = new MySqlConnection(_connectionString);
         const string sql = "select * from tbl_discord_leaguechannel";
 
-        var activeYears = await GetActiveYears();
         var leagueChannels = await connection.QueryAsync<LeagueChannelEntity>(sql);
-        return leagueChannels.Select(l => l.ToMinimalDomain(activeYears)).ToList();
+        return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
     public async Task<IReadOnlyList<GameNewsChannel>> GetAllGameNewsChannels()
@@ -85,32 +84,6 @@ public class MySQLDiscordRepo : IDiscordRepo
         return entities.Select(x => x.ToDomain()).ToList();
     }
 
-    public async Task<IReadOnlyList<CombinedChannel>> GetAllCombinedChannels()
-    {
-        var leagueChannelsTask = GetAllLeagueChannels();
-        var gameNewsChannelsTask = GetAllGameNewsChannels();
-        await Task.WhenAll(leagueChannelsTask, gameNewsChannelsTask);
-
-        var leagueChannels = await leagueChannelsTask;
-        var gameNewsChannels = await gameNewsChannelsTask;
-
-        var leagueChannelDictionary = leagueChannels.ToDictionary(x => x.ChannelKey);
-        var gameNewsChannelDictionary = gameNewsChannels.ToDictionary(x => x.ChannelKey);
-
-        var channelKeys = leagueChannels.Select(x => x.ChannelKey)
-            .Concat(gameNewsChannels.Select(x => x.ChannelKey)).Distinct().ToList();
-
-        List<CombinedChannel> combinedChannels = new List<CombinedChannel>();
-        foreach (var channelKey in channelKeys)
-        {
-            var leagueChannel = leagueChannelDictionary.GetValueOrDefault(channelKey);
-            var gameNewsChannel = gameNewsChannelDictionary.GetValueOrDefault(channelKey);
-            combinedChannels.Add(new CombinedChannel(leagueChannel, gameNewsChannel, _clock.GetToday().Year));
-        }
-
-        return combinedChannels;
-    }
-
     public async Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID)
     {
         await using var connection = new MySqlConnection(_connectionString);
@@ -119,12 +92,10 @@ public class MySQLDiscordRepo : IDiscordRepo
             leagueID
         };
 
-        const string leagueChannelSQL =
-            "select * from tbl_discord_leaguechannel WHERE LeagueID = @leagueID";
+        const string leagueChannelSQL = "select * from tbl_discord_leaguechannel WHERE LeagueID = @leagueID";
 
-        var activeYears = await GetActiveYears();
         var leagueChannels = await connection.QueryAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
-        return leagueChannels.Select(l => l.ToMinimalDomain(activeYears)).ToList();
+        return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
     public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null)
@@ -203,13 +174,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task<MinimalLeagueChannel?> GetMinimalLeagueChannel(ulong guildID, ulong channelID)
     {
         var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
-        if (leagueChannelEntity is null)
-        {
-            return null;
-        }
-
-        var activeYears = await GetActiveYears();
-        return leagueChannelEntity.ToMinimalDomain(activeYears);
+        return leagueChannelEntity?.ToMinimalDomain();
     }
 
     private async Task<LeagueChannelEntity?> GetLeagueChannelEntity(ulong guildID, ulong channelID)
