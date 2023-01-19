@@ -202,6 +202,23 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return leagueYears;
     }
 
+    public async Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYears(IEnumerable<Guid> leagueIDs)
+    {
+        var supportedYears = await GetSupportedYears();
+        var activeYears = supportedYears.Where(x => !x.Finished).ToList();
+        List<LeagueYear> requestedLeagueYears = new List<LeagueYear>();
+
+        var leagueIDSet = leagueIDs.ToHashSet();
+        foreach (var activeYear in activeYears)
+        {
+            var allLeagueYears = await GetLeagueYears(activeYear.Year);
+            var requestedLeagueYearsForYear = allLeagueYears.Where(x => leagueIDSet.Contains(x.League.LeagueID));
+            requestedLeagueYears.AddRange(requestedLeagueYearsForYear);
+        }
+
+        return requestedLeagueYears;
+    }
+
     public async Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         const string sql = "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;";
