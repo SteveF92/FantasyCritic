@@ -96,6 +96,7 @@ public static class Program
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
         IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo, _clock);
         IDiscordSupplementalDataRepo discordSupplementalRepo = new MySQLDiscordSupplementalDataRepo(localRepoConfig);
+        IRoyaleRepo royaleRepo = new MySQLRoyaleRepo(localRepoConfig, localUserStore, masterGameRepo, fantasyCriticRepo);
         DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("",
                 _baseAddress,
                 true,
@@ -113,7 +114,7 @@ public static class Program
         IGGService ggService = null!;
         PatreonService patreonService = null!;
         IRDSManager rdsManager = null!;
-        RoyaleService royaleService = null!;
+        RoyaleService royaleService = new RoyaleService(royaleRepo, _clock, masterGameRepo);
         IHypeFactorService hypeFactorService = new DefaultHypeFactorService();
 
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
