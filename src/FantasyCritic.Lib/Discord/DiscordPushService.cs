@@ -142,7 +142,7 @@ public class DiscordPushService
                 .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
-                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, combinedChannel.SendNotableMisses, x.NewCriticScore))
+                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, x.NewCriticScore))
                 .ToList();
             var editsToSend = _masterGameEditMessages
                 .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame.MasterGame,

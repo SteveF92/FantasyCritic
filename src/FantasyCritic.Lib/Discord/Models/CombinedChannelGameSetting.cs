@@ -6,17 +6,19 @@ public class CombinedChannelGameSetting
     private static readonly ILogger Logger = Log.ForContext<CombinedChannelGameSetting>();
 
     private readonly bool _sendLeagueMasterGameUpdates;
-    private readonly GameNewsSetting? _gameNewsSetting;
+    private readonly bool _sendNotableMisses;
+    private readonly GameNewsSetting _gameNewsSetting;
 
-    public CombinedChannelGameSetting(bool sendLeagueMasterGameUpdates, GameNewsSetting? gameNewsSetting)
+    public CombinedChannelGameSetting(bool sendLeagueMasterGameUpdates, bool sendNotableMisses, GameNewsSetting gameNewsSetting)
     {
         _sendLeagueMasterGameUpdates = sendLeagueMasterGameUpdates;
+        _sendNotableMisses = sendNotableMisses;
         _gameNewsSetting = gameNewsSetting;
     }
 
     public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
     {
-        if (_gameNewsSetting is null)
+        if (_gameNewsSetting.Equals(GameNewsSetting.Off))
         {
             //This is by definition not a game in your league (it was just added), so if you don't want general game news, then you don't want this.
             return false;
@@ -98,7 +100,7 @@ public class CombinedChannelGameSetting
             return false;
         }
 
-        if (_gameNewsSetting is null)
+        if (_gameNewsSetting.Equals(GameNewsSetting.Off))
         {
             return false;
         }
@@ -133,10 +135,10 @@ public class CombinedChannelGameSetting
             }
         }
 
-        return _gameNewsSetting is not null;
+        return !_gameNewsSetting.Equals(GameNewsSetting.Off);
     }
 
-    public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, bool sendNotableMisses, decimal? criticScore)
+    public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, decimal? criticScore)
     {
         if (activeLeagueYears is not null)
         {
@@ -149,12 +151,12 @@ public class CombinedChannelGameSetting
                 }
             }
 
-            if (_gameNewsSetting is not null)
+            if (!_gameNewsSetting.Equals(GameNewsSetting.Off))
             {
                 return true;
             }
 
-            if (sendNotableMisses && criticScore is >= 83m)
+            if (_sendNotableMisses && criticScore is >= 83m)
             {
                 return true;
             }
@@ -162,7 +164,7 @@ public class CombinedChannelGameSetting
             return false;
         }
 
-        return _gameNewsSetting is not null;
+        return !_gameNewsSetting.Equals(GameNewsSetting.Off);
     }
 
     public override string ToString()
@@ -177,7 +179,7 @@ public class CombinedChannelGameSetting
             parts.Add("No League Master Game Updates");
         }
 
-        if (_gameNewsSetting is null)
+        if (_gameNewsSetting.Equals(GameNewsSetting.Off))
         {
             parts.Add("No Non-League Master Game Updates");
         }

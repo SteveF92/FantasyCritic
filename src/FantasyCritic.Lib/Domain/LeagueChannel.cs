@@ -44,6 +44,10 @@ public class CombinedChannel
             ChannelID = gameNewsChannel.ChannelID;
             GameNewsSetting = gameNewsChannel.GameNewsSetting;
         }
+        else
+        {
+            GameNewsSetting = GameNewsSetting.Off;
+        }
     }
 
     public ulong GuildID { get; }
@@ -52,9 +56,9 @@ public class CombinedChannel
     public IReadOnlyList<LeagueYear>? ActiveLeagueYears { get; }
     public bool SendLeagueMasterGameUpdates { get; }
     public bool SendNotableMisses { get; }
-    public GameNewsSetting? GameNewsSetting { get; }
+    public GameNewsSetting GameNewsSetting { get; }
 
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 
-    public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(SendLeagueMasterGameUpdates, GameNewsSetting);
+    public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(SendLeagueMasterGameUpdates, SendNotableMisses, GameNewsSetting);
 }
