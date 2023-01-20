@@ -38,10 +38,25 @@ public class MySQLDiscordRepo : IDiscordRepo
 
     public async Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting)
     {
-        await using var connection = new MySqlConnection(_connectionString);
+        bool deleting = gameNewsSetting.Equals(GameNewsSetting.Off);
+        var deleteSQL = "DELETE FROM tbl_discord_gamenewschannel where GuildID=@GuildID AND ChannelID=@ChannelID;";
+        var insertSQL = "INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,GameNewsSetting) VALUES (@GuildID,@ChannelID,@GameNewsSetting);";
+        var updateSQL = "UPDATE tbl_discord_gamenewschannel SET GameNewsSetting = @GameNewsSetting where GuildID=@GuildID AND ChannelID=@ChannelID;";
         var gameNewsChannelEntity = new GameNewsChannelEntity(guildID, channelID, gameNewsSetting);
-        var sql = "UPDATE tbl_discord_gamenewschannel SET GameNewsSetting=@GameNewsSetting WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
-        await connection.ExecuteAsync(sql, gameNewsChannelEntity);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(deleteSQL, gameNewsChannelEntity, transaction);
+        if (deleting)
+        {
+            await connection.ExecuteAsync(deleteSQL, gameNewsChannelEntity, transaction);
+        }
+        else
+        {
+            await connection.ExecuteAsync(insertSQL, gameNewsChannelEntity, transaction);
+            await connection.ExecuteAsync(updateSQL, gameNewsChannelEntity, transaction);
+        }
+        await transaction.CommitAsync();
     }
 
     public async Task SetBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? bidAlertRoleID)
