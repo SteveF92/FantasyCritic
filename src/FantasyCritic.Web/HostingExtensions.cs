@@ -37,6 +37,7 @@ using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
 using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.EventHandlers;
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Web;
@@ -95,6 +96,7 @@ public static class HostingExtensions
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
         services.AddScoped<IDiscordSupplementalDataRepo, MySQLDiscordSupplementalDataRepo>();
         services.AddScoped<IDiscordFormatter, DiscordFormatter>();
+        services.AddScoped<SelectMenuExecutedHandler>();
 
         services.AddScoped<PatreonService>();
 
