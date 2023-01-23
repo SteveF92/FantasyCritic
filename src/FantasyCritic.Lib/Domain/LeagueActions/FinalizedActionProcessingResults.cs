@@ -57,10 +57,10 @@ public class FinalizedActionProcessingResults
         }
         
         var bidsByLeague = allBids.GroupToDictionary(x => x.LeagueYear);
-        var dropsByLeague = allDrops.ToLookup(x => x.LeagueYear);
+        var dropsByLeague = allDrops.GroupToDictionary(x => x.LeagueYear);
 
         List<LeagueActionProcessingSet> leagueSets = new List<LeagueActionProcessingSet>();
-        var leagueYears = bidsByLeague.Keys.ToList();
+        var leagueYears = bidsByLeague.Keys.Concat(dropsByLeague.Keys).Distinct().ToList();
         foreach (var leagueYear in leagueYears)
         {
             var dropsForLeague = dropsByLeague[leagueYear];
