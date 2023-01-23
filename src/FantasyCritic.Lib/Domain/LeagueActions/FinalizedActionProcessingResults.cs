@@ -63,8 +63,8 @@ public class FinalizedActionProcessingResults
         var leagueYears = bidsByLeague.Keys.Concat(dropsByLeague.Keys).Distinct().ToList();
         foreach (var leagueYear in leagueYears)
         {
-            var dropsForLeague = dropsByLeague[leagueYear];
-            var bidsForLeague = bidsByLeague[leagueYear];
+            var dropsForLeague = dropsByLeague.GetValueOrDefault(leagueYear) ?? new List<DropRequest>();
+            var bidsForLeague = bidsByLeague.GetValueOrDefault(leagueYear) ?? new List<PickupBid>();
             leagueSets.Add(new LeagueActionProcessingSet(leagueYear, ProcessSetID, ProcessTime, ProcessName, dropsForLeague, bidsForLeague));
         }
 
