@@ -6,6 +6,8 @@ public class GameNewsSetting : TypeSafeEnum<GameNewsSetting>
     public static readonly GameNewsSetting All = new GameNewsSetting("All");
     public static readonly GameNewsSetting WillReleaseInYear = new GameNewsSetting("WillReleaseInYear");
     public static readonly GameNewsSetting MightReleaseInYear = new GameNewsSetting("MightReleaseInYear");
+    public static readonly GameNewsSetting Recommended = new GameNewsSetting("Recommended");
+    public static readonly GameNewsSetting LeagueGamesOnly = new GameNewsSetting("LeagueGamesOnly");
     public static readonly GameNewsSetting Off = new GameNewsSetting("Off");
 
     // Constructor is private: values are defined within this class only!

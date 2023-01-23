@@ -12,7 +12,7 @@ internal class LeagueChannelEntity
         GuildID = guildID;
         ChannelID = channelID;
         SendLeagueMasterGameUpdates = sendLeagueMasterGameUpdates;
-        SendNotableMisses = true;
+        SendNotableMisses = sendNotableMisses;
         BidAlertRoleID = bidAlertRoleID;
     }
 

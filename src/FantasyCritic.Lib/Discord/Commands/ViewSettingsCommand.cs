@@ -13,6 +13,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
     private readonly InterLeagueService _interLeagueService;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
+    private const string NoRoleSetText = "No role is set for alerting on public bids. You may use `/set-public-bid-role` to set up a role to mention with public bid announcements. Make sure that role is mentionable!";
 
     public ViewSettingsCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
@@ -41,7 +42,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
                 leagueChannel.LeagueYear.Year).BuildUrl(leagueChannel.LeagueYear.League.LeagueName)
             : "No league has been set. Use `/set-league` to configure a league.";
 
-        var settingsMessage = $"League: **{leagueDisplay}**\n";
+        var settingsMessage = "";
 
         embedFieldBuilders.Add(new EmbedFieldBuilder
         {
@@ -55,7 +56,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
                 Name = "Game News",
-                Value = GetGameNewsSettingDescription(leagueChannel.SendLeagueMasterGameUpdates, gameNewsChannel?.GameNewsSetting),
+                Value = GetGameNewsSettingDescription(leagueChannel.SendLeagueMasterGameUpdates, leagueChannel.SendNotableMisses, gameNewsChannel?.GameNewsSetting),
                 IsInline = false
             });
 
@@ -77,17 +78,18 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             embedFieldBuilders));
     }
 
-    private static string GetGameNewsSettingDescription(bool sendLeagueMasterGameUpdates, GameNewsSetting? gameNewsSetting)
+    private static string GetGameNewsSettingDescription(bool sendLeagueMasterGameUpdates,
+        bool sendNotableMisses, GameNewsSetting? gameNewsSetting)
     {
-        List<string> parts = new List<string>();
-        if (sendLeagueMasterGameUpdates)
+        var parts = new List<string>
         {
-            parts.Add("League Master Game Updates");
-        }
-        else
-        {
-            parts.Add("No League Master Game Updates");
-        }
+            sendLeagueMasterGameUpdates
+                ? "League Master Game Updates"
+                : "No League Master Game Updates",
+            sendNotableMisses
+                ? "Notable Misses"
+                : "No Notable Misses"
+        };
 
         if (gameNewsSetting is null)
         {
@@ -105,8 +107,8 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
         {
             parts.Add("Any 'Will Release' Master Game Updates");
         }
-        
-        return string.Join(',', parts);
+
+        return string.Join("\n", parts);
     }
 
     private string GetPublicBiddingRoleDisplayText(PickupSystem pickupSystem, ulong? publicBiddingAlertRoleId)
@@ -116,15 +118,14 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             return "N/A (Bidding is Secret in this league)";
         }
 
-        if (publicBiddingAlertRoleId != null)
+        if (publicBiddingAlertRoleId == null)
         {
-            var roleToMention = Context.Guild.Roles.FirstOrDefault(r => r.Id == publicBiddingAlertRoleId);
-            if (roleToMention != null)
-            {
-                return roleToMention.Mention;
-            }
+            return
+                NoRoleSetText;
         }
-
-        return "No role is set for alerting on public bids. You may use `/set-public-bid-role` to set up a role to mention with public bid announcements. Make sure that role is mentionable!";
+        var roleToMention = Context.Guild.Roles.FirstOrDefault(r => r.Id == publicBiddingAlertRoleId);
+        return roleToMention != null
+            ? roleToMention.Mention
+            : NoRoleSetText;
     }
 }

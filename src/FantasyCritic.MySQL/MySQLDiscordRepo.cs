@@ -45,6 +45,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         var gameNewsChannelEntity = new GameNewsChannelEntity(guildID, channelID, gameNewsSetting);
 
         await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(deleteSQL, gameNewsChannelEntity, transaction);
         if (deleting)
