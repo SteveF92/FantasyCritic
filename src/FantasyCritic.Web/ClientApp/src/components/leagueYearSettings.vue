@@ -323,6 +323,16 @@ export default {
         this.intendedNumberOfPlayersEverValid = true;
       }
     },
+    'internalValue.standardGames': function () {
+      if (this.oneShotMode) {
+        this.internalValue.gamesToDraft = this.internalValue.standardGames;
+      }
+    },
+    'internalValue.counterPicks': function () {
+      if (this.oneShotMode) {
+        this.internalValue.counterPicksToDraft = this.internalValue.counterPicks;
+      }
+    },
     internalValue: function () {
       this.updateInternalValue();
     }
