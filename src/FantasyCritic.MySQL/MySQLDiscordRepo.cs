@@ -20,10 +20,10 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, true, true, null);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, null);
         var existingLeague = await GetLeagueChannel(guildID, channelID, year);
         var sql = existingLeague == null
-            ? "INSERT INTO tbl_discord_leaguechannel (LeagueID,GuildID,ChannelID,SendLeagueMasterGameUpdates,SendNotableMisses) VALUES (@LeagueID, @GuildID, @ChannelID, @SendLeagueMasterGameUpdates, @SendNotableMisses)"
+            ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,SendLeagueMasterGameUpdates,SendNotableMisses) VALUES (@GuildID, @ChannelID, @LeagueID, @SendLeagueMasterGameUpdates, @SendNotableMisses)"
             : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID WHERE @ChannelID=@ChannelID AND @GuildID=@GuildID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
@@ -31,7 +31,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates, bool sendNotableMisses)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, sendLeagueMasterGameUpdates, sendNotableMisses, null);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, sendLeagueMasterGameUpdates, sendNotableMisses, null);
         var sql = "UPDATE tbl_discord_leaguechannel SET SendLeagueMasterGameUpdates=@SendLeagueMasterGameUpdates, SendNotableMisses=@SendNotableMisses WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
@@ -63,7 +63,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? bidAlertRoleID)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(leagueID, guildID, channelID, true, true, bidAlertRoleID);
+        var leagueChannelEntity = new LeagueChannelEntity( guildID, channelID, leagueID, true, true, bidAlertRoleID);
         var sql = "UPDATE tbl_discord_leaguechannel SET BidAlertRoleID=@BidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }

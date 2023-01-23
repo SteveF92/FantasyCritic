@@ -6,19 +6,19 @@ internal class LeagueChannelEntity
 
     }
 
-    public LeagueChannelEntity(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates, bool sendNotableMisses, ulong? bidAlertRoleID)
+    public LeagueChannelEntity(ulong guildID, ulong channelID, Guid leagueID, bool sendLeagueMasterGameUpdates, bool sendNotableMisses, ulong? bidAlertRoleID)
     {
-        LeagueID = leagueID;
         GuildID = guildID;
         ChannelID = channelID;
+        LeagueID = leagueID;
         SendLeagueMasterGameUpdates = sendLeagueMasterGameUpdates;
         SendNotableMisses = sendNotableMisses;
         BidAlertRoleID = bidAlertRoleID;
     }
 
+    public ulong ChannelID { get; set; }
     public Guid LeagueID { get; set; }
     public ulong GuildID { get; set; }
-    public ulong ChannelID { get; set; }
     public bool SendLeagueMasterGameUpdates { get; set; }
     public bool SendNotableMisses { get; set; }
     public ulong? BidAlertRoleID { get; set; }
