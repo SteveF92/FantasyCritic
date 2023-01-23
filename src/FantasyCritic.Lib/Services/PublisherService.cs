@@ -123,6 +123,7 @@ public class PublisherService
 
         LeagueAction leagueAction = new LeagueAction(editValues, _clock.GetCurrentInstant());
         await _fantasyCriticRepo.EditPublisher(editValues, leagueAction);
+        await _discordPushService.SendPublisherEditMessage(editValues);
         return Result.Success();
     }
 

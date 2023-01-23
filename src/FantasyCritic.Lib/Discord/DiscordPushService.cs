@@ -6,8 +6,10 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -390,6 +392,27 @@ public class DiscordPushService
         }
 
         var messageToSend = $"Publisher **{oldPublisherName}** ({publisher.User.UserName}) is now known as **{newPublisherName}**";
+
+
+        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(messageToSend));
+        await Task.WhenAll(messageTasks);
+    }
+
+    public async Task SendPublisherEditMessage(EditPublisherRequest editPublisherRequest)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var channels = await GetChannelsForLeague(editPublisherRequest.Publisher.LeagueYearKey.LeagueID);
+        if (!channels.Any())
+        {
+            return;
+        }
+
+        var messageToSend = $"Publisher **{editPublisherRequest.Publisher.GetPublisherAndUserDisplayName()}** edited by League Manager: {editPublisherRequest.GetActionString()}";
 
 
         var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(messageToSend));
