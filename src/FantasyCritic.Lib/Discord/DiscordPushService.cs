@@ -557,8 +557,6 @@ public class DiscordPushService
 
         foreach (var bidGameAction in leagueActionDictionaryByGame)
         {
-            var winningBidAmount = bidGameAction.Value.OrderByDescending(b => b.BidAmount).First().BidAmount;
-
             var messageToAdd = $"**{bidGameAction.Key}**\n";
             foreach (var bid in bidGameAction.Value)
             {
@@ -574,10 +572,7 @@ public class DiscordPushService
                 }
                 else
                 {
-                    var lossReason = bid.BidAmount == winningBidAmount
-                        ? "lost on tiebreakers"
-                        : "was outbid";
-                    messageToAdd += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} {lossReason}\n";
+                    messageToAdd += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} did not succeed: {bid.Outcome}\n";
                 }
             }
 
