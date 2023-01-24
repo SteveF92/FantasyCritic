@@ -35,8 +35,8 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         await DeferAsync();
         var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
 
-        var settingEnum = GameNewsSetting.TryFromValue(setting);
-        if (settingEnum is null)
+        var requestedSettingEnum = RequestedGameNewsSetting.TryFromValue(setting);
+        if (requestedSettingEnum is null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                 "No Change Made to Game News Configuration",
@@ -45,14 +45,12 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
             return;
         }
 
-        var leagueChannel =
-            await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
-        var gameChannelIsLeagueChannel =
-            leagueChannel != null && leagueChannel.ChannelID == Context.Channel.Id;
+        var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
+        var gameChannelIsLeagueChannel = leagueChannel != null && leagueChannel.ChannelID == Context.Channel.Id;
 
-        if (!settingEnum.Equals(GameNewsSetting.All) && !settingEnum.Equals(GameNewsSetting.Off))
+        if (!requestedSettingEnum.Equals(GameNewsSetting.All) && !requestedSettingEnum.Equals(GameNewsSetting.Off))
         {
-            if (!gameChannelIsLeagueChannel && settingEnum.Equals(GameNewsSetting.LeagueGamesOnly))
+            if (!gameChannelIsLeagueChannel && requestedSettingEnum.Equals(RequestedGameNewsSetting.LeagueGamesOnly))
             {
                 await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "No Change Made to Game News Configuration",
@@ -61,7 +59,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                 return;
             }
 
-            if (settingEnum.Equals(GameNewsSetting.Recommended))
+            if (requestedSettingEnum.Equals(RequestedGameNewsSetting.Recommended))
             {
                 await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id,
                         GameNewsSetting.MightReleaseInYear);
@@ -82,12 +80,12 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
 
             if (gameChannelIsLeagueChannel)
             {
-                if (settingEnum.Equals(GameNewsSetting.LeagueGamesOnly))
+                if (requestedSettingEnum.Equals(RequestedGameNewsSetting.LeagueGamesOnly))
                 {
-                    await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settingEnum);
+                    await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.Off);
                     await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                         "Game News Configuration Saved",
-                        $"Game News Announcements now set to **{settingEnum.Value}**.",
+                        $"Game News Announcements now set to **{requestedSettingEnum.Value}**.",
                         Context.User));
 
                     var notableMissesMenuComponent = BuildYesOrNoSelectMenuComponent("notable-misses");
@@ -97,12 +95,13 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                         leagueChannel.ChannelID, true, false);
                     await FollowupAsync(NotableMissesQuestion, components: notableMissesMenuComponent);
                 }
-                else if (settingEnum.Equals(GameNewsSetting.MightReleaseInYear) || settingEnum.Equals(GameNewsSetting.WillReleaseInYear))
+                else if (requestedSettingEnum.Equals(RequestedGameNewsSetting.MightReleaseInYear) || requestedSettingEnum.Equals(RequestedGameNewsSetting.WillReleaseInYear))
                 {
+                    var settingEnum = requestedSettingEnum.ToNormalSetting();
                     await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settingEnum);
                     await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                         "Game News Configuration Saved",
-                        $"Game News Announcements now set to **{settingEnum.Value}**.",
+                        $"Game News Announcements now set to **{requestedSettingEnum.Value}**.",
                         Context.User));
 
                     var includeLeagueGamesMenuComponent = BuildYesOrNoSelectMenuComponent("include-league-games");
@@ -114,16 +113,16 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         }
         else
         {
-            if (gameChannelIsLeagueChannel && settingEnum.Equals(GameNewsSetting.All))
+            if (gameChannelIsLeagueChannel && requestedSettingEnum.Equals(RequestedGameNewsSetting.All))
             {
                 await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, leagueChannel!.GuildID,
                     leagueChannel!.ChannelID, true, true);
             }
-            await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settingEnum);
+            await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.All);
 
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "Game News Configuration Saved",
-                $"Game News Announcements now set to **{settingEnum.Value}**.",
+                $"Game News Announcements now set to **{requestedSettingEnum.Value}**.",
                 Context.User));
         }
     }
