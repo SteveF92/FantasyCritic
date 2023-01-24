@@ -19,8 +19,8 @@ internal class GameNewsChannelEntity
     public ulong ChannelID { get; set; }
     public string GameNewsSetting { get; set; } = null!;
 
-    public GameNewsChannel ToDomain()
+    public GameNewsChannel ToDomain(IEnumerable<MasterGameTag> skippedTags)
     {
-        return new GameNewsChannel(GuildID, ChannelID, Lib.Discord.Models.GameNewsSetting.FromValue(GameNewsSetting));
+        return new GameNewsChannel(GuildID, ChannelID, Lib.Discord.Models.GameNewsSetting.FromValue(GameNewsSetting), skippedTags.ToList());
     }
 }

@@ -50,6 +50,7 @@ CREATE TABLE `tbl_discord_gamenewschannelskiptag` (
 	`TagName` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`GuildID`, `ChannelID`) USING BTREE,
 	INDEX `FK_tbl_discord_gamenewschannelskiptag_tbl_mastergame_tag` (`TagName`) USING BTREE,
+	CONSTRAINT `FK_tbl_discord_gamenewschannel` FOREIGN KEY (`GuildID`, `ChannelID`) REFERENCES `tbl_discord_gamenewschannel` (`GuildID`, `ChannelID`) ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT `FK_tbl_discord_gamenewschannelskiptag_tbl_mastergame_tag` FOREIGN KEY (`TagName`) REFERENCES `tbl_mastergame_tag` (`Name`) ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 ENGINE=InnoDB

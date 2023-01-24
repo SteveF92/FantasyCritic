@@ -14,7 +14,7 @@ public record LeagueChannel(LeagueYear LeagueYear, ulong GuildID, ulong ChannelI
 
 public record MultiYearLeagueChannel(Guid LeagueID, IReadOnlyList<LeagueYear> ActiveLeagueYears, ulong GuildID, ulong ChannelID, bool SendLeagueMasterGameUpdates, bool SendNotableMisses, ulong? BidAlertRoleID);
 
-public record GameNewsChannel(ulong GuildID, ulong ChannelID, GameNewsSetting GameNewsSetting)
+public record GameNewsChannel(ulong GuildID, ulong ChannelID, GameNewsSetting GameNewsSetting, IReadOnlyList<MasterGameTag> SkippedTags)
 {
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 }
@@ -43,10 +43,12 @@ public class CombinedChannel
             GuildID = gameNewsChannel.GuildID;
             ChannelID = gameNewsChannel.ChannelID;
             GameNewsSetting = gameNewsChannel.GameNewsSetting;
+            SkippedTags = gameNewsChannel.SkippedTags;
         }
         else
         {
             GameNewsSetting = GameNewsSetting.Off;
+            SkippedTags = new List<MasterGameTag>();
         }
     }
 
@@ -57,8 +59,9 @@ public class CombinedChannel
     public bool SendLeagueMasterGameUpdates { get; }
     public bool SendNotableMisses { get; }
     public GameNewsSetting GameNewsSetting { get; }
+    public IReadOnlyList<MasterGameTag> SkippedTags { get; }
 
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 
-    public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(SendLeagueMasterGameUpdates, SendNotableMisses, GameNewsSetting);
+    public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(SendLeagueMasterGameUpdates, SendNotableMisses, GameNewsSetting, SkippedTags);
 }

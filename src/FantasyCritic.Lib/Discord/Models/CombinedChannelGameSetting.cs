@@ -8,12 +8,14 @@ public class CombinedChannelGameSetting
     private readonly bool _sendLeagueMasterGameUpdates;
     private readonly bool _sendNotableMisses;
     private readonly GameNewsSetting _gameNewsSetting;
+    private readonly IReadOnlyList<MasterGameTag> _skippedTags;
 
-    public CombinedChannelGameSetting(bool sendLeagueMasterGameUpdates, bool sendNotableMisses, GameNewsSetting gameNewsSetting)
+    public CombinedChannelGameSetting(bool sendLeagueMasterGameUpdates, bool sendNotableMisses, GameNewsSetting gameNewsSetting, IReadOnlyList<MasterGameTag> skippedTags)
     {
         _sendLeagueMasterGameUpdates = sendLeagueMasterGameUpdates;
         _sendNotableMisses = sendNotableMisses;
         _gameNewsSetting = gameNewsSetting;
+        _skippedTags = skippedTags;
     }
 
     public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
@@ -26,6 +28,11 @@ public class CombinedChannelGameSetting
         if (_gameNewsSetting.Equals(GameNewsSetting.All))
         {
             return true;
+        }
+
+        if (masterGame.Tags.Intersect(_skippedTags).Any())
+        {
+            return false;
         }
 
         if (activeLeagueYears is not null)
@@ -82,6 +89,11 @@ public class CombinedChannelGameSetting
                     continue;
                 }
 
+                if (masterGame.Tags.Intersect(_skippedTags).Any())
+                {
+                    continue;
+                }
+
                 bool eligible = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
                 if (!eligible)
                 {
@@ -107,6 +119,10 @@ public class CombinedChannelGameSetting
         if (_gameNewsSetting.Equals(GameNewsSetting.All))
         {
             return true;
+        }
+        if (masterGame.Tags.Intersect(_skippedTags).Any())
+        {
+            return false;
         }
         if (_gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
@@ -135,6 +151,11 @@ public class CombinedChannelGameSetting
             }
         }
 
+        if (masterGame.Tags.Intersect(_skippedTags).Any())
+        {
+            return false;
+        }
+
         return !_gameNewsSetting.Equals(GameNewsSetting.Off);
     }
 
@@ -161,6 +182,11 @@ public class CombinedChannelGameSetting
                 return true;
             }
 
+            return false;
+        }
+
+        if (masterGame.Tags.Intersect(_skippedTags).Any())
+        {
             return false;
         }
 

@@ -1,21 +1,20 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Discord;
-using FantasyCritic.SharedSerialization.Database;
 
 namespace FantasyCritic.MySQL;
 public class MySQLDiscordRepo : IDiscordRepo
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IMasterGameRepo _masterGameRepo;
     private readonly IClock _clock;
     private readonly string _connectionString;
 
-    public MySQLDiscordRepo(RepositoryConfiguration configuration, IFantasyCriticRepo fantasyCriticRepo, IClock clock)
+    public MySQLDiscordRepo(RepositoryConfiguration configuration, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _masterGameRepo = masterGameRepo;
         _clock = clock;
         _connectionString = configuration.ConnectionString;
     }
@@ -114,11 +113,27 @@ public class MySQLDiscordRepo : IDiscordRepo
 
     public async Task<IReadOnlyList<GameNewsChannel>> GetAllGameNewsChannels()
     {
-        await using var connection = new MySqlConnection(_connectionString);
-        const string sql = "select * from tbl_discord_gamenewschannel";
+        var possibleTags = await _masterGameRepo.GetMasterGameTags();
 
-        var entities = await connection.QueryAsync<GameNewsChannelEntity>(sql);
-        return entities.Select(x => x.ToDomain()).ToList();
+        await using var connection = new MySqlConnection(_connectionString);
+        const string channelSQL = "select * from tbl_discord_gamenewschannel";
+        const string tagSQL = "select * from tbl_discord_gamenewschannelskiptag";
+
+        var channelEntities = await connection.QueryAsync<GameNewsChannelEntity>(channelSQL);
+        var tagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(tagSQL);
+
+        var tagLookup = tagEntities.ToLookup(x => new DiscordChannelKey(x.GuildID, x.ChannelID));
+        List<GameNewsChannel> gameNewsChannels = new List<GameNewsChannel>();
+        foreach (var channelEntity in channelEntities)
+        {
+            var tagAssociations = tagLookup[new DiscordChannelKey(channelEntity.GuildID, channelEntity.ChannelID)].Select(x => x.TagName).ToList();
+            IReadOnlyList<MasterGameTag> tags = possibleTags
+                .Where(x => tagAssociations.Contains(x.Name))
+                .ToList();
+            gameNewsChannels.Add(channelEntity.ToDomain(tags));
+        }
+
+        return gameNewsChannels;
     }
 
     public async Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID)
@@ -195,17 +210,26 @@ public class MySQLDiscordRepo : IDiscordRepo
 
     public async Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID)
     {
+        var possibleTags = await _masterGameRepo.GetMasterGameTags();
+
         await using var connection = new MySqlConnection(_connectionString);
+        const string channelSQL = "select * from tbl_discord_gamenewschannel WHERE GuildID = @guildID AND ChannelID = @channelID;";
+        const string tagSQL = "select * from tbl_discord_gamenewschannelskiptag WHERE GuildID = @guildID AND ChannelID = @channelID;";
+
         var queryObject = new
         {
             guildID,
             channelID
         };
 
-        const string sql = "select * from tbl_discord_gamenewschannel WHERE GuildID = @guildID AND ChannelID = @channelID";
+        var entity = await connection.QuerySingleOrDefaultAsync<GameNewsChannelEntity>(channelSQL, queryObject);
+        var tagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(tagSQL);
 
-        var entity = await connection.QuerySingleOrDefaultAsync<GameNewsChannelEntity>(sql, queryObject);
-        return entity?.ToDomain();
+        var tagAssociations = tagEntities.Select(x => x.TagName).ToList();
+        IReadOnlyList<MasterGameTag> tags = possibleTags
+            .Where(x => tagAssociations.Contains(x.Name))
+            .ToList();
+        return entity?.ToDomain(tags);
     }
 
     public async Task<MinimalLeagueChannel?> GetMinimalLeagueChannel(ulong guildID, ulong channelID)
