@@ -8,16 +8,18 @@ namespace FantasyCritic.Lib.Discord.Commands;
 public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
+    private readonly IMasterGameRepo _masterGameRepo;
     private readonly IDiscordFormatter _discordFormatter;
     private const string NotableMissesQuestion =
         "Do you want to hear about \"notable misses\"? These are games that nobody in the league picked up, but are of a notably high score that would've made for a strong pick.";
     private const string IncludeLeagueGamesQuestion = "Do you want to hear about games in your league no matter what?";
 
     public SetGameNewsCommand(IDiscordRepo discordRepo,
-        IDiscordFormatter discordFormatter)
+        IDiscordFormatter discordFormatter, IMasterGameRepo masterGameRepo)
     {
         _discordRepo = discordRepo;
         _discordFormatter = discordFormatter;
+        _masterGameRepo = masterGameRepo;
     }
 
     [SlashCommand("set-game-news", "Sets what games this channel will get news announcements for.")]
@@ -47,6 +49,18 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
 
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         var gameChannelIsLeagueChannel = leagueChannel != null && leagueChannel.ChannelID == Context.Channel.Id;
+
+        List<MasterGameTag> tagsToSkip = new List<MasterGameTag>();
+        bool skipUnannouncedGame = false; //TODO get real value
+        if (skipUnannouncedGame)
+        {
+            var tagsDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+            var unannouncedTag = tagsDictionary["UnannouncedGame"];
+            tagsToSkip.Add(unannouncedTag);
+        }
+        //await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip); //TODO I'm not totally sure where this line should go
+        await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, new List<MasterGameTag>()); //TODO this to clear it
+
 
         if (!requestedSettingEnum.Equals(GameNewsSetting.All) && !requestedSettingEnum.Equals(GameNewsSetting.Off))
         {
