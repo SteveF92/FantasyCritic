@@ -43,3 +43,15 @@ ALTER TABLE `tbl_discord_leaguechannel`
 	DROP PRIMARY KEY,
 	ADD PRIMARY KEY (`GuildID`, `ChannelID`) USING BTREE,
 	ADD INDEX `FK_LeagueID` (`LeagueID`);
+
+CREATE TABLE `tbl_discord_gamenewschannelskiptag` (
+	`GuildID` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+	`ChannelID` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+	`TagName` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`GuildID`, `ChannelID`) USING BTREE,
+	INDEX `FK_tbl_discord_gamenewschannelskiptag_tbl_mastergame_tag` (`TagName`) USING BTREE,
+	CONSTRAINT `FK_tbl_discord_gamenewschannelskiptag_tbl_mastergame_tag` FOREIGN KEY (`TagName`) REFERENCES `tbl_mastergame_tag` (`Name`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+ENGINE=InnoDB
+ROW_FORMAT=DYNAMIC
+;

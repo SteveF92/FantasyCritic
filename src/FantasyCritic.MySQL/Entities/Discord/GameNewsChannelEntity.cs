@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Discord.Models;
 
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.MySQL.Entities.Discord;
 internal class GameNewsChannelEntity
 {
     public GameNewsChannelEntity()
@@ -21,6 +21,6 @@ internal class GameNewsChannelEntity
 
     public GameNewsChannel ToDomain()
     {
-        return new GameNewsChannel(GuildID, ChannelID, FantasyCritic.Lib.Discord.Models.GameNewsSetting.FromValue(GameNewsSetting));
+        return new GameNewsChannel(GuildID, ChannelID, Lib.Discord.Models.GameNewsSetting.FromValue(GameNewsSetting));
     }
 }

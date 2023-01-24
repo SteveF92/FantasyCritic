@@ -1,7 +1,10 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.MySQL.Entities.Discord;
+using FantasyCritic.SharedSerialization.Database;
 
 namespace FantasyCritic.MySQL;
 public class MySQLDiscordRepo : IDiscordRepo
@@ -57,6 +60,25 @@ public class MySQLDiscordRepo : IDiscordRepo
             await connection.ExecuteAsync(insertSQL, gameNewsChannelEntity, transaction);
             await connection.ExecuteAsync(updateSQL, gameNewsChannelEntity, transaction);
         }
+        await transaction.CommitAsync();
+    }
+
+    public async Task SetSkippedGameNewsTags(ulong guildID, ulong channelID, IEnumerable<MasterGameTag> skippedTags)
+    {
+        const string deleteTagsSQL = "delete from tbl_discord_gamenewschannelskiptag where GuildID=@GuildID AND ChannelID=@ChannelID;";
+        var param = new
+        {
+            guildID,
+            channelID
+        };
+
+        var tagEntities = skippedTags.Select(x => new GameNewsChannelSkippedTagEntity(guildID, channelID, x));
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(deleteTagsSQL, param, transaction);
+        await connection.BulkInsertAsync<GameNewsChannelSkippedTagEntity>(tagEntities, "tbl_discord_gamenewschannelskiptag", 500, transaction);
         await transaction.CommitAsync();
     }
 

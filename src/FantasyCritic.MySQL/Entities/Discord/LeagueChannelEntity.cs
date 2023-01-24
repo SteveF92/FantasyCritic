@@ -1,4 +1,4 @@
-namespace FantasyCritic.MySQL.Entities;
+namespace FantasyCritic.MySQL.Entities.Discord;
 internal class LeagueChannelEntity
 {
     public LeagueChannelEntity()
