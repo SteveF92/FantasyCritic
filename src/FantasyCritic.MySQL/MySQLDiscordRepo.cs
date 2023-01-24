@@ -44,11 +44,25 @@ public class MySQLDiscordRepo : IDiscordRepo
         var deleteSQL = "DELETE FROM tbl_discord_gamenewschannel where GuildID=@GuildID AND ChannelID=@ChannelID;";
         var insertSQL = "INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,GameNewsSetting) VALUES (@GuildID,@ChannelID,@GameNewsSetting);";
         var updateSQL = "UPDATE tbl_discord_gamenewschannel SET GameNewsSetting = @GameNewsSetting where GuildID=@GuildID AND ChannelID=@ChannelID;";
+        var selectTagsSQL = "SELECT * from tbl_discord_gamenewschannelskiptag where GuildID=@guildID AND ChannelID=@channelID;";
+        var deleteTagsSQL = "DELETE from tbl_discord_gamenewschannelskiptag where GuildID=@guildID AND ChannelID=@channelID;";
         var gameNewsChannelEntity = new GameNewsChannelEntity(guildID, channelID, gameNewsSetting);
+
+        var param = new
+        {
+            guildID,
+            channelID
+        };
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
+
+        var masterGameTagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(selectTagsSQL, param);
+        //var skippedTags = masterGameTagEntities.Select(t => t.ToDomain());
+        //var tagEntities = skippedTags.Select(x => new GameNewsChannelSkippedTagEntity(guildID, channelID, x));
+
         await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(deleteTagsSQL, param, transaction);
         await connection.ExecuteAsync(deleteSQL, gameNewsChannelEntity, transaction);
         if (deleting)
         {
@@ -58,18 +72,19 @@ public class MySQLDiscordRepo : IDiscordRepo
         {
             await connection.ExecuteAsync(insertSQL, gameNewsChannelEntity, transaction);
             await connection.ExecuteAsync(updateSQL, gameNewsChannelEntity, transaction);
+            await connection.BulkInsertAsync(masterGameTagEntities, "tbl_discord_gamenewschannelskiptag", 500, transaction);
         }
         await transaction.CommitAsync();
     }
 
     public async Task SetSkippedGameNewsTags(ulong guildID, ulong channelID, IEnumerable<MasterGameTag> skippedTags)
     {
-        const string deleteTagsSQL = "delete from tbl_discord_gamenewschannelskiptag where GuildID=@GuildID AND ChannelID=@ChannelID;";
         var param = new
         {
             guildID,
             channelID
         };
+        const string deleteTagsSQL = "delete from tbl_discord_gamenewschannelskiptag where GuildID=@guildID AND ChannelID=@channelID;";
 
         var tagEntities = skippedTags.Select(x => new GameNewsChannelSkippedTagEntity(guildID, channelID, x));
 
@@ -84,7 +99,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? bidAlertRoleID)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity( guildID, channelID, leagueID, true, true, bidAlertRoleID);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, bidAlertRoleID);
         var sql = "UPDATE tbl_discord_leaguechannel SET BidAlertRoleID=@BidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
@@ -223,7 +238,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         };
 
         var entity = await connection.QuerySingleOrDefaultAsync<GameNewsChannelEntity>(channelSQL, queryObject);
-        var tagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(tagSQL);
+        var tagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(tagSQL, queryObject);
 
         var tagAssociations = tagEntities.Select(x => x.TagName).ToList();
         IReadOnlyList<MasterGameTag> tags = possibleTags

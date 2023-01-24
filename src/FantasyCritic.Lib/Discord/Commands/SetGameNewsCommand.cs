@@ -31,7 +31,9 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         [Choice("Will Release In Year", "WillReleaseInYear")]
         [Choice("League Games Only", "LeagueGamesOnly")]
         [Choice("Off", "Off")]
-        string setting = "Recommended"
+        string setting = "Recommended",
+        [Summary("skip_unannounced", "Whether or not to skip unannounced games in game news ")]
+        bool skipUnannouncedGames = false
         )
     {
         await DeferAsync();
@@ -50,17 +52,22 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         var gameChannelIsLeagueChannel = leagueChannel != null && leagueChannel.ChannelID == Context.Channel.Id;
 
-        List<MasterGameTag> tagsToSkip = new List<MasterGameTag>();
-        bool skipUnannouncedGame = false; //TODO get real value
-        if (skipUnannouncedGame)
+        var tagsToSkip = new List<MasterGameTag>();
+
+        if (skipUnannouncedGames && !requestedSettingEnum.Equals(RequestedGameNewsSetting.Off))
         {
             var tagsDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
             var unannouncedTag = tagsDictionary["UnannouncedGame"];
             tagsToSkip.Add(unannouncedTag);
         }
-        //await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip); //TODO I'm not totally sure where this line should go
-        await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, new List<MasterGameTag>()); //TODO this to clear it
 
+        var settingChangedMessageText = $"Game News Announcements now set to **{requestedSettingEnum.Value}**.";
+        var tagSkipMessage = "";
+        if (tagsToSkip.Any())
+        {
+            tagSkipMessage = $"\n**Tags to Skip in News Announcements:** {string.Join(", ", tagsToSkip.Select(t => t.ReadableName))}";
+        }
+        settingChangedMessageText += tagSkipMessage;
 
         if (!requestedSettingEnum.Equals(GameNewsSetting.All) && !requestedSettingEnum.Equals(GameNewsSetting.Off))
         {
@@ -75,8 +82,8 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
 
             if (requestedSettingEnum.Equals(RequestedGameNewsSetting.Recommended))
             {
-                await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id,
-                        GameNewsSetting.MightReleaseInYear);
+                await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.MightReleaseInYear);
+                await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip);
 
                 var newsSettingsMessage = $"**Game News Setting:** {GameNewsSetting.MightReleaseInYear}";
 
@@ -86,6 +93,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                         leagueChannel.ChannelID, true, true);
                     newsSettingsMessage += "\n**Include League Games**: Yes\n**Include Notable Misses:** Yes";
                 }
+                newsSettingsMessage += tagSkipMessage;
 
                 await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Recommended Game News Settings Applied",
                     newsSettingsMessage, Context.User));
@@ -99,7 +107,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                     await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.Off);
                     await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                         "Game News Configuration Saved",
-                        $"Game News Announcements now set to **{requestedSettingEnum.Value}**.",
+                        settingChangedMessageText,
                         Context.User));
 
                     var notableMissesMenuComponent = BuildYesOrNoSelectMenuComponent("notable-misses");
@@ -113,9 +121,10 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                 {
                     var settingEnum = requestedSettingEnum.ToNormalSetting();
                     await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settingEnum);
+                    await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip);
                     await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                         "Game News Configuration Saved",
-                        $"Game News Announcements now set to **{requestedSettingEnum.Value}**.",
+                        settingChangedMessageText,
                         Context.User));
 
                     var includeLeagueGamesMenuComponent = BuildYesOrNoSelectMenuComponent("include-league-games");
@@ -132,11 +141,14 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                 await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, leagueChannel!.GuildID,
                     leagueChannel!.ChannelID, true, true);
             }
-            await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.All);
+
+            var settingEnum = requestedSettingEnum.ToNormalSetting();
+            await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settingEnum);
+            await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip);
 
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 "Game News Configuration Saved",
-                $"Game News Announcements now set to **{requestedSettingEnum.Value}**.",
+                settingChangedMessageText,
                 Context.User));
         }
     }
