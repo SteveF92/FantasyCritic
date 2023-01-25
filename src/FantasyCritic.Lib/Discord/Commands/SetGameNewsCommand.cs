@@ -53,7 +53,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         var gameChannelIsLeagueChannel = leagueChannel != null && leagueChannel.ChannelID == Context.Channel.Id;
 
         var tagsToSkip = new List<MasterGameTag>();
-        
+
 
         if (skipUnannouncedGames && !requestedSettingEnum.Equals(RequestedGameNewsSetting.Off))
         {
@@ -113,13 +113,11 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                     await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip);
                     await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                         "Game News Configuration Saved",
-                        BuildGameNewsSettingsDisplayText(requestedSettingEnum, true, false, tagsToSkip),
+                        BuildGameNewsSettingsDisplayText(requestedSettingEnum, true, true, tagsToSkip),
                         Context.User));
 
                     var includeLeagueGamesMenuComponent = BuildYesOrNoSelectMenuComponent("include-league-games");
-                    var notableMissesMenuComponent = BuildYesOrNoSelectMenuComponent("notable-misses");
                     await FollowupAsync(IncludeLeagueGamesQuestion, components: includeLeagueGamesMenuComponent, ephemeral: true);
-                    await FollowupAsync(NotableMissesQuestion, components: notableMissesMenuComponent, ephemeral: true);
                 }
             }
         }
