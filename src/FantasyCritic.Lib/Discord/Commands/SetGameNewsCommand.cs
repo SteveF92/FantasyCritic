@@ -85,7 +85,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                 }
 
                 await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Recommended Game News Settings Applied",
-                    BuildGameNewsSettingsDisplayText(requestedSettingEnum, true, true, tagsToSkip), Context.User));
+                    BuildGameNewsSettingsDisplayText(RequestedGameNewsSetting.MightReleaseInYear, true, true, tagsToSkip), Context.User));
                 return;
             }
 
