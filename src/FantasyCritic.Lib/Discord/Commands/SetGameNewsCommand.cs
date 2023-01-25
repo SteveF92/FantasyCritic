@@ -111,6 +111,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                     var settingEnum = requestedSettingEnum.ToNormalSetting();
                     await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settingEnum);
                     await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip);
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, Context.Guild.Id, Context.Channel.Id, true, true);
                     await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                         "Game News Configuration Saved",
                         BuildGameNewsSettingsDisplayText(requestedSettingEnum, true, true, tagsToSkip),
