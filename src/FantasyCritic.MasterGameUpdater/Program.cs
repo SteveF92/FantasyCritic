@@ -1,3 +1,4 @@
+using System.ComponentModel.Design;
 using System.Reflection;
 using Dapper.NodaTime;
 using DiscordDotNetUtilities;
@@ -96,15 +97,7 @@ public static class Program
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
         IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo, masterGameRepo, _clock);
         IRoyaleRepo royaleRepo = new MySQLRoyaleRepo(localRepoConfig, localUserStore, masterGameRepo, fantasyCriticRepo);
-        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("",
-                _baseAddress,
-                true,
-                null),
-            _clock,
-            discordRepo,
-            localUserStore,
-            fantasyCriticRepo,
-            new DiscordFormatter());
+        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true, null), _clock, new ServiceContainer(), new DiscordFormatter());
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo);
         FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, discordPushService, fantasyCriticRepo, discordRepo, _clock);

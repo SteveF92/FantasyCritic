@@ -81,7 +81,8 @@ public static class HostingExtensions
         services.AddSingleton<PatreonConfig>(_ => patreonConfig);
         services.AddSingleton<EmailSendingServiceConfiguration>(_ => emailSendingConfig);
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
-        services.AddSingleton<DiscordPushService>(_ => GetDiscordPushService(discordConfiguration, repoConfiguration, clock));
+        services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
+        services.AddSingleton<DiscordPushService>();
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
@@ -94,7 +95,6 @@ public static class HostingExtensions
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
-        services.AddScoped<IDiscordFormatter, DiscordFormatter>();
         services.AddScoped<SelectMenuExecutedHandler>();
 
         services.AddScoped<PatreonService>();
@@ -381,15 +381,5 @@ public static class HostingExtensions
         app.MapFallbackToFile("index.html");
 
         return app;
-    }
-
-    private static DiscordPushService GetDiscordPushService(FantasyCriticDiscordConfiguration discordConfiguration,
-        RepositoryConfiguration repositoryConfiguration, IClock clock)
-    {
-        var userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
-        var masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore);
-        var fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, masterGameRepo);
-        var discordRepo = new MySQLDiscordRepo(repositoryConfiguration, fantasyCriticRepo, masterGameRepo, clock);
-        return new DiscordPushService(discordConfiguration, clock, discordRepo, userStore, fantasyCriticRepo, new DiscordFormatter());
     }
 }
