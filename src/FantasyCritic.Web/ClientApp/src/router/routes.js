@@ -1,7 +1,7 @@
 import Welcome from '@/views/welcome';
 import Home from '@/views/home';
 import About from '@/views/about';
-import Community from '@/views/community';
+import DiscordBot from '@/views/discordBot';
 import HowToPlay from '@/views/howToPlay';
 import Faq from '@/views/faq';
 import Contact from '@/views/contact';
@@ -67,11 +67,11 @@ export const routes = [
     }
   },
   {
-    path: '/community',
-    component: Community,
-    name: 'community',
+    path: '/discord-bot',
+    component: DiscordBot,
+    name: 'discordBot',
     meta: {
-      title: 'Community',
+      title: 'Discord Bot',
       isPublic: true
     }
   },

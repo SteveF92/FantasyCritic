@@ -31,7 +31,7 @@
             </router-link>
           </div>
           <div>
-            <router-link :to="{ name: 'community' }" title="Community">
+            <router-link :to="{ name: 'discordBot' }" title="Community">
               <font-awesome-icon icon="users" size="lg" fixed-width />
               <span class="full-nav">Community</span>
             </router-link>
