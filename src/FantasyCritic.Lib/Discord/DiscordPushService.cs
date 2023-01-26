@@ -6,7 +6,6 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
@@ -26,7 +25,6 @@ public class DiscordPushService
     private readonly string _botToken;
     private readonly IClock _clock;
     private readonly IDiscordRepo _discordRepo;
-    private readonly IDiscordSupplementalDataRepo _supplementalDataRepo;
     private readonly IFantasyCriticUserStore _userStore;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IDiscordFormatter _discordFormatter;
@@ -43,7 +41,6 @@ public class DiscordPushService
         FantasyCriticDiscordConfiguration configuration,
         IClock clock,
         IDiscordRepo discordRepo,
-        IDiscordSupplementalDataRepo supplementalDataRepo,
         IFantasyCriticUserStore userStore,
         IFantasyCriticRepo fantasyCriticRepo,
         IDiscordFormatter discordFormatter)
@@ -53,7 +50,6 @@ public class DiscordPushService
         _baseAddress = configuration.BaseAddress;
         _clock = clock;
         _discordRepo = discordRepo;
-        _supplementalDataRepo = supplementalDataRepo;
         _userStore = userStore;
         _fantasyCriticRepo = fantasyCriticRepo;
         _discordFormatter = discordFormatter;

@@ -60,7 +60,6 @@ public class Program
             .AddSingleton(repositoryConfiguration)
             .AddScoped<IDiscordRepo, MySQLDiscordRepo>()
             .AddScoped<SelectMenuExecutedHandler>()
-            .AddScoped<IDiscordSupplementalDataRepo, MySQLDiscordSupplementalDataRepo>()
             .AddScoped<DiscordPushService>()
             .AddScoped<IMasterGameRepo, MySQLMasterGameRepo>()
             .AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
