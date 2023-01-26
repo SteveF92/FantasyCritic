@@ -33,5 +33,5 @@ public class ClaimResult
     public bool Overridable { get; }
 
     public bool NoSpaceError => Errors.Any(x => x.NoSpaceError);
-
+    public bool NoEligibleSpaceError => Errors.Any(x => x.NoEligibleSpaceError);
 }

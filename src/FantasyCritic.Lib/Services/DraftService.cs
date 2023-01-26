@@ -88,9 +88,9 @@ public class DraftService
         return Result.Success();
     }
 
-    public async Task<(ClaimResult Result, bool DraftComplete)> DraftGame(ClaimGameDomainRequest request, bool managerAction)
+    public async Task<(ClaimResult Result, bool DraftComplete)> DraftGame(ClaimGameDomainRequest request, bool managerAction, bool allowIneligibleSlot)
     {
-        var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, true);
+        var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, true, allowIneligibleSlot);
         int standardGamesAdded = 0;
         if (result.Success && !request.CounterPick)
         {
@@ -166,7 +166,7 @@ public class DraftService
                 foreach (var possibleGame in gamesToTake)
                 {
                     var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true, false);
                     if (autoDraftResult.Success)
                     {
                         standardGamesAdded++;
@@ -186,7 +186,7 @@ public class DraftService
                 foreach (var possibleGame in possibleGames)
                 {
                     var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true, false);
                     if (autoDraftResult.Success)
                     {
                         counterPicksAdded++;

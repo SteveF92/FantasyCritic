@@ -26,7 +26,7 @@ public static class SlotEligibilityFunctions
     }
 
     public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueOptions leagueOptions, MasterGameWithEligibilityFactors? eligibilityFactors,
-        bool counterPick, int? validDropSlot, bool acquiringNow, bool managerOverride)
+        bool counterPick, int? validDropSlot, bool acquiringNow, bool managerOverride, bool allowIneligibleSlot)
     {
         string filledSpacesText = "User's game spaces are filled.";
         if (counterPick)
@@ -96,9 +96,14 @@ public static class SlotEligibilityFunctions
             }
         }
 
-        //This game isn't eligible in any slots, so we will just take the first open one.
-        var bestSlot = openSlots.First();
-        return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
+        if (allowIneligibleSlot)
+        {
+            //This game isn't eligible in any slots, so we will just take the first open one.
+            var bestSlot = openSlots.First();
+            return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
+        }
+
+        return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError("Game is not eligible in any open slots.", false, false, true) });
     }
 
     public static int? GetTradeSlotResult(Publisher publisher, LeagueOptions leagueOptions, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers)

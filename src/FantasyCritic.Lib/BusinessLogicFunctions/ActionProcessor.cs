@@ -203,6 +203,7 @@ public class ActionProcessor
         var nonDuplicateBids = activeBidsForLeague.Except(duplicateBids);
 
         List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
+        List<PickupBid> noEligibleSpaceLeftBids = new List<PickupBid>();
         List<PickupBid> insufficientFundsBids = new List<PickupBid>();
         List<PickupBid> belowMinimumBids = new List<PickupBid>();
         List<KeyValuePair<PickupBid, string>> invalidGameBids = new List<KeyValuePair<PickupBid, string>>();
@@ -228,10 +229,17 @@ public class ActionProcessor
             }
 
             bool counterPickWillBeConditionallyDropped = activeBid.CounterPick && conditionalDropsThatWillSucceed.ContainsGame(activeBid.MasterGame);
-            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped, _currentDate);
+            bool todoEliminate = false;
+            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped, _currentDate, todoEliminate);
             if (claimResult.NoSpaceError)
             {
                 noSpaceLeftBids.Add(pickupBidWithConditionalDropResult);
+                continue;
+            }
+
+            if (claimResult.NoEligibleSpaceError)
+            {
+                noEligibleSpaceLeftBids.Add(pickupBidWithConditionalDropResult);
                 continue;
             }
 
@@ -288,6 +296,22 @@ public class ActionProcessor
             else
             {
                 failedBid = new FailedPickupBid(noSpaceLeftBid, "No roster spots available.", _systemWideValues, processDate);
+            }
+            noSpaceLeftBidFailures.Add(failedBid);
+        }
+
+        foreach (var noEligibleSpaceLeftBid in noEligibleSpaceLeftBids)
+        {
+            FailedPickupBid failedBid;
+            if (noEligibleSpaceLeftBid.ConditionalDropPublisherGame is not null && noEligibleSpaceLeftBid.ConditionalDropResult!.Result.IsFailure)
+            {
+                failedBid = new FailedPickupBid(noEligibleSpaceLeftBid, "No eligible roster spots available. Attempted to conditionally drop game: " +
+                                                                        $"{noEligibleSpaceLeftBid.ConditionalDropPublisherGame.MasterGame!.MasterGame.GameName} " +
+                                                                        $"but failed because: {noEligibleSpaceLeftBid.ConditionalDropResult.Result.Error}", _systemWideValues, processDate);
+            }
+            else
+            {
+                failedBid = new FailedPickupBid(noEligibleSpaceLeftBid, "No eligible roster spots available.", _systemWideValues, processDate);
             }
             noSpaceLeftBidFailures.Add(failedBid);
         }

@@ -600,7 +600,7 @@ public class LeagueManagerController : BaseLeagueController
 
         bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, request.CounterPick, masterGame, false);
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false, masterGame, null, null);
-        ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, false);
+        ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, false, request.AllowIneligibleSlot);
         var viewModel = new ManagerClaimResultViewModel(result);
 
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
@@ -851,7 +851,7 @@ public class LeagueManagerController : BaseLeagueController
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false,
             masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
-        var result = await _draftService.DraftGame(domainRequest, true);
+        var result = await _draftService.DraftGame(domainRequest, true, request.AllowIneligibleSlot);
         var viewModel = new ManagerClaimResultViewModel(result.Result);
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
 

@@ -24,7 +24,7 @@ public class GameAcquisitionService
         _discordPushService = discordPushService;
     }
 
-    public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, bool drafting)
+    public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, bool drafting, bool allowIneligibleSlot)
     {
         MasterGameYear? masterGameYear = null;
         if (request.MasterGame is not null)
@@ -32,7 +32,7 @@ public class GameAcquisitionService
             masterGameYear = new MasterGameYear(request.MasterGame, request.LeagueYear.Year);
         }
 
-        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, drafting, false, false, _clock.GetToday());
+        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, drafting, false, false, _clock.GetToday(), allowIneligibleSlot);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -124,7 +124,8 @@ public class GameAcquisitionService
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday());
+        bool todoEliminate = false;
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday(), todoEliminate);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -148,7 +149,7 @@ public class GameAcquisitionService
         }
 
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, false, false, false, _clock.GetToday());
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, false, false, false, _clock.GetToday(), true);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -290,7 +291,8 @@ public class GameAcquisitionService
 
         var currentDate = _clock.GetToday();
         MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
-        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear.Options, eligibilityFactors, bid.CounterPick, validDropSlot, false, false);
+        bool todoEliminate = false;
+        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear.Options, eligibilityFactors, bid.CounterPick, validDropSlot, false, false, todoEliminate);
         if (!slotResult.SlotNumber.HasValue)
         {
             return new ClaimResult(slotResult.ClaimErrors, null);
