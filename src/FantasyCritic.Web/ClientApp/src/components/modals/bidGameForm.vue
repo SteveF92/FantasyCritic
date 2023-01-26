@@ -89,6 +89,9 @@
             <font-awesome-icon v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" icon="info-circle" />
           </label>
           <b-form-select v-model="conditionalDrop">
+            <template #first>
+              <option :value="null">None</option>
+            </template>
             <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
               {{ publisherGame.gameName }}
             </option>
@@ -276,7 +279,7 @@ export default {
       this.showingTopAvailable = false;
       this.isBusy = false;
       this.requestIsBusy = false;
-      this.conditionalDrop = false;
+      this.conditionalDrop = null;
     },
     clearData() {
       this.clearDataExceptSearch();
