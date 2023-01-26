@@ -21,6 +21,7 @@ public class PickupBidEntity
         Timestamp = domain.Timestamp;
         Priority = domain.Priority;
         BidAmount = domain.BidAmount;
+        AllowIneligibleSlot = domain.AllowIneligibleSlot;
         Successful = domain.Successful;
         ProcessSetID = domain.ProcessSetID;
         Outcome = domain.Outcome;
@@ -37,6 +38,7 @@ public class PickupBidEntity
         Timestamp = domain.PickupBid.Timestamp;
         Priority = domain.PickupBid.Priority;
         BidAmount = domain.PickupBid.BidAmount;
+        AllowIneligibleSlot = domain.PickupBid.AllowIneligibleSlot;
         Successful = successful;
         ProcessSetID = processSetID;
         Outcome = domain.Outcome;
@@ -53,6 +55,7 @@ public class PickupBidEntity
         Timestamp = domain.Timestamp;
         Priority = domain.Priority;
         BidAmount = bidAmount;
+        AllowIneligibleSlot = domain.AllowIneligibleSlot;
         Successful = domain.Successful;
         ProcessSetID = domain.ProcessSetID;
         Outcome = domain.Outcome;
@@ -67,6 +70,7 @@ public class PickupBidEntity
     public Instant Timestamp { get; set; }
     public int Priority { get; set; }
     public uint BidAmount { get; set; }
+    public bool AllowIneligibleSlot { get; set; }
     public bool? Successful { get; set; }
     public Guid? ProcessSetID { get; set; }
     public string? Outcome { get; set; }
@@ -74,6 +78,6 @@ public class PickupBidEntity
 
     public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame, LeagueYear leagueYear)
     {
-        return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, CounterPick, BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid);
+        return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, CounterPick, BidAmount, AllowIneligibleSlot, Priority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid);
     }
 }

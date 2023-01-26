@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 public class PickupBid : IEquatable<PickupBid>
 {
     public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame,
-        bool counterPick, uint bidAmount, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome, decimal? projectedPointsAtTimeOfBid)
+        bool counterPick, uint bidAmount, bool allowIneligibleSlot, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome, decimal? projectedPointsAtTimeOfBid)
     {
         BidID = bidID;
         Publisher = publisher;
@@ -15,6 +15,7 @@ public class PickupBid : IEquatable<PickupBid>
         ConditionalDropPublisherGame = conditionalDropPublisherGame;
         CounterPick = counterPick;
         BidAmount = bidAmount;
+        AllowIneligibleSlot = allowIneligibleSlot;
         Priority = priority;
         Timestamp = timestamp;
         Successful = successful;
@@ -25,8 +26,8 @@ public class PickupBid : IEquatable<PickupBid>
     }
 
     public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame,
-        bool counterPick, uint bidAmount, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome, decimal? projectedPointsAtTimeOfBid, DropResult conditionalDropResult)
-    : this(bidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, bidAmount, priority, timestamp, successful, processSetID, outcome, projectedPointsAtTimeOfBid)
+        bool counterPick, uint bidAmount, bool allowIneligibleSlot, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome, decimal? projectedPointsAtTimeOfBid, DropResult conditionalDropResult)
+    : this(bidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, bidAmount, allowIneligibleSlot, priority, timestamp, successful, processSetID, outcome, projectedPointsAtTimeOfBid)
     {
         ConditionalDropResult = conditionalDropResult;
     }
@@ -38,6 +39,7 @@ public class PickupBid : IEquatable<PickupBid>
     public PublisherGame? ConditionalDropPublisherGame { get; }
     public bool CounterPick { get; }
     public uint BidAmount { get; }
+    public bool AllowIneligibleSlot { get; }
     public int Priority { get; }
     public Instant Timestamp { get; }
     public bool? Successful { get; }
@@ -50,7 +52,7 @@ public class PickupBid : IEquatable<PickupBid>
     public PickupBid WithConditionalDropResult(DropResult conditionalDropResult)
     {
         return new PickupBid(BidID, Publisher, LeagueYear, MasterGame, ConditionalDropPublisherGame, CounterPick,
-            BidAmount, Priority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid,
+            BidAmount, AllowIneligibleSlot, Priority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid,
             conditionalDropResult);
     }
 

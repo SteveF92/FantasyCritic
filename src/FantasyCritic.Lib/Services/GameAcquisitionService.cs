@@ -66,7 +66,7 @@ public class GameAcquisitionService
     }
 
     public async Task<ClaimResult> MakePickupBid(LeagueYear leagueYear, Publisher publisher, MasterGame masterGame,
-        PublisherGame? conditionalDropPublisherGame, bool counterPick, uint bidAmount)
+        PublisherGame? conditionalDropPublisherGame, bool counterPick, uint bidAmount, bool allowIneligibleSlot)
     {
         if (bidAmount < leagueYear.Options.MinimumBidAmount)
         {
@@ -124,8 +124,7 @@ public class GameAcquisitionService
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
-        bool todoEliminate = false;
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday(), todoEliminate);
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday(), allowIneligibleSlot);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -133,7 +132,7 @@ public class GameAcquisitionService
 
         var nextPriority = pickupBids.Count + 1;
         PickupBid currentBid = new PickupBid(Guid.NewGuid(), publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick,
-            bidAmount, nextPriority, _clock.GetCurrentInstant(), null, null, null, null);
+            bidAmount, allowIneligibleSlot, nextPriority, _clock.GetCurrentInstant(), null, null, null, null);
         await _fantasyCriticRepo.CreatePickupBid(currentBid);
 
         return claimResult;
@@ -246,7 +245,7 @@ public class GameAcquisitionService
         return _fantasyCriticRepo.GetDropRequest(dropRequest);
     }
 
-    public async Task<ClaimResult> EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount)
+    public async Task<ClaimResult> EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount, bool allowIneligibleSlot)
     {
         if (bid.Successful != null)
         {
@@ -287,12 +286,11 @@ public class GameAcquisitionService
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
-        await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount);
+        await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount, allowIneligibleSlot);
 
         var currentDate = _clock.GetToday();
         MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
-        bool todoEliminate = false;
-        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear.Options, eligibilityFactors, bid.CounterPick, validDropSlot, false, false, todoEliminate);
+        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear.Options, eligibilityFactors, bid.CounterPick, validDropSlot, false, false, allowIneligibleSlot);
         if (!slotResult.SlotNumber.HasValue)
         {
             return new ClaimResult(slotResult.ClaimErrors, null);

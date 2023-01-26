@@ -604,7 +604,7 @@ public class LeagueController : BaseLeagueController
             conditionalDropPublisherGame = publisher.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGameID.Value);
         }
 
-        ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(leagueYear, publisher, masterGame, conditionalDropPublisherGame, request.CounterPick, request.BidAmount);
+        ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(leagueYear, publisher, masterGame, conditionalDropPublisherGame, request.CounterPick, request.BidAmount, request.AllowIneligibleSlot);
         var viewModel = new PickupBidResultViewModel(bidResult);
 
         return Ok(viewModel);
@@ -639,7 +639,7 @@ public class LeagueController : BaseLeagueController
             conditionalDropPublisherGame = publisher.GetPublisherGameByPublisherGameID(request.ConditionalDropPublisherGameID.Value);
         }
 
-        ClaimResult bidResult = await _gameAcquisitionService.EditPickupBid(maybeBid, conditionalDropPublisherGame, request.BidAmount);
+        ClaimResult bidResult = await _gameAcquisitionService.EditPickupBid(maybeBid, conditionalDropPublisherGame, request.BidAmount, request.AllowIneligibleSlot);
         var viewModel = new PickupBidResultViewModel(bidResult);
 
         return Ok(viewModel);

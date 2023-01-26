@@ -229,8 +229,7 @@ public class ActionProcessor
             }
 
             bool counterPickWillBeConditionallyDropped = activeBid.CounterPick && conditionalDropsThatWillSucceed.ContainsGame(activeBid.MasterGame);
-            bool todoEliminate = false;
-            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped, _currentDate, todoEliminate);
+            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped, _currentDate, activeBid.AllowIneligibleSlot);
             if (claimResult.NoSpaceError)
             {
                 noSpaceLeftBids.Add(pickupBidWithConditionalDropResult);

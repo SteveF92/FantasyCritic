@@ -332,18 +332,26 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_league_pickupbid(BidID,PublisherID,MasterGameID,ConditionalDropMasterGameID,CounterPick,Timestamp,Priority,BidAmount,Successful) VALUES " +
-            "(@BidID,@PublisherID,@MasterGameID,@ConditionalDropMasterGameID,@CounterPick,@Timestamp,@Priority,@BidAmount,@Successful);",
+            "insert into tbl_league_pickupbid(BidID,PublisherID,MasterGameID,ConditionalDropMasterGameID,CounterPick,Timestamp,Priority,BidAmount,AllowIneligibleSlot,Successful) VALUES " +
+            "(@BidID,@PublisherID,@MasterGameID,@ConditionalDropMasterGameID,@CounterPick,@Timestamp,@Priority,@BidAmount,@AllowIneligibleSlot,@Successful);",
             entity);
     }
 
-    public async Task EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount)
+    public async Task EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount, bool allowIneligibleSlot)
     {
+        string sql =
+            """
+            UPDATE tbl_league_pickupbid SET
+            ConditionalDropMasterGameID = @ConditionalDropMasterGameID,
+            BidAmount = @BidAmount,
+            AllowIneligibleSlot = @AllowIneligibleSlot
+            WHERE BidID = @BidID;
+            """;
+
         var entity = new PickupBidEntity(bid, conditionalDropPublisherGame, bidAmount);
 
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync("UPDATE tbl_league_pickupbid SET ConditionalDropMasterGameID = @ConditionalDropMasterGameID, " +
-                                      "BidAmount = @BidAmount WHERE BidID = @BidID;", entity);
+        await connection.ExecuteAsync(sql, entity);
     }
 
     public async Task<FantasyCriticUser?> GetLeagueYearWinner(Guid leagueID, int year)

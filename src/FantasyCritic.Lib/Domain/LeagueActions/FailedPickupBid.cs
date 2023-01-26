@@ -19,7 +19,7 @@ public class FailedPickupBid : IProcessedBid
     {
         return new PickupBid(PickupBid.BidID, PickupBid.Publisher, PickupBid.LeagueYear, PickupBid.MasterGame,
             PickupBid.ConditionalDropPublisherGame, PickupBid.CounterPick,
-            PickupBid.BidAmount, PickupBid.Priority, PickupBid.Timestamp, false, processSetID, FailureReason,
+            PickupBid.BidAmount, PickupBid.AllowIneligibleSlot, PickupBid.Priority, PickupBid.Timestamp, false, processSetID, FailureReason,
             ProjectedPointsAtTimeOfBid);
     }
 }

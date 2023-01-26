@@ -132,7 +132,7 @@ public interface IFantasyCriticRepo
     Task<Result> DeleteManagerMessage(LeagueYear leagueYear, Guid messageID);
     Task<Result> DismissManagerMessage(Guid messageId, Guid userId);
     Task FinishYear(SupportedYear supportedYear);
-    Task EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount);
+    Task EditPickupBid(PickupBid bid, PublisherGame? conditionalDropPublisherGame, uint bidAmount, bool allowIneligibleSlot);
     Task<FantasyCriticUser?> GetLeagueYearWinner(Guid leagueID, int year);
     Task CreateTrade(Trade trade);
     Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear);
