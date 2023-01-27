@@ -35,7 +35,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
 
     [SlashCommand("game", "Get game information. You can search with just a portion of the name.")]
     public async Task GetGame(
-        [Summary("game_name", "The game name that you're searching for. You can input only a portion of the name.")] string gameName,
+        [Summary("game_name", "The game name that you're searching for. You only need to enter a portion of the name.")] string gameName,
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
         await DeferAsync();

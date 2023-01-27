@@ -41,7 +41,7 @@
         </b-nav-item>
 
         <b-nav-item :to="{ name: 'discordBot' }">
-          <font-awesome-icon class="topnav-icon" icon="users" size="lg" fixed-width />
+          <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="topnav-icon" fixed-width />
           <span class="full-nav">Discord Bot</span>
         </b-nav-item>
 
