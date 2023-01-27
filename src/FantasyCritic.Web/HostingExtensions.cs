@@ -186,7 +186,6 @@ public static class HostingExtensions
             services.AddScoped<DiscordSocketClient>();
             services.AddScoped(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
             services.AddScoped<DiscordBotService>();
-            services.AddScoped<IDiscordFormatter, DiscordFormatter>();
             services.AddHostedService<DiscordHostedService>();
         }
 
