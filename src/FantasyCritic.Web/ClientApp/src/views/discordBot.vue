@@ -76,7 +76,7 @@
             <collapseCard>
               <div id="how-to-use" slot="header">How to Use The Bot</div>
               <div slot="body">
-                <h2>Contents</h2>
+                <h3>Available Bot Commands</h3>
                 <ul>
                   <li><router-link :to="{ hash: '#league' }">See League Information</router-link></li>
                   <li><router-link :to="{ hash: '#league-options' }">See League Options</router-link></li>
