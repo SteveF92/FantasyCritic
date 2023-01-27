@@ -33,7 +33,7 @@
               <li>Click the link above to invite the bot to your Discord server. It requires all permissions that it requests.</li>
               <li>
                 Set up the bot in your Discord server's preferred channel(s). You can do this in any of the following ways (see
-                <a href="#how-to-use">How To Use The Bot</a>
+                <router-link :to="{ hash: '#how-to-use' }">How To Use The Bot</router-link>
                 below for more info):
                 <ul>
                   <li>
