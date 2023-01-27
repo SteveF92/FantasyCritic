@@ -71,7 +71,7 @@
             <p>League actions, bid results on Saturdays, public bids on Thursdays, publisher score updates, and more will post real-time as they happen.</p>
 
             <h4 id="game-news">Game News</h4>
-            <p>Publisher score updates, rank changes, bid results, and more will post real-time as they happen. This does not require a league to be set up,</p>
+            <p>Publisher score updates, rank changes, bid results, and more will post real-time as they happen. This does not require a league to be set up.</p>
 
             <collapseCard>
               <div id="how-to-use" slot="header">How to Use The Bot</div>
