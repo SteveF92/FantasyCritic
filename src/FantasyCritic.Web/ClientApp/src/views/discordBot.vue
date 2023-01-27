@@ -105,7 +105,7 @@
                       <span class="param-label">Parameters:</span>
                       <p>
                         <code>year:</code>
-                        [optional] The year for the league you'd like to search. Defaults to earliest active year.
+                        [optional] The year for the league. Defaults to earliest active year.
                       </p>
                     </span>
                   </p>
@@ -126,7 +126,7 @@
                       <span class="param-label">Parameters:</span>
                       <p>
                         <code>year:</code>
-                        [optional] The year for the league for which you'd like to see options. Defaults to earliest active year.
+                        [optional] The year for the league. Defaults to earliest active year.
                       </p>
                     </span>
                   </p>
