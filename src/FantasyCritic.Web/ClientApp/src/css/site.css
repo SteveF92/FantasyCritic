@@ -211,6 +211,10 @@ img.critic-royale-nav {
   white-space: pre-line;
 }
 
+.unbulleted-list {
+  list-style: none;
+}
+
 .nested-list {
   list-style: none;
 }

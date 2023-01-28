@@ -24,7 +24,7 @@
             <p>To set up the bot, do the following:</p>
             <ol>
               <li>
-                First, I
+                First, we
                 <em>highly</em>
                 recommend
                 <router-link :to="{ hash: '#link-discord-account' }">linking your Discord account</router-link>
@@ -38,14 +38,14 @@
                 <ul>
                   <li>
                     For
-                    <router-link :to="{ hash: '#league-updates' }">League Updates</router-link>
+                    <router-link :to="{ hash: '#upcoming' }">League Updates</router-link>
                     use the
                     <code>/set-league</code>
                     command in the appropriate channel(s).
                   </li>
                   <li>
                     For
-                    <router-link :to="{ hash: '#game-news' }">Game News</router-link>
+                    <router-link :to="{ hash: '#set-game-news' }">Game News</router-link>
                     use the
                     <code>/set-game-news</code>
                     command in the appropriate channel(s).
@@ -270,7 +270,9 @@
                       <span class="param-label">Parameters:</span>
                       <p class="parameter-explanation">
                         <code>league_id:</code>
-                        The ID for your league. You can find it in the URL for your league.
+                        The ID for your league. You can get it by clicking the
+                        <font-awesome-icon :icon="['far', 'copy']" />
+                        icon next to your league name. You can also find it in the URL for your league.
                         <br />
                         <strong>Example:</strong>
                         https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2023
@@ -387,6 +389,7 @@
         <div>
           <h2>Unofficial Discord Bots</h2>
           <div class="text-well">
+            <h3><em>Note! This bots are here for historical purposes. Please use the official bot above!</em></h3>
             <h3>fantasy-critic-bot</h3>
             <div>
               <a href="https://github.com/rarDevelopment/fantasy-critic-bot" target="_blank">
@@ -398,7 +401,7 @@
             <p>
               Bot created by
               <a href="https://github.com/rarDevelopment" target="_blank">Robert (rardk64)</a>
-              with additional development by me (Steve Fallon). The bot will send automatic updates for:
+              with additional development by me (Steve Fallon). The bot would send automatic updates for:
             </p>
             <ul>
               <li>Game releases</li>
@@ -408,8 +411,7 @@
               <li>Trade proposals</li>
             </ul>
             <p>
-              You can also issue commands to the bot and it will give info such as the current standings for your league. Full instructions are available on GitHub. One important note: the bot does
-              not work with private leagues. Note that while this bot is still operational for now, development efforts going forward will be focused on the official bot above.
+              This was also the first Fantasy Critic bot to use Discord's slash commands feature, and working on this together is what led us to decide to take on the task of making the official bot.
             </p>
             <hr />
             <h3>fcbot</h3>
@@ -421,10 +423,9 @@
             </div>
             <br />
             <p>
-              Bot created by
+              The original Fantasy Critic Bot, created by
               <a href="https://github.com/drcatdoctor" target="_blank">drcat.</a>
-              While this bot is still functional, it has not been updated in a while. Full instructions are available on GitHub, but I can't guarantee full functionality. Notably, the method described
-              on GitHub to make the bot connect to a private league no longer works.
+              This bot has not been updated in a while and does not function anymore. However, it's an essential part of Fantasy Critic's history and was the root inspiration for the other bots.
             </p>
           </div>
         </div>

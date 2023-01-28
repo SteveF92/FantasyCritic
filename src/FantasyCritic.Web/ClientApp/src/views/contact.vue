@@ -22,19 +22,16 @@
           </li>
         </ul>
       </div>
-      <div>
-        <h2>Twitter</h2>
-        <div class="text-well">
-          <p>You can reach me on Twitter for any questions, comments, or support.</p>
-          <a href="https://twitter.com/fantasy_critic" target="_blank">
-            <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" fixed-width />
-            @fantasy_critic
+
+      <h2>Community</h2>
+      <div class="text-well">
+        <h3>
+          <a href="https://discord.gg/dNa7DD3" target="_blank">
+            <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
+            Join our Discord Server!
           </a>
-        </div>
-      </div>
-      <div>
-        <h2>Discord</h2>
-        <div class="text-well">
+        </h3>
+        <div>
           <p>The Discord is the primary home for the Fantasy Critic community. We have channels for:</p>
           <ul>
             <li>Finding a league</li>
@@ -44,28 +41,47 @@
             <li>Discussing new features</li>
             <li>...and more</li>
           </ul>
-          <a href="https://discord.gg/dNa7DD3" target="_blank">
-            <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
-            Join our Server
-          </a>
         </div>
-      </div>
-      <div>
-        <h2>Subreddit</h2>
-        <div class="text-well">
-          <p>
-            The subreddit admittedly doesn't see as much traffic as it used to, as it's been largely supplanted by our Discord. However, it may still be where you want to go if you want to post
-            something very detailed like a feature proposal.
-          </p>
+        <h2>
           <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
             <font-awesome-icon :icon="['fab', 'reddit']" size="lg" class="reddit-icon" />
             r/fantasycritic
           </a>
+        </h2>
+        <div>
+          <p>
+            The subreddit admittedly doesn't see as much traffic as it used to, as it's been largely supplanted by our Discord. However, it may still be where you want to go if you want to post
+            something very detailed like a feature proposal. I do still check it, but you'll get a faster response from both myself and the community on our Discord.
+          </p>
         </div>
       </div>
-      <div>
-        <h2>Your creations!</h2>
-        <div class="text-well">Have you made something Fantasy Critic related that you think is cool? Contact me and I might just feature it here.</div>
+
+      <h2>How to Reach Me Directly</h2>
+      <div class="text-well">
+        <ul class="unbulleted-list">
+          <li>
+            <a href="https://twitter.com/fantasy_critic" target="_blank">
+              <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" fixed-width />
+              @fantasy_critic
+            </a>
+          </li>
+          <li>
+            <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
+            elitefusion#8608 (You can find me at the top of the members list in our Discord)
+          </li>
+        </ul>
+        <h3>Account issues</h3>
+        <p>
+          If you have an issue with your account(can't login, can't verify email, etc), please reach out to me directly via DM on Discord or Twitter. Additionally, if one of your league members is
+          having issues with their account, you should have them reach out to me directly, rather than contacting me on their behalf. On Discord, I'm and you can find me at the top of the members list
+          in the server.
+        </p>
+        <h3>Other Issues</h3>
+        <p>
+          I'm always happy to respond to a DM, but if your issue is not an account issue, you can also post in our #tech-support channel in our Discord. In particular, if you have an issue with the
+          <router-link :to="{ name: 'discordBot' }">Discord Bot</router-link>
+          , you should definitely post that in the channel as opposed to a DM.
+        </p>
       </div>
     </div>
   </div>
