@@ -7,7 +7,7 @@
         <slot name="header"></slot>
       </div>
     </b-card-header>
-    <b-collapse :id="'accordion-' + _uid" :visible="defaultVisible" role="tabpanel">
+    <b-collapse :id="'accordion-' + _uid" :visible="visible" role="tabpanel">
       <b-card-body>
         <p class="card-text">
           <slot name="body"></slot>
@@ -21,6 +21,16 @@
 export default {
   props: {
     defaultVisible: { type: Boolean }
+  },
+  data() {
+    return {
+      visible: this.defaultVisible
+    };
+  },
+  methods: {
+    show() {
+      this.visible = true;
+    }
   }
 };
 </script>

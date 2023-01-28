@@ -33,23 +33,24 @@
               <li>Click the link above to invite the bot to your Discord server. It requires all permissions that it requests.</li>
               <li>
                 Set up the bot in your Discord server's preferred channel(s). You can do this in any of the following ways (see
-                <router-link :to="{ hash: '#how-to-use' }">How To Use The Bot</router-link>
+                <router-link :to="{ hash: '#how-to-use' }" @click.native="showCollapse('how-to-use')">How To Use The Bot</router-link>
                 below for more info):
                 <ul>
                   <li>
                     For
-                    <router-link :to="{ hash: '#set-league' }">League Updates</router-link>
+                    <router-link :to="{ hash: '#set-league' }" @click.native="showCollapse('set-league')">League Updates</router-link>
                     use the
                     <code>/set-league</code>
                     command in the appropriate channel(s).
                   </li>
                   <li>
                     For
-                    <router-link :to="{ hash: '#set-game-news' }">Game News</router-link>
+                    <router-link :to="{ hash: '#set-game-news' }" @click.native="showCollapse('set-game-news')">Game News</router-link>
                     use the
                     <code>/set-game-news</code>
                     command in the appropriate channel(s).
                   </li>
+                  <li>You can also use both commands in the same channel to configure your channel to receive both types of updates!</li>
                 </ul>
               </li>
             </ol>
@@ -73,7 +74,7 @@
             <h4 id="game-news">Game News</h4>
             <p>Publisher score updates, rank changes, bid results, and more will post real-time as they happen. This does not require a league to be set up.</p>
 
-            <collapseCard>
+            <collapseCard ref="discordBotInfoCollapseRef">
               <div id="how-to-use" slot="header">How to Use The Bot</div>
               <div slot="body">
                 <h3>Available Bot Commands</h3>
@@ -444,11 +445,17 @@ export default {
   data() {
     return {};
   },
+  mounted() {
+    if (this.$route.hash) {
+      this.showCollapse(this.$route.hash);
+    }
+  },
   methods: {
-    getCollapseID() {
-      let thisID = this.lastID;
-      this.lastID = this.lastID + 1;
-      return thisID;
+    showCollapse(hash) {
+      this.$refs.discordBotInfoCollapseRef.show();
+      setTimeout(() => {
+        this.$router.push({ hash: hash });
+      }, 250);
     }
   }
 };
