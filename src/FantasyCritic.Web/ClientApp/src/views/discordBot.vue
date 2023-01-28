@@ -17,7 +17,7 @@
             <p>
               New for the 2023 season! This bot was co-developed by
               <a href="https://github.com/rarDevelopment" target="_blank">Robert (rardk64)</a>
-              and myself (Steve Fallon), and is integrated into the site itself. Here's a summary of the bot's features:
+              and myself (Steve Fallon), and is integrated into the site itself.
             </p>
 
             <h4>Setup Instructions</h4>
@@ -38,7 +38,7 @@
                 <ul>
                   <li>
                     For
-                    <router-link :to="{ hash: '#upcoming' }">League Updates</router-link>
+                    <router-link :to="{ hash: '#set-league' }">League Updates</router-link>
                     use the
                     <code>/set-league</code>
                     command in the appropriate channel(s).
@@ -389,7 +389,7 @@
         <div>
           <h2>Unofficial Discord Bots</h2>
           <div class="text-well">
-            <h3><em>Note! This bots are here for historical purposes. Please use the official bot above!</em></h3>
+            <h3><em>Note! These bots are here for historical purposes. Please use the official bot above!</em></h3>
             <h3>fantasy-critic-bot</h3>
             <div>
               <a href="https://github.com/rarDevelopment/fantasy-critic-bot" target="_blank">
