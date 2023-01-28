@@ -22,12 +22,12 @@ public class GameNewsSetting : TypeSafeEnum<GameNewsSetting>
 public class RequestedGameNewsSetting  : TypeSafeEnum<RequestedGameNewsSetting>
 {
     // Define values here.
-    public static readonly RequestedGameNewsSetting  All = new RequestedGameNewsSetting ("All", GameNewsSetting.All);
-    public static readonly RequestedGameNewsSetting  WillReleaseInYear = new RequestedGameNewsSetting ("WillReleaseInYear", GameNewsSetting.WillReleaseInYear);
-    public static readonly RequestedGameNewsSetting  MightReleaseInYear = new RequestedGameNewsSetting ("MightReleaseInYear", GameNewsSetting.MightReleaseInYear);
-    public static readonly RequestedGameNewsSetting  Recommended = new RequestedGameNewsSetting ("Recommended");
-    public static readonly RequestedGameNewsSetting  LeagueGamesOnly = new RequestedGameNewsSetting ("LeagueGamesOnly");
-    public static readonly RequestedGameNewsSetting  Off = new RequestedGameNewsSetting ("Off", GameNewsSetting.Off);
+    public static readonly RequestedGameNewsSetting All = new RequestedGameNewsSetting ("All", GameNewsSetting.All);
+    public static readonly RequestedGameNewsSetting WillReleaseInYear = new RequestedGameNewsSetting ("WillReleaseInYear", GameNewsSetting.WillReleaseInYear);
+    public static readonly RequestedGameNewsSetting MightReleaseInYear = new RequestedGameNewsSetting ("MightReleaseInYear", GameNewsSetting.MightReleaseInYear);
+    public static readonly RequestedGameNewsSetting Recommended = new RequestedGameNewsSetting ("Recommended");
+    public static readonly RequestedGameNewsSetting LeagueGamesOnly = new RequestedGameNewsSetting ("LeagueGamesOnly");
+    public static readonly RequestedGameNewsSetting Off = new RequestedGameNewsSetting ("Off", GameNewsSetting.Off);
 
     // Constructor is private: values are defined within this class only!
     private RequestedGameNewsSetting (string value, GameNewsSetting? normalSetting = null)

@@ -84,7 +84,7 @@ public class CombinedChannelGameSetting
                     return true;
                 }
 
-                if (_gameNewsSetting is null)
+                if (_gameNewsSetting.Equals(GameNewsSetting.Off))
                 {
                     continue;
                 }
