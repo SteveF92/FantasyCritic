@@ -166,6 +166,7 @@ public class TestDataService
     {
         using var reader = new StreamReader(Path.Combine(_basePath, "PickupBids.csv"));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Context.RegisterClassMap<PickupBidEntityMap>();
         var pickupBids = csv.GetRecords<PickupBidEntity>().ToList();
         return pickupBids;
     }
