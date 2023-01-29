@@ -87,6 +87,14 @@
               <input v-model="draftOverride" class="form-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
+
+          <div v-if="draftResult.noEligibleSpaceError" class="form-check">
+            <span>
+              <label class="text-white">This game is going to end up in an ineligible slot.</label>
+              <label class="text-white">Do you want draft this game anyway anyway?</label>
+              <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -119,7 +127,8 @@ export default {
       showingUnlistedField: false,
       showingTopAvailable: false,
       isBusy: false,
-      selectedSlotIndex: 0
+      selectedSlotIndex: 0,
+      allowIneligibleSlot: false
     };
   },
   computed: {
@@ -198,7 +207,8 @@ export default {
         gameName: gameName,
         counterPick: false,
         masterGameID: masterGameID,
-        managerOverride: this.draftOverride
+        managerOverride: this.draftOverride,
+        allowIneligibleSlot: this.allowIneligibleSlot
       };
 
       axios

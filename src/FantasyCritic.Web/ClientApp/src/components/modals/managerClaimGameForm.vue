@@ -66,6 +66,14 @@
             <input v-model="claimOverride" class="form-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
+
+        <div v-if="claimResult.noEligibleSpaceError" class="form-check">
+          <span>
+            <label class="text-white">This game is going to end up in an ineligible slot.</label>
+            <label class="text-white">Do you want add this game anyway anyway?</label>
+            <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+          </span>
+        </div>
       </div>
     </form>
   </b-modal>
@@ -94,7 +102,8 @@ export default {
       claimCounterPick: false,
       possibleMasterGames: [],
       searched: false,
-      showingUnlistedField: false
+      showingUnlistedField: false,
+      allowIneligibleSlot: false
     };
   },
   computed: {
@@ -135,7 +144,8 @@ export default {
         gameName: gameName,
         counterPick: this.claimCounterPick,
         masterGameID: masterGameID,
-        managerOverride: this.claimOverride
+        managerOverride: this.claimOverride,
+        allowIneligibleSlot: this.allowIneligibleSlot
       };
 
       axios
