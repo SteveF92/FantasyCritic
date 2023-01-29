@@ -99,7 +99,7 @@
     LeagueID: 01e47dbb-9986-4730-8a85-cb8ab5a6e403,
     PublisherID: 496421fd-dbaa-4add-bfc9-37f562d08d1f,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'System Shock' with a bid of $2. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'System Shock' with a bid of $2. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 01e47dbb-9986-4730-8a85-cb8ab5a6e403,
@@ -375,7 +375,7 @@
     LeagueID: 055813ca-efb3-4403-9e61-f00f2e005618,
     PublisherID: 81c3bb26-d8ef-4e20-bbfe-1e576ad2446e,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pentiment' with a bid of $10. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Pentiment' with a bid of $10. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 055813ca-efb3-4403-9e61-f00f2e005618,
@@ -585,7 +585,7 @@
     LeagueID: 06664755-6079-42bd-a5da-5343c0cd17d4,
     PublisherID: eb49f42f-b267-4d41-99ae-244aef973dc0,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'A Plague Tale: Requiem' with a bid of $5. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'A Plague Tale: Requiem' with a bid of $5. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 06664755-6079-42bd-a5da-5343c0cd17d4,
@@ -1005,7 +1005,7 @@
     LeagueID: 0e65b7e0-d0ad-4599-8a32-d6f246823968,
     PublisherID: 1478d980-3bd9-4052-a150-2ea270c46418,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Bear and Breakfast' with a bid of $5. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Bear and Breakfast' with a bid of $5. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 0e65b7e0-d0ad-4599-8a32-d6f246823968,
@@ -1017,7 +1017,7 @@
     LeagueID: 0e65b7e0-d0ad-4599-8a32-d6f246823968,
     PublisherID: 2bdd0f7f-cff3-4419-8bc5-cc657690e383,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Forza Horizon 5: Hot Wheels' with a bid of $30. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Forza Horizon 5: Hot Wheels' with a bid of $30. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 0e65b7e0-d0ad-4599-8a32-d6f246823968,
@@ -1041,7 +1041,7 @@
     LeagueID: 0e65b7e0-d0ad-4599-8a32-d6f246823968,
     PublisherID: 9488b3b2-c791-4da1-be0e-fe68c47d247f,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pentiment' with a bid of $5. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Pentiment' with a bid of $5. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 0e65b7e0-d0ad-4599-8a32-d6f246823968,
@@ -1179,7 +1179,7 @@
     LeagueID: 0f3a4be2-6611-4e28-9dd4-93d9e396eb3c,
     PublisherID: 8b4d8acc-4213-413a-94f2-420826b65fa9,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Metal: Hellsinger' with a bid of $12. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Metal: Hellsinger' with a bid of $12. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 0f3a4be2-6611-4e28-9dd4-93d9e396eb3c,
@@ -1455,7 +1455,7 @@
     LeagueID: 11fff4cc-e11c-41f7-a574-85cb7b59c34e,
     PublisherID: 03aceab4-88b6-4a50-9035-4616f680a89d,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Hogwarts Legacy' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Hogwarts Legacy' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 11fff4cc-e11c-41f7-a574-85cb7b59c34e,
@@ -1485,7 +1485,7 @@
     LeagueID: 11fff4cc-e11c-41f7-a574-85cb7b59c34e,
     PublisherID: fa14a30b-8a78-4189-a2ae-91dff181f687,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pokémon Scarlet & Violet' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Pokémon Scarlet & Violet' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 12266da1-2198-4829-bd82-716dab85768d,
@@ -2409,7 +2409,7 @@
     LeagueID: 1d913a98-fc97-418a-af82-a78692e56eed,
     PublisherID: 39019713-90ca-4846-be96-42f12a1a536a,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'High on Life' with a bid of $6. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'High on Life' with a bid of $6. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 1d913a98-fc97-418a-af82-a78692e56eed,
@@ -2925,7 +2925,7 @@
     LeagueID: 25a827b6-db37-42a4-965f-74ea44f898c1,
     PublisherID: 0df55b6c-aee0-47a1-90cf-c21cc5bff355,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Fire Emblem Warriors: Three Hopes' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Fire Emblem Warriors: Three Hopes' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 25a827b6-db37-42a4-965f-74ea44f898c1,
@@ -6681,7 +6681,7 @@
     LeagueID: 4edcc5f2-d27c-4696-b058-843d60234886,
     PublisherID: 675519e7-a5a1-4c90-904e-b0a2d2cc39ed,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'F1 Manager 2022' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'F1 Manager 2022' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 4edcc5f2-d27c-4696-b058-843d60234886,
@@ -7335,7 +7335,7 @@
     LeagueID: 5579e441-5e98-4273-affe-107a8a8fb455,
     PublisherID: 3aa615e4-5774-44d3-8e50-8d0ae49650cd,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Goat Simulator 3' with a bid of $6. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Goat Simulator 3' with a bid of $6. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 5579e441-5e98-4273-affe-107a8a8fb455,
@@ -7701,7 +7701,7 @@
     LeagueID: 58b41639-e280-4690-af33-6db8ccf5c3b8,
     PublisherID: 361e577f-079f-4a50-92c6-324131f954a1,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Forspoken' with a bid of $9. Failure reason: Publisher was outbid.
+    Description: Tried to acquire counter pick 'Forspoken' with a bid of $9. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 58b41639-e280-4690-af33-6db8ccf5c3b8,
@@ -7713,7 +7713,7 @@
     LeagueID: 58b41639-e280-4690-af33-6db8ccf5c3b8,
     PublisherID: 361e577f-079f-4a50-92c6-324131f954a1,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pentiment' with a bid of $9. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Pentiment' with a bid of $9. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 58b41639-e280-4690-af33-6db8ccf5c3b8,
@@ -8541,7 +8541,7 @@
     LeagueID: 60f3a4ef-c232-4db5-ab57-5984ae1b4a6e,
     PublisherID: a734d045-8346-49e1-93b2-5340d41a09d7,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Bear and Breakfast' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Bear and Breakfast' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 60f3a4ef-c232-4db5-ab57-5984ae1b4a6e,
@@ -9405,7 +9405,7 @@
     LeagueID: 6dab41df-1883-4498-853f-6372ad72f03f,
     PublisherID: 4d07f55b-e31a-4df9-9844-dcba20a64061,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Scorn' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Scorn' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 6dab41df-1883-4498-853f-6372ad72f03f,
@@ -9501,7 +9501,7 @@
     LeagueID: 6e813f05-959e-497b-9526-c96629c4a607,
     PublisherID: a14c26f6-c3fb-45d1-9440-8a11b3aa28d2,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Callisto Protocol' with a bid of $10. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'The Callisto Protocol' with a bid of $10. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 6e813f05-959e-497b-9526-c96629c4a607,
@@ -9537,7 +9537,7 @@
     LeagueID: 6ec4d27a-563b-44b8-9f9b-85035f8e9f4b,
     PublisherID: 5f5c0d47-0eff-4ff8-b02d-55c812275338,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Marvel’s Midnight Suns' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Marvel’s Midnight Suns' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 6ec4d27a-563b-44b8-9f9b-85035f8e9f4b,
@@ -10131,7 +10131,7 @@
     LeagueID: 775e91e1-4f85-43f9-b236-5238297d7a62,
     PublisherID: 84bfa66c-2f84-4d6f-a4d3-535893db7d4b,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'A Plague Tale: Requiem' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'A Plague Tale: Requiem' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 775e91e1-4f85-43f9-b236-5238297d7a62,
@@ -11493,7 +11493,7 @@
     LeagueID: 83a67988-9213-4b5a-a961-17062a741c2c,
     PublisherID: 1f5c7270-06e9-43ec-8272-f9a039b62c6b,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Forza Horizon 5: Hot Wheels' with a bid of $15. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Forza Horizon 5: Hot Wheels' with a bid of $15. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 83a67988-9213-4b5a-a961-17062a741c2c,
@@ -12417,7 +12417,7 @@
     LeagueID: 8c3e6e03-7169-43b0-90e5-374ff2d4f38b,
     PublisherID: 98bdc4ab-03ed-4614-9553-46e5cc503775,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Saints Row' with a bid of $10. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Saints Row' with a bid of $10. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 8c3e6e03-7169-43b0-90e5-374ff2d4f38b,
@@ -12921,7 +12921,7 @@
     LeagueID: 92f915f1-c537-49ed-92c7-3e0331ab9677,
     PublisherID: ea419f52-1762-4899-9ed6-6de232bca38f,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Soul Hackers 2' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Soul Hackers 2' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 92f915f1-c537-49ed-92c7-3e0331ab9677,
@@ -13071,7 +13071,7 @@
     LeagueID: 965ef09c-f6dd-487d-8370-b8635eeb7a1e,
     PublisherID: 36070795-4bcb-46e1-bb44-b8e9c2c86906,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Resident Evil: Village DLC ' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Resident Evil: Village DLC ' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 965ef09c-f6dd-487d-8370-b8635eeb7a1e,
@@ -13275,7 +13275,7 @@
     LeagueID: 9a0d403e-4a3f-4d5b-b5ff-ceb45a6c2a2a,
     PublisherID: 38081ea7-bbe0-420b-b594-e3156b7f6814,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pokémon Scarlet & Violet' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Pokémon Scarlet & Violet' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 9a0d403e-4a3f-4d5b-b5ff-ceb45a6c2a2a,
@@ -13605,7 +13605,7 @@
     LeagueID: 9d8aa9c1-5241-4b0d-b34b-b159645399ea,
     PublisherID: 296f0486-b978-4083-8473-ecac871a8bad,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Hogwarts Legacy' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Hogwarts Legacy' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 9d8aa9c1-5241-4b0d-b34b-b159645399ea,
@@ -14475,7 +14475,7 @@
     LeagueID: a520beb1-cca5-4f65-9130-8304c5f11d8f,
     PublisherID: 2ed55e60-787e-424d-a6b3-7876bcce82ab,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Last of Us Part I' with a bid of $10. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'The Last of Us Part I' with a bid of $10. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: a520beb1-cca5-4f65-9130-8304c5f11d8f,
@@ -14589,7 +14589,7 @@
     LeagueID: a6cc1eb1-1565-4da7-9363-fa9897e1da3c,
     PublisherID: 648d4b50-81f9-4791-bed2-5b89eb78fa1d,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Digimon Survive' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Digimon Survive' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: a6cc1eb1-1565-4da7-9363-fa9897e1da3c,
@@ -16509,7 +16509,7 @@
     LeagueID: bd9b3c0d-ada2-43f7-a4b6-0d1de0f15d78,
     PublisherID: 2f7c4666-1a82-4722-b1e4-65433b5ea887,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Return to Monkey Island' with a bid of $5. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Return to Monkey Island' with a bid of $5. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: bd9b3c0d-ada2-43f7-a4b6-0d1de0f15d78,
@@ -16941,7 +16941,7 @@
     LeagueID: c29171ba-1361-4149-8029-cca121e77521,
     PublisherID: 9c87ac40-d405-44bf-8797-ae69de47e0d2,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Scorn' with a bid of $5. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Scorn' with a bid of $5. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: c29171ba-1361-4149-8029-cca121e77521,
@@ -18183,7 +18183,7 @@
     LeagueID: d0930ac8-e973-43df-aa92-884489b0e048,
     PublisherID: e279a7d0-8670-4114-8c0c-10845f237543,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Digimon Survive' with a bid of $12. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Digimon Survive' with a bid of $12. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: d0930ac8-e973-43df-aa92-884489b0e048,
@@ -19515,7 +19515,7 @@
     LeagueID: e05a43e4-d4a5-40dc-b46e-fb2b328e4b96,
     PublisherID: 7636b047-8e41-45c4-8f71-32c9d27b46b4,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Metal: Hellsinger' with a bid of $20. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Metal: Hellsinger' with a bid of $20. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: e05a43e4-d4a5-40dc-b46e-fb2b328e4b96,
@@ -21093,7 +21093,7 @@
     LeagueID: ebb73fb4-d88f-4394-b074-4da25eb08f35,
     PublisherID: 25566e7a-baff-490c-b950-1e814043f082,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pentiment' with a bid of $6. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Pentiment' with a bid of $6. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: ebb73fb4-d88f-4394-b074-4da25eb08f35,
@@ -21273,7 +21273,7 @@
     LeagueID: ed11d605-93e5-42d7-8841-4efe39a7e4ed,
     PublisherID: 3f5f93ea-3441-498f-a189-11914880d751,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Overwatch 2' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Overwatch 2' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: ed11d605-93e5-42d7-8841-4efe39a7e4ed,
@@ -22263,7 +22263,7 @@
     LeagueID: f6233b47-f045-4474-a248-84a436de8661,
     PublisherID: 5f864f84-9d92-4280-8e50-652d55dbf2e1,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Callisto Protocol' with a bid of $15. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'The Callisto Protocol' with a bid of $15. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: f6233b47-f045-4474-a248-84a436de8661,
@@ -22293,13 +22293,13 @@
     LeagueID: f6233b47-f045-4474-a248-84a436de8661,
     PublisherID: 8601b085-2b41-4a1d-b4e9-fc45557d0689,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Live A Live' with a bid of $3. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Live A Live' with a bid of $3. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: f6233b47-f045-4474-a248-84a436de8661,
     PublisherID: 8601b085-2b41-4a1d-b4e9-fc45557d0689,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Marvel’s Midnight Suns' with a bid of $7. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Marvel’s Midnight Suns' with a bid of $7. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: f6233b47-f045-4474-a248-84a436de8661,
@@ -22353,7 +22353,7 @@
     LeagueID: f6233b47-f045-4474-a248-84a436de8661,
     PublisherID: a650b027-302d-46ae-8b12-04d84ef4d7bf,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Callisto Protocol' with a bid of $15. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'The Callisto Protocol' with a bid of $15. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: f6233b47-f045-4474-a248-84a436de8661,
@@ -22839,7 +22839,7 @@
     LeagueID: fb57fbbc-fbb0-4836-89a7-7f6fa27b85fe,
     PublisherID: 6b104bff-4179-4f86-973d-2d720d99d019,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'F1 Manager 2022' with a bid of $11. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'F1 Manager 2022' with a bid of $11. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: fb57fbbc-fbb0-4836-89a7-7f6fa27b85fe,

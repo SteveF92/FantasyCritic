@@ -2,11 +2,14 @@ using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
+using Serilog;
 
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
 
 public class ActionProcessor
 {
+    private static readonly ILogger _logger = Log.ForContext<ActionProcessor>();
+
     private readonly SystemWideValues _systemWideValues;
     private readonly Instant _processingTime;
     private readonly LocalDate _currentDate;
@@ -276,7 +279,7 @@ public class ActionProcessor
             .Except(belowMinimumBids)
             .Except(invalidGameBids.Select(x => x.Key))
             .Where(x => takenGames.Contains(x.MasterGame))
-            .Select(x => new FailedPickupBid(x, "Publisher was outbid.", _systemWideValues, processDate));
+            .Select(x => new FailedPickupBid(x, GetLostBidMessage(x, winningBids), _systemWideValues, processDate));
 
         var duplicateBidFailures = duplicateBids.Select(x => new FailedPickupBid(x, "You cannot have multiple bids for the same game. This bid has been ignored.", _systemWideValues, processDate));
         var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, _systemWideValues, processDate));
@@ -324,6 +327,26 @@ public class ActionProcessor
 
         var processedSet = new ProcessedBidSet(winningBids, failedBids);
         return processedSet;
+    }
+
+    private static string GetLostBidMessage(PickupBid pickupBid, IReadOnlyList<SucceededPickupBid> winningBids)
+    {
+        var winningBid = winningBids.SingleOrDefault(x =>
+            x.PickupBid.LeagueYear.Key == pickupBid.LeagueYear.Key &&
+            x.PickupBid.MasterGame.MasterGameID == pickupBid.MasterGame.MasterGameID);
+
+        if (winningBid is null)
+        {
+            _logger.Warning("Impossible situation with bids: {leagueID} {masterGame}", pickupBid.LeagueYear.League.LeagueID, pickupBid.MasterGame.GameName);
+            return "Publisher was outbid.";
+        }
+
+        if (pickupBid.BidAmount == winningBid.PickupBid.BidAmount)
+        {
+            return "Bid lost on tiebreakers.";
+        }
+
+        return "Publisher was outbid.";
     }
 
     private IReadOnlyList<SucceededPickupBid> GetWinnableBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear)

@@ -122,8 +122,8 @@
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 113.6371710067608,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 06abfc8e-29ee-4024-bb6d-ea79a88a9a3e,
@@ -647,8 +647,8 @@
     MasterGameID: 1200424e-3363-4732-9e61-b3ddcc9924e6,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 111.6951707530115,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 2059bf04-2ff0-42c2-b7bd-eed1229882eb,
@@ -896,8 +896,8 @@
     MasterGameID: 4281d474-efa1-4e40-bbe4-91856657b8a8,
     BidAmount: 15,
     ProjectedPointsAtTimeOfBid: 115.6109172702226,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 2f4a13f5-6698-4d3e-82b3-a0f3724cd1d5,
@@ -1164,8 +1164,8 @@
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 158.69272948219288181818181819,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 3c027fef-b608-4a05-9edf-eec6ed879da6,
@@ -1199,8 +1199,8 @@
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 61.7259914407146,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 3fb93b42-6187-4494-851c-a29942bd777b,
@@ -1262,8 +1262,8 @@
     MasterGameID: b7f12909-14ba-4309-b263-230b1b17bead,
     BidAmount: 3,
     ProjectedPointsAtTimeOfBid: 131.24973542064040000000000001,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 40eb5a0d-05d4-4331-8df5-4526f3ef2ca2,
@@ -1742,8 +1742,8 @@
     MasterGameID: 97710dee-1995-4a8f-a2a7-39ff8a08cf0d,
     BidAmount: 11,
     ProjectedPointsAtTimeOfBid: 77.62449542339667826086956522,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 58b8622a-e4dc-4a79-9626-6f76e8b3816d,
@@ -1946,8 +1946,8 @@
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     BidAmount: 15,
     ProjectedPointsAtTimeOfBid: 124.39174521984362857142857144,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 615567c9-b064-4d01-a7ba-19096ebf296c,
@@ -2078,8 +2078,8 @@
     MasterGameID: 1c50d917-74a9-45d5-959a-3e2b3ae28619,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 58.889069895775469230769230768,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 6501d3cf-fb54-4a58-bfb7-a0aced33a510,
@@ -2213,8 +2213,8 @@
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     BidAmount: 15,
     ProjectedPointsAtTimeOfBid: 116.13067279034051428571428572,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 6b2a6483-7ec2-49f1-807c-32d12f3e3299,
@@ -2231,8 +2231,8 @@
     MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 172.20684487723266666666666666,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 6c0dd9c9-3d43-49ba-8037-70d09b23c76f,
@@ -2292,8 +2292,8 @@
     MasterGameID: 897529cc-65de-4259-8468-6e333fcd2ea4,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 74.7738078716569,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 6e980fa9-2862-4b70-bffa-b933ade567e3,
@@ -2355,8 +2355,8 @@
     MasterGameID: b001f107-8b76-4a6d-ba63-560b8e97a67b,
     BidAmount: 2,
     ProjectedPointsAtTimeOfBid: 94.55103262557243333333333334,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 7161a842-59ec-43f2-a6b7-f6416ea2f8d4,
@@ -2499,8 +2499,8 @@
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 118.13324029422055925925925925,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 756ac399-7693-4967-aea6-d6c150cb29bb,
@@ -2561,8 +2561,8 @@
     MasterGameID: 650bbf88-dd55-475d-b189-583fca09c4a0,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 100.1009664992016,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 77739299-4bd7-402f-b1c9-e9ac5cc9c049,
@@ -2945,8 +2945,8 @@
     MasterGameID: 1bc02877-a443-44e8-bb37-d14624737669,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 156.17850942278385517241379310,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 8b510928-b6d4-4de9-be6e-c1c39628761c,
@@ -3150,8 +3150,8 @@
     MasterGameID: 97710dee-1995-4a8f-a2a7-39ff8a08cf0d,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 64.266594973008737037037037037,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 98113ee8-1f1e-4337-803e-d0c9a65014e1,
@@ -3195,8 +3195,8 @@
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 132.18508875215173636363636360,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 98f6ecc5-8fcc-44a4-952e-8c2a954771e6,
@@ -3231,8 +3231,8 @@
     MasterGameID: 1bc02877-a443-44e8-bb37-d14624737669,
     BidAmount: 12,
     ProjectedPointsAtTimeOfBid: 105.80027952576799459459459457,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 9a76f614-f117-43cf-9651-7ca49a8aa420,
@@ -3285,8 +3285,8 @@
     MasterGameID: ddce3a8b-7314-423d-9517-12cb09baa52b,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 109.5336326550684,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 9c27a6dc-97c6-413c-8a2f-4c73fe647fd1,
@@ -3393,8 +3393,8 @@
     MasterGameID: 4281d474-efa1-4e40-bbe4-91856657b8a8,
     BidAmount: 30,
     ProjectedPointsAtTimeOfBid: 46.388145878409504761904761905,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: a151cc65-f10c-4539-a9ae-5ef45912f062,
@@ -3510,8 +3510,8 @@
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
     BidAmount: 7,
     ProjectedPointsAtTimeOfBid: 131.24973542064040000000000001,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: a9e0dcc8-3ed4-4fd4-850f-eb8dddec0564,
@@ -3545,8 +3545,8 @@
     MasterGameID: 5cb61cc8-36b2-4b8a-b5af-393c821b246c,
     BidAmount: 6,
     ProjectedPointsAtTimeOfBid: 109.93434749033730952380952381,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: aa5ff696-716b-45e1-bf77-1715ed3a2660,
@@ -3800,8 +3800,8 @@
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 87.83015730415063333333333333,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: b3e166e8-cf71-49eb-830c-25fef15f6bc7,
@@ -3953,8 +3953,8 @@
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     BidAmount: 9,
     ProjectedPointsAtTimeOfBid: 138.0245827595449,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: b969b5fa-8bf4-4cb8-bcfb-284417dba22d,
@@ -4142,8 +4142,8 @@
     MasterGameID: 1eaed613-22cb-4fe0-9360-845445a73022,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 289.42429022562805185185185190,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: c13840e3-959d-4b6a-ae63-8cd08cce1584,
@@ -4212,8 +4212,8 @@
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     BidAmount: 6,
     ProjectedPointsAtTimeOfBid: 117.51113270882825454545454545,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: c4c5ab1a-fae3-4b71-a582-f84d6539566f,
@@ -4398,8 +4398,8 @@
     MasterGameID: ddce3a8b-7314-423d-9517-12cb09baa52b,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 54.0693747224332,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: cd14201f-d278-490e-9369-c8d83eb0ca4b,
@@ -4646,8 +4646,8 @@
     MasterGameID: a7371690-ae7e-400d-9289-ab55040cce47,
     BidAmount: 6,
     ProjectedPointsAtTimeOfBid: 113.53944530509133333333333334,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: de7f4130-5c5a-4af9-af0f-44aede6a5888,
@@ -4691,8 +4691,8 @@
     MasterGameID: b760cedc-bfb9-41b2-a4b8-35429cfc1e21,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 106.76576226324505714285714287,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: e092e696-d973-4198-a85f-9f7af5b42d33,
@@ -5000,8 +5000,8 @@
     MasterGameID: 7cc0aeb3-1aba-42ba-b969-649fca5067d1,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 69.944253233469070370370370370,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: ec9deb62-63f9-4ad6-a2e1-3ea203b60cf6,
@@ -5017,8 +5017,8 @@
     MasterGameID: 897529cc-65de-4259-8468-6e333fcd2ea4,
     BidAmount: 12,
     ProjectedPointsAtTimeOfBid: 177.58235446638643636363636360,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: ed345348-4ef7-4633-bcc1-eea072ca57ee,
@@ -5035,8 +5035,8 @@
     MasterGameID: 0b798cbc-ade9-45bd-ac69-c0a82b7d3d06,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 137.6341705766119,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: ee2c62f1-0667-46ee-bd51-cdf369f49527,
@@ -5044,8 +5044,8 @@
     MasterGameID: 8f30444f-44fc-4020-a36f-228f9702f105,
     BidAmount: 9,
     ProjectedPointsAtTimeOfBid: 138.0245827595449,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: ee8eb5d1-6f26-4ca3-a8c2-e605f883f37e,
@@ -5071,8 +5071,8 @@
     MasterGameID: 52d41710-186a-4145-a32e-a514434cfcad,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 83.6859746621607,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: ef2f2479-0579-452b-ac76-51d267de5375,
@@ -5107,8 +5107,8 @@
     MasterGameID: 1c50d917-74a9-45d5-959a-3e2b3ae28619,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 50.226518473473607317073170732,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: f10e0098-64c6-4b53-b279-c2c408fd5958,
@@ -5161,8 +5161,8 @@
     MasterGameID: 1eaed613-22cb-4fe0-9360-845445a73022,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 207.83371181608696842105263159,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: f296c3b3-d214-4e2a-9286-e1feb1c450d8,
@@ -5205,8 +5205,8 @@
     MasterGameID: 52d41710-186a-4145-a32e-a514434cfcad,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 135.0656592070018,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: f4b750fc-dffb-40e6-88ee-c285e7c5955b,
@@ -5276,8 +5276,8 @@
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 54.157473893977980487804878049,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: f773a33d-793e-4687-9a4d-c030e69ffc42,
