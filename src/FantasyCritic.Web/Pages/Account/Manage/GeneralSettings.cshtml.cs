@@ -54,7 +54,7 @@ public class GeneralSettingsModel : PageModel
         var generalSettings = new GeneralUserSettings(Input.ShowDecimalPoints);
         await _userManager.SetGeneralSettings(user, generalSettings);
 
-        StatusMessage = "Email Settings Updated.";
+        StatusMessage = "Settings Updated.";
         return RedirectToPage();
     }
 }
