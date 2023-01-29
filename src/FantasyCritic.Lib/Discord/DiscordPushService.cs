@@ -796,7 +796,7 @@ public class DiscordPushService
         await Task.WhenAll(messageTasks);
     }
 
-    private async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
+    private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
     {
         var externalLogins = await userStore.GetLoginsAsync(fantasyCriticUser, CancellationToken.None);
         var discordProviderKey = externalLogins.SingleOrDefault(x => x.LoginProvider == "discord")?.ProviderKey;

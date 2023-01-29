@@ -69,10 +69,30 @@
             </p>
 
             <h4 id="league-updates">League Updates</h4>
-            <p>League actions, bid results on Saturdays, public bids on Thursdays, publisher score updates, and more will post real-time as they happen.</p>
+            <p>The following information will be posted real-time as it happens on the website:</p>
+            <ul>
+              <li>League Actions</li>
+              <li>Publisher Score Updates</li>
+              <li>Publisher League Registration Notifications</li>
+              <li>Publisher Updates (name changes, league manager manual updates)</li>
+              <li>Drop Results (on Saturdays)</li>
+              <li>Bid Results (on Saturdays)</li>
+              <li>Trade Proposals and Updates</li>
+              <li>League Manager Messages</li>
+              <li>Public Bid Games (on Thursdays)</li>
+              <li>Special Auction Information</li>
+              <li>Final Standings When The Year Ends</li>
+            </ul>
 
             <h4 id="game-news">Game News</h4>
-            <p>Publisher score updates, rank changes, bid results, and more will post real-time as they happen. This does not require a league to be set up.</p>
+            <p>The following information will be posted real-time as it happens on the website:</p>
+            <ul>
+              <li>New Games</li>
+              <li>Game Changes (renames, added details, tag changes)</li>
+              <li>Game Critic Score Updates</li>
+              <li>Game Score Updates</li>
+              <li>Game Release Updates</li>
+            </ul>
 
             <collapseCard ref="discordBotInfoCollapseRef">
               <div id="how-to-use" slot="header">How to Use The Bot</div>
