@@ -18,6 +18,7 @@ public class FantasyCriticUserViewModel
         EmailAddress = user.Email;
         Roles = roles;
         EmailConfirmed = user.EmailConfirmed;
+        ShowDecimalPoints = user.GeneralUserSettings.ShowDecimalPoints;
     }
 
     public FantasyCriticUserViewModel(FantasyCriticUser user)
@@ -32,9 +33,11 @@ public class FantasyCriticUserViewModel
     public string EmailAddress { get; init; } = null!;
     public IEnumerable<string> Roles { get; init; } = null!;
     public bool EmailConfirmed { get; init; }
+    public bool ShowDecimalPoints { get; init; }
 
     public FantasyCriticUser ToDomain()
     {
-        return new FantasyCriticUser(UserID, DisplayName, null, DisplayNumber, EmailAddress, EmailAddress, EmailConfirmed, "", "", false, null, Instant.MinValue, GeneralUserSettings.Default, false);
+        var generalSettings = new GeneralUserSettings(ShowDecimalPoints);
+        return new FantasyCriticUser(UserID, DisplayName, null, DisplayNumber, EmailAddress, EmailAddress, EmailConfirmed, "", "", false, null, Instant.MinValue, generalSettings, false);
     }
 }

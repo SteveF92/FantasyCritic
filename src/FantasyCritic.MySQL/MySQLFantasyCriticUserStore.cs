@@ -74,7 +74,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                            $"LastChangedCredentials = @{nameof(FantasyCriticUserEntity.LastChangedCredentials)}, " +
                            $"TwoFactorEnabled = @{nameof(FantasyCriticUserEntity.TwoFactorEnabled)}, " +
                            $"AuthenticatorKey = @{nameof(FantasyCriticUserEntity.AuthenticatorKey)}, " +
-                           $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
+                           $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)}, " +
                            $"ShowDecimalPoints = @{nameof(FantasyCriticUserEntity.ShowDecimalPoints)} " +
                            $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 

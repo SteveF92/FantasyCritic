@@ -4,13 +4,13 @@
       <gameNameColumn :game-slot="gameSlot" :has-special-slots="hasSpecialSlots" :supported-year="supportedYear" :counter-pick-deadline="leagueYear.counterPickDeadline"></gameNameColumn>
     </td>
     <td class="score-column">
-      <template v-if="scoreColumnMode === 'RealScore'">{{ game.criticScore | score(1) }}</template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ game.criticScore | score(decimalsToShow) }}</template>
       <template v-if="scoreColumnMode === 'Empty'"></template>
     </td>
 
     <td class="score-column" :class="{ 'projected-text': showProjectedScore }">
-      <template v-if="scoreColumnMode === 'RealScore'">{{ game.fantasyPoints | score(1) }}</template>
-      <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ gameSlot.projectedFantasyPoints | score(1) }}</template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ game.fantasyPoints | score(decimalsToShow) }}</template>
+      <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ gameSlot.projectedFantasyPoints | score(decimalsToShow) }}</template>
       <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore }}</template>
     </td>
   </tr>
@@ -50,6 +50,13 @@ export default {
       }
 
       return '';
+    },
+    decimalsToShow() {
+      if (this.userInfo.showDecimalPoints) {
+        return 1;
+      }
+
+      return 0;
     }
   }
 };
