@@ -97,6 +97,13 @@ let leagueMixin = {
     },
     draftFinished() {
       return this.leagueYear.playStatus.draftFinished;
+    },
+    decimalsToShow() {
+      if (this.userInfo.showDecimalPoints) {
+        return 1;
+      }
+
+      return 0;
     }
   },
   methods: {

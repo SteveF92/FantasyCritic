@@ -50,13 +50,6 @@ export default {
       }
 
       return '';
-    },
-    decimalsToShow() {
-      if (this.userInfo.showDecimalPoints) {
-        return 1;
-      }
-
-      return 0;
     }
   }
 };
