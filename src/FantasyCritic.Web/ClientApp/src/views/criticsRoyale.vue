@@ -86,19 +86,16 @@
         <p>If you lose confidence in a game, you can choose to "sell" it, and get back half the money you spent on it. You can't sell a game that has come out, or one that has reviews already.</p>
       </div>
 
-      <h3>New Feature!</h3>
-      <div>
-        <b-alert variant="info" show>
-          <p>New for Q4 of 2022, your games are now hidden from other players until one of the following happens:</p>
-          <ul>
-            <li>The game gets a score from Open Critic.</li>
-            <li>The game releases.</li>
-            <li>The game is delayed out of the quarter.</li>
-            <li>The quarter ends.</li>
-          </ul>
-          <p>In other words, games can't be seen by other players until that game is not available for purchase anymore. The idea of this feature is to force every player to do their own research.</p>
-          <p>This feature is an experiment, and depending on how people like it, it may not stick around past the quarter, or it may be tweaked.</p>
-        </b-alert>
+      <h3>Secret Roster Rule</h3>
+      <div class="text-well">
+        <p>Your games are hidden from other players until one of the following happens:</p>
+        <ul>
+          <li>The game gets a score from Open Critic.</li>
+          <li>The game releases.</li>
+          <li>The game is delayed out of the quarter.</li>
+          <li>The quarter ends.</li>
+        </ul>
+        <p>In other words, games can't be seen by other players until that game is not available for purchase anymore. The idea of this feature is to force every player to do their own research.</p>
       </div>
 
       <h3>What's an "advertising budget"?</h3>
@@ -131,10 +128,18 @@
       </div>
       <h3>What games are elgible?</h3>
       <div class="text-well">
+        <label>The following tags are banned:</label>
         <p>
-          The eligibility rules are the same as the default rules in the standard leagues. That means anything with an eligibility level of "New Game", "Complete Remake", and "Remake". Anything higher
-          than that ("Partial Remake" and up) is not eligible in Critics Royale. On top of that, yearly installments, games currently in early access, free to play games, games already released in
-          other regions (other than the US), expansion packs/DLC are not allowed.
+          <masterGameTagBadge tag-name="DirectorsCut"></masterGameTagBadge>
+          <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
+          <masterGameTagBadge tag-name="YearlyInstallment"></masterGameTagBadge>
+          <masterGameTagBadge tag-name="CurrentlyInEarlyAccess"></masterGameTagBadge>
+          <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
+          <masterGameTagBadge tag-name="Port"></masterGameTagBadge>
+        </p>
+        <p>
+          Additionally, you cannot purchase a game that will release in 5 days or less. This is to prevent people from taking games that are about to come out that may have reviews starting to come
+          in.
         </p>
       </div>
     </div>
@@ -144,10 +149,12 @@
 <script>
 import axios from 'axios';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm';
+import MasterGameTagBadge from '@/components/masterGameTagBadge';
 
 export default {
   components: {
-    CreateRoyalePublisherForm
+    CreateRoyalePublisherForm,
+    MasterGameTagBadge
   },
   props: {
     year: { type: Number, default: null },
