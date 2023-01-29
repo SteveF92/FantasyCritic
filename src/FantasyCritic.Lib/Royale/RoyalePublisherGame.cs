@@ -57,6 +57,13 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public bool CalculateIsCurrentlyIneligible(IEnumerable<MasterGameTag> allMasterGameTags)
     {
+        var purchaseDate = Timestamp.ToEasternDate();
+        var releaseDate = MasterGame.MasterGame.ReleaseDate;
+        if (purchaseDate >= releaseDate)
+        {
+            return true;
+        }
+
         var royaleTags = LeagueTagExtensions.GetRoyaleEligibilitySettings(allMasterGameTags);
         var customCodeTags = royaleTags.Where(x => x.Tag.HasCustomCode).ToList();
         var nonCustomCodeTags = royaleTags.Except(customCodeTags).ToList();
