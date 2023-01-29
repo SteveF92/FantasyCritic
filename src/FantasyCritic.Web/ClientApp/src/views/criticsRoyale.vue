@@ -139,7 +139,8 @@
         </p>
         <p>
           Additionally, you cannot purchase a game that will release in 5 days or less. This is to prevent people from taking games that are about to come out that may have reviews starting to come
-          in.
+          in. In the case of "Shadow Drops", if you purchased the game the day before the game was revealed, you can keep it, but if you purchase it the same day as the reveal + release, then it will
+          be marked as ineligible once the release date is set correctly in the system.
         </p>
       </div>
     </div>

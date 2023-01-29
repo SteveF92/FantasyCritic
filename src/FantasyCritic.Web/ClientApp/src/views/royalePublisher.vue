@@ -185,8 +185,9 @@ export default {
         },
         content: () => {
           return (
-            "This game's status has changed since you purchased it, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count. <br/> <br/>" +
-            'You can drop the game for a full refund.'
+            "This game's status has changed since it was purchased, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count. <br/> <br/>" +
+            'Alternatively, this can happen if the game was purchased the same day as it released, but before the site was updated with the correct release date. <br/> <br/>' +
+            'The game can be dropped for a full refund.'
           );
         }
       };
