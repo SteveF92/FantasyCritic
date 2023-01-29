@@ -97,6 +97,12 @@
             </option>
           </b-form-select>
         </div>
+        <div class="form-check">
+          <span>
+            <label class="form-check-label">Allow bid to succeed even if there are no slots this game is eligible in.</label>
+            <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+          </span>
+        </div>
         <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="requestIsBusy" @click="bidGame">{{ bidButtonText }}</b-button>
         <div v-if="bidResult && !bidResult.success" class="alert bid-error" :class="{ 'alert-danger': !bidResult.showAsWarning, 'alert-warning': bidResult.showAsWarning }">
           <h3 v-if="bidResult.showAsWarning" class="alert-heading">Warning!</h3>
@@ -105,12 +111,9 @@
             <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
           </ul>
 
-          <div v-if="bidResult.noEligibleSpaceError" class="form-check">
-            <span>
-              <label class="text-white">If you do not move, drop, or trade a game, this game will end up in an ineligible slot.</label>
-              <label class="text-white">Do you want to place this bid anyway?</label>
-              <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
-            </span>
+          <div v-if="bidResult.noEligibleSpaceError">
+            <div class="text-white">If you do not move, drop, or trade a game, this game will end up in an ineligible slot.</div>
+            <div class="text-white">Check the box above if you are sure you want to make this bid.</div>
           </div>
         </div>
       </ValidationObserver>
