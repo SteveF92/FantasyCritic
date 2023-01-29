@@ -97,11 +97,12 @@
             </option>
           </b-form-select>
         </div>
-        <div class="form-check">
-          <span>
-            <label class="form-check-label">Allow bid to succeed even if there are no slots this game is eligible in.</label>
-            <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
-          </span>
+        <div v-if="leagueYear.hasSpecialSlots" class="form-check">
+          <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+          <label class="form-check-label">
+            Allow bid to succeed even if there are no slots this game is eligible in.
+            <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
+          </label>
         </div>
         <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="requestIsBusy" @click="bidGame">{{ bidButtonText }}</b-button>
         <div v-if="bidResult && !bidResult.success" class="alert bid-error" :class="{ 'alert-danger': !bidResult.showAsWarning, 'alert-warning': bidResult.showAsWarning }">
@@ -183,6 +184,20 @@ export default {
         return 'bidGameFormRef';
       }
       return `bidGameFormRef-${this.specialAuction.masterGameYear.masterGameID}`;
+    },
+    allowIneligibleText() {
+      return {
+        html: true,
+        title: () => {
+          return 'What does this mean?';
+        },
+        content: () => {
+          return (
+            'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
+            'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
+          );
+        }
+      };
     }
   },
   mounted() {
@@ -308,11 +323,6 @@ export default {
 <style scoped>
 .game-search-input {
   margin-bottom: 15px;
-}
-
-.override-checkbox {
-  margin-left: 10px;
-  margin-top: 8px;
 }
 
 .search-results {
