@@ -17,4 +17,5 @@ public interface IFantasyCriticUserStore : IReadOnlyFantasyCriticUserStore, IUse
     Task<IReadOnlyList<FantasyCriticUserWithEmailSettings>> GetAllEmailSettings();
     Task SetEmailSettings(FantasyCriticUser user, bool sendPublicBidEmails);
     Task<IReadOnlyList<EmailType>> GetEmailSettings(FantasyCriticUser user);
+    Task SetGeneralSettings(FantasyCriticUser user, GeneralUserSettings generalSettings);
 }

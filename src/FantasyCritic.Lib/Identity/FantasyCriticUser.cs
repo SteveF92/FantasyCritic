@@ -6,11 +6,12 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
 {
     public FantasyCriticUser()
     {
-
+        GeneralUserSettings = GeneralUserSettings.Default;
     }
 
     public FantasyCriticUser(Guid userID, string displayName, string? patreonDonorNameOverride, int displayNumber, string emailAddress, string normalizedEmailAddress,
-        bool emailConfirmed, string? securityStamp, string? passwordHash, bool twoFactorEnabled, string? authenticatorKey, Instant lastChangedCredentials, bool isDeleted)
+        bool emailConfirmed, string? securityStamp, string? passwordHash, bool twoFactorEnabled, string? authenticatorKey, Instant lastChangedCredentials,
+        GeneralUserSettings generalUserSettings, bool isDeleted)
     {
         Id = userID;
         base.UserName = displayName;
@@ -24,6 +25,7 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
         TwoFactorEnabled = twoFactorEnabled;
         AuthenticatorKey = authenticatorKey;
         LastChangedCredentials = lastChangedCredentials;
+        GeneralUserSettings = generalUserSettings;
         IsDeleted = isDeleted;
     }
 
@@ -48,12 +50,19 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
     public string? PatreonDonorNameOverride { get; }
     public int DisplayNumber { get; set; }
     public Instant LastChangedCredentials { get; set; }
+    public GeneralUserSettings GeneralUserSettings { get; }
     public bool IsDeleted { get; set; }
     public string? AuthenticatorKey { get; set; }
 
     public void UpdateLastUsedCredentials(Instant currentInstant)
     {
         LastChangedCredentials = currentInstant;
+    }
+
+    public FantasyCriticUser UpdateGeneralSettings(GeneralUserSettings generalSettings)
+    {
+        return new FantasyCriticUser(Id, UserName, PatreonDonorNameOverride, DisplayNumber, Email, NormalizedEmail, EmailConfirmed,
+            SecurityStamp, PasswordHash, TwoFactorEnabled, AuthenticatorKey, LastChangedCredentials, generalSettings, IsDeleted);
     }
 
     public bool Equals(FantasyCriticUser? other)
@@ -79,6 +88,6 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
     public static FantasyCriticUser GetFakeUser()
     {
         return new FantasyCriticUser(Guid.Empty, "<Non-Existent User>", null, 0, "", "", false, "", "", false, null,
-            Instant.MinValue, false);
+            Instant.MinValue, GeneralUserSettings.Default, false);
     }
 }

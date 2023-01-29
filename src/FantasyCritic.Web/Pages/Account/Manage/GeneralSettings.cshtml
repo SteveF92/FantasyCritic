@@ -1,0 +1,29 @@
+@page
+@using FantasyCritic.Web.Pages.Account.Manage
+@model GeneralSettingsModel
+@{
+    ViewData["Title"] = "Change General Settings";
+    ViewData["ActivePage"] = ManageNavPages.GeneralSettings;
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="change-settings-form" method="post">
+
+            <label asp-for="Input.ShowDecimalPoints">
+                <input asp-for="Input.ShowDecimalPoints" />
+                @Html.DisplayNameFor(m => m.Input.ShowDecimalPoints)
+                <br />
+                If you select this option, games on league pages will be shown with decimal points.
+            </label>
+
+            <button type="submit" class="btn btn-primary">Change Settings</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

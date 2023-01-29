@@ -5,6 +5,7 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 public static class ManageNavPages
 {
     public static string Index => "Index";
+    public static string GeneralSettings => "GeneralSettings";
 
     public static string Email => "Email";
 
@@ -18,6 +19,7 @@ public static class ManageNavPages
 
     public static string? IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
+    public static string? GeneralSettingsNavClass(ViewContext viewContext) => PageNavClass(viewContext, GeneralSettings);
     public static string? EmailNavClass(ViewContext viewContext) => PageNavClass(viewContext, Email);
 
     public static string? ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);

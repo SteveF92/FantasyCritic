@@ -30,9 +30,9 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             await connection.OpenAsync(cancellationToken);
             await connection.ExecuteAsync(
                 "insert into tbl_user(UserID,DisplayName,PatreonDonorNameOverride,DisplayNumber,EmailAddress,NormalizedEmailAddress,PasswordHash,SecurityStamp," +
-                "TwoFactorEnabled,AuthenticatorKey,LastChangedCredentials,EmailConfirmed,IsDeleted) VALUES " +
+                "TwoFactorEnabled,AuthenticatorKey,LastChangedCredentials,EmailConfirmed,ShowDecimalPoints,IsDeleted) VALUES " +
                 "(@UserID,@DisplayName,@PatreonDonorNameOverride,@DisplayNumber,@EmailAddress,@NormalizedEmailAddress,@PasswordHash,@SecurityStamp," +
-                "@TwoFactorEnabled,@AuthenticatorKey,@LastChangedCredentials,@EmailConfirmed,@IsDeleted)",
+                "@TwoFactorEnabled,@AuthenticatorKey,@LastChangedCredentials,@EmailConfirmed,@ShowDecimalPoints,@IsDeleted)",
                 entity);
         }
 
@@ -63,7 +63,6 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         user.SecurityStamp = Guid.NewGuid().ToString();
         user.UpdateLastUsedCredentials(_clock.GetCurrentInstant());
 
-        //Not updating password or email confirmed as that breaks password change. Use the SetPasswordHash.
         FantasyCriticUserEntity entity = new FantasyCriticUserEntity(user);
         const string sql = $@"UPDATE tbl_user SET DisplayName = @{nameof(FantasyCriticUserEntity.DisplayName)}, " +
                            $"PatreonDonorNameOverride = @{nameof(FantasyCriticUserEntity.PatreonDonorNameOverride)}, " +
@@ -76,6 +75,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                            $"TwoFactorEnabled = @{nameof(FantasyCriticUserEntity.TwoFactorEnabled)}, " +
                            $"AuthenticatorKey = @{nameof(FantasyCriticUserEntity.AuthenticatorKey)}, " +
                            $"SecurityStamp = @{nameof(FantasyCriticUserEntity.SecurityStamp)} " +
+                           $"ShowDecimalPoints = @{nameof(FantasyCriticUserEntity.ShowDecimalPoints)} " +
                            $"WHERE UserID = @{nameof(FantasyCriticUserEntity.UserID)}";
 
         await using (var connection = new MySqlConnection(_connectionString))
@@ -671,6 +671,12 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         await using var connection = new MySqlConnection(_connectionString);
         var emailResult = await connection.QueryAsync<FantasyCriticUserEmailSettingEntity>(emailSQL, parameters);
         return emailResult.Select(x => EmailType.FromValue(x.EmailType)).ToList();
+    }
+
+    public Task SetGeneralSettings(FantasyCriticUser user, GeneralUserSettings generalSettings)
+    {
+        var modifiedUser = user.UpdateGeneralSettings(generalSettings);
+        return UpdateAsync(modifiedUser, CancellationToken.None);
     }
 
     public async Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)

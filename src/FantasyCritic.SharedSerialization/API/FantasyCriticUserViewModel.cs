@@ -35,6 +35,6 @@ public class FantasyCriticUserViewModel
 
     public FantasyCriticUser ToDomain()
     {
-        return new FantasyCriticUser(UserID, DisplayName, null, DisplayNumber, EmailAddress, EmailAddress, EmailConfirmed, "", "", false, null, Instant.MinValue, false);
+        return new FantasyCriticUser(UserID, DisplayName, null, DisplayNumber, EmailAddress, EmailAddress, EmailConfirmed, "", "", false, null, Instant.MinValue, GeneralUserSettings.Default, false);
     }
 }

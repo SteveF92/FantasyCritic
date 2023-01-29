@@ -23,6 +23,7 @@ internal class FantasyCriticUserEntity
         TwoFactorEnabled = user.TwoFactorEnabled;
         AuthenticatorKey = user.AuthenticatorKey;
         LastChangedCredentials = user.LastChangedCredentials;
+        ShowDecimalPoints = user.GeneralUserSettings.ShowDecimalPoints;
         IsDeleted = user.IsDeleted;
     }
 
@@ -38,12 +39,14 @@ internal class FantasyCriticUserEntity
     public bool TwoFactorEnabled { get; set; }
     public string? AuthenticatorKey { get; set; }
     public Instant LastChangedCredentials { get; set; }
+    public bool ShowDecimalPoints { get; set; }
     public bool IsDeleted { get; set; }
 
     public FantasyCriticUser ToDomain()
     {
+        var generalSettings = new GeneralUserSettings(ShowDecimalPoints);
         FantasyCriticUser domain = new FantasyCriticUser(UserID, DisplayName, PatreonDonorNameOverride, DisplayNumber, EmailAddress, NormalizedEmailAddress, EmailConfirmed,
-            SecurityStamp, PasswordHash, TwoFactorEnabled, AuthenticatorKey, LastChangedCredentials, IsDeleted);
+            SecurityStamp, PasswordHash, TwoFactorEnabled, AuthenticatorKey, LastChangedCredentials, generalSettings, IsDeleted);
         return domain;
     }
 }

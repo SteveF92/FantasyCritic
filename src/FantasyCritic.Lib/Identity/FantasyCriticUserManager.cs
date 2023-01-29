@@ -34,7 +34,8 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
         var now = _clock.GetCurrentInstant();
         var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,
-            user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
+            user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled,
+            user.AuthenticatorKey, now, GeneralUserSettings.Default,  false);
         var createdUser = await base.CreateAsync(fullUser, password);
         return createdUser;
     }
@@ -50,7 +51,8 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         int openUserNumber = await _userStore.GetOpenDisplayNumber(user.UserName);
         var now = _clock.GetCurrentInstant();
         var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,
-            user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled, user.AuthenticatorKey, now, false);
+            user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled,
+            user.AuthenticatorKey, now, GeneralUserSettings.Default, false);
         var createdUser = await base.CreateAsync(fullUser);
         return createdUser;
     }
@@ -114,5 +116,10 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
     public Task<IReadOnlyList<string>> GetDonors()
     {
         return _userStore.GetDonors();
+    }
+
+    public Task SetGeneralSettings(FantasyCriticUser user, GeneralUserSettings generalSettings)
+    {
+        return _userStore.SetGeneralSettings(user, generalSettings);
     }
 }
