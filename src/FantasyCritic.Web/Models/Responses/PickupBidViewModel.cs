@@ -10,6 +10,7 @@ public class PickupBidViewModel
         PublisherID = pickupBid.Publisher.PublisherID;
         PublisherName = pickupBid.Publisher.PublisherName;
         BidAmount = pickupBid.BidAmount;
+        AllowIneligibleSlot = pickupBid.AllowIneligibleSlot;
         Priority = pickupBid.Priority;
         Timestamp = pickupBid.Timestamp.ToDateTimeUtc();
         Successful = pickupBid.Successful;
@@ -31,6 +32,7 @@ public class PickupBidViewModel
     public Guid PublisherID { get; }
     public string PublisherName { get; }
     public uint BidAmount { get; }
+    public bool AllowIneligibleSlot { get; }
     public int Priority { get; }
     public DateTime Timestamp { get; }
     public bool? Successful { get; }

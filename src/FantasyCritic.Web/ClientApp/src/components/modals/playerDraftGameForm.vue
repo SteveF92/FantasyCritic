@@ -65,10 +65,10 @@
         <h3 v-show="draftMasterGame" for="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
         <masterGameSummary v-if="draftMasterGame" :master-game="draftMasterGame"></masterGameSummary>
         <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Draft Game</b-button>
-        <div v-if="draftResult && !draftResult.success" class="alert draft-error" :class="{ 'alert-danger': !draftResult.overridable, 'alert-warning': draftResult.overridable }">
+        <div v-if="draftResult && !draftResult.success" class="alert draft-error" :class="{ 'alert-danger': !draftResult.showAsWarning, 'alert-warning': draftResult.showAsWarning }">
           <hr />
-          <h3 v-if="draftResult.overridable" class="alert-heading">Warning!</h3>
-          <h3 v-if="!draftResult.overridable" class="alert-heading">Error!</h3>
+          <h3 v-if="draftResult.showAsWarning" class="alert-heading">Warning!</h3>
+          <h3 v-else class="alert-heading">Error!</h3>
           <ul>
             <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
           </ul>

@@ -53,9 +53,9 @@
       <div>
         <input v-if="formIsValid" type="submit" class="btn btn-primary full-width-button" value="Add game to publisher" />
       </div>
-      <div v-if="claimResult && !claimResult.success" class="alert claim-error" :class="{ 'alert-danger': !claimResult.overridable, 'alert-warning': claimResult.overridable }">
-        <h3 v-if="claimResult.overridable" class="alert-heading">Warning!</h3>
-        <h3 v-if="!claimResult.overridable" class="alert-heading">Error!</h3>
+      <div v-if="claimResult && !claimResult.success" class="alert claim-error" :class="{ 'alert-danger': !claimResult.showAsWarning, 'alert-warning': claimResult.showAsWarning }">
+        <h3 v-if="claimResult.showAsWarning" class="alert-heading">Warning!</h3>
+        <h3 v-else class="alert-heading">Error!</h3>
         <ul>
           <li v-for="error in claimResult.errors" :key="error">{{ error }}</li>
         </ul>

@@ -98,11 +98,20 @@
           </b-form-select>
         </div>
         <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="requestIsBusy" @click="bidGame">{{ bidButtonText }}</b-button>
-        <div v-if="bidResult && !bidResult.success" class="alert alert-danger bid-error">
-          <h3 class="alert-heading">Error!</h3>
+        <div v-if="bidResult && !bidResult.success" class="alert bid-error" :class="{ 'alert-danger': !bidResult.showAsWarning, 'alert-warning': bidResult.showAsWarning }">
+          <h3 v-if="bidResult.showAsWarning" class="alert-heading">Warning!</h3>
+          <h3 v-else class="alert-heading">Error!</h3>
           <ul>
             <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
           </ul>
+
+          <div v-if="bidResult.noEligibleSpaceError" class="form-check">
+            <span>
+              <label class="text-white">If you do not move, drop, or trade a game, this game will end up in an ineligible slot.</label>
+              <label class="text-white">Do you want to place this bid anyway?</label>
+              <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+            </span>
+          </div>
         </div>
       </ValidationObserver>
     </div>
@@ -140,7 +149,8 @@ export default {
       searched: false,
       isBusy: false,
       requestIsBusy: false,
-      selectedSlotIndex: 0
+      selectedSlotIndex: 0,
+      allowIneligibleSlot: false
     };
   },
   computed: {
@@ -244,7 +254,8 @@ export default {
         publisherID: this.userPublisher.publisherID,
         masterGameID: this.bidMasterGame.masterGameID,
         bidAmount: this.bidAmount,
-        counterPick: false
+        counterPick: false,
+        allowIneligibleSlot: this.allowIneligibleSlot
       };
 
       if (this.conditionalDrop) {

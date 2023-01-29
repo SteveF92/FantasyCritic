@@ -34,4 +34,5 @@ public class ClaimResult
 
     public bool NoSpaceError => Errors.Any(x => x.NoSpaceError);
     public bool NoEligibleSpaceError => Errors.Any(x => x.NoEligibleSpaceError);
+    public bool ShowAsWarning => Overridable || NoEligibleSpaceError;
 }

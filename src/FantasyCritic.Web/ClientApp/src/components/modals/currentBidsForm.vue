@@ -18,6 +18,7 @@
           <b-th>Priority</b-th>
           <b-th>Conditional Drop</b-th>
           <b-th>Counter Pick Bid?</b-th>
+          <b-th>Fail if no eligible slot?</b-th>
           <b-th v-show="!settingPriority">Edit</b-th>
           <b-th v-show="!settingPriority">Cancel</b-th>
         </b-tr>
@@ -30,6 +31,7 @@
           <b-td>{{ bid.priority }}</b-td>
           <b-td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</b-td>
           <b-td v-else>None</b-td>
+          <b-td>{{ !bid.allowIneligibleSlot | yesNo }}</b-td>
           <b-td>{{ bid.counterPick | yesNo }}</b-td>
         </b-tr>
       </draggable>
@@ -41,6 +43,7 @@
           <b-td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</b-td>
           <b-td v-else>None</b-td>
           <b-td>{{ bid.counterPick | yesNo }}</b-td>
+          <b-td>{{ !bid.allowIneligibleSlot | yesNo }}</b-td>
           <b-td class="select-cell">
             <b-button variant="info" size="sm" @click="startEditingBid(bid)">Edit</b-button>
           </b-td>
