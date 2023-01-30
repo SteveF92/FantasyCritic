@@ -167,23 +167,26 @@ public class RoyaleService
 
     public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame)
     {
-        var currentDate = _clock.GetToday();
-        if (publisherGame.MasterGame.MasterGame.IsReleased(currentDate))
-        {
-            return Result.Failure("That game has already been released.");
-        }
-        if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
-        {
-            return Result.Failure("That game already has a score.");
-        }
-
-        if (!publisher.PublisherGames.Contains(publisherGame))
-        {
-            return Result.Failure("You don't have that game.");
-        }
-
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
         var currentlyInEligible = publisherGame.CalculateIsCurrentlyIneligible(masterGameTags);
+        if (!currentlyInEligible)
+        {
+            var currentDate = _clock.GetToday();
+            if (publisherGame.MasterGame.MasterGame.IsReleased(currentDate))
+            {
+                return Result.Failure("That game has already been released.");
+            }
+            if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
+            {
+                return Result.Failure("That game already has a score.");
+            }
+
+            if (!publisher.PublisherGames.Contains(publisherGame))
+            {
+                return Result.Failure("You don't have that game.");
+            }
+        }
+        
         await _royaleRepo.SellGame(publisherGame, currentlyInEligible);
         return Result.Success();
     }
