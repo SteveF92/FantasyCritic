@@ -92,7 +92,7 @@ export default {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
     },
     showRoundingWarning() {
-      if (this.userInfo.showDecimalPlaces) {
+      if (this.userInfo?.showDecimalPlaces) {
         return false;
       }
 

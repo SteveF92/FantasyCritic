@@ -99,7 +99,7 @@ let leagueMixin = {
       return this.leagueYear.playStatus.draftFinished;
     },
     decimalsToShow() {
-      if (this.userInfo.showDecimalPoints) {
+      if (this.userInfo?.showDecimalPoints) {
         return 1;
       }
 
