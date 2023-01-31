@@ -56,7 +56,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
                 Name = "Game News",
-                Value = GetGameNewsSettingDescription(leagueChannel.SendLeagueMasterGameUpdates, leagueChannel.SendNotableMisses, gameNewsChannel?.GameNewsSetting),
+                Value = GetGameNewsSettingDescription(leagueChannel.SendLeagueMasterGameUpdates, leagueChannel.SendNotableMisses, gameNewsChannel?.GameNewsSetting, gameNewsChannel?.SkippedTags),
                 IsInline = false
             });
 
@@ -79,34 +79,40 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
     }
 
     private static string GetGameNewsSettingDescription(bool sendLeagueMasterGameUpdates,
-        bool sendNotableMisses, GameNewsSetting? gameNewsSetting)
+        bool sendNotableMisses, GameNewsSetting? gameNewsSetting, IReadOnlyList<MasterGameTag>? skippedTags)
     {
         var parts = new List<string>
         {
             sendLeagueMasterGameUpdates
-                ? "League Master Game Updates"
-                : "No League Master Game Updates",
+                ? "✅ League Master Game Updates"
+                : "❌ League Master Game Updates",
             sendNotableMisses
-                ? "Notable Misses"
-                : "No Notable Misses"
+                ? "✅ Notable Misses"
+                : "❌ Notable Misses"
         };
 
         if (gameNewsSetting is null)
         {
-            parts.Add("No Non-League Master Game Updates");
+            parts.Add("❌ Non-League Master Game Updates");
         }
         else if (gameNewsSetting.Equals(GameNewsSetting.All))
         {
-            parts.Add("All Master Game Updates");
+            parts.Add("✅ All Master Game Updates");
         }
         else if (gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
         {
-            parts.Add("Any 'Might Release' Master Game Updates");
+            parts.Add("✅ Any 'Might Release' Master Game Updates");
         }
         else if (gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
         {
-            parts.Add("Any 'Will Release' Master Game Updates");
+            parts.Add("✅ Any 'Will Release' Master Game Updates");
         }
+
+        parts.Add(skippedTags != null
+            ? $"✅ Skipping Tags: {(skippedTags.Any() ? string.Join(", ", skippedTags.Select(t => t.ReadableName)) : "NONE")}"
+            : "❌ Skipping Tags");
+
+        parts.Add("✅ for ON, ❌ for OFF");
 
         return string.Join("\n", parts);
     }

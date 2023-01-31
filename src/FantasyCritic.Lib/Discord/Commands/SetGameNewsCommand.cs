@@ -126,12 +126,18 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         {
             var includeLeagueGames = false;
             var notableMisses = false;
-            if (gameChannelIsLeagueChannel && requestedSettingEnum.Equals(RequestedGameNewsSetting.All))
+            switch (gameChannelIsLeagueChannel)
             {
-                includeLeagueGames = true;
-                notableMisses = true;
-                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, leagueChannel!.GuildID,
-                    leagueChannel!.ChannelID, true, true);
+                case true when requestedSettingEnum.Equals(RequestedGameNewsSetting.All):
+                    includeLeagueGames = true;
+                    notableMisses = true;
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, leagueChannel!.GuildID,
+                        leagueChannel!.ChannelID, true, true);
+                    break;
+                case true when requestedSettingEnum.Equals(GameNewsSetting.Off):
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, leagueChannel.GuildID,
+                        leagueChannel.ChannelID, false, false);
+                    break;
             }
 
             var settingEnum = requestedSettingEnum.ToNormalSetting();
@@ -149,7 +155,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
 
     private static string BuildGameNewsSettingsDisplayText(RequestedGameNewsSetting requestedSettingEnum,
         bool includeLeagueGames, bool includeNotableMisses,
-        IReadOnlyCollection<MasterGameTag> tagsToSkip)
+        IReadOnlyCollection<MasterGameTag> skippedTags)
     {
         var settingText = $"Game News Announcements: **{requestedSettingEnum.Value}**";
         if (requestedSettingEnum.Equals(RequestedGameNewsSetting.Off))
@@ -158,7 +164,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         }
         settingText += $"\nInclude League Games: **{(includeLeagueGames ? "ON" : "OFF")}**";
         settingText += $"\nInclude Notable Misses: **{(includeNotableMisses ? "ON" : "OFF")}**";
-        settingText += $"\nTags to Skip: **{(tagsToSkip.Any() ? string.Join(", ", tagsToSkip) : "NONE")}**";
+        settingText += $"\nSkipped Tags: **{(skippedTags.Any() ? string.Join(", ", skippedTags.Select(t => t.ReadableName)) : "NONE")}**";
         return settingText;
     }
 

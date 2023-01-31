@@ -58,8 +58,6 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.OpenAsync();
 
         var masterGameTagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(selectTagsSQL, param);
-        //var skippedTags = masterGameTagEntities.Select(t => t.ToDomain());
-        //var tagEntities = skippedTags.Select(x => new GameNewsChannelSkippedTagEntity(guildID, channelID, x));
 
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(deleteTagsSQL, param, transaction);
