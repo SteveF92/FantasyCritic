@@ -79,7 +79,7 @@ public class CombinedChannelGameSetting
             foreach (var leagueYear in activeLeagueYears)
             {
                 bool inLeagueYear = leagueYear.Publishers.Any(x => x.MyMasterGames.Contains(masterGame));
-                if (inLeagueYear)
+                if (_sendLeagueMasterGameUpdates && inLeagueYear)
                 {
                     return true;
                 }
@@ -139,7 +139,7 @@ public class CombinedChannelGameSetting
 
     public bool ReleasedGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
     {
-        if (activeLeagueYears is not null)
+        if (_sendLeagueMasterGameUpdates && activeLeagueYears is not null)
         {
             foreach (var leagueYear in activeLeagueYears)
             {
@@ -161,7 +161,7 @@ public class CombinedChannelGameSetting
 
     public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, decimal? criticScore)
     {
-        if (activeLeagueYears is not null)
+        if (_sendLeagueMasterGameUpdates && activeLeagueYears is not null)
         {
             foreach (var leagueYear in activeLeagueYears)
             {
