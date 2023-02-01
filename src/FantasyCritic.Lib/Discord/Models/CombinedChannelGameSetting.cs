@@ -139,6 +139,11 @@ public class CombinedChannelGameSetting
 
     public bool ReleasedGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
     {
+        if (_gameNewsSetting.Equals(GameNewsSetting.All))
+        {
+            return true;
+        }
+
         if (_sendLeagueMasterGameUpdates && activeLeagueYears is not null)
         {
             foreach (var leagueYear in activeLeagueYears)
@@ -149,6 +154,8 @@ public class CombinedChannelGameSetting
                     return true;
                 }
             }
+
+            return false;
         }
 
         if (masterGame.Tags.Intersect(_skippedTags).Any())
@@ -161,6 +168,11 @@ public class CombinedChannelGameSetting
 
     public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, decimal? criticScore)
     {
+        if (_gameNewsSetting.Equals(GameNewsSetting.All))
+        {
+            return true;
+        }
+
         if (_sendLeagueMasterGameUpdates && activeLeagueYears is not null)
         {
             foreach (var leagueYear in activeLeagueYears)
@@ -170,11 +182,6 @@ public class CombinedChannelGameSetting
                 {
                     return true;
                 }
-            }
-
-            if (!_gameNewsSetting.Equals(GameNewsSetting.Off))
-            {
-                return true;
             }
 
             if (_sendNotableMisses && criticScore is >= 83m)
