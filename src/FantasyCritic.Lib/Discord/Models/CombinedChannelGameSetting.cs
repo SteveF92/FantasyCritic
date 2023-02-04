@@ -74,6 +74,11 @@ public class CombinedChannelGameSetting
     public bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, IReadOnlyList<LeagueYear>? activeLeagueYears,
         DiscordChannelKey channelKey, LocalDate currentDate)
     {
+        if (_gameNewsSetting.Equals(GameNewsSetting.All))
+        {
+            return true;
+        }
+
         if (activeLeagueYears is not null)
         {
             foreach (var leagueYear in activeLeagueYears)
@@ -115,10 +120,6 @@ public class CombinedChannelGameSetting
         if (_gameNewsSetting.Equals(GameNewsSetting.Off))
         {
             return false;
-        }
-        if (_gameNewsSetting.Equals(GameNewsSetting.All))
-        {
-            return true;
         }
         if (masterGame.Tags.Intersect(_skippedTags).Any())
         {
