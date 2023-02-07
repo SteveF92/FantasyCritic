@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" @hidden="clearData">
+  <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" hide-footer @hidden="clearData">
     <div v-show="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
@@ -53,6 +53,7 @@
         </b-tr>
       </b-tbody>
     </b-table-simple>
+    <b-button v-if="settingPriority" variant="primary" class="full-width-button" @click="setBidPriorityOrder()">Set Priority Order</b-button>
     <div v-if="bidBeingEdited">
       <h3 for="bidBeingEdited" class="selected-game text-black">Edit Bid:</h3>
       <masterGameSummary :master-game="bidBeingEdited.masterGame"></masterGameSummary>
@@ -80,9 +81,6 @@
         </ul>
       </div>
     </div>
-    <template #modal-footer>
-      <b-button v-if="settingPriority" variant="primary" @click="setBidPriorityOrder()">Set Priority Order</b-button>
-    </template>
   </b-modal>
 </template>
 
