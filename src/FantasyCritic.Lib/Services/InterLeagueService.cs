@@ -44,24 +44,32 @@ public class InterLeagueService
         _discordPushService.QueueNewMasterGameMessage(masterGame);
     }
 
-    public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser)
+    public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser, bool minorEdit)
     {
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
         var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, currentDate);
         var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
         await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
-        if (changes.Any())
+
+        if (!changes.Any())
         {
-            var masterGameYearStats = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, currentDate.Year);
-            if (masterGameYearStats is null)
-            {
-                return Result.Success();
-            }
-            var existingMasterGameYear = masterGameYearStats.WithNewMasterGame(existingMasterGame);
-            var editedMasterGameYear = masterGameYearStats.WithNewMasterGame(editedMasterGame);
+            return Result.Success();
+        }
+
+        var masterGameYearStats = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, currentDate.Year);
+        if (masterGameYearStats is null)
+        {
+            return Result.Success();
+        }
+
+        var existingMasterGameYear = masterGameYearStats.WithNewMasterGame(existingMasterGame);
+        var editedMasterGameYear = masterGameYearStats.WithNewMasterGame(editedMasterGame);
+        if (!minorEdit)
+        {
             _discordPushService.QueueMasterGameEditMessage(existingMasterGameYear, editedMasterGameYear, changes);
         }
+
         return Result.Success();
     }
 

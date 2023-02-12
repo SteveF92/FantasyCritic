@@ -15,12 +15,12 @@ public class EditMasterGameRequest
     public string EstimatedReleaseDate { get; }
     public LocalDate MinimumReleaseDate { get; }
 
-    public List<string> Tags { get; init; } = new List<string>();
-    public bool DoNotRefreshDate { get; init; } = false;
-    public bool DoNotRefreshAnything { get; init; } = false;
-    public bool EligibilityChanged { get; init; } = false;
-    public bool DelayContention { get; init; } = false;
-    public bool ShowNote { get; init; } = false;
+    public required List<string> Tags { get; init; }
+    public bool DoNotRefreshDate { get; init; }
+    public bool DoNotRefreshAnything { get; init; }
+    public bool EligibilityChanged { get; init; }
+    public bool DelayContention { get; init; }
+    public bool ShowNote { get; init; }
 
     public LocalDate? MaximumReleaseDate { get; init; }
     public LocalDate? EarlyAccessReleaseDate { get; init; }
@@ -30,6 +30,7 @@ public class EditMasterGameRequest
     public int? OpenCriticID { get; init; }
     public string? GGToken { get; init; }
     public string? Notes { get; init; }
+    public bool MinorEdit { get; init; }
 
     public Lib.Domain.MasterGame ToDomain(Lib.Domain.MasterGame existingMasterGame, Instant timestamp, IEnumerable<MasterGameTag> tags)
     {

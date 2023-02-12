@@ -235,6 +235,11 @@ public class AdminService
         _logger.Information("Done refreshing caches");
     }
 
+    public void ClearMasterGameEditDiscordQueue()
+    {
+        _discordPushService.ClearMasterGameEditQueue();
+    }
+
     public Task SnapshotDatabase()
     {
         Instant time = _clock.GetCurrentInstant();

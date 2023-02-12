@@ -74,7 +74,7 @@ public class FactCheckerController : FantasyCriticController
 
         var user = await GetCurrentUserOrThrow();
         MasterGame editedMasterGame = viewModel.ToDomain(existingMasterGame, instant, tags);
-        var result = await _interLeagueService.EditMasterGame(existingMasterGame, editedMasterGame, user);
+        var result = await _interLeagueService.EditMasterGame(existingMasterGame, editedMasterGame, user, viewModel.MinorEdit);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -251,6 +251,13 @@ public class FactCheckerController : FantasyCriticController
     public async Task<IActionResult> RefreshCaches()
     {
         await _adminService.RefreshCaches();
+        return Ok();
+    }
+
+    [HttpPost]
+    public IActionResult ClearMasterGameEditDiscordQueue()
+    {
+        _adminService.ClearMasterGameEditDiscordQueue();
         return Ok();
     }
 

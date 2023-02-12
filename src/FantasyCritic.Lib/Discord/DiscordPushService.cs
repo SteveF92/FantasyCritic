@@ -110,6 +110,11 @@ public class DiscordPushService
         _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame, editedGame, changes));
     }
 
+    public void ClearMasterGameEditQueue()
+    {
+        _masterGameEditMessages.Clear();
+    }
+
     public async Task SendBatchedMasterGameUpdates()
     {
         bool shouldRun = await StartBot();
@@ -140,7 +145,7 @@ public class DiscordPushService
                 .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
-                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, x.NewCriticScore))
+                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, x.NewCriticScore, today))
                 .ToList();
             var editsToSend = _masterGameEditMessages
                 .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame.MasterGame,
