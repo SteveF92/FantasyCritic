@@ -50,7 +50,7 @@ public class ExternalLoginModel : PageModel
         public string DisplayName { get; set; }
     }
 
-    public IActionResult OnGetAsync()
+    public IActionResult OnGet()
     {
         return RedirectToPage("./Login");
     }
