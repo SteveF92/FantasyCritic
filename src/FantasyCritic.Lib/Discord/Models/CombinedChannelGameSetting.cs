@@ -167,7 +167,7 @@ public class CombinedChannelGameSetting
         return !_gameNewsSetting.Equals(GameNewsSetting.Off);
     }
 
-    public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, decimal? criticScore)
+    public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, decimal? criticScore, LocalDate currentDate)
     {
         if (_gameNewsSetting.Equals(GameNewsSetting.All))
         {
@@ -183,11 +183,11 @@ public class CombinedChannelGameSetting
                 {
                     return true;
                 }
-            }
 
-            if (_sendNotableMisses && criticScore is >= 83m)
-            {
-                return true;
+                if (_sendNotableMisses && criticScore is >= 83m && leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate))
+                {
+                    return true;
+                }
             }
 
             return false;
