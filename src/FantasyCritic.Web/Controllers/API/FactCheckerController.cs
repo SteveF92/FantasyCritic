@@ -261,13 +261,6 @@ public class FactCheckerController : FantasyCriticController
         return Ok();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> RefreshPatreonInfo()
-    {
-        await _adminService.UpdatePatreonRoles();
-        return Ok();
-    }
-    
     [HttpGet]
     public ActionResult<DateParseResponse> ParseEstimatedDate(string estimatedReleaseDate)
     {

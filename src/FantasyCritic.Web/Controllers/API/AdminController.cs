@@ -256,6 +256,13 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
+    public async Task<IActionResult> RefreshPatreonInfo()
+    {
+        await _adminService.UpdatePatreonRoles();
+        return Ok();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> PushPublicBiddingDiscordMessages()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();

@@ -24,7 +24,7 @@
           <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshGGInfo')">Refresh GG Info</b-button>
           <b-button variant="info" @click="takePostAction('FactChecker', 'UpdateFantasyPoints')">Update Fantasy Points</b-button>
           <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Refresh Caches</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
+          <b-button variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Game Discord Queue</b-button>
         </div>
       </div>
 
@@ -47,6 +47,7 @@
           <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'ExpireTrades')">Expire Trades</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
+          <b-button variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
         </div>
 
         <h2>Database</h2>
