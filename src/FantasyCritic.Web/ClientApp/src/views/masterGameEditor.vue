@@ -127,10 +127,11 @@
                   <input id="boxartFileName" v-model="masterGame.boxartFileName" name="boxartFileName" class="form-control input" />
                 </div>
 
-                <div class="form-group">
-                  <div class="col-md-offset-2 col-md-4">
-                    <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
-                  </div>
+                <div class="submit-button">
+                  <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+                  <b-form-checkbox v-model="minorEdit">
+                    <span class="checkbox-label">Minor Edit (Will not push to Discord)</span>
+                  </b-form-checkbox>
                 </div>
               </form>
             </ValidationObserver>
@@ -158,7 +159,8 @@ export default {
       changeRequest: null,
       tags: [],
       responseInfo: null,
-      generatedSQL: null
+      generatedSQL: null,
+      minorEdit: false
     };
   },
   watch: {
@@ -232,6 +234,7 @@ export default {
       let tagNames = _.map(this.tags, 'name');
 
       let request = this.masterGame;
+      request.minorEdit = this.minorEdit;
       request.tags = tagNames;
 
       try {
@@ -271,15 +274,16 @@ export default {
 }
 
 .checkbox-label {
-  padding-left: 25px;
+  padding-left: 5px;
 }
 
 label {
   font-size: 18px;
 }
-</style>
-<style>
-.vue-slider-piecewise-label {
-  color: white !important;
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 </style>
