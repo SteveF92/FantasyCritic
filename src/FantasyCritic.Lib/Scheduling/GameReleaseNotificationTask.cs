@@ -3,11 +3,13 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace FantasyCritic.Lib.Scheduling;
 
 public class GameReleaseNotificationTask : IScheduledTask
 {
+    private static readonly ILogger _logger = Log.ForContext<GameReleaseNotificationTask>();
     private readonly IServiceProvider _serviceProvider;
     public string Schedule => "0 */1 * * *";
 
@@ -18,6 +20,7 @@ public class GameReleaseNotificationTask : IScheduledTask
 
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        _logger.Information("About to run Master Game Release Push");
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
         using var scope = serviceScopeFactory.CreateScope();
@@ -26,21 +29,25 @@ public class GameReleaseNotificationTask : IScheduledTask
         var isTimeToNotify = IsTimeToNotify(now);
         if (!isTimeToNotify)
         {
+            _logger.Information("Not time to run Master Game Release Push");
             return;
         }
 
+        _logger.Information("Time to run Master Game Release Push");
         var interLeagueService = scope.ServiceProvider.GetRequiredService<InterLeagueService>();
         var discordPushService = scope.ServiceProvider.GetRequiredService<DiscordPushService>();
 
         var easternDate = now.ToEasternDate();
         var allMasterGames = await interLeagueService.GetMasterGameYears(easternDate.Year);
-        var masterGamesReleasingToday = allMasterGames.Where(x => x.MasterGame.ReleaseDate == easternDate).ToList();
+        var masterGamesReleasingToday = allMasterGames.Where(x => x.MasterGame.ReleaseDate.HasValue && x.MasterGame.ReleaseDate.Value == easternDate).ToList();
         if (!masterGamesReleasingToday.Any())
         {
+            _logger.Information("No games for Master Game Release Push");
             return;
         }
 
-        await discordPushService.SendGameReleaseUpdates(masterGamesReleasingToday, easternDate.Year);
+        _logger.Information("{masterGamesReleasingTodayCount} games for Master Game Release Push", masterGamesReleasingToday.Count);
+        await discordPushService.SendGameReleaseUpdates(masterGamesReleasingToday);
     }
 
     private static bool IsTimeToNotify(Instant now)

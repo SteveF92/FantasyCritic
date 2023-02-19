@@ -255,7 +255,7 @@ public class DiscordPushService
         _masterGameEditMessages.Clear();
     }
 
-    public async Task SendGameReleaseUpdates(IReadOnlyList<MasterGameYear> masterGamesReleasingToday, int year)
+    public async Task SendGameReleaseUpdates(IReadOnlyList<MasterGameYear> masterGamesReleasingToday)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
