@@ -2,7 +2,7 @@
   <div>
     <h2>Standings</h2>
 
-    <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" bordered small responsive striped>
+    <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
         <font-awesome-icon v-if="data.item.previousYearWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-year-winner" />
@@ -126,6 +126,22 @@ export default {
     },
     ordinal_suffix_of(num) {
       return GlobalFunctions.ordinal_suffix_of(num);
+    },
+    sortCompare(aRow, bRow, key) {
+      // Extend with other sortable columns as necessary.
+      const secondarySorts = {
+        totalFantasyPoints: 'projectedFantasyPoints',
+        projectedFantasyPoints: 'totalFantasyPoints'
+      };
+      const a = aRow[key];
+      const b = bRow[key];
+      const primarySort = a < b ? -1 : a > b ? 1 : 0;
+      // Return unless the primary Sort Key results in a Tie, i.e each row has 0 points.
+      if (primarySort != 0) return primarySort;
+      const secondarySortKey = secondarySorts[key];
+      const secondaryA = aRow[secondarySortKey];
+      const secondaryB = bRow[secondarySortKey];
+      return secondaryA < secondaryB ? -1 : secondaryA > secondaryB ? 1 : 0;
     }
   }
 };
