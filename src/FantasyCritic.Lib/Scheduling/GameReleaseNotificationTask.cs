@@ -11,7 +11,7 @@ public class GameReleaseNotificationTask : IScheduledTask
 {
     private static readonly ILogger _logger = Log.ForContext<GameReleaseNotificationTask>();
     private readonly IServiceProvider _serviceProvider;
-    public string Schedule => "0 */1 * * *";
+    public string Schedule => "1 */1 * * *";
 
     public GameReleaseNotificationTask(IServiceProvider serviceProvider)
     {
@@ -55,8 +55,8 @@ public class GameReleaseNotificationTask : IScheduledTask
         var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
 
         var timeOfDay = nycNow.TimeOfDay;
-        var earliestTimeToSend = LocalTime.Midnight.Minus(Period.FromMinutes(1));
-        var latestTimeToSend = LocalTime.Midnight.Plus(Period.FromMinutes(1));
+        var earliestTimeToSend = LocalTime.Midnight;
+        var latestTimeToSend = LocalTime.Midnight.Plus(Period.FromMinutes(2));
         bool isTimeToNotify = timeOfDay > earliestTimeToSend && timeOfDay < latestTimeToSend;
         return isTimeToNotify;
     }
