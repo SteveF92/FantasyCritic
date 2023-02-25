@@ -707,11 +707,16 @@ public class DiscordPushService
             embedFieldBuilder
         };
 
+        var leagueUrl = new LeagueUrlBuilder(_baseAddress, trade.LeagueYear.League.LeagueID,
+                trade.LeagueYear.Year)
+            .BuildUrl();
+
         var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
             "Trade Update",
             header,
             null,
-            embedFieldBuilders)));
+            embedFieldBuilders,
+            leagueUrl)));
 
         await Task.WhenAll(messageTasks);
     }
