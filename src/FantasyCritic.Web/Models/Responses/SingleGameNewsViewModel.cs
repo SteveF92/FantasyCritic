@@ -26,7 +26,7 @@ public class SingleGameNewsViewModel
             }
             else
             {
-                LeagueName = $"{publishersPairsThatHaveGame.Count} Leagues";
+                LeagueName = string.Join(", ", publishersPairsThatHaveGame.Select(p => p.Publisher.PublisherName)); //$"{publishersPairsThatHaveGame.Count} Leagues";
                 PublisherName = "Multiple";
             }
         }

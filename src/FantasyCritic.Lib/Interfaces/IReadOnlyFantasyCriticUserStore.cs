@@ -9,4 +9,7 @@ public interface IReadOnlyFantasyCriticUserStore
     Task<IReadOnlyList<FantasyCriticUser>> GetUsers(IEnumerable<Guid> userIDs);
     Task<int> GetOpenDisplayNumber(string displayName);
     Task<FantasyCriticUser?> FindByDisplayName(string displayName, int displayNumber);
+
+    Task<FantasyCriticUser?> FindByLoginAsync(string loginProvider, string providerKey,
+        CancellationToken cancellationToken);
 }

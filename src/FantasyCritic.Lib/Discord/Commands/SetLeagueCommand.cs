@@ -15,14 +15,14 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
-    private readonly IFantasyCriticUserStore _userStore;
+    private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly FantasyCriticSettings _fantasyCriticSettings;
 
     public SetLeagueCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         IFantasyCriticRepo fantasyCriticRepo,
-        IFantasyCriticUserStore userStore,
+        IReadOnlyFantasyCriticUserStore userStore,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;

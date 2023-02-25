@@ -4,15 +4,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 namespace FantasyCritic.Lib.Services;
 public class GameNewsService
 {
-    private readonly InterLeagueService _interLeagueService;
-    private readonly LeagueMemberService _leagueMemberService;
-
-    public GameNewsService(InterLeagueService interLeagueService, LeagueMemberService leagueMemberService)
-    {
-        _interLeagueService = interLeagueService;
-        _leagueMemberService = leagueMemberService;
-    }
-
     public IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> GetGameNewsForPublishers(IReadOnlyList<LeagueYearPublisherPair> leagueYearPublisherPairs, LocalDate currentDate, bool recentReleases)
     {
         var gameNewsUpcoming = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, recentReleases, currentDate);

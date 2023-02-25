@@ -78,4 +78,9 @@ public static class RepositoryInterfaceExtensions
     {
         return GetUserThatMightExist(repo, id, CancellationToken.None);
     }
+
+    public static Task<FantasyCriticUser?> GetFantasyCriticUserForDiscordUser(this IReadOnlyFantasyCriticUserStore repo, ulong discordUserId)
+    {
+        return repo.FindByLoginAsync("Discord", discordUserId.ToString(), CancellationToken.None);
+    }
 }
