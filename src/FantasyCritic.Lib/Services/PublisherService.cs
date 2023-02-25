@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Identity;
@@ -10,13 +11,21 @@ public class PublisherService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;
+    private readonly InterLeagueService _interLeagueService;
+    private readonly LeagueMemberService _leagueMemberService;
     private readonly IClock _clock;
 
 
-    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, DiscordPushService discordPushService, IClock clock)
+    public PublisherService(IFantasyCriticRepo fantasyCriticRepo,
+        DiscordPushService discordPushService,
+        InterLeagueService interLeagueService,
+        LeagueMemberService leagueMemberService,
+        IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _discordPushService = discordPushService;
+        _interLeagueService = interLeagueService;
+        _leagueMemberService = leagueMemberService;
         _clock = clock;
     }
 
@@ -192,5 +201,35 @@ public class PublisherService
 
         await _fantasyCriticRepo.ReorderPublisherGames(publisher, slotStates);
         return Result.Success();
+    }
+
+    public async Task<IReadOnlyList<LeagueYearPublisherPair>> GetPublishersWithLeagueYears(FantasyCriticUser user)
+    {
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
+
+        var leagueYearPublishers = new List<LeagueYearPublisherPair>();
+        foreach (var year in activeYears)
+        {
+            var activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(user, year.Year);
+
+            foreach (var leagueYear in activeLeagueYears)
+            {
+                if (leagueYear.League.TestLeague)
+                {
+                    continue;
+                }
+
+                var userPublisher = leagueYear.GetUserPublisher(user);
+                if (userPublisher is null)
+                {
+                    continue;
+                }
+
+                leagueYearPublishers.Add(new LeagueYearPublisherPair(leagueYear, userPublisher));
+            }
+        }
+
+        return leagueYearPublishers;
     }
 }

@@ -116,6 +116,7 @@ public static class HostingExtensions
         services.AddScoped<GameAcquisitionService>();
         services.AddScoped<LeagueMemberService>();
         services.AddScoped<PublisherService>();
+        services.AddScoped<GameNewsService>();
         services.AddScoped<InterLeagueService>();
         services.AddScoped<DraftService>();
         services.AddScoped<GameSearchingService>();
@@ -168,7 +169,7 @@ public static class HostingExtensions
                 args.SetObserved();
             });
         }
-        
+
         if (!string.IsNullOrWhiteSpace(discordBotToken) && discordBotToken != "secret")
         {
             //Discord request service
