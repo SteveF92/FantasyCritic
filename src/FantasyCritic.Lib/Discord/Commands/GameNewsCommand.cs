@@ -9,15 +9,17 @@ using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class UpcomingGamesCommand : InteractionModuleBase<SocketInteractionContext>
+public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
+    private const string UpcomingValue = "Upcoming";
+    private const string RecentValue = "Recent";
 
-    public UpcomingGamesCommand(IDiscordRepo discordRepo,
+    public GameNewsCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
         IClock clock,
         IDiscordFormatter discordFormatter,
@@ -30,8 +32,12 @@ public class UpcomingGamesCommand : InteractionModuleBase<SocketInteractionConte
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    [SlashCommand("upcoming", "Get upcoming releases for publishers in the league.")]
-    public async Task GetUpcomingGames()
+    [SlashCommand("game-news", "Get upcoming or recent releases for publishers in the league (or for yourself in a DM).")]
+    public async Task GetGameNews(
+        [Summary("upcoming_or_recent", "Whether you want upcoming or recent releases")]
+        [Choice("Upcoming Releases",UpcomingValue)]
+        [Choice("Recent Releases", RecentValue)]
+        string upcomingOrRecent = UpcomingValue)
     {
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate();
@@ -41,7 +47,7 @@ public class UpcomingGamesCommand : InteractionModuleBase<SocketInteractionConte
         if (leagueChannel == null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Getting Upcoming Games",
+                "Error Getting Game News",
                 "No league configuration found for this channel.",
                 Context.User));
             return;
@@ -50,17 +56,18 @@ public class UpcomingGamesCommand : InteractionModuleBase<SocketInteractionConte
         var leagueYear = leagueChannel.LeagueYear;
         var leagueYearPublisherPairs = leagueYear.Publishers.Select(publisher => new LeagueYearPublisherPair(leagueYear, publisher));
 
-        var upcomingGamesData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, false, dateToCheck);
-        if (upcomingGamesData.Count == 0)
+        var isRecentReleases = upcomingOrRecent == RecentValue;
+        var gameNewsData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, isRecentReleases, dateToCheck);
+        if (gameNewsData.Count == 0)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
-                "Error Getting Upcoming Games",
+                "Error Getting Game News",
                 "No data found.",
                 Context.User));
         }
 
-        List<string> messages = new List<string>();
-        foreach (var recentGameGrouping in upcomingGamesData)
+        var messages = new List<string>();
+        foreach (var recentGameGrouping in gameNewsData)
         {
             var standardGame = recentGameGrouping.FirstOrDefault(p => !p.CounterPick);
             var counterPick = recentGameGrouping.FirstOrDefault(p => p.CounterPick);
@@ -77,7 +84,7 @@ public class UpcomingGamesCommand : InteractionModuleBase<SocketInteractionConte
         var message = string.Join("\n--------------------------------\n", messages);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "Upcoming Publisher Releases",
+            $"{upcomingOrRecent} Publisher Releases",
             message,
             Context.User));
     }
