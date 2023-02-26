@@ -34,7 +34,8 @@ public static class DiscordSharedMessageUtilities
                     .FirstOrDefault(g =>
                         g.MasterGame?.MasterGame.MasterGameID == masterGameYear.MasterGame.MasterGameID)
                     ?.CounterPick;
-                return $"{p.LeagueYear.League.LeagueName} {(isCounterPick.HasValue && isCounterPick.Value ? "(Counter Pick)" : "")}";
+                var leagueUrl = new LeagueUrlBuilder(baseAddress, p.LeagueYear.League.LeagueID, p.LeagueYear.Year).BuildUrl(p.LeagueYear.League.LeagueName);
+                return $"{leagueUrl} {(isCounterPick.HasValue && isCounterPick.Value ? "(Counter Pick)" : "")}";
             }));
         return $"**{masterGameYear.MasterGame.EstimatedReleaseDate}** - {gameUrl}\n> {joinedPublisherLeagueNames}";
     }
