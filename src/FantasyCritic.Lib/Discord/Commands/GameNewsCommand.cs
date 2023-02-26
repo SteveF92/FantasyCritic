@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Interactions;
+using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
@@ -22,6 +23,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly string _baseAddress;
     private const string UpcomingValue = "Upcoming";
     private const string RecentValue = "Recent";
+    private const int MaxMessageLength = 2000;
 
     public GameNewsCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
@@ -55,7 +57,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var isRecentReleases = upcomingOrRecent == RecentValue;
 
-        if (Context.Channel is IDMChannel dmChannel)
+        if (Context.Channel is IDMChannel)
         {
             var user = await _fantasyCriticUserStore.GetFantasyCriticUserForDiscordUser(Context.User.Id);
             if (user == null)
@@ -75,8 +77,13 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 .Select(leagueYearPublisherList
                     => DiscordSharedMessageUtilities.BuildGameWithPublishersMessage(leagueYearPublisherList.Value, leagueYearPublisherList.Key))
                 .ToList();
+
+            var messagesToSend = new MessageListBuilder(gameMessages, MaxMessageLength)
+                .WithDivider("\n--------------------------------\n")
+                .Build();
+
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Your Game News",
-                string.Join("\n", gameMessages), Context.User));
+                string.Join("\n", messagesToSend), Context.User));
         }
         else
         {
