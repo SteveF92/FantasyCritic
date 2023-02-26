@@ -66,6 +66,7 @@ public class Program
             .AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>()
             .AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>()
             .AddScoped<InterLeagueService>()
+            .AddScoped<PublisherService>()
             .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
             .AddScoped<GameNewsService>()
             .AddScoped<GameSearchingService>()

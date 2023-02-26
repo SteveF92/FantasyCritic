@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord.UrlBuilders;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Discord.Utilities;
@@ -18,6 +19,12 @@ public static class DiscordSharedMessageUtilities
         return counterPickPublisher is not null
             ? $"> **{masterGame.EstimatedReleaseDate}** - {gameUrl}\n > Counter Pick For {counterPickPublisher!.GetPublisherAndUserDisplayName()}"
             : null;
+    }
+
+    public static string BuildGameWithPublishersMessage(List<LeagueYearPublisherPair> publishers, MasterGameYear masterGameYear)
+    {
+        return $"**{masterGameYear.MasterGame.GameName}**\n{string.Join(", ",
+            publishers.Select(p => p.Publisher.PublisherName))}";
     }
 
     public static IList<string> RankLeaguePublishers(LeagueYear leagueYear,

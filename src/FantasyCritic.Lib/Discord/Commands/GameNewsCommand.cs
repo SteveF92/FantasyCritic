@@ -66,12 +66,17 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                     Context.User));
                 return;
             }
-            else
-            {
-                var publishers = await _publisherService.GetPublishersWithLeagueYears(user);
-                var gameNews = _gameNewsService.GetGameNewsForPublishers(publishers, dateToCheck, isRecentReleases);
-                var leagueYearPublisherLists = _gameNewsService.GetLeagueYearPublisherLists(publishers, gameNews);
-            }
+
+            var publishers = await _publisherService.GetPublishersWithLeagueYears(user);
+            var gameNews = _gameNewsService.GetGameNewsForPublishers(publishers, dateToCheck, isRecentReleases);
+            var leagueYearPublisherLists = _gameNewsService.GetLeagueYearPublisherLists(publishers, gameNews);
+
+            var gameMessages = leagueYearPublisherLists
+                .Select(leagueYearPublisherList
+                    => DiscordSharedMessageUtilities.BuildGameWithPublishersMessage(leagueYearPublisherList.Value, leagueYearPublisherList.Key))
+                .ToList();
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Your Game News",
+                string.Join("\n", gameMessages), Context.User));
         }
         else
         {

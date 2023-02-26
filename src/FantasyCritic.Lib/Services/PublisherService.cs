@@ -12,20 +12,17 @@ public class PublisherService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly LeagueMemberService _leagueMemberService;
     private readonly IClock _clock;
 
 
     public PublisherService(IFantasyCriticRepo fantasyCriticRepo,
         DiscordPushService discordPushService,
         InterLeagueService interLeagueService,
-        LeagueMemberService leagueMemberService,
         IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _discordPushService = discordPushService;
         _interLeagueService = interLeagueService;
-        _leagueMemberService = leagueMemberService;
         _clock = clock;
     }
 
@@ -211,7 +208,7 @@ public class PublisherService
         var leagueYearPublishers = new List<LeagueYearPublisherPair>();
         foreach (var year in activeYears)
         {
-            var activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(user, year.Year);
+            var activeLeagueYears = await _fantasyCriticRepo.GetLeagueYearsForUser(user, year.Year);
 
             foreach (var leagueYear in activeLeagueYears)
             {
