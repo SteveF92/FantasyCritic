@@ -75,14 +75,14 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 
             var gameMessages = leagueYearPublisherLists
                 .Select(leagueYearPublisherList
-                    => DiscordSharedMessageUtilities.BuildGameWithPublishersMessage(leagueYearPublisherList.Value, leagueYearPublisherList.Key))
+                    => DiscordSharedMessageUtilities.BuildGameWithPublishersMessage(leagueYearPublisherList.Value, leagueYearPublisherList.Key, _baseAddress))
                 .ToList();
 
             var messagesToSend = new MessageListBuilder(gameMessages, MaxMessageLength)
                 .WithDivider("\n--------------------------------\n")
                 .Build();
 
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Your Game News",
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed($"Your {upcomingOrRecent} Releases ({user.UserName})",
                 string.Join("\n", messagesToSend), Context.User));
         }
         else
@@ -129,11 +129,13 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 }
             }
 
-            var message = string.Join("\n--------------------------------\n", messages);
+            var messagesToSend = new MessageListBuilder(messages, MaxMessageLength)
+                .WithDivider("\n--------------------------------\n")
+                .Build();
 
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
                 $"{upcomingOrRecent} Publisher Releases",
-                message,
+                string.Join("\n", messagesToSend),
                 Context.User));
         }
     }
