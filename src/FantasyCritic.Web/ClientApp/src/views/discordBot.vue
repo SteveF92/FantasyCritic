@@ -68,7 +68,7 @@
               and will allow us to give you more information directly in Discord in certain functions.
             </p>
 
-            <h4 id="league-updates">League Updates</h4>
+            <h4>League Updates</h4>
             <p>The following information will be posted real-time as it happens on the website:</p>
             <ul>
               <li>League Actions</li>
@@ -84,7 +84,7 @@
               <li>Final Standings When The Year Ends</li>
             </ul>
 
-            <h4 id="game-news">Game News</h4>
+            <h4>Game News</h4>
             <p>The following information will be posted real-time as it happens on the website:</p>
             <ul>
               <li>New Games</li>
@@ -104,8 +104,7 @@
                   <li><router-link :to="{ hash: '#link' }">Get a Link to the League</router-link></li>
                   <li><router-link :to="{ hash: '#publisher' }">See Publisher Information</router-link></li>
                   <li><router-link :to="{ hash: '#game' }">Search for a Game</router-link></li>
-                  <li><router-link :to="{ hash: '#upcoming' }">View Upcoming League Releases</router-link></li>
-                  <li><router-link :to="{ hash: '#recent' }">View Recent League Releases</router-link></li>
+                  <li><router-link :to="{ hash: '#game-news' }">View Upcoming or Recent League Releases</router-link></li>
                   <li><router-link :to="{ hash: '#public-bids' }">View Public Bids for the Current Week</router-link></li>
                   <li><router-link :to="{ hash: '#special-auctions' }">View Current Special Auctions</router-link></li>
                   <li><router-link :to="{ hash: '#set-league' }">Set Up a League in your Channel</router-link></li>
@@ -227,21 +226,15 @@
                 </div>
                 <hr />
                 <div class="discord-command-explanation">
-                  <h5 id="upcoming">View Upcoming League Releases</h5>
+                  <h5 id="game-news">View Upcoming or Recent League Releases</h5>
                   <p>
                     <span class="command-label">Command:</span>
-                    <code>/upcoming</code>
+                    <code>/game-news</code>
                   </p>
-                  <span>Displays upcoming releases for players in the league.</span>
-                </div>
-                <hr />
-                <div class="discord-command-explanation">
-                  <h5 id="recent">View Recent League Releases</h5>
-                  <p>
-                    <span class="command-label">Command:</span>
-                    <code>/recent</code>
-                  </p>
-                  <span>Displays games that were recently released for players in the league.</span>
+                  <span>
+                    Displays upcoming or recent releases for players in the league. You can also use this command in a Direct Message to the bot and it will display all of your upcoming or recent
+                    releases across all of your leagues. NOTE: DMing the bot will require that your Discord account be linked to your Fantasy Critic account.
+                  </span>
                 </div>
                 <hr />
                 <div class="discord-command-explanation">
