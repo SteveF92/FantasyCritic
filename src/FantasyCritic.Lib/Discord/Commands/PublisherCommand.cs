@@ -433,7 +433,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         return gameMessage;
     }
 
-    public async Task<Publisher?> GetPublisherForDiscordUser(ulong discordUserId, LeagueChannel leagueChannel,
+    private async Task<Publisher?> GetPublisherForDiscordUser(ulong discordUserId, LeagueChannel leagueChannel,
         ulong channelId)
     {
         Publisher? publisherFound = null;

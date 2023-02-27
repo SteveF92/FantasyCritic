@@ -38,11 +38,10 @@ public class LeagueController : BaseLeagueController
     private readonly ILogger<LeagueController> _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly TradeService _tradeService;
-    private readonly GameNewsService _gameNewsService;
 
     public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
-        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService, GameNewsService gameNewsService)
+        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService)
         : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
     {
         _draftService = draftService;
@@ -53,7 +52,6 @@ public class LeagueController : BaseLeagueController
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
         _tradeService = tradeService;
-        _gameNewsService = gameNewsService;
     }
 
     [AllowAnonymous]
@@ -857,7 +855,7 @@ public class LeagueController : BaseLeagueController
 
         LocalDate currentDate = _clock.GetToday();
         IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews = GameNewsFunctions.GetGameNews(myPublishers, false, currentDate);
-        var viewModels = BuildGameNewsViewModel(true, currentDate, _gameNewsService.GetLeagueYearPublisherLists(myPublishers, gameNews)).ToList();
+        var viewModels = BuildGameNewsViewModel(true, currentDate, GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNews)).ToList();
         return viewModels;
     }
 
@@ -868,11 +866,11 @@ public class LeagueController : BaseLeagueController
 
         var myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
 
-        var gameNewsUpcoming = _gameNewsService.GetGameNewsForPublishers(myPublishers, currentDate, false);
-        var gameNewsRecent = _gameNewsService.GetGameNewsForPublishers(myPublishers, currentDate, true);
+        var gameNewsUpcoming = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, false);
+        var gameNewsRecent = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, true);
 
-        var leagueYearPublisherListsUpcoming = _gameNewsService.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
-        var leagueYearPublisherListsRecent = _gameNewsService.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
+        var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
+        var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
 
         var upcomingGames = BuildGameNewsViewModel(true, currentDate, leagueYearPublisherListsUpcoming).ToList();
         var recentGames = BuildGameNewsViewModel(true, currentDate, leagueYearPublisherListsRecent).ToList();
@@ -1463,11 +1461,11 @@ public class LeagueController : BaseLeagueController
     private IReadOnlyList<SingleGameNewsViewModel> BuildGameNewsViewModel(LeagueYear leagueYear, bool userMode, LocalDate currentDate, IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews)
     {
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
-        return BuildGameNewsViewModel(userMode, currentDate, _gameNewsService.GetLeagueYearPublisherLists(publishers, gameNews));
+        return BuildGameNewsViewModel(userMode, currentDate, GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews));
     }
 
     private static IReadOnlyList<SingleGameNewsViewModel> BuildGameNewsViewModel(bool userMode,
-        LocalDate currentDate, Dictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
+        LocalDate currentDate, IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
     {
         return leagueYearPublisherLists.Select(l =>
                 new SingleGameNewsViewModel(l.Key, l.Value, userMode, currentDate))

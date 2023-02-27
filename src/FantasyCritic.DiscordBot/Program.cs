@@ -68,7 +68,6 @@ public class Program
             .AddScoped<InterLeagueService>()
             .AddScoped<PublisherService>()
             .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
-            .AddScoped<GameNewsService>()
             .AddScoped<GameSearchingService>()
             .AddScoped<GameAcquisitionService>()
             .AddScoped<IDiscordFormatter, DiscordFormatter>()

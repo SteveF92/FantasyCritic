@@ -46,19 +46,7 @@ public class DiscordBotService
 
     public async Task Client_Ready()
     {
-        //if (_botConfiguration.IsDevelopment)
-        //{
-        //    if (_botConfiguration.DevDiscordServerId is null)
-        //    {
-        //        throw new Exception("Development Discord server ID is not set.");
-        //    }
-
-        //    await _interactionService.RegisterCommandsToGuildAsync(_botConfiguration.DevDiscordServerId.Value, true);
-        //}
-        //else
-        //{
-            await _interactionService.RegisterCommandsGloballyAsync(true);
-        //}
+        await _interactionService.RegisterCommandsGloballyAsync();
     }
 
     private async Task HandleInteraction(SocketInteraction interaction)

@@ -15,7 +15,6 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
-    private readonly GameNewsService _gameNewsService;
     private readonly PublisherService _publisherService;
     private readonly IReadOnlyFantasyCriticUserStore _fantasyCriticUserStore;
     private readonly IClock _clock;
@@ -27,7 +26,6 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 
     public GameNewsCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
-        GameNewsService gameNewsService,
         PublisherService publisherService,
         IReadOnlyFantasyCriticUserStore fantasyCriticUserStore,
         IClock clock,
@@ -36,7 +34,6 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
     {
         _discordRepo = discordRepo;
         _interLeagueService = interLeagueService;
-        _gameNewsService = gameNewsService;
         _publisherService = publisherService;
         _fantasyCriticUserStore = fantasyCriticUserStore;
         _clock = clock;
@@ -70,8 +67,8 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
             }
 
             var publishers = await _publisherService.GetPublishersWithLeagueYears(user);
-            var gameNews = _gameNewsService.GetGameNewsForPublishers(publishers, dateToCheck, isRecentReleases);
-            var leagueYearPublisherLists = _gameNewsService.GetLeagueYearPublisherLists(publishers, gameNews);
+            var gameNews = GameNewsFunctions.GetGameNewsForPublishers(publishers, dateToCheck, isRecentReleases);
+            var leagueYearPublisherLists = GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews);
 
             var gameMessages = leagueYearPublisherLists
                 .Select(leagueYearPublisherList

@@ -32,4 +32,23 @@ public static class GameNewsFunctions
 
         return orderedByReleaseDate.ToList();
     }
+
+    public static IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> GetGameNewsForPublishers(IReadOnlyList<LeagueYearPublisherPair> leagueYearPublisherPairs, LocalDate currentDate, bool recentReleases)
+    {
+        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, recentReleases, currentDate);
+        return gameNewsUpcoming;
+    }
+
+    public static IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> GetLeagueYearPublisherLists(IReadOnlyList<LeagueYearPublisherPair> publishers, IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews)
+    {
+        var leagueYearPublisherLists = new Dictionary<MasterGameYear, List<LeagueYearPublisherPair>>();
+
+        foreach (var publisherGameGroup in gameNews)
+        {
+            var publishersThatHaveGame = publishers.Where(x => publisherGameGroup.Select(y => y.PublisherID).Contains(x.Publisher.PublisherID)).ToList();
+            leagueYearPublisherLists.Add(publisherGameGroup.Key, publishersThatHaveGame);
+        }
+
+        return leagueYearPublisherLists;
+    }
 }
