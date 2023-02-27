@@ -15,48 +15,14 @@ public class SingleGameNewsViewModel
 
         if (userMode)
         {
-            if (publishersPairsThatHaveGame.Count == 1)
-            {
-                var publisherPair = publishersPairsThatHaveGame.Single();
-                LeagueID = publisherPair.LeagueYear.League.LeagueID;
-                Year = publisherPair.LeagueYear.Year;
-                LeagueName = publisherPair.LeagueYear.League.LeagueName;
-                PublisherID = publisherPair.Publisher.PublisherID;
-                PublisherName = publisherPair.Publisher.PublisherName;
-            }
-            else
-            {
-                LeagueName = string.Join(", ", publishersPairsThatHaveGame.Select(p => p.LeagueYear.League.LeagueName)); //$"{publishersPairsThatHaveGame.Count} Leagues";
-                PublisherName = "Multiple";
-            }
+            PublishersWithGame = publishersPairsThatHaveGame.Select(x => new SingleGameNewsPublisherViewModel(x)).ToList();
         }
         else
         {
-            if (publishersPairsThatHaveGame.Count == 1)
+            PublishersWithGame = new List<SingleGameNewsPublisherViewModel>()
             {
-                var publisherPair = publishersPairsThatHaveGame.Single();
-                LeagueID = publisherPair.LeagueYear.League.LeagueID;
-                Year = publisherPair.LeagueYear.Year;
-                LeagueName = publisherPair.LeagueYear.League.LeagueName;
-                PublisherID = publisherPair.Publisher.PublisherID;
-                PublisherName = publisherPair.Publisher.PublisherName;
-            }
-            else if (publishersPairsThatHaveGame.Count == 2)
-            {
-                var standardPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherGames.Where(y => !y.CounterPick).Where(y => y.MasterGame is not null).Any(y => y.MasterGame!.MasterGame.MasterGameID == masterGame.MasterGame.MasterGameID));
-                var counterPickPublisherPair = publishersPairsThatHaveGame.Single(x => x.Publisher.PublisherID != standardPublisherPair.Publisher.PublisherID);
-                LeagueID = standardPublisherPair.LeagueYear.League.LeagueID;
-                Year = standardPublisherPair.LeagueYear.Year;
-                LeagueName = standardPublisherPair.LeagueYear.League.LeagueName;
-                PublisherID = standardPublisherPair.Publisher.PublisherID;
-                PublisherName = standardPublisherPair.Publisher.PublisherName;
-                CounterPickPublisherID = counterPickPublisherPair.Publisher.PublisherID;
-                CounterPickPublisherName = counterPickPublisherPair.Publisher.PublisherName;
-            }
-            else
-            {
-                throw new Exception($"Problem with upcoming games. Happened for Game: {masterGame.MasterGame.GameName} and publisherIDs: {string.Join('|', publishersPairsThatHaveGame.Select(x => x.Publisher.PublisherID))}");
-            }
+                new SingleGameNewsPublisherViewModel(masterGame.MasterGame, publishersPairsThatHaveGame)
+            };
         }
     }
 
@@ -66,11 +32,5 @@ public class SingleGameNewsViewModel
     public string EstimatedReleaseDate { get; }
     public LocalDate MaximumReleaseDate { get; }
     public LocalDate? ReleaseDate { get; }
-    public Guid? LeagueID { get; }
-    public int? Year { get; }
-    public string LeagueName { get; }
-    public Guid? PublisherID { get; }
-    public string PublisherName { get; }
-    public Guid? CounterPickPublisherID { get; }
-    public string? CounterPickPublisherName { get; }
+    public IReadOnlyList<SingleGameNewsPublisherViewModel> PublishersWithGame { get; }
 }

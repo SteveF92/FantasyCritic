@@ -242,9 +242,9 @@ public class LeagueController : BaseLeagueController
             privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate, masterGameYearDictionary);
         }
 
-        var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x));
-        var upcomingGames = BuildGameNewsViewModel(leagueYear, false, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
-        var recentGames = BuildGameNewsViewModel(leagueYear, false, currentDate, GameNewsFunctions.GetGameNews(publishers, true, currentDate)).ToList();
+        var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
+        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
+        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, true, currentDate)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
         var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager);
 
@@ -898,7 +898,7 @@ public class LeagueController : BaseLeagueController
         LocalDate currentDate = _clock.GetToday();
 
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x));
-        var viewModels = BuildGameNewsViewModel(leagueYear, false, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
+        var viewModels = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
         return Ok(viewModels);
     }
 
@@ -1458,14 +1458,13 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
-    private IReadOnlyList<SingleGameNewsViewModel> BuildGameNewsViewModel(LeagueYear leagueYear, bool userMode, LocalDate currentDate, IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews)
+    private static IReadOnlyList<SingleGameNewsViewModel> BuildLeagueGameNewsViewModel(LeagueYear leagueYear, LocalDate currentDate, IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews)
     {
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
-        return BuildGameNewsViewModel(userMode, currentDate, GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews));
+        return BuildGameNewsViewModel(false, currentDate, GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews));
     }
 
-    private static IReadOnlyList<SingleGameNewsViewModel> BuildGameNewsViewModel(bool userMode,
-        LocalDate currentDate, IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
+    private static IReadOnlyList<SingleGameNewsViewModel> BuildGameNewsViewModel(bool userMode, LocalDate currentDate, IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
     {
         return leagueYearPublisherLists.Select(l =>
                 new SingleGameNewsViewModel(l.Key, l.Value, userMode, currentDate))
