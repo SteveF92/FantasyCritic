@@ -824,41 +824,6 @@ public class LeagueController : BaseLeagueController
         return Ok();
     }
 
-    public async Task<ActionResult<List<SingleGameNewsViewModel>>> MyUpcomingGames()
-    {
-        var currentUser = await GetCurrentUserOrThrow();
-
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
-
-        List<LeagueYearPublisherPair> myPublishers = new List<LeagueYearPublisherPair>();
-        foreach (var year in activeYears)
-        {
-            IReadOnlyList<LeagueYear> activeLeagueYears = await _leagueMemberService.GetLeaguesYearsForUser(currentUser, year.Year);
-
-            foreach (var leagueYear in activeLeagueYears)
-            {
-                if (leagueYear.League.TestLeague)
-                {
-                    continue;
-                }
-
-                var userPublisher = leagueYear.GetUserPublisher(currentUser);
-                if (userPublisher is null)
-                {
-                    continue;
-                }
-
-                myPublishers.Add(new LeagueYearPublisherPair(leagueYear, userPublisher));
-            }
-        }
-
-        LocalDate currentDate = _clock.GetToday();
-        IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews = GameNewsFunctions.GetGameNews(myPublishers, false, currentDate);
-        var viewModels = BuildGameNewsViewModel(true, currentDate, GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNews)).ToList();
-        return viewModels;
-    }
-
     public async Task<ActionResult<GameNewsViewModel>> MyGameNews()
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -875,31 +840,6 @@ public class LeagueController : BaseLeagueController
         var upcomingGames = BuildGameNewsViewModel(true, currentDate, leagueYearPublisherListsUpcoming).ToList();
         var recentGames = BuildGameNewsViewModel(true, currentDate, leagueYearPublisherListsRecent).ToList();
         return new GameNewsViewModel(upcomingGames, recentGames);
-    }
-
-    [AllowAnonymous]
-    public async Task<IActionResult> LeagueUpcomingGames(Guid leagueID, int year)
-    {
-        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
-        if (leagueYearRecord.FailedResult is not null)
-        {
-            return leagueYearRecord.FailedResult;
-        }
-        var validResult = leagueYearRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
-        var league = leagueYear.League;
-        var relationship = validResult.Relationship;
-
-        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
-        {
-            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
-        }
-
-        LocalDate currentDate = _clock.GetToday();
-
-        var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x));
-        var viewModels = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
-        return Ok(viewModels);
     }
 
     public async Task<IActionResult> PossibleMasterGames(string gameName, int year, Guid leagueID)
