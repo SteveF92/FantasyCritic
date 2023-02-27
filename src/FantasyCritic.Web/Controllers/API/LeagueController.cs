@@ -837,8 +837,8 @@ public class LeagueController : BaseLeagueController
         var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
         var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
 
-        var upcomingGames = BuildGameNewsViewModel(true, currentDate, leagueYearPublisherListsUpcoming).ToList();
-        var recentGames = BuildGameNewsViewModel(true, currentDate, leagueYearPublisherListsRecent).ToList();
+        var upcomingGames = BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
+        var recentGames = BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
         return new GameNewsViewModel(upcomingGames, recentGames);
     }
 
@@ -1401,13 +1401,12 @@ public class LeagueController : BaseLeagueController
     private static IReadOnlyList<SingleGameNewsViewModel> BuildLeagueGameNewsViewModel(LeagueYear leagueYear, LocalDate currentDate, IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews)
     {
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
-        return BuildGameNewsViewModel(false, currentDate, GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews));
+        var publisherLists = GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews);
+        return publisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, false, currentDate)).ToList();
     }
 
-    private static IReadOnlyList<SingleGameNewsViewModel> BuildGameNewsViewModel(bool userMode, LocalDate currentDate, IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
+    private static IReadOnlyList<SingleGameNewsViewModel> BuildUserGameNewsViewModel(LocalDate currentDate, IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
     {
-        return leagueYearPublisherLists.Select(l =>
-                new SingleGameNewsViewModel(l.Key, l.Value, userMode, currentDate))
-            .ToList();
+        return leagueYearPublisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, true, currentDate)).ToList();
     }
 }

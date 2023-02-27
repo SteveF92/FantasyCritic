@@ -15,11 +15,11 @@ public class SingleGameNewsViewModel
 
         if (userMode)
         {
-            PublishersWithGame = publishersPairsThatHaveGame.Select(x => new SingleGameNewsPublisherViewModel(x)).ToList();
+            LeaguePublisherSets = publishersPairsThatHaveGame.Select(x => new SingleGameNewsPublisherViewModel(x)).ToList();
         }
         else
         {
-            PublishersWithGame = new List<SingleGameNewsPublisherViewModel>()
+            LeaguePublisherSets = new List<SingleGameNewsPublisherViewModel>()
             {
                 new SingleGameNewsPublisherViewModel(masterGame.MasterGame, publishersPairsThatHaveGame)
             };
@@ -32,5 +32,5 @@ public class SingleGameNewsViewModel
     public string EstimatedReleaseDate { get; }
     public LocalDate MaximumReleaseDate { get; }
     public LocalDate? ReleaseDate { get; }
-    public IReadOnlyList<SingleGameNewsPublisherViewModel> PublishersWithGame { get; }
+    public IReadOnlyList<SingleGameNewsPublisherViewModel> LeaguePublisherSets { get; }
 }
