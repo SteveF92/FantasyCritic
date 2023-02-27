@@ -29,17 +29,24 @@
           {{ getReleaseDate(data.item) }}
         </template>
         <template #cell(league)="data">
-          <router-link v-if="data.item.leagueID" :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year } }">{{ data.item.leagueName }}</router-link>
-          <span v-else>{{ data.item.leagueName }}</span>
+          <ul class="comma-list">
+            <li v-for="leaguePublisherSet in data.item.leaguePublisherSets" :key="leaguePublisherSet.LeagueID" class="league-list">
+              <router-link :to="{ name: 'league', params: { leagueid: leaguePublisherSet.leagueID, year: leaguePublisherSet.year } }">
+                {{ leaguePublisherSet.leagueName }}
+              </router-link>
+            </li>
+          </ul>
         </template>
         <template #cell(publisher)="data">
           <span v-if="!data.item.counterPickPublisherID">
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID } }">{{ data.item.publisherName }}</router-link>
+            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.leaguePublisherSets[0].publisherID } }">{{ data.item.leaguePublisherSets[0].publisherName }}</router-link>
           </span>
           <span v-else>
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID } }">{{ data.item.publisherName }}</router-link>
+            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.leaguePublisherSets[0].publisherID } }">{{ data.item.leaguePublisherSets[0].publisherName }}</router-link>
             - Counter Picked by:
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.counterPickPublisherID } }">{{ data.item.counterPickPublisherName }}</router-link>
+            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.leaguePublisherSets[0].counterPickPublisherID } }">
+              {{ data.item.leaguePublisherSets[0].counterPickPublisherName }}
+            </router-link>
           </span>
         </template>
       </b-table>
@@ -117,5 +124,19 @@ export default {
 .upcoming-header {
   display: flex;
   justify-content: space-between;
+}
+
+.comma-list {
+  padding: 0;
+  display: inline;
+  list-style: none;
+}
+
+.comma-list li {
+  display: inline;
+}
+
+.comma-list li + li:before {
+  content: ', ';
 }
 </style>
