@@ -42,12 +42,8 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     store.commit('clearLeagueStoreData');
   }
 
-  if (!store.getters.allTags && !store.getters.masterGamesIsBusy) {
-    await store.dispatch('getAllTags');
-  }
-
-  if (!store.getters.bidTimes && !store.getters.bidTimesIsBusy) {
-    await store.dispatch('getBidTimes');
+  if (!store.getters.interLeagueDataLoaded && !store.getters.interLeagueIsBusy) {
+    await store.dispatch('fetchInterLeagueData');
   }
 
   //If we are current, we're good to go

@@ -1,9 +1,12 @@
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import GlobalFunctions from '@/globalFunctions';
 
 let basicMixin = {
   computed: {
     ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'authIsBusy']),
+    ...mapState({
+      possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions
+    }),
     displayName() {
       if (!this.$store.getters.userInfo) {
         return;

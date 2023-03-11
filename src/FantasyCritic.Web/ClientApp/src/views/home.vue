@@ -152,7 +152,7 @@ export default {
   },
   async mounted() {
     const tasks = [this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
-    await Promise.all([tasks]);
+    await Promise.all(tasks);
   },
   methods: {
     fetchMyLeagues() {

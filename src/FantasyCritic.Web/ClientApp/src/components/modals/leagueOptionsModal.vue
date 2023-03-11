@@ -127,23 +127,13 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      possibleLeagueOptions: null,
       leagueYearOptions: null
     };
   },
   mounted() {
-    this.fetchPossibleLeagueOptions();
     this.fetchLeagueYearOptions();
   },
   methods: {
-    fetchPossibleLeagueOptions() {
-      axios
-        .get('/api/League/LeagueOptions')
-        .then((response) => {
-          this.possibleLeagueOptions = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
-    },
     fetchLeagueYearOptions() {
       axios
         .get('/api/League/GetLeagueYearOptions?leagueID=' + this.league.leagueID + '&year=' + this.leagueYear.year)
