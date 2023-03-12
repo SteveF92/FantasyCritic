@@ -33,16 +33,9 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeague(id);
     }
 
-    public async Task<LeagueYear?> GetLeagueYear(Guid id, int year)
+    public Task<LeagueYear?> GetLeagueYear(Guid id, int year)
     {
-        var league = await GetLeagueByID(id);
-        if (league is null)
-        {
-            return null;
-        }
-
-        var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
-        return leagueYear;
+        return _fantasyCriticRepo.GetLeagueYear(id, year);
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -153,8 +146,8 @@ public class FantasyCriticService
         }
 
         var slotAssignments = GetNewSlotAssignments(parameters, leagueYear, publishers);
-        var eligibilityOverrides = await GetEligibilityOverrides(league, parameters.Year);
-        var tagOverrides = await GetTagOverrides(league, parameters.Year);
+        var eligibilityOverrides = leagueYear.EligibilityOverrides;
+        var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
@@ -230,11 +223,6 @@ public class FantasyCriticService
         }
 
         return finalSlotAssignments;
-    }
-
-    public Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
-    {
-        return _fantasyCriticRepo.GetEligibilityOverrides(league, year);
     }
 
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, LeagueYear mostRecentLeagueYear)
@@ -386,7 +374,7 @@ public class FantasyCriticService
 
         foreach (var year in league.Years)
         {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league, year);
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league.LeagueID, year);
             var publishers = leagueYear.Publishers;
             foreach (var publisher in publishers)
             {
@@ -504,16 +492,6 @@ public class FantasyCriticService
 
         LeagueAction eligibilityAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Eligibility Setting Changed", description, true);
         await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
-    }
-
-    public Task<IReadOnlyList<TagOverride>> GetTagOverrides(League league, int year)
-    {
-        return _fantasyCriticRepo.GetTagOverrides(league, year);
-    }
-
-    public Task<IReadOnlyList<MasterGameTag>> GetTagOverridesForGame(League league, int year, MasterGame masterGame)
-    {
-        return _fantasyCriticRepo.GetTagOverridesForGame(league, year, masterGame);
     }
 
     public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)

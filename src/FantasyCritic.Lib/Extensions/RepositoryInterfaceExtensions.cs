@@ -15,12 +15,12 @@ public static class RepositoryInterfaceExtensions
         return result;
     }
 
-    public static async Task<LeagueYear> GetLeagueYearOrThrow(this IFantasyCriticRepo repo, League league, int year)
+    public static async Task<LeagueYear> GetLeagueYearOrThrow(this IFantasyCriticRepo repo, Guid leagueID, int year)
     {
-        var leagueYear = await repo.GetLeagueYear(league, year);
+        var leagueYear = await repo.GetLeagueYear(leagueID, year);
         if (leagueYear is null)
         {
-            throw new Exception($"League year not found: {league.LeagueID} | {year}");
+            throw new Exception($"League year not found: {leagueID} | {year}");
         }
 
         return leagueYear;

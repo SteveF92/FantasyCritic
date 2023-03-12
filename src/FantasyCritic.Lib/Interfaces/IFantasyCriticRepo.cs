@@ -9,7 +9,7 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IFantasyCriticRepo
 {
     Task<League?> GetLeague(Guid id);
-    Task<LeagueYear?> GetLeagueYear(League requestLeague, int requestYear);
+    Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
     Task AddNewLeagueYear(League league, int year, LeagueOptions options);
@@ -105,11 +105,8 @@ public interface IFantasyCriticRepo
 
     Task SetDraftPause(LeagueYear leagueYear, bool pause);
     Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueAction draftSetAction);
-    Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year);
     Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
     Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
-    Task<IReadOnlyList<TagOverride>> GetTagOverrides(League league, int year);
-    Task<IReadOnlyList<MasterGameTag>> GetTagOverridesForGame(League league, int year, MasterGame masterGame);
     Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags);
 
     Task<SystemWideValues> GetSystemWideValues();

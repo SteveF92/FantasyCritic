@@ -80,7 +80,7 @@ public class LeagueMemberService
         List<Publisher> allPublishers = new List<Publisher>();
         foreach (var year in league.Years)
         {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league, year);
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league.LeagueID, year);
             leagueYears.Add(leagueYear);
             var publishersForYear = leagueYear.Publishers;
             allPublishers.AddRange(publishersForYear);
@@ -222,7 +222,7 @@ public class LeagueMemberService
     {
         foreach (var year in league.Years)
         {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league, year);
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league.LeagueID, year);
             var allPublishers = leagueYear.Publishers;
             var deletePublisher = allPublishers.SingleOrDefault(x => x.User.Id == removeUser.Id);
             if (deletePublisher != null)

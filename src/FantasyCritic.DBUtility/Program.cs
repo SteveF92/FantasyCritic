@@ -49,8 +49,7 @@ class Program
             var leagueYearsWithProblemTrades = await GetLeagueYearsWithProblemTrades(supportedYear);
             foreach (var leagueYearKey in leagueYearsWithProblemTrades)
             {
-                var league = await fantasyCriticRepo.GetLeague(leagueYearKey.LeagueID);
-                var leagueYear = await fantasyCriticRepo.GetLeagueYearOrThrow(league!, leagueYearKey.Year);
+                var leagueYear = await fantasyCriticRepo.GetLeagueYearOrThrow(leagueYearKey.LeagueID, leagueYearKey.Year);
                 var trades = await fantasyCriticRepo.GetTradesForLeague(leagueYear);
                 var executedTrades = trades.Where(x => x.Status.Equals(TradeStatus.Executed)).ToList();
                 var leagueActions = await fantasyCriticRepo.GetLeagueActions(leagueYear);

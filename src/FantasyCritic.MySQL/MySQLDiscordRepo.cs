@@ -171,20 +171,19 @@ public class MySQLDiscordRepo : IDiscordRepo
             return null;
         }
 
-        var league = await _fantasyCriticRepo.GetLeague(leagueChannelEntity.LeagueID);
-        if (league is null)
-        {
-            return null;
-        }
-
         LeagueYear? leagueYear = null;
 
         if (year != null)
         {
-            leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year.Value);
+            leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueChannelEntity.LeagueID, year.Value);
         }
         else
         {
+            var league = await _fantasyCriticRepo.GetLeague(leagueChannelEntity.LeagueID);
+            if (league is null)
+            {
+                return null;
+            }
             var supportedYear = supportedYears
                 .OrderBy(y => y.Year)
                 .FirstOrDefault(y => !y.Finished && league.Years.Contains(y.Year));
@@ -193,7 +192,7 @@ public class MySQLDiscordRepo : IDiscordRepo
                 return null;
             }
 
-            leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, supportedYear.Year);
+            leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueChannelEntity.LeagueID, supportedYear.Year);
         }
 
         return leagueYear is null
@@ -209,13 +208,7 @@ public class MySQLDiscordRepo : IDiscordRepo
             return null;
         }
 
-        var league = await _fantasyCriticRepo.GetLeague(leagueChannelEntity.LeagueID);
-        if (league is null)
-        {
-            return null;
-        }
-
-        var leagueYear = await _fantasyCriticRepo.GetLeagueYear(league, year);
+        var leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueChannelEntity.LeagueID, year);
         return leagueYear is null
             ? null
             : leagueChannelEntity.ToDomain(leagueYear);

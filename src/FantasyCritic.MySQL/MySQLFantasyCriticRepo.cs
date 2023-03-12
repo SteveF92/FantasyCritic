@@ -83,21 +83,27 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return leagues;
     }
 
-    public async Task<LeagueYear?> GetLeagueYear(League requestLeague, int requestYear)
+    public async Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year)
     {
-        var leagueTags = await GetLeagueYearTagEntities(requestLeague.LeagueID, requestYear);
-        var specialGameSlots = await GetSpecialGameSlotEntities(requestLeague.LeagueID, requestYear);
+        var league = await GetLeague(leagueID);
+        if (league is null)
+        {
+            return null;
+        }
+
+        var leagueTags = await GetLeagueYearTagEntities(leagueID, year);
+        var specialGameSlots = await GetSpecialGameSlotEntities(leagueID, year);
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-        var eligibilityOverrides = await GetEligibilityOverrides(requestLeague, requestYear);
-        var tagOverrides = await GetTagOverrides(requestLeague, requestYear);
-        var supportedYear = await GetSupportedYear(requestYear);
+        var eligibilityOverrides = await GetEligibilityOverrides(leagueID, year);
+        var tagOverrides = await GetTagOverrides(leagueID, year);
+        var supportedYear = await GetSupportedYear(year);
 
         const string sql = "select * from tbl_league_year where LeagueID = @leagueID and Year = @year";
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
         {
-            leagueID = requestLeague.LeagueID,
-            year = requestYear
+            leagueID,
+            year
         };
 
         LeagueYearEntity yearEntity = await connection.QuerySingleOrDefaultAsync<LeagueYearEntity>(sql, queryObject);
@@ -106,26 +112,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return null;
         }
 
-        var leagueYearKey = new LeagueYearKey(requestLeague.LeagueID, requestYear);
+        var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = ConvertLeagueTagEntities(leagueTags, tagDictionary);
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlots, tagDictionary);
         var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
 
         var winningUser = await _userStore.GetUserThatMightExist(yearEntity.WinningUserID);
         var publishers = await GetPublishersInLeagueForYear(leagueYearKey);
-        LeagueYear year = yearEntity.ToDomain(requestLeague, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
+        LeagueYear leagueYear = yearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
             winningUser, publishers);
-        return year;
-    }
-
-    public async Task<LeagueYear> AssertLeagueYear(League requestLeague, int requestYear)
-    {
-        var leagueYear = await GetLeagueYear(requestLeague, requestYear);
-        if (leagueYear is null)
-        {
-            throw new Exception($"League Year not found: {requestLeague.LeagueID} {requestYear}");
-        }
-
         return leagueYear;
     }
 
@@ -613,8 +608,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var publisher = await GetPublisherOrThrow(dropRequestEntity.PublisherID);
         var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropRequestEntity.MasterGameID);
-        var league = await this.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
-        var leagueYear = await AssertLeagueYear(league, publisher.LeagueYearKey.Year);
+        var leagueYear = await this.GetLeagueYearOrThrow(publisher.LeagueYearKey.LeagueID, publisher.LeagueYearKey.Year);
 
         DropRequest domain = dropRequestEntity.ToDomain(publisher, masterGame, leagueYear);
         return domain;
@@ -879,8 +873,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var publisher = await GetPublisherOrThrow(bidEntity.PublisherID);
         var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
-        var league = await this.GetLeagueOrThrow(publisher.LeagueYearKey.LeagueID);
-        var leagueYear = await AssertLeagueYear(league, publisher.LeagueYearKey.Year);
+        var leagueYear = await this.GetLeagueYearOrThrow(publisher.LeagueYearKey.LeagueID, publisher.LeagueYearKey.Year);
 
         var publisherGameDictionary = publisher.PublisherGames
             .Where(x => x.MasterGame is not null)
@@ -1889,13 +1882,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
 
-        var league = await this.GetLeagueOrThrow(tradeEntity.LeagueID);
-        if (league is null)
-        {
-            throw new Exception($"Trade has bad league: {tradeEntity.TradeID}|{tradeEntity.LeagueID}.");
-        }
-
-        var leagueYear = await this.GetLeagueYearOrThrow(league, tradeEntity.Year);
+        var leagueYear = await this.GetLeagueYearOrThrow(tradeEntity.LeagueID, tradeEntity.Year);
         Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
         Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
@@ -2480,12 +2467,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(League league, int year)
+    private async Task<IReadOnlyList<EligibilityOverride>> GetEligibilityOverrides(Guid leagueID, int year)
     {
         const string sql = "select * from tbl_league_eligibilityoverride where LeagueID = @leagueID and Year = @year;";
         var queryObject = new
         {
-            leagueID = league.LeagueID,
+            leagueID,
             year
         };
 
@@ -2606,14 +2593,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task<IReadOnlyList<TagOverride>> GetTagOverrides(League league, int year)
+    private async Task<IReadOnlyList<TagOverride>> GetTagOverrides(Guid leagueID, int year)
     {
         const string sql = "select tbl_league_tagoverride.* from tbl_league_tagoverride " +
                      "JOIN tbl_mastergame_tag ON tbl_league_tagoverride.TagName = tbl_mastergame_tag.Name " +
                      "WHERE LeagueID = @leagueID AND Year = @year;";
         var queryObject = new
         {
-            leagueID = league.LeagueID,
+            leagueID,
             year
         };
 
@@ -2640,23 +2627,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         return domains;
-    }
-
-    public async Task<IReadOnlyList<MasterGameTag>> GetTagOverridesForGame(League league, int year, MasterGame masterGame)
-    {
-        const string sql = "select tbl_mastergame_tag.* from tbl_league_tagoverride " +
-                     "JOIN tbl_mastergame_tag ON tbl_league_tagoverride.TagName = tbl_mastergame_tag.Name " +
-                     "WHERE LeagueID = @leagueID AND Year = @year AND MasterGameID = @masterGameID;";
-        var queryObject = new
-        {
-            leagueID = league.LeagueID,
-            year,
-            masterGameID = masterGame.MasterGameID
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<MasterGameTagEntity> entities = await connection.QueryAsync<MasterGameTagEntity>(sql, queryObject);
-        return entities.Select(x => x.ToDomain()).ToList();
     }
 
     public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags)
@@ -3044,7 +3014,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
     {
-        var mostRecentYear = await this.GetLeagueYearOrThrow(league, league.Years.Max());
+        var mostRecentYear = await this.GetLeagueYearOrThrow(league.LeagueID, league.Years.Max());
         bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
 
         var userAddObject = new
