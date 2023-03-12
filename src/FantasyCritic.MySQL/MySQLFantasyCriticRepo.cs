@@ -24,6 +24,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly IMasterGameRepo _masterGameRepo;
 
+    private IReadOnlyList<SupportedYear>? _supportedYearCache;
+
     public MySQLFantasyCriticRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo)
     {
         _connectionString = configuration.ConnectionString;
@@ -91,12 +93,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return null;
         }
 
+        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+        var supportedYear = await GetSupportedYear(year);
+
         var leagueTags = await GetLeagueYearTagEntities(leagueID, year);
         var specialGameSlots = await GetSpecialGameSlotEntities(leagueID, year);
-        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var eligibilityOverrides = await GetEligibilityOverrides(leagueID, year);
         var tagOverrides = await GetTagOverrides(leagueID, year);
-        var supportedYear = await GetSupportedYear(year);
 
         const string sql = "select * from tbl_league_year where LeagueID = @leagueID and Year = @year";
         await using var connection = new MySqlConnection(_connectionString);
@@ -2287,9 +2290,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<SupportedYear>> GetSupportedYears()
     {
+        if (_supportedYearCache is not null)
+        {
+            return _supportedYearCache;
+        }
         await using var connection = new MySqlConnection(_connectionString);
         var results = await connection.QueryAsync<SupportedYearEntity>("select * from tbl_meta_supportedyear;");
-        return results.Select(x => x.ToDomain()).ToList();
+        var supportedYears = results.Select(x => x.ToDomain()).ToList();
+        _supportedYearCache = supportedYears;
+        return supportedYears;
     }
 
     public async Task<SupportedYear> GetSupportedYear(int year)
