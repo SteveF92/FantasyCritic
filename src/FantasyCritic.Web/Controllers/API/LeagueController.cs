@@ -225,8 +225,7 @@ public class LeagueController : BaseLeagueController
         Publisher? userPublisher = null;
         if (currentUser is not null)
         {
-            var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league);
-            userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Id);
+            userIsFollowingLeague = await _fantasyCriticService.UserIsFollowingLeague(currentUser, league);
             userPublisher = leagueYear.GetUserPublisher(currentUser);
         }
 

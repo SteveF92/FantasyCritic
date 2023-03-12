@@ -1185,6 +1185,25 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return users;
     }
 
+    public async Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league)
+    {
+        var query = new
+        {
+            userID = currentUser.Id,
+            leagueID = league.LeagueID
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var result = await connection.QuerySingleAsync<int>(
+            @"
+            select Count(*) from tbl_user
+                join tbl_user_followingleague on (tbl_user.UserID = tbl_user_followingleague.UserID)
+                where tbl_user_followingleague.LeagueID = @leagueID AND tbl_user.UserID = @userID;
+            ", query);
+
+        return result > 0;
+    }
+
     public async Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user)
     {
         IEnumerable<LeagueEntity> leagueEntities;
@@ -1860,7 +1879,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             List<TradeVote> tradeVotes = new List<TradeVote>();
             foreach (var vote in votes)
             {
-                var user = await _userStore.FindByIdOrThrowAsync(vote.UserID, CancellationToken.None);
+                var user = leagueYear.Publishers.Single(x => x.User.Id == vote.UserID).User;
                 var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
                 tradeVotes.Add(domainVote);
             }

@@ -421,6 +421,11 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueFollowers(league);
     }
 
+    public Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league)
+    {
+        return _fantasyCriticRepo.UserIsFollowingLeague(currentUser, league);
+    }
+
     public async Task<Result> FollowLeague(League league, FantasyCriticUser user)
     {
         if (!league.PublicLeague)
