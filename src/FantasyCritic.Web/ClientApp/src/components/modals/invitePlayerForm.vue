@@ -1,6 +1,6 @@
 <template>
   <ValidationObserver v-slot="{ invalid }">
-    <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData">
+    <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData" @show="fetchInviteLinks">
       <div v-show="errorInfo" class="alert alert-danger">
         {{ errorInfo }}
       </div>
@@ -68,9 +68,6 @@ export default {
     valuesEntered() {
       return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
     }
-  },
-  mounted() {
-    this.fetchInviteLinks();
   },
   methods: {
     invitePlayer() {

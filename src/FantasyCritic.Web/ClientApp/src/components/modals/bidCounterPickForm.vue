@@ -84,9 +84,6 @@ export default {
       return _.filter(this.possibleCounterPicks, (x) => x.willRelease && !x.released);
     }
   },
-  mounted() {
-    this.getPossibleCounterPicks();
-  },
   methods: {
     getPossibleCounterPicks() {
       this.clearData();

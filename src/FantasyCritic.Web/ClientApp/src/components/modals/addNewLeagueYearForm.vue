@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal id="addNewLeagueYear" ref="addNewLeagueYearRef" title="Start new Year">
+    <b-modal id="addNewLeagueYear" ref="addNewLeagueYearRef" title="Start new Year" @show="fetchAvailableYears">
       <div class="form-horizontal">
         <div class="form-group">
           <label for="selectedYear" class="control-label">New Year to Play</label>
@@ -31,32 +31,32 @@ export default {
       error: ''
     };
   },
-  mounted() {
-    if (!this.isManager) {
-      return;
-    }
-    axios
-      .get('/api/LeagueManager/AvailableYears/' + this.league.leagueID)
-      .then((response) => {
-        this.availableYears = response.data;
-      })
-      .catch((returnedError) => (this.error = returnedError));
-  },
   methods: {
-    addNewLeagueYear() {
+    async fetchAvailableYears() {
+      if (!this.isManager) {
+        return;
+      }
+
+      try {
+        const response = await axios.get('/api/LeagueManager/AvailableYears/' + this.league.leagueID);
+        this.availableYears = response.data;
+      } catch (error) {
+        this.error = error.response.data;
+      }
+    },
+    async addNewLeagueYear() {
       var model = {
         leagueID: this.league.leagueID,
         year: this.selectedYear
       };
-      axios
-        .post('/api/leagueManager/AddNewLeagueYear', model)
-        .then(() => {
-          this.$refs.addNewLeagueYearRef.hide();
-          this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.selectedYear }, query: { freshSettings: true } });
-        })
-        .catch((response) => {
-          this.error = response;
-        });
+
+      try {
+        await axios.post('/api/leagueManager/AddNewLeagueYear', model);
+        this.$refs.addNewLeagueYearRef.hide();
+        this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.selectedYear }, query: { freshSettings: true } });
+      } catch (error) {
+        this.error = error.response.data;
+      }
     }
   }
 };

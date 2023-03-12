@@ -38,9 +38,6 @@ export default {
       isBusy: false
     };
   },
-  mounted() {
-    this.getPossibleCounterPicks();
-  },
   methods: {
     selectCounterPick() {
       this.isBusy = true;
