@@ -30,8 +30,8 @@ public class PublisherEntity
 
     public Guid PublisherID { get; set; }
     public string PublisherName { get; set; } = null!;
-    public string? PublisherIcon { get; }
-    public string? PublisherSlogan { get; }
+    public string? PublisherIcon { get; set; }
+    public string? PublisherSlogan { get; set; }
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
     public Guid UserID { get; set; }
