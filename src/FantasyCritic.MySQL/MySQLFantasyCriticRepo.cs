@@ -1024,6 +1024,56 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return users;
     }
 
+    public async Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league)
+    {
+        var param = new
+        {
+            P_LeagueID = league.LeagueID
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        using var resultSets = await connection.QueryMultipleAsync("sp_getusersinleague", param, commandType: CommandType.StoredProcedure);
+        var userEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
+        var playStatuses = await resultSets.ReadAsync<LeagueYearStatusEntity>();
+        var userYears = await resultSets.ReadAsync<LeagueYearUserEntity>();
+
+        var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
+
+        var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
+        foreach (var userYear in userYears)
+        {
+            if (!userYearsDictionary.ContainsKey(userYear.Year))
+            {
+                userYearsDictionary[userYear.Year] = new HashSet<Guid>();
+            }
+
+            userYearsDictionary[userYear.Year].Add(userYear.UserID);
+        }
+
+        var startedYears = playStatuses
+            .Where(x => x.PlayStatus != PlayStatus.NotStartedDraft.Value)
+            .Select(x => x.Year)
+            .ToList();
+
+        List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
+        foreach (var user in usersInLeague)
+        {
+            bool userRemovable = !league.LeagueManager.Equals(user);
+            foreach (var year in startedYears)
+            {
+                var userPlayedInYear = userYearsDictionary[year].Contains(user.Id);
+                if (userPlayedInYear)
+                {
+                    userRemovable = false;
+                }
+            }
+
+            usersWithStatus.Add(new FantasyCriticUserRemovable(user, userRemovable));
+        }
+
+        return usersWithStatus;
+    }
+
     public async Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year)
     {
         var query = new

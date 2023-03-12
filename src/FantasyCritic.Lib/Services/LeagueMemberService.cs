@@ -72,42 +72,9 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
     }
 
-    public async Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league)
+    public Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league)
     {
-        var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
-
-        List<LeagueYear> leagueYears = new List<LeagueYear>();
-        List<Publisher> allPublishers = new List<Publisher>();
-        foreach (var year in league.Years)
-        {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league.LeagueID, year);
-            leagueYears.Add(leagueYear);
-            var publishersForYear = leagueYear.Publishers;
-            allPublishers.AddRange(publishersForYear);
-        }
-
-        List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
-        foreach (var user in usersInLeague)
-        {
-            bool userRemovable = !league.LeagueManager.Equals(user);
-            foreach (var leagueYear in leagueYears)
-            {
-                var publishersForYear = allPublishers.Where(x => x.LeagueYearKey.Year == leagueYear.Year);
-                if (!publishersForYear.Any(x => x.User.Equals(user)))
-                {
-                    //User did not play in this year, safe to remove.
-                    continue;
-                }
-                if (leagueYear.PlayStatus.PlayStarted)
-                {
-                    userRemovable = false;
-                }
-            }
-
-            usersWithStatus.Add(new FantasyCriticUserRemovable(user, userRemovable));
-        }
-
-        return usersWithStatus;
+        return _fantasyCriticRepo.GetUsersWithRemoveStatus(league);
     }
 
     public async Task<Result> InviteUserByEmail(League league, string inviteEmail)
