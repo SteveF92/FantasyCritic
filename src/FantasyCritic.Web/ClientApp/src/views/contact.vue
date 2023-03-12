@@ -73,8 +73,7 @@
         <h3>Account issues</h3>
         <p>
           If you have an issue with your account(can't login, can't verify email, etc), please reach out to me directly via DM on Discord or Twitter. Additionally, if one of your league members is
-          having issues with their account, you should have them reach out to me directly, rather than contacting me on their behalf. On Discord, I'm and you can find me at the top of the members list
-          in the server.
+          having issues with their account, you should have them reach out to me directly, rather than contacting me on their behalf.
         </p>
         <h3>Other Issues</h3>
         <p>
