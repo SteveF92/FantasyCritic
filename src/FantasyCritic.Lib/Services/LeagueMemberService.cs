@@ -198,9 +198,9 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetLeaguesForUser(user);
     }
 
-    public Task<IReadOnlyList<LeagueYear>> GetLeaguesYearsForUser(FantasyCriticUser user, int year)
+    public Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
     {
-        return _fantasyCriticRepo.GetLeagueYearsForUser(user, year);
+        return _fantasyCriticRepo.GetLeaguesWithMostRecentYearOneShot();
     }
 
     public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser user)

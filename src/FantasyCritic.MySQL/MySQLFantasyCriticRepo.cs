@@ -53,8 +53,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string leagueYearSQL = "select Year from tbl_league_year where LeagueID = @leagueID;";
         IEnumerable<int> years = await connection.QueryAsync<int>(leagueYearSQL, queryObject);
-        var oneShotLeagues = await GetLeaguesWithMostRecentYearOneShot();
-        League league = leagueEntity.ToDomain(manager, years, oneShotLeagues.Contains(leagueEntity.LeagueID));
+        League league = leagueEntity.ToDomain(manager, years);
         return league;
     }
 
@@ -79,7 +78,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(manager, years, oneShotLeagues.Contains(leagueEntity.LeagueID));
+            League league = leagueEntity.ToDomain(manager, years);
             leagues.Add(league);
         }
 
@@ -123,7 +122,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var winningUser = await _userStore.GetUserThatMightExist(leagueYearEntity.WinningUserID);
         var manager = await _userStore.FindByIdOrThrowAsync(leagueEntity.LeagueManager, CancellationToken.None);
 
-        var league = leagueEntity.ToDomain(manager, years, false);
+        var league = leagueEntity.ToDomain(manager, years);
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = ConvertLeagueTagEntities(leagueTagEntities, tagDictionary);
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
@@ -1120,6 +1119,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
         return leagues;
+    }
+
+    public async Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
+    {
+        const string sql = "SELECT distinct LeagueID " +
+                           "FROM (SELECT LeagueID, YEAR, OneShotMode, ROW_NUMBER() OVER (PARTITION BY LeagueID ORDER BY Year DESC) ranked_order FROM tbl_caching_leagueyear) subQuery " +
+                           "WHERE subQuery.ranked_order = 1 AND subQuery.OneShotMode = 1;";
+        await using var connection = new MySqlConnection(_connectionString);
+        var leagueIDs = await connection.QueryAsync<Guid>(sql);
+        return leagueIDs.ToHashSet();
     }
 
     public async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year)
@@ -2326,7 +2335,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(manager, years, oneShotLeagues.Contains(leagueEntity.LeagueID));
+            League league = leagueEntity.ToDomain(manager, years);
             leagues.Add(league);
         }
 
@@ -3197,16 +3206,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             false, null, false, null, conditionalDropGame, 0, null, null, null, null);
 
         return fakePublisherGame;
-    }
-    
-    private async Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
-    {
-        const string sql = "SELECT distinct LeagueID " +
-            "FROM (SELECT LeagueID, YEAR, OneShotMode, ROW_NUMBER() OVER (PARTITION BY LeagueID ORDER BY Year DESC) ranked_order FROM tbl_caching_leagueyear) subQuery " +
-            "WHERE subQuery.ranked_order = 1 AND subQuery.OneShotMode = 1;";
-        await using var connection = new MySqlConnection(_connectionString);
-        var leagueIDs = await connection.QueryAsync<Guid>(sql);
-        return leagueIDs.ToHashSet();
     }
 
     public async Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears)

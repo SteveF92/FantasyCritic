@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Domain;
 public class League : IEquatable<League>
 {
     public League(Guid leagueID, string leagueName, FantasyCriticUser leagueManager, IEnumerable<int> years,
-        bool publicLeague, bool testLeague, bool customRulesLeague, bool archived, int numberOfFollowers, bool mostRecentYearOneShotMode)
+        bool publicLeague, bool testLeague, bool customRulesLeague, bool archived, int numberOfFollowers)
     {
         LeagueID = leagueID;
         LeagueName = leagueName;
@@ -16,7 +16,6 @@ public class League : IEquatable<League>
         CustomRulesLeague = customRulesLeague;
         Archived = archived;
         NumberOfFollowers = numberOfFollowers;
-        MostRecentYearOneShotMode = mostRecentYearOneShotMode;
     }
 
     public Guid LeagueID { get; }
@@ -28,7 +27,6 @@ public class League : IEquatable<League>
     public bool CustomRulesLeague { get; }
     public bool Archived { get; }
     public int NumberOfFollowers { get; }
-    public bool MostRecentYearOneShotMode { get; }
 
     public bool AffectsStats => !(TestLeague || CustomRulesLeague);
 

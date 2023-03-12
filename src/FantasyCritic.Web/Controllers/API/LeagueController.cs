@@ -85,6 +85,7 @@ public class LeagueController : BaseLeagueController
         var currentUser = await GetCurrentUserOrThrow();
 
         IReadOnlyList<League> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
+        var oneShotLeagues = await _leagueMemberService.GetLeaguesWithMostRecentYearOneShot();
 
         List<LeagueWithStatusViewModel> viewModels = new List<LeagueWithStatusViewModel>();
         foreach (var league in myLeagues)
@@ -95,7 +96,7 @@ public class LeagueController : BaseLeagueController
             }
 
             bool isManager = (league.LeagueManager.Id == currentUser.Id);
-            viewModels.Add(new LeagueWithStatusViewModel(league, isManager, true, false));
+            viewModels.Add(new LeagueWithStatusViewModel(league, isManager, true, true, oneShotLeagues.Contains(league.LeagueID)));
         }
 
         var sortedViewModels = viewModels.OrderBy(l => l.LeagueName);
