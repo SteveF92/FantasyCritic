@@ -17,20 +17,20 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     private readonly string _connectionString;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
 
-    private Dictionary<Guid, MasterGame> _masterGamesCache;
+    private IReadOnlyList<MasterGameTag>? _tagCache;
+    private Dictionary<Guid, MasterGame>? _masterGamesCache;
     private Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
 
     public MySQLMasterGameRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore)
     {
         _connectionString = configuration.ConnectionString;
         _userStore = userStore;
-        _masterGamesCache = new Dictionary<Guid, MasterGame>();
         _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
     }
 
     public void ClearMasterGameCache()
     {
-        _masterGamesCache = new Dictionary<Guid, MasterGame>();
+        _masterGamesCache = null;
     }
 
     public void ClearMasterGameYearCache()
@@ -40,7 +40,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<IReadOnlyList<MasterGame>> GetMasterGames()
     {
-        if (_masterGamesCache.Any())
+        if (_masterGamesCache is not null)
         {
             return _masterGamesCache.Values.ToList();
         }
@@ -109,12 +109,12 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<MasterGame?> GetMasterGame(Guid masterGameID)
     {
-        if (!_masterGamesCache.Any())
+        if (_masterGamesCache is null)
         {
             await GetMasterGames();
         }
 
-        return _masterGamesCache.GetValueOrDefault(masterGameID);
+        return _masterGamesCache!.GetValueOrDefault(masterGameID);
     }
 
     public async Task<MasterGameYear?> GetMasterGameYear(Guid masterGameID, int year)
@@ -595,11 +595,18 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<IReadOnlyList<MasterGameTag>> GetMasterGameTags()
     {
+        if (_tagCache is not null)
+        {
+            return _tagCache;
+        }
+
         const string sql = "select * from tbl_mastergame_tag;";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameTagEntity> entities = await connection.QueryAsync<MasterGameTagEntity>(sql);
-        return entities.Select(x => x.ToDomain()).ToList();
+        var tags = entities.Select(x => x.ToDomain()).ToList();
+        _tagCache = tags;
+        return tags;
     }
 
     public async Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary()
