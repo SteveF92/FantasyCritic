@@ -1039,6 +1039,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
 
+        var domains = ConvertUserRemovableEntities(league, userYears, playStatuses, usersInLeague);
+        return domains;
+    }
+
+    private IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
+        IEnumerable<LeagueYearStatusEntity> playStatuses, List<FantasyCriticUser> usersInLeague)
+    {
         var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
         foreach (var userYear in userYears)
         {
@@ -1090,6 +1097,31 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var users = results.Select(x => x.ToDomain()).ToList();
         return users;
+    }
+
+    public async Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear)
+    {
+        var param = new
+        {
+            P_LeagueID = leagueYear.League.LeagueID,
+            P_Year = leagueYear.Year
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        using var resultSets = await connection.QueryMultipleAsync("sp_getcombinedleagueyearuserstatus", param, commandType: CommandType.StoredProcedure);
+        var userEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
+        var playStatuses = await resultSets.ReadAsync<LeagueYearStatusEntity>();
+        var userYears = await resultSets.ReadAsync<LeagueYearUserEntity>();
+        var activeUserEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
+        var inviteEntities = await resultSets.ReadAsync<LeagueInviteEntity>();
+
+        var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
+        var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
+
+        var usersWithRemoveStatus = ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
+        var leagueInvites = await ConvertLeagueInviteEntitiesForSingleLeague(leagueYear.League, inviteEntities);
+
+        return new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
     }
 
     public async Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
@@ -1371,7 +1403,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 query);
         }
 
-        var leagueInvites = await ConvertLeagueInviteEntities(invites);
+        var leagueInvites = await ConvertLeagueInviteEntitiesForSingleLeague(league, invites);
         return leagueInvites;
     }
 
@@ -3023,6 +3055,25 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var entity in entities)
         {
             var league = await this.GetLeagueOrThrow(entity.LeagueID);
+            if (entity.UserID.HasValue)
+            {
+                FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
+                leagueInvites.Add(entity.ToDomain(league, user));
+            }
+            else
+            {
+                leagueInvites.Add(entity.ToDomain(league));
+            }
+        }
+
+        return leagueInvites;
+    }
+
+    private async Task<IReadOnlyList<LeagueInvite>> ConvertLeagueInviteEntitiesForSingleLeague(League league, IEnumerable<LeagueInviteEntity> entities)
+    {
+        List<LeagueInvite> leagueInvites = new List<LeagueInvite>();
+        foreach (var entity in entities)
+        {
             if (entity.UserID.HasValue)
             {
                 FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);

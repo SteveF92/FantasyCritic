@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -233,6 +234,11 @@ public class LeagueMemberService
     public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
     {
         return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, year);
+    }
+
+    public Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear)
+    {
+        return _fantasyCriticRepo.GetCombinedLeagueYearUserStatus(leagueYear);
     }
 
     private async Task<LeagueInvite?> GetMatchingInvite(League league, string emailAddress)

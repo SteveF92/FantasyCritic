@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Calculations;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
@@ -19,6 +20,8 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league);
     Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year);
+    Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear);
+
     Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
     Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange);
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
