@@ -21,6 +21,7 @@ export default {
       try {
         const tasks = [context.dispatch('getAllTags'), context.dispatch('getPossibleLeagueOptions'), context.dispatch('getBidTimes')];
         await Promise.all(tasks);
+        context.commit('setDataLoaded', true);
       } finally {
         context.commit('setBusy', false);
       }
@@ -53,6 +54,9 @@ export default {
   mutations: {
     setBusy(state, isBusyFlag) {
       state.isBusy = isBusyFlag;
+    },
+    setDataLoaded(state, dataLoaded) {
+      state.dataLoaded = dataLoaded;
     },
     setTags(state, tags) {
       state.tags = tags;
