@@ -116,7 +116,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import MasterGameTagBadge from '@/components/masterGameTagBadge';
 import LeagueMixin from '@/mixins/leagueMixin';
 
@@ -125,22 +124,9 @@ export default {
     MasterGameTagBadge
   },
   mixins: [LeagueMixin],
-  data() {
-    return {
-      leagueYearOptions: null
-    };
-  },
-  mounted() {
-    this.fetchLeagueYearOptions();
-  },
-  methods: {
-    fetchLeagueYearOptions() {
-      axios
-        .get('/api/League/GetLeagueYearOptions?leagueID=' + this.league.leagueID + '&year=' + this.leagueYear.year)
-        .then((response) => {
-          this.leagueYearOptions = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+  computed: {
+    leagueYearOptions() {
+      return this.leagueYear.settings;
     }
   }
 };

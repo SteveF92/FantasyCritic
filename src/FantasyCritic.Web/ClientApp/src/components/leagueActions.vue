@@ -30,7 +30,7 @@
           <ul class="actions-list">
             <li class="action">
               <router-link :to="{ name: 'publisher', params: { publisherid: userPublisher.publisherID } }">
-                <template v-if="leagueYear.hasSpecialSlots && !leagueYear.supportedYear.finished">My Publisher Details / Move Games</template>
+                <template v-if="leagueYear.settings.hasSpecialSlots && !leagueYear.supportedYear.finished">My Publisher Details / Move Games</template>
                 <template v-else>My Publisher Details</template>
               </router-link>
             </li>
@@ -45,8 +45,8 @@
                 <li v-if="draftFinished" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
                 <li v-if="draftFinished" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
                 <li v-if="draftFinished" v-b-modal="'currentBidsForm'" class="fake-link action">My Current Bids</li>
-                <li v-if="draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
-                <li v-if="draftFinished && leagueYear.tradingSystem !== 'NoTrades'" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
+                <li v-if="draftFinished && leagueYear.settings.tradingSystem !== 'NoTrades'" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
+                <li v-if="draftFinished && leagueYear.settings.tradingSystem !== 'NoTrades'" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
                 <li v-if="draftFinished" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
                 <li v-if="draftFinished && userPublisher.superDropsAvailable > 0" v-b-modal="'superDropGameForm'" class="fake-link action">Use a Super Drop</li>
                 <li v-if="draftFinished" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>

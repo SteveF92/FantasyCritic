@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
 
@@ -20,13 +21,7 @@ public class LeagueYearViewModel
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
         SupportedYear = new SupportedYearViewModel(leagueYear.SupportedYear);
-        StandardGames = leagueYear.Options.StandardGames;
-        CounterPicks = leagueYear.Options.CounterPicks;
-        DraftSystem = leagueYear.Options.DraftSystem.Value;
-        PickupSystem = leagueYear.Options.PickupSystem.Value;
-        TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
-        ScoringSystem = leagueYear.Options.ScoringSystem.Name;
-        TradingSystem = leagueYear.Options.TradingSystem.Value;
+        Settings = new LeagueYearSettingsViewModel(leagueYear);
         UnlinkedGameExists = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame is null);
 
         if (accessingUser is not null)
@@ -34,9 +29,6 @@ public class LeagueYearViewModel
             UserIsActive = activeUsers.Any(x => x.Id == accessingUser.Id);
         }
 
-        HasSpecialSlots = leagueYear.Options.HasSpecialSlots;
-        OneShotMode = leagueYear.Options.OneShotMode;
-        CounterPickDeadline = leagueYear.CounterPickDeadline;
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
@@ -139,23 +131,14 @@ public class LeagueYearViewModel
     public Guid LeagueID { get; }
     public int Year { get; }
     public SupportedYearViewModel SupportedYear { get; }
-    public int StandardGames { get; }
-    public int CounterPicks { get; }
-    public string DraftSystem { get; }
-    public string PickupSystem { get; }
-    public string TiebreakSystem { get; }
-    public string ScoringSystem { get; }
-    public string TradingSystem { get; }
+    public LeagueYearSettingsViewModel Settings { get; }
+    public PublisherSlotRequirementsViewModel SlotInfo { get; }
     public bool UnlinkedGameExists { get; }
     public bool UserIsActive { get; }
-    public bool HasSpecialSlots { get; }
-    public bool OneShotMode { get; }
-    public LocalDate CounterPickDeadline { get; }
     public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
     public IReadOnlyList<PublisherViewModel> Publishers { get; }
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
-    public PublisherSlotRequirementsViewModel SlotInfo { get; }
     public PlayStatusViewModel PlayStatus { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
     public PublicBiddingSetViewModel? PublicBiddingGames { get; }

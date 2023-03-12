@@ -67,7 +67,7 @@ export default {
     },
     publisherSlotsAreFilled() {
       let userGames = this.userPublisher.games;
-      let counterPickSlots = this.leagueYear.counterPicks;
+      let counterPickSlots = this.leagueYear.settings.counterPicks;
       let counterPicks = _.filter(userGames, { counterPick: true });
       return counterPicks.length >= counterPickSlots;
     },

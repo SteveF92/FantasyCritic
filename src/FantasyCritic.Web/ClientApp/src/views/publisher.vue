@@ -48,28 +48,30 @@
           <ul>
             <li>A game's tags changed after a correction was made.</li>
             <li>{{ referToPlayer('You', 'They') }} picked up a game and there were no eligible slots it could fit in.</li>
-            <li v-if="leagueYear.hasSpecialSlots">{{ referToPlayer('You', 'They') }} intentionally moved a game into a slot it's not eligble for. This used to be possible but no longer is.</li>
+            <li v-if="leagueYear.settings.hasSpecialSlots">
+              {{ referToPlayer('You', 'They') }} intentionally moved a game into a slot it's not eligble for. This used to be possible but no longer is.
+            </li>
           </ul>
 
           The options going forward are:
           <ul>
-            <li v-if="leagueYear.hasSpecialSlots">{{ referToPlayer('You', 'They') }} can reorganize {{ referToPlayer('your', 'their') }} games so everything is eligible.</li>
+            <li v-if="leagueYear.settings.hasSpecialSlots">{{ referToPlayer('You', 'They') }} can reorganize {{ referToPlayer('your', 'their') }} games so everything is eligible.</li>
             <li>The league manager can override a game's tags if the league disagrees with the tags the site decided.</li>
             <li>{{ referToPlayer('You', 'They') }} can drop the game (depending on the league settings).</li>
             <li>The league could decide to give {{ referToPlayer('you', 'they') }} a "free drop" regardless of the league settings if they decide that this game should not be eligible.</li>
             <li>{{ referToPlayer('You', 'They') }} could trade the game to another player.</li>
           </ul>
 
-          <template v-if="leagueYear.hasSpecialSlots">
+          <template v-if="leagueYear.settings.hasSpecialSlots">
             Generally speaking, players should always be putting their games into slots they are eligible for. Intentionally keeping games in ineligible slots in order to free up 'more valuable' slots
             is outside of the spirit of Fantasy Critic.
           </template>
         </div>
 
         <div v-show="!coverArtMode" class="table-options">
-          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
-          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
-          <b-button v-if="!sortOrderMode && leagueYear.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
+          <b-button v-if="!sortOrderMode && leagueYear.settings.hasSpecialSlots && userIsPublisher && !moveMode" variant="info" @click="enterMoveMode">Move Games</b-button>
+          <b-button v-if="!sortOrderMode && leagueYear.settings.hasSpecialSlots && moveMode" variant="secondary" @click="cancelMoveMode">Cancel Movement</b-button>
+          <b-button v-if="!sortOrderMode && leagueYear.settings.hasSpecialSlots && moveMode" variant="success" @click="confirmPositions">Confirm Positions</b-button>
           <template v-if="!moveMode && isPlusUser">
             <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="editableIncludeRemovedInSorted">
               <span class="checkbox-label">Include Dropped Games</span>

@@ -108,7 +108,7 @@ export default {
         return 0;
       }
 
-      var expectedNumberOfCounterPicks = this.leagueYear.counterPicks;
+      var expectedNumberOfCounterPicks = this.leagueYear.settings.counterPicks;
       var numberCounterPicks = this.publisher.games.filter((x) => x.counterPick).length;
       var emptySlots = expectedNumberOfCounterPicks - numberCounterPicks;
       var points = emptySlots * -15;

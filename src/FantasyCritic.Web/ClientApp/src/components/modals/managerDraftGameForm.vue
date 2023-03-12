@@ -20,7 +20,7 @@
           </span>
         </div>
 
-        <div v-if="!leagueYear.hasSpecialSlots">
+        <div v-if="!leagueYear.settings.hasSpecialSlots">
           <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
         </div>
         <div v-else>

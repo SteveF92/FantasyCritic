@@ -1,7 +1,7 @@
 <template>
   <b-modal id="manageEligibilityOverridesModal" ref="eligibilityOverridesModalRef" size="lg" title="Manage Eligibility Overrides" hide-footer @hidden="clearData">
     <div class="alert alert-info">This option will allow you to manually allow or ban a specific game in your league, no matter what your other settings are.</div>
-    <div v-if="leagueYear.hasSpecialSlots" class="alert alert-warning">
+    <div v-if="leagueYear.settings.hasSpecialSlots" class="alert alert-warning">
       Warning! Because your league uses 'special roster slots', you should consider using the 'tag override' option, instead of this option. If you set a game as 'eligible' here, it will be eligible
       in
       <em>any</em>

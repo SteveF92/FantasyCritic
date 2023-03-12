@@ -249,7 +249,7 @@ export default {
       return mostRecentMessage;
     },
     showPublicRevealCountdown() {
-      if (!this.leagueYear || (this.leagueYear.pickupSystem !== 'SemiPublicBidding' && this.leagueYear.pickupSystem !== 'SemiPublicBiddingSecretCounterPicks')) {
+      if (!this.leagueYear || (this.leagueYear.settings.pickupSystem !== 'SemiPublicBidding' && this.leagueYear.settings.pickupSystem !== 'SemiPublicBiddingSecretCounterPicks')) {
         return false;
       }
 

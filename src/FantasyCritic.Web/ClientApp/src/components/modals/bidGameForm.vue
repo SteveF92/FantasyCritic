@@ -27,7 +27,7 @@
         </span>
       </div>
 
-      <div v-if="!leagueYear.hasSpecialSlots">
+      <div v-if="!leagueYear.settings.hasSpecialSlots">
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
       </div>
@@ -97,7 +97,7 @@
             </option>
           </b-form-select>
         </div>
-        <div v-if="leagueYear.hasSpecialSlots" class="form-check">
+        <div v-if="leagueYear.settings.hasSpecialSlots" class="form-check">
           <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
           <label class="form-check-label">
             Allow bid to succeed even if there are no slots this game is eligible in.
@@ -163,7 +163,7 @@ export default {
     },
     publisherSlotsAreFilled() {
       let userGames = this.userPublisher.games;
-      let standardGameSlots = this.leagueYear.standardGames;
+      let standardGameSlots = this.leagueYear.settings.standardGames;
       let userStandardGames = _.filter(userGames, { counterPick: false });
       return userStandardGames.length >= standardGameSlots;
     },

@@ -27,7 +27,7 @@ let leagueMixin = {
       return this.leagueYear.players;
     },
     hasSpecialSlots() {
-      return this.leagueYear.hasSpecialSlots;
+      return this.leagueYear.settings.hasSpecialSlots;
     },
     supportedYear() {
       return this.leagueYear.supportedYear;
@@ -87,7 +87,7 @@ let leagueMixin = {
       return this.leagueYear.gameNews;
     },
     oneShotMode() {
-      return this.leagueYear.oneShotMode;
+      return this.leagueYear.settings.oneShotMode;
     },
     playStarted() {
       return this.leagueYear.playStatus.playStarted;

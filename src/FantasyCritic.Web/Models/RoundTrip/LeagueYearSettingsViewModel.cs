@@ -96,6 +96,7 @@ public class LeagueYearSettingsViewModel
 
         Tags = new LeagueTagOptionsViewModel(bannedTags, requiredTags);
         SpecialGameSlots = leagueYear.Options.SpecialGameSlots.Select(x => new SpecialGameSlotViewModel(x)).ToList();
+        HasSpecialSlots = leagueYear.Options.HasSpecialSlots;
     }
 
     public Guid LeagueID { get; }
@@ -134,6 +135,7 @@ public class LeagueYearSettingsViewModel
 
     public LeagueTagOptionsViewModel Tags { get; }
     public List<SpecialGameSlotViewModel> SpecialGameSlots { get; }
+    public bool HasSpecialSlots { get; }
 
     public Result IsValid()
     {
