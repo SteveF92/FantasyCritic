@@ -600,14 +600,14 @@ public class DiscordPushService
                     throw new Exception($"Bid {bid.BidID} Successful property is null");
                 }
 
+                var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
                 if (bid.Successful.Value)
                 {
-                    var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
                     messageToAdd += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}\n";
                 }
                 else
                 {
-                    messageToAdd += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} did not succeed: {bid.Outcome}\n";
+                    messageToAdd += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} did not succeed: {bid.Outcome} {counterPickMessage}\n";
                 }
             }
 
