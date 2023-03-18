@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Postmark" Version="4.7.5" />
+    <PackageReference Include="Postmark" Version="4.7.7" />
   </ItemGroup>
 
   <ItemGroup>
