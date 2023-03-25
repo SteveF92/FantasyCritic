@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "prestart": "node aspnetcore-https",
-    "build": "vue-cli-service build --modern",
-    "client": "vue-cli-service serve --mode client --https",
-    "serve": "vue-cli-service serve --https",
-    "start": "vue-cli-service serve --port 44477 --https",
-    "watch": "vue-cli-service build --mode=development --watch",
-    "lint": "vue-cli-service lint"
+    "start": "vite",
+    "build": "run-p type-check build-only",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --noEmit",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
@@ -21,7 +22,6 @@
     "axios": "^0.27.2",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.23.1",
-    "core-js": "^3.26.0",
     "grapheme-breaker-mjs": "^1.0.4",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
@@ -42,21 +42,13 @@
     "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.2",
-    "@babel/eslint-parser": "^7.19.1",
-    "@vue/cli-plugin-babel": "~5.0.8",
-    "@vue/cli-plugin-eslint": "~5.0.8",
-    "@vue/cli-plugin-pwa": "~5.0.8",
-    "@vue/cli-plugin-router": "~5.0.8",
-    "@vue/cli-plugin-vuex": "~5.0.8",
-    "@vue/cli-service": "~5.0.8",
-    "eslint": "^8.27.0",
-    "eslint-config-prettier": "^8.5.0",
+    "@vitejs/plugin-vue2": "^2.2.0",
+    "@vue/eslint-config-prettier": "^7.1.0",
+    "eslint": "^8.36.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-vue": "^8.7.1",
-    "prettier": "^2.7.1",
-    "sass": "^1.56.0",
-    "sass-loader": "^12.6.0",
-    "vue-template-compiler": "^2.7.13"
+    "eslint-plugin-vue": "^9.10.0",
+    "prettier": "^2.8.7",
+    "sass": "^1.60.0",
+    "vite": "^4.2.1"
   }
 }
