@@ -46,6 +46,8 @@
 </template>
 
 <script>
+import _ from 'lodash';
+
 import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 

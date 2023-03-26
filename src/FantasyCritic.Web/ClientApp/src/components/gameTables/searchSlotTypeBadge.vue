@@ -16,6 +16,8 @@
   </span>
 </template>
 <script>
+import _ from 'lodash';
+
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {

@@ -24,6 +24,7 @@
 
 <script>
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
+import _ from 'lodash';
 
 export default {
   components: {

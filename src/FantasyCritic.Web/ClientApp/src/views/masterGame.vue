@@ -102,6 +102,7 @@
 
 <script>
 import axios from 'axios';
+import _ from 'lodash';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import GGMixin from '@/mixins/ggMixin.js';
 

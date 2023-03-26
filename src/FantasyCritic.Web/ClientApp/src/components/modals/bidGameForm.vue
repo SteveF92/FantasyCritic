@@ -124,6 +124,8 @@
 
 <script>
 import axios from 'axios';
+import _ from 'lodash';
+
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';

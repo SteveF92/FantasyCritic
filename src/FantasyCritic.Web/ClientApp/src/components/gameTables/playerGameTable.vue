@@ -81,6 +81,7 @@
 import GlobalFunctions from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 import PublisherMixin from '@/mixins/publisherMixin.js';
+import _ from 'lodash';
 
 export default {
   components: {

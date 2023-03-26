@@ -140,6 +140,7 @@
 
 <script>
 import html2canvas from 'html2canvas';
+import _ from 'lodash';
 
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';

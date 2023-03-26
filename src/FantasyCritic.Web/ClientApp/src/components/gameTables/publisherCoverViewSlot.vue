@@ -40,6 +40,8 @@
   </div>
 </template>
 <script>
+import _ from 'lodash';
+
 import PublisherMixin from '@/mixins/publisherMixin.js';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';

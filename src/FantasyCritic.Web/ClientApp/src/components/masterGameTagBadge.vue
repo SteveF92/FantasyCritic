@@ -23,6 +23,8 @@
   </span>
 </template>
 <script>
+import _ from 'lodash';
+
 export default {
   props: {
     tagName: { type: String, required: true },

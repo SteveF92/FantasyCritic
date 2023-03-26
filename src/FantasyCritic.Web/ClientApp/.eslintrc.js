@@ -13,7 +13,6 @@ module.exports = {
         }]
     },
     globals: {
-        "_": "readonly",
         "__dirname": "readonly"
     }
 };

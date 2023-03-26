@@ -289,6 +289,7 @@
 <script>
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
+import _ from 'lodash';
 
 export default {
   components: {

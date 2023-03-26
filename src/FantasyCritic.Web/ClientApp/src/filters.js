@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import moment from 'moment';
+import _ from 'lodash';
 
 Vue.filter('score', function (value, decimals) {
   if (value === 0) {

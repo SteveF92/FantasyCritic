@@ -59,6 +59,7 @@
 </template>
 <script>
 import html2canvas from 'html2canvas';
+import _ from 'lodash';
 
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
