@@ -21,8 +21,6 @@ import vueAwesomeCountdown from 'vue-awesome-countdown';
 
 import BasicMixin from './mixins/basicMixin';
 
-import './registerServiceWorker';
-
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
