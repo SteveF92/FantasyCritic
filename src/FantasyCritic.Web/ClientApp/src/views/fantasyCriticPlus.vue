@@ -24,7 +24,7 @@
             <p>Plus users can click a button to easily share their publishers (their lists of games) to social media.</p>
           </div>
           <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
-            <b-img src="@/assets/plus-publisher-example.png" fluid alt="Publisher Example"></b-img>
+            <b-img src="/src/assets/plus-publisher-example.png" fluid alt="Publisher Example"></b-img>
           </div>
         </div>
         <hr />
@@ -34,7 +34,7 @@
             <p>Plus users can view any publisher in a more visual way, as shown below. There's also a share button to easily share the image to social media.</p>
           </div>
           <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
-            <b-img src="@/assets/plus-cover-art-view-example.png" fluid alt="Cover Art View Example"></b-img>
+            <b-img src="/src/assets/plus-cover-art-view-example.png" fluid alt="Cover Art View Example"></b-img>
           </div>
         </div>
         <hr />
@@ -48,7 +48,7 @@
             <p>Players can use this to easily see all the stats for any game that is available, or see all the stats for the games that are taken, perhaps to make a decision about a counter pick.</p>
           </div>
           <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
-            <b-img src="@/assets/master-game-searching-example.png" fluid alt="Master Game Searching Example"></b-img>
+            <b-img src="/src/assets/master-game-searching-example.png" fluid alt="Master Game Searching Example"></b-img>
           </div>
         </div>
         <hr />
@@ -63,7 +63,7 @@
             </p>
           </div>
           <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
-            <b-img src="@/assets/game-news-example.png" fluid alt="Game News Example"></b-img>
+            <b-img src="/src/assets/game-news-example.png" fluid alt="Game News Example"></b-img>
           </div>
         </div>
         <hr />
