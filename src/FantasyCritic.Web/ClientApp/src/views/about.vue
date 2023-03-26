@@ -190,7 +190,7 @@
 </template>
 <script>
 import axios from 'axios';
-import SiteCounts from '@/components/siteCounts';
+import SiteCounts from '@/components/siteCounts.vue';
 
 export default {
   components: {

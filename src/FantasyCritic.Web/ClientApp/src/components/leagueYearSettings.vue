@@ -287,8 +287,8 @@
   </div>
 </template>
 <script>
-import LeagueTagSelector from '@/components/leagueTagSelector';
-import SpecialGameSlotSelector from '@/components/specialGameSlotSelector';
+import LeagueTagSelector from '@/components/leagueTagSelector.vue';
+import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
 
 export default {
   components: {

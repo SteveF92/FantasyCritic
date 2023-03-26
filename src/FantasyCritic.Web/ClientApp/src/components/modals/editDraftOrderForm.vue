@@ -38,7 +38,7 @@
 <script>
 import axios from 'axios';
 import draggable from 'vuedraggable';
-import LeagueMixin from '@/mixins/leagueMixin';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

@@ -19,7 +19,7 @@
 
 <script>
 import Multiselect from 'vue-multiselect';
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

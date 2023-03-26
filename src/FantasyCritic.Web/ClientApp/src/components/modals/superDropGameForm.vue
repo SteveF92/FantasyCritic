@@ -37,7 +37,7 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   mixins: [LeagueMixin],

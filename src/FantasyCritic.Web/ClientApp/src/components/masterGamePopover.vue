@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import MasterGameSummary from '@/components/masterGameSummary';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
 
 export default {
   components: {

@@ -141,10 +141,10 @@
 <script>
 import html2canvas from 'html2canvas';
 
-import PlayerGameTable from '@/components/gameTables/playerGameTable';
-import PublisherCoverView from '@/components/gameTables/publisherCoverView';
+import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
+import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import GlobalFunctions from '@/globalFunctions';
-import PublisherMixin from '@/mixins/publisherMixin';
+import PublisherMixin from '@/mixins/publisherMixin.js';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {

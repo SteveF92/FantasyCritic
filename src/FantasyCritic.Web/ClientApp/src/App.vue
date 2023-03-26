@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import TopNavbar from '@/components/topNavBar';
-import FooterModule from '@/components/footerModule';
+import TopNavbar from '@/components/topNavBar.vue';
+import FooterModule from '@/components/footerModule.vue';
 
 export default {
   components: {

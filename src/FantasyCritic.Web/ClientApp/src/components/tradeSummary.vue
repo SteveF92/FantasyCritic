@@ -156,9 +156,9 @@
 <script>
 import axios from 'axios';
 
-import LeagueMixin from '@/mixins/leagueMixin';
-import MasterGamePopover from '@/components/masterGamePopover';
-import CollapseCard from '@/components/collapseCard';
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import CollapseCard from '@/components/collapseCard.vue';
 
 export default {
   components: {

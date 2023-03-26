@@ -186,9 +186,9 @@
 </template>
 
 <script>
-import SiteCounts from '@/components/siteCounts';
-import HomeFaq from '@/components/homeFAQ';
-import Tweets from '@/components/tweets';
+import SiteCounts from '@/components/siteCounts.vue';
+import HomeFaq from '@/components/homeFAQ.vue';
+import Tweets from '@/components/tweets.vue';
 
 export default {
   components: {

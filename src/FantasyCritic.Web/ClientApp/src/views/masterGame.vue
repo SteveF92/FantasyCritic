@@ -102,8 +102,8 @@
 
 <script>
 import axios from 'axios';
-import MasterGameDetails from '@/components/masterGameDetails';
-import GGMixin from '@/mixins/ggMixin';
+import MasterGameDetails from '@/components/masterGameDetails.vue';
+import GGMixin from '@/mixins/ggMixin.js';
 
 export default {
   components: {

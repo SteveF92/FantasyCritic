@@ -1049,8 +1049,8 @@
   </div>
 </template>
 <script>
-import CollapseCard from '@/components/collapseCard';
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import CollapseCard from '@/components/collapseCard.vue';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

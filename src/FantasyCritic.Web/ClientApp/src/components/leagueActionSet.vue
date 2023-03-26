@@ -55,7 +55,7 @@
   </div>
 </template>
 <script>
-import MasterGamePopover from '@/components/masterGamePopover';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

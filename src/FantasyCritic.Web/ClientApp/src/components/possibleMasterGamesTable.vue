@@ -26,8 +26,8 @@
   </div>
 </template>
 <script>
-import StatusBadge from '@/components/statusBadge';
-import MasterGamePopover from '@/components/masterGamePopover';
+import StatusBadge from '@/components/statusBadge.vue';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

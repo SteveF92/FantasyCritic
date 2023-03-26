@@ -40,11 +40,11 @@
   </div>
 </template>
 <script>
-import PublisherMixin from '@/mixins/publisherMixin';
-import MasterGameSummary from '@/components/masterGameSummary';
-import SlotTypeBadge from '@/components/gameTables/slotTypeBadge';
+import PublisherMixin from '@/mixins/publisherMixin.js';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
+import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import GlobalFunctions from '@/globalFunctions';
-import GGMixin from '@/mixins/ggMixin';
+import GGMixin from '@/mixins/ggMixin.js';
 
 export default {
   components: {

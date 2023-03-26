@@ -60,8 +60,8 @@
 <script>
 import html2canvas from 'html2canvas';
 
-import LeagueMixin from '@/mixins/leagueMixin';
-import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow';
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {

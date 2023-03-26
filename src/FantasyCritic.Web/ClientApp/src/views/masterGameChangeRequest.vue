@@ -111,8 +111,8 @@
 </template>
 <script>
 import axios from 'axios';
-import MasterGamePopover from '@/components/masterGamePopover';
-import MasterGameDetails from '@/components/masterGameDetails';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import MasterGameDetails from '@/components/masterGameDetails.vue';
 
 export default {
   components: {

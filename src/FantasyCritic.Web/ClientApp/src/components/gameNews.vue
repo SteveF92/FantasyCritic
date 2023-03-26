@@ -55,7 +55,7 @@
 </template>
 <script>
 import moment from 'moment';
-import MasterGamePopover from '@/components/masterGamePopover';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {

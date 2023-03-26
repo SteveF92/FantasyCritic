@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import CollapseCard from '@/components/collapseCard';
+import CollapseCard from '@/components/collapseCard.vue';
 
 export default {
   components: {

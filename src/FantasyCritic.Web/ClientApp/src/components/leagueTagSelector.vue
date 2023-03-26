@@ -38,7 +38,7 @@
 
 <script>
 import draggable from 'vuedraggable';
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

@@ -87,8 +87,8 @@
 <script>
 import axios from 'axios';
 import draggable from 'vuedraggable';
-import MasterGameSummary from '@/components/masterGameSummary';
-import LeagueMixin from '@/mixins/leagueMixin';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

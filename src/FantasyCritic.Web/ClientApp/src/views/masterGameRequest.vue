@@ -133,7 +133,7 @@
 </template>
 <script>
 import axios from 'axios';
-import MasterGamePopover from '@/components/masterGamePopover';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

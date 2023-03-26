@@ -68,7 +68,7 @@
 
 <script>
 import axios from 'axios';
-import MasterGamesTable from '@/components/gameTables/masterGamesTable';
+import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 
 export default {
   components: {

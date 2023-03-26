@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
-import LeagueMixin from '@/mixins/leagueMixin';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

@@ -114,8 +114,8 @@
 </template>
 <script>
 import GlobalFunctions from '@/globalFunctions';
-import MasterGamePopover from '@/components/masterGamePopover';
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

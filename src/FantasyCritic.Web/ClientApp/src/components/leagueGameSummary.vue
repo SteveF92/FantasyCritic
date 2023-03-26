@@ -28,9 +28,9 @@
   </div>
 </template>
 <script>
-import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable';
+import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable.vue';
 import { ToggleButton } from 'vue-js-toggle-button';
-import LeagueMixin from '@/mixins/leagueMixin';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

@@ -127,12 +127,12 @@
 import axios from 'axios';
 import moment from 'moment';
 
-import MasterGamePopover from '@/components/masterGamePopover';
-import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm';
-import RoyaleChangePublisherNameForm from '@/components/modals/royaleChangePublisherNameForm';
-import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePublisherIconForm';
-import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePublisherSloganForm';
-import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm.vue';
+import RoyaleChangePublisherNameForm from '@/components/modals/royaleChangePublisherNameForm.vue';
+import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePublisherIconForm.vue';
+import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePublisherSloganForm.vue';
+import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 
 import GlobalFunctions from '@/globalFunctions';
 

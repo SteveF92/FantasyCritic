@@ -58,8 +58,8 @@
 
 <script>
 import axios from 'axios';
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
-import LeagueMixin from '@/mixins/leagueMixin';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

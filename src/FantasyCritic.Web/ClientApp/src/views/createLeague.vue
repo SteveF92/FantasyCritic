@@ -93,7 +93,7 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueYearSettings from '@/components/leagueYearSettings';
+import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 
 export default {
   components: {

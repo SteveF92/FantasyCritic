@@ -79,8 +79,8 @@
 
 <script>
 import GlobalFunctions from '@/globalFunctions';
-import GameNameColumn from '@/components/gameTables/gameNameColumn';
-import PublisherMixin from '@/mixins/publisherMixin';
+import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
+import PublisherMixin from '@/mixins/publisherMixin.js';
 
 export default {
   components: {

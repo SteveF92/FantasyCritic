@@ -149,8 +149,8 @@
 
 <script>
 import axios from 'axios';
-import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm';
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
+import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm.vue';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

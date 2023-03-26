@@ -62,10 +62,10 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueActionSet from '@/components/leagueActionSet';
-import CollapseCard from '@/components/collapseCard';
-import TradeSummary from '@/components/tradeSummary';
-import LeagueMixin from '@/mixins/leagueMixin';
+import LeagueActionSet from '@/components/leagueActionSet.vue';
+import CollapseCard from '@/components/collapseCard.vue';
+import TradeSummary from '@/components/tradeSummary.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

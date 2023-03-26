@@ -57,10 +57,10 @@
 
 <script>
 import axios from 'axios';
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
-import MasterGameTagSelector from '@/components/masterGameTagSelector';
-import LeagueMixin from '@/mixins/leagueMixin';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

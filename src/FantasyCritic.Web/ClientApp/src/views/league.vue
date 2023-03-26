@@ -200,16 +200,16 @@
 import axios from 'axios';
 import * as signalR from '@microsoft/signalr';
 
-import LeagueGameSummary from '@/components/leagueGameSummary';
-import LeagueYearStandings from '@/components/leagueYearStandings';
-import LeagueActions from '@/components/leagueActions';
-import CreatePublisherForm from '@/components/modals/createPublisherForm';
-import StartDraftModal from '@/components/modals/startDraftModal';
-import GameNews from '@/components/gameNews';
-import ActiveBids from '@/components/activeBids';
-import BidCountdowns from '@/components/bidCountdowns';
-import LeagueMixin from '@/mixins/leagueMixin';
-import SpecialAuctionInfo from '@/components/specialAuctionInfo';
+import LeagueGameSummary from '@/components/leagueGameSummary.vue';
+import LeagueYearStandings from '@/components/leagueYearStandings.vue';
+import LeagueActions from '@/components/leagueActions.vue';
+import CreatePublisherForm from '@/components/modals/createPublisherForm.vue';
+import StartDraftModal from '@/components/modals/startDraftModal.vue';
+import GameNews from '@/components/gameNews.vue';
+import ActiveBids from '@/components/activeBids.vue';
+import BidCountdowns from '@/components/bidCountdowns.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
 
 export default {
   components: {

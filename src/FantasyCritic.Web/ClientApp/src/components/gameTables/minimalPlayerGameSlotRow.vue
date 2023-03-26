@@ -16,8 +16,8 @@
   </tr>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin';
-import GameNameColumn from '@/components/gameTables/gameNameColumn';
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 
 export default {
   components: {

@@ -17,7 +17,7 @@
   </b-modal>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   mixins: [LeagueMixin]

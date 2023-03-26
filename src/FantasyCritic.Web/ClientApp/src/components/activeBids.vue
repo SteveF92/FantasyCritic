@@ -26,8 +26,8 @@
 </template>
 <script>
 import moment from 'moment';
-import MasterGamePopover from '@/components/masterGamePopover';
-import LeagueMixin from '@/mixins/leagueMixin';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

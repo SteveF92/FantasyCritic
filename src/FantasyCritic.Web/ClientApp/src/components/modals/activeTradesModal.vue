@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import LeagueMixin from '@/mixins/leagueMixin';
-import TradeSummary from '@/components/tradeSummary';
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import TradeSummary from '@/components/tradeSummary.vue';
 
 export default {
   components: {

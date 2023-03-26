@@ -57,8 +57,8 @@
 </template>
 <script>
 import axios from 'axios';
-import MasterGamesTable from '@/components/gameTables/masterGamesTable';
-import LeagueActionSet from '@/components/leagueActionSet';
+import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
+import LeagueActionSet from '@/components/leagueActionSet.vue';
 
 export default {
   components: {

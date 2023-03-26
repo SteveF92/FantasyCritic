@@ -107,9 +107,9 @@
 import axios from 'axios';
 import _ from 'lodash';
 
-import Tweets from '@/components/tweets';
-import LeagueTable from '@/components/leagueTable';
-import GameNews from '@/components/gameNews';
+import Tweets from '@/components/tweets.vue';
+import LeagueTable from '@/components/leagueTable.vue';
+import GameNews from '@/components/gameNews.vue';
 
 export default {
   components: {

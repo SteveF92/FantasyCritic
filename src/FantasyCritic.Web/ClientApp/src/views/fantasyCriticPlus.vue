@@ -76,14 +76,6 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {};
-  }
-};
-</script>
 <style scoped>
 .plus-logo {
   margin-top: 10px;

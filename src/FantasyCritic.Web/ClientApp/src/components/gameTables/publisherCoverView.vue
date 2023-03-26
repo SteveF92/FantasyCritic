@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import PublisherMixin from '@/mixins/publisherMixin';
-import PublisherCoverViewSlot from '@/components/gameTables/publisherCoverViewSlot';
+import PublisherMixin from '@/mixins/publisherMixin.js';
+import PublisherCoverViewSlot from '@/components/gameTables/publisherCoverViewSlot.vue';
 
 export default {
   components: {

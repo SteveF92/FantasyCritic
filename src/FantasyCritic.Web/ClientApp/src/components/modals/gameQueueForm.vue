@@ -91,11 +91,11 @@
 import axios from 'axios';
 import draggable from 'vuedraggable';
 
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
-import StatusBadge from '@/components/statusBadge';
-import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge';
-import LeagueMixin from '@/mixins/leagueMixin';
-import MasterGamePopover from '@/components/masterGamePopover';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
+import StatusBadge from '@/components/statusBadge.vue';
+import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

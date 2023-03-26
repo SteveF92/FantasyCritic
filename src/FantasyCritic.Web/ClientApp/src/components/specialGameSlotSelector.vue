@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import MasterGameTagSelector from '@/components/masterGameTagSelector';
+import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
 export default {
   components: {

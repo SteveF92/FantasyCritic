@@ -143,7 +143,7 @@
 </template>
 <script>
 import axios from 'axios';
-import MasterGameTagSelector from '@/components/masterGameTagSelector';
+import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
 export default {
   components: {

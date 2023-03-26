@@ -61,10 +61,10 @@
 
 <script>
 import axios from 'axios';
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable';
-import LeagueMixin from '@/mixins/leagueMixin';
-import MasterGameSummary from '@/components/masterGameSummary';
-import MasterGamePopover from '@/components/masterGamePopover';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

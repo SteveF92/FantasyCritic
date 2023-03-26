@@ -24,9 +24,9 @@
 
 <script>
 import moment from 'moment';
-import MasterGamePopover from '@/components/masterGamePopover';
-import BidGameForm from '@/components/modals/bidGameForm';
-import LeagueMixin from '@/mixins/leagueMixin';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import BidGameForm from '@/components/modals/bidGameForm.vue';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {

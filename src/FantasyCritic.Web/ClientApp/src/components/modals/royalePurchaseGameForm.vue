@@ -55,7 +55,7 @@
 
 <script>
 import axios from 'axios';
-import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable';
+import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable.vue';
 
 export default {
   components: {

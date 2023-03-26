@@ -43,7 +43,7 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin';
+import LeagueMixin from '@/mixins/leagueMixin.js';
 import GlobalFunctions from '@/globalFunctions';
 
 export default {

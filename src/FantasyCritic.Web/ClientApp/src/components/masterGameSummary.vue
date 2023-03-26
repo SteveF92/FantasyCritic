@@ -87,8 +87,8 @@
 
 <script>
 import moment from 'moment';
-import MasterGameTagBadge from '@/components/masterGameTagBadge';
-import GGMixin from '@/mixins/ggMixin';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import GGMixin from '@/mixins/ggMixin.js';
 
 export default {
   components: {

@@ -38,9 +38,9 @@
   </span>
 </template>
 <script>
-import MasterGamePopover from '@/components/masterGamePopover';
-import SlotTypeBadge from '@/components/gameTables/slotTypeBadge';
-import BasicMixin from '@/mixins/basicMixin';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
+import BasicMixin from '@/mixins/basicMixin.js';
 
 export default {
   components: {
