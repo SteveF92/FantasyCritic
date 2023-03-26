@@ -26,28 +26,4 @@
     <ProjectReference Include="..\FantasyCritic.SharedSerialization\FantasyCritic.SharedSerialization.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="ActionProcessingTests\BaseActionProcessingTests.SuccessDropsTest.verified.txt">
-      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
-    </None>
-    <None Update="ActionProcessingTests\BaseActionProcessingTests.SuccessBidsTest.verified.txt">
-      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
-    </None>
-    <None Update="ActionProcessingTests\BaseActionProcessingTests.RemovedPublisherGamesTest.verified.txt">
-      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
-    </None>
-    <None Update="ActionProcessingTests\BaseActionProcessingTests.LeagueActionsTest.verified.txt">
-      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
-    </None>
-    <None Update="ActionProcessingTests\BaseActionProcessingTests.FailedDropsTest.verified.txt">
-      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
-    </None>
-    <None Update="ActionProcessingTests\BaseActionProcessingTests.FailedBidsTest.verified.txt">
-      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
-    </None>
-    <None Update="ActionProcessingTests\BaseActionProcessingTests.AddedPublisherGamesTest.verified.txt">
-      <DependentUpon>BaseActionProcessingTests.cs</DependentUpon>
-    </None>
-  </ItemGroup>
-
 </Project>
