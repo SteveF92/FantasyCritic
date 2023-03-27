@@ -31,7 +31,43 @@ export default defineConfig({
         target: target,
         changeOrigin: true,
         secure: false
-      }
+      },
+      '/Account': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
+      '/updatehub': {
+        target: target,
+        changeOrigin: true,
+        secure: false,
+        ws: true
+      },
+      '/.well-known': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
+      '/css': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
+      '/img': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
+      '/js': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
+      '/lib': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
     }
   },
   resolve: {

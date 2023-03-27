@@ -56,7 +56,7 @@ a, .nav-link {
 body {
     background-color: black;
     color: white;
-    background-image: url("/img/bg-geo-texture.png");
+    background-image: url("/images/bg-geo-texture.png");
     background-repeat: repeat;
     min-width: 250px;
     width: auto !important;

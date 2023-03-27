@@ -2,12 +2,12 @@
   <b-navbar toggleable="md" type="dark" variant="dark" class="main-nav">
     <b-navbar-brand :to="{ name: 'welcome' }">
       <template v-if="!isPlusUser">
-        <img class="full-logo" src="/img/horizontal-logo.svg" />
-        <img class="minimal-logo" src="/img/minimal-logo.svg" />
+        <img class="full-logo" src="/images/horizontal-logo.svg" />
+        <img class="minimal-logo" src="/images/minimal-logo.svg" />
       </template>
       <template v-else>
-        <img class="full-logo" src="/img/horizontal-logo-plus.svg" />
-        <img class="minimal-logo" src="/img/minimal-logo-plus.svg" />
+        <img class="full-logo" src="/images/horizontal-logo-plus.svg" />
+        <img class="minimal-logo" src="/images/minimal-logo-plus.svg" />
       </template>
     </b-navbar-brand>
 
