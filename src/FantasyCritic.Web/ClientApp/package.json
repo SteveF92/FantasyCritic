@@ -18,6 +18,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^2.0.10",
     "@microsoft/signalr": "^6.0.15",
+    "@vue/compat": "^3.1.0",
     "axios": "^0.27.2",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.23.1",
@@ -27,7 +28,7 @@
     "moment": "^2.29.4",
     "register-service-worker": "^1.7.2",
     "vee-validate": "^3.4.15",
-    "vue": "^2.7.14",
+    "vue": "^3.1.0",
     "vue-awesome-countdown": "^1.1.4",
     "vue-clipboard2": "^0.3.3",
     "vue-flatpickr-component": "^8.1.8",
@@ -41,7 +42,7 @@
     "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue2": "^2.2.0",
+    "@vitejs/plugin-vue": "^1.2.2",
     "@vue/eslint-config-prettier": "^7.1.0",
     "eslint": "^8.36.0",
     "eslint-plugin-prettier": "^4.2.1",
