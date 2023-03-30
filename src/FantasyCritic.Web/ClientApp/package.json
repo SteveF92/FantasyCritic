@@ -24,6 +24,7 @@
     "bootstrap-vue": "^2.23.1",
     "grapheme-breaker-mjs": "^1.0.4",
     "html2canvas": "^1.4.1",
+    "jquery": "^3.6.4",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "register-service-worker": "^1.7.2",
