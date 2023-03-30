@@ -17,18 +17,18 @@
     <div v-else>
       <h5 class="text-black">Top Available by Slot</h5>
       <span class="search-tags">
-        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click.native="getTopGames"></searchSlotTypeBadge>
+        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
         <searchSlotTypeBadge
           :game-slot="leagueYear.slotInfo.regularSlot"
           name="REG"
           :selected="selectedSlotIndex === 1"
-          @click.native="getGamesForSlot(leagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+          @click="getGamesForSlot(leagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
         <searchSlotTypeBadge
           v-for="(specialSlot, index) in leagueYear.slotInfo.specialSlots"
           :key="specialSlot.overallSlotNumber"
           :game-slot="specialSlot"
           :selected="selectedSlotIndex === 2 + index"
-          @click.native="getGamesForSlot(specialSlot, 2 + index)"></searchSlotTypeBadge>
+          @click="getGamesForSlot(specialSlot, 2 + index)"></searchSlotTypeBadge>
       </span>
     </div>
 
