@@ -45,7 +45,7 @@
                 </div>
               </b-tab>
               <b-tab v-if="invitedLeagues && invitedLeagues.length > 0" title-item-class="tab-header">
-                <template slot="title">
+                <template #title>
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
