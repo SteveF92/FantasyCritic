@@ -2,7 +2,7 @@
   <div>
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
 
-    <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(masterGame.gameName)="data">
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>

@@ -21,7 +21,7 @@
         :height="28" />
     </span>
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
-      <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small>
+      <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small>
         <template #cell(gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>

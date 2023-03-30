@@ -90,7 +90,7 @@
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
             <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
-              <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
+              <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
                 <template #cell(leagueName)="data">
                   <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
                 </template>

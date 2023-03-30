@@ -6,8 +6,8 @@
       bordered
       responsive
       striped
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
+      v-model:sort-by="sortBy"
+      v-model:sort-desc="sortDesc"
       primary-key="overallSlotNumber"
       tbody-tr-class="btable-player-game-row">
       <template #head(projectedFantasyPoints)>

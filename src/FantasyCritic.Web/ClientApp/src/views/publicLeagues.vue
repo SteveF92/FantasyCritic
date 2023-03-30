@@ -16,8 +16,8 @@
         </b-form-group>
 
         <b-table
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
+          v-model:sort-by="sortBy"
+          v-model:sort-desc="sortDesc"
           :items="publicLeagues"
           :fields="leagueFields"
           bordered

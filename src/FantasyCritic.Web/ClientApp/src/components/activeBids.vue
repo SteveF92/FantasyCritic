@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="games && games.length > 0">
-      <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="games" :fields="gamesFields" bordered striped responsive small>
+      <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="games" :fields="gamesFields" bordered striped responsive small>
         <template #cell(gameName)="data">
           <span class="game-name-column">
             <span v-if="data.item.counterPick" v-b-popover.hover.focus="counterPickText" class="badge tag-badge counter-pick-badge">CPK</span>

@@ -28,7 +28,7 @@
         <b-collapse id="action-collapse" class="mt-2">
           <div class="row">
             <div class="history-table">
-              <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="dryRunResults.leagueActions" :fields="actionFields" bordered striped responsive>
+              <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="dryRunResults.leagueActions" :fields="actionFields" bordered striped responsive>
                 <template #cell(timestamp)="data">
                   {{ data.item.timestamp | dateTime }}
                 </template>

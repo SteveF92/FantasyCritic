@@ -2,7 +2,7 @@
   <div>
     <h2>Standings</h2>
 
-    <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
         <font-awesome-icon v-if="data.item.previousYearWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-year-winner" />
