@@ -30,10 +30,10 @@
             <div class="history-table">
               <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="dryRunResults.leagueActions" :fields="actionFields" bordered striped responsive>
                 <template #cell(timestamp)="data">
-                  {{ data.item.timestamp | dateTime }}
+                  {{ dateTime(data.item.timestamp) }}
                 </template>
                 <template #cell(managerAction)="data">
-                  {{ data.item.managerAction | yesNo }}
+                  {{ yesNo(data.item.managerAction) }}
                 </template>
               </b-table>
             </div>

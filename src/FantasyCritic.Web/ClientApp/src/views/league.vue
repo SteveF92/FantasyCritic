@@ -48,7 +48,7 @@
         </div>
 
         <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
-          <h5>Manager's Message ({{ mostRecentManagerMessage.timestamp | dateTime }})</h5>
+          <h5>Manager's Message ({{ dateTime(mostRecentManagerMessage.timestamp) }})</h5>
           <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
         </b-alert>
 

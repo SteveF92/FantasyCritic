@@ -52,35 +52,35 @@
           </tr>
           <tr>
             <th class="bg-primary">Drop Only Drafted Games</th>
-            <td>{{ leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
+            <td>{{ yesNo(leagueYearOptions.dropOnlyDraftGames) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Automatic Super Drops</th>
-            <td>{{ leagueYearOptions.grantSuperDrops | yesNo }}</td>
+            <td>{{ yesNo(leagueYearOptions.grantSuperDrops) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Counter Picks Block Drops</th>
-            <td>{{ leagueYearOptions.counterPicksBlockDrops | yesNo }}</td>
+            <td>{{ yesNo(leagueYearOptions.counterPicksBlockDrops) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Bidding System</th>
-            <td>{{ leagueYearOptions.pickupSystem | selectTextFromPossibleOptions(possibleLeagueOptions.pickupSystems) }}</td>
+            <td>{{ selectTextFromPossibleOptions(leagueYearOptions.pickupSystem, possibleLeagueOptions.pickupSystems) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Tiebreak System</th>
-            <td>{{ leagueYearOptions.tiebreakSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tiebreakSystems) }}</td>
+            <td>{{ selectTextFromPossibleOptions(leagueYearOptions.tiebreakSystem, possibleLeagueOptions.tiebreakSystems) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Trading System</th>
-            <td>{{ leagueYearOptions.tradingSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tradingSystems) }}</td>
+            <td>{{ selectTextFromPossibleOptions(leagueYearOptions.tradingSystem, possibleLeagueOptions.tradingSystems) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Game Release Rule</th>
-            <td>{{ leagueYearOptions.releaseSystem | selectTextFromPossibleOptions(possibleLeagueOptions.releaseSystems) }}</td>
+            <td>{{ selectTextFromPossibleOptions(leagueYearOptions.releaseSystem, possibleLeagueOptions.releaseSystems) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Scoring Rule</th>
-            <td>{{ leagueYearOptions.scoringSystem | selectTextFromPossibleOptions(possibleLeagueOptions.scoringSystems) }}</td>
+            <td>{{ selectTextFromPossibleOptions(leagueYearOptions.scoringSystem, possibleLeagueOptions.scoringSystems) }}</td>
           </tr>
 
           <tr>
@@ -99,15 +99,15 @@
 
           <tr>
             <th class="bg-primary">Public League</th>
-            <td>{{ league.publicLeague | yesNo }}</td>
+            <td>{{ yesNo(league.publicLeague) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Custom Rules League</th>
-            <td>{{ league.customRulesLeague | yesNo }}</td>
+            <td>{{ yesNo(league.customRulesLeague) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Test League</th>
-            <td>{{ league.testLeague | yesNo }}</td>
+            <td>{{ yesNo(league.testLeague) }}</td>
           </tr>
         </tbody>
       </table>

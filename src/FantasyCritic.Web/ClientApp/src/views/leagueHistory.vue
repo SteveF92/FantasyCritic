@@ -14,7 +14,7 @@
           <h2>Manager's Messages</h2>
           <div v-for="message in leagueYear.managerMessages" :key="message.messageID" class="alert alert-info">
             <b-button v-if="league.isManager" class="delete-button" variant="warning" @click="deleteMessage(message)">Delete</b-button>
-            <h5>{{ message.timestamp | dateTime }}</h5>
+            <h5>{{ dateTime(message.timestamp) }}</h5>
             <div class="preserve-whitespace">{{ message.messageText }}</div>
           </div>
           <hr />
@@ -25,7 +25,7 @@
           <div v-for="leagueActionSet in leagueActionSets" :key="leagueActionSet.processSetID" class="history-table">
             <collapseCard>
               <template #header>
-                {{ leagueActionSet.processTime | longDate }}
+                {{ longDate(leagueActionSet.processTime) }}
                 <template v-if="leagueActionSet.isSpecialAuction">(Special Auction)</template>
               </template>
               <template #body>
@@ -44,7 +44,7 @@
         <div class="history-table">
           <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="leagueActions" :fields="actionFields" bordered striped responsive>
             <template #cell(timestamp)="data">
-              {{ data.item.timestamp | dateTime }}
+              {{ dateTime(data.item.timestamp) }}
             </template>
             <template #cell(description)="data">
               <span class="preserve-whitespace">
@@ -52,7 +52,7 @@
               </span>
             </template>
             <template #cell(managerAction)="data">
-              {{ data.item.managerAction | yesNo }}
+              {{ yesNo(data.item.managerAction) }}
             </template>
           </b-table>
         </div>

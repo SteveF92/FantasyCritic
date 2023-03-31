@@ -29,16 +29,16 @@
         </div>
         <div class="trade-status-list">
           <h5>Action Log</h5>
-          <div>• Trade proposed by '{{ trade.proposerPublisherName }}' on {{ trade.proposedTimestamp | dateTimeAt }}.</div>
+          <div>• Trade proposed by '{{ trade.proposerPublisherName }}' on {{ dateTimeAt(trade.proposedTimestamp) }}.</div>
           <label>Message from {{ trade.proposerPublisherName }}:</label>
           <p class="component-row">{{ trade.message }}</p>
-          <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{ trade.counterPartyPublisherName }}' on {{ trade.acceptedTimestamp | dateTimeAt }}.</div>
+          <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{ trade.counterPartyPublisherName }}' on {{ dateTimeAt(trade.acceptedTimestamp) }}.</div>
 
-          <div v-if="trade.status === 'RejectedByCounterParty'">• Trade rejected by '{{ trade.counterPartyPublisherName }}' on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-          <div v-if="trade.status === 'RejectedByManager'">• Trade rejected by league manager on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-          <div v-if="trade.status === 'Rescinded'">• Trade rescinded by '{{ trade.proposerPublisherName }}' on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-          <div v-if="trade.status === 'Executed'">• Trade executed by league manager on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-          <div v-if="trade.status === 'Expired'">• Trade expired automatically on {{ trade.completedTimestamp | dateTimeAt }}.</div>
+          <div v-if="trade.status === 'RejectedByCounterParty'">• Trade rejected by '{{ trade.counterPartyPublisherName }}' on {{ dateTimeAt(trade.completedTimestamp) }}.</div>
+          <div v-if="trade.status === 'RejectedByManager'">• Trade rejected by league manager on {{ dateTimeAt(trade.completedTimestamp) }}.</div>
+          <div v-if="trade.status === 'Rescinded'">• Trade rescinded by '{{ trade.proposerPublisherName }}' on {{ dateTimeAt(trade.completedTimestamp) }}.</div>
+          <div v-if="trade.status === 'Executed'">• Trade executed by league manager on {{ dateTimeAt(trade.completedTimestamp) }}.</div>
+          <div v-if="trade.status === 'Expired'">• Trade expired automatically on {{ dateTimeAt(trade.completedTimestamp) }}.</div>
 
           <div v-if="tradeIsActive && trade.error">
             <div v-if="trade.error" class="alert alert-warning">
@@ -64,23 +64,23 @@
           <div v-else>
             <div v-if="trade.status === 'Proposed' && !isCounterParty" class="alert alert-info">
               Trade is waiting for approval from '{{ trade.counterPartyPublisherName }}'.
-              <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+              <div>Trade will expire on {{ dateTimeAt(trade.willExpireTimestamp) }}.</div>
               <b-button v-if="isProposer" variant="danger" @click="rescindTrade">Rescind Trade</b-button>
             </div>
             <div v-if="trade.status === 'Accepted' && isProposer" class="alert alert-info">
               Trade is has been accepted by '{{ trade.counterPartyPublisherName }}', but you can still rescind it.
-              <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+              <div>Trade will expire on {{ dateTimeAt(trade.willExpireTimestamp) }}.</div>
               <b-button variant="danger" @click="rescindTrade">Rescind Trade</b-button>
             </div>
             <div v-if="trade.status === 'Proposed' && isCounterParty" class="alert alert-info">
               This trade is waiting for your approval.
-              <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+              <div>Trade will expire on {{ dateTimeAt(trade.willExpireTimestamp) }}.</div>
               <b-button variant="success" @click="acceptTrade">Accept</b-button>
               <b-button variant="danger" @click="rejectTrade">Reject</b-button>
             </div>
             <div v-if="trade.status === 'Accepted' && isCounterParty" class="alert alert-info">
               You accepted this trade, but you are free to change your mind.
-              <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+              <div>Trade will expire on {{ dateTimeAt(trade.willExpireTimestamp) }}.</div>
               <b-button variant="danger" @click="rejectTrade">Reject Trade</b-button>
             </div>
 
@@ -130,7 +130,7 @@
               <h4>Votes</h4>
               <b-table-lite :items="trade.votes" :fields="voteFields" bordered responsive striped>
                 <template #cell(approved)="data">
-                  {{ data.item.approved | approvedRejected }}
+                  {{ approvedRejected(data.item.approved) }}
                 </template>
 
                 <template #cell(comment)="data">

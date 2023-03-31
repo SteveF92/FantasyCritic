@@ -45,7 +45,7 @@
         <label v-if="masterGame.averagedScore">This is an episodic game. We have caluclated an average score.</label>
         <div>
           <span class="detail-label">Critic Score:</span>
-          {{ masterGame.criticScore | score(2) }}
+          {{ score(masterGame.criticScore, 2) }}
           <span v-if="masterGame.averagedScore">(Averaged Score)</span>
         </div>
       </li>

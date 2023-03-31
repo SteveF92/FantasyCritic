@@ -4,7 +4,7 @@
       <div>
         Special Auction in progress for:
         <masterGamePopover :master-game="specialAuction.masterGameYear"></masterGamePopover>
-        <div>Bids will process for this game only on: {{ scheduledEndTime | dateTimeAt }}</div>
+        <div>Bids will process for this game only on: {{ dateTimeAt(scheduledEndTime) }}</div>
         <vac :end-time="scheduledEndTime" @finish="endTimeElapsed">
           <template #process="{ timeObj }">
             <span class="countdown">Time Remaining: {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
@@ -14,7 +14,7 @@
       <b-button v-if="league.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
     </div>
     <div v-else>
-      <div>Auction closed at: {{ scheduledEndTime | dateTime }}</div>
+      <div>Auction closed at: {{ dateTime(scheduledEndTime) }}</div>
       <h3>This auction is now locked, and will process shortly.</h3>
       On a good day, bids process within 10 minutes. If it's been more than 20 minutes, contact us on Twitter or Discord.
     </div>

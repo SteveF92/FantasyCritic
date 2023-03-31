@@ -22,11 +22,11 @@
         </span>
       </template>
       <template #cell(projectedFantasyPoints)="data">
-        {{ data.item.projectedFantasyPoints | score(2) }}
+        {{ score(data.item.projectedFantasyPoints, 2) }}
         <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
       </template>
       <template #cell(totalFantasyPoints)="data">
-        {{ data.item.totalFantasyPoints | score(2) }}
+        {{ score(data.item.totalFantasyPoints, 2) }}
         <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
       </template>
       <template #cell(gamesReleased)="data">
@@ -36,7 +36,7 @@
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesWillRelease }}</span>
       </template>
       <template #cell(budget)="data">
-        <span v-if="data.item.publisher">{{ data.item.publisher.budget | money }}</span>
+        <span v-if="data.item.publisher">{{ money(data.item.publisher.budget) }}</span>
       </template>
     </b-table>
   </div>

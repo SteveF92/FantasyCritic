@@ -40,7 +40,7 @@
 
     <div class="form-horizontal">
       <div>
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Purchase Game for {{ purchaseRoyaleGame.cost | money }}</b-button>
+        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Purchase Game for {{ money(purchaseRoyaleGame.cost) }}</b-button>
       </div>
       <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" :class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
         <h3 v-if="purchaseResult.overridable" class="alert-heading">Warning!</h3>

@@ -14,7 +14,7 @@
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
-        {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
+        {{ score(data.item.masterGame.dateAdjustedHypeFactor, 1) }}
       </template>
       <template #cell(status)="data">
         <statusBadge :possible-master-game="data.item"></statusBadge>

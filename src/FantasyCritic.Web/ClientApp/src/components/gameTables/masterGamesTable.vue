@@ -79,29 +79,29 @@
         <span v-else>--</span>
       </template>
       <template #cell(dateAdjustedHypeFactor)="data">
-        <span v-if="yearOpenForPlay">{{ data.item.dateAdjustedHypeFactor | score(1) }}</span>
+        <span v-if="yearOpenForPlay">{{ score(data.item.dateAdjustedHypeFactor, 1) }}</span>
         <span v-if="!yearOpenForPlay">--</span>
       </template>
       <template #cell(projectedOrRealFantasyPoints)="data">
-        <span v-if="data.item.fantasyPoints">{{ data.item.fantasyPoints | score(1) }}</span>
-        <span v-if="!data.item.fantasyPoints && yearOpenForPlay" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
+        <span v-if="data.item.fantasyPoints">{{ score(data.item.fantasyPoints, 1) }}</span>
+        <span v-if="!data.item.fantasyPoints && yearOpenForPlay" class="projected-text">~{{ score(data.item.projectedFantasyPoints, 1) }}</span>
         <span v-if="!data.item.fantasyPoints && !yearOpenForPlay" class="projected-text">--</span>
       </template>
       <template #cell(eligiblePercentStandardGame)="data">
-        <span v-if="yearOpenForPlay">{{ data.item.eligiblePercentStandardGame | percent(1) }}</span>
+        <span v-if="yearOpenForPlay">{{ percent(data.item.eligiblePercentStandardGame, 1) }}</span>
         <span v-if="!yearOpenForPlay">--</span>
       </template>
       <template #cell(adjustedPercentCounterPick)="data">
         <template v-if="yearOpenForPlay">
           <span v-if="data.item.adjustedPercentCounterPick !== null">
-            {{ data.item.adjustedPercentCounterPick | percent(1) }}
+            {{ percent(data.item.adjustedPercentCounterPick, 1) }}
           </span>
           <span v-else>N/A</span>
         </template>
         <span v-if="!yearOpenForPlay">--</span>
       </template>
       <template #cell(addedTimestamp)="data">
-        {{ data.item.addedTimestamp | date }}
+        {{ date(data.item.addedTimestamp) }}
       </template>
       <template #cell(tags)="data">
         <span v-for="tag in data.item.tags" :key="tag">

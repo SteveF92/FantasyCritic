@@ -13,13 +13,13 @@
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
-        {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
+        {{ score(data.item.masterGame.dateAdjustedHypeFactor, 1) }}
       </template>
       <template #cell(status)="data">
         <statusBadge :possible-master-game="data.item"></statusBadge>
       </template>
       <template #cell(cost)="data">
-        {{ data.item.cost | money }}
+        {{ money(data.item.cost) }}
       </template>
       <template #cell(select)="data">
         <b-button size="sm" variant="info" @click="selectGame(data.item)">Select</b-button>

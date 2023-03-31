@@ -34,26 +34,26 @@
         </div>
         <div>
           <span class="detail-label">Percent Published:</span>
-          {{ masterGame.eligiblePercentStandardGame | percent(1) }}
+          {{ percent(masterGame.eligiblePercentStandardGame, 1) }}
         </div>
         <div>
           <span class="detail-label">Percent Counterpicked:</span>
-          {{ masterGame.adjustedPercentCounterPick | percent(1) }}
+          {{ percent(masterGame.adjustedPercentCounterPick, 1) }}
         </div>
         <div>
           <span class="detail-label">Average Draft Position:</span>
-          <span v-if="masterGame.averageDraftPosition">{{ masterGame.averageDraftPosition | score(1) }}</span>
+          <span v-if="masterGame.averageDraftPosition">{{ score(masterGame.averageDraftPosition, 1) }}</span>
           <span v-else>Undrafted</span>
         </div>
         <div>
           <span class="detail-label">Hype Factor:</span>
-          <span v-if="masterGame.dateAdjustedHypeFactor">{{ masterGame.dateAdjustedHypeFactor | score(1) }}</span>
+          <span v-if="masterGame.dateAdjustedHypeFactor">{{ score(masterGame.dateAdjustedHypeFactor, 1) }}</span>
           <span v-else>Unhyped...</span>
         </div>
         <div v-if="masterGame.projectedFantasyPoints">
           <span v-if="!masterGame.criticScore" class="detail-label">Projected Points:</span>
           <span v-else class="detail-label">Pre-Release Projected Points:</span>
-          <span>~{{ masterGame.projectedFantasyPoints | score(1) }}</span>
+          <span>~{{ score(masterGame.projectedFantasyPoints, 1) }}</span>
         </div>
         <div v-if="masterGame.openCriticID">
           <a :href="openCriticLink" target="_blank">

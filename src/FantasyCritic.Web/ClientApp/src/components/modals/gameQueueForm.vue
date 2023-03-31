@@ -70,7 +70,7 @@
             <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
             <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
           </td>
-          <td>{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
+          <td>{{ score(queuedGame.masterGame.dateAdjustedHypeFactor, 1) }}</td>
           <td>{{ queuedGame.rank }}</td>
           <td>
             <statusBadge :possible-master-game="queuedGame"></statusBadge>

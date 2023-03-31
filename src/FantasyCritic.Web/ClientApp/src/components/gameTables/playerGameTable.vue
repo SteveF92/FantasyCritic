@@ -38,15 +38,15 @@
 
       <template #cell(publisherGame.masterGame.criticScore)="data">
         <template v-if="data.item.publisherGame">
-          {{ data.item.publisherGame.criticScore | score(2) }}
+          {{ score(data.item.publisherGame.criticScore, 2) }}
         </template>
       </template>
 
-      <template #cell(projectedFantasyPoints)="data">~{{ data.item.projectedFantasyPoints | score(2) }}</template>
+      <template #cell(projectedFantasyPoints)="data">~{{ score(data.item.projectedFantasyPoints, 2) }}</template>
 
       <template #cell(publisherGame.fantasyPoints)="data">
         <template v-if="data.item.publisherGame">
-          {{ data.item.publisherGame.fantasyPoints | score(2) }}
+          {{ score(data.item.publisherGame.fantasyPoints, 2) }}
         </template>
         <template v-if="!data.item.publisherGame && data.item.counterPick && leagueYear.supportedYear.finished">-15</template>
       </template>
@@ -68,9 +68,9 @@
           </b-td>
           <b-td></b-td>
           <b-td></b-td>
-          <b-td class="average-critic-column">{{ publisher.averageCriticScore | score(2) }} (Average)</b-td>
-          <b-td class="total-column projected-text bg-info">~{{ publisher.totalProjectedPoints | score(2) }}</b-td>
-          <b-td class="total-column bg-success">{{ publisher.totalFantasyPoints | score(2) }}</b-td>
+          <b-td class="average-critic-column">{{ score(publisher.averageCriticScore, 2) }} (Average)</b-td>
+          <b-td class="total-column projected-text bg-info">~{{ score(publisher.totalProjectedPoints, 2) }}</b-td>
+          <b-td class="total-column bg-success">{{ score(publisher.totalFantasyPoints, 2) }}</b-td>
         </b-tr>
       </template>
     </b-table>

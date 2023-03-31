@@ -28,7 +28,7 @@
               <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year } }">League: {{ publisher.leagueName }}</router-link>
             </h4>
             <ul>
-              <li>Budget: {{ publisher.budget | money }}</li>
+              <li>Budget: {{ money(publisher.budget) }}</li>
               <li>Will Release Games Dropped: {{ getDropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames) }}</li>
               <li>Will Not Release Games Dropped: {{ getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames) }}</li>
               <li>"Any Unreleased" Games Dropped: {{ getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames) }}</li>

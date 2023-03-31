@@ -11,10 +11,10 @@
           <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
         </template>
         <template #cell(creationTime)="data">
-          {{ data.item.creationTime | dateTime }}
+          {{ dateTime(data.item.creationTime) }}
         </template>
         <template #cell(scheduledEndTime)="data">
-          {{ data.item.scheduledEndTime | dateTime }}
+          {{ dateTime(data.item.scheduledEndTime) }}
           <b-badge v-if="data.item.isLocked" variant="danger">Ended</b-badge>
           <b-button v-else variant="danger" @click="cancelSpecialAuction(data.item.masterGameYear)">Cancel</b-button>
         </template>

@@ -116,7 +116,7 @@
                   <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td>
-                  <span v-if="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                  <span v-if="request.responseTimestamp">{{ dateTime(request.responseTimestamp) }}</span>
                   <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td class="select-cell">

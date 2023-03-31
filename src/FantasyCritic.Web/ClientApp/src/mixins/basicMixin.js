@@ -1,5 +1,6 @@
 import { mapGetters, mapState } from 'vuex';
-import GlobalFunctions from '@/globalFunctions';
+import GlobalFunctions from '@/globalFunctions.js';
+import * as Filters from '@/filters.js';
 
 let basicMixin = {
   computed: {
@@ -28,7 +29,8 @@ let basicMixin = {
     },
     formatLongDate(date) {
       return GlobalFunctions.formatLongDate(date);
-    }
+    },
+    ...Filters
   }
 };
 

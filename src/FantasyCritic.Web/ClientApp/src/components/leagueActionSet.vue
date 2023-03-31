@@ -12,13 +12,13 @@
           </router-link>
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.timestamp | dateTime }}
+          {{ dateTime(data.item.timestamp) }}
         </template>
         <template #cell(masterGame)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(successful)="data">
-          {{ data.item.successful | yesNo }}
+          {{ yesNo(data.item.successful) }}
         </template>
       </b-table>
     </div>
@@ -31,24 +31,24 @@
           </router-link>
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.timestamp | dateTime }}
+          {{ dateTime(data.item.timestamp) }}
         </template>
         <template #cell(masterGame)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
           <span v-if="data.item.counterPick">(Counter Pick)</span>
         </template>
         <template #cell(counterPick)="data">
-          {{ data.item.counterPick | yesNo }}
+          {{ yesNo(data.item.counterPick) }}
         </template>
         <template #cell(conditionalDropPublisherGame)="data">
           <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :master-game="data.item.conditionalDropPublisherGame.masterGame"></masterGamePopover>
           <span v-else>None</span>
         </template>
         <template #cell(projectedPointsAtTimeOfBid)="data">
-          {{ data.item.projectedPointsAtTimeOfBid | score(2) }}
+          {{ score(data.item.projectedPointsAtTimeOfBid, 2) }}
         </template>
         <template #cell(successful)="data">
-          {{ data.item.successful | yesNo }}
+          {{ yesNo(data.item.successful) }}
         </template>
       </b-table>
     </div>

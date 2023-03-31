@@ -23,7 +23,7 @@
             </option>
           </b-form-select>
 
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ money(userPublisher.budget) }})</label>
 
           <ValidationProvider v-slot="{ errors }" rules="required|integer">
             <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />

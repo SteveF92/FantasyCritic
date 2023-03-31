@@ -9,7 +9,7 @@
       <p>You will get back half of the money you bought it for, and any advertising money currently assigned to it.</p>
       <p>
         Money to recieve:
-        <strong>{{ (publisherGame.refundAmount + publisherGame.advertisingMoney) | money }}</strong>
+        <strong>{{ money(publisherGame.refundAmount + publisherGame.advertisingMoney) }}</strong>
       </p>
     </div>
     <div v-else>
@@ -21,7 +21,7 @@
       <p>You'll also get back any advertising money currently assigned to it.</p>
       <p>
         Money to recieve:
-        <strong>{{ (publisherGame.refundAmount + publisherGame.advertisingMoney) | money }}</strong>
+        <strong>{{ money(publisherGame.refundAmount + publisherGame.advertisingMoney) }}</strong>
       </p>
     </div>
   </b-modal>

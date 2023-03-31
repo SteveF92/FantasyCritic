@@ -8,7 +8,7 @@
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.change.timestamp | longDate }}
+          {{ longDate(data.item.change.timestamp) }}
         </template>
         <template #cell(description)="data">
           {{ data.item.change.description }}

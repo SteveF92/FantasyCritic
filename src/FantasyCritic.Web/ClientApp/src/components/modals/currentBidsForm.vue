@@ -27,23 +27,23 @@
         <b-tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
           <b-td class="handle"><font-awesome-icon icon="bars" size="lg" /></b-td>
           <b-td>{{ bid.masterGame.gameName }}</b-td>
-          <b-td>{{ bid.bidAmount | money }}</b-td>
+          <b-td>{{ money(bid.bidAmount) }}</b-td>
           <b-td>{{ bid.priority }}</b-td>
           <b-td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</b-td>
           <b-td v-else>None</b-td>
-          <b-td>{{ !bid.allowIneligibleSlot | yesNo }}</b-td>
-          <b-td>{{ bid.counterPick | yesNo }}</b-td>
+          <b-td>{{ yesNo(!bid.allowIneligibleSlot) }}</b-td>
+          <b-td>{{ yesNo(bid.counterPick) }}</b-td>
         </b-tr>
       </draggable>
       <b-tbody v-if="!settingPriority">
         <b-tr v-for="bid in currentBids" :key="bid.bidID">
           <b-td>{{ bid.masterGame.gameName }}</b-td>
-          <b-td>{{ bid.bidAmount | money }}</b-td>
+          <b-td>{{ money(bid.bidAmount) }}</b-td>
           <b-td>{{ bid.priority }}</b-td>
           <b-td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</b-td>
           <b-td v-else>None</b-td>
-          <b-td>{{ bid.counterPick | yesNo }}</b-td>
-          <b-td>{{ !bid.allowIneligibleSlot | yesNo }}</b-td>
+          <b-td>{{ yesNo(bid.counterPick) }}</b-td>
+          <b-td>{{ yesNo(!bid.allowIneligibleSlot) }}</b-td>
           <b-td class="select-cell">
             <b-button variant="info" size="sm" @click="startEditingBid(bid)">Edit</b-button>
           </b-td>
@@ -58,7 +58,7 @@
       <h3 for="bidBeingEdited" class="selected-game text-black">Edit Bid:</h3>
       <masterGameSummary :master-game="bidBeingEdited.masterGame"></masterGameSummary>
       <div class="form-group">
-        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
+        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ money(userPublisher.budget) }})</label>
 
         <ValidationProvider v-slot="{ errors }" rules="required|integer">
           <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />

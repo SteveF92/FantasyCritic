@@ -26,7 +26,7 @@
       <div class="row">
         <div class="col-md-12 col-lg-8">
           <h2>Total Points: {{ publisher.totalFantasyPoints }}</h2>
-          <h4>Remaining Budget: {{ publisher.budget | money }}</h4>
+          <h4>Remaining Budget: {{ money(publisher.budget) }}</h4>
         </div>
 
         <div class="col-md-12 col-lg-4">
@@ -72,23 +72,23 @@
           <template v-else>--</template>
         </template>
         <template #cell(amountSpent)="data">
-          <template v-if="data.item.masterGame">{{ data.item.amountSpent | money }}</template>
+          <template v-if="data.item.masterGame">{{ money(data.item.amountSpent) }}</template>
           <template v-else>--</template>
         </template>
         <template #cell(advertisingMoney)="data">
-          {{ data.item.advertisingMoney | money }}
+          {{ money(data.item.advertisingMoney) }}
           <b-button v-if="userIsPublisher && !data.item.locked" variant="info" size="sm" @click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template #cell(masterGame.criticScore)="data">
           <template v-if="data.item.masterGame">
-            {{ data.item.masterGame.criticScore | score(2) }}
+            {{ score(data.item.masterGame.criticScore, 2) }}
           </template>
         </template>
         <template #cell(fantasyPoints)="data">
-          {{ data.item.fantasyPoints | score(2) }}
+          {{ score(data.item.fantasyPoints, 2) }}
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.timestamp | date }}
+          {{ date(data.item.timestamp) }}
         </template>
         <template #cell(sellGame)="data">
           <b-button v-if="!data.item.locked" v-b-modal="'sellRoyaleGameModal'" block variant="danger" @click="setGameToSell(data.item)">Sell</b-button>

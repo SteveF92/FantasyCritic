@@ -41,7 +41,7 @@
             <h2>Change Log</h2>
             <b-table :items="changeLog" :fields="changeLogFields" bordered striped responsive small>
               <template #cell(timestamp)="data">
-                {{ data.item.timestamp | longDate }}
+                {{ longDate(data.item.timestamp) }}
               </template>
               <template #cell(changedByUser)="data">
                 {{ data.item.changedByUser.displayName }}
@@ -52,17 +52,17 @@
           <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-section">
             <h2>Stats for {{ masterGameYear.year }}</h2>
             <ul>
-              <li>Drafted or picked up in {{ masterGameYear.eligiblePercentStandardGame | percent(1) }} of leagues where it is eligible.</li>
+              <li>Drafted or picked up in {{ percent(masterGameYear.eligiblePercentStandardGame, 1) }} of leagues where it is eligible.</li>
 
-              <li v-if="masterGameYear.averageDraftPosition">Average Draft Position: {{ masterGameYear.averageDraftPosition | score(1) }}</li>
+              <li v-if="masterGameYear.averageDraftPosition">Average Draft Position: {{ score(masterGameYear.averageDraftPosition, 1) }}</li>
               <li v-else>Average Draft Position: Undrafted</li>
 
-              <li v-if="masterGameYear.dateAdjustedHypeFactor">Hype Factor: {{ masterGameYear.dateAdjustedHypeFactor | score(1) }}</li>
+              <li v-if="masterGameYear.dateAdjustedHypeFactor">Hype Factor: {{ score(masterGameYear.dateAdjustedHypeFactor, 1) }}</li>
               <li v-else>Hype Factor: Unhyped...</li>
 
               <template v-if="masterGameYear.year >= 2022 && masterGameYear.peakHypeFactor > masterGameYear.dateAdjustedHypeFactor">
                 <li v-if="masterGameYear.peakHypeFactor">
-                  Peak Hype Factor: {{ masterGameYear.peakHypeFactor | score(1) }}
+                  Peak Hype Factor: {{ score(masterGameYear.peakHypeFactor, 1) }}
                   <font-awesome-icon v-b-popover.hover.top="peakHypeFactorText" color="white" size="lg" icon="info-circle" />
                 </li>
                 <li v-else>
@@ -71,9 +71,9 @@
                 </li>
               </template>
 
-              <li v-if="masterGameYear.projectedFantasyPoints">Projected Points: ~{{ masterGameYear.projectedFantasyPoints | score(1) }}</li>
+              <li v-if="masterGameYear.projectedFantasyPoints">Projected Points: ~{{ score(masterGameYear.projectedFantasyPoints, 1) }}</li>
 
-              <li>Counter Picked in {{ masterGameYear.adjustedPercentCounterPick | percent(1) }} of leagues where it is published.</li>
+              <li>Counter Picked in {{ percent(masterGameYear.adjustedPercentCounterPick, 1) }} of leagues where it is published.</li>
             </ul>
           </div>
         </div>
