@@ -186,7 +186,7 @@ export default {
     max-width: 200px;
   }
 }
-div >>> tr.table-success td {
+div :deep(tr.table-success td) {
   font-weight: bolder;
 }
 

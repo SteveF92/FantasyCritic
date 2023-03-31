@@ -253,15 +253,15 @@ export default {
   min-width: 200px;
 }
 
-div >>> div.card {
+div :deep(div.card) {
   background: rgba(50, 50, 50, 0.8);
 }
 
-div >>> .tab-header {
+div :deep(.tab-header) {
   margin-bottom: 5px;
 }
 
-div >>> .tab-header a {
+div :deep(.tab-header a) {
   border-radius: 0px;
   font-weight: bolder;
   color: white;

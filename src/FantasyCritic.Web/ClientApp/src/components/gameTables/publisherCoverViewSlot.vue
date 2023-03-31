@@ -230,7 +230,7 @@ export default {
   text-decoration: none;
 }
 
-.header-badge >>> .mg-badge-text {
+.header-badge :deep(.mg-badge-text) {
   font-size: 20px;
 }
 

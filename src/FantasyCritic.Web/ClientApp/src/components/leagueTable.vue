@@ -78,7 +78,7 @@ export default {
 };
 </script>
 <style scoped>
-table >>> .hidden_header {
+table :deep(.hidden_header) {
   display: none;
 }
 
