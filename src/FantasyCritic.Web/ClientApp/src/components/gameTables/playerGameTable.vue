@@ -61,7 +61,7 @@
         </template>
       </template>
 
-      <template slot="custom-foot">
+      <template #custom-foot>
         <b-tr>
           <b-td class="total-description">
             <span class="total-description-text">Total Fantasy Points</span>

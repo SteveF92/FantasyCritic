@@ -19,7 +19,9 @@
             <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
           </div>
-          <span slot="header" class="tag-header">Banned Tags</span>
+          <template #header>
+            <span class="tag-header">Banned Tags</span>
+          </template>
         </draggable>
       </div>
 
@@ -29,7 +31,9 @@
             <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
           </div>
-          <span slot="header" class="tag-header">Allowed Tags</span>
+          <template #header>
+            <span class="tag-header">Allowed Tags</span>
+          </template>
         </draggable>
       </div>
     </div>

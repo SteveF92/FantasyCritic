@@ -24,13 +24,13 @@
           <h2>Detailed Bid/Drop Results</h2>
           <div v-for="leagueActionSet in leagueActionSets" :key="leagueActionSet.processSetID" class="history-table">
             <collapseCard>
-              <div slot="header">
+              <template #header>
                 {{ leagueActionSet.processTime | longDate }}
                 <template v-if="leagueActionSet.isSpecialAuction">(Special Auction)</template>
-              </div>
-              <div slot="body">
+              </template>
+              <template #body>
                 <leagueActionSet :league-action-set="leagueActionSet" :mode="'leagueHistory'"></leagueActionSet>
-              </div>
+              </template>
             </collapseCard>
           </div>
         </div>

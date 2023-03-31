@@ -95,8 +95,11 @@
             </ul>
 
             <collapseCard ref="discordBotInfoCollapseRef">
-              <div id="how-to-use" slot="header">How to Use The Bot</div>
-              <div slot="body">
+              <template #header>
+                <div id="how-to-use">How to Use The Bot</div>
+              </template>
+
+              <template #body>
                 <h3>Available Bot Commands</h3>
                 <ul>
                   <li><router-link :to="{ hash: '#league' }">See League Information</router-link></li>
@@ -395,7 +398,7 @@
                   <h5>And more to come!</h5>
                   <p>This bot will see continued development moving forward. Got an idea for a feature? Give us a shout in the official Fantasy Critic Discord.</p>
                 </div>
-              </div>
+              </template>
             </collapseCard>
           </div>
         </div>
