@@ -1,18 +1,10 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import store from '../store';
 import { routes } from './routes';
 
-const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location, onResolve, onReject) {
-  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject);
-  return originalPush.call(this, location).catch((err) => err);
-};
-
-Vue.use(VueRouter);
-
-let router = new VueRouter({
+let router = createRouter({
+  history: createWebHistory(),
   scrollBehavior(to, from) {
     if (to.hash) {
       const smoothParams = {
@@ -32,7 +24,6 @@ let router = new VueRouter({
     }
     return { x: 0, y: 0 }; // Go to the top of the page if no hash
   },
-  mode: 'history',
   routes
 });
 

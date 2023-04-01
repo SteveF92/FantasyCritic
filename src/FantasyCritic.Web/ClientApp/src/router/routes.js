@@ -29,7 +29,7 @@ import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
 
 export const routes = [
   { path: '/404', component: NotFound },
-  { path: '*', redirect: '/404' },
+  { path: '/:pathMatch(.*)*', redirect: '/404' },
   {
     path: '/',
     component: Welcome,

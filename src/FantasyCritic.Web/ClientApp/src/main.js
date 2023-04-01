@@ -3,7 +3,7 @@ import BootstrapVue from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
 import en from 'vee-validate/dist/locale/en.json';
-import VueGtag from 'vue-gtag';
+//import VueGtag from 'vue-gtag';
 import VueClipboard from 'vue-clipboard2';
 
 import App from './App.vue';
@@ -24,11 +24,9 @@ import BasicMixin from './mixins/basicMixin';
 
 VueClipboard.config.autoSetContainer = true;
 
-const app = createApp({
-  router,
-  ...App
-});
+const app = createApp(App);
 
+app.use(router);
 app.use(store);
 
 app.use(VueClipboard);
@@ -75,13 +73,13 @@ localize({
   en
 });
 
-app.use(
-  VueGtag,
-  {
-    config: { id: 'UA-131370681-1' }
-  },
-  router
-);
+// app.use(
+//   VueGtag,
+//   {
+//     config: { id: 'UA-131370681-1' }
+//   },
+//   router
+// );
 
 // Registration of global components
 app.component('FontAwesomeIcon', FontAwesomeIcon);
