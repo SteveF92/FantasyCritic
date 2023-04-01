@@ -85,7 +85,10 @@ export default {
         return [];
       }
       for (var i = 0; i < standings.length; ++i) {
-        if (this.leagueYear.supportedYear.finished && this.topPublisher.publisherID === standings[i].publisher.publisherID) {
+        if (!standings[i].publisher) {
+          continue;
+        }
+        if (this.leagueYear.supportedYear.finished && this.topPublisher && this.topPublisher.publisherID === standings[i].publisher.publisherID) {
           standings[i]._rowVariant = 'success';
         }
       }
