@@ -86,6 +86,4 @@ app.component('FontAwesomeIcon', FontAwesomeIcon);
 app.component('FontAwesomeLayers', FontAwesomeLayers);
 app.component('FontAwesomeLayersText', FontAwesomeLayersText);
 
-//sync(store, router);
-
 app.mount('#app');
