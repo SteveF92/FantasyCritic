@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
@@ -22,16 +22,23 @@ import vueAwesomeCountdown from 'vue-awesome-countdown';
 import BasicMixin from './mixins/basicMixin';
 
 VueClipboard.config.autoSetContainer = true;
-Vue.use(VueClipboard);
-Vue.use(BootstrapVue);
-Vue.use(VueFlatPickr);
-Vue.use(vueAwesomeCountdown, 'vac');
+
+const app = createApp({
+  router,
+  store,
+  ...App
+});
+
+app.use(VueClipboard);
+app.use(BootstrapVue);
+app.use(VueFlatPickr);
+app.use(vueAwesomeCountdown, 'vac');
 
 //Vee-validate registration
-Vue.component('ValidationProvider', ValidationProvider);
-Vue.component('ValidationObserver', ValidationObserver);
+app.component('ValidationProvider', ValidationProvider);
+app.component('ValidationObserver', ValidationObserver);
 
-Vue.mixin(BasicMixin);
+app.mixin(BasicMixin);
 
 extend('required', {
   ...rules.required
@@ -66,7 +73,7 @@ localize({
   en
 });
 
-Vue.use(
+app.use(
   VueGtag,
   {
     config: { id: 'UA-131370681-1' }
@@ -75,15 +82,10 @@ Vue.use(
 );
 
 // Registration of global components
-Vue.component('FontAwesomeIcon', FontAwesomeIcon);
-Vue.component('FontAwesomeLayers', FontAwesomeLayers);
-Vue.component('FontAwesomeLayersText', FontAwesomeLayersText);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
+app.component('FontAwesomeLayers', FontAwesomeLayers);
+app.component('FontAwesomeLayersText', FontAwesomeLayersText);
+
 sync(store, router);
 
-Vue.config.productionTip = false;
-
-new Vue({
-  router,
-  store,
-  render: (h) => h(App)
-}).$mount('#app');
+app.mount('#app');
