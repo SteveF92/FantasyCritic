@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "FantasyCritic.Web": {
+    "Console - Full Stack": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -9,7 +9,14 @@
       },
       "applicationUrl": "https://localhost:4554"
     },
-    "IIS Express": {
+    "Console - Backend Only": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:4554"
+    },
+    "IIS Express - Full Stack": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
