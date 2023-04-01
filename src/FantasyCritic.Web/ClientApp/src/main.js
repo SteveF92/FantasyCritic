@@ -7,12 +7,13 @@ import VueGtag from 'vue-gtag';
 import VueClipboard from 'vue-clipboard2';
 
 import App from './App.vue';
+
 import router from './router/index';
-import store from './store';
-import { sync } from 'vuex-router-sync';
+
+import store from './store/index';
+
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
-import './filters';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import VueFlatPickr from 'vue-flatpickr-component';
@@ -25,9 +26,10 @@ VueClipboard.config.autoSetContainer = true;
 
 const app = createApp({
   router,
-  store,
   ...App
 });
+
+app.use(store);
 
 app.use(VueClipboard);
 app.use(BootstrapVue);
@@ -86,6 +88,6 @@ app.component('FontAwesomeIcon', FontAwesomeIcon);
 app.component('FontAwesomeLayers', FontAwesomeLayers);
 app.component('FontAwesomeLayersText', FontAwesomeLayersText);
 
-sync(store, router);
+//sync(store, router);
 
 app.mount('#app');

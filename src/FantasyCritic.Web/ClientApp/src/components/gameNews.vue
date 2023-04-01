@@ -81,9 +81,6 @@ export default {
     };
   },
   computed: {
-    isPlusUser() {
-      return this.$store.getters.isPlusUser;
-    },
     gameNewsFields() {
       if (this.mode === 'user') {
         return this.baseGameNewsFields.concat(this.userGameNewsFields);

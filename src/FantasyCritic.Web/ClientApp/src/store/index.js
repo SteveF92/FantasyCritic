@@ -1,17 +1,14 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import auth from './auth';
-import league from './leagueStore';
-import interLeague from './interLeagueStore';
-import publisher from './publisherStore';
+import { createStore } from 'vuex';
+import authStore from './authStore.js';
+import leagueStore from './leagueStore.js';
+import interLeagueStore from './interLeagueStore.js';
+import publisherStore from './publisherStore.js';
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default createStore({
   modules: {
-    auth,
-    league,
-    interLeague,
-    publisher
+    auth: authStore,
+    league: leagueStore,
+    interLeague: interLeagueStore,
+    publisher: publisherStore
   }
 });
