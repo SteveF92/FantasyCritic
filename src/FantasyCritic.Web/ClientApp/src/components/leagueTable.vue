@@ -10,7 +10,7 @@
                 <font-awesome-icon icon="cog" transform="right-26 down-15" />
                 <font-awesome-icon icon="book" size="2x" transform="left-1 down-2" />
               </font-awesome-layers>
-              <font-awesome-icon v-else icon="book" size="2x" transform="right-4" />
+              <font-awesome-icon v-else icon="book" size="2x" transform="right-1" />
             </template>
             <template v-else>
               <template v-if="data.item.oneShotMode">
