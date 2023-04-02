@@ -356,8 +356,11 @@ public static class GameEligibilityFunctions
             }
         }
 
+        bool willNotRelease = !masterGame.WillReleaseInYear(year);
+        bool releaseRequiredForPoints = leagueYear.Options.ReleaseSystem.Equals(ReleaseSystem.MustBeReleased);
+        bool willNotReleaseAndMustRelease = willNotRelease && releaseRequiredForPoints;
         bool hasScore = masterGame.CriticScore.HasValue;
-        if (hasScore && !manuallyEligible && !partOfSpecialAuction)
+        if (hasScore && !manuallyEligible && !partOfSpecialAuction && !willNotReleaseAndMustRelease)
         {
             claimErrors.Add(new ClaimError("That game already has a score.", true));
         }
