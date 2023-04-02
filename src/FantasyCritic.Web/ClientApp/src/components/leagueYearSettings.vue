@@ -282,6 +282,12 @@
           <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific "2023" date, then it will still be counter as "Will Release" for 2023.</p>
           <p>In more technical terms, this is based on the "Maximum Release Date" that you can see on the Master Game page.</p>
         </div>
+        <div>
+          <b-form-checkbox v-model="internalValue.allowMoveIntoIneligible">
+            <span class="checkbox-label">Allow games to be moved into ineligible slots</span>
+            <p>Usually, you cannot intentionally move a game into a slot it is not eligible for. If you want to play with custom rules like having a "bench", then you'll need to enable this.</p>
+          </b-form-checkbox>
+        </div>
       </b-collapse>
     </div>
   </div>

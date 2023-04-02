@@ -190,7 +190,7 @@ public class PublisherService
             var currentSlotIsValid = currentSlot.SlotIsValid(leagueYear);
             var potentialNewSlot = moveIntoSlot.GetWithReplacedGame(game);
             var potentialNewSlotIsValid = potentialNewSlot.SlotIsValid(leagueYear);
-            if (currentSlotIsValid && !potentialNewSlotIsValid)
+            if (currentSlotIsValid && !potentialNewSlotIsValid && !leagueYear.Options.AllowMoveIntoIneligible)
             {
                 return Result.Failure("You cannot move a game into a slot that it is not eligible for.");
             }

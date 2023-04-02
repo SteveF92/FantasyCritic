@@ -6,7 +6,7 @@ public class LeagueYearParameters
 {
     public LeagueYearParameters(Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
         int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops,
-        bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
+        bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
         DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
     {
@@ -22,6 +22,7 @@ public class LeagueYearParameters
         DropOnlyDraftGames = dropOnlyDraftGames;
         GrantSuperDrops = grantSuperDrops;
         CounterPicksBlockDrops = counterPicksBlockDrops;
+        AllowMoveIntoIneligible = allowMoveIntoIneligible;
         MinimumBidAmount = minimumBidAmount;
         LeagueTags = leagueTags.ToList();
         SpecialGameSlots = specialGameSlots.ToList();
@@ -47,6 +48,7 @@ public class LeagueYearParameters
     public bool DropOnlyDraftGames { get; }
     public bool GrantSuperDrops { get; }
     public bool CounterPicksBlockDrops { get; }
+    public bool AllowMoveIntoIneligible { get; }
     public int MinimumBidAmount { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
     public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }

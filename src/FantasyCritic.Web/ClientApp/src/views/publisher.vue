@@ -43,7 +43,7 @@
           {{ moveGameError }}
         </div>
 
-        <div v-if="hasIneligibleGame" class="alert alert-warning">
+        <div v-if="hasIneligibleGame && !allowMoveIntoIneligible" class="alert alert-warning">
           {{ referToPlayer('You have', 'This player has') }} games in ineligible slots. There are a few reasons this could happen.
           <ul>
             <li>A game's tags changed after a correction was made.</li>
@@ -58,7 +58,7 @@
             <li v-if="leagueYear.settings.hasSpecialSlots">{{ referToPlayer('You', 'They') }} can reorganize {{ referToPlayer('your', 'their') }} games so everything is eligible.</li>
             <li>The league manager can override a game's tags if the league disagrees with the tags the site decided.</li>
             <li>{{ referToPlayer('You', 'They') }} can drop the game (depending on the league settings).</li>
-            <li>The league could decide to give {{ referToPlayer('you', 'they') }} a "free drop" regardless of the league settings if they decide that this game should not be eligible.</li>
+            <li>The league could decide to give {{ referToPlayer('you', 'them') }} a "free drop" regardless of the league settings if they decide that this game should not be eligible.</li>
             <li>{{ referToPlayer('You', 'They') }} could trade the game to another player.</li>
           </ul>
 
@@ -173,6 +173,9 @@ export default {
     },
     hasIneligibleGame() {
       return _.some(this.publisher.gameSlots, (x) => !x.gameMeetsSlotCriteria);
+    },
+    allowMoveIntoIneligible() {
+      return this.leagueYear.settings.allowMoveIntoIneligible;
     },
     editableSortOrderMode: {
       get() {

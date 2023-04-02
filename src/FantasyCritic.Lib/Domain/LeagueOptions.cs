@@ -8,9 +8,10 @@ public class LeagueOptions
 {
     private readonly Dictionary<int, SpecialGameSlot> _specialSlotDictionary;
 
-    public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames,
-        bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
+    public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames,
+        int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount,
+        IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, DraftSystem draftSystem, PickupSystem pickupSystem,
+        ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
     {
         StandardGames = standardGames;
@@ -23,6 +24,7 @@ public class LeagueOptions
         DropOnlyDraftGames = dropOnlyDraftGames;
         GrantSuperDrops = grantSuperDrops;
         CounterPicksBlockDrops = counterPicksBlockDrops;
+        AllowMoveIntoIneligible = allowMoveIntoIneligible;
         MinimumBidAmount = minimumBidAmount;
         LeagueTags = leagueTags.ToList();
         SpecialGameSlots = specialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
@@ -50,6 +52,7 @@ public class LeagueOptions
         DropOnlyDraftGames = parameters.DropOnlyDraftGames;
         GrantSuperDrops = parameters.GrantSuperDrops;
         CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
+        AllowMoveIntoIneligible = parameters.AllowMoveIntoIneligible;
         MinimumBidAmount = parameters.MinimumBidAmount;
         LeagueTags = parameters.LeagueTags;
         SpecialGameSlots = parameters.SpecialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
@@ -75,6 +78,7 @@ public class LeagueOptions
     public bool DropOnlyDraftGames { get; }
     public bool GrantSuperDrops { get; }
     public bool CounterPicksBlockDrops { get; }
+    public bool AllowMoveIntoIneligible { get; }
     public int MinimumBidAmount { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
     public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }
@@ -255,6 +259,11 @@ public class LeagueOptions
             differences.Add($"'Grant Super Drops' changed from {existingOptions.GrantSuperDrops.ToYesNoString()} to {GrantSuperDrops.ToYesNoString()}.");
         }
 
+        if (AllowMoveIntoIneligible != existingOptions.AllowMoveIntoIneligible)
+        {
+            differences.Add($"'Allow Move Into Ineligible' changed from {existingOptions.AllowMoveIntoIneligible.ToYesNoString()} to {AllowMoveIntoIneligible.ToYesNoString()}.");
+        }
+
         var orderedExistingTags = existingOptions.LeagueTags.OrderBy(t => t.Tag.Name).ToList();
         var orderedNewTags = LeagueTags.OrderBy(t => t.Tag.Name).ToList();
         if (!orderedNewTags.SequenceEqual(orderedExistingTags))
@@ -286,8 +295,10 @@ public class LeagueOptions
     public LeagueOptions UpdateOptionsForYear(int requestYear)
     {
         var newScoringSystem = ScoringSystem.GetDefaultScoringSystem(requestYear);
-        LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem, PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem,
+        LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames,
+            WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
+            AllowMoveIntoIneligible, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem,
+            PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem,
             CounterPickDeadline, MightReleaseDroppableDate);
         return options;
     }
