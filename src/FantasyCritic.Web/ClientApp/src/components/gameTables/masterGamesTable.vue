@@ -83,9 +83,9 @@
         <span v-if="!yearOpenForPlay">--</span>
       </template>
       <template #cell(projectedOrRealFantasyPoints)="data">
-        <span v-if="data.item.fantasyPoints">{{ data.item.fantasyPoints | score(1) }}</span>
-        <span v-if="!data.item.fantasyPoints && yearOpenForPlay" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
-        <span v-if="!data.item.fantasyPoints && !yearOpenForPlay" class="projected-text">--</span>
+        <span v-if="data.item.fantasyPoints !== null">{{ data.item.fantasyPoints | score(1) }}</span>
+        <span v-if="data.item.fantasyPoints === null && yearOpenForPlay" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
+        <span v-if="data.item.fantasyPoints === null && !yearOpenForPlay" class="projected-text">--</span>
       </template>
       <template #cell(eligiblePercentStandardGame)="data">
         <span v-if="yearOpenForPlay">{{ data.item.eligiblePercentStandardGame | percent(1) }}</span>
