@@ -275,6 +275,7 @@ public class ActionProcessor
             .Except(winningBids.Select(x => x.PickupBid))
             .Except(duplicateBids)
             .Except(noSpaceLeftBids)
+            .Except(noEligibleSpaceLeftBids)
             .Except(insufficientFundsBids)
             .Except(belowMinimumBids)
             .Except(invalidGameBids.Select(x => x.Key))

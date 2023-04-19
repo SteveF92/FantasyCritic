@@ -35,7 +35,8 @@ public static class SlotEligibilityFunctions
         }
 
         var slots = publisher.GetPublisherSlots(leagueOptions);
-        var openSlots = slots.Where(x => x.CounterPick == counterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
+        var openSlots = slots.Where(x => x.CounterPick == counterPick && (x.PublisherGame is null || (validDropSlot.HasValue && validDropSlot.Value == x.SlotNumber)))
+            .OrderBy(x => x.SlotNumber).ToList();
         if (eligibilityFactors is null)
         {
             //This is an unlinked master game
