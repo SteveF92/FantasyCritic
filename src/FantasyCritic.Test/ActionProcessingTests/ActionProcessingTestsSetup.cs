@@ -1,3 +1,4 @@
+using Argon;
 using NUnit.Framework;
 using VerifyTests;
 
@@ -10,5 +11,9 @@ public class ActionProcessingTestsSetup
     public void Initialize()
     {
         VerifierSettings.DontScrubGuids();
+        VerifierSettings.AddExtraSettings(x =>
+        {
+            x.DefaultValueHandling = DefaultValueHandling.Include;
+        });
     }
 }

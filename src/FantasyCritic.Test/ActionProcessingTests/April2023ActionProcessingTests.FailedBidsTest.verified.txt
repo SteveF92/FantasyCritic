@@ -147,6 +147,7 @@
     BidID: 21a34197-1ce4-4414-adf7-7e8db8393757,
     PublisherID: ff139741-00f4-4a69-90da-7be986ea1c1b,
     MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 125.51555464536400909090909092,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
@@ -938,6 +939,7 @@
     BidID: b5dc846e-27b6-452d-b321-d6b6c53e3e3f,
     PublisherID: 6c063b45-ea1c-464b-bad9-8bbce974804e,
     MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 156.0466273472679,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -964,6 +966,7 @@
     BidID: b860a022-fc56-473d-85c2-0a25866257da,
     PublisherID: 9a20e5c9-682b-4c0c-82de-56f3a3f9e618,
     MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 101.2179981832314,
     FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2023.,
     Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023.
@@ -1143,6 +1146,7 @@
     BidID: d5b2de50-2332-4d4a-a730-aa7384df977a,
     PublisherID: 49e3cff6-a113-4297-b119-17f68eae107d,
     MasterGameID: f6a1123f-7f72-4fc2-9a4c-fd8cc336ce2a,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 75.8004772913634,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1313,6 +1317,7 @@
     BidID: fc8d381f-f9a6-4e03-9e80-f9aef9b8b149,
     PublisherID: 5cd0eb30-bb4b-407b-8923-714a8eb4beaf,
     MasterGameID: cf8bc2e5-aca8-4f64-ac25-4b8be5fc7900,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 130.96177117508789565217391301,
     FailureReason: Game is no longer eligible: That game already has a score.,
     Outcome: Game is no longer eligible: That game already has a score.
