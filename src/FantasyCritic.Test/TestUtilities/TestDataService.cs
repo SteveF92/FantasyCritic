@@ -15,9 +15,12 @@ namespace FantasyCritic.Test.TestUtilities;
 public class TestDataService
 {
     private readonly string _basePath;
-    public TestDataService(string basePath)
+    private readonly bool _defaultAllowIneligible;
+
+    public TestDataService(string basePath, bool defaultAllowIneligible)
     {
         _basePath = basePath;
+        _defaultAllowIneligible = defaultAllowIneligible;
     }
 
     public SystemWideValues GetSystemWideValues()
@@ -166,7 +169,14 @@ public class TestDataService
     {
         using var reader = new StreamReader(Path.Combine(_basePath, "PickupBids.csv"));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        csv.Context.RegisterClassMap<PickupBidEntityMap>();
+        if (_defaultAllowIneligible)
+        {
+            csv.Context.RegisterClassMap<PreAllowIneligibleSlotPickupBidEntityMap>();
+        }
+        else
+        {
+            csv.Context.RegisterClassMap<PickupBidEntityMap>();
+        }
         var pickupBids = csv.GetRecords<PickupBidEntity>().ToList();
         return pickupBids;
     }

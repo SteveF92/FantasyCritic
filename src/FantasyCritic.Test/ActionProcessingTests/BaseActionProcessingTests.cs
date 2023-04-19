@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.BusinessLogicFunctions;
@@ -7,20 +8,23 @@ using FantasyCritic.Test.TestUtilities;
 using NodaTime;
 using NUnit.Framework;
 using VerifyNUnit;
-using VerifyTests;
 
 namespace FantasyCritic.Test.ActionProcessingTests;
 
 public abstract class BaseActionProcessingTests
 {
-    protected FinalizedActionProcessingResults _results = null!;
+    private readonly Dictionary<string, FinalizedActionProcessingResults> _results = new Dictionary<string, FinalizedActionProcessingResults>();
 
-    protected void SetupAndProcess(Instant processingTime, string testDataName)
+    protected abstract Instant ProcessingTime { get; }
+    protected abstract string ActionProcessingSetName { get; }
+    protected abstract bool DefaultAllowIneligible { get; }
+
+    [OneTimeSetUp]
+    public void Process()
     {
-        VerifierSettings.DontScrubGuids();
-        var currentDate = processingTime.InZone(TimeExtensions.EasternTimeZone).Date;
+        var currentDate = ProcessingTime.InZone(TimeExtensions.EasternTimeZone).Date;
 
-        var testDataService = new TestDataService($"../../../TestData/{testDataName}/");
+        var testDataService = new TestDataService($"../../../TestData/{ActionProcessingSetName}/", DefaultAllowIneligible);
         var systemWideValues = testDataService.GetSystemWideValues();
         var masterGameYearDictionary = testDataService.GetMasterGameYears();
         var publishers = testDataService.GetPublishers(masterGameYearDictionary);
@@ -29,14 +33,14 @@ public abstract class BaseActionProcessingTests
         var allActiveBids = testDataService.GetActiveBids(leagueYears, masterGameYearDictionary);
         var allActiveDrops = testDataService.GetActiveDrops(leagueYears, masterGameYearDictionary);
 
-        var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary);
-        _results = actionProcessor.ProcessActions(allActiveBids, allActiveDrops, publishers);
+        var actionProcessor = new ActionProcessor(systemWideValues, ProcessingTime, currentDate, masterGameYearDictionary);
+        _results[ActionProcessingSetName] = actionProcessor.ProcessActions(allActiveBids, allActiveDrops, publishers);
     }
 
     [Test]
     public Task SuccessBidsTest()
     {
-        var testData = _results.Results.SuccessBids.Select(x => new
+        var testData = _results[ActionProcessingSetName].Results.SuccessBids.Select(x => new
             {
                 x.PickupBid.BidID,
                 x.PickupBid.Publisher.PublisherID,
@@ -59,7 +63,7 @@ public abstract class BaseActionProcessingTests
     [Test]
     public Task FailedBidsTest()
     {
-        var testData = _results.Results.FailedBids.Select(x => new
+        var testData = _results[ActionProcessingSetName].Results.FailedBids.Select(x => new
             {
                 x.PickupBid.BidID,
                 x.PickupBid.Publisher.PublisherID,
@@ -78,7 +82,7 @@ public abstract class BaseActionProcessingTests
     [Test]
     public Task SuccessDropsTest()
     {
-        var testData = _results.Results.SuccessDrops.Select(x => new
+        var testData = _results[ActionProcessingSetName].Results.SuccessDrops.Select(x => new
             {
                 x.DropRequestID,
                 x.Publisher.PublisherID,
@@ -93,7 +97,7 @@ public abstract class BaseActionProcessingTests
     [Test]
     public Task FailedDropsTest()
     {
-        var testData = _results.Results.FailedDrops.Select(x => new
+        var testData = _results[ActionProcessingSetName].Results.FailedDrops.Select(x => new
             {
                 x.DropRequestID,
                 x.Publisher.PublisherID,
@@ -108,7 +112,7 @@ public abstract class BaseActionProcessingTests
     [Test]
     public Task AddedPublisherGamesTest()
     {
-        var testData = _results.Results.AddedPublisherGames.Select(x => new
+        var testData = _results[ActionProcessingSetName].Results.AddedPublisherGames.Select(x => new
             {
                 x.PublisherID,
                 x.MasterGame!.MasterGame.MasterGameID,
@@ -128,7 +132,7 @@ public abstract class BaseActionProcessingTests
     [Test]
     public Task RemovedPublisherGamesTest()
     {
-        var testData = _results.Results.RemovedPublisherGames.Select(x => new
+        var testData = _results[ActionProcessingSetName].Results.RemovedPublisherGames.Select(x => new
             {
                 x.PublisherGame.PublisherID,
                 x.PublisherGame.MasterGame!.MasterGame.MasterGameID,
@@ -151,7 +155,7 @@ public abstract class BaseActionProcessingTests
     [Test]
     public Task LeagueActionsTest()
     {
-        var testData = _results.Results.LeagueActions.Select(x => new
+        var testData = _results[ActionProcessingSetName].Results.LeagueActions.Select(x => new
             {
                 x.Publisher.LeagueYearKey.LeagueID,
                 x.Publisher.PublisherID,
@@ -170,6 +174,6 @@ public abstract class BaseActionProcessingTests
     [Test]
     public void NoSpecialAuctionsTest()
     {
-        Assert.AreEqual(0, _results.SpecialAuctionsProcessed.Count);
+        Assert.AreEqual(0, _results[ActionProcessingSetName].SpecialAuctionsProcessed.Count);
     }
 }
