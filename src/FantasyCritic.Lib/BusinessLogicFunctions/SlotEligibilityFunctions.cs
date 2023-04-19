@@ -70,11 +70,6 @@ public static class SlotEligibilityFunctions
         //At this point, the game is eligible in the league. Does the publisher have an open slot?
         if (!openSlots.Any())
         {
-            if (validDropSlot.HasValue)
-            {
-                return new PublisherSlotAcquisitionResult(validDropSlot.Value);
-            }
-
             if (!acquiringNow)
             {
                 return new PublisherSlotAcquisitionResult(1);
