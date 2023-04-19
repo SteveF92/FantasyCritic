@@ -1138,7 +1138,7 @@
     Priority: 1,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 134.34619393464281538461538460,
-    SlotNumber: 10,
+    SlotNumber: 3,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
     ConditionalDropResult: Success
@@ -1620,19 +1620,6 @@
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 242.41439429213632307692307690,
     SlotNumber: 2,
-    Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
-    BidID: 3107b679-42db-4913-a6c2-9979eca03e10,
-    PublisherID: 16b1880b-276b-4cf4-a70c-b5be61a18f35,
-    MasterGameID: 81641cb4-291d-4b27-80e3-767fed0e47b7,
-    CounterPick: false,
-    Priority: 1,
-    BidAmount: 12,
-    ProjectedPointsAtTimeOfBid: 38.256082350973728571428571428,
-    SlotNumber: 4,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -2750,7 +2737,7 @@
     Priority: 1,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 105.92368424187809230769230769,
-    SlotNumber: 11,
+    SlotNumber: 9,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 57251229-a966-4da0-b1ac-48f883dc2f7f,
     ConditionalDropResult: Success
@@ -4089,7 +4076,7 @@
     Priority: 1,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 96.52709651149346363636363635,
-    SlotNumber: 11,
+    SlotNumber: 3,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
     ConditionalDropResult: Success
@@ -4765,7 +4752,7 @@
     Priority: 1,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 42.704764838627625925925925926,
-    SlotNumber: 11,
+    SlotNumber: 10,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
     ConditionalDropResult: Success
@@ -6650,9 +6637,22 @@
     Priority: 1,
     BidAmount: 8,
     ProjectedPointsAtTimeOfBid: 77.823128208511871428571428571,
-    SlotNumber: 11,
+    SlotNumber: 6,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    ConditionalDropResult: Success
+  },
+  {
+    BidID: b44cce0a-c923-4ae9-99e1-51dbcedfdc57,
+    PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
+    MasterGameID: 81641cb4-291d-4b27-80e3-767fed0e47b7,
+    CounterPick: false,
+    Priority: 2,
+    BidAmount: 20,
+    ProjectedPointsAtTimeOfBid: 33.523754204133528571428571428,
+    SlotNumber: 3,
+    Outcome: This bid was the highest bid.,
+    ConditionalDropMasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
     ConditionalDropResult: Success
   },
   {
@@ -8099,19 +8099,6 @@
     ConditionalDropResult: null
   },
   {
-    BidID: d7dccaff-f675-40e5-9f45-aeece719d28b,
-    PublisherID: 50a8cc88-ca4e-484f-a983-05943b70d72e,
-    MasterGameID: d228e436-ac5e-4f52-bcac-b7311c9fd177,
-    CounterPick: false,
-    Priority: 1,
-    BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 123.6305279414314,
-    SlotNumber: 3,
-    Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
-    ConditionalDropResult: Success
-  },
-  {
     BidID: d8177830-89d1-4577-b1fe-52a1bddb0c0c,
     PublisherID: 17f3dbcb-de86-421a-95ab-b5babcb18e74,
     MasterGameID: 3a6c9f9d-9566-4b05-87c3-54e2ab31007b,
@@ -8795,7 +8782,7 @@
     Priority: 2,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 105.92368424187809230769230769,
-    SlotNumber: 9,
+    SlotNumber: 11,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 57251229-a966-4da0-b1ac-48f883dc2f7f,
     ConditionalDropResult: Failure(Cannot drop a game that you do not have)
@@ -8977,7 +8964,7 @@
     Priority: 1,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 109.3280511428625,
-    SlotNumber: 9,
+    SlotNumber: 2,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
     ConditionalDropResult: Success

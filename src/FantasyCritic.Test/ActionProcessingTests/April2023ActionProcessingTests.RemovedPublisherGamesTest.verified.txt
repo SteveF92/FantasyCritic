@@ -312,6 +312,14 @@
     RemovedNote: Dropped by player
   },
   {
+    PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: 5,
+    RemovedNote: Conditionally dropped while picking up: Immortals of Aveum
+  },
+  {
     PublisherID: 295f51c3-1f7e-473b-a606-f66ffc0fdcea,
     MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
     CounterPick: false,
@@ -662,14 +670,6 @@
     SlotNumber: 2,
     BidAmount: null,
     RemovedNote: Dropped by player
-  },
-  {
-    PublisherID: 50a8cc88-ca4e-484f-a983-05943b70d72e,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
-    CounterPick: false,
-    SlotNumber: 3,
-    BidAmount: null,
-    RemovedNote: Conditionally dropped while picking up: Counter-Strike 2
   },
   {
     PublisherID: 52806723-6a1b-4849-9077-a31bf46cad00,

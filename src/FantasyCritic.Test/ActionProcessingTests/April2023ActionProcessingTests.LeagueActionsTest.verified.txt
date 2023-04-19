@@ -5216,8 +5216,8 @@
   {
     LeagueID: c89a8802-f67f-455b-9ae3-e0105fec1aee,
     PublisherID: 50a8cc88-ca4e-484f-a983-05943b70d72e,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Counter-Strike 2' with a bid of $0. Dropped game 'Redfall' conditionally.
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Counter-Strike 2' with a bid of $0. Failure reason: No eligible roster spots available.
   },
   {
     LeagueID: c89a8802-f67f-455b-9ae3-e0105fec1aee,
@@ -6080,26 +6080,20 @@
   {
     LeagueID: e5336535-20cc-48a2-a1f5-e80ee33b59c2,
     PublisherID: 16b1880b-276b-4cf4-a70c-b5be61a18f35,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Immortals of Aveum' with a bid of $12
-  },
-  {
-    LeagueID: e5336535-20cc-48a2-a1f5-e80ee33b59c2,
-    PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Immortals of Aveum' with a bid of $20. Failure reason: No eligible roster spots available.
-  },
-  {
-    LeagueID: e5336535-20cc-48a2-a1f5-e80ee33b59c2,
-    PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Immortals of Aveum' with a bid of $20. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Immortals of Aveum' with a bid of $12. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: e5336535-20cc-48a2-a1f5-e80ee33b59c2,
     PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
     ActionType: Pickup Successful,
     Description: Acquired game 'Aliens: Dark Descent' with a bid of $5
+  },
+  {
+    LeagueID: e5336535-20cc-48a2-a1f5-e80ee33b59c2,
+    PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Immortals of Aveum' with a bid of $20. Dropped game 'The Day Before' conditionally.
   },
   {
     LeagueID: e55fd8d6-abbb-44ef-b821-6fe3740ee70d,

@@ -198,6 +198,15 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: 3107b679-42db-4913-a6c2-9979eca03e10,
+    PublisherID: 16b1880b-276b-4cf4-a70c-b5be61a18f35,
+    MasterGameID: 81641cb4-291d-4b27-80e3-767fed0e47b7,
+    BidAmount: 12,
+    ProjectedPointsAtTimeOfBid: 38.256082350973728571428571428,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
     BidID: 31f66fa4-8ad3-48ec-8ed6-e45014e98077,
     PublisherID: ae51838e-0bef-4f83-8f05-4fed52be84fd,
     MasterGameID: cf8bc2e5-aca8-4f64-ac25-4b8be5fc7900,
@@ -918,15 +927,6 @@
     Outcome: Game is no longer eligible: That game already has a score.
   },
   {
-    BidID: b44cce0a-c923-4ae9-99e1-51dbcedfdc57,
-    PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
-    MasterGameID: 81641cb4-291d-4b27-80e3-767fed0e47b7,
-    BidAmount: 20,
-    ProjectedPointsAtTimeOfBid: 33.523754204133528571428571428,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
-  },
-  {
     BidID: b58a73a4-79ca-4688-865c-e16870d47c3e,
     PublisherID: 83e1ae94-c0aa-4efa-9dc5-5260285952da,
     MasterGameID: cf8bc2e5-aca8-4f64-ac25-4b8be5fc7900,
@@ -1159,6 +1159,15 @@
     ProjectedPointsAtTimeOfBid: 42.874791947441885365853658536,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
+  },
+  {
+    BidID: d7dccaff-f675-40e5-9f45-aeece719d28b,
+    PublisherID: 50a8cc88-ca4e-484f-a983-05943b70d72e,
+    MasterGameID: d228e436-ac5e-4f52-bcac-b7311c9fd177,
+    BidAmount: 0,
+    ProjectedPointsAtTimeOfBid: 123.6305279414314,
+    FailureReason: No eligible roster spots available.,
+    Outcome: No eligible roster spots available.
   },
   {
     BidID: d9935a03-1b23-412e-962c-4c23d8d91230,
