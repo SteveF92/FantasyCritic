@@ -48,7 +48,8 @@ public class ActionProcessor
             return new FinalizedActionProcessingResults(processSetID, _processingTime, processName, dropResults, new List<SpecialAuction>());
         }
 
-        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed = GetConditionalDropsThatWillSucceed(allActiveBids);
+        var dropResultsCopy = dropResults.MakeCopy();
+        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed = GetConditionalDropsThatWillSucceed(allActiveBids, dropResultsCopy);
 
         ActionProcessingResults bidResults = ProcessPickups(allActiveBids, dropResults, conditionalDropsThatWillSucceed);
         return new FinalizedActionProcessingResults(processSetID, _processingTime, processName, bidResults, new List<SpecialAuction>());
@@ -108,24 +109,15 @@ public class ActionProcessor
         return dropProcessingResults;
     }
 
-    private ILookup<LeagueYearKey, PublisherGame> GetConditionalDropsThatWillSucceed(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids)
+    private ILookup<LeagueYearKey, PublisherGame> GetConditionalDropsThatWillSucceed(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids, ActionProcessingResults existingResults)
     {
-        List<(LeagueYearKey, PublisherGame)> conditionalDropsThatWillSucceed = new List<(LeagueYearKey, PublisherGame)>();
-
-        foreach (var leagueYearSet in allActiveBids)
-        {
-            var bidsWithConditionalDrops = leagueYearSet.Value.Where(x => x.ConditionalDropPublisherGame is not null).ToList();
-            foreach (var bid in bidsWithConditionalDrops)
-            {
-                var conditionalDropResult = GameEligibilityFunctions.CanConditionallyDropGame(bid, leagueYearSet.Key, bid.Publisher, _processingTime, _currentDate);
-                if (conditionalDropResult.Result.IsSuccess)
-                {
-                    conditionalDropsThatWillSucceed.Add((leagueYearSet.Key.Key, bid.ConditionalDropPublisherGame!));
-                }
-            }
-        }
-
-        return conditionalDropsThatWillSucceed.ToLookup(x => x.Item1, y => y.Item2);
+        var emptyLookup = new List<(LeagueYearKey, PublisherGame)>().ToLookup(x => x.Item1, y => y.Item2);
+        ActionProcessingResults bidResults = ProcessPickups(allActiveBids, existingResults, emptyLookup);
+        var finalLookup = bidResults.SuccessBids
+            .Where(x => x.PickupBid.ConditionalDropPublisherGame is not null)
+            .Select(x => (x.PickupBid.LeagueYear.Key, x.PickupBid.ConditionalDropPublisherGame!))
+            .ToLookup(x => x.Item1, y => y.Item2);
+        return finalLookup;
     }
 
     private ActionProcessingResults ProcessPickups(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
