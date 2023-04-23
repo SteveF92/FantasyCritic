@@ -1492,7 +1492,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser)
     {
-        string addUserSQL = "insert into tbl_league_hasuser (LeagueID,UserID) VALUES (@LeagueID,@NewUserID);";
         string setUserActiveSQL = "insert into tbl_league_activeplayer (LeagueID,Year,UserID) VALUES (@LeagueID,@Year,@NewUserID);";
         string reassignPublisherSQL = "update tbl_league_publisher SET UserID = @NewUserID WHERE LeagueID = @LeagueID AND PublisherID = @PublisherID";
         string setUserInactiveSQL = "delete from tbl_league_activeplayer WHERE LeagueID = @LeagueID AND Year = @Year AND UserID = @OldUserID;";
@@ -1510,7 +1509,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        await connection.ExecuteAsync(addUserSQL, param, transaction);
         await connection.ExecuteAsync(setUserActiveSQL, param, transaction);
         await connection.ExecuteAsync(reassignPublisherSQL, param, transaction);
         await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);

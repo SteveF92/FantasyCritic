@@ -14,7 +14,6 @@ public class PublisherService
     private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
 
-
     public PublisherService(IFantasyCriticRepo fantasyCriticRepo,
         DiscordPushService discordPushService,
         InterLeagueService interLeagueService,
@@ -230,12 +229,29 @@ public class PublisherService
         return leagueYearPublishers;
     }
 
-    public async Task<Result> ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser)
+    public async Task<Result> ReassignPublisher(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUser> allUsersInLeague, Guid publisherID, Guid newUserID)
     {
-        var userIsAlreadyInLeague = leagueYear.Publishers.Any(x => x.User.Id == newUser.Id);
-        if (userIsAlreadyInLeague)
+        var userAlreadyHasPublisher = leagueYear.Publishers.Any(x => x.User.Id == newUserID);
+        if (userAlreadyHasPublisher)
         {
             return Result.Failure("That user already has a publisher in this league year.");
+        }
+
+        var newUser = allUsersInLeague.SingleOrDefault(x => x.Id == newUserID);
+        if (newUser is null)
+        {
+            return Result.Failure("User must be in the league to assign a publisher to them.");
+        }
+
+        var publisherToReassign = leagueYear.GetPublisherByID(publisherID);
+        if (publisherToReassign is null)
+        {
+            return Result.Failure("Publisher not found.");
+        }
+
+        if (publisherToReassign.User.Id == leagueYear.League.LeagueManager.Id)
+        {
+            return Result.Failure("You cannot reassign your publisher to someone else.");
         }
 
         await _fantasyCriticRepo.ReassignPublisher(leagueYear, publisherToReassign, newUser);

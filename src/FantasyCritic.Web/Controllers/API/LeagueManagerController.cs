@@ -434,19 +434,8 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var leagueYear = leagueYearRecord.ValidResult!.LeagueYear;
-        var publisherToReassign = leagueYear.GetPublisherByID(request.PublisherID);
-        if (publisherToReassign is null)
-        {
-            return BadRequest("Publisher cannot be found in that league.");
-        }
-
-        var inviteUser = await _userManager.FindByDisplayName(request.InviteDisplayName, request.InviteDisplayNumber);
-        if (inviteUser is null)
-        {
-            return BadRequest("User to invite cannot be found.");
-        }
-
-        var reassignResult = await _publisherService.ReassignPublisher(leagueYear, publisherToReassign, inviteUser);
+        var playersInLeague = leagueYearRecord.ValidResult!.PlayersInLeague.Select(x => x.User).ToList();
+        var reassignResult = await _publisherService.ReassignPublisher(leagueYear, playersInLeague, request.PublisherID, request.NewUserID);
         if (reassignResult.IsFailure)
         {
             return BadRequest(reassignResult.Error);
