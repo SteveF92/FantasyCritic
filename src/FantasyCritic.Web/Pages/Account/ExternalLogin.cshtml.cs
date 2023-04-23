@@ -129,7 +129,7 @@ public class ExternalLoginModel : PageModel
                     var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, fullUser, Request);
                     await _emailSendingService.SendConfirmationEmail(fullUser, confirmLink);
 
-                    await _signInManager.SignInAsync(fullUser, isPersistent: false, info.LoginProvider);
+                    await _signInManager.SignInAsync(fullUser, isPersistent: true, info.LoginProvider);
 
                     return LocalRedirect(returnUrl);
                 }
