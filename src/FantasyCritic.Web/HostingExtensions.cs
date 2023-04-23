@@ -75,11 +75,11 @@ public static class HostingExtensions
 
         var repoConfiguration = new RepositoryConfiguration(connectionString, clock);
         var patreonConfig = new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!);
-        var emailSendingConfig = new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction());
+        var emailSendingConfig = new EnvironmentConfiguration(baseAddress, environment.IsProduction());
         var discordConfiguration = new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId"));
         services.AddSingleton<RepositoryConfiguration>(_ => repoConfiguration);
         services.AddSingleton<PatreonConfig>(_ => patreonConfig);
-        services.AddSingleton<EmailSendingServiceConfiguration>(_ => emailSendingConfig);
+        services.AddSingleton<EnvironmentConfiguration>(_ => emailSendingConfig);
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
         services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
         services.AddSingleton<DiscordPushService>();
