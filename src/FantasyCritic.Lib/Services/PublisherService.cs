@@ -229,4 +229,16 @@ public class PublisherService
 
         return leagueYearPublishers;
     }
+
+    public async Task<Result> ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser)
+    {
+        var userIsAlreadyInLeague = leagueYear.Publishers.Any(x => x.User.Id == newUser.Id);
+        if (userIsAlreadyInLeague)
+        {
+            return Result.Failure("That user already has a publisher in this league year.");
+        }
+
+        await _fantasyCriticRepo.ReassignPublisher(leagueYear, publisherToReassign, newUser);
+        return Result.Success();
+    }
 }

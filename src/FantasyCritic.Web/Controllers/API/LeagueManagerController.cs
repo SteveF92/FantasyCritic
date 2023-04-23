@@ -425,6 +425,38 @@ public class LeagueManagerController : BaseLeagueController
 
     [HttpPost]
     [Authorize("Write")]
+    public async Task<IActionResult> ReassignPublisher([FromBody] ReassignPublisherRequest request)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+
+        var leagueYear = leagueYearRecord.ValidResult!.LeagueYear;
+        var publisherToReassign = leagueYear.GetPublisherByID(request.PublisherID);
+        if (publisherToReassign is null)
+        {
+            return BadRequest("Publisher cannot be found in that league.");
+        }
+
+        var inviteUser = await _userManager.FindByDisplayName(request.InviteDisplayName, request.InviteDisplayNumber);
+        if (inviteUser is null)
+        {
+            return BadRequest("User to invite cannot be found.");
+        }
+
+        var reassignResult = await _publisherService.ReassignPublisher(leagueYear, publisherToReassign, inviteUser);
+        if (reassignResult.IsFailure)
+        {
+            return BadRequest(reassignResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Authorize("Write")]
     public async Task<IActionResult> CreatePublisherForUser([FromBody] CreatePublisherForUserRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);

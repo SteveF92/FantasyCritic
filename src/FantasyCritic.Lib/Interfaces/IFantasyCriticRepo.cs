@@ -47,6 +47,7 @@ public interface IFantasyCriticRepo
     Task DeactivateInviteLink(LeagueInviteLink inviteID);
     Task<IReadOnlyList<LeagueInviteLink>> GetInviteLinks(League league);
     Task<LeagueInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode);
+    Task ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser);
     Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
     Task FullyRemovePublisher(LeagueYear leagueYear, Publisher deletePublisher);

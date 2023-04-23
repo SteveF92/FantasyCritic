@@ -1490,6 +1490,34 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return result.ToDomain(league);
     }
 
+    public async Task ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser)
+    {
+        string addUserSQL = "insert into tbl_league_hasuser (LeagueID,UserID) VALUES (@LeagueID,@NewUserID);";
+        string setUserActiveSQL = "insert into tbl_league_activeplayer (LeagueID,Year,UserID) VALUES (@LeagueID,@Year,@NewUserID);";
+        string reassignPublisherSQL = "update tbl_league_publisher SET UserID = @NewUserID WHERE LeagueID = @LeagueID AND PublisherID = @PublisherID";
+        string setUserInactiveSQL = "delete from tbl_league_activeplayer WHERE LeagueID = @LeagueID AND Year = @Year AND UserID = @OldUserID;";
+
+        var param = new
+        {
+            LeagueID = leagueYear.League.LeagueID,
+            Year = leagueYear.Year,
+            PublisherID = publisherToReassign.PublisherID,
+            OldUserID = publisherToReassign.User.Id,
+            NewUserID = newUser.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(addUserSQL, param, transaction);
+        await connection.ExecuteAsync(setUserActiveSQL, param, transaction);
+        await connection.ExecuteAsync(reassignPublisherSQL, param, transaction);
+        await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+
+        await transaction.CommitAsync();
+    }
+
     public async Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
     {
         const string updateSQL = "update tbl_league_hasuser SET Archived = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";
