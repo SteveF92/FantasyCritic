@@ -4,7 +4,10 @@
       <div v-show="errorInfo" class="alert alert-danger">
         {{ errorInfo }}
       </div>
-      <div>
+      <div v-if="playStarted" class="alert alert-warning">
+        This year has already been started. Any players invited now will be marked as "inactive". The only reason to do this is if you intend to use the "Reassign Publisher" option.
+      </div>
+      <div v-if="!playStarted">
         <h3 class="text-black">Invite Link</h3>
         <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
         <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
