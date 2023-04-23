@@ -5222,8 +5222,8 @@
   {
     LeagueID: c89a8802-f67f-455b-9ae3-e0105fec1aee,
     PublisherID: 9cfbd58e-8380-494d-bddb-4c218f85c318,
-    ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Redfall' with a bid of $1. Failure reason: Game is no longer eligible: Game has been dropped by the other player.
+    ActionType: Counter Pick Pickup Successful,
+    Description: Acquired counter pick 'Redfall' with a bid of $1
   },
   {
     LeagueID: c919a4e9-926f-43e8-b153-3326fa1aa56e,

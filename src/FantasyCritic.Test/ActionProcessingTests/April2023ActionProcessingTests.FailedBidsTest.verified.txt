@@ -693,15 +693,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: 7abeb9f7-4865-40c2-837b-167ca459268d,
-    PublisherID: 9cfbd58e-8380-494d-bddb-4c218f85c318,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
-    BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 117.2444240066000,
-    FailureReason: Game is no longer eligible: Game has been dropped by the other player.,
-    Outcome: Game is no longer eligible: Game has been dropped by the other player.
-  },
-  {
     BidID: 7bc137b8-cc7f-4b8f-8f6d-cf1852012981,
     PublisherID: 58c1570d-68b7-4f73-b5a1-12e088ab6250,
     MasterGameID: cf8bc2e5-aca8-4f64-ac25-4b8be5fc7900,

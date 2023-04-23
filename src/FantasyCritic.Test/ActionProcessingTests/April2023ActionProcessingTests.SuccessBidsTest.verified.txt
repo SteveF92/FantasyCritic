@@ -4368,6 +4368,19 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 7abeb9f7-4865-40c2-837b-167ca459268d,
+    PublisherID: 9cfbd58e-8380-494d-bddb-4c218f85c318,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: true,
+    Priority: 1,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 117.2444240066000,
+    SlotNumber: 2,
+    Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
     BidID: 7ac843b6-74a4-40f4-9c87-38db01ebd8a3,
     PublisherID: 1f814da0-a756-41de-98a6-c93a29c22ce2,
     MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,

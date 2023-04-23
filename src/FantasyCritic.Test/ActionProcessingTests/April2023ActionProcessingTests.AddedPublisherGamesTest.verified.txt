@@ -3234,6 +3234,13 @@
     BidAmount: 5
   },
   {
+    PublisherID: 9cfbd58e-8380-494d-bddb-4c218f85c318,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: true,
+    SlotNumber: 2,
+    BidAmount: 1
+  },
+  {
     PublisherID: 9d6e8d8b-46d8-4b2f-8d5e-23ad24e71d99,
     MasterGameID: c176eeda-b0fe-4f25-8535-d7900916bc4c,
     CounterPick: false,
