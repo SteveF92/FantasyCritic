@@ -235,6 +235,12 @@ public static class HostingExtensions
                 const string numbers = "0123456789";
                 const string specials = "-._@+ ";
                 options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
+                options.Password.RequiredLength = 10;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 5;
             })
             .AddSignInManager<FantasyCriticSignInManager>()
             .AddUserManager<FantasyCriticUserManager>()
