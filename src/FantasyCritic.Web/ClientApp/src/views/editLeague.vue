@@ -8,15 +8,9 @@
         <p>{{ errorInfo }}</p>
       </div>
 
-      <div v-if="possibleLeagueOptions && leagueYearSettings && leagueYear">
+      <div v-if="leagueYearSettings && leagueYear">
         <div class="text-well league-options">
-          <leagueYearSettings
-            v-model="leagueYearSettings"
-            :year="year"
-            :possible-league-options="possibleLeagueOptions"
-            edit-mode
-            :current-number-of-players="activePlayersInLeague"
-            :fresh-settings="freshSettings"></leagueYearSettings>
+          <leagueYearSettings v-model="leagueYearSettings" :year="year" edit-mode :current-number-of-players="activePlayersInLeague" :fresh-settings="freshSettings"></leagueYearSettings>
         </div>
 
         <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
@@ -43,7 +37,6 @@ export default {
   data() {
     return {
       errorInfo: '',
-      possibleLeagueOptions: null,
       leagueYearSettings: null,
       leagueYear: null,
       freshSettings: false
@@ -75,19 +68,10 @@ export default {
     if (this.$route.query.freshSettings) {
       this.freshSettings = this.$route.query.freshSettings;
     }
-    this.fetchLeagueOptions();
     this.fetchCurrentLeagueYearOptions();
     this.fetchLeagueYear();
   },
   methods: {
-    fetchLeagueOptions() {
-      axios
-        .get('/api/League/LeagueOptions')
-        .then((response) => {
-          this.possibleLeagueOptions = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
-    },
     fetchLeagueYear() {
       axios
         .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)

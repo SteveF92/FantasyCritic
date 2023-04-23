@@ -37,7 +37,7 @@
           <div v-if="readyToSetupLeagueYear">
             <hr />
             <div class="text-well">
-              <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :possible-league-options="possibleLeagueOptions" fresh-settings></leagueYearSettings>
+              <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" fresh-settings></leagueYearSettings>
             </div>
           </div>
 
@@ -102,7 +102,6 @@ export default {
   data() {
     return {
       errorInfo: '',
-      possibleLeagueOptions: null,
       leagueName: '',
       initialYear: '',
       leagueYearSettings: null,
@@ -139,7 +138,6 @@ export default {
     }
   },
   mounted() {
-    this.fetchLeagueOptions();
     this.leagueYearSettings = {
       standardGames: '',
       gamesToDraft: '',
@@ -156,14 +154,6 @@ export default {
     };
   },
   methods: {
-    fetchLeagueOptions() {
-      axios
-        .get('/api/League/LeagueOptions')
-        .then((response) => {
-          this.possibleLeagueOptions = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
-    },
     postRequest() {
       this.leagueYearSettings.year = this.initialYear;
       let selectedLeagueOptions = {
