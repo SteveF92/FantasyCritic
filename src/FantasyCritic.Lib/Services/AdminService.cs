@@ -661,7 +661,8 @@ public class AdminService
 
                 List<LeagueYear> timeAdjustedLeagues;
                 var scoreOrReleaseTime = masterGame.FirstCriticScoreTimestamp ?? masterGame.ReleaseDate?.AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();
-                if (scoreOrReleaseTime.HasValue)
+                var hadScoreBeforeYear = scoreOrReleaseTime.HasValue && scoreOrReleaseTime.Value.ToEasternDate() < new LocalDate(supportedYear.Year, 1, 1);
+                if (scoreOrReleaseTime.HasValue && !hadScoreBeforeYear)
                 {
                     timeAdjustedLeagues = leaguesWhereEligible.Where(x =>
                             x.DraftStartedTimestamp.HasValue &&
