@@ -37,7 +37,7 @@ public class MasterGameYearViewModel
         PercentCounterPick = masterGame.PercentCounterPick;
         AdjustedPercentCounterPick = masterGame.AdjustedPercentCounterPick;
 
-        if (masterGame.MasterGame.EligibilityChanged)
+        if (masterGame.MasterGame.UseSimpleEligibility)
         {
             EligiblePercentStandardGame = masterGame.PercentStandardGame;
         }
@@ -79,7 +79,7 @@ public class MasterGameYearViewModel
         PercentCounterPick = masterGame.PercentCounterPick;
         AdjustedPercentCounterPick = masterGame.AdjustedPercentCounterPick;
 
-        if (masterGame.MasterGame.EligibilityChanged)
+        if (masterGame.MasterGame.UseSimpleEligibility)
         {
             EligiblePercentStandardGame = masterGame.PercentStandardGame;
         }

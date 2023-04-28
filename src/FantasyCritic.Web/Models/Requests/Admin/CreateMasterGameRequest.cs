@@ -17,7 +17,7 @@ public class CreateMasterGameRequest
     public List<string> Tags { get; init; } = new List<string>();
     public bool DoNotRefreshDate { get; init; } = false;
     public bool DoNotRefreshAnything { get; init; } = false;
-    public bool EligibilityChanged { get; init; } = false;
+    public bool UseSimpleEligibility { get; init; } = false;
     public bool DelayContention { get; init; } = false;
     public bool ShowNote { get; init; } = false;
 
@@ -41,7 +41,7 @@ public class CreateMasterGameRequest
         }
         Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, minimumReleaseDate, MaximumReleaseDate,
             EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, false, null, Notes, null, null, null,
-            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, ShowNote, now, addedByUser, new List<MasterSubGame>(), tags);
+            DoNotRefreshDate, DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, now, addedByUser, new List<MasterSubGame>(), tags);
         return masterGame;
     }
 }

@@ -698,7 +698,7 @@ public class AdminService
 
                 double percentStandardGameToUse = eligiblePercentStandardGame;
                 double percentCounterPickToUse = adjustedPercentCounterPick ?? percentCounterPick;
-                if (masterGame.EligibilityChanged || eligiblePercentStandardGame > 1)
+                if (masterGame.UseSimpleEligibility || eligiblePercentStandardGame > 1)
                 {
                     percentStandardGameToUse = percentStandardGame;
                     percentCounterPickToUse = percentCounterPick;
