@@ -119,9 +119,16 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         var gameDisplayText = $"**Release Date:** {releaseDateDisplayText}";
         gameDisplayText += $"\n**Release Status (for {dateToCheck.Year}):** {(gameFound.MasterGame.IsReleased(dateToCheck) ? "Released" : gameFound.GetWillReleaseStatus().ReadableName)}";
 
-        var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false);
+        if (gameFound.MasterGame.CriticScore != null)
+        {
+            gameDisplayText += $"\n**Score:** {Math.Round(gameFound.MasterGame.CriticScore.Value, 1)}";
+        }
+        else
+        {
+            var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false);
+            gameDisplayText += $"\n**Projected Score:** {Math.Round(projectedScore, 1)}";
+        }
 
-        gameDisplayText += $"\n**Projected Score:** {Math.Round(projectedScore, 1)}";
         gameDisplayText += $"\n**Hype Factor:** {Math.Round(gameFound.HypeFactor, 1)}";
         gameDisplayText += $"\n**% Drafted:** {(gameFound.PercentStandardGame == 0 ? "N/A" : $"{Math.Round(gameFound.PercentStandardGame * 100, 0)}%")}";
         gameDisplayText += $"\n**% Counter Picked:** {(gameFound.PercentCounterPick == 0 ? "N/A" : $"{Math.Round(gameFound.PercentCounterPick * 100, 0)}%")}";
