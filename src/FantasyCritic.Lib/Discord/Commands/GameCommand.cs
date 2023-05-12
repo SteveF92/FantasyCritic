@@ -119,7 +119,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         var gameDisplayText = $"**Release Date:** {releaseDateDisplayText}";
         gameDisplayText += $"\n**Release Status (for {dateToCheck.Year}):** {(gameFound.MasterGame.IsReleased(dateToCheck) ? "Released" : gameFound.GetWillReleaseStatus().ReadableName)}";
 
-        if (gameFound.MasterGame.CriticScore != null)
+        if (gameFound.MasterGame.CriticScore.HasValue)
         {
             gameDisplayText += $"\n**Score:** {Math.Round(gameFound.MasterGame.CriticScore.Value, 1)}";
         }
