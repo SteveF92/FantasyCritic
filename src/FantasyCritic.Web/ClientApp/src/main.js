@@ -6,7 +6,7 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 //import * as rules from 'vee-validate/dist/rules';
 //import en from 'vee-validate/dist/locale/en.json';
 import VueGtag from 'vue-gtag';
-import VueClipboard from 'vue-clipboard2';
+// import VueClipboard from 'vue-clipboard2';
 
 import App from './App.vue';
 
@@ -16,22 +16,22 @@ import store from './store/index';
 
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
-import VueFlatPickr from 'vue-flatpickr-component';
-import 'flatpickr/dist/flatpickr.css';
-import vueAwesomeCountdown from 'vue-awesome-countdown';
+// import VueFlatPickr from 'vue-flatpickr-component';
+// import 'flatpickr/dist/flatpickr.css';
+// import vueAwesomeCountdown from 'vue-awesome-countdown';
 
 import BasicMixin from './mixins/basicMixin';
 
-VueClipboard.config.autoSetContainer = true;
+// VueClipboard.config.autoSetContainer = true;
 
 const app = createApp(App);
 
 app.use(router);
 app.use(store);
 
-app.use(VueClipboard);
-app.use(VueFlatPickr);
-app.use(vueAwesomeCountdown, 'vac');
+// app.use(VueClipboard);
+// app.use(VueFlatPickr);
+// app.use(vueAwesomeCountdown, 'vac');
 
 //Vee-validate registration
 //app.component('ValidationProvider', ValidationProvider);

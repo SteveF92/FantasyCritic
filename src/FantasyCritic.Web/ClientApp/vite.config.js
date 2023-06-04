@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import createVuePlugin from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue'
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath, URL } from 'node:url';
@@ -21,15 +21,7 @@ const target = process.env.ASPNETCORE_HTTPS_PORT
 
 export default defineConfig({
   plugins: [
-    createVuePlugin({
-      template: {
-        compilerOptions: {
-          compatConfig: {
-            MODE: 2
-          }
-        }
-      }
-    }),
+    vue(),
     Components({
       resolvers: [BootstrapVueNextResolver()],
     }),

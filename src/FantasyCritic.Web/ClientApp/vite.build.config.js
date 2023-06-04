@@ -1,18 +1,15 @@
 import { defineConfig } from 'vite';
-import createVuePlugin from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url';
+import Components from 'unplugin-vue-components/vite'
+import {BootstrapVueNextResolver} from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
   plugins: [
-    createVuePlugin({
-      template: {
-        compilerOptions: {
-          compatConfig: {
-            MODE: 2
-          }
-        }
-      }
-    })
+    vue(),
+    Components({
+      resolvers: [BootstrapVueNextResolver()],
+    }),
   ],
   resolve: {
     alias: {
