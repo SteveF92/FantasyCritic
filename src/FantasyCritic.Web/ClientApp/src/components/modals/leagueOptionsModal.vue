@@ -64,7 +64,7 @@
           </tr>
           <tr>
             <th class="bg-primary">Allow Games to be moved into ineligible slots</th>
-            <td>{{ leagueYearOptions.allowMoveIntoIneligible | yesNo }}</td>
+            <td>{{ yesNo(leagueYearOptions.allowMoveIntoIneligible) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Bidding System</th>
