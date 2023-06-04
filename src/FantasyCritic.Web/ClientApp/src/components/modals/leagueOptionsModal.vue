@@ -63,6 +63,10 @@
             <td>{{ yesNo(leagueYearOptions.counterPicksBlockDrops) }}</td>
           </tr>
           <tr>
+            <th class="bg-primary">Allow Games to be moved into ineligible slots</th>
+            <td>{{ leagueYearOptions.allowMoveIntoIneligible | yesNo }}</td>
+          </tr>
+          <tr>
             <th class="bg-primary">Bidding System</th>
             <td>{{ selectTextFromPossibleOptions(leagueYearOptions.pickupSystem, possibleLeagueOptions.pickupSystems) }}</td>
           </tr>

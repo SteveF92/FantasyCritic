@@ -14,6 +14,7 @@ public class PublisherStateSet
     }
 
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
+    public PublisherStateSet MakeCopy() => new PublisherStateSet(Publishers);
 
     public Publisher GetPublisher(Guid publisherID) => _publisherDictionary.GetValueOrThrow(publisherID, $"Cannot find publisher: {publisherID}");
 

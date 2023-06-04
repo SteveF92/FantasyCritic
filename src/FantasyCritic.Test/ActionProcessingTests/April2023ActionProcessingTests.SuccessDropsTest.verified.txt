@@ -1,0 +1,1067 @@
+﻿[
+  {
+    DropRequestID: 0189ea00-bf99-499a-8077-90ce023b45b0,
+    PublisherID: 10a80309-8769-4b71-abeb-cd61b1746105,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 01e1ca6e-63e6-4a3a-bf8e-04cb97de2c89,
+    PublisherID: 79ccccd1-f73a-476a-86a3-2de44a6cd045,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 022623fb-64d0-4733-b8ea-698ac6e885ba,
+    PublisherID: d76c4ddc-984e-4697-b9f1-61b18cef9729,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 023902a7-a76e-4f97-827c-c79d17cf0b23,
+    PublisherID: ae075508-ebd9-4406-9d8c-22b6cf7af4fe,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 02742b08-2d15-4dda-9f10-933386ac0767,
+    PublisherID: c03913eb-5c8e-46b4-b532-52c936e366ff,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 04c433a0-92ec-4ac1-b765-7431afd33e5b,
+    PublisherID: cb5a0ebe-2c04-4518-a959-bfeaf8d53ebf,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 0585d434-87af-407a-9497-02bcfc78425e,
+    PublisherID: 5f5cf051-0644-4ff1-a824-405d7e6bb890,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 0591eef6-ba92-47dd-90a1-b2bd488ab32a,
+    PublisherID: 3339b17d-2aae-410f-bc14-55d9352e22d2,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 0667bb20-0816-4f6b-993f-1a07a8f4175e,
+    PublisherID: d2404b0c-4f38-4a28-8db1-ab62286ad1bb,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 080233de-0b39-4ba4-b721-48dd3d5ff594,
+    PublisherID: 71ac1af9-7420-40c3-b352-8a9e7fbf118b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 0b8b8913-126c-4bf3-ae16-82afbc41a477,
+    PublisherID: d93eb28b-5b09-42c4-8166-584166bb6ae0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 0cd83cf8-6419-4984-86b9-e7ad5151d23a,
+    PublisherID: 56a4b209-bd3e-4b1e-9f5b-27adb9570704,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 0d353c45-d467-41ae-9fe3-655e9f2f7377,
+    PublisherID: 5005b10a-77b2-4b1b-bb98-fa1d598252b8,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 0d4d74e2-bfea-454d-8b8d-5973816493a3,
+    PublisherID: db8ddedb-f8aa-4ca9-9017-1e188191d0d3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 0d990cdb-9754-4f14-bc76-2138c8c93984,
+    PublisherID: 5747b806-a6bd-485f-a53e-9b9fb4f51572,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 10218cc0-e7da-4a3d-a486-7ec30e152ac6,
+    PublisherID: ee9b0331-d457-4cc8-9446-0cd19f0ead11,
+    MasterGameID: 37a23837-7636-4c6f-aa88-495b73cf8001
+  },
+  {
+    DropRequestID: 114cdf74-2cdc-4cb4-a4dc-2b580c815587,
+    PublisherID: eadceb32-d97c-489d-b580-f2c0111e8511,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 125dca8f-44ab-4104-95ef-a9e89c28d882,
+    PublisherID: 87ce1324-3b85-4163-9ea5-7e6f66d98fcb,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 12cf9a58-e02f-4e10-9c6f-d59af168f3f7,
+    PublisherID: dc27145b-af94-486c-9688-35a0c58b3bdc,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 12f713aa-3791-4966-9972-0ddb334fdd20,
+    PublisherID: f0dfdf83-11db-4e0c-ad20-3e438b57459b,
+    MasterGameID: e0f1c6ef-dd9c-41fe-acfe-c65c9fc11f5d
+  },
+  {
+    DropRequestID: 14889780-55bc-4cf4-82cd-717b42c983a4,
+    PublisherID: 3d32e079-3cfa-46de-9809-00b2bf602c17,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f
+  },
+  {
+    DropRequestID: 148a2288-9f3c-46a5-9f8c-6185bec50607,
+    PublisherID: dea0c82c-7e44-46ad-a200-9c4a03d9445d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 159fa083-cdf2-4c76-94e0-ef0a3d07ef52,
+    PublisherID: 950a272f-caa6-4a83-a621-c502baf00e0b,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 170e6221-3df9-43fe-8cab-ff03eddf5069,
+    PublisherID: c219cbf6-a2a0-49b4-bc4f-93b2aff9df87,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 1b482a2a-0405-4f74-8ca2-ecb65a363674,
+    PublisherID: 3bb7362a-eb1c-4e9b-8555-a79c4416be2f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 1c530cd7-0bf6-457f-a978-ad7c748418e2,
+    PublisherID: cb99a63f-3d54-4bef-9d32-ee3f873990b6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 1c803cdf-6d5c-430c-8566-51382aba4ce2,
+    PublisherID: 8746c52a-9d4f-4e3a-8112-90e684efbdb3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 1ebf8685-2b76-4eac-871a-369c49fc3229,
+    PublisherID: 748efc46-cca5-45c9-990c-bfe98ff5dd84,
+    MasterGameID: 77e4d021-06ee-48d4-b4b8-6409a37b86ec
+  },
+  {
+    DropRequestID: 1fe6649f-4a57-4ccf-892b-56260127d1ab,
+    PublisherID: 6128b302-82f2-49b5-9334-d8439ca744c1,
+    MasterGameID: 883db900-195e-4727-a8da-4a9125638f5f
+  },
+  {
+    DropRequestID: 2063ba89-68b2-4f7f-9f30-842d99f76b0f,
+    PublisherID: a1589eea-238d-4454-aab3-c997ee14adcd,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 242b11da-840c-4a76-83e5-7c9add9157df,
+    PublisherID: a89f5a32-bfe5-47a7-b24f-7ffb41ea622d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 24870ffb-3712-434d-9151-4a042cca315d,
+    PublisherID: a06c505b-8a22-407b-9f40-0a134c80696b,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec
+  },
+  {
+    DropRequestID: 25c295fa-b802-41f3-af9f-99497a1768e2,
+    PublisherID: 22cad0c0-9393-470c-bb68-18540da20245,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 26baa046-5f64-4f3d-af5e-06ced05d159a,
+    PublisherID: ff438b05-62f5-4959-9a56-704664e0738d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 292f2500-d968-4763-95b3-8beae1a2fda8,
+    PublisherID: bd24d835-d4c2-472c-9559-88e1cb24709f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 2b9aa79d-212c-4c76-81f5-f521cf89e9ce,
+    PublisherID: 1e926748-5933-4216-add5-e40ebb4e69a1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 2d0bb147-8ddb-4293-8ca0-cded65f84188,
+    PublisherID: 5370508a-5049-480d-8e87-845f76423d45,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 2ed429ad-91c7-43ef-b18e-c552532047a8,
+    PublisherID: 492e8edd-a181-472d-811f-cb2fabb050b6,
+    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9
+  },
+  {
+    DropRequestID: 32a3353a-778c-4cf4-9b9d-6f66f9d9217c,
+    PublisherID: 4e716bb3-e362-49cf-8411-09d1868091ce,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 3364d714-d905-4beb-b38f-2429025248f6,
+    PublisherID: 25b3aa97-c4f5-4db6-9a20-9850a9baad7c,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 351850a5-9268-4916-91c8-14db69519a59,
+    PublisherID: f3106986-d414-4d37-a504-18c76a9223e9,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 354e3b2f-9a4d-48f6-9d82-4f2fe1d9892f,
+    PublisherID: 561c09bc-b069-4269-8cde-79728747f098,
+    MasterGameID: 41672094-f6c8-49e1-a04b-6ac173f77a25
+  },
+  {
+    DropRequestID: 361ff686-f44e-4d1f-b816-20f7c3232368,
+    PublisherID: f1f9e94c-fd20-46dd-97d0-de3ae5fd3537,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 363dfede-0e40-49ee-98d1-27f2fce2b3d4,
+    PublisherID: a5f181c6-2251-49b9-abd3-cea9ac1962ef,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 3681175c-4fab-4742-a7e5-e5a2ccc696dd,
+    PublisherID: a363f337-8144-43a8-92af-2be88f7a9f28,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 36f1591f-cbda-4661-b040-2759b3650d62,
+    PublisherID: cb013fb2-39c4-4360-a34d-49bec5d6bf28,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 3958c639-52c1-421c-8c25-7258f343b963,
+    PublisherID: 22cdc116-86db-45c2-be11-a2b591b36165,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 444be15b-7de3-4f83-aa53-6d859489b6bf,
+    PublisherID: 9ae80957-50ae-42ba-ab07-20a8ffe9feb0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 45b9ae63-e7cc-4eee-88af-9fe889c06bbc,
+    PublisherID: fb429305-468b-4474-8238-8d49a9d7c481,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 45fd23db-b579-4f2b-9f77-1c4740729205,
+    PublisherID: bc30f23e-da24-4982-8e6e-8915da7f9a5b,
+    MasterGameID: 28e2cb97-8968-47a4-bd54-f227086f0cfc
+  },
+  {
+    DropRequestID: 46994f93-7981-4811-aa5d-993a76d9d571,
+    PublisherID: 02392fbe-a2db-4893-834e-448d9086f7e3,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 48102b7f-7ecb-49ff-9cf5-0a45a7274f73,
+    PublisherID: 6617ac53-a488-4b22-85a8-56a3efe235e9,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 4817c03e-d059-4c11-ba32-2c21bf088449,
+    PublisherID: a9cc71d4-4eb6-469e-a3a4-7680a1a9c2f0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 48b84d8e-5a42-4903-8742-bf983b3234c2,
+    PublisherID: dd476fad-c775-4134-8893-a015b31625c1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 48d452d8-7d5b-4029-84ee-99775ef19fe7,
+    PublisherID: 26efa30f-aca1-4366-a8e7-c2d6b4aec633,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 49deda20-124a-4c04-9c23-c125511d35c0,
+    PublisherID: 0af3bd69-ee4e-4f02-a164-efc74af47519,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 4a0ca607-9f30-4a29-a2c2-c53405f23ab6,
+    PublisherID: 0fe31bb6-2620-468b-92a8-c1a0e7298e49,
+    MasterGameID: 40f38b2e-e029-4d03-a0ca-ba2ba412aeac
+  },
+  {
+    DropRequestID: 4c3a4a5e-888d-40bc-ad9a-ce1f47d569eb,
+    PublisherID: 78ddafb2-e9d0-4f15-9868-b5ccbe8d88f3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 4d1bf1f1-a431-4f5a-af8b-9842e6076384,
+    PublisherID: 391d6e22-edb2-40c7-bb1d-1ed02b3ded3a,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 4ea25995-9069-4dda-9001-6513bd40d07e,
+    PublisherID: 7f9cc691-667f-4a37-93a3-6c27ac1e6a23,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 4ec11d95-4dab-412c-af58-9bfcd9da786c,
+    PublisherID: 8c01a6b9-aa36-4582-9505-7de8f31e28ef,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5142c171-be03-4123-a73a-0e0712c54e9e,
+    PublisherID: 2f8e8fac-89dc-432b-ba84-124eb3491ec5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5320c523-7515-43f8-9f59-4fde6cf2640e,
+    PublisherID: eb7b5ffd-9576-497a-8f5b-2206372c2547,
+    MasterGameID: 71db9489-6a05-44e8-998c-51a2bcdea93b
+  },
+  {
+    DropRequestID: 539e2d5e-f592-4149-a1d5-36f5e7d2c172,
+    PublisherID: 542a57ac-b618-4fc1-8c1c-9f266a2260b3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5506f980-519e-4c71-9912-15d0d378a66c,
+    PublisherID: d9a829ea-658b-4a2b-a1ff-1ca67080ec73,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 56562e1f-746e-433f-a254-4f861a1a9681,
+    PublisherID: 673e8871-3dbd-4b19-b1d2-761ac8ae59a1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 56e556f1-9a35-4a37-afce-5afb99d5b2b1,
+    PublisherID: fd53ad5c-c201-4abe-b20f-27dd198c19fb,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 57b605c9-4b72-4c15-9ce1-d2571a9d3bd0,
+    PublisherID: 50442125-7604-414f-9362-160e07dbe884,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 582e2e06-e772-45f2-afdd-11251d8b1eba,
+    PublisherID: 03f54b72-190d-46a8-866d-8c1d6357d2ee,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f
+  },
+  {
+    DropRequestID: 584cea31-173e-4ca5-9b77-ace7911a0ab0,
+    PublisherID: b3810180-e74b-44ad-b021-3fc912c54642,
+    MasterGameID: b40d9a56-9173-487b-9451-e88a9d741420
+  },
+  {
+    DropRequestID: 5910b652-031f-42df-8fba-d0cd6a13ba83,
+    PublisherID: c069fc75-d9d9-443f-ad7b-46fdea7d6a5b,
+    MasterGameID: 51982dd9-b66d-43cb-83fc-eb991b645070
+  },
+  {
+    DropRequestID: 5bc13886-4cd4-44ad-ac77-4a078c64168f,
+    PublisherID: 87568b30-972b-472a-8261-d6ecc34b1168,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5c3260f5-d266-40a0-aed2-f67c1a7f8683,
+    PublisherID: 7c6e489e-c36d-4447-823e-b311c3f3694c,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5c817b35-3ad9-421c-86d1-51144343030f,
+    PublisherID: 299e631f-606a-41f2-a955-017937cb6286,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5de3647e-ab7e-44ef-90a6-ae81254e2af0,
+    PublisherID: 9acb8d84-fc84-487d-811a-bc5015a646b5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5de7f4b1-32cc-4536-8b0b-5cf1b9d9ee9a,
+    PublisherID: cc8b86c7-f08f-414a-bf00-ac2ca71bbc7e,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5e6d7bc5-430f-4779-bba1-b6281d42cc52,
+    PublisherID: 39502688-75d3-4308-95ac-8827cfed46af,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 5e7fc724-c5b6-4cad-8978-d979a7017b68,
+    PublisherID: b95347d9-76a1-46a1-abb2-b8d22d45515d,
+    MasterGameID: 4f359243-1a0b-4e69-bf46-dd8f1726d2f8
+  },
+  {
+    DropRequestID: 5eebed95-46f9-415a-a520-de2bef3084ad,
+    PublisherID: fc55b203-c566-43bd-97bb-bafb4ef1e8d4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 613fde0d-700e-4371-bd9b-b4a8bb99681d,
+    PublisherID: 75806990-ef75-4e0e-80f8-0d7fce1e9f55,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 61b230d9-9bea-48ba-84f0-b562c7926de3,
+    PublisherID: fd16a274-0adb-4f7d-afaa-7512ba37d4fa,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 63c35166-6a4d-4164-bf4a-6bb5134b2232,
+    PublisherID: ec9c0242-5390-47ba-9f02-637bddde2572,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 6460c6d3-d5db-4f6a-8e00-c9564be4ea76,
+    PublisherID: 7f23ea32-4674-482b-9102-265b6e7ecd57,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 6627644c-8646-48d1-acc8-ce9c969517d4,
+    PublisherID: 9ea02c4f-adeb-4255-a657-95cb59228430,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 663977cd-f47d-4b3a-b9ac-bcd0e4e039ca,
+    PublisherID: 2d46674a-0067-46f1-9bb7-f1a3b8d5fc22,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 666c5839-72f2-47ae-a465-62e25552cf7f,
+    PublisherID: 0953c8a4-0bc1-452a-a0ac-133a9ef68b6f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 674305e9-e7f5-4540-897e-c7ad941c5491,
+    PublisherID: 7421e324-59b1-4d9b-8f20-a3cbc9d7eeb4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 69ac06c4-77c8-40da-9c7b-b3d900c9eeb1,
+    PublisherID: 4e2c2b3f-7d12-412e-9dba-2e1fdaafd22f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 6b017c59-8e72-4545-95cf-2b313ea31953,
+    PublisherID: 224e46aa-25d2-464b-aa80-6d93cd0b070a,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 6b5dce4d-4a78-4400-97c0-ee83fd9fbaf8,
+    PublisherID: cc55f5f7-cba2-45c0-90ad-46e29401a03f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 6d8e6bc1-2c7f-45ec-8e01-7c129096ba67,
+    PublisherID: fb6ac2f2-8137-45b7-ad6e-f505d0930ff9,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 6e1dba43-382c-4195-8793-55342e51b2c2,
+    PublisherID: d4b87ce3-40ad-42f8-a486-f9dda32f7a96,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 71ac6d4c-bbef-45ea-9c8e-0b21e146bc42,
+    PublisherID: 8ef8577b-9e8b-4e59-b456-54a9ef1c7cb8,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 776e0ce5-db67-4d63-9555-d5eca7d38bc2,
+    PublisherID: 1656a81b-657c-4b37-9d7a-b6280bc7e966,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 77f8a1b8-02eb-449d-ba72-388e367744ae,
+    PublisherID: 5ab6e810-7458-46a4-ac70-8c5d3dc455da,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 794714a9-c779-4d3c-a83b-f2f908fec5fc,
+    PublisherID: 8755c622-4185-45a7-afe6-b4527514563d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 79b6a99c-015a-4f50-87c8-481059bbcf5f,
+    PublisherID: fc0a9528-4fec-496a-9626-09fefc4e9973,
+    MasterGameID: e33c05d9-893a-404b-ae3d-fc3a2ebf4760
+  },
+  {
+    DropRequestID: 7a4e54cf-c93a-48bd-8e72-1de00ffece0a,
+    PublisherID: d1bd5df9-8ddc-459a-9818-accc40a8ef78,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 7a7fd8bb-84ed-4fa0-8a69-b813c359e5b6,
+    PublisherID: 9b437a78-629d-4756-8bef-a49c23b06ba7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 7ab2411c-228d-4c4a-83b7-2bdcd885ace2,
+    PublisherID: 056e84e6-89d5-4ea7-83b2-6c042943d0df,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 7bc63ee3-1429-4f42-b1d8-ca831f834b0f,
+    PublisherID: cbe20572-3f99-42e5-a7c6-2fe5d56babff,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 7e226037-859a-4055-890f-9ad1cdea52e4,
+    PublisherID: 9b2678a8-4203-470f-adb9-1ea4a9733cc1,
+    MasterGameID: 51982dd9-b66d-43cb-83fc-eb991b645070
+  },
+  {
+    DropRequestID: 81d0e90d-8ea3-4d38-90b9-49f0fdd17b80,
+    PublisherID: 318b2a99-051f-4a42-98bb-c564ab9ea070,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 8366ee9b-fc9e-4678-be04-8dbc8fe696a3,
+    PublisherID: f97188e9-a511-49c5-bbcd-8dbe0e49dd8c,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 85458fcc-a273-4585-9f63-4068a180d867,
+    PublisherID: 575233d0-047d-4119-97c2-b31109459f5e,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 85bb07f0-0139-48b2-8bc8-fabee0fd0870,
+    PublisherID: f528a306-eca8-4917-9c31-d25858a262b2,
+    MasterGameID: a36c2bac-a69a-46e4-b1e1-745bc6d7125c
+  },
+  {
+    DropRequestID: 8627bd6e-d9a0-48f9-a25c-f1635e4e8c1e,
+    PublisherID: f9914320-d8ac-4b53-9645-ff1881e66304,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f
+  },
+  {
+    DropRequestID: 86730106-2369-4f1b-b660-687bc90700af,
+    PublisherID: 143e8450-e2f9-4254-b1fe-1ce53abad5dc,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 884c1eb5-3f97-47cb-a02c-d154cc2c243c,
+    PublisherID: ae33965a-21a8-4d07-8017-9d518a38fb4e,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 884c4879-8c0d-4be9-b6fc-8001e679747b,
+    PublisherID: 9abe21b0-a8eb-4345-955e-effa01128d71,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f
+  },
+  {
+    DropRequestID: 894113d3-b1e4-4067-86ab-1df228b7bbad,
+    PublisherID: dbfe8b90-9fed-4bcd-830b-7be3474a1546,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 89f1b48d-1dd8-4124-9ae0-706f3df2191c,
+    PublisherID: 6f7e0b41-764d-4273-955e-bc9167d3fa67,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 8ad2d90b-6661-43aa-a4e7-d2262e55bed1,
+    PublisherID: 90361dc0-df0c-4daa-bd3f-79252706d6f1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 8b180ea3-84fd-4dc3-a83a-b6e1323cedcc,
+    PublisherID: 78acb294-4856-4d16-82e7-1580e460ea25,
+    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84
+  },
+  {
+    DropRequestID: 8b62abd2-ed96-4f0d-bbf3-6f6ae32b7b59,
+    PublisherID: c3c4d152-5add-46d4-9d18-1cd430f9cded,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 8b6bbc7f-3ac8-45e8-ab1d-f038063d06b4,
+    PublisherID: 23e518e0-23d7-4606-a71d-52900c8b8c07,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 8cf3f2f7-2bbe-4a66-8a7c-9880cfa1200e,
+    PublisherID: 50488ae8-a61f-49fd-9e39-927bc153351f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 8cf7f061-dbab-42b9-a32b-1e75bffab8f0,
+    PublisherID: 383f8203-8b84-48de-8462-9afc6ea33d1f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 8fb50c73-1fae-49d6-b799-09a9990d7210,
+    PublisherID: d2ebbbb6-d148-459c-9b71-33439bbca9af,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 90a7b194-fd0e-48b7-975e-ffa759928925,
+    PublisherID: 6fd71dd6-a42e-425b-9f8e-861a2b310ee7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 915e0400-74c8-4d50-88a7-2d38287c109f,
+    PublisherID: 6e6e0eb7-1e78-48f2-a8af-d933c261b3d6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 93757678-12bd-4e76-9b6f-8513c35dcca6,
+    PublisherID: 0bffd275-c59a-4ad0-bc6b-467abb4256f2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 93e4b867-9ea5-4e39-baf4-80af3eee77fc,
+    PublisherID: 80265be3-4b15-4e5f-bfbd-2ab66a914694,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 9415634e-4da8-40ff-845b-e5b0192259b9,
+    PublisherID: 1e7364ad-52d8-4ed8-9967-5b81338ad2fe,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 945f8302-beba-4803-bffe-47cb9dcd2ad0,
+    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
+    MasterGameID: d228e436-ac5e-4f52-bcac-b7311c9fd177
+  },
+  {
+    DropRequestID: 9614264b-b8c3-4dc7-a622-845c8c474db8,
+    PublisherID: 7383d16b-4d6b-401b-b8f8-75243a5f5745,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 973316e0-30a2-4fea-b60e-41d9ea13f4ef,
+    PublisherID: b24ec7c9-eb92-44f0-bbdc-354f041fc306,
+    MasterGameID: 83d70244-13de-43b5-a821-55ee0c535e9b
+  },
+  {
+    DropRequestID: 97ae339c-a8b3-41c6-8494-a0ba00ec6e00,
+    PublisherID: be292e77-eae8-4886-891d-633bb8f887fc,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85
+  },
+  {
+    DropRequestID: 9859a5c2-9409-4d65-8f71-a7e2d8f3b301,
+    PublisherID: 295f51c3-1f7e-473b-a606-f66ffc0fdcea,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: 99494a0f-2beb-4a90-a19a-11328c4a6a74,
+    PublisherID: 3da61b51-00b7-4a95-8e10-e1bd5d86abda,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 99853495-02b7-4874-96f7-79346c0a3af0,
+    PublisherID: b7e1cdf2-a27c-48f9-a2b3-b4698b3c2cef,
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce
+  },
+  {
+    DropRequestID: 9a5fb228-3d59-45c1-95b8-e79e9579697f,
+    PublisherID: 0a104e96-f05e-4ee9-895d-2bb371c70f15,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 9a9d4313-575f-4d92-8407-58efbae78da3,
+    PublisherID: 3752ab6a-a350-4951-a88a-099b6d034bce,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 9bec8b22-6964-4c94-9973-02d567e9e7f4,
+    PublisherID: 810a5c77-b8ac-43ad-bbd1-30a6f10a31d5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 9e8230a7-f632-40fe-95e3-b0ac5dbb1830,
+    PublisherID: 4dd00f7e-7365-47c5-906c-f670a24e3d85,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 9ef376db-3cb6-4aa9-99a6-a38f6633ccce,
+    PublisherID: 853f3648-cd6e-45cc-8935-a158a31c0c5d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 9fa0a578-1954-4bb2-9a5a-d4cfc936db24,
+    PublisherID: 61203c08-a4be-4313-9b4c-0e72ec6b12b4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: 9ffb59d0-81fc-4a8e-8e41-ddbceb59ea76,
+    PublisherID: df7732bd-cab7-427b-ac09-395a6ee98364,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: a3d1fbca-5fd0-4354-93cd-42728e7e4fe7,
+    PublisherID: e8db9928-8722-487a-bfb8-9af32c99a23a,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: a4ba6f2c-bc68-48c2-bc28-32141d7d567d,
+    PublisherID: cdaa4a84-1ddf-4b58-8595-96f6b8e3ae36,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: a5cb91dc-778d-4435-ac2b-e27857daec17,
+    PublisherID: 1f035e8d-28f8-42c2-87d9-a3e916574dc7,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: a62a6226-29e3-4ee6-baa3-15efa824e7bd,
+    PublisherID: ae075508-ebd9-4406-9d8c-22b6cf7af4fe,
+    MasterGameID: 65245876-fc34-415d-89f6-f8a637e75d94
+  },
+  {
+    DropRequestID: a77810ef-d13b-4bb3-ba47-66a619a91a99,
+    PublisherID: 54b7ab6a-55b6-4dd3-8682-84daf85044e4,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: a7985ffe-68f3-4c0e-b8e3-09020843877a,
+    PublisherID: b8462dbe-846f-4b86-b970-755deba9a0da,
+    MasterGameID: ae88b95e-94f9-413c-9aa4-33842c44aa51
+  },
+  {
+    DropRequestID: a7b6b9e3-38b3-45df-bb46-0f0cf20c85ea,
+    PublisherID: ff5f7747-01ae-41c7-b298-49a8115cfc04,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: aa7f0dc7-5342-4a59-9133-029c5bc70a26,
+    PublisherID: f994d9de-1d25-4846-86d0-8c590a2a14fd,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: accab859-341e-4fc5-b04e-87b30fa6f1df,
+    PublisherID: c9d8a1d4-1404-4fa8-b8f4-5ffd95c26fbe,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: ad0049a5-4d1a-43be-b018-9b00fb3f0726,
+    PublisherID: 6ae05c8e-6b43-441b-b837-d2895d7828d3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: af62356a-770c-4656-8ea6-d31431bd839b,
+    PublisherID: 07ce5003-280c-4ea0-9f1e-63e2b322beae,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: af88c7f6-4540-45ca-a226-6ef2ba7e61e9,
+    PublisherID: 2c5513a4-1915-4eca-8673-b4c285140368,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: b1bd2fa9-6af3-47c8-b6cc-5a47bd15479c,
+    PublisherID: 1d98d928-82b1-4f60-9323-25c918a945d8,
+    MasterGameID: d228e436-ac5e-4f52-bcac-b7311c9fd177
+  },
+  {
+    DropRequestID: b1e40c44-3fa7-4d5c-a817-aa8e29c75f48,
+    PublisherID: b94bf813-b413-4382-8329-556149995aa1,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: b2a1f17f-de07-4c5c-826a-668112dfefc0,
+    PublisherID: aec64958-5428-457d-912d-68b338edaef2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: b40e5816-be78-4cd5-abdb-80648f1d9172,
+    PublisherID: ef0cbed9-983f-4aa3-bb98-a72a53f9c0e3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: b4cd97a6-64e1-4dc0-8511-c2c23652c895,
+    PublisherID: 4fff5098-5855-4255-ae49-ba108672edb0,
+    MasterGameID: 1032d9e0-6598-4284-9460-daa3342c7283
+  },
+  {
+    DropRequestID: b68920b5-c492-4424-abab-ac5dd6b25c67,
+    PublisherID: 36324ec9-3906-4818-8c3e-b35c20403ab6,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: b7cd4c72-ea07-4506-b824-22b1e091dd45,
+    PublisherID: c6afba17-ca3d-4fd6-9e7f-39b0e31d7848,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85
+  },
+  {
+    DropRequestID: b97bf399-1574-4dbb-972d-8af4fa84090a,
+    PublisherID: b9aa6ee3-a0e5-4f59-909c-cf7e3170d4f5,
+    MasterGameID: 35d4a7fd-a34c-4dcb-981e-80fd6068c912
+  },
+  {
+    DropRequestID: b98b507c-5a86-4817-a7d5-9d7eb317b090,
+    PublisherID: e0f0df92-e555-4ea3-9758-128a2ffcd076,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: b9f60779-e03f-432b-bc66-89f3ffc56a8f,
+    PublisherID: 58be9737-435e-42d7-bb2f-05d188ee849b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: ba6cd816-e74e-4951-ad2e-529c669f282d,
+    PublisherID: 20b1dccc-08e3-4f32-bb58-026422a59b0b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: bf2b7f7d-1082-4d73-ba0c-c78fffd37beb,
+    PublisherID: 6ebdf775-d4e6-4857-89bf-c28e41f0a5ff,
+    MasterGameID: 65245876-fc34-415d-89f6-f8a637e75d94
+  },
+  {
+    DropRequestID: c03ac77d-b381-45f5-b3b6-a0f3d493e0df,
+    PublisherID: 4a2a68db-aec4-402f-996e-f3445e683628,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: c24f0eca-6b0a-4049-be58-0e8d2ee10e48,
+    PublisherID: 966c5c80-b311-45b0-a037-dd4777cd4aba,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: c4486052-4f1b-43bd-895e-f1ed92133eaf,
+    PublisherID: 75512fe4-33e5-4a9a-8880-401e08703d53,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: c49f603a-0b08-489f-9d5e-e87b0d7c6a5c,
+    PublisherID: 66b0a659-c2b8-44f0-88fe-1ff85498e1d3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: c8041930-338a-4eca-8376-ff942cb0ffe7,
+    PublisherID: 1a46f7ad-8e68-4bc1-9dbf-72c870af780c,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: c86d0af9-7304-4f90-807a-307c0518369d,
+    PublisherID: 97756168-997b-43ce-b724-e0a0e0c820e6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: c8f409ee-6509-4ae2-9010-2386d49a42d7,
+    PublisherID: 266ec6d7-24ef-4484-a6bf-2c362b57332d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: c8f67c1f-a4b4-4c9c-88f3-ada512f65b08,
+    PublisherID: 9abe21b0-a8eb-4345-955e-effa01128d71,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85
+  },
+  {
+    DropRequestID: c91b8d01-c72c-4811-a6f9-ef2cb4a67318,
+    PublisherID: 33ec392c-879e-409a-8798-ab3009f31563,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: cabefabc-de8f-4c81-b154-51e3f476446f,
+    PublisherID: 15b56cc0-6859-4416-8ecf-a77d28374bb2,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: caf69448-fcd2-44a7-9cd9-f144134a9b3f,
+    PublisherID: 3544c4de-c0b2-4456-b87a-ea5084f22818,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: cb764962-6ad7-423d-8454-53de8c32de37,
+    PublisherID: ad86c04c-3a76-4d83-97a7-52acfb7ff1aa,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: ccc8a620-6851-40e0-8b92-d55d981c406d,
+    PublisherID: bdf18122-d871-42d1-9da2-0aac2ecae79a,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: cf366cde-b0b0-4452-89c6-216122c4ea1b,
+    PublisherID: ac5f7beb-8b09-45ea-88e7-3ad87bfd25e9,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: d076d126-3e0e-48c1-b284-08f974932ec4,
+    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: d13655b4-8dea-4e65-9829-193caf5161b9,
+    PublisherID: cbe20572-3f99-42e5-a7c6-2fe5d56babff,
+    MasterGameID: 12323b7f-5018-4c28-9140-def4d4a8d61a
+  },
+  {
+    DropRequestID: d29dbec5-b413-4164-a118-063bf0b62d30,
+    PublisherID: b642b96e-8b40-46c7-884a-5a6dc80bf761,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: d425b605-63a3-4b56-aa4c-3e19ecf68ebe,
+    PublisherID: 4aa36aa6-e426-4e98-9d66-419b551551f7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: d44744f4-5078-459f-9076-a2fc186f89c9,
+    PublisherID: e6c9483d-9905-4aeb-80d2-5b29bb8d8804,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: d5b5065d-bc06-4bdd-871e-3bb5f7195749,
+    PublisherID: a8e60b54-fca7-4a28-844e-647925135395,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: d99b1f05-abf6-4a4d-b235-9359c9a06ee2,
+    PublisherID: 8558eb8f-62c4-413c-a285-28a404a7573d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: d9f5d577-4500-429e-a332-e5efea5c64e8,
+    PublisherID: 05d9772c-8a54-4b7c-b741-c40e0db17861,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: da8e7689-7975-49af-9009-4e867e821839,
+    PublisherID: 9dcdba4c-18d5-48eb-b44b-579796dbd580,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: dcadc09e-52bc-41e8-a9b4-4089df258795,
+    PublisherID: 9c68da25-6776-46ab-a042-cfdaefb60e85,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: dcbb3551-2c69-4979-8b61-3dc6ed844376,
+    PublisherID: de03c9d4-2949-4ed3-b232-8c71b6821929,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: de861803-c6dc-4d7a-a300-40c4fcdbc5f1,
+    PublisherID: f814c54c-4251-4e7d-843a-4fd3873f86c5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: e05892c7-98be-4f8b-ae38-2ed850b6349a,
+    PublisherID: eabf6c28-3bd6-4e72-bd65-aa10159dfa72,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f
+  },
+  {
+    DropRequestID: e1e13130-225b-471c-8d48-9e0d1510041c,
+    PublisherID: 6128b302-82f2-49b5-9334-d8439ca744c1,
+    MasterGameID: 375ad5cc-0f18-480b-acba-a2a32282958d
+  },
+  {
+    DropRequestID: e26f15a6-882b-4d29-a3a1-e2f22d70b052,
+    PublisherID: 3d5a1554-ecbe-4490-82f4-722cb2a6bd74,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: e49e243a-7b6a-40bf-944e-ccac64a409e9,
+    PublisherID: 17f3dbcb-de86-421a-95ab-b5babcb18e74,
+    MasterGameID: e88e1de6-f064-4ca2-96b0-eb8803f24dbf
+  },
+  {
+    DropRequestID: e5e682ef-f748-4322-862a-cb0f985d66d7,
+    PublisherID: 9911d402-4a0a-4fdd-b937-59093541bf6f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: e747e48c-86a2-4304-bdca-3efca6360846,
+    PublisherID: 3df2aea2-27cf-4e31-b39d-0e12b7f6103a,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: e9490b9d-0155-49b9-8b1a-82108e4f7670,
+    PublisherID: 3eef5dcf-ac37-4992-9053-a45872cff4b6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: ea0d5d64-f49f-490c-83e7-0eec72cadf44,
+    PublisherID: cf7840ce-4d15-4e62-9d64-17fe4a85b3a5,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: eaa59ac1-aac4-43ab-9300-23135a1bcd7e,
+    PublisherID: 632ab389-42be-42a6-ad12-e01384f8e938,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: eaa626b6-2711-456a-a4d9-230add3e31eb,
+    PublisherID: f0a0012f-bd5a-43cc-9e4f-31e9e1c3f8f7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: ec3ec90f-757e-4de4-974d-217b82f8905d,
+    PublisherID: 8a65bce5-e401-4027-98db-438b18e510c3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: eca3cc4a-3137-434f-9e0f-11ede4beb6ad,
+    PublisherID: 27f3e575-09a7-4b62-a3f6-448913890fe2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: ed6c2380-6725-4244-a763-e441485de44e,
+    PublisherID: 38d8c9cb-6058-4ff2-899c-f535b55bfb2b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: eef7450c-5bc3-4451-bf07-7faf91629c30,
+    PublisherID: f036ce4c-1f33-48ee-a8cf-d9847b44c6e3,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: ef7c09f5-8f3f-45a3-b35e-b307fd78ed1b,
+    PublisherID: 4eeab78b-86e4-4003-b61b-c75619e5e49a,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+  },
+  {
+    DropRequestID: f110e9fe-3409-4f13-94ec-2aa0dbbbf4d3,
+    PublisherID: d516e624-cb48-48d9-a664-ac38fbb25f8f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: f27c98b5-446a-41d2-9aa0-9b8280436c0c,
+    PublisherID: 53370363-2c8f-42e2-b2b1-0829286f26c0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: f39721e0-c494-41d1-9937-2ec80615f8e3,
+    PublisherID: 27382e9f-2024-4794-9be8-f51ec7202647,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: f3bccd87-4d3d-4c9a-ad16-1610129ab002,
+    PublisherID: 70bf1027-c566-49fb-991e-5b300105aa9f,
+    MasterGameID: 80a1e0d5-be57-4f41-85ee-0c07a38901cb
+  },
+  {
+    DropRequestID: f5e7da93-d452-4dc5-97a0-74208e285e46,
+    PublisherID: 59cf1c82-5e8e-455d-b691-73dee8e502b7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: f5f1831c-4f62-422c-bcd8-012194a7f9d9,
+    PublisherID: 737f4949-255a-43c6-ad6d-2aef14ddfac2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: f64d5c14-9635-4ba8-9a07-0b9cf0fdb672,
+    PublisherID: 62f7c964-d43f-44a7-8457-15996ad52c9d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: f9a81363-da43-46c0-85a0-a70d5765ddc3,
+    PublisherID: aa3537d1-c1a1-41c1-894f-4445bc7ed676,
+    MasterGameID: 12323b7f-5018-4c28-9140-def4d4a8d61a
+  },
+  {
+    DropRequestID: fb56cf52-a5e7-419e-a886-735022f52a12,
+    PublisherID: 0f26e078-4715-4794-898d-f7a1116431d4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  },
+  {
+    DropRequestID: ffa0a4f6-5ef1-447d-8045-6f6fce90be5b,
+    PublisherID: 8ed16809-54de-4aa9-93a6-39cdf2e14377,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+  }
+]

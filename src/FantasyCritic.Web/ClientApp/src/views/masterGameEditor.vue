@@ -108,8 +108,8 @@
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">
-                  <b-form-checkbox v-model="masterGame.eligibilityChanged">
-                    <span class="checkbox-label">Eligibility Changed</span>
+                  <b-form-checkbox v-model="masterGame.useSimpleEligibility">
+                    <span class="checkbox-label">Use Simple Eligibility</span>
                   </b-form-checkbox>
                 </div>
                 <div class="form-group">

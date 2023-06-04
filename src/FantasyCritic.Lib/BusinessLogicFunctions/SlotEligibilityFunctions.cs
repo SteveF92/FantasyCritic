@@ -35,7 +35,8 @@ public static class SlotEligibilityFunctions
         }
 
         var slots = publisher.GetPublisherSlots(leagueOptions);
-        var openSlots = slots.Where(x => x.CounterPick == counterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
+        var openSlots = slots.Where(x => x.CounterPick == counterPick && (x.PublisherGame is null || (validDropSlot.HasValue && validDropSlot.Value == x.SlotNumber)))
+            .OrderBy(x => x.SlotNumber).ToList();
         if (eligibilityFactors is null)
         {
             //This is an unlinked master game
@@ -69,11 +70,6 @@ public static class SlotEligibilityFunctions
         //At this point, the game is eligible in the league. Does the publisher have an open slot?
         if (!openSlots.Any())
         {
-            if (validDropSlot.HasValue)
-            {
-                return new PublisherSlotAcquisitionResult(validDropSlot.Value);
-            }
-
             if (!acquiringNow)
             {
                 return new PublisherSlotAcquisitionResult(1);

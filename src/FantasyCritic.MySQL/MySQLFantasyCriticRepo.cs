@@ -920,10 +920,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """
             insert into tbl_league_year
             (LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
-            GrantSuperDrops,CounterPicksBlockDrops,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,PlayStatus,DraftOrderSet,
+            GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,PlayStatus,DraftOrderSet,
             CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay) VALUES
             (@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
-            @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
+            @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
             @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay);
             """;
 
@@ -958,7 +958,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """
             UPDATE tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, CounterPicksToDraft = @CounterPicksToDraft,
             FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
-            DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem,
+            DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops, AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem,
             PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem, ReleaseSystem = @ReleaseSystem,
             CounterPickDeadlineMonth = @CounterPickDeadlineMonth, CounterPickDeadlineDay = @CounterPickDeadlineDay, MightReleaseDroppableMonth = @MightReleaseDroppableMonth, MightReleaseDroppableDay = @MightReleaseDroppableDay
             WHERE LeagueID = @LeagueID and Year = @Year;
@@ -1488,6 +1488,32 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var league = await this.GetLeagueOrThrow(result.LeagueID);
         return result.ToDomain(league);
+    }
+
+    public async Task ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser)
+    {
+        string setUserActiveSQL = "insert into tbl_league_activeplayer (LeagueID,Year,UserID) VALUES (@LeagueID,@Year,@NewUserID);";
+        string reassignPublisherSQL = "update tbl_league_publisher SET UserID = @NewUserID WHERE LeagueID = @LeagueID AND PublisherID = @PublisherID";
+        string setUserInactiveSQL = "delete from tbl_league_activeplayer WHERE LeagueID = @LeagueID AND Year = @Year AND UserID = @OldUserID;";
+
+        var param = new
+        {
+            LeagueID = leagueYear.League.LeagueID,
+            Year = leagueYear.Year,
+            PublisherID = publisherToReassign.PublisherID,
+            OldUserID = publisherToReassign.User.Id,
+            NewUserID = newUser.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(setUserActiveSQL, param, transaction);
+        await connection.ExecuteAsync(reassignPublisherSQL, param, transaction);
+        await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+
+        await transaction.CommitAsync();
     }
 
     public async Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)

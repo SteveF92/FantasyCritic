@@ -18,7 +18,7 @@ public class EditMasterGameRequest
     public required List<string> Tags { get; init; }
     public bool DoNotRefreshDate { get; init; }
     public bool DoNotRefreshAnything { get; init; }
-    public bool EligibilityChanged { get; init; }
+    public bool UseSimpleEligibility { get; init; }
     public bool DelayContention { get; init; }
     public bool ShowNote { get; init; }
 
@@ -37,7 +37,7 @@ public class EditMasterGameRequest
         var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate,
             EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.RawCriticScore, existingMasterGame.HasAnyReviews, existingMasterGame.OpenCriticSlug,
             Notes, existingMasterGame.BoxartFileName, existingMasterGame.GGCoverArtFileName, existingMasterGame.FirstCriticScoreTimestamp,
-            DoNotRefreshDate, DoNotRefreshAnything, EligibilityChanged, DelayContention, ShowNote,
+            DoNotRefreshDate, DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote,
             timestamp, existingMasterGame.AddedByUser, existingMasterGame.SubGames, tags);
         return masterGame;
     }

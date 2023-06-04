@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -28,10 +29,12 @@ public class LeagueManagerController : BaseLeagueController
     private readonly EmailSendingService _emailSendingService;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly TradeService _tradeService;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
-        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService, TradeService tradeService)
+        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService, TradeService tradeService,
+        EnvironmentConfiguration environmentConfiguration)
         : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
     {
         _draftService = draftService;
@@ -41,6 +44,7 @@ public class LeagueManagerController : BaseLeagueController
         _emailSendingService = emailSendingService;
         _gameAcquisitionService = gameAcquisitionService;
         _tradeService = tradeService;
+        _environmentConfiguration = environmentConfiguration;
     }
 
     [HttpPost]
@@ -329,9 +333,8 @@ public class LeagueManagerController : BaseLeagueController
         var league = validResult.League;
 
         int currentYear = league.Years.Max();
-        string baseURL = $"{Request.Scheme}://{Request.Host.Value}";
         IReadOnlyList<LeagueInviteLink> activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
-        var viewModels = activeLinks.Select(x => new LeagueInviteLinkViewModel(x, currentYear, baseURL));
+        var viewModels = activeLinks.Select(x => new LeagueInviteLinkViewModel(x, currentYear, _environmentConfiguration.BaseAddress));
         return Ok(viewModels);
     }
 
@@ -421,6 +424,27 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         return Ok(result.Value);
+    }
+
+    [HttpPost]
+    [Authorize("Write")]
+    public async Task<IActionResult> ReassignPublisher([FromBody] ReassignPublisherRequest request)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+
+        var leagueYear = leagueYearRecord.ValidResult!.LeagueYear;
+        var playersInLeague = leagueYearRecord.ValidResult!.PlayersInLeague.Select(x => x.User).ToList();
+        var reassignResult = await _publisherService.ReassignPublisher(leagueYear, playersInLeague, request.PublisherID, request.NewUserID);
+        if (reassignResult.IsFailure)
+        {
+            return BadRequest(reassignResult.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]

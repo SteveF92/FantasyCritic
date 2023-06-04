@@ -20,7 +20,7 @@ public class EmailSendingService
     private readonly bool _isProduction;
 
     public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
-        LeagueMemberService leagueMemberService, EmailSendingServiceConfiguration configuration)
+        LeagueMemberService leagueMemberService, EnvironmentConfiguration configuration)
     {
         _userManager = userManager;
         _emailSender = emailSender;

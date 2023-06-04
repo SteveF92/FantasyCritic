@@ -27,7 +27,7 @@ public class MasterGameViewModel
 
         DoNotRefreshDate = masterGame.DoNotRefreshDate;
         DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
-        EligibilityChanged = masterGame.EligibilityChanged;
+        UseSimpleEligibility = masterGame.UseSimpleEligibility;
         DelayContention = masterGame.DelayContention;
         ShowNote = masterGame.ShowNote;
 
@@ -79,7 +79,7 @@ public class MasterGameViewModel
     public bool ReleasingToday { get; init; }
     public bool DoNotRefreshDate { get; init; }
     public bool DoNotRefreshAnything { get; init; }
-    public bool EligibilityChanged { get; init; }
+    public bool UseSimpleEligibility { get; init; }
     public bool DelayContention { get; init; }
     public bool ShowNote { get; init; }
     public decimal? CriticScore { get; init; }
@@ -110,6 +110,6 @@ public class MasterGameViewModel
         
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, AddedTimestamp, DoNotRefreshDate,
-            DoNotRefreshAnything, EligibilityChanged, DelayContention, ShowNote, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
+            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
     }
 }

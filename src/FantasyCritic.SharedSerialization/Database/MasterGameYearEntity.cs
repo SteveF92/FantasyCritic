@@ -30,7 +30,7 @@ public class MasterGameYearEntity
         Notes = masterGameStats.MasterGame.Notes;
         BoxartFileName = masterGameStats.MasterGame.BoxartFileName;
         GGCoverArtFileName = masterGameStats.MasterGame.GGCoverArtFileName;
-        EligibilityChanged = masterGameStats.MasterGame.EligibilityChanged;
+        UseSimpleEligibility = masterGameStats.MasterGame.UseSimpleEligibility;
         DelayContention = masterGameStats.MasterGame.DelayContention;
         ShowNote = masterGameStats.MasterGame.ShowNote;
         FirstCriticScoreTimestamp = masterGameStats.MasterGame.FirstCriticScoreTimestamp?.ToDateTimeUtc();
@@ -70,7 +70,7 @@ public class MasterGameYearEntity
     public string? Notes { get; set; }
     public string? BoxartFileName { get; set; }
     public string? GGCoverArtFileName { get; set; }
-    public bool EligibilityChanged { get; set; }
+    public bool UseSimpleEligibility { get; set; }
     public bool DelayContention { get; set; }
     public bool ShowNote { get; set; }
     public DateTimeOffset? FirstCriticScoreTimestamp { get; set; }
@@ -133,7 +133,7 @@ public class MasterGameYearEntity
         var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate),
             maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
             releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,
-            firstCriticScoreTimestamp, false, false, EligibilityChanged, DelayContention, ShowNote, addedTimestamp, addedByUser, subGames, tags);
+            firstCriticScoreTimestamp, false, false, UseSimpleEligibility, DelayContention, ShowNote, addedTimestamp, addedByUser, subGames, tags);
 
         return new MasterGameYear(masterGame, Year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
             NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor, LinearRegressionHypeFactor);

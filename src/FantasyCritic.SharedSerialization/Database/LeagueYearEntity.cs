@@ -28,6 +28,7 @@ public class LeagueYearEntity
         DropOnlyDraftGames = options.DropOnlyDraftGames;
         GrantSuperDrops = options.GrantSuperDrops;
         CounterPicksBlockDrops = options.CounterPicksBlockDrops;
+        AllowMoveIntoIneligible = options.AllowMoveIntoIneligible;
         MinimumBidAmount = options.MinimumBidAmount;
         CounterPickDeadlineMonth = options.CounterPickDeadline.Month;
         CounterPickDeadlineDay = options.CounterPickDeadline.Day;
@@ -56,6 +57,7 @@ public class LeagueYearEntity
     public bool DropOnlyDraftGames { get; set; }
     public bool GrantSuperDrops { get; set; }
     public bool CounterPicksBlockDrops { get; set; }
+    public bool AllowMoveIntoIneligible { get; set; }
     public int MinimumBidAmount { get; set; }
     public string DraftSystem { get; set; } = null!;
     public string PickupSystem { get; set; } = null!;
@@ -92,7 +94,8 @@ public class LeagueYearEntity
         }
         
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
-            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, MinimumBidAmount, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem,
+            DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
+            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem,
             counterPickDeadline, mightReleaseDroppableDate);
 
         return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser, publishersInLeague);

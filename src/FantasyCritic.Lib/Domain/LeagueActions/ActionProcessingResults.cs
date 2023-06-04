@@ -44,6 +44,12 @@ public class ActionProcessingResults
         return updatedPublisherPairs;
     }
 
+    public ActionProcessingResults MakeCopy()
+    {
+        return new ActionProcessingResults(SuccessBids, FailedBids, SuccessDrops, FailedDrops, LeagueActions,
+            PublisherStateSet.MakeCopy(), AddedPublisherGames, RemovedPublisherGames);
+    }
+
     public static ActionProcessingResults GetEmptyResultsSet(PublisherStateSet publisherStateSet)
     {
         return new ActionProcessingResults(new List<SucceededPickupBid>(), new List<FailedPickupBid>(), new List<DropRequest>(),

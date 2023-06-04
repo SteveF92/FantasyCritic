@@ -33,7 +33,7 @@ public class MasterGame : IEquatable<MasterGame>
         DoNotRefreshDate = doNotRefreshDate;
         DelayContention = delayContention;
         DoNotRefreshAnything = doNotRefreshAnything;
-        EligibilityChanged = eligibilityChanged;
+        UseSimpleEligibility = eligibilityChanged;
         ShowNote = showNote;
         AddedTimestamp = addedTimestamp;
         AddedByUser = addedByUser;
@@ -59,7 +59,7 @@ public class MasterGame : IEquatable<MasterGame>
     public bool DoNotRefreshDate { get; }
     public bool DelayContention { get; }
     public bool DoNotRefreshAnything { get; }
-    public bool EligibilityChanged { get; }
+    public bool UseSimpleEligibility { get; }
     public bool ShowNote { get; }
     public Instant AddedTimestamp { get; }
     public FantasyCriticUser AddedByUser { get; }

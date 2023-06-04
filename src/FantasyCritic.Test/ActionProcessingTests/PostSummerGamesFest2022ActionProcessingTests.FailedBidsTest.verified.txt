@@ -174,6 +174,7 @@
     BidID: 07dd560a-391c-4e21-8001-574261014b4c,
     PublisherID: 0ba692e6-adf9-49da-9939-c1fe5f5f8750,
     MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 81.7213405077144,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have
@@ -326,6 +327,7 @@
     BidID: 0f7b682b-33e3-412f-8731-b2be018030fa,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: 1c50d917-74a9-45d5-959a-3e2b3ae28619,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -343,6 +345,7 @@
     BidID: 10b85863-644a-44b2-bd3c-42b7d15fbf0c,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -468,6 +471,7 @@
     BidID: 160bcdcd-8d79-443c-80b3-32254b3a1918,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: ae88b95e-94f9-413c-9aa4-33842c44aa51,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -512,6 +516,7 @@
     BidID: 19091450-163f-4cc5-9653-c152db3f4bc0,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 7fe097c9-44d8-44d2-8fda-9dd30bd1acde,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -601,6 +606,7 @@
     BidID: 1d5e533b-4bf2-493a-bbe6-d6e51d690dc2,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -753,6 +759,7 @@
     BidID: 272bc3b9-445b-4e51-8ed7-8a1a714775b0,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: 7cc0aeb3-1aba-42ba-b969-649fca5067d1,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -860,6 +867,7 @@
     BidID: 2d3848d3-d590-42fe-96d8-53bd935b5645,
     PublisherID: 1c3a309c-3db6-4d79-858b-8df2e9f4c568,
     MasterGameID: 821c8622-df32-40b9-89b8-a9bd013542d9,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 49.8729949001876,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -886,6 +894,7 @@
     BidID: 2e51e92c-7b12-454d-806e-4a37496897cf,
     PublisherID: 606944cc-988a-43b6-8f5f-c5c381d84001,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 61.7224688736675,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -1128,6 +1137,7 @@
     BidID: 3a91b62c-bb34-4051-aad5-2580373ba18d,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1136,6 +1146,7 @@
     BidID: 3aea91e9-a4d1-42ac-9a79-cc438980191d,
     PublisherID: 216b0c7b-6b8f-447d-a619-0061f76e3155,
     MasterGameID: 47f9a77e-6b79-4d9e-b7fe-e00d9da02e25,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 49.1384030613263,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1189,6 +1200,7 @@
     BidID: 3d2f4709-4405-4cbd-aaf2-aba221726dc1,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: 20b50459-74ff-4a3d-9ffb-b1c335c11cb3,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -1296,6 +1308,7 @@
     BidID: 41e897e5-b074-473b-b17b-a9ae27f2860a,
     PublisherID: 31d51912-3a3a-4186-8529-3c674ba95ad9,
     MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 89.6597824946877,
     FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2022.,
     Outcome: Game is no longer eligible: That game is not scheduled to be released in 2022.
@@ -1403,6 +1416,7 @@
     BidID: 46c6d337-31ce-46f4-b86d-2c6e78cb2685,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 17bc3e26-0e35-4275-8690-c45cf3396fa5,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1474,6 +1488,7 @@
     BidID: 4aff507a-35ab-4bd1-a8b4-76b2790308a8,
     PublisherID: f664045f-24f8-4c96-bc30-9e38369386d4,
     MasterGameID: 40f1999e-aa35-4dd4-8a53-94b923b92b9a,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 82.53292025843694117647058824,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1518,6 +1533,7 @@
     BidID: 4dc836af-1fcd-45c4-b8db-51d72160368a,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1526,6 +1542,7 @@
     BidID: 4e047a9e-592f-404e-85ce-5ff365bf5a39,
     PublisherID: 7d3a55a2-c511-4d16-b5c3-9694aaa99d2a,
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 45.184165988581829411764705882,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -1687,6 +1704,7 @@
     BidID: 55733fb8-cadd-4bed-bc92-b95c57eaae36,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 65e734f9-0ecd-445a-9592-78fb36fc77c6,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1830,6 +1848,7 @@
     BidID: 5bac1bb2-ac90-4b79-8b74-814998e3d972,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 02912784-65fa-4a3a-9cf3-b5d7f2b22380,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1892,6 +1911,7 @@
     BidID: 5eea230d-1aa4-4f50-9d0e-cb57b7380245,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 50b0650b-a17c-4b20-a909-624a87d02892,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1918,6 +1938,7 @@
     BidID: 5ffb51af-ab8e-4f88-a6a2-a75475b9f9fc,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 66ff761f-8da3-4418-b290-d9f5468da0a8,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1980,6 +2001,7 @@
     BidID: 62872e8e-c5fc-4361-9dcb-c5a9f50bb48f,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 136dfc6a-c954-49d0-b079-b0899a2608b5,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -1997,6 +2019,7 @@
     BidID: 6328323f-b057-4f37-b33f-84406db5be60,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 35c2d720-f71c-4792-a99d-dab06049a1ba,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -2023,6 +2046,7 @@
     BidID: 63dd0514-5569-4638-8594-8408f86d380b,
     PublisherID: 33466387-0029-4003-b845-eedb0ab0b0d1,
     MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 135.03135686855363333333333336,
     FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2022. AND Cannot counter pick a game that no other player is publishing.,
     Outcome: Game is no longer eligible: That game is not scheduled to be released in 2022. AND Cannot counter pick a game that no other player is publishing.
@@ -2247,6 +2271,7 @@
     BidID: 6c751862-6d1d-4b6d-8305-f0db27697342,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -2273,6 +2298,7 @@
     BidID: 6d47457f-c477-4c08-a191-6b2f41740729,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 6960a432-875d-4d64-ae5c-a3f2275ab44a,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -2542,6 +2568,7 @@
     BidID: 767048a6-b43a-4728-8cbe-dd600600cc6b,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -2793,6 +2820,7 @@
     BidID: 83582fb4-b408-497e-8066-3a6a90eaa273,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: a7371690-ae7e-400d-9289-ab55040cce47,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -2828,6 +2856,7 @@
     BidID: 85a01d19-35ce-42c8-8dfa-8600d37e824d,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -2899,6 +2928,7 @@
     BidID: 89015814-2a4d-4b70-b892-441a55a522fa,
     PublisherID: 0ba692e6-adf9-49da-9939-c1fe5f5f8750,
     MasterGameID: 02912784-65fa-4a3a-9cf3-b5d7f2b22380,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 81.7213405077144,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have
@@ -3069,6 +3099,7 @@
     BidID: 93136aa0-c435-473d-a131-103df6f1dc8a,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 7fe097c9-44d8-44d2-8fda-9dd30bd1acde,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -3086,6 +3117,7 @@
     BidID: 932e768c-d3b2-4206-ae27-c6f20fd73280,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: f9fd27f0-8c2c-4d98-8981-be62ad5aa7cd,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -3517,6 +3549,7 @@
     BidID: a9e0dcc8-3ed4-4fd4-850f-eb8dddec0564,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: ae27feef-cde3-4c3b-a6a7-88958ab8a218,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -3552,6 +3585,7 @@
     BidID: aa5ff696-716b-45e1-bf77-1715ed3a2660,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 8eba7f3c-3891-42d6-82fb-30e5f87d8082,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -3596,6 +3630,7 @@
     BidID: acd4c046-19d0-40f9-919f-da986b16beff,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 13e0515d-a136-4cf2-af77-fa714cc337fb,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -3694,6 +3729,7 @@
     BidID: b19214e0-c046-4901-b4fd-6711ed384fde,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: e56e2dac-958a-4d5f-a5d5-3fab15f595a4,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -3729,6 +3765,7 @@
     BidID: b2763c96-243e-429e-8cfb-52bb216150d9,
     PublisherID: bb5efd66-4c0c-4a95-84d8-7363eb0c45d6,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1162699774144,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -3764,6 +3801,7 @@
     BidID: b2dfd831-10de-4b0b-81a4-b06e5a7a0fe6,
     PublisherID: 557402fc-5485-419c-bcf3-0f805d64ea9f,
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 12.207915238946333333333333334,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -3790,6 +3828,7 @@
     BidID: b32261fa-8fb9-42fa-8cdc-300d57896052,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 35c2d720-f71c-4792-a99d-dab06049a1ba,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4176,6 +4215,7 @@
     BidID: c29cf111-7d63-4f7d-82b8-931daa72694f,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4202,6 +4242,7 @@
     BidID: c33a5951-2e2e-4a19-91aa-384922fa9b80,
     PublisherID: 384b6575-c712-486e-8864-574e4d711a0c,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 143.76769277892460810810810811,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -4273,6 +4314,7 @@
     BidID: c5778c2f-db3f-4f45-bb7f-4bccf0aa96eb,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 50b0650b-a17c-4b20-a909-624a87d02892,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4344,6 +4386,7 @@
     BidID: cb52d9e5-a888-4419-a5f7-596e43a99173,
     PublisherID: 369ed511-07a9-485c-97e9-1999ca2baf5a,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 77.6587122767058,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Senua's Saga: Hellblade 2 but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Senua's Saga: Hellblade 2 but failed because: Cannot drop a game that you do not have
@@ -4361,6 +4404,7 @@
     BidID: cc3574bb-1749-4a99-ab96-e937cc35a3cb,
     PublisherID: ba2ea8da-a52d-4056-a65e-cf487c6af811,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 58.834792123385534482758620691,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -4450,6 +4494,7 @@
     BidID: ceebbf5a-ad35-4790-9fa6-2c13c794c847,
     PublisherID: a650b027-302d-46ae-8b12-04d84ef4d7bf,
     MasterGameID: e6c372d2-6216-42dc-abe4-2089c9ed7355,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 124.39174521984362857142857144,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -4539,6 +4584,7 @@
     BidID: d4f71631-e6bd-4605-987f-4ad2b773a774,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4619,6 +4665,7 @@
     BidID: dbca88d2-fe9f-4a12-ac34-c5dcaabdbc65,
     PublisherID: 84b4c0c0-ac58-4228-93e6-504391c998db,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 87.5334394254387,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have
@@ -4636,6 +4683,7 @@
     BidID: dd2694d4-b177-41da-bfe7-8361b147de73,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 408a13cd-dbe5-4a9c-8031-e9a65280b557,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4716,6 +4764,7 @@
     BidID: e242fa57-6767-4460-be19-aead9d77f5a8,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 9fe1560b-804a-4cab-b25d-85766888d7da,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4787,6 +4836,7 @@
     BidID: e4fe5c0e-131b-48d8-a76b-6b73cf0b3c08,
     PublisherID: 1e584fe1-b0d2-460c-b56e-f828900d2188,
     MasterGameID: b760cedc-bfb9-41b2-a4b8-35429cfc1e21,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 153.7383866465877,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Final Fantasy XVI  but failed because: Cannot drop a game that you do not have
@@ -4795,6 +4845,7 @@
     BidID: e595e095-09e1-4bb7-a8ed-3a6342a569fd,
     PublisherID: 1c3a309c-3db6-4d79-858b-8df2e9f4c568,
     MasterGameID: 64b7d48d-37da-44e1-8450-6aaa001aca16,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 49.8729949001876,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4866,6 +4917,7 @@
     BidID: e764a0e4-d049-4b2a-8af2-fd6191078a55,
     PublisherID: a1df03a7-8d6e-406b-a2fd-d5506a35fe82,
     MasterGameID: 35c2d720-f71c-4792-a99d-dab06049a1ba,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 155.33977092496579999999999996,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -4892,6 +4944,7 @@
     BidID: e869bc25-3074-42be-900e-b364b3a7756a,
     PublisherID: 34fc926b-4a83-41fd-8494-b5ec368287e1,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 67.0364507265038,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
@@ -4954,6 +5007,7 @@
     BidID: ea006980-3a05-413b-a031-5d0cf5e366ec,
     PublisherID: fd029b94-c36d-4d7b-b67e-2daa0fd0d9a5,
     MasterGameID: e6c372d2-6216-42dc-abe4-2089c9ed7355,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 77.5097459939644,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have
@@ -5007,6 +5061,7 @@
     BidID: ec9deb62-63f9-4ad6-a2e1-3ea203b60cf6,
     PublisherID: 0149774a-91d7-447e-9d53-03a475997393,
     MasterGameID: 75cf5294-ced3-4a7a-9367-c78cf6972362,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 69.04023198722027777777777778,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -5168,6 +5223,7 @@
     BidID: f296c3b3-d214-4e2a-9286-e1feb1c450d8,
     PublisherID: 369ed511-07a9-485c-97e9-1999ca2baf5a,
     MasterGameID: 02912784-65fa-4a3a-9cf3-b5d7f2b22380,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 77.6587122767058,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Senua's Saga: Hellblade 2 but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Senua's Saga: Hellblade 2 but failed because: Cannot drop a game that you do not have
@@ -5248,6 +5304,7 @@
     BidID: f65688c7-f22a-4b4f-b375-2b7af0fa1f69,
     PublisherID: 39ba38f6-5bcf-40c9-a8cc-4c737a6f0c7f,
     MasterGameID: f9fd27f0-8c2c-4d98-8981-be62ad5aa7cd,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 70.2365421977235,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -5328,6 +5385,7 @@
     BidID: f8ee4b82-3170-4b95-b51e-170a3497868b,
     PublisherID: 84b4c0c0-ac58-4228-93e6-504391c998db,
     MasterGameID: 17bc3e26-0e35-4275-8690-c45cf3396fa5,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 87.5334394254387,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have
@@ -5417,6 +5475,7 @@
     BidID: fc0eed79-0b58-4b82-8705-c32faf57363a,
     PublisherID: 84b4c0c0-ac58-4228-93e6-504391c998db,
     MasterGameID: 37f29a94-22da-4523-8c92-78180e356153,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 87.5334394254387,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Forza Motorsport (Xbox Series X) but failed because: Cannot drop a game that you do not have
@@ -5461,6 +5520,7 @@
     BidID: fecbd42c-7c73-4740-8deb-a34ab7883823,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: 17bc3e26-0e35-4275-8690-c45cf3396fa5,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.
@@ -5469,6 +5529,7 @@
     BidID: fef3a298-efee-4ccf-b459-d807f1448979,
     PublisherID: a119f55c-212e-498a-9937-ed1b805c6ebd,
     MasterGameID: ae27feef-cde3-4c3b-a6a7-88958ab8a218,
+    BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 94.1080172423081,
     FailureReason: No roster spots available.,
     Outcome: No roster spots available.

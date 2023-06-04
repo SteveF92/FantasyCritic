@@ -10,7 +10,7 @@
     PublisherID: 0011d562-397a-44a4-9a0d-8f8b6bca51b3,
     MasterGameID: 296d91de-dfd6-41b4-bb2d-58180c36c7e8,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 9,
     BidAmount: 13
   },
   {
@@ -31,7 +31,7 @@
     PublisherID: 0011d562-397a-44a4-9a0d-8f8b6bca51b3,
     MasterGameID: 97710dee-1995-4a8f-a2a7-39ff8a08cf0d,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 11,
     BidAmount: 3
   },
   {
@@ -45,6 +45,7 @@
     PublisherID: 00c4d31f-8760-47dd-8c19-85ff89af778b,
     MasterGameID: a77df430-de91-4a8a-a6be-7ff6bf1e07bf,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 21
   },
   {
@@ -268,6 +269,7 @@
     PublisherID: 03aceab4-88b6-4a50-9035-4616f680a89d,
     MasterGameID: 52d41710-186a-4145-a32e-a514434cfcad,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 1
   },
   {
@@ -568,21 +570,21 @@
     PublisherID: 068d55ef-0bf3-4848-93de-8566e55fde27,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 7,
+    SlotNumber: 9,
     BidAmount: 16
   },
   {
     PublisherID: 068d55ef-0bf3-4848-93de-8566e55fde27,
     MasterGameID: a77df430-de91-4a8a-a6be-7ff6bf1e07bf,
     CounterPick: false,
-    SlotNumber: 18,
+    SlotNumber: 7,
     BidAmount: 10
   },
   {
     PublisherID: 068d55ef-0bf3-4848-93de-8566e55fde27,
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 18,
     BidAmount: 13
   },
   {
@@ -673,12 +675,14 @@
     PublisherID: 08b3f2c1-d675-4976-b744-2797dd031a02,
     MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 7
   },
   {
     PublisherID: 08f06ce8-38d3-4ba1-a180-c062a5dba0dd,
     MasterGameID: 36227014-dd8a-4a63-944c-06536f7d90fd,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 35
   },
   {
@@ -741,6 +745,7 @@
     PublisherID: 09635e47-aa1c-4c31-9e25-16dc07743542,
     MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 2
   },
   {
@@ -1377,13 +1382,14 @@
     PublisherID: 11ff2d1c-d19c-4822-881a-fff4c84003a1,
     MasterGameID: 29e1e64e-a9c5-4dd2-ae87-250bbff08cfe,
     CounterPick: false,
+    SlotNumber: 10,
     BidAmount: 5
   },
   {
     PublisherID: 11ff2d1c-d19c-4822-881a-fff4c84003a1,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
-    SlotNumber: 10,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -1985,6 +1991,7 @@
     PublisherID: 1b5f0745-a92b-4636-866a-9d563c996f2a,
     MasterGameID: e91d79d0-5aba-4d36-9ad5-f43f742f0f03,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 11
   },
   {
@@ -2187,21 +2194,21 @@
     PublisherID: 1f91eb2f-538f-4972-b5ae-b717222dc632,
     MasterGameID: 496fc9f9-03d0-4a7b-a3de-2e5528bc88f5,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 5,
     BidAmount: 25
   },
   {
     PublisherID: 1f91eb2f-538f-4972-b5ae-b717222dc632,
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,
     CounterPick: false,
-    SlotNumber: 5,
+    SlotNumber: 10,
     BidAmount: 25
   },
   {
     PublisherID: 1f91eb2f-538f-4972-b5ae-b717222dc632,
     MasterGameID: 5f82d85e-e91c-416d-8d64-216dd319e782,
     CounterPick: false,
-    SlotNumber: 10,
+    SlotNumber: 9,
     BidAmount: 10
   },
   {
@@ -2411,21 +2418,21 @@
     PublisherID: 21c7677c-8d2d-4412-ab6a-5b011621044c,
     MasterGameID: 56d549d4-072d-4ce1-b590-4cfa0aba731c,
     CounterPick: false,
-    SlotNumber: 7,
+    SlotNumber: 14,
     BidAmount: 4
   },
   {
     PublisherID: 21c7677c-8d2d-4412-ab6a-5b011621044c,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
     CounterPick: false,
-    SlotNumber: 20,
+    SlotNumber: 7,
     BidAmount: 4
   },
   {
     PublisherID: 21c7677c-8d2d-4412-ab6a-5b011621044c,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 14,
+    SlotNumber: 20,
     BidAmount: 4
   },
   {
@@ -2551,6 +2558,7 @@
     PublisherID: 22f76596-3ddf-4818-9eed-5d2c7e6961ff,
     MasterGameID: 6be88169-8ac7-4ecc-b13e-10945b386fca,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -2627,6 +2635,7 @@
     PublisherID: 240947b6-40ad-4825-971b-2ae5b0fe444f,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 3
   },
   {
@@ -2857,6 +2866,7 @@
     PublisherID: 26da4ac4-c1b1-4718-b599-85caec653eb5,
     MasterGameID: a77df430-de91-4a8a-a6be-7ff6bf1e07bf,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 1
   },
   {
@@ -3738,12 +3748,14 @@
     PublisherID: 31bf7633-d0cc-4da6-b592-4cabc15d3527,
     MasterGameID: e0c936db-5116-4e39-8bb3-95722bd2cad8,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 6
   },
   {
     PublisherID: 31c8c1bf-0c61-4ff1-b6ef-c5f9593f7f30,
     MasterGameID: 1200424e-3363-4732-9e61-b3ddcc9924e6,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 4
   },
   {
@@ -3792,6 +3804,7 @@
     PublisherID: 32467343-9a04-49ab-8dd5-511527c6e698,
     MasterGameID: 650bbf88-dd55-475d-b189-583fca09c4a0,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -3882,7 +3895,7 @@
     PublisherID: 3371d7fb-85fb-47f2-8501-e3f7f99873da,
     MasterGameID: 1bc02877-a443-44e8-bb37-d14624737669,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 1,
     BidAmount: 5
   },
   {
@@ -3945,7 +3958,7 @@
     PublisherID: 34b3f94d-7afb-4967-b0e4-28af40076571,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
     CounterPick: false,
-    SlotNumber: 17,
+    SlotNumber: 6,
     BidAmount: 6
   },
   {
@@ -3966,7 +3979,7 @@
     PublisherID: 34b3f94d-7afb-4967-b0e4-28af40076571,
     MasterGameID: f10bd7b4-a6df-495c-a4da-cfccf48ebf09,
     CounterPick: false,
-    SlotNumber: 6,
+    SlotNumber: 17,
     BidAmount: 6
   },
   {
@@ -4421,7 +4434,7 @@
     PublisherID: 3b599202-bc5d-44b9-baec-05ac8a4e82ba,
     MasterGameID: 897529cc-65de-4259-8468-6e333fcd2ea4,
     CounterPick: false,
-    SlotNumber: 7,
+    SlotNumber: 2,
     BidAmount: 20
   },
   {
@@ -4624,13 +4637,14 @@
     PublisherID: 3ed6fbac-a4ff-41f1-8c0c-86433f94f959,
     MasterGameID: a7371690-ae7e-400d-9289-ab55040cce47,
     CounterPick: false,
-    SlotNumber: 14,
+    SlotNumber: 0,
     BidAmount: 11
   },
   {
     PublisherID: 3ed6fbac-a4ff-41f1-8c0c-86433f94f959,
     MasterGameID: a77df430-de91-4a8a-a6be-7ff6bf1e07bf,
     CounterPick: false,
+    SlotNumber: 14,
     BidAmount: 5
   },
   {
@@ -4847,7 +4861,7 @@
     PublisherID: 40b2dbe2-efa9-47c6-a291-33e50ddc8b3a,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
     CounterPick: false,
-    SlotNumber: 16,
+    SlotNumber: 5,
     BidAmount: 6
   },
   {
@@ -5106,6 +5120,7 @@
     PublisherID: 449fe570-cf5f-4e68-9df6-7b57bc3e4944,
     MasterGameID: 1eaed613-22cb-4fe0-9360-845445a73022,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 10
   },
   {
@@ -5133,14 +5148,14 @@
     PublisherID: 458d67f4-b608-4b1a-b7aa-acf1e2c2811c,
     MasterGameID: a7371690-ae7e-400d-9289-ab55040cce47,
     CounterPick: false,
-    SlotNumber: 10,
+    SlotNumber: 13,
     BidAmount: 15
   },
   {
     PublisherID: 458d67f4-b608-4b1a-b7aa-acf1e2c2811c,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 10,
     BidAmount: 15
   },
   {
@@ -5728,6 +5743,7 @@
     PublisherID: 4e858924-70c0-46fe-ae11-7f86c6d910b9,
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 11
   },
   {
@@ -5951,13 +5967,14 @@
     PublisherID: 5094e86a-3ec7-4e81-85cd-abe3b4e7cd78,
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
     CounterPick: true,
+    SlotNumber: 0,
     BidAmount: 10
   },
   {
     PublisherID: 50bc055b-b7f3-4bb8-b00f-4db9605ac84c,
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 2,
     BidAmount: 45
   },
   {
@@ -6034,7 +6051,7 @@
     PublisherID: 52020918-5d72-4fcb-875c-0baf61a94065,
     MasterGameID: b760cedc-bfb9-41b2-a4b8-35429cfc1e21,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 10,
     BidAmount: 5
   },
   {
@@ -6251,7 +6268,7 @@
     PublisherID: 5606b924-bdb4-499d-9408-fa65433d4058,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 3,
     BidAmount: 3
   },
   {
@@ -6496,6 +6513,7 @@
     PublisherID: 59bd494e-bdd4-4040-8d14-2656fbe888b7,
     MasterGameID: a77df430-de91-4a8a-a6be-7ff6bf1e07bf,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 20
   },
   {
@@ -6684,6 +6702,7 @@
     PublisherID: 5ca60653-dfe1-486f-982f-582b95a8f746,
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
     CounterPick: true,
+    SlotNumber: 0,
     BidAmount: 0
   },
   {
@@ -6788,6 +6807,7 @@
     PublisherID: 5dd79279-64c7-4a65-8851-b9239039eda9,
     MasterGameID: 52d41710-186a-4145-a32e-a514434cfcad,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 15
   },
   {
@@ -7004,6 +7024,7 @@
     PublisherID: 6133073a-542f-4d8c-94cc-061ae2b01e69,
     MasterGameID: 52d41710-186a-4145-a32e-a514434cfcad,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -7066,7 +7087,7 @@
     PublisherID: 621e3ad7-0db1-463c-bdac-6f33c2b767ae,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
     CounterPick: false,
-    SlotNumber: 7,
+    SlotNumber: 0,
     BidAmount: 15
   },
   {
@@ -7101,14 +7122,14 @@
     PublisherID: 62b523a7-6aa2-4f47-9334-39d691646ca3,
     MasterGameID: 4665c6ea-5c50-4c9e-ba9f-5853f74cdc5b,
     CounterPick: false,
-    SlotNumber: 3,
+    SlotNumber: 8,
     BidAmount: 5
   },
   {
     PublisherID: 62b523a7-6aa2-4f47-9334-39d691646ca3,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 3,
     BidAmount: 7
   },
   {
@@ -7563,6 +7584,7 @@
     PublisherID: 660453b0-4b27-48ec-9e4a-700e96cd11b9,
     MasterGameID: 52d41710-186a-4145-a32e-a514434cfcad,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -7583,6 +7605,7 @@
     PublisherID: 665457a2-1959-4af8-ada5-fc1512a7e7b0,
     MasterGameID: dae170c7-3c32-4f68-9b1f-ac3df8527b39,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 3
   },
   {
@@ -7764,21 +7787,21 @@
     PublisherID: 68ae799a-cc1b-4373-a306-f90f0416fbca,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 1,
     BidAmount: 8
   },
   {
     PublisherID: 68ae799a-cc1b-4373-a306-f90f0416fbca,
     MasterGameID: 7cc0aeb3-1aba-42ba-b969-649fca5067d1,
     CounterPick: false,
-    SlotNumber: 1,
+    SlotNumber: 9,
     BidAmount: 2
   },
   {
     PublisherID: 68c25464-f044-40b3-95e4-d45f5ee03f92,
     MasterGameID: 02912784-65fa-4a3a-9cf3-b5d7f2b22380,
     CounterPick: false,
-    SlotNumber: 2,
+    SlotNumber: 0,
     BidAmount: 0
   },
   {
@@ -8030,7 +8053,7 @@
     PublisherID: 6c11d481-a791-4a20-ad1d-14af21868641,
     MasterGameID: 4281d474-efa1-4e40-bbe4-91856657b8a8,
     CounterPick: false,
-    SlotNumber: 5,
+    SlotNumber: 11,
     BidAmount: 2
   },
   {
@@ -8191,7 +8214,7 @@
     PublisherID: 6efd27d4-9719-46e0-9c65-160a60916762,
     MasterGameID: 721ae24c-9c94-4477-827d-77ca9afdf2e9,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 7,
     BidAmount: 30
   },
   {
@@ -8219,6 +8242,7 @@
     PublisherID: 6f7435d7-3ef1-4753-89bb-f815fc2f45be,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 14
   },
   {
@@ -8281,14 +8305,14 @@
     PublisherID: 70711cac-5071-40a4-83d7-ae4821e75467,
     MasterGameID: 8eba7f3c-3891-42d6-82fb-30e5f87d8082,
     CounterPick: false,
-    SlotNumber: 7,
+    SlotNumber: 9,
     BidAmount: 8
   },
   {
     PublisherID: 70711cac-5071-40a4-83d7-ae4821e75467,
     MasterGameID: b61b2975-2d9e-40a7-aea0-933557e067cb,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 7,
     BidAmount: 35
   },
   {
@@ -8344,6 +8368,7 @@
     PublisherID: 7104e66a-9565-4394-98d0-efc59fce6dab,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 9
   },
   {
@@ -8672,13 +8697,14 @@
     PublisherID: 795f1c2c-9707-4368-8e61-17805db4e2ef,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 14,
+    SlotNumber: 3,
     BidAmount: 2
   },
   {
     PublisherID: 795f1c2c-9707-4368-8e61-17805db4e2ef,
     MasterGameID: 8eba7f3c-3891-42d6-82fb-30e5f87d8082,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -8860,6 +8886,7 @@
     PublisherID: 7c831dfe-fe65-4d44-9e94-3724466c235b,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -9181,7 +9208,7 @@
     PublisherID: 84ae115c-d3ae-4d86-bcf2-219a6790562d,
     MasterGameID: 29758217-e5df-4aa5-b3dd-ed6421929f05,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 6,
     BidAmount: 6
   },
   {
@@ -9377,6 +9404,7 @@
     PublisherID: 86374adc-aaa6-437d-b23b-3b1c1bed546d,
     MasterGameID: a77df430-de91-4a8a-a6be-7ff6bf1e07bf,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 4
   },
   {
@@ -9411,6 +9439,7 @@
     PublisherID: 86a89e4d-ffa3-446c-b778-c31dfaff97d2,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 10
   },
   {
@@ -9732,6 +9761,7 @@
     PublisherID: 8b23cd64-0203-4174-adf5-a33f60ecff4c,
     MasterGameID: 20b50459-74ff-4a3d-9ffb-b1c335c11cb3,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 3
   },
   {
@@ -10158,7 +10188,7 @@
     PublisherID: 90242c98-b70f-4e91-b84c-7d6bd318dba3,
     MasterGameID: b7f12909-14ba-4309-b263-230b1b17bead,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 1,
     BidAmount: 1
   },
   {
@@ -10186,6 +10216,7 @@
     PublisherID: 916df11e-e2d5-4824-8e6a-594da23933a0,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -10591,7 +10622,7 @@
     PublisherID: 97b160a0-d693-46f1-9dfd-67d37c9dd8f1,
     MasterGameID: 296d91de-dfd6-41b4-bb2d-58180c36c7e8,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 3,
     BidAmount: 5
   },
   {
@@ -10661,7 +10692,7 @@
     PublisherID: 99162c4a-1feb-4ca6-b00e-31a60be9b014,
     MasterGameID: 1eaed613-22cb-4fe0-9360-845445a73022,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 5,
     BidAmount: 22
   },
   {
@@ -10822,7 +10853,7 @@
     PublisherID: 9b54874b-d908-4b54-90b8-b03d3450ebbb,
     MasterGameID: 85ce4ca3-177f-473d-9a4c-4110fab44db2,
     CounterPick: false,
-    SlotNumber: 6,
+    SlotNumber: 2,
     BidAmount: 15
   },
   {
@@ -10962,6 +10993,7 @@
     PublisherID: 9d5485d1-cb3c-47aa-8d0d-fac7f6c094cd,
     MasterGameID: 333d0414-c59e-4991-a783-526c064c6761,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 1
   },
   {
@@ -11416,7 +11448,7 @@
     PublisherID: a0eaa2bb-a61a-4879-a0ca-f14fd3f97d7b,
     MasterGameID: 19495bd1-f309-4f2c-91d2-eef32b26059b,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 4,
     BidAmount: 2
   },
   {
@@ -11654,13 +11686,14 @@
     PublisherID: a1df03a7-8d6e-406b-a2fd-d5506a35fe82,
     MasterGameID: e6c372d2-6216-42dc-abe4-2089c9ed7355,
     CounterPick: true,
+    SlotNumber: 0,
     BidAmount: 0
   },
   {
     PublisherID: a1fa8d70-5ddd-4909-bd04-e5900687c9ad,
     MasterGameID: a7371690-ae7e-400d-9289-ab55040cce47,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 8,
     BidAmount: 2
   },
   {
@@ -11695,6 +11728,7 @@
     PublisherID: a26ba800-cae1-4d3f-8eac-1894be26b03e,
     MasterGameID: 02912784-65fa-4a3a-9cf3-b5d7f2b22380,
     CounterPick: true,
+    SlotNumber: 0,
     BidAmount: 1
   },
   {
@@ -11729,13 +11763,14 @@
     PublisherID: a2a20f5f-4343-435b-b3b3-f799075d149a,
     MasterGameID: 20b50459-74ff-4a3d-9ffb-b1c335c11cb3,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 4,
     BidAmount: 3
   },
   {
     PublisherID: a2d91a86-2a0b-4aa4-bed1-14e50b2f7225,
     MasterGameID: 7cc0aeb3-1aba-42ba-b969-649fca5067d1,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 1
   },
   {
@@ -11875,6 +11910,7 @@
     PublisherID: a3ede9cc-6ea3-4c9a-a046-057810e2f993,
     MasterGameID: f9fd27f0-8c2c-4d98-8981-be62ad5aa7cd,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -11909,14 +11945,14 @@
     PublisherID: a4cd4e10-49e1-4e9a-ac39-8a4ba5841b03,
     MasterGameID: 40f1999e-aa35-4dd4-8a53-94b923b92b9a,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 9,
     BidAmount: 6
   },
   {
     PublisherID: a4cd4e10-49e1-4e9a-ac39-8a4ba5841b03,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 15,
+    SlotNumber: 8,
     BidAmount: 2
   },
   {
@@ -12385,7 +12421,7 @@
     PublisherID: aa8978bc-749a-4076-83da-d8bf0ed3a8e7,
     MasterGameID: 1200424e-3363-4732-9e61-b3ddcc9924e6,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 8,
     BidAmount: 1
   },
   {
@@ -12399,7 +12435,7 @@
     PublisherID: aa8978bc-749a-4076-83da-d8bf0ed3a8e7,
     MasterGameID: 864416f6-bde1-4ce3-b2ff-38bdfff595c1,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 9,
     BidAmount: 1
   },
   {
@@ -12546,14 +12582,14 @@
     PublisherID: acdcd9f9-eec6-42ce-b4ba-b61c203e1116,
     MasterGameID: 621b8342-5e6a-438e-9bd6-5c9b68880447,
     CounterPick: false,
-    SlotNumber: 6,
+    SlotNumber: 1,
     BidAmount: 20
   },
   {
     PublisherID: acdcd9f9-eec6-42ce-b4ba-b61c203e1116,
     MasterGameID: b760cedc-bfb9-41b2-a4b8-35429cfc1e21,
     CounterPick: false,
-    SlotNumber: 1,
+    SlotNumber: 6,
     BidAmount: 40
   },
   {
@@ -12686,7 +12722,7 @@
     PublisherID: ae6a64a2-cc59-42ce-939e-43b22a59b856,
     MasterGameID: ae27feef-cde3-4c3b-a6a7-88958ab8a218,
     CounterPick: false,
-    SlotNumber: 6,
+    SlotNumber: 3,
     BidAmount: 10
   },
   {
@@ -12763,6 +12799,7 @@
     PublisherID: afb5eb1b-1d4c-4fee-8a3e-fea772cd89d5,
     MasterGameID: 496fc9f9-03d0-4a7b-a3de-2e5528bc88f5,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 0
   },
   {
@@ -12818,14 +12855,14 @@
     PublisherID: b031a9e7-9505-4ddc-b426-9fcb9663c739,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 2,
     BidAmount: 20
   },
   {
     PublisherID: b031a9e7-9505-4ddc-b426-9fcb9663c739,
     MasterGameID: ae27feef-cde3-4c3b-a6a7-88958ab8a218,
     CounterPick: false,
-    SlotNumber: 2,
+    SlotNumber: 8,
     BidAmount: 20
   },
   {
@@ -13147,7 +13184,7 @@
     PublisherID: b534f8ac-a86a-43b2-b7f7-a6d1f8c02709,
     MasterGameID: 41000361-8e46-4845-b049-8e07ecfd4ca0,
     CounterPick: false,
-    SlotNumber: 1,
+    SlotNumber: 5,
     BidAmount: 5
   },
   {
@@ -13161,7 +13198,7 @@
     PublisherID: b534f8ac-a86a-43b2-b7f7-a6d1f8c02709,
     MasterGameID: 9d19792f-0c79-446c-8881-4e7c8392d8e3,
     CounterPick: false,
-    SlotNumber: 5,
+    SlotNumber: 1,
     BidAmount: 5
   },
   {
@@ -13511,7 +13548,7 @@
     PublisherID: bc0e1dc5-4bcd-4f88-816d-58e34c956574,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 4,
     BidAmount: 0
   },
   {
@@ -13567,6 +13604,7 @@
     PublisherID: bc93e9c2-900c-438e-8d4f-be9b4504ba2e,
     MasterGameID: 296d91de-dfd6-41b4-bb2d-58180c36c7e8,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 6
   },
   {
@@ -13615,6 +13653,7 @@
     PublisherID: bd379c8e-5ec0-45a3-addc-c0970385b5a2,
     MasterGameID: 02912784-65fa-4a3a-9cf3-b5d7f2b22380,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 10
   },
   {
@@ -13663,6 +13702,7 @@
     PublisherID: bd4dc50c-533d-40c6-a6f6-78911e2b61e7,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 19
   },
   {
@@ -13760,14 +13800,14 @@
     PublisherID: be5111d2-edfd-4f03-8714-88face312270,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
-    SlotNumber: 1,
+    SlotNumber: 4,
     BidAmount: 6
   },
   {
     PublisherID: be5111d2-edfd-4f03-8714-88face312270,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 14,
+    SlotNumber: 1,
     BidAmount: 1
   },
   {
@@ -13781,7 +13821,7 @@
     PublisherID: be5111d2-edfd-4f03-8714-88face312270,
     MasterGameID: ae27feef-cde3-4c3b-a6a7-88958ab8a218,
     CounterPick: false,
-    SlotNumber: 4,
+    SlotNumber: 14,
     BidAmount: 3
   },
   {
@@ -13893,21 +13933,21 @@
     PublisherID: c044fdbe-1fd2-405f-a3b9-b969b0029623,
     MasterGameID: 1eaed613-22cb-4fe0-9360-845445a73022,
     CounterPick: false,
-    SlotNumber: 19,
+    SlotNumber: 8,
     BidAmount: 3
   },
   {
     PublisherID: c044fdbe-1fd2-405f-a3b9-b969b0029623,
     MasterGameID: a77df430-de91-4a8a-a6be-7ff6bf1e07bf,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 19,
     BidAmount: 2
   },
   {
     PublisherID: c0692dfd-f1b2-4455-873a-4054d9fb8ce6,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 16,
+    SlotNumber: 9,
     BidAmount: 6
   },
   {
@@ -14152,6 +14192,7 @@
     PublisherID: c41579ad-f9c9-4fab-973f-373a023034b5,
     MasterGameID: e0a9dd84-09e1-4175-99eb-cb87c1d48020,
     CounterPick: true,
+    SlotNumber: 0,
     BidAmount: 4
   },
   {
@@ -14263,7 +14304,7 @@
     PublisherID: c61dedc0-0274-4ced-a3da-5c8d4a58b79b,
     MasterGameID: 36227014-dd8a-4a63-944c-06536f7d90fd,
     CounterPick: false,
-    SlotNumber: 5,
+    SlotNumber: 12,
     BidAmount: 16
   },
   {
@@ -14459,7 +14500,7 @@
     PublisherID: c85ed61d-675d-4e3f-874b-d291f0e458eb,
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 8,
     BidAmount: 5
   },
   {
@@ -14473,7 +14514,7 @@
     PublisherID: c85ed61d-675d-4e3f-874b-d291f0e458eb,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 11,
     BidAmount: 1
   },
   {
@@ -14571,14 +14612,14 @@
     PublisherID: c992c18f-eed9-4c0a-902a-55ea50b7c497,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 4,
     BidAmount: 7
   },
   {
     PublisherID: c992c18f-eed9-4c0a-902a-55ea50b7c497,
     MasterGameID: 8eba7f3c-3891-42d6-82fb-30e5f87d8082,
     CounterPick: false,
-    SlotNumber: 4,
+    SlotNumber: 9,
     BidAmount: 5
   },
   {
@@ -14998,6 +15039,7 @@
     PublisherID: ce6cd4bb-0aae-44e0-b9da-5ee646c1636d,
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 41
   },
   {
@@ -15088,6 +15130,7 @@
     PublisherID: cfe917ad-262c-46c6-9f45-616f139bc7a0,
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 17
   },
   {
@@ -15360,6 +15403,7 @@
     PublisherID: d3133aae-d3e3-41d0-8b58-52100a7f46b1,
     MasterGameID: 7bf94e03-0e7b-4f4b-8cca-e8f5f2fc976e,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 0
   },
   {
@@ -15436,6 +15480,7 @@
     PublisherID: d3e502dd-d51f-4558-bcc5-c435bc2848d2,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 15
   },
   {
@@ -15477,6 +15522,7 @@
     PublisherID: d55965a2-f0bf-4937-b127-8f4f4f5788f8,
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 10
   },
   {
@@ -15861,6 +15907,7 @@
     PublisherID: dd47e8bb-ae24-4362-a70a-19dd446771b6,
     MasterGameID: 1bc02877-a443-44e8-bb37-d14624737669,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 1
   },
   {
@@ -15923,6 +15970,7 @@
     PublisherID: ddb18888-0c2a-42ac-9de8-09a9aa3e5392,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 15
   },
   {
@@ -16027,6 +16075,7 @@
     PublisherID: df2defcb-44ca-45a1-8693-6ed22b0633b3,
     MasterGameID: 7cc0aeb3-1aba-42ba-b969-649fca5067d1,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 1
   },
   {
@@ -16264,7 +16313,7 @@
     PublisherID: e255812b-b346-488e-ae95-1221a509546b,
     MasterGameID: ddce3a8b-7314-423d-9517-12cb09baa52b,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 4,
     BidAmount: 5
   },
   {
@@ -16446,14 +16495,14 @@
     PublisherID: e4df29e5-5fcc-4b1c-aa61-c0dd8552e889,
     MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
     CounterPick: false,
-    SlotNumber: 3,
+    SlotNumber: 4,
     BidAmount: 2
   },
   {
     PublisherID: e4df29e5-5fcc-4b1c-aa61-c0dd8552e889,
     MasterGameID: ae27feef-cde3-4c3b-a6a7-88958ab8a218,
     CounterPick: false,
-    SlotNumber: 4,
+    SlotNumber: 3,
     BidAmount: 2
   },
   {
@@ -16712,6 +16761,7 @@
     PublisherID: e9ca8a70-2a8e-428e-8b27-0469120f61fe,
     MasterGameID: 296d91de-dfd6-41b4-bb2d-58180c36c7e8,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 12
   },
   {
@@ -16851,6 +16901,7 @@
     PublisherID: ebb71454-4f69-448e-bc00-fa31f7734433,
     MasterGameID: 897529cc-65de-4259-8468-6e333fcd2ea4,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 5
   },
   {
@@ -17186,7 +17237,7 @@
     PublisherID: f1270a9a-904c-4ba8-b643-f5b7cca867ff,
     MasterGameID: 136dfc6a-c954-49d0-b079-b0899a2608b5,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 8,
     BidAmount: 5
   },
   {
@@ -17228,6 +17279,7 @@
     PublisherID: f1a249ec-ae30-4824-8195-e1fa1ddd0c46,
     MasterGameID: a7c1de72-1581-4394-82bf-fd0f26b135a6,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 21
   },
   {
@@ -17388,14 +17440,14 @@
     PublisherID: f530d11e-fc25-4614-80a1-fd2d6a94ac0b,
     MasterGameID: 62956812-70b6-4c17-903d-f24a2fcef466,
     CounterPick: false,
-    SlotNumber: 18,
+    SlotNumber: 3,
     BidAmount: 10
   },
   {
     PublisherID: f530d11e-fc25-4614-80a1-fd2d6a94ac0b,
     MasterGameID: 9d19792f-0c79-446c-8881-4e7c8392d8e3,
     CounterPick: false,
-    SlotNumber: 3,
+    SlotNumber: 18,
     BidAmount: 1
   },
   {
@@ -17500,6 +17552,7 @@
     PublisherID: f5b8f754-7dc8-4c45-affc-d4bd928cf0c9,
     MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 12
   },
   {
@@ -17674,21 +17727,21 @@
     PublisherID: f7664d7a-5889-4839-8a31-8fd9a4d3f5d4,
     MasterGameID: 1eaed613-22cb-4fe0-9360-845445a73022,
     CounterPick: false,
-    SlotNumber: 17,
+    SlotNumber: 3,
     BidAmount: 5
   },
   {
     PublisherID: f7664d7a-5889-4839-8a31-8fd9a4d3f5d4,
     MasterGameID: 6a2eb08b-fdc9-4f58-9c7c-0b8b696db89f,
     CounterPick: false,
-    SlotNumber: 21,
+    SlotNumber: 4,
     BidAmount: 5
   },
   {
     PublisherID: f7664d7a-5889-4839-8a31-8fd9a4d3f5d4,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
-    SlotNumber: 3,
+    SlotNumber: 17,
     BidAmount: 5
   },
   {
@@ -17702,7 +17755,7 @@
     PublisherID: f7664d7a-5889-4839-8a31-8fd9a4d3f5d4,
     MasterGameID: b7f12909-14ba-4309-b263-230b1b17bead,
     CounterPick: false,
-    SlotNumber: 4,
+    SlotNumber: 21,
     BidAmount: 1
   },
   {
@@ -17772,6 +17825,7 @@
     PublisherID: f820b1bc-4dc6-478c-b738-2ba42f9b2361,
     MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 3
   },
   {
@@ -17820,14 +17874,14 @@
     PublisherID: f88851fe-d2a8-4587-b371-d33bf7fd5798,
     MasterGameID: 1170866e-5aab-4db0-bfb5-09de1a4d544d,
     CounterPick: false,
-    SlotNumber: 4,
+    SlotNumber: 6,
     BidAmount: 1
   },
   {
     PublisherID: f88851fe-d2a8-4587-b371-d33bf7fd5798,
     MasterGameID: 37f29a94-22da-4523-8c92-78180e356153,
     CounterPick: false,
-    SlotNumber: 6,
+    SlotNumber: 4,
     BidAmount: 10
   },
   {
@@ -17939,6 +17993,7 @@
     PublisherID: faa12a6c-c80d-4e94-858b-ac4d4d770f53,
     MasterGameID: 4281d474-efa1-4e40-bbe4-91856657b8a8,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 20
   },
   {
@@ -18120,6 +18175,7 @@
     PublisherID: fce4817b-36d3-4bf1-9505-f3fa42b7d912,
     MasterGameID: b760cedc-bfb9-41b2-a4b8-35429cfc1e21,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 10
   },
   {
@@ -18203,6 +18259,7 @@
     PublisherID: ff90a2f4-97ce-4dd8-9ac8-05c15a9b6aae,
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     CounterPick: false,
+    SlotNumber: 0,
     BidAmount: 31
   },
   {

@@ -123,9 +123,15 @@ export default {
         .catch(() => {});
     },
     isTopPublisher(publisher) {
+      if (!publisher) {
+        return false;
+      }
       return this.topPublisher && this.topPublisher.publisherID === publisher.publisherID;
     },
     isProjectedTopPublisher(publisher) {
+      if (!publisher) {
+        return false;
+      }
       return this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
     },
     ordinal_suffix_of(num) {

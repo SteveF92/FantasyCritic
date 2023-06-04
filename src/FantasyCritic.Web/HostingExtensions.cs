@@ -75,11 +75,11 @@ public static class HostingExtensions
 
         var repoConfiguration = new RepositoryConfiguration(connectionString, clock);
         var patreonConfig = new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!);
-        var emailSendingConfig = new EmailSendingServiceConfiguration(baseAddress, environment.IsProduction());
+        var emailSendingConfig = new EnvironmentConfiguration(baseAddress, environment.IsProduction());
         var discordConfiguration = new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId"));
         services.AddSingleton<RepositoryConfiguration>(_ => repoConfiguration);
         services.AddSingleton<PatreonConfig>(_ => patreonConfig);
-        services.AddSingleton<EmailSendingServiceConfiguration>(_ => emailSendingConfig);
+        services.AddSingleton<EnvironmentConfiguration>(_ => emailSendingConfig);
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
         services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
         services.AddSingleton<DiscordPushService>();
@@ -235,6 +235,12 @@ public static class HostingExtensions
                 const string numbers = "0123456789";
                 const string specials = "-._@+ ";
                 options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
+                options.Password.RequiredLength = 10;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 5;
             })
             .AddSignInManager<FantasyCriticSignInManager>()
             .AddUserManager<FantasyCriticUserManager>()

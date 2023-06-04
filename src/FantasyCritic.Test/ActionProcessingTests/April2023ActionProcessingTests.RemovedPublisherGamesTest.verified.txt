@@ -1,0 +1,2130 @@
+﻿[
+  {
+    PublisherID: 0015a628-1062-4c22-861f-7b8c87bc248d,
+    MasterGameID: e7efc830-b71a-4a5f-9cb9-ef3837629a2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Immortals of Aveum
+  },
+  {
+    PublisherID: 02392fbe-a2db-4893-834e-448d9086f7e3,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 20,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 03f54b72-190d-46a8-866d-8c1d6357d2ee,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 056e84e6-89d5-4ea7-83b2-6c042943d0df,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 05d9772c-8a54-4b7c-b741-c40e0db17861,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 06d830cc-cb22-4646-9785-88de1a7264e7,
+    MasterGameID: 1ee05e1c-9518-4b38-9d30-e852130c4f9c,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Immortals of Aveum
+  },
+  {
+    PublisherID: 07ce5003-280c-4ea0-9f1e-63e2b322beae,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 0953c8a4-0bc1-452a-a0ac-133a9ef68b6f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 6,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 0a104e96-f05e-4ee9-895d-2bb371c70f15,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 0af3bd69-ee4e-4f02-a164-efc74af47519,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 0bffd275-c59a-4ad0-bc6b-467abb4256f2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 0f26e078-4715-4794-898d-f7a1116431d4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 0fe31bb6-2620-468b-92a8-c1a0e7298e49,
+    MasterGameID: 40f38b2e-e029-4d03-a0ca-ba2ba412aeac,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 10a80309-8769-4b71-abeb-cd61b1746105,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 143e8450-e2f9-4254-b1fe-1ce53abad5dc,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 15b56cc0-6859-4416-8ecf-a77d28374bb2,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 1656a81b-657c-4b37-9d7a-b6280bc7e966,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 17f3dbcb-de86-421a-95ab-b5babcb18e74,
+    MasterGameID: e88e1de6-f064-4ca2-96b0-eb8803f24dbf,
+    CounterPick: false,
+    SlotNumber: 18,
+    BidAmount: 0,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 19c9576e-2361-4b32-8e71-5d7f57a8991f,
+    MasterGameID: 1a5b7ace-8b32-4767-bd54-8048c38eba8b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Another Crab’s Treasure
+  },
+  {
+    PublisherID: 1a46f7ad-8e68-4bc1-9dbf-72c870af780c,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 1bc8f797-4dd0-4cbc-ae76-f72e4b799864,
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: The Lord of the Rings: Gollum
+  },
+  {
+    PublisherID: 1d98d928-82b1-4f60-9323-25c918a945d8,
+    MasterGameID: d228e436-ac5e-4f52-bcac-b7311c9fd177,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 1e7364ad-52d8-4ed8-9967-5b81338ad2fe,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 1e926748-5933-4216-add5-e40ebb4e69a1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 1f035e8d-28f8-42c2-87d9-a3e916574dc7,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 1f406d72-38a4-4c0e-b8fd-6865c0eb92c8,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: The Last Case of Benedict Fox
+  },
+  {
+    PublisherID: 1fe354f5-76d5-4043-9db4-5e91263e56cf,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: LEGO 2K Drive
+  },
+  {
+    PublisherID: 1fe354f5-76d5-4043-9db4-5e91263e56cf,
+    MasterGameID: 7113cc92-1868-488c-ac82-005e820ac40e,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Master Detective Archives: RAIN CODE
+  },
+  {
+    PublisherID: 20b1dccc-08e3-4f32-bb58-026422a59b0b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 224e46aa-25d2-464b-aa80-6d93cd0b070a,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 22cad0c0-9393-470c-bb68-18540da20245,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 22cdc116-86db-45c2-be11-a2b591b36165,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 23e518e0-23d7-4606-a71d-52900c8b8c07,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 25233a48-b4b8-4ed3-88a1-b6079666ad58,
+    MasterGameID: 2b1f18a1-bfff-4546-81ad-86b7000e23a8,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 5,
+    RemovedNote: Conditionally dropped while picking up: Cities: Skylines II
+  },
+  {
+    PublisherID: 25b3aa97-c4f5-4db6-9a20-9850a9baad7c,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 266ec6d7-24ef-4484-a6bf-2c362b57332d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 26efa30f-aca1-4366-a8e7-c2d6b4aec633,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 20,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 27382e9f-2024-4794-9be8-f51ec7202647,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 27f3e575-09a7-4b62-a3f6-448913890fe2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 28a5445c-39e7-4875-b835-e4993c978d23,
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: 5,
+    RemovedNote: Conditionally dropped while picking up: Immortals of Aveum
+  },
+  {
+    PublisherID: 295f51c3-1f7e-473b-a606-f66ffc0fdcea,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 299e631f-606a-41f2-a955-017937cb6286,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 2c5513a4-1915-4eca-8673-b4c285140368,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 2c5513a4-1915-4eca-8673-b4c285140368,
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Master Detective Archives: RAIN CODE
+  },
+  {
+    PublisherID: 2d46674a-0067-46f1-9bb7-f1a3b8d5fc22,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 2f8e8fac-89dc-432b-ba84-124eb3491ec5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3159c892-cd1c-4958-83c2-a0fa7915c81c,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: 15,
+    RemovedNote: Conditionally dropped while picking up: Homeworld 3
+  },
+  {
+    PublisherID: 318b2a99-051f-4a42-98bb-c564ab9ea070,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3339b17d-2aae-410f-bc14-55d9352e22d2,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 15,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 33ec392c-879e-409a-8798-ab3009f31563,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 10,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3544c4de-c0b2-4456-b87a-ea5084f22818,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 36324ec9-3906-4818-8c3e-b35c20403ab6,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3752ab6a-a350-4951-a88a-099b6d034bce,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 383f8203-8b84-48de-8462-9afc6ea33d1f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 38d8c9cb-6058-4ff2-899c-f535b55bfb2b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 14,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 391d6e22-edb2-40c7-bb1d-1ed02b3ded3a,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 39502688-75d3-4308-95ac-8827cfed46af,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
+    MasterGameID: 273e3937-c260-4dca-8697-1c3c82badf12,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Fuga: Melodies of Steel 2
+  },
+  {
+    PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
+    MasterGameID: e466da26-aaa3-4319-876f-dceccb70e794,
+    CounterPick: false,
+    SlotNumber: 15,
+    BidAmount: 15,
+    RemovedNote: Conditionally dropped while picking up: Persona 3 Remake
+  },
+  {
+    PublisherID: 3aaedfc7-a63b-4f32-84bc-c1c7f21aabef,
+    MasterGameID: 424b1874-071d-418c-ac2c-c1a2005b6694,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Advance Wars 1+2: Re-Boot Camp
+  },
+  {
+    PublisherID: 3bb7362a-eb1c-4e9b-8555-a79c4416be2f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3d32e079-3cfa-46de-9809-00b2bf602c17,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3d5a1554-ecbe-4490-82f4-722cb2a6bd74,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 2,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3da61b51-00b7-4a95-8e10-e1bd5d86abda,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3df2aea2-27cf-4e31-b39d-0e12b7f6103a,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3ea39baf-c3de-4b7c-9db2-a6f959c32aba,
+    MasterGameID: 5757fb54-12c0-4bab-b3ed-bed8a11a9b61,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Advance Wars 1+2: Re-Boot Camp
+  },
+  {
+    PublisherID: 3ea39baf-c3de-4b7c-9db2-a6f959c32aba,
+    MasterGameID: b9c3cf20-63e6-4f0c-a0d9-21192eb87677,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Viewfinder
+  },
+  {
+    PublisherID: 3eef5dcf-ac37-4992-9053-a45872cff4b6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 3fef6c90-8eb6-4069-a742-44b2e4b1793a,
+    MasterGameID: 28b63e32-29ff-4a7f-8a86-b7fa4387cfe2,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 2,
+    RemovedNote: Conditionally dropped while picking up: Wargroove 2
+  },
+  {
+    PublisherID: 44882976-ca6f-48f7-bf42-7f20df54e0ac,
+    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: 5,
+    RemovedNote: Conditionally dropped while picking up: Trine 5: A Clockwork Conspiracy
+  },
+  {
+    PublisherID: 46796f04-847d-4949-bd7d-3a0bfeb931c8,
+    MasterGameID: 7113cc92-1868-488c-ac82-005e820ac40e,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Honkai: Star Rail
+  },
+  {
+    PublisherID: 47999be0-9e75-47f2-b965-229ba5c4ff08,
+    MasterGameID: 135f0f77-d0ee-4c99-8577-8269c810faca,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Immortals of Aveum
+  },
+  {
+    PublisherID: 492e8edd-a181-472d-811f-cb2fabb050b6,
+    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 4a2a68db-aec4-402f-996e-f3445e683628,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 0,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 4aa36aa6-e426-4e98-9d66-419b551551f7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 4c142902-bab8-4bde-be1e-575bab3a2d68,
+    MasterGameID: b7606937-e8e3-4c33-8f20-7fbeabbec1d7,
+    CounterPick: false,
+    SlotNumber: 21,
+    BidAmount: 2,
+    RemovedNote: Conditionally dropped while picking up: Shadow Gambit: The Cursed Crew
+  },
+  {
+    PublisherID: 4dd00f7e-7365-47c5-906c-f670a24e3d85,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 4e2c2b3f-7d12-412e-9dba-2e1fdaafd22f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 4e716bb3-e362-49cf-8411-09d1868091ce,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: 30,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 4eeab78b-86e4-4003-b61b-c75619e5e49a,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 10,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 4fff5098-5855-4255-ae49-ba108672edb0,
+    MasterGameID: 1032d9e0-6598-4284-9460-daa3342c7283,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 23,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 5005b10a-77b2-4b1b-bb98-fa1d598252b8,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 50442125-7604-414f-9362-160e07dbe884,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 50488ae8-a61f-49fd-9e39-927bc153351f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 52806723-6a1b-4849-9077-a31bf46cad00,
+    MasterGameID: 57251229-a966-4da0-b1ac-48f883dc2f7f,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Fuga: Melodies of Steel 2
+  },
+  {
+    PublisherID: 53370363-2c8f-42e2-b2b1-0829286f26c0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: 20,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 5370508a-5049-480d-8e87-845f76423d45,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 542a57ac-b618-4fc1-8c1c-9f266a2260b3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 54b7ab6a-55b6-4dd3-8682-84daf85044e4,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 561c09bc-b069-4269-8cde-79728747f098,
+    MasterGameID: 41672094-f6c8-49e1-a04b-6ac173f77a25,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 56a4b209-bd3e-4b1e-9f5b-27adb9570704,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 56bfabb2-30f8-4d41-aca1-7f7c6ad1aaf5,
+    MasterGameID: 72838094-128d-4846-9111-e6c2b668c116,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Stray Gods: The Roleplaying Musical
+  },
+  {
+    PublisherID: 5747b806-a6bd-485f-a53e-9b9fb4f51572,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 575233d0-047d-4119-97c2-b31109459f5e,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 58135273-02d6-4001-a9cd-fbf31670502a,
+    MasterGameID: 0f920d46-27df-41c1-8729-2e0ae75aa077,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Persona 3 Remake
+  },
+  {
+    PublisherID: 58be9737-435e-42d7-bb2f-05d188ee849b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 59cf1c82-5e8e-455d-b691-73dee8e502b7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 59cf1c82-5e8e-455d-b691-73dee8e502b7,
+    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Trine 5: A Clockwork Conspiracy
+  },
+  {
+    PublisherID: 5ab6e810-7458-46a4-ac70-8c5d3dc455da,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 6,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 5ce615a0-d6c6-4c64-bae1-651a09a417df,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Warhammer 40,000: Space Marine 2
+  },
+  {
+    PublisherID: 5f5cf051-0644-4ff1-a824-405d7e6bb890,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 0,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 5f8405ae-cded-4d5b-b746-94bff239d12e,
+    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
+    CounterPick: false,
+    SlotNumber: 22,
+    BidAmount: 2,
+    RemovedNote: Conditionally dropped while picking up: Dragon Age: Dreadwolf
+  },
+  {
+    PublisherID: 61203c08-a4be-4313-9b4c-0e72ec6b12b4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6128b302-82f2-49b5-9334-d8439ca744c1,
+    MasterGameID: 375ad5cc-0f18-480b-acba-a2a32282958d,
+    CounterPick: false,
+    SlotNumber: 15,
+    BidAmount: 2,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6128b302-82f2-49b5-9334-d8439ca744c1,
+    MasterGameID: 883db900-195e-4727-a8da-4a9125638f5f,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 62f7c964-d43f-44a7-8457-15996ad52c9d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 632ab389-42be-42a6-ad12-e01384f8e938,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6617ac53-a488-4b22-85a8-56a3efe235e9,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 66b0a659-c2b8-44f0-88fe-1ff85498e1d3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 673e8871-3dbd-4b19-b1d2-761ac8ae59a1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6adfb974-3033-4ce6-904e-cdd1e7c90a79,
+    MasterGameID: 508ac2da-e3e5-4592-86fc-ef7a7c246185,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Layers of Fear
+  },
+  {
+    PublisherID: 6ae05c8e-6b43-441b-b837-d2895d7828d3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6c063b45-ea1c-464b-bad9-8bbce974804e,
+    MasterGameID: 1e754c8b-52f8-4c64-8cd7-5d50bddc2d93,
+    CounterPick: false,
+    SlotNumber: 17,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: The Last Case of Benedict Fox
+  },
+  {
+    PublisherID: 6c063b45-ea1c-464b-bad9-8bbce974804e,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 10,
+    RemovedNote: Conditionally dropped while picking up: LEGO 2K Drive
+  },
+  {
+    PublisherID: 6c063b45-ea1c-464b-bad9-8bbce974804e,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Mortal Kombat 12
+  },
+  {
+    PublisherID: 6c838387-05e9-42da-bce3-4ac6d2016d32,
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Trine 5: A Clockwork Conspiracy
+  },
+  {
+    PublisherID: 6cb12e3b-30c1-405b-987e-0979f6dd16fc,
+    MasterGameID: 19495bd1-f309-4f2c-91d2-eef32b26059b,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Warhammer 40,000: Boltgun
+  },
+  {
+    PublisherID: 6e6e0eb7-1e78-48f2-a8af-d933c261b3d6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 10,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6ebdf775-d4e6-4857-89bf-c28e41f0a5ff,
+    MasterGameID: 65245876-fc34-415d-89f6-f8a637e75d94,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6f7e0b41-764d-4273-955e-bc9167d3fa67,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 6fd71dd6-a42e-425b-9f8e-861a2b310ee7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 70bf1027-c566-49fb-991e-5b300105aa9f,
+    MasterGameID: 80a1e0d5-be57-4f41-85ee-0c07a38901cb,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 71ac1af9-7420-40c3-b352-8a9e7fbf118b,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 737f4949-255a-43c6-ad6d-2aef14ddfac2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 7383d16b-4d6b-401b-b8f8-75243a5f5745,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 7421e324-59b1-4d9b-8f20-a3cbc9d7eeb4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 748efc46-cca5-45c9-990c-bfe98ff5dd84,
+    MasterGameID: 77e4d021-06ee-48d4-b4b8-6409a37b86ec,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 3,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 75512fe4-33e5-4a9a-8880-401e08703d53,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 75806990-ef75-4e0e-80f8-0d7fce1e9f55,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 8,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 76b161a9-0052-4c3d-ac34-e8e8bca0118b,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 4,
+    RemovedNote: Conditionally dropped while picking up: Tekken 8
+  },
+  {
+    PublisherID: 78acb294-4856-4d16-82e7-1580e460ea25,
+    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 7,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 78ddafb2-e9d0-4f15-9868-b5ccbe8d88f3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 79ccccd1-f73a-476a-86a3-2de44a6cd045,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 7b6d4537-5e35-4727-a9e4-b1462bed95d8,
+    MasterGameID: dfafdfc8-bf29-466d-a47e-18aaf6f24697,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 7,
+    RemovedNote: Conditionally dropped while picking up: Stray Gods: The Roleplaying Musical
+  },
+  {
+    PublisherID: 7c6e489e-c36d-4447-823e-b311c3f3694c,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Disney Illusion Island
+  },
+  {
+    PublisherID: 7c6e489e-c36d-4447-823e-b311c3f3694c,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 7deaaecc-e6c1-4f08-bc86-d032cca691db,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Exoprimal
+  },
+  {
+    PublisherID: 7f23ea32-4674-482b-9102-265b6e7ecd57,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 7f9cc691-667f-4a37-93a3-6c27ac1e6a23,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 80265be3-4b15-4e5f-bfbd-2ab66a914694,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 810a5c77-b8ac-43ad-bbd1-30a6f10a31d5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 820e149d-e4fb-4993-8dd5-3b5c633f120c,
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Redfall
+  },
+  {
+    PublisherID: 853f3648-cd6e-45cc-8935-a158a31c0c5d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8558eb8f-62c4-413c-a285-28a404a7573d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8746c52a-9d4f-4e3a-8112-90e684efbdb3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 87527220-4fc1-4105-a898-c525ccc4cd05,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Mina the Hollower
+  },
+  {
+    PublisherID: 8755c622-4185-45a7-afe6-b4527514563d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 87568b30-972b-472a-8261-d6ecc34b1168,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
+    MasterGameID: d228e436-ac5e-4f52-bcac-b7311c9fd177,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 87ce1324-3b85-4163-9ea5-7e6f66d98fcb,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 16,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8a65bce5-e401-4027-98db-438b18e510c3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 15,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8c01a6b9-aa36-4582-9505-7de8f31e28ef,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8ed16809-54de-4aa9-93a6-39cdf2e14377,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 2,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8ef8577b-9e8b-4e59-b456-54a9ef1c7cb8,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 8fe77b38-059f-4bae-98fc-4e7b6c524b4d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Stellar Blade
+  },
+  {
+    PublisherID: 90361dc0-df0c-4daa-bd3f-79252706d6f1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 91612923-511b-40a1-9c52-8cab40463d0b,
+    MasterGameID: cda341b4-ca23-419c-92de-24d4197496d9,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Honkai: Star Rail
+  },
+  {
+    PublisherID: 950a272f-caa6-4a83-a621-c502baf00e0b,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 966c5c80-b311-45b0-a037-dd4777cd4aba,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 97756168-997b-43ce-b724-e0a0e0c820e6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9911d402-4a0a-4fdd-b937-59093541bf6f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9abe21b0-a8eb-4345-955e-effa01128d71,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9abe21b0-a8eb-4345-955e-effa01128d71,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9acb8d84-fc84-487d-811a-bc5015a646b5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9ae80957-50ae-42ba-ab07-20a8ffe9feb0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9b2678a8-4203-470f-adb9-1ea4a9733cc1,
+    MasterGameID: 51982dd9-b66d-43cb-83fc-eb991b645070,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9b437a78-629d-4756-8bef-a49c23b06ba7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9c68da25-6776-46ab-a042-cfdaefb60e85,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9dcdba4c-18d5-48eb-b44b-579796dbd580,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 9ea02c4f-adeb-4255-a657-95cb59228430,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: a06c505b-8a22-407b-9f40-0a134c80696b,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: a1589eea-238d-4454-aab3-c997ee14adcd,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: a363f337-8144-43a8-92af-2be88f7a9f28,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: 20,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: a5f181c6-2251-49b9-abd3-cea9ac1962ef,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: a7502610-bbb0-4be6-ba75-ce5705047557,
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 11,
+    RemovedNote: Conditionally dropped while picking up: Immortals of Aveum
+  },
+  {
+    PublisherID: a8876241-5b1b-42c6-b76f-f5c6809928a7,
+    MasterGameID: a5ba16b1-7269-4788-afee-0d782df4b0b9,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 2,
+    RemovedNote: Conditionally dropped while picking up: Rift of the NecroDancer
+  },
+  {
+    PublisherID: a89f5a32-bfe5-47a7-b24f-7ffb41ea622d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: a8e60b54-fca7-4a28-844e-647925135395,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: a9cc71d4-4eb6-469e-a3a4-7680a1a9c2f0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: aa3537d1-c1a1-41c1-894f-4445bc7ed676,
+    MasterGameID: 12323b7f-5018-4c28-9140-def4d4a8d61a,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ac5f7beb-8b09-45ea-88e7-3ad87bfd25e9,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ad86c04c-3a76-4d83-97a7-52acfb7ff1aa,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ae075508-ebd9-4406-9d8c-22b6cf7af4fe,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ae075508-ebd9-4406-9d8c-22b6cf7af4fe,
+    MasterGameID: 65245876-fc34-415d-89f6-f8a637e75d94,
+    CounterPick: false,
+    SlotNumber: 19,
+    BidAmount: 6,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ae33965a-21a8-4d07-8017-9d518a38fb4e,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: aec64958-5428-457d-912d-68b338edaef2,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b24ec7c9-eb92-44f0-bbdc-354f041fc306,
+    MasterGameID: 83d70244-13de-43b5-a821-55ee0c535e9b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 3,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b3810180-e74b-44ad-b021-3fc912c54642,
+    MasterGameID: b40d9a56-9173-487b-9451-e88a9d741420,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 10,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b642b96e-8b40-46c7-884a-5a6dc80bf761,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b7e1cdf2-a27c-48f9-a2b3-b4698b3c2cef,
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 10,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b8462dbe-846f-4b86-b970-755deba9a0da,
+    MasterGameID: ae88b95e-94f9-413c-9aa4-33842c44aa51,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 3,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b94bf813-b413-4382-8329-556149995aa1,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 2,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b95347d9-76a1-46a1-abb2-b8d22d45515d,
+    MasterGameID: 4f359243-1a0b-4e69-bf46-dd8f1726d2f8,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: b9aa6ee3-a0e5-4f59-909c-cf7e3170d4f5,
+    MasterGameID: 35d4a7fd-a34c-4dcb-981e-80fd6068c912,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ba8f9bba-30c2-4ce0-8399-270443527e5e,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 5,
+    RemovedNote: Conditionally dropped while picking up: Cities: Skylines II
+  },
+  {
+    PublisherID: bc30f23e-da24-4982-8e6e-8915da7f9a5b,
+    MasterGameID: 28e2cb97-8968-47a4-bd54-f227086f0cfc,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: 0,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: bd24d835-d4c2-472c-9559-88e1cb24709f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: bdf18122-d871-42d1-9da2-0aac2ecae79a,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: be292e77-eae8-4886-891d-633bb8f887fc,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 9,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: c03913eb-5c8e-46b4-b532-52c936e366ff,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: c069fc75-d9d9-443f-ad7b-46fdea7d6a5b,
+    MasterGameID: 51982dd9-b66d-43cb-83fc-eb991b645070,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: c219cbf6-a2a0-49b4-bc4f-93b2aff9df87,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 0,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: c3c4d152-5add-46d4-9d18-1cd430f9cded,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: c6afba17-ca3d-4fd6-9e7f-39b0e31d7848,
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: 2,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: c9d8a1d4-1404-4fa8-b8f4-5ffd95c26fbe,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cb013fb2-39c4-4360-a34d-49bec5d6bf28,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cb5a0ebe-2c04-4518-a959-bfeaf8d53ebf,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cb99a63f-3d54-4bef-9d32-ee3f873990b6,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cbe20572-3f99-42e5-a7c6-2fe5d56babff,
+    MasterGameID: 12323b7f-5018-4c28-9140-def4d4a8d61a,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cbe20572-3f99-42e5-a7c6-2fe5d56babff,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 0,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cc55f5f7-cba2-45c0-90ad-46e29401a03f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cc8b86c7-f08f-414a-bf00-ac2ca71bbc7e,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cdaa4a84-1ddf-4b58-8595-96f6b8e3ae36,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: cf7840ce-4d15-4e62-9d64-17fe4a85b3a5,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d1bd5df9-8ddc-459a-9818-accc40a8ef78,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d2404b0c-4f38-4a28-8db1-ab62286ad1bb,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d2ebbbb6-d148-459c-9b71-33439bbca9af,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d4b87ce3-40ad-42f8-a486-f9dda32f7a96,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d4cc365b-32f1-45ac-a9ed-55f61e0f8a3f,
+    MasterGameID: 9c9da853-9228-4712-beff-66305e1eae28,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 10,
+    RemovedNote: Conditionally dropped while picking up: Crash Team Rumble
+  },
+  {
+    PublisherID: d516e624-cb48-48d9-a664-ac38fbb25f8f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d5758b58-68a4-4631-9fe1-56f6feafca59,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 0,
+    RemovedNote: Conditionally dropped while picking up: Anger Foot
+  },
+  {
+    PublisherID: d76c4ddc-984e-4697-b9f1-61b18cef9729,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d7717456-679c-4ede-8ced-f458bfc2a27a,
+    MasterGameID: a7c1de72-1581-4394-82bf-fd0f26b135a6,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Stray Gods: The Roleplaying Musical
+  },
+  {
+    PublisherID: d93eb28b-5b09-42c4-8166-584166bb6ae0,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: d9a829ea-658b-4a2b-a1ff-1ca67080ec73,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: db8ddedb-f8aa-4ca9-9017-1e188191d0d3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: dbfe8b90-9fed-4bcd-830b-7be3474a1546,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: dc27145b-af94-486c-9688-35a0c58b3bdc,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: dc6e5a70-8022-4999-9666-74d096f864fb,
+    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Metal Slug Tactics
+  },
+  {
+    PublisherID: dd476fad-c775-4134-8893-a015b31625c1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: dde3b983-0a02-497b-865d-72dc933aaf6f,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Nine Sols
+  },
+  {
+    PublisherID: de03c9d4-2949-4ed3-b232-8c71b6821929,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: dea0c82c-7e44-46ad-a200-9c4a03d9445d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 3,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: df7732bd-cab7-427b-ac09-395a6ee98364,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: e0f0df92-e555-4ea3-9758-128a2ffcd076,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: e529a337-af2d-4c2d-8ebb-e2cceefbdae1,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 0,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Warhammer 40,000: Space Marine 2
+  },
+  {
+    PublisherID: e529a337-af2d-4c2d-8ebb-e2cceefbdae1,
+    MasterGameID: 83d70244-13de-43b5-a821-55ee0c535e9b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Tekken 8
+  },
+  {
+    PublisherID: e529a337-af2d-4c2d-8ebb-e2cceefbdae1,
+    MasterGameID: c17375cc-11fa-497d-aa2f-ffff58c3c783,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: LEGO 2K Drive
+  },
+  {
+    PublisherID: e6c9483d-9905-4aeb-80d2-5b29bb8d8804,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 6,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: e8db9928-8722-487a-bfb8-9af32c99a23a,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: eabf6c28-3bd6-4e72-bd65-aa10159dfa72,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: eadceb32-d97c-489d-b580-f2c0111e8511,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: eb7b5ffd-9576-497a-8f5b-2206372c2547,
+    MasterGameID: 71db9489-6a05-44e8-998c-51a2bcdea93b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ec9c0242-5390-47ba-9f02-637bddde2572,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ee9b0331-d457-4cc8-9446-0cd19f0ead11,
+    MasterGameID: 37a23837-7636-4c6f-aa88-495b73cf8001,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 4,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ef0cbed9-983f-4aa3-bb98-a72a53f9c0e3,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f036ce4c-1f33-48ee-a8cf-d9847b44c6e3,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f0a0012f-bd5a-43cc-9e4f-31e9e1c3f8f7,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f0dfdf83-11db-4e0c-ad20-3e438b57459b,
+    MasterGameID: e0f1c6ef-dd9c-41fe-acfe-c65c9fc11f5d,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f1f9e94c-fd20-46dd-97d0-de3ae5fd3537,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 0,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f3106986-d414-4d37-a504-18c76a9223e9,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f528a306-eca8-4917-9c31-d25858a262b2,
+    MasterGameID: a36c2bac-a69a-46e4-b1e1-745bc6d7125c,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f814c54c-4251-4e7d-843a-4fd3873f86c5,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f97188e9-a511-49c5-bbcd-8dbe0e49dd8c,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f9914320-d8ac-4b53-9645-ff1881e66304,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 11,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: f994d9de-1d25-4846-86d0-8c590a2a14fd,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 1,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: fb429305-468b-4474-8238-8d49a9d7c481,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: 14,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: fb6ac2f2-8137-45b7-ad6e-f505d0930ff9,
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 1,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: fc0a9528-4fec-496a-9626-09fefc4e9973,
+    MasterGameID: e33c05d9-893a-404b-ae3d-fc3a2ebf4760,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: fc55b203-c566-43bd-97bb-bafb4ef1e8d4,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 10,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: fcfe0358-11df-4017-89ae-422ab5e5e34a,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Remnant 2
+  },
+  {
+    PublisherID: fd16a274-0adb-4f7d-afaa-7512ba37d4fa,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: fd53ad5c-c201-4abe-b20f-27dd198c19fb,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 3,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ff438b05-62f5-4959-9a56-704664e0738d,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 4,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: ff5f7747-01ae-41c7-b298-49a8115cfc04,
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    CounterPick: false,
+    SlotNumber: 7,
+    BidAmount: 5,
+    RemovedNote: Dropped by player
+  }
+]

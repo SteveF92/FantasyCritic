@@ -79,7 +79,7 @@ public class ExternalLoginModel : PageModel
         }
 
         // Sign in the user with this external login provider if the user already has a login.
-        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true, bypassTwoFactor: true);
         if (result.Succeeded)
         {
             _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
@@ -129,7 +129,7 @@ public class ExternalLoginModel : PageModel
                     var confirmLink = await LinkBuilder.GetConfirmEmailLink(_userManager, fullUser, Request);
                     await _emailSendingService.SendConfirmationEmail(fullUser, confirmLink);
 
-                    await _signInManager.SignInAsync(fullUser, isPersistent: false, info.LoginProvider);
+                    await _signInManager.SignInAsync(fullUser, isPersistent: true, info.LoginProvider);
 
                     return LocalRedirect(returnUrl);
                 }
