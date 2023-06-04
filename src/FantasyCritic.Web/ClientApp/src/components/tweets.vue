@@ -1,12 +1,13 @@
 <template>
   <div class="tweet-area">
     <div class="tweet-timeline">
-      <Timeline :id="'fantasy_critic'" :source-type="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" />
+      TWEETS!
+      <!-- <Timeline :id="'fantasy_critic'" :source-type="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" /> -->
     </div>
   </div>
 </template>
 
-<script>
+<!-- <script>
 import { Timeline } from 'vue-tweet-embed';
 
 export default {
@@ -14,7 +15,7 @@ export default {
     Timeline
   }
 };
-</script>
+</script> -->
 
 <style scoped>
 .tweet-area {

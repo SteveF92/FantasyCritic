@@ -5,7 +5,7 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 //import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
 //import * as rules from 'vee-validate/dist/rules';
 //import en from 'vee-validate/dist/locale/en.json';
-import VueGtag from 'vue-gtag';
+//import VueGtag from 'vue-gtag';
 // import VueClipboard from 'vue-clipboard2';
 
 import App from './App.vue';
@@ -20,7 +20,7 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './ico
 // import 'flatpickr/dist/flatpickr.css';
 // import vueAwesomeCountdown from 'vue-awesome-countdown';
 
-import BasicMixin from './mixins/basicMixin';
+//import BasicMixin from './mixins/basicMixin';
 
 // VueClipboard.config.autoSetContainer = true;
 
@@ -37,7 +37,7 @@ app.use(store);
 //app.component('ValidationProvider', ValidationProvider);
 //app.component('ValidationObserver', ValidationObserver);
 
-app.mixin(BasicMixin);
+//app.mixin(BasicMixin);
 
 // extend('required', {
 //   ...rules.required
@@ -72,13 +72,13 @@ app.mixin(BasicMixin);
 //   en
 // });
 
-app.use(
-  VueGtag,
-  {
-    config: { id: 'UA-131370681-1' }
-  },
-  router
-);
+// app.use(
+//   VueGtag,
+//   {
+//     config: { id: 'UA-131370681-1' }
+//   },
+//   router
+// );
 
 // Registration of global components
 app.component('FontAwesomeIcon', FontAwesomeIcon);
