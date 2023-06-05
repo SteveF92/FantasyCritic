@@ -15,7 +15,7 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item :to="{ name: 'howtoplay' }">
+        <!-- <b-nav-item :to="{ name: 'howtoplay' }">
           <font-awesome-icon class="topnav-icon" icon="book-open" size="lg" fixed-width />
           <span class="full-nav">How to Play</span>
         </b-nav-item>
@@ -33,17 +33,17 @@
         <b-nav-item :to="{ name: 'faq' }">
           <font-awesome-icon class="topnav-icon" icon="question-circle" size="lg" fixed-width />
           <span class="full-nav">FAQ</span>
-        </b-nav-item>
+        </b-nav-item> -->
 
         <b-nav-item :to="{ name: 'about' }">
           <font-awesome-icon class="topnav-icon" icon="info-circle" size="lg" fixed-width />
           <span class="full-nav">About</span>
         </b-nav-item>
-
+        <!-- 
         <b-nav-item :to="{ name: 'discordBot' }">
           <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="topnav-icon" fixed-width />
           <span class="full-nav">Discord Bot</span>
-        </b-nav-item>
+        </b-nav-item> -->
 
         <b-nav-item :to="{ name: 'contact' }">
           <font-awesome-icon class="topnav-icon" icon="envelope" size="lg" fixed-width />
@@ -55,10 +55,10 @@
           <span class="full-nav">Store</span>
         </b-nav-item>
 
-        <b-nav-item :to="{ name: 'fantasyCriticPlus' }">
+        <!-- <b-nav-item :to="{ name: 'fantasyCriticPlus' }">
           <img class="fc-plus-icon topnav-icon" src="@/assets/plus.svg" />
           <span class="full-nav">Plus</span>
-        </b-nav-item>
+        </b-nav-item> -->
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->

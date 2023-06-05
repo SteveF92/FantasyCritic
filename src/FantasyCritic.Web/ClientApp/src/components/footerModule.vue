@@ -6,7 +6,7 @@
           <img src="@/assets/logo-white.png" />
         </div>
         <div col-lg-4 col-md-6>
-          <div>
+          <!-- <div>
             <router-link :to="{ name: 'howtoplay' }" title="How To Play">
               <font-awesome-icon icon="book-open" size="lg" fixed-width />
               <span class="full-nav">How to Play</span>
@@ -23,31 +23,31 @@
               <font-awesome-icon icon="question-circle" size="lg" fixed-width />
               <span class="full-nav">FAQ</span>
             </router-link>
-          </div>
+          </div> -->
           <div>
             <router-link :to="{ name: 'about' }" title="About">
               <font-awesome-icon icon="info-circle" size="lg" fixed-width />
               <span class="full-nav">About</span>
             </router-link>
           </div>
-          <div>
+          <!-- <div>
             <router-link :to="{ name: 'discordBot' }" title="Discord Bot">
               <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="topnav-icon" fixed-width />
               <span class="full-nav">Discord Bot</span>
             </router-link>
-          </div>
+          </div> -->
           <div>
             <a href="https://store.fantasycritic.games" target="_blank">
               <font-awesome-icon icon="cart-shopping" size="lg" fixed-width />
               <span class="full-nav">Store</span>
             </a>
           </div>
-          <div>
+          <!-- <div>
             <router-link :to="{ name: 'fantasyCriticPlus' }" title="Fantasy Critic Plus">
               <img class="fc-plus-nav" src="@/assets/plus.svg" />
               <span class="full-nav">Fantasy Critic Plus</span>
             </router-link>
-          </div>
+          </div> -->
         </div>
         <div col-lg-4 col-md-6>
           <div>

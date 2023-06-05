@@ -20,7 +20,7 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './ico
 // import 'flatpickr/dist/flatpickr.css';
 // import vueAwesomeCountdown from 'vue-awesome-countdown';
 
-//import BasicMixin from './mixins/basicMixin';
+import BasicMixin from './mixins/basicMixin';
 
 // VueClipboard.config.autoSetContainer = true;
 
@@ -37,7 +37,7 @@ app.use(store);
 //app.component('ValidationProvider', ValidationProvider);
 //app.component('ValidationObserver', ValidationObserver);
 
-//app.mixin(BasicMixin);
+app.mixin(BasicMixin);
 
 // extend('required', {
 //   ...rules.required
