@@ -12980,7 +12980,7 @@
     MasterGameID: 20b50459-74ff-4a3d-9ffb-b1c335c11cb3,
     GameName: Rollerdrome,
     CounterPick: false,
-    SlotNumber: 22,
+    SlotNumber: 21,
     BidAmount: 6
   },
   {
@@ -12988,7 +12988,7 @@
     MasterGameID: bf655276-cbfc-4375-a89f-2ed857167722,
     GameName: Melatonin,
     CounterPick: false,
-    SlotNumber: 21,
+    SlotNumber: 22,
     BidAmount: 2
   },
   {

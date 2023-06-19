@@ -13425,8 +13425,8 @@
   },
   {
     PublisherID: 8d464a47-8423-41fb-a1d3-1a271b882c21,
-    MasterGameID: 02db557e-bab3-450d-bcda-68dd1506be91,
-    GameName: SteamWorld Build,
+    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
+    GameName: Cities: Skylines II,
     CounterPick: false,
     SlotNumber: 10,
     BidAmount: 0

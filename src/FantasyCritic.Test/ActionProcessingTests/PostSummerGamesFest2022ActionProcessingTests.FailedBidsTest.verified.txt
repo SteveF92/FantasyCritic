@@ -2326,8 +2326,8 @@
     GameName: Pentiment,
     BidAmount: 12,
     ProjectedPointsAtTimeOfBid: 56.055277633946334782608695651,
-    FailureReason: Not enough budget.,
-    Outcome: Not enough budget.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 64fbba18-f23b-4009-99c6-693ac7089c78,
@@ -4876,8 +4876,8 @@
     GameName: Pentiment,
     BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 77.6587122767058,
-    FailureReason: No roster spots available. Attempted to conditionally drop game: Senua's Saga: Hellblade 2 but failed because: Cannot drop a game that you do not have,
-    Outcome: No roster spots available. Attempted to conditionally drop game: Senua's Saga: Hellblade 2 but failed because: Cannot drop a game that you do not have
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: cc1d7a03-1afb-4a4a-88f6-6820a84b8e71,

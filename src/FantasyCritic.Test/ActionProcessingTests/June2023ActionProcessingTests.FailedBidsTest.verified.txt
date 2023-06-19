@@ -246,8 +246,8 @@
     GameName: Little Devil Inside,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 126.62230821345646842105263158,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 05f15507-72b9-4ddd-8ba9-6f486bbff220,
@@ -1520,16 +1520,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: 266fca3e-7e99-448a-aed3-40812c8c2f41,
-    PublisherID: 8d464a47-8423-41fb-a1d3-1a271b882c21,
-    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
-    GameName: Cities: Skylines II,
-    BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 142.8696382776975,
-    FailureReason: No roster spots available. Attempted to conditionally drop game: Pepper Grinder but failed because: Cannot drop a game that you do not have,
-    Outcome: No roster spots available. Attempted to conditionally drop game: Pepper Grinder but failed because: Cannot drop a game that you do not have
-  },
-  {
     BidID: 26b0f31d-016e-4019-a591-0c8fdc60b9aa,
     PublisherID: 441d2e80-95c3-4be7-9858-e5806f48e3b3,
     MasterGameID: 83d70244-13de-43b5-a821-55ee0c535e9b,
@@ -1746,8 +1736,8 @@
     GameName: Lords of the Fallen,
     BidAmount: 6,
     ProjectedPointsAtTimeOfBid: 80.6666256773670,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 2a64e3a8-1f11-41d5-b08c-4561b39d7b44,
@@ -2336,8 +2326,8 @@
     GameName: Lords of the Fallen,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 133.8406444463391,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 399adf6a-cfb9-47de-b94d-ca5be024f4af,
@@ -2850,6 +2840,16 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: 463c7920-f183-4381-a20f-812ded51f8cb,
+    PublisherID: 8d464a47-8423-41fb-a1d3-1a271b882c21,
+    MasterGameID: 02db557e-bab3-450d-bcda-68dd1506be91,
+    GameName: SteamWorld Build,
+    BidAmount: 0,
+    ProjectedPointsAtTimeOfBid: 142.8696382776975,
+    FailureReason: No roster spots available. Attempted to conditionally drop game: Pepper Grinder but failed because: Cannot drop a game that you do not have,
+    Outcome: No roster spots available. Attempted to conditionally drop game: Pepper Grinder but failed because: Cannot drop a game that you do not have
+  },
+  {
     BidID: 47034d5d-2832-4c17-8e18-03b520d5bea3,
     PublisherID: 2ad09cf8-6845-47e0-8f7e-5644424d1db6,
     MasterGameID: 64b7d48d-37da-44e1-8450-6aaa001aca16,
@@ -3006,8 +3006,8 @@
     GameName: Payday 3,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 46.8863692762396,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 4c12bd5d-1db4-47c2-970b-f32a7488ff72,
@@ -3446,8 +3446,8 @@
     GameName: Cities: Skylines II,
     BidAmount: 61,
     ProjectedPointsAtTimeOfBid: 96.6271429157241,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 58c2b12e-4aa6-493d-bef4-6e5263eaf6a3,
@@ -6316,8 +6316,8 @@
     GameName: Ghostrunner 2,
     BidAmount: 13,
     ProjectedPointsAtTimeOfBid: 48.8017501289189,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: a9d40078-51a4-498e-b75f-c94515f6617d,
@@ -8116,8 +8116,8 @@
     GameName: Shadow Gambit: The Cursed Crew,
     BidAmount: 3,
     ProjectedPointsAtTimeOfBid: 98.9000639453772,
-    FailureReason: Not enough budget.,
-    Outcome: Not enough budget.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: da8d80c4-5bbb-4dd5-9ab4-5183d7cb7bc3,
@@ -9446,8 +9446,8 @@
     GameName: Alan Wake II,
     BidAmount: 4,
     ProjectedPointsAtTimeOfBid: 143.98112464441724285714285715,
-    FailureReason: No eligible roster spots available.,
-    Outcome: No eligible roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: fc4df813-c967-4529-8613-7db06db87422,

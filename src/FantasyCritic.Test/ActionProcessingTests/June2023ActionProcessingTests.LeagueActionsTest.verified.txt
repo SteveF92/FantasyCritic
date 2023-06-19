@@ -3903,7 +3903,7 @@
     LeagueID: 22064816-a106-402c-967d-c3b534fe470e,
     PublisherID: f9aaefe6-61cd-42f3-bd97-ff51e4e8d1e9,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Lords of the Fallen' with a bid of $6. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Lords of the Fallen' with a bid of $6. Failure reason: No roster spots available.
   },
   {
     LeagueID: 22064816-a106-402c-967d-c3b534fe470e,
@@ -4389,7 +4389,7 @@
     LeagueID: 28a8a1d5-0931-4d43-9d37-bc59cf2b602c,
     PublisherID: 04c0390a-cfa7-4804-8e3f-44f46fd6008a,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Alan Wake II' with a bid of $4. Failure reason: No eligible roster spots available.
+    Description: Tried to acquire game 'Alan Wake II' with a bid of $4. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 28a8a1d5-0931-4d43-9d37-bc59cf2b602c,
@@ -5553,13 +5553,13 @@
     LeagueID: 30e48532-8b57-404c-ada0-a0bcdd507938,
     PublisherID: 8d464a47-8423-41fb-a1d3-1a271b882c21,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Cities: Skylines II' with a bid of $0. Failure reason: No roster spots available. Attempted to conditionally drop game: Pepper Grinder but failed because: Cannot drop a game that you do not have
+    Description: Tried to acquire game 'SteamWorld Build' with a bid of $0. Failure reason: No roster spots available. Attempted to conditionally drop game: Pepper Grinder but failed because: Cannot drop a game that you do not have
   },
   {
     LeagueID: 30e48532-8b57-404c-ada0-a0bcdd507938,
     PublisherID: 8d464a47-8423-41fb-a1d3-1a271b882c21,
     ActionType: Pickup Successful,
-    Description: Acquired game 'SteamWorld Build' with a bid of $0. Dropped game 'Pepper Grinder' conditionally.
+    Description: Acquired game 'Cities: Skylines II' with a bid of $0. Dropped game 'Pepper Grinder' conditionally.
   },
   {
     LeagueID: 30e48532-8b57-404c-ada0-a0bcdd507938,
@@ -12831,7 +12831,7 @@
     LeagueID: 77657425-8c6a-4e78-ba5f-1b3fb47bc3ac,
     PublisherID: ce9c093d-b620-40fe-8f32-3c751b480e03,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Payday 3' with a bid of $5. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Payday 3' with a bid of $5. Failure reason: No roster spots available.
   },
   {
     LeagueID: 77657425-8c6a-4e78-ba5f-1b3fb47bc3ac,
@@ -17793,7 +17793,7 @@
     LeagueID: a1d61c2d-bc25-4628-adac-5e181ff41ec7,
     PublisherID: e55b4ccd-14ee-4654-94c8-83c82c899c93,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Ghostrunner 2' with a bid of $13. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'Ghostrunner 2' with a bid of $13. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: a1d61c2d-bc25-4628-adac-5e181ff41ec7,
@@ -17871,7 +17871,7 @@
     LeagueID: a2a48419-78c8-4578-a6d5-e9dc05acc1e6,
     PublisherID: 03c39fc3-fa60-4612-a989-6400e6a3798f,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Shadow Gambit: The Cursed Crew' with a bid of $3. Failure reason: Not enough budget.
+    Description: Tried to acquire game 'Shadow Gambit: The Cursed Crew' with a bid of $3. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: a2a48419-78c8-4578-a6d5-e9dc05acc1e6,
@@ -20745,7 +20745,7 @@
     LeagueID: c0637808-752c-4d84-ab97-f39f5cfaeeb9,
     PublisherID: 52871972-be5b-4aaa-b5dc-e92cc17f1a40,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Little Devil Inside' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire counter pick 'Little Devil Inside' with a bid of $1. Failure reason: No roster spots available.
   },
   {
     LeagueID: c0637808-752c-4d84-ab97-f39f5cfaeeb9,
@@ -25755,7 +25755,7 @@
     LeagueID: f0cb5024-1115-4670-bbd3-aa596a378494,
     PublisherID: 2ad09cf8-6845-47e0-8f7e-5644424d1db6,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Lords of the Fallen' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Lords of the Fallen' with a bid of $1. Failure reason: No roster spots available.
   },
   {
     LeagueID: f0cb5024-1115-4670-bbd3-aa596a378494,
@@ -26679,7 +26679,7 @@
     LeagueID: f7f290a3-e66a-4191-89c2-07ba58972b97,
     PublisherID: 643401e6-18b7-4368-9280-55ffa2492b56,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Cities: Skylines II' with a bid of $61. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'Cities: Skylines II' with a bid of $61. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: f7f290a3-e66a-4191-89c2-07ba58972b97,

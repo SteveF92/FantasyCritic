@@ -6496,6 +6496,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 266fca3e-7e99-448a-aed3-40812c8c2f41,
+    PublisherID: 8d464a47-8423-41fb-a1d3-1a271b882c21,
+    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
+    GameName: Cities: Skylines II,
+    CounterPick: false,
+    Priority: 1,
+    BidAmount: 0,
+    ProjectedPointsAtTimeOfBid: 142.8696382776975,
+    SlotNumber: 10,
+    Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: b9c3cf20-63e6-4f0c-a0d9-21192eb87677,
+    ConditionalDropResult: Success
+  },
+  {
     BidID: 267934b0-5f3e-46c7-9c83-8ac128e826dc,
     PublisherID: 7a3215c0-fba5-4617-82c4-f1b35985f6ea,
     MasterGameID: 1e53a17a-7ec0-4e5b-885c-d4cb273afacf,
@@ -11886,20 +11900,6 @@
     ConditionalDropResult: null
   },
   {
-    BidID: 463c7920-f183-4381-a20f-812ded51f8cb,
-    PublisherID: 8d464a47-8423-41fb-a1d3-1a271b882c21,
-    MasterGameID: 02db557e-bab3-450d-bcda-68dd1506be91,
-    GameName: SteamWorld Build,
-    CounterPick: false,
-    Priority: 2,
-    BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 142.8696382776975,
-    SlotNumber: 10,
-    Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: b9c3cf20-63e6-4f0c-a0d9-21192eb87677,
-    ConditionalDropResult: Success
-  },
-  {
     BidID: 4661f8fb-1930-41c0-8d81-925deb487ca1,
     PublisherID: ea9419e4-e8e4-4b8d-abc7-96d595269350,
     MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
@@ -13085,7 +13085,7 @@
     BidAmount: 13,
     ProjectedPointsAtTimeOfBid: 81.2583227428429,
     SlotNumber: 8,
-    Outcome: This bid was the highest bid.,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
     ConditionalDropResult: Success
   },
@@ -13799,7 +13799,7 @@
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 117.7701656317313,
     SlotNumber: 14,
-    Outcome: No competing bids for this game.,
+    Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -14639,7 +14639,7 @@
     BidAmount: 12,
     ProjectedPointsAtTimeOfBid: 108.7183556769535,
     SlotNumber: 15,
-    Outcome: This bid was the highest bid.,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: e88e1de6-f064-4ca2-96b0-eb8803f24dbf,
     ConditionalDropResult: Failure(Cannot drop a game that you do not have)
   },
@@ -21065,7 +21065,7 @@
     BidAmount: 13,
     ProjectedPointsAtTimeOfBid: 110.16126643864500000000000001,
     SlotNumber: 5,
-    Outcome: No competing bids for this game.,
+    Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -26651,7 +26651,7 @@
     BidAmount: 19,
     ProjectedPointsAtTimeOfBid: 63.399308506220233333333333335,
     SlotNumber: 5,
-    Outcome: No competing bids for this game.,
+    Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -26679,7 +26679,7 @@
     BidAmount: 2,
     ProjectedPointsAtTimeOfBid: 95.31965243198563684210526316,
     SlotNumber: 7,
-    Outcome: This bid was the highest bid.,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -38201,7 +38201,7 @@
     BidAmount: 63,
     ProjectedPointsAtTimeOfBid: 97.9139189266243,
     SlotNumber: 9,
-    Outcome: No competing bids for this game.,
+    Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -39433,7 +39433,7 @@
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 51.5884201299927,
     SlotNumber: 5,
-    Outcome: This bid was the highest bid.,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
     ConditionalDropResult: Success
   },

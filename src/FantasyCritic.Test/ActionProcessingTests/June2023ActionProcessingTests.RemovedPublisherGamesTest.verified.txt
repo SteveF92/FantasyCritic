@@ -4290,7 +4290,7 @@
     CounterPick: false,
     SlotNumber: 10,
     BidAmount: 0,
-    RemovedNote: Conditionally dropped while picking up: SteamWorld Build
+    RemovedNote: Conditionally dropped while picking up: Cities: Skylines II
   },
   {
     PublisherID: 8d6825f2-2e3a-4863-9f2b-8a815f1137aa,
