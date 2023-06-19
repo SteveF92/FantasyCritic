@@ -15,6 +15,8 @@ public class SucceededPickupBid : IProcessedBid
     public string Outcome { get; }
     public decimal ProjectedPointsAtTimeOfBid { get; }
 
+    public override string ToString() => PickupBid.ToString() + "|" + Outcome;
+
     public PickupBid ToFlatBid(Guid processSetID)
     {
         return new PickupBid(PickupBid.BidID, PickupBid.Publisher, PickupBid.LeagueYear, PickupBid.MasterGame,

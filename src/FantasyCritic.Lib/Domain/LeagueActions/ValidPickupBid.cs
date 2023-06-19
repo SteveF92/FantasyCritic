@@ -10,4 +10,6 @@ public class ValidPickupBid
 
     public PickupBid PickupBid { get; }
     public int SlotNumber { get; }
+
+    public override string ToString() => PickupBid.ToString();
 }
