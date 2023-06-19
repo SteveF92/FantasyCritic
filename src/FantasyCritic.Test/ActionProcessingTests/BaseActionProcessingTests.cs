@@ -45,6 +45,7 @@ public abstract class BaseActionProcessingTests
                 x.PickupBid.BidID,
                 x.PickupBid.Publisher.PublisherID,
                 x.PickupBid.MasterGame.MasterGameID,
+                x.PickupBid.MasterGame.GameName,
                 x.PickupBid.CounterPick,
                 x.PickupBid.Priority,
                 x.PickupBid.BidAmount,
@@ -68,6 +69,7 @@ public abstract class BaseActionProcessingTests
                 x.PickupBid.BidID,
                 x.PickupBid.Publisher.PublisherID,
                 x.PickupBid.MasterGame.MasterGameID,
+                x.PickupBid.MasterGame.GameName,
                 x.PickupBid.BidAmount,
                 x.ProjectedPointsAtTimeOfBid,
                 x.FailureReason,
@@ -87,6 +89,7 @@ public abstract class BaseActionProcessingTests
                 x.DropRequestID,
                 x.Publisher.PublisherID,
                 x.MasterGame.MasterGameID,
+                x.MasterGame.GameName
             })
             .OrderBy(x => x.DropRequestID)
             .ToList();
@@ -102,6 +105,7 @@ public abstract class BaseActionProcessingTests
                 x.DropRequestID,
                 x.Publisher.PublisherID,
                 x.MasterGame.MasterGameID,
+                x.MasterGame.GameName
             })
             .OrderBy(x => x.DropRequestID)
             .ToList();
@@ -116,6 +120,7 @@ public abstract class BaseActionProcessingTests
             {
                 x.PublisherID,
                 x.MasterGame!.MasterGame.MasterGameID,
+                x.MasterGame!.MasterGame.GameName,
                 x.CounterPick,
                 x.SlotNumber,
                 x.BidAmount
@@ -136,6 +141,7 @@ public abstract class BaseActionProcessingTests
             {
                 x.PublisherGame.PublisherID,
                 x.PublisherGame.MasterGame!.MasterGame.MasterGameID,
+                x.PublisherGame.MasterGame!.MasterGame.GameName,
                 x.PublisherGame.CounterPick,
                 x.PublisherGame.SlotNumber,
                 x.PublisherGame.BidAmount,

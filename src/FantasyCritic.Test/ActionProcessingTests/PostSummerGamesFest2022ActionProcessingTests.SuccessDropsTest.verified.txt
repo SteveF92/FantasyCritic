@@ -2,3091 +2,3709 @@
   {
     DropRequestID: 005332bb-1d8c-4a7d-971d-31b7ddab082b,
     PublisherID: 97fc9713-318d-48f7-98c3-f0ff317a2bf3,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 007dc965-ca9d-40ca-b081-ec78b5fc58e5,
     PublisherID: 8c6038c2-5e0b-4cea-aaf6-14f31c533e82,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 009fd939-f325-4c5a-9cb8-d3f57eadffb9,
     PublisherID: ddabfffd-4a1c-40b2-a2ac-c26bd84764e0,
-    MasterGameID: 20b50459-74ff-4a3d-9ffb-b1c335c11cb3
+    MasterGameID: 20b50459-74ff-4a3d-9ffb-b1c335c11cb3,
+    GameName: Rollerdrome
   },
   {
     DropRequestID: 0131cd6b-4178-42ab-8a31-bf5842acb5d4,
     PublisherID: 9488b3b2-c791-4da1-be0e-fe68c47d247f,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 026d011b-d917-400f-b122-1b133bed6525,
     PublisherID: 6cfc5f23-4476-4191-aa1c-448721f4425e,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 0315565f-574b-4a2a-b61d-2da5c2779aa8,
     PublisherID: cb258c75-1ad4-4077-be39-9361ec2c3d0c,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 03c00950-0956-48a2-97c5-57d15a4462ca,
     PublisherID: bcd17b41-3161-4d46-bea9-398c1e94bcba,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 0455c2b1-f5f3-4991-9273-62d7e00baaa5,
     PublisherID: 658a27ea-f24e-475d-8d83-a1cc6bbb1dae,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 04888fe5-08dc-4009-a1e6-1e3009887d95,
     PublisherID: 2723aa58-126a-4edb-b17b-101539a851c4,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 0615d97e-4f48-4448-9d5e-d49310d080cc,
     PublisherID: 047468bf-a50e-47ba-a9cf-e7ca13f7b534,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 061c831f-df1b-4142-a76e-8aff53ab355e,
     PublisherID: e8b9079f-7db5-4432-ac0f-052c9f8e4d55,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 06ccc3f1-f653-46f0-ad39-acd33d7632bc,
     PublisherID: 9f6f39a7-5d4f-41ab-ac6f-67d712c0ec99,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 06e786e4-5835-4758-b9d5-585799f4bfcd,
     PublisherID: a9bc3d5d-92e3-4e22-a92b-839c6f28bd01,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 0727f57e-8f7d-44fc-92ff-323ae690f2a2,
     PublisherID: 6d554f5f-cda8-4427-81f3-cb9251dba06a,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 07e3efd2-c2b1-480a-8001-0dfaf8c1c1d0,
     PublisherID: 402a74e9-4691-4a1c-b024-1cfe904b6aec,
-    MasterGameID: 9907b22d-462a-48b4-aee8-9c0d8a34c063
+    MasterGameID: 9907b22d-462a-48b4-aee8-9c0d8a34c063,
+    GameName: Avowed
   },
   {
     DropRequestID: 091774a0-95e9-47c3-9d4e-a78e2fdd80ce,
     PublisherID: 40a1ffe4-eb07-4f3f-bf60-18a9a78239d1,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 0972ca90-084e-4776-880c-20561b9e5d0f,
     PublisherID: 27a2a136-76f2-4063-8998-ce508c03ba9e,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 0a374e0a-3336-4f71-8c3a-27e2933475d0,
     PublisherID: bd052ab3-cd5a-4bbd-b09b-0c61fb86fb84,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 0af06cc9-555e-49c4-b33c-c54ada535108,
     PublisherID: 08f06ce8-38d3-4ba1-a180-c062a5dba0dd,
-    MasterGameID: 842252c8-e318-4ccb-9837-25908540f81b
+    MasterGameID: 842252c8-e318-4ccb-9837-25908540f81b,
+    GameName: Fable (Xbox Series X)
   },
   {
     DropRequestID: 0b2c6a19-4dce-43aa-823e-54de658a8bbe,
     PublisherID: 1858370b-5631-4a07-aedf-add9c6f70068,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 0b7e7643-9d58-41e7-a3dc-31964ef8d6c4,
     PublisherID: 7c831dfe-fe65-4d44-9e94-3724466c235b,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 0b809975-e974-4902-842b-6df4b1223837,
     PublisherID: 1ad9f3ef-3e8f-42e8-8997-6faef438fe0f,
-    MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02
+    MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02,
+    GameName: Dragon Quest III HD-2D
   },
   {
     DropRequestID: 0bc16256-153f-4fec-9ab8-9853aac7f889,
     PublisherID: 7f9f80ce-e2c5-45f8-898d-c09fbe7e7a2c,
-    MasterGameID: 6a2eb08b-fdc9-4f58-9c7c-0b8b696db89f
+    MasterGameID: 6a2eb08b-fdc9-4f58-9c7c-0b8b696db89f,
+    GameName: Gotham Knights
   },
   {
     DropRequestID: 0c0aa352-71fc-4f2e-b555-c04d046ccbce,
     PublisherID: a0ed8160-5689-40e6-9d1b-9a65a06db891,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 0c3cc050-b667-4b14-9272-ea3cb07a26c4,
     PublisherID: 7d796e05-b1fd-48ff-b897-30d021d151a8,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 0cefb616-87c0-40f4-87e4-5384cb9694be,
     PublisherID: aee355ac-7cc6-4a4c-8376-529c47b10b26,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 0dab9d9e-af69-4ef8-9af8-229bdeba0349,
     PublisherID: 53f60e67-ecad-40e6-98a5-2b2a5584d103,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 0dd616c8-bd64-41ce-abf4-d7a407bea21a,
     PublisherID: eb405e1e-6451-414a-9827-4c2faf129692,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 0e17dce2-b086-413a-aac9-c754882fa407,
     PublisherID: 660453b0-4b27-48ec-9e4a-700e96cd11b9,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 0e87b8e2-0a33-4a63-85a7-1d7c46fffdf9,
     PublisherID: 7b6f3d28-38d5-4635-98c5-1c89f04674c3,
-    MasterGameID: 4a0abbc6-c413-49dc-8f6f-3c9b43fa14a3
+    MasterGameID: 4a0abbc6-c413-49dc-8f6f-3c9b43fa14a3,
+    GameName: Prince of Persia: The Sands of Time Remake
   },
   {
     DropRequestID: 0eae4107-ccbe-4814-bf8b-afb72a090a96,
     PublisherID: ef1f2b90-9a8d-43ef-9b6f-faf5912b51d5,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 0fe521c6-2a62-48e3-b6fe-302f73cdea34,
     PublisherID: 6dacbcb8-9fe2-48e2-b5aa-af513a7c32ed,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 0ff477d4-bf10-4f1b-af6f-3e68ed6cf133,
     PublisherID: 50511ae9-ddce-4cf1-9326-9ff1e40608f9,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 102b3ed4-6c84-4539-9c4a-9811d2f0cb46,
     PublisherID: 6380a4ac-3ecf-47f8-891a-a3fe8a64582c,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 10b73a1d-44fd-48f5-b33d-d201f62b4019,
     PublisherID: 09729548-7261-4e4f-a6a3-b8bf7e687865,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 10b799ba-7223-4eca-870a-ffdd51654cd0,
     PublisherID: aa3103c2-5d9b-4e59-b713-1f70ea1a6d69,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 10c8b9b3-3c7a-401b-8354-d97bbfb775d7,
     PublisherID: 9fb1b668-571f-4165-8d07-64fa273c28af,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 10e2a23f-dde8-48ea-8a33-0ff1705883be,
     PublisherID: b5eeb5ca-2433-45ab-a481-d54393c7b65a,
-    MasterGameID: 039a4008-7aed-470c-acbb-1b570fa6ebd9
+    MasterGameID: 039a4008-7aed-470c-acbb-1b570fa6ebd9,
+    GameName: Have a Nice Death
   },
   {
     DropRequestID: 11394b51-0f6a-45b3-82d6-214bdfaac4c8,
     PublisherID: eef4e5c0-1e6b-4e7f-83b5-d7a77f11a2e4,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 12d41e75-17c4-4760-8b48-f1f1655d7658,
     PublisherID: 3619636c-106e-48fb-8161-9bb97aba9e9d,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 130c11ae-bef9-4687-87a8-c606358f696b,
     PublisherID: 93187c62-3c44-41a2-af2b-e4c06b3510a4,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: 1325032b-9643-43a6-a8e0-78b5b242e3c5,
     PublisherID: a5654670-9d88-4d49-9baa-eb581db411d0,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 13362d6e-a06d-4765-b70a-12eedb61754a,
     PublisherID: 9b115914-8668-4580-b6be-5eb2661f7bb7,
-    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13
+    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
+    GameName: Lord of the Rings: Gollum
   },
   {
     DropRequestID: 1337452e-aaac-4eb9-bc60-d3f6278b4e53,
     PublisherID: d3fe6992-e969-4f79-8345-0e1f731184aa,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 13920032-265c-4f69-8372-d9c41a0fd1db,
     PublisherID: 39ba38f6-5bcf-40c9-a8cc-4c737a6f0c7f,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 13fe5928-48cf-4bc6-9086-f42c51d3a855,
     PublisherID: d9aac3ef-c4c4-4daf-9d51-8b4d4c907305,
-    MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666
+    MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
+    GameName: Marvel’s Midnight Suns
   },
   {
     DropRequestID: 140401fe-1e59-4b07-be12-173a00d3c823,
     PublisherID: 37e71d6f-3173-45ce-a86e-6d945545ad35,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 14350113-ebd9-4136-8e4a-5e5dd98f9385,
     PublisherID: ed9f1cff-6353-4a07-9719-d31af08decdd,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 145651a1-8521-452c-9808-309b224ac351,
     PublisherID: 5dcf81b6-7f3a-4c39-8288-59b5a6e1f9d4,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: 149b86c4-d760-4168-a4d3-dd2886834f2d,
     PublisherID: 0a6221b4-fab8-4ea7-93af-4aaeb7f8c1df,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 14ef3d65-da6b-4d7f-b113-1db7a2f603ea,
     PublisherID: 5f3eec20-59ba-4085-adf8-d2820e9c7d34,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 150629d2-90d6-4c25-8300-0eabb92b3ba6,
     PublisherID: bd4abb58-108a-47dc-87c7-10bdc25a1271,
-    MasterGameID: 56456cc9-d23e-4c6e-a28c-853ac6e234dc
+    MasterGameID: 56456cc9-d23e-4c6e-a28c-853ac6e234dc,
+    GameName: The Settlers
   },
   {
     DropRequestID: 154ada4e-19b0-420a-aa3b-f4db58d78297,
     PublisherID: 6133073a-542f-4d8c-94cc-061ae2b01e69,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 155a90ec-5897-421c-81d5-0948ad6bd18f,
     PublisherID: 4a34d39a-f506-4c8b-b54f-b6d095efb873,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 16485c1b-a825-4322-a9be-272fd9d755c2,
     PublisherID: 8a956e4b-f193-4d07-ad89-2e0f855d5949,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 16d50440-dec5-473b-84fe-8529138d6890,
     PublisherID: 3e985eeb-1bb3-4f5a-a6d6-558ee159464f,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 175529f4-7fda-456d-9ef0-72adc9274166,
     PublisherID: 4ad351dd-b6e2-4c37-a9d4-ba9cce61a938,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 17abdc98-d873-4295-a621-bfebe0cc0146,
     PublisherID: d0be96ac-0b5d-4fdc-ad2d-bd6d4b57d14b,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 1829935a-93fb-47e4-8b66-df4aa8adc953,
     PublisherID: 3b5e3b49-ca0e-495e-bad5-f96aaff5ad2f,
-    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7
+    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7,
+    GameName: Somerville
   },
   {
     DropRequestID: 186065a2-8276-4472-a587-22def7047865,
     PublisherID: 4138f72c-f898-4c75-b99a-07c3659cc6d1,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 187e0b6b-5d75-4e28-ada1-805321b77b3d,
     PublisherID: a914c1bb-5384-43b4-b7a7-c6d3cbfed68b,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 18b995b0-da17-4a70-a781-1f970e2d42d1,
     PublisherID: 9ac5af1f-9832-45eb-91d8-de4acdde8fc5,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 18fadee8-4dbe-4df8-85f3-57be9ddf2f52,
     PublisherID: fa14a30b-8a78-4189-a2ae-91dff181f687,
-    MasterGameID: bd675d0a-fc6b-4f1c-9177-08a93d40f326
+    MasterGameID: bd675d0a-fc6b-4f1c-9177-08a93d40f326,
+    GameName: Thirsty Suitors
   },
   {
     DropRequestID: 18fba93e-4589-406b-81d7-31d13fcdcd46,
     PublisherID: 4da26489-c385-4c56-af6d-6d792c053601,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 1985ab0c-1514-48bf-82d8-c7531bbbc80f,
     PublisherID: 476ca9a6-1aaa-436e-99d6-50c81097311e,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 1990bd47-2f67-429c-ae60-7d3ccd32f645,
     PublisherID: e2f52165-151f-4bfb-ba6c-81d41b6feafb,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 19a8f1ee-7bad-47d9-9ff3-6a8eb563e81a,
     PublisherID: 811fbea0-96e0-49ec-9662-33d656b177e2,
-    MasterGameID: 496fc9f9-03d0-4a7b-a3de-2e5528bc88f5
+    MasterGameID: 496fc9f9-03d0-4a7b-a3de-2e5528bc88f5,
+    GameName: Oxenfree 2: Lost Signals
   },
   {
     DropRequestID: 19dedb1c-f91e-4da9-8efc-c9f8d74de261,
     PublisherID: 962881d9-9dfb-4358-a709-2db40cc1e1ef,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: 1a981eca-47e8-40b4-be23-9ec83705e7cb,
     PublisherID: 4896ea0d-bc11-4a26-baed-ef215c94718b,
-    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4
+    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4,
+    GameName: Tchia
   },
   {
     DropRequestID: 1ac95ab7-0733-4619-9dd8-39a1e7a8cfc9,
     PublisherID: 22f76596-3ddf-4818-9eed-5d2c7e6961ff,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 1ae4e98d-d8a8-4f81-bf09-9b816eee3813,
     PublisherID: f2cdddcb-780c-46ae-95d8-16ddc9478e5d,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 1b0f5385-a959-4a30-8474-a081c91429ca,
     PublisherID: 2723aa58-126a-4edb-b17b-101539a851c4,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 1b1a9275-4772-4274-b665-f3305653a657,
     PublisherID: 31c8c1bf-0c61-4ff1-b6ef-c5f9593f7f30,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 1b5e8e8e-76d6-478f-95d6-2c69c4ba7a8d,
     PublisherID: 8b35718e-1809-4dd0-a9d8-37f1d6572e90,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 1b73ed4d-33da-441a-a2e4-1f5511bb8e47,
     PublisherID: 2196b627-61ae-460b-aec7-a060ad91022a,
-    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23
+    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23,
+    GameName: The Invincible
   },
   {
     DropRequestID: 1b825660-127a-4add-97b0-d5c1a046db80,
     PublisherID: c82f6a38-6c9d-4882-ad9b-f02bd0d2b159,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 1b8cd696-5643-4188-9e5f-cfcd274bc260,
     PublisherID: 4f331211-63a0-42f5-a576-6371b4376275,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: 1bac170b-00e7-4642-8a31-6be2c97c33f5,
     PublisherID: 26da4ac4-c1b1-4718-b599-85caec653eb5,
-    MasterGameID: cc46bd71-29aa-429b-a96d-dc8221d736da
+    MasterGameID: cc46bd71-29aa-429b-a96d-dc8221d736da,
+    GameName: Project Belfry (Stoic)
   },
   {
     DropRequestID: 1c119dc5-44c0-40b1-8935-6edaee1592ee,
     PublisherID: f80fb394-0653-43f5-93f3-e3c6fa6156bb,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 1c65dc8c-eb4c-470d-acdb-f8b445e78fa6,
     PublisherID: 1238cb88-fb52-4da4-b7c1-c63e01730668,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 1cb4bced-ab13-46f9-bea6-a9ce83da5c88,
     PublisherID: 262d4b17-885a-4cdc-b7e7-d3231763391f,
-    MasterGameID: 496fc9f9-03d0-4a7b-a3de-2e5528bc88f5
+    MasterGameID: 496fc9f9-03d0-4a7b-a3de-2e5528bc88f5,
+    GameName: Oxenfree 2: Lost Signals
   },
   {
     DropRequestID: 1cd41315-c5d6-4679-a458-6eea5a488a38,
     PublisherID: 26145795-cb67-4ad1-a65f-e6767d1bfe41,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 1d503004-b32b-441f-8e9a-970c0a99df18,
     PublisherID: 79fca0e9-2043-495b-a95d-bb5bed843ba4,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 1ec18ed0-a839-4519-8f6e-38dd653f675a,
     PublisherID: 6aa46bff-2e4d-4888-a50e-e8a215684227,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 1ecba599-01a1-4f77-ad67-5a6235955214,
     PublisherID: 98bdc4ab-03ed-4614-9553-46e5cc503775,
-    MasterGameID: 6a2eb08b-fdc9-4f58-9c7c-0b8b696db89f
+    MasterGameID: 6a2eb08b-fdc9-4f58-9c7c-0b8b696db89f,
+    GameName: Gotham Knights
   },
   {
     DropRequestID: 1eed19b8-56e9-4df3-b214-9b1e7310806a,
     PublisherID: 196b48f7-943f-4c0b-b3d1-39f7233b90d7,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 1f0dd33e-1734-4937-bf83-64813787d9b3,
     PublisherID: 195df74d-986a-4c37-b977-43d97969ff7e,
-    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16
+    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16,
+    GameName: Resident Evil 4 Remake
   },
   {
     DropRequestID: 1f26e385-5fde-47f1-b7d4-44d568b66e3d,
     PublisherID: e278f687-2ae5-4ee9-a451-4c1b4d542917,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 1f753aeb-243b-4ac2-b5fe-f70c5bab3403,
     PublisherID: d3e502dd-d51f-4558-bcc5-c435bc2848d2,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 1f8d2581-372d-49d9-a1b2-3f6bb25000ec,
     PublisherID: 6099e8bb-55ef-43c1-b570-50d61e2de70a,
-    MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5
+    MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5,
+    GameName: Advance Wars 1 + 2: Re-boot Camp
   },
   {
     DropRequestID: 1ff0899f-82a2-47f3-931c-a0b400eca7ad,
     PublisherID: 48b4fb5b-b493-455a-9c78-f03a128e127f,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 20199355-8133-4fdc-9733-cc421fc79fea,
     PublisherID: a3ede9cc-6ea3-4c9a-a046-057810e2f993,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 21240cd5-9124-4891-8226-8ea9f7b3d4cd,
     PublisherID: 71113cd7-1115-4387-a27e-c9ffb9bc2e8d,
-    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4
+    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4,
+    GameName: Tchia
   },
   {
     DropRequestID: 2165f402-70c6-4738-b042-899f3c29eb6d,
     PublisherID: 75c6b1cc-9b1a-4ede-9e3d-eda716863fb0,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 21903474-ae70-4ce1-8dfa-c0fbab725c92,
     PublisherID: 31ae05b4-213c-462d-99b4-8124a6611503,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: 221c1aba-f654-4d49-82d0-3e5a0dd0ceae,
     PublisherID: 389b88bb-5ff8-4485-9cf7-db16464f3e96,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 2299a47b-f61b-48b4-8785-6c6761c06070,
     PublisherID: 454e3664-f3e0-4934-96d4-58911bc5afca,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 22e4ed24-017a-4d74-bc2f-d8874739e156,
     PublisherID: 08142841-5fa7-4441-96d6-f9ca38782039,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 22e67c67-3a6d-4929-94d6-5e50c0513757,
     PublisherID: c15988af-0349-4134-b29b-59e5ac810c93,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 23a1e967-50d1-4155-bddf-4f5c3d6fd6f0,
     PublisherID: 8ca5d1de-0afd-4efd-9880-91211bd5a1ba,
-    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
   },
   {
     DropRequestID: 23d6b663-3a5b-4b9e-9dba-9b7653fe0af7,
     PublisherID: e278f687-2ae5-4ee9-a451-4c1b4d542917,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 240d838e-0951-4ec3-8a6b-1bda28fda40f,
     PublisherID: 7fc0890b-995b-45c2-ad27-b45dfc691e34,
-    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn
   },
   {
     DropRequestID: 25130cf4-3551-4fdd-8a05-287e4b78636d,
     PublisherID: 22d57957-8fa6-4ba0-ae70-766b003b1d9e,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 25d9916c-4d1e-40fa-ac2f-1222f22a79ec,
     PublisherID: c77a0f9b-dc09-4b3c-85ee-09314fbb1e57,
-    MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d
+    MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
+    GameName: Fire Emblem Warriors: Three Hopes
   },
   {
     DropRequestID: 26276bf4-7f09-4974-a3cc-c1be331de8b3,
     PublisherID: c782d112-2f8b-4d7e-86e8-596db261fab7,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 274ecdda-2825-4c1e-b9c0-24415c33e9d2,
     PublisherID: dc32cd3c-fd0b-4238-9c48-adeb1800253e,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 2760e814-cf13-4d5d-9969-332cee712afe,
     PublisherID: 4896ea0d-bc11-4a26-baed-ef215c94718b,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 2a2269cc-20ac-468b-8977-257fc0a10b4b,
     PublisherID: 3bae313f-81b8-418e-94e5-476f0f267b5f,
-    MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02
+    MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02,
+    GameName: Dragon Quest III HD-2D
   },
   {
     DropRequestID: 2b2a87b1-411d-43c9-b459-9938016d345b,
     PublisherID: a65f84ec-6816-48c8-9b42-4b4162696391,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 2c1ca5a3-42a1-411a-a241-83debbd1ccf7,
     PublisherID: 81c3bb26-d8ef-4e20-bbfe-1e576ad2446e,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 2c4dfc0d-9095-4593-ab7a-00ad00dc6171,
     PublisherID: 4a5f8e0b-f3c4-43b6-bcdb-e9e4e65ae012,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 2c56907c-0a1c-4234-9fc6-4c55f09080dd,
     PublisherID: 4df46cdf-3304-42c6-96f5-73f7003f3b69,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 2c6d2026-1956-4bf8-8a30-f480e28f5973,
     PublisherID: 87da5e34-7115-49d0-afd6-f08614b3f6ea,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 2c94a224-652c-47c7-ae23-f83e932dfd7e,
     PublisherID: 061c8bf8-77bd-4358-93dd-395314e1bdb4,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 2ce33c9b-779d-4392-8eeb-699c17a2636b,
     PublisherID: 52d853c7-a564-420e-ab08-a63cb46d02fe,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 2d30fcf4-c8eb-47ff-ad89-238dede3eb68,
     PublisherID: e512fe28-c3b3-45fb-abed-79b19d6802df,
-    MasterGameID: a7c1de72-1581-4394-82bf-fd0f26b135a6
+    MasterGameID: a7c1de72-1581-4394-82bf-fd0f26b135a6,
+    GameName: Party Animals
   },
   {
     DropRequestID: 2d8c0996-ffc2-47b1-b46e-2fbfe85fbf19,
     PublisherID: b5acea37-91d0-4f18-a558-dde68d5e3b7c,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 2d9af9df-235a-4453-8773-3428c05d3ca7,
     PublisherID: 2d6ea52b-c941-49f5-89eb-b885c24a6f32,
-    MasterGameID: cee54003-c6a3-4b69-998a-b7dc49d3ee55
+    MasterGameID: cee54003-c6a3-4b69-998a-b7dc49d3ee55,
+    GameName: Sonic Frontiers
   },
   {
     DropRequestID: 2dc34250-f8e5-4c00-96e2-b9a10cd60ff3,
     PublisherID: ea1ceeb8-7b96-4a5e-abc4-74f054554c97,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 2e192411-99e4-4df3-97a6-47e67e18da7f,
     PublisherID: ce6cd4bb-0aae-44e0-b9da-5ee646c1636d,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 2e287516-b86a-4570-af2e-3c1313b35666,
     PublisherID: 7610d32a-6bc5-49e8-9776-b36348283835,
-    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
   },
   {
     DropRequestID: 2e426070-d547-440b-ad7b-10b7d5e8a0e2,
     PublisherID: 6ca57fc4-6fe1-4f1c-ac2d-cb2ce6097bc9,
-    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn
   },
   {
     DropRequestID: 2eeb548c-c923-45b0-a32f-5d7667a80a87,
     PublisherID: a5654670-9d88-4d49-9baa-eb581db411d0,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 2ef3b7c9-9f80-4b16-8d57-7d7bfc7fc4dd,
     PublisherID: 28e62978-6599-4519-b934-634999d3e1ad,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 2f650711-2560-426d-ae48-62f27a6df907,
     PublisherID: 9e48aef4-a793-4695-9d6d-d2aa8c230137,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 2f718105-a8ac-410e-8ec5-b07ac698ac64,
     PublisherID: 8f767c41-3024-46fb-bb1f-ba0e75aad3cb,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 307a563a-3411-4754-bce2-510d662f9209,
     PublisherID: 428e41b6-858b-48a7-b4fd-a1098c00eae0,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 30d642e3-e9a4-44a2-8a45-26ada4f45fce,
     PublisherID: 81c3bb26-d8ef-4e20-bbfe-1e576ad2446e,
-    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4
+    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4,
+    GameName: Tchia
   },
   {
     DropRequestID: 310eca08-7880-4c21-b92a-0c1d8c0a7f6e,
     PublisherID: f591a0af-098a-4362-b550-a7e35d834cc2,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 31ca5930-fd0c-4f28-be13-5fa02f6872be,
     PublisherID: 739e41d4-e189-43b7-b686-e2b57f396f77,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 31dd33ba-3a6d-44e6-840c-d459a5d9f90c,
     PublisherID: 565439f5-2280-4414-bca2-0e28bf05ec12,
-    MasterGameID: 6c229650-70ed-43ed-9699-71cde518e2fb
+    MasterGameID: 6c229650-70ed-43ed-9699-71cde518e2fb,
+    GameName: The Outer Worlds 2
   },
   {
     DropRequestID: 31fdb93c-b855-46fa-b3a9-d9242ab95ec4,
     PublisherID: 63f103b4-61aa-45a5-ac8d-287f276ec731,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 32b82903-1589-4d8e-b5d1-c10d381589bd,
     PublisherID: a39ff888-ea41-4f39-96d6-c6e8966648dd,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 32f6ab8e-d725-485c-bc08-b4518861a6f8,
     PublisherID: e13efd3f-0f01-48e8-816c-05dad5b3cbcf,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 33218414-460d-45d3-aa70-f62de182c1b3,
     PublisherID: cca61539-a3a9-4569-80ef-80a42d72552f,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: 337b371a-da29-48bc-979d-00f6fb7b85be,
     PublisherID: 365cbe30-7e33-4573-812d-0ec59eaee621,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 3389a6c7-9098-4dfd-8cc5-778ceeef1968,
     PublisherID: 63b6137b-6c4b-427e-90d1-9b43f133b19e,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 33c8692c-6853-4891-8f1e-facf52e975d1,
     PublisherID: a17b661b-8024-4c0b-bc96-7bf23b2d7ea9,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 3406258d-3602-4a72-82ff-3e923722a4a8,
     PublisherID: c6af4cdc-3669-40db-9982-9b66845ee9ea,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 340b8e93-1971-44fd-9def-ac8b6dc46915,
     PublisherID: 3223dcdb-e56a-425d-a1b7-f81ae18975f2,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 3418c689-ddba-4a2b-ac68-9fd47b5f6576,
     PublisherID: 91782f9a-e81b-48be-b48e-100108d43461,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 346934d6-e0ce-4796-8de1-1c6af83a4af7,
     PublisherID: b005247b-2035-496a-a1c4-b5bf23905d79,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 34755940-c0a4-4e28-9fc2-25387fd4e22f,
     PublisherID: 79359848-cd96-4b5b-97f0-12c6b13212c8,
-    MasterGameID: bbd89fc3-8a65-4376-a078-264235015af2
+    MasterGameID: bbd89fc3-8a65-4376-a078-264235015af2,
+    GameName: Street Fighter 6
   },
   {
     DropRequestID: 34e052bc-f628-41c3-ae22-8eb0ae9e0ccd,
     PublisherID: b7559fe8-ef4c-40c9-bae7-3a203f6dd2eb,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 351dd18b-36e1-44f4-9e64-9b2c0518ab1f,
     PublisherID: 4405cc61-08aa-47ed-9523-c4e6a6e8e8bd,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 3545d3a0-933b-4619-85f0-54772393a931,
     PublisherID: 6860d6c4-036e-4188-8541-e09696f58abe,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 35c6ca11-6208-4f9e-bce8-22fe5bdf763a,
     PublisherID: 91782f9a-e81b-48be-b48e-100108d43461,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 35dc8317-a3e2-4c21-a7b4-6573ed6d7407,
     PublisherID: 5dcf81b6-7f3a-4c39-8288-59b5a6e1f9d4,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 365f1f98-a549-4c43-9540-81a569ac88bc,
     PublisherID: 394cdd4c-f9c1-4c0b-9a99-0c10dd4ecd99,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 36eeee9c-320f-4f5c-ae87-2f30d24bd447,
     PublisherID: 085d76c4-d493-4d52-8bfd-88e7e7f14405,
-    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23
+    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23,
+    GameName: Frostpunk 2
   },
   {
     DropRequestID: 3772a84b-a160-42ed-984c-69b4d3801388,
     PublisherID: a58b479b-0739-4856-b23f-e127aff0b298,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 384ae0aa-c0b4-4180-8e36-d627e0e13485,
     PublisherID: 68147442-2911-45b3-bebd-813cfee326a6,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 38890990-78d5-4722-813e-66612e706c5f,
     PublisherID: 2d3851db-35b1-4026-a03d-6e7fe9b9d249,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 388b2d64-e7ae-4570-b879-31dbde1a44ac,
     PublisherID: da86d861-d5db-4127-ad6f-ddc7df1e230a,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 38f6267f-2ec6-495e-9e59-8ad96bd3977b,
     PublisherID: 4dec8a0f-3438-4426-99c3-0b43925e2d09,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 391ae8b8-5e32-431d-bfb3-3c7ef63f5b22,
     PublisherID: 303afed3-f335-4f0e-8197-3ddab57f884f,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 393750b6-73a4-4585-b796-3f777241a4e6,
     PublisherID: 1094e0a4-fc78-4549-b931-8fa2bef66292,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 39b93dd0-1daa-4bb9-8027-fee664e84d0a,
     PublisherID: 97290292-ae16-4e3a-a229-32a2512d4194,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 3ab4b872-8ac5-4c2e-b83e-f100b76d5d71,
     PublisherID: 5f864f84-9d92-4280-8e50-652d55dbf2e1,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 3ae02ea1-25d0-4f10-8fce-e75eecf2b925,
     PublisherID: 7a3fe002-a7ec-4242-9dbb-5717b2143e2d,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 3b408c76-d8ee-4101-9533-ad432587a223,
     PublisherID: 6f7435d7-3ef1-4753-89bb-f815fc2f45be,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 3baed807-4613-4720-a3f4-16b39891be37,
     PublisherID: 9857afa5-31f4-4d4a-b11e-450d72c550c3,
-    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
+    GameName: The Day Before
   },
   {
     DropRequestID: 3baeea40-1a60-4dd1-8a13-b4607643deba,
     PublisherID: 6db48e3a-15a0-4624-ae6a-4992e1c970fa,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: 3bc4d166-5f72-48dc-992c-eaf05ef275c2,
     PublisherID: 2af7748e-913c-469d-bbc6-389b84d20484,
-    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
   },
   {
     DropRequestID: 3bc68035-fe48-40d7-afe1-7092ee8e5f38,
     PublisherID: c38ead46-4334-48d6-b37a-b5b9c779d843,
-    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
   },
   {
     DropRequestID: 3d30666d-d66c-40bc-8af7-6fae7b01ffbc,
     PublisherID: 37e71d6f-3173-45ce-a86e-6d945545ad35,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 3d95ccc0-6081-4d51-9ede-097c8440ddf4,
     PublisherID: 9d597fbc-1588-4da9-a1f1-5c4c378525d0,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 3e0e864e-34e1-4191-9342-ef21773e245d,
     PublisherID: adaab477-0ed3-4c19-8a69-5af51c67162c,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 3ebc7909-a43e-481a-a275-ce2cceac825a,
     PublisherID: 14c8ffcd-5813-43d7-93bf-be3a8dbd29ff,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 3f6ef979-da75-40df-9d8b-9cd8797f6a0e,
     PublisherID: cfece488-4756-4802-ba1b-acfe68ece687,
-    MasterGameID: ddce3a8b-7314-423d-9517-12cb09baa52b
+    MasterGameID: ddce3a8b-7314-423d-9517-12cb09baa52b,
+    GameName: Hogwarts Legacy
   },
   {
     DropRequestID: 3f846368-9ff9-4b18-99d8-9958553f71ff,
     PublisherID: 2c4ddf02-ef36-4b7b-9016-06c83194eccc,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 4089bac2-bda5-4fe6-bc04-1841a636793a,
     PublisherID: 3c380def-6690-406e-8661-af2508344583,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 40cf7864-7fe4-404d-9377-497525bcfee9,
     PublisherID: 0a9158cc-4553-4145-bcb3-41bbf72489b4,
-    MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d
+    MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
+    GameName: Fire Emblem Warriors: Three Hopes
   },
   {
     DropRequestID: 41359def-bafb-445a-a641-b52d7ee206e2,
     PublisherID: 46f9336e-903c-48b1-84a1-538796c4bded,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 41ec2e4a-d225-47fc-a2e1-fada65e7ab80,
     PublisherID: 420a4cb6-b659-471b-8ecb-a56109722d97,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 42d16f74-7d0b-40a4-bfa6-073910be986a,
     PublisherID: ddb18888-0c2a-42ac-9de8-09a9aa3e5392,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 42ff8d21-4d10-4103-8d9a-2addaf455a77,
     PublisherID: 358cdda7-2fc7-4b64-bfb4-3a6b94dd8e51,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 4319bf60-527c-4307-b1f1-a23870746218,
     PublisherID: 3f5f93ea-3441-498f-a189-11914880d751,
-    MasterGameID: e56e2dac-958a-4d5f-a5d5-3fab15f595a4
+    MasterGameID: e56e2dac-958a-4d5f-a5d5-3fab15f595a4,
+    GameName: Company of Heroes 3
   },
   {
     DropRequestID: 4372a73d-9360-41b7-9882-02378b2b4d5b,
     PublisherID: 58cf3d3b-949d-4c21-8879-1caf74e95ec2,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 43750c68-fc6e-4f7a-ab8f-34dd7bbf8163,
     PublisherID: e1933cdd-fd38-49b5-9c69-c54967a6a334,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 4382fd59-598c-46b5-92c9-1b0e1558b8de,
     PublisherID: 50bc055b-b7f3-4bb8-b00f-4db9605ac84c,
-    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7
+    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7,
+    GameName: Somerville
   },
   {
     DropRequestID: 43aee635-5b8e-4dee-95d6-e6063f32c57f,
     PublisherID: dabd24ed-2fd1-4e6b-953e-06d2213937b1,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4420d7df-a70d-4a8d-ad53-3b3cb2d8c43a,
     PublisherID: d2ad943d-65ec-445a-a313-6f0388c3cf24,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 444a01dc-88b2-40c2-98bb-fbb191f43472,
     PublisherID: ecce5192-ac9e-432e-832d-d5747650ed27,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 444af582-24d1-41de-b9db-85af307d7b96,
     PublisherID: c7aaf0e2-d9bb-40d0-9f0a-daa1f2984b8d,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 465ee556-5b24-4858-8166-bbcf27af4cea,
     PublisherID: 095c618b-6065-4161-bdc9-bfaa655f040b,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 466a8a41-d2cf-43be-a56d-58b77c45d337,
     PublisherID: ecce5192-ac9e-432e-832d-d5747650ed27,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 46892391-ecf6-4f9e-9751-8c11470798b2,
     PublisherID: 6133073a-542f-4d8c-94cc-061ae2b01e69,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 47064bf4-d9e0-4327-8a34-6e28c91cf9ec,
     PublisherID: 150d5d19-98b2-4798-82cf-aead0dd3e6af,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 47150316-7dc0-4313-a204-b306a46acbe1,
     PublisherID: 39ba38f6-5bcf-40c9-a8cc-4c737a6f0c7f,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 47540e0d-b6e7-44f8-9985-798d4de5eda9,
     PublisherID: bc694c8a-7ddd-4c3f-be0a-c8ca1feb2944,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: 47b14c04-081a-4dd1-a94e-97fb4d51ff20,
     PublisherID: 75c6b1cc-9b1a-4ede-9e3d-eda716863fb0,
-    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23
+    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23,
+    GameName: The Invincible
   },
   {
     DropRequestID: 47e37f65-f2f3-4654-b64b-5f7df2c42deb,
     PublisherID: c33854ff-bba6-4e6d-92a6-d7957fce24c4,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: 48d0c405-05b5-48ba-a77c-4b01c081ac71,
     PublisherID: 5818f36f-e534-4c8c-8d89-e8c84f1764a4,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 490681fe-dfd9-4b8d-81c5-949ee9c0bff7,
     PublisherID: 66b822d5-cc62-4af4-acae-10a77fdabcf8,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 4a3e959c-44d6-4ba2-842d-27ed9752618e,
     PublisherID: b8f37ed6-15ba-47b9-a8db-2084349ecbf0,
-    MasterGameID: 37f29a94-22da-4523-8c92-78180e356153
+    MasterGameID: 37f29a94-22da-4523-8c92-78180e356153,
+    GameName: River City Girls 2
   },
   {
     DropRequestID: 4aa312be-f417-41b0-b4de-b453be8e07c4,
     PublisherID: 36ab9209-c404-4817-bd02-e55cb522c440,
-    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
   },
   {
     DropRequestID: 4adb1c38-f30f-4c0e-a51d-340d3f8b7566,
     PublisherID: cf0ac571-d202-4b0b-99a6-fb7b262c425b,
-    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
+    GameName: The Day Before
   },
   {
     DropRequestID: 4aeca3fc-9b60-4c45-a4be-655088967eb6,
     PublisherID: 557402fc-5485-419c-bcf3-0f805d64ea9f,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 4b2116e2-279a-4dab-b7c4-64d5490c06b7,
     PublisherID: 6d829673-e667-4a48-8ef0-be1316b1aa45,
-    MasterGameID: 7803c24e-8eac-4a82-bbd6-07da8d402523
+    MasterGameID: 7803c24e-8eac-4a82-bbd6-07da8d402523,
+    GameName: Spirit Swap: Lo-fi Beats to Match-3 To
   },
   {
     DropRequestID: 4b3f09be-a1d9-47ba-9f90-5228d461f31e,
     PublisherID: 10cf1702-c398-4d0a-8895-cc052f4c5241,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 4b8b495b-2761-4384-93ec-7b61333f8a7c,
     PublisherID: b291f90d-337d-4ec7-88a4-5c7f9204745c,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 4bd553ca-ebd3-4f21-bc54-727a54e7f8de,
     PublisherID: ac5ebb4b-4bdc-429e-b0f7-af6f0dd97214,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4bd69f97-8609-4a57-9825-75f18da73076,
     PublisherID: 006868f2-36fe-4536-a243-e55e5ad8845f,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4c02e25a-c238-4e26-950f-2133c239f374,
     PublisherID: baab43c1-4e76-431e-8c83-6746654c50f1,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 4c30b243-9592-4718-9122-1f8a8bc66c14,
     PublisherID: 86374adc-aaa6-437d-b23b-3b1c1bed546d,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4c47b129-a722-4946-9ed7-e85c69d3a32c,
     PublisherID: c85ed61d-675d-4e3f-874b-d291f0e458eb,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 4c5447ce-95aa-451d-8458-ccd0786aeb6b,
     PublisherID: f06d8b68-c76a-4451-8282-e77502a69efe,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4d5e98a0-d4a0-4a55-911b-0c5ad1201f05,
     PublisherID: 1ad9f3ef-3e8f-42e8-8997-6faef438fe0f,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4dd64923-46ca-40fb-b2df-0ab6fcc44ce1,
     PublisherID: e9ba2bec-029c-47fe-8302-24bd6350da5c,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4de6c1fa-6caf-438e-a71d-c5ac34766e4d,
     PublisherID: 2d87008a-eec0-4dbc-9192-c26eeb0513fa,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 4e53bc2d-6f85-4454-b23b-828acc7f0844,
     PublisherID: d934ceef-cf76-4f33-b4e1-163522031dd9,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 4e5cb0ec-7a05-453c-ba48-a741751fa998,
     PublisherID: 986b7f38-ddf9-4b95-b312-b8a85d7d3b40,
-    MasterGameID: 039a4008-7aed-470c-acbb-1b570fa6ebd9
+    MasterGameID: 039a4008-7aed-470c-acbb-1b570fa6ebd9,
+    GameName: Have a Nice Death
   },
   {
     DropRequestID: 4e9f8c38-2d40-422b-a2b2-11ec25ce44d8,
     PublisherID: 85d455f1-5800-48e0-bd0a-632fbce31cd4,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 4edcc8a4-81c2-4178-b36c-f57dee372f73,
     PublisherID: 986b7f38-ddf9-4b95-b312-b8a85d7d3b40,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 4f55fdb8-41ca-4d66-98f2-29868cf837d0,
     PublisherID: efd9ba7d-cfaf-4346-83e2-af109955594a,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: 4fa5ff12-faa0-4d0b-a4e7-d9c3e7449365,
     PublisherID: 0190964f-74f1-4566-9c70-a329c206920e,
-    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn
   },
   {
     DropRequestID: 509f3d51-c84d-4b04-930c-638a9203010e,
     PublisherID: dbf6cc88-5698-4827-b063-71111813254e,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 50d9762c-7316-45b5-a19e-2c9be85ba908,
     PublisherID: 68c900d8-b2fd-40dc-b40f-e1475f618928,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 51cba935-1f2c-4cc7-8fa9-4df04902305d,
     PublisherID: a6525b20-29d6-4a2a-9b09-bb8919035af7,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 51d3e7b6-738d-44c0-b846-d1f08e4ba560,
     PublisherID: 1238cb88-fb52-4da4-b7c1-c63e01730668,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 51febd6a-5df3-47b1-afbe-d11b6463aa84,
     PublisherID: 38a77c4b-356b-48ce-aba9-ab28627753a5,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: 520bc08c-abdf-4783-af09-c5b2f7dd0685,
     PublisherID: 3817ccdf-64eb-461e-a60a-99fed494b3a0,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 52963381-e3b1-4a99-a2bf-08c23c7a84a5,
     PublisherID: 9729bf56-3ffe-4942-bb2a-5121a3474ed2,
-    MasterGameID: f959cbc7-0b91-4a61-9e5b-0002851f216f
+    MasterGameID: f959cbc7-0b91-4a61-9e5b-0002851f216f,
+    GameName: Final Fantasy VII Rebirth
   },
   {
     DropRequestID: 5329c619-4db5-41bf-add9-3722bfe1dc47,
     PublisherID: baf47450-7b95-4bf8-8854-067dbf7cad7d,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 53973d73-77e8-4370-bab3-1787f3e86464,
     PublisherID: 52460fd9-bdf3-44bc-b424-15a766f0e907,
-    MasterGameID: 187e1c3d-55d6-418b-8bcd-f19e408ea219
+    MasterGameID: 187e1c3d-55d6-418b-8bcd-f19e408ea219,
+    GameName: ARC Raiders
   },
   {
     DropRequestID: 53f201f6-68ac-47fe-bfb7-54f00fff9cbb,
     PublisherID: af219d53-c75d-4ffb-8c78-f956daf36f02,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 54124f2d-6690-44cd-a0e7-5fe89ce92014,
     PublisherID: 1a254ede-5b70-4998-a219-4cb0604cd385,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 54c77b99-a394-4e54-a1f9-a7ce778cd2bb,
     PublisherID: 665457a2-1959-4af8-ada5-fc1512a7e7b0,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 55006034-e8a3-4233-92a7-6385d29d2e74,
     PublisherID: a09f3840-79ba-4832-a684-6139fae4f5ea,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 5557748f-75e5-4e4d-bee5-b23a003248f6,
     PublisherID: ba7d6c9e-b259-44ea-9625-861daca324bb,
-    MasterGameID: 1eefb3a6-a1d4-4a85-9bd7-73efd1f51281
+    MasterGameID: 1eefb3a6-a1d4-4a85-9bd7-73efd1f51281,
+    GameName: Small Saga
   },
   {
     DropRequestID: 56988983-cf0d-4b47-ae9d-624f7e7333bd,
     PublisherID: efd9ba7d-cfaf-4346-83e2-af109955594a,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 569a374c-34c9-4994-87da-d9e7c62a2925,
     PublisherID: 655a5469-e4b2-409c-86a4-28be2a9f0466,
-    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16
+    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16,
+    GameName: Resident Evil 4 Remake
   },
   {
     DropRequestID: 575e5531-9585-40df-a909-1eeb25116903,
     PublisherID: 2da37e03-b65d-4885-9cd5-9db8222310fc,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 577dec28-fbb2-4df3-a9a8-78a1c886b9ae,
     PublisherID: 7912e3a4-a974-4287-a7fb-9ac916ee5834,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 578c25c2-e172-4f23-9cf5-f5e403f08fe1,
     PublisherID: c7aaf0e2-d9bb-40d0-9f0a-daa1f2984b8d,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 57921ba8-5e84-4c1e-a913-bd4350891967,
     PublisherID: 795f1c2c-9707-4368-8e61-17805db4e2ef,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 57a8627d-58e2-494a-9b86-7f7f7ff5e2e2,
     PublisherID: 84e1eb71-a99a-46d6-8f0b-5f760eba18ef,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 583c7aa5-ce1b-4f1e-a6cf-2f454b6b8cbf,
     PublisherID: 3c380def-6690-406e-8661-af2508344583,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 5871d947-78e1-4686-b6fb-ccd84c2158bb,
     PublisherID: 25b52132-42f5-4972-88c9-45b36a00ae23,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 5a690d51-a10d-4413-a9f6-122038e5615d,
     PublisherID: f6d84170-91f3-46b6-9abb-186b634822a1,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 5ad7fe60-cffe-4763-a98c-167633cbac23,
     PublisherID: 2af7748e-913c-469d-bbc6-389b84d20484,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 5af64fb8-31cf-40d8-9713-ccc8f23dc7bb,
     PublisherID: acf1a30d-baec-4e7e-986f-88e83fa95db6,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 5c1cdca9-57a1-4493-960b-cafe17336789,
     PublisherID: df84dcc1-a093-4e0e-bb62-bd857d5f0d1e,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 5c836079-fd60-4df5-af33-96053e43240c,
     PublisherID: 36505ac0-373d-47b1-b213-f4ff0e8e4cb6,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 5ca47393-da0d-4f19-84f1-1cac03a6c2b8,
     PublisherID: 2985376f-c989-4f3c-9369-83c48b1401af,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 5d50fc25-989a-446a-b81e-d1ebff70ee4a,
     PublisherID: 9c87ac40-d405-44bf-8797-ae69de47e0d2,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 5d84f672-d0f8-4071-bef4-c7b27a503de5,
     PublisherID: 32467343-9a04-49ab-8dd5-511527c6e698,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 5d974d0c-c5a0-4bd8-8697-67e4ab358775,
     PublisherID: a94288bf-6641-41cc-86f6-f9b2a049adde,
-    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13
+    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
+    GameName: Lord of the Rings: Gollum
   },
   {
     DropRequestID: 5dc6f9e4-2003-4004-9540-8ba294b5ced0,
     PublisherID: a58f7752-b8dc-4310-b21e-e55958234e45,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 5e481d6c-4b38-44fb-8492-3535d674c25f,
     PublisherID: 1659ca8b-2761-484f-9288-77baababb15d,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 604250f1-1809-4c09-89b8-af311d48a599,
     PublisherID: a59b6c06-9317-44f1-bfea-dfa57a08add1,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 60589246-18c6-4908-954c-52951f177595,
     PublisherID: bb4e0246-d1f6-4c3c-947e-22a8c66fb3a2,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 60802fba-2e48-4633-9d44-e60236afa632,
     PublisherID: 17dec99e-ac07-4146-937e-3ae84ccda143,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: 608d54f0-fa56-45cd-b013-bc92203f2c04,
     PublisherID: f7ec8f0a-7816-41d6-98fe-2fcad3e02ac0,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 6165b167-7871-4524-92ad-cb814b3b1423,
     PublisherID: 39171951-fbf0-4d15-91a7-a454e410396c,
-    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23
+    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23,
+    GameName: The Invincible
   },
   {
     DropRequestID: 61f33043-2d1b-4745-bd17-02048ef6f661,
     PublisherID: 75e33abe-3a1d-40b4-aaf5-2e98e6ad9997,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 621aaa85-bc12-43f4-b5d4-6e0757e0dd66,
     PublisherID: d7603498-5258-497e-8ad3-d98733511311,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 626b2cec-a082-4367-bdfe-266bf098b81e,
     PublisherID: b5eeb5ca-2433-45ab-a481-d54393c7b65a,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 62c78535-6801-45c9-b16a-85bf2d11db51,
     PublisherID: 78d22626-bbb4-4d68-892b-9980d580bc48,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 632b14e7-d8ad-4cbc-b916-0dda15198eb0,
     PublisherID: 5dd1ae4c-6cae-4177-8138-ef7546ca8c56,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 632e6249-b03d-49ee-8188-95c4a0bf579a,
     PublisherID: 0fb62e65-1a61-4684-8dba-a65f4429d6b2,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 6403fb9f-e817-48e8-86ad-2481d6245458,
     PublisherID: bc93e9c2-900c-438e-8d4f-be9b4504ba2e,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 6556effb-7926-4665-9b6b-d430059838aa,
     PublisherID: 2c315d35-7919-48be-8e2d-99b4a5beedb4,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 669ff56c-92b2-4445-97ff-1bf93fc686b7,
     PublisherID: 9c87ac40-d405-44bf-8797-ae69de47e0d2,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 6704b4e2-0555-406f-84e8-3632a6b66487,
     PublisherID: 5dc32dd2-11a3-453f-b855-42959515ca0d,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 67330306-6481-4dc9-80bc-05cd6c9e8edc,
     PublisherID: 1f35b1ed-be6c-4e84-b48a-7fb55d7f8f6a,
-    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn
   },
   {
     DropRequestID: 676a3a7a-c664-44b9-8135-98c8d43e8ad6,
     PublisherID: 26da4ac4-c1b1-4718-b599-85caec653eb5,
-    MasterGameID: c604c102-c592-4ef9-98b1-985f53031694
+    MasterGameID: c604c102-c592-4ef9-98b1-985f53031694,
+    GameName: Wolfenstein III
   },
   {
     DropRequestID: 69014037-174c-4b6e-8c95-3f8a8c628b67,
     PublisherID: 4d3a1758-700f-4c80-a56b-ff3a39e38d81,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 69f707b0-5727-4def-9a6e-23754b2f3b45,
     PublisherID: a1875165-764f-4200-a9ff-25f1f3f0696d,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 6aa3cb72-1870-475f-a8a0-8ea01fdb1d6f,
     PublisherID: 38134903-4040-4c08-8f0b-0f560f67d921,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 6ae74d7e-73de-440a-885f-b5acde0576aa,
     PublisherID: 78590c7d-21a8-4740-9304-754aee963c19,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: 6b123ec3-eaea-4b92-9203-466515a1202a,
     PublisherID: 4c8baca9-8cf1-4771-b5db-7042015c26c5,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 6b462665-dc57-4568-9794-812c824e5652,
     PublisherID: 31c19f0c-fd4d-4d41-a15e-28d35219810a,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 6b5026f5-c04d-499b-9580-5da2cf7b26df,
     PublisherID: 2307fc54-9fd7-421f-b7fa-35f2e6223f46,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 6c1c19b1-91ff-4234-92be-1916aac68563,
     PublisherID: d8fadc10-e908-48d8-9017-5599da30c04b,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 6c9e1f5a-c1e5-4357-a9df-6f24458c7fec,
     PublisherID: 0c24e208-e367-4802-b4c8-15db3a90e8d5,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 6cc1ebbb-bd04-4355-a4b9-7fc3402929b9,
     PublisherID: 64534ec6-a360-46f6-8fbe-7b8bd92aab1b,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 6d164489-7cf4-4e93-8b8b-49d3ce94282e,
     PublisherID: 407ae5ba-8b77-49eb-830f-e07921c3ba89,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 6f0a12f4-567a-4f4a-8dc6-b5bcb118cb1e,
     PublisherID: c02042c5-32e0-4ff7-abea-f264dbb2205f,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 6f55bea9-9d45-448f-a219-ab6e39ca5ee9,
     PublisherID: f1c8ae02-556e-4b19-afa1-88ac5b9ef2c0,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 6f730ddb-e24f-4cd3-8f24-485bd641ebd6,
     PublisherID: 98dfe1b9-c675-45c4-b8b5-7034caf261e7,
-    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4
+    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4,
+    GameName: Tchia
   },
   {
     DropRequestID: 6fc51f9e-e46f-4451-bd13-bd5c41158dbd,
     PublisherID: 9a61deb4-96f8-493a-a8c2-06de33697eed,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 702d3ef1-5e08-459f-a83a-8c7ca46ec0ac,
     PublisherID: 70a0ffd3-9d68-4b9a-a75f-5cf1c6b32947,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 70bc3ab5-dac4-41d6-900a-78b8d4a62650,
     PublisherID: 3c380def-6690-406e-8661-af2508344583,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: 70e63d25-1b45-4832-b302-74b44a89e4e2,
     PublisherID: 8ed392a4-317d-4f65-bdcb-2c0280d9b0cb,
-    MasterGameID: cee54003-c6a3-4b69-998a-b7dc49d3ee55
+    MasterGameID: cee54003-c6a3-4b69-998a-b7dc49d3ee55,
+    GameName: Sonic Frontiers
   },
   {
     DropRequestID: 70ee17c2-3cce-4d50-9040-9185afab881c,
     PublisherID: 565439f5-2280-4414-bca2-0e28bf05ec12,
-    MasterGameID: 05359292-9a97-4941-9b48-2e9f0475854b
+    MasterGameID: 05359292-9a97-4941-9b48-2e9f0475854b,
+    GameName: Untitled Open World Star Wars Game (Ubisoft Massive)
   },
   {
     DropRequestID: 70fda339-f440-42c9-bc9a-d552b24f6e17,
     PublisherID: bdffa3e3-ea95-46a8-a026-3b1ca8c889ff,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 71e3e4ed-75c3-4098-b4b4-5c10d2e2094d,
     PublisherID: 80273997-d50e-48e4-9bc2-83a7b6edcbee,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 727aab60-ee23-4a85-9f5a-a73af3e64339,
     PublisherID: 773c51c4-beb8-4197-b5d4-6ff6776db852,
-    MasterGameID: b001f107-8b76-4a6d-ba63-560b8e97a67b
+    MasterGameID: b001f107-8b76-4a6d-ba63-560b8e97a67b,
+    GameName: System Shock
   },
   {
     DropRequestID: 72b0c5ed-1850-47c2-bc79-e75c0b5f8390,
     PublisherID: 64be7464-f4c0-48c4-8e44-a51292a1de8a,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 72c6b8e1-e84c-48d0-825c-35141da6ea34,
     PublisherID: 56936e4b-68eb-49df-93ce-def2aad8c03a,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 73af54fe-6b6e-44a9-98b5-06f917300f07,
     PublisherID: 82a94b0a-93c0-43a4-abc2-3479c774de1d,
-    MasterGameID: d4bb9209-dd22-4f03-b2a5-970fa3cb5f5f
+    MasterGameID: d4bb9209-dd22-4f03-b2a5-970fa3cb5f5f,
+    GameName: SacriFire
   },
   {
     DropRequestID: 73c6b3c5-d93e-4483-b62a-466427e8474f,
     PublisherID: 9c8c2353-226b-48b9-b7f5-77a9fd45fb9f,
-    MasterGameID: b1c31dc3-44b2-4322-aebc-84bb63ee3271
+    MasterGameID: b1c31dc3-44b2-4322-aebc-84bb63ee3271,
+    GameName: Red Matter 2
   },
   {
     DropRequestID: 750c36f3-d961-4c74-95fb-cc844109b06b,
     PublisherID: 07c41b8a-b537-486b-8083-eb72c41a072c,
-    MasterGameID: e59f1689-b40b-4000-b92e-053318e2a0da
+    MasterGameID: e59f1689-b40b-4000-b92e-053318e2a0da,
+    GameName: Mahokenshi
   },
   {
     DropRequestID: 7594ce70-75eb-42b2-a99d-2ee1b194a5bf,
     PublisherID: d7603498-5258-497e-8ad3-d98733511311,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 75f09a74-4119-4aff-bebe-9ffc4503080e,
     PublisherID: d35f98d0-2c39-4279-8c36-e23689ca48c7,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 7699d231-fa76-4aac-b9f0-a149dd2a994d,
     PublisherID: e8327430-d7ee-457c-ab3c-aa4a852a9213,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 76b4ab6e-6443-4b8b-bb47-9f7b1e23e00a,
     PublisherID: b574370a-0739-4c04-8cbc-12f116d7b5fc,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 7867d74b-ba03-458c-a659-942b7c974455,
     PublisherID: cb3a7393-f3ab-402a-bc97-b8464a8dcbed,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 78a0bf25-6131-4446-a0f1-4c5e4b220c68,
     PublisherID: 1b5f0745-a92b-4636-866a-9d563c996f2a,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 79e94555-8a3b-40f5-9d6c-5dff8b632059,
     PublisherID: df2defcb-44ca-45a1-8693-6ed22b0633b3,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 7a912f67-3941-4a69-979a-b8843a78f81a,
     PublisherID: a12f6a18-2879-44d5-b4dd-3da3c98f2dff,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 7a92d541-24df-4521-91b4-aafa35c31ab1,
     PublisherID: afeca2e4-55c5-46b3-8613-2e27814720b5,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 7b9391c4-f8fb-49a4-a493-edffd3c7e1a7,
     PublisherID: ebb71454-4f69-448e-bc00-fa31f7734433,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 7ceacc25-aa06-4505-98bf-bf0829f2ac94,
     PublisherID: c38ead46-4334-48d6-b37a-b5b9c779d843,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 7d91d720-7282-4ca5-be5b-36733998657d,
     PublisherID: 2f114a24-7f23-4e66-8d94-53a7788e1aca,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 7dba04be-650f-4460-b9e0-029b0a02829e,
     PublisherID: 134da504-a886-4cfc-b2ce-a23c95117ec6,
-    MasterGameID: 7803c24e-8eac-4a82-bbd6-07da8d402523
+    MasterGameID: 7803c24e-8eac-4a82-bbd6-07da8d402523,
+    GameName: Spirit Swap: Lo-fi Beats to Match-3 To
   },
   {
     DropRequestID: 7dfbb3ba-ffab-44a9-adc7-c1eb9b7384f3,
     PublisherID: b72d324f-42be-442d-914c-32817a4e7dfd,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 7e2e755a-15af-40f6-abe9-0b297d45c10b,
     PublisherID: 6133073a-542f-4d8c-94cc-061ae2b01e69,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 7e2ec4a3-2628-4fc3-a537-8f7b1c4a64a6,
     PublisherID: a59b6c06-9317-44f1-bfea-dfa57a08add1,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 7eb02b9e-19a0-4ca1-8090-5655f0e15afa,
     PublisherID: 0ecaef91-aa59-4632-a9dc-40b282aa9c9f,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 7ed38c40-31c9-4043-8c32-b31d9a9ac3ed,
     PublisherID: d0ae5de6-6d01-465c-9ebb-c40d7b3a6b01,
-    MasterGameID: bbd89fc3-8a65-4376-a078-264235015af2
+    MasterGameID: bbd89fc3-8a65-4376-a078-264235015af2,
+    GameName: Street Fighter 6
   },
   {
     DropRequestID: 8140f9c6-7649-4020-8475-fa25f6a13242,
     PublisherID: 42303397-0e6d-4dd5-b506-8e47dc550d68,
-    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4
+    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4,
+    GameName: Tchia
   },
   {
     DropRequestID: 816647b7-7763-49fe-ab02-4a072f8ee613,
     PublisherID: 32afe6fe-4abb-44f9-ae9f-2862836cf5e5,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 81721b66-f1c1-42e7-b261-b1403bcb6b3d,
     PublisherID: f1a45f44-2d85-4c27-b90d-c2dd0df50db0,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 825ebd82-2b37-4383-bce0-72f185691413,
     PublisherID: 334c953d-003d-42e9-b91a-7b7c0140daa7,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 8394c67f-8b6f-4ac0-97d9-b16b0f14b55d,
     PublisherID: ebb71454-4f69-448e-bc00-fa31f7734433,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 83b38ed7-d777-4cfd-95a4-a1fcc61eadb2,
     PublisherID: e9fdb54a-c1d2-4847-b036-e1bf5df487e9,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 83f43eae-de21-4aca-9c3e-fbddfbb20f1b,
     PublisherID: bdffa3e3-ea95-46a8-a026-3b1ca8c889ff,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 8406098a-d874-4a78-90dc-8b23ee4b7d1f,
     PublisherID: 2af7748e-913c-469d-bbc6-389b84d20484,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 8418229b-bbc1-40fb-8f64-8b61cb697cf8,
     PublisherID: 6d950f70-777e-4371-9d5b-c37801249b48,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: 84282067-fbba-4868-a530-e0eccb7a7852,
     PublisherID: baab43c1-4e76-431e-8c83-6746654c50f1,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 85d916f4-aa63-4bfa-bdd2-1486ea587d3e,
     PublisherID: a6659863-b7f7-4aba-9e46-cad11b4ca1b4,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 8630c734-f732-463b-bcd0-cffa81d06ef5,
     PublisherID: 4e7ba1a7-3908-40e0-b56a-d8d86e386745,
-    MasterGameID: 47f9a77e-6b79-4d9e-b7fe-e00d9da02e25
+    MasterGameID: 47f9a77e-6b79-4d9e-b7fe-e00d9da02e25,
+    GameName: Sea of Stars
   },
   {
     DropRequestID: 86c0a0ef-916a-4efe-ae4f-e5594969d19d,
     PublisherID: ff90a2f4-97ce-4dd8-9ac8-05c15a9b6aae,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: 87e72212-2568-41ab-94f4-fbaf01524882,
     PublisherID: df84dcc1-a093-4e0e-bb62-bd857d5f0d1e,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 8825170e-2f69-4421-b0eb-1cc01ef406c3,
     PublisherID: ecce5192-ac9e-432e-832d-d5747650ed27,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 884cdc4b-f152-4f09-be75-1343f1890094,
     PublisherID: 38cb2d90-65ad-4022-8fe7-04a1b23a2a94,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 885f3c96-781f-429c-94db-c7ace04afcfe,
     PublisherID: 315e48a5-a755-46a4-96e6-6df1b5f08e74,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 8aba1912-66c5-4b9d-8f0b-0bc55829d44a,
     PublisherID: c15988af-0349-4134-b29b-59e5ac810c93,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 8b1cf1c8-e251-4146-88d8-f878970798ab,
     PublisherID: 89a1f89c-28f5-4b11-b64c-77d4596b29f2,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 8b351275-4222-4a75-bda0-33beb76ca15c,
     PublisherID: 87da5e34-7115-49d0-afd6-f08614b3f6ea,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 8bde5e44-c595-4b48-9689-c48c02050cf2,
     PublisherID: 11e385a7-884c-4c87-8ae1-70272ffb6b7f,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: 8c00d17e-024e-4454-828f-6b74a099435d,
     PublisherID: 31bb50c3-a137-496b-b5c1-8cd4b708618c,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 8c1a0ddd-483a-497d-abae-d3f37941d932,
     PublisherID: 2f6183c8-ad0b-4e3e-bed1-57cecbd2be9d,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: 8d7b184f-c968-496d-aa12-c0b2106356d4,
     PublisherID: c72c1954-7420-4037-ba93-093e73ddc858,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 8e9665db-ea89-47b9-b3c0-0e144a41f6b0,
     PublisherID: 15271cb9-99c1-4015-8323-663c823de10d,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 9062d42d-effc-423a-9055-f00557022280,
     PublisherID: 1f900735-62a8-484d-806f-1288a0243c3e,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 90e5451e-1760-4351-92c6-d0181f6b7c8b,
     PublisherID: 9d03b598-3ebb-424b-8d8a-25093022deb8,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 911bcb01-fcc8-4067-8783-8cde2388adf0,
     PublisherID: 4e7ba1a7-3908-40e0-b56a-d8d86e386745,
-    MasterGameID: b90e37f4-5942-42aa-8bde-da440c83724a
+    MasterGameID: b90e37f4-5942-42aa-8bde-da440c83724a,
+    GameName: Haunted Chocolatier
   },
   {
     DropRequestID: 92178279-b4b1-4204-8e75-6f8540adc9ba,
     PublisherID: 9a8b43c0-7e98-4fda-8b48-f8f7e7973a7d,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 9277c6d2-b468-440e-a4a4-80b8f9440779,
     PublisherID: b5acea37-91d0-4f18-a558-dde68d5e3b7c,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 929b3a92-b391-43bb-beca-943d65487480,
     PublisherID: 8bc8dbf1-8efa-449c-b55a-830ad2f7b4d2,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 92dff788-2c56-40c8-854a-56e058292509,
     PublisherID: bf99b2c8-2f7a-422d-b4b0-38a9bcd30e4d,
-    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16
+    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16,
+    GameName: Resident Evil 4 Remake
   },
   {
     DropRequestID: 9350bed5-57d7-4eb1-bd0b-0669485ae348,
     PublisherID: 6099e8bb-55ef-43c1-b570-50d61e2de70a,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 93894175-7089-4534-adfa-ff315cc8afaa,
     PublisherID: 4bd740df-d6ad-4843-8ca8-4c8d1ad9dc76,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 93e1cc7f-0da6-4e4a-ba7e-7af95b7fdab2,
     PublisherID: 1b431947-a2d8-4058-becc-d6d5f0672aaf,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 93e1ce8c-e7a7-48d9-bdf0-a6b05898e3de,
     PublisherID: 4896ea0d-bc11-4a26-baed-ef215c94718b,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 94169d33-3eb0-41a3-9b74-fb4c4edd0979,
     PublisherID: f87121f1-5abd-478f-bf81-3042b5a3adc2,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 946e6ddc-5cc9-4da8-a412-8fc447e0cf08,
     PublisherID: 31c19f0c-fd4d-4d41-a15e-28d35219810a,
-    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
+    GameName: The Day Before
   },
   {
     DropRequestID: 94f223c6-9986-4ff0-bde6-ed889746e999,
     PublisherID: 26da4ac4-c1b1-4718-b599-85caec653eb5,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 94fe4f09-9363-468e-8cec-a64c5293b0ae,
     PublisherID: dcf8fe68-7b35-4567-ba65-9d214f9632e8,
-    MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d
+    MasterGameID: 719bf209-65fd-42a3-acba-42c4972ec10d,
+    GameName: Fire Emblem Warriors: Three Hopes
   },
   {
     DropRequestID: 9522c59b-3ffd-4c02-853c-168bed900875,
     PublisherID: 6380a4ac-3ecf-47f8-891a-a3fe8a64582c,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: 957f975a-24b1-40b4-abf3-fffb0ccabb2f,
     PublisherID: 8f5e2be2-8e24-41d2-ac62-04dfd5ef5d4f,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 9594929c-888f-407b-aeea-70cbd4df4392,
     PublisherID: 46f9336e-903c-48b1-84a1-538796c4bded,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: 95ae3ce5-3384-4b7e-b2cd-fcd17d3e52f6,
     PublisherID: ad846036-fe74-46d7-b1f4-19d4e52d428d,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: 95dae4d5-4d48-4067-afc1-26cc2b02e62a,
     PublisherID: dd4e5546-2de6-4494-9e23-b60ffb725b67,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 95fdf5ec-d8a7-4296-9729-38e1f7ccea3f,
     PublisherID: d34c86e6-81b6-4cd4-9b53-3e911482a710,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 96bd0456-0150-4d5e-ae3e-6fce53d3528e,
     PublisherID: 7610d32a-6bc5-49e8-9776-b36348283835,
-    MasterGameID: b7f12909-14ba-4309-b263-230b1b17bead
+    MasterGameID: b7f12909-14ba-4309-b263-230b1b17bead,
+    GameName: Live A Live
   },
   {
     DropRequestID: 96d3a987-3f3e-4138-9916-3863a624a815,
     PublisherID: df0b5f90-7a38-4795-a848-3c137aead12a,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 96f2d688-3085-4e54-9d1b-9e85020be56f,
     PublisherID: 216886dd-2fd5-4cbc-9300-3cb76d530d85,
-    MasterGameID: bf6c2ff2-5a02-447f-a66b-8d6e615ec818
+    MasterGameID: bf6c2ff2-5a02-447f-a66b-8d6e615ec818,
+    GameName: Sonic Origins
   },
   {
     DropRequestID: 97c1e2ab-e11d-4756-a22e-b95bb33b8ec0,
     PublisherID: fd757b2a-157b-4bee-b957-9641b4c84db0,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 9847cd53-ba92-4e5d-8e67-82efba21d83c,
     PublisherID: 5fb91b3b-dd25-4178-9bf3-da9bca11e285,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 984c10b8-20fa-45cd-bad4-8bfef15b8727,
     PublisherID: 2da37e03-b65d-4885-9cd5-9db8222310fc,
-    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16
+    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16,
+    GameName: Resident Evil 4 Remake
   },
   {
     DropRequestID: 98a597c0-a192-4bff-9dcb-1c70008a6759,
     PublisherID: faa12a6c-c80d-4e94-858b-ac4d4d770f53,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 98c1e5c5-dd7b-4525-acea-6d6a35364b2f,
     PublisherID: 113698f1-cb0e-4d76-9997-755657348b78,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: 9941548e-6bf8-4988-85c8-5d2d74cc7ad7,
     PublisherID: 703f3f85-ce71-4fc3-8ece-ca0539b2bc3b,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 99ce3950-37af-4aba-b535-1b9293d5be55,
     PublisherID: 3c2cbdc1-52d8-4027-b820-3a97a9985b93,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 99e3bb06-952e-4221-8160-11ab7c64e141,
     PublisherID: 31c19f0c-fd4d-4d41-a15e-28d35219810a,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 9a58c01e-0ef8-4096-bb09-5ac74002b49d,
     PublisherID: fa936d72-a037-462d-8f9e-124fcb323987,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 9ae95500-99b8-4e90-93f6-5411eacdc545,
     PublisherID: df68c69d-a32a-454f-87da-68b6768f6729,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 9bb9ef67-8d3d-42c8-b2a8-34c938638a10,
     PublisherID: f591a0af-098a-4362-b550-a7e35d834cc2,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: 9bd21ca4-4157-4db1-9b9a-9247878fabaa,
     PublisherID: c7aaf0e2-d9bb-40d0-9f0a-daa1f2984b8d,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: 9c469b23-04c8-4381-b6a1-30d185987bd4,
     PublisherID: 52020918-5d72-4fcb-875c-0baf61a94065,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: 9cee5e06-37cd-43ff-ab27-28f7522dde12,
     PublisherID: 194426c2-8b13-4d81-94bd-f2400fc5d0e7,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 9d140623-d080-44fb-8fa0-c57d6a739c24,
     PublisherID: 0448ebab-6c66-41e2-b835-76e9d4954556,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 9d467e8f-5fd3-401f-8245-01b53ec2ec91,
     PublisherID: e8d37c14-5fd0-4eca-a824-962b25492252,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: 9d88bf83-a69d-4997-8342-4897fabe7c20,
     PublisherID: a98c306c-ab91-4667-81eb-d6de765a897b,
-    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
   },
   {
     DropRequestID: 9dc6de9f-becf-4159-a957-c9f847a50be2,
     PublisherID: 312021bd-a504-4ee3-8b4a-ba7a9a1a482a,
-    MasterGameID: ddce3a8b-7314-423d-9517-12cb09baa52b
+    MasterGameID: ddce3a8b-7314-423d-9517-12cb09baa52b,
+    GameName: Hogwarts Legacy
   },
   {
     DropRequestID: 9e569167-0769-48f3-a452-8f1e819878f7,
     PublisherID: 4e858924-70c0-46fe-ae11-7f86c6d910b9,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: 9eda9ef5-dcb2-4348-a799-7f49e97bb62d,
     PublisherID: 9857afa5-31f4-4d4a-b11e-450d72c550c3,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: 9f05204c-60fc-4e02-b97e-9981b38bbf68,
     PublisherID: 36815d18-b462-4ff0-83af-9fb8e92ae401,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: 9f8a4687-3963-4a19-b14a-2d94631cd64a,
     PublisherID: fafd733f-04bd-4700-95ff-15bffb714852,
-    MasterGameID: 9907b22d-462a-48b4-aee8-9c0d8a34c063
+    MasterGameID: 9907b22d-462a-48b4-aee8-9c0d8a34c063,
+    GameName: Avowed
   },
   {
     DropRequestID: 9f9fcbf7-f3ba-4761-a88a-7ff9dec77131,
     PublisherID: ebc39915-857d-4070-b515-497295f4c987,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: 9ff20184-dbfe-48f2-9e8b-cc795cb8673f,
     PublisherID: 278049eb-7cb7-4e16-8c08-e23be8489368,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: a1352707-7deb-4bf3-8eaa-4c2e67bda96f,
     PublisherID: 46128e87-0c7f-4686-a2fd-e11dee1ad454,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: a1afc5da-3bd6-4f91-b024-dedf67066117,
     PublisherID: a0cf98fc-783c-4a18-89a9-f31deb9cfa92,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: a22ba636-dc28-4e2f-9d75-c828a14706c4,
     PublisherID: 3965e326-2de6-4227-80c2-8526ae2a342c,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: a29d2e60-12a5-4feb-a8ae-f38e9d5b9d84,
     PublisherID: 8de6fec3-9a4b-4738-8d34-3bf4347026ba,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: a362a27e-7677-4342-8bd3-a2894054db76,
     PublisherID: caaf0d19-0961-4873-a2a6-bbf5d633e32a,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: a3b49272-3fa4-456c-848a-038ef55c22cf,
     PublisherID: 75c6b1cc-9b1a-4ede-9e3d-eda716863fb0,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: a44e24ab-84fe-41b4-a7d3-1a67099eb60e,
     PublisherID: 2dcacea2-fd71-4df3-b14f-a91dc8f8c4e3,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: a49fa383-7010-44a3-abd5-ac7f56f410dd,
     PublisherID: 4f2947ea-3ac8-4083-9369-eecf531fa163,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: a556b9d1-75d8-4407-ba60-d09ddf3a7072,
     PublisherID: a8576fe9-b5a1-415e-849c-05c229a345ff,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: a5f04a09-6974-4efd-824e-ac097eeac29d,
     PublisherID: 654615b8-5e63-4192-b05e-13682a3e1e0d,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: a61713ca-ab16-47c1-aece-a689bf8d7622,
     PublisherID: 37e71d6f-3173-45ce-a86e-6d945545ad35,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: a7298053-63e6-4177-8af5-7a1a61f61e26,
     PublisherID: f8d158ba-ad08-4578-b2fb-9ce6280c9be4,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: a867b0ee-e155-43ed-8ff1-e8c7d011e57f,
     PublisherID: c7496029-2e56-4f3b-90ea-403fec0210ad,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: a86bb9d0-13b9-4125-a372-39f20dbc1544,
     PublisherID: 55b51576-59bf-423b-83b7-d6fb88aab180,
-    MasterGameID: d55e0038-9286-474e-9d46-40faa84747ce
+    MasterGameID: d55e0038-9286-474e-9d46-40faa84747ce,
+    GameName: UFO 50
   },
   {
     DropRequestID: a907ebfa-d3ef-48bd-bd04-ad198b996c04,
     PublisherID: 7104e66a-9565-4394-98d0-efc59fce6dab,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: a94406d5-de4d-4614-844c-9c788713a3a6,
     PublisherID: f77edfc7-87d9-40b8-ab10-34fbff218dbd,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: a98c322c-dd7c-4b36-ad6f-268d5c177dad,
     PublisherID: c7aaf0e2-d9bb-40d0-9f0a-daa1f2984b8d,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: a9e42974-4e29-41a3-a4d8-d3b9b8147908,
     PublisherID: ab54a8e3-f8c9-4936-b68f-6b89723e7e8c,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: aa85fd92-31bf-4b16-8ecf-2a34d93dd282,
     PublisherID: f97998b9-152d-49d0-8b24-d7f04eafbf8b,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ab050e54-357a-464f-a32f-e922158be75b,
     PublisherID: 1ca1ac8d-7a0d-49b8-9706-5ce4d3c3a373,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: ab482b28-d681-45ab-bbbe-0ac789ee85fa,
     PublisherID: 24ccb86f-ea2e-4e20-9347-85ed01c60f85,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: ac01ed0a-c210-4994-896a-f6fa4be03466,
     PublisherID: 0deda1eb-8447-4d26-821a-d1f89c99d949,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ad136392-8b65-4997-ac52-31125b801cdc,
     PublisherID: 34fc926b-4a83-41fd-8494-b5ec368287e1,
-    MasterGameID: 5cb61cc8-36b2-4b8a-b5af-393c821b246c
+    MasterGameID: 5cb61cc8-36b2-4b8a-b5af-393c821b246c,
+    GameName: Goat Simulator 3
   },
   {
     DropRequestID: ad3ceb7d-9e43-4590-bf57-d21306e09fd7,
     PublisherID: c0b8d755-4099-4942-bd62-e86acd719a08,
-    MasterGameID: 17bc3e26-0e35-4275-8690-c45cf3396fa5
+    MasterGameID: 17bc3e26-0e35-4275-8690-c45cf3396fa5,
+    GameName: Avatar: Frontiers of Pandora
   },
   {
     DropRequestID: ad887512-1c19-4dce-a74e-595e32aa172e,
     PublisherID: 23549ba9-294f-4e16-bebc-a7c6a543f9f7,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ad8986c5-5dd1-407d-99af-2d060c004ca4,
     PublisherID: 00ebc9ba-d831-4616-83d2-c3ca31e2074b,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ad89892d-496f-4b95-bb1b-1ec8be801cf7,
     PublisherID: ef7bb3a7-34cc-4960-9704-697c9c2522c1,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: ad9e7546-fe0f-4558-a609-947d5b8e461c,
     PublisherID: e0111a4e-891f-4b25-9292-c37d11f33ffe,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: ae4d1913-a588-4917-a000-9a707e10170d,
     PublisherID: b5acea37-91d0-4f18-a558-dde68d5e3b7c,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: ae7b04c9-4eab-466f-8a27-7d0ddbb59bc5,
     PublisherID: b074f236-6da1-4eb2-baf3-47b85fbdd5dd,
-    MasterGameID: 37f29a94-22da-4523-8c92-78180e356153
+    MasterGameID: 37f29a94-22da-4523-8c92-78180e356153,
+    GameName: River City Girls 2
   },
   {
     DropRequestID: b03f4c41-813c-4d69-9889-7f54a154282c,
     PublisherID: ae1bf97c-ec63-43b6-802d-9c36dd17708a,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: b06eee57-7bf8-4ab9-b113-8246ac2ec772,
     PublisherID: c38ead46-4334-48d6-b37a-b5b9c779d843,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: b247fd0a-38b9-4f0c-80e3-c5bbee3dd827,
     PublisherID: 8682a2d7-6cea-4188-8c7d-fd164b5729f6,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: b262dcab-b844-4e04-8d7b-6459427bc523,
     PublisherID: 25b52132-42f5-4972-88c9-45b36a00ae23,
-    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8
+    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8,
+    GameName: Dead Space (Remake)
   },
   {
     DropRequestID: b2ad7a90-e1f0-4689-93cf-8031dc1b7b81,
     PublisherID: cdc42b1c-6d06-474c-90d0-9e77aa5def49,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b2be5a9a-eb40-4a88-86ac-ac6d61896a3b,
     PublisherID: c9713a4f-d5a5-4b07-9cdb-e1e22a31e210,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: b2c6cb91-0266-47bc-b151-b602d8d0174f,
     PublisherID: 27d4d75e-5393-4747-8421-fc3c9512b580,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b3cfbfcc-46cd-43bf-8e78-c4517a7846ed,
     PublisherID: 36a52bb7-b0c1-407e-9b35-a4fb45010cac,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: b3ea5b70-694f-4b52-9b65-9cc2124c429c,
     PublisherID: ed5e00e4-fda9-43ef-9bdc-dd9db9ff0235,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b40e97a6-7335-4e42-84fe-f23a1261299a,
     PublisherID: a3ede9cc-6ea3-4c9a-a046-057810e2f993,
-    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4
+    MasterGameID: 56fc8348-3ef9-4b5b-8708-5edc9fdf6ec4,
+    GameName: Tchia
   },
   {
     DropRequestID: b44181f7-92bc-4783-9788-7b02223d1637,
     PublisherID: 2af7748e-913c-469d-bbc6-389b84d20484,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: b448dd6c-43e8-4457-bf37-64619dbb496a,
     PublisherID: 2da37e03-b65d-4885-9cd5-9db8222310fc,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b465c9c4-41e0-42b0-93ee-db709c234d77,
     PublisherID: 7be87eac-7dc5-42db-9c22-b94725a982f4,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: b4a360e7-22ac-44b1-b866-a4a365ee9d94,
     PublisherID: 1c9e6076-46ad-42a4-a9a4-06dbe42db0a0,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b4b2c3cb-23d0-4d9d-b928-d6959643a014,
     PublisherID: 55b51576-59bf-423b-83b7-d6fb88aab180,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: b5e8e991-87a1-40a2-b72c-f88e0c103e78,
     PublisherID: 3ee80504-0f97-4ab5-b187-7bffbbb25170,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: b609f62e-cf17-45c6-bc56-5321495a60f1,
     PublisherID: 5fe299bb-4eab-4bc9-b84a-1b4a96ef8e8e,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b62f6b4a-d729-4b50-bebc-230753e7783a,
     PublisherID: 5e0abd13-9928-4be7-84c5-647a77c425ed,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: b7b57194-bc13-4dba-89d4-0bbc485ea171,
     PublisherID: 315e48a5-a755-46a4-96e6-6df1b5f08e74,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: b7ed3b94-374b-4cc3-a6c2-78e36b7d56d9,
     PublisherID: 77b60c46-7a5d-4bba-adb2-2182b6847c53,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b840ca16-ef15-4c16-bbbe-661179132e9f,
     PublisherID: f5a23311-265a-45c9-b862-2419bd58a4bf,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: b885ba39-d7f8-44eb-befd-5ba520e0140c,
     PublisherID: f6d84170-91f3-46b6-9abb-186b634822a1,
-    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16
+    MasterGameID: bea6c7c5-213a-4822-b2a7-cc2484286a16,
+    GameName: Resident Evil 4 Remake
   },
   {
     DropRequestID: b8c9ea11-5b8e-47bd-be55-bd19a387ee3f,
     PublisherID: f7731306-3760-42fd-9b9c-c1a023df518e,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: b970fa22-3b34-4e50-b372-cec7a391d98c,
     PublisherID: 78590c7d-21a8-4740-9304-754aee963c19,
-    MasterGameID: cf394eb5-21e7-4cc3-9556-e178cd32fd2a
+    MasterGameID: cf394eb5-21e7-4cc3-9556-e178cd32fd2a,
+    GameName: Test Drive Unlimited Solar Crown
   },
   {
     DropRequestID: b99775f7-b68f-453a-bcac-cc8ab8f582c2,
     PublisherID: 5e503293-8dee-4c3f-8f19-977ed79d68ab,
-    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23
+    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23,
+    GameName: The Invincible
   },
   {
     DropRequestID: ba230c6a-73c5-41de-a14c-2b50799af52b,
     PublisherID: 2d5725e8-ff2b-4fad-886d-9b17302a4b25,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: ba4aa534-c433-40a1-9def-78ad28e1d803,
     PublisherID: 00b325ed-2373-47e3-a662-9b3e4a99bbb5,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ba863f29-3e6d-42e1-a015-3ae4acff30bd,
     PublisherID: 15811e48-53f1-48d3-b08d-7ccfb45b8f3f,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: badabe59-642b-48cf-9b3b-75f0329c882e,
     PublisherID: 23152cac-5e24-44ba-86d7-9ff02ca1a726,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: bafb4c13-1028-4568-b9e1-b782623e975b,
     PublisherID: 40a36020-10fb-4fb2-a297-cec9ff668a6a,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: bb5da7bc-eade-4bc8-b6e2-ee9fc25dbe3c,
     PublisherID: 36a52bb7-b0c1-407e-9b35-a4fb45010cac,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: bc350899-6e45-4a5c-aebc-8f46090c9b88,
     PublisherID: df84dcc1-a093-4e0e-bb62-bd857d5f0d1e,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: bc7e81b6-1947-4a7b-8ac0-2e23846de22e,
     PublisherID: 74c16bc4-999c-4166-b606-c949bb4e84c7,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: bc857f44-9417-4b78-a82c-4aab5937d2b7,
     PublisherID: 3616266d-434d-463b-9ed9-6a53f975c399,
-    MasterGameID: 8b5ab73b-ea50-4f70-a87f-644de8981c8c
+    MasterGameID: 8b5ab73b-ea50-4f70-a87f-644de8981c8c,
+    GameName: Capcom Fighting Collection
   },
   {
     DropRequestID: bcfb5f53-bfec-454a-ae34-eabe7274c34e,
     PublisherID: 42303397-0e6d-4dd5-b506-8e47dc550d68,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: bd9ae47f-97b4-4765-a9ea-64c96c7b552a,
     PublisherID: 89554d76-a5b6-4e74-a9be-3cd788720424,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: bdba6377-3766-464f-bb78-4f7f103c7997,
     PublisherID: 3a5ae23a-1e5f-453d-a8a6-c2de122497d1,
-    MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5
+    MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5,
+    GameName: Advance Wars 1 + 2: Re-boot Camp
   },
   {
     DropRequestID: bdbb63f1-77b4-4e24-8ce6-74a646112fa8,
     PublisherID: 9d5485d1-cb3c-47aa-8d0d-fac7f6c094cd,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: be626463-282b-4032-bd21-70f4af8b2fce,
     PublisherID: 529dafc8-2401-4705-8a47-e7c3abdc049a,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: bf01fed0-7fa1-408b-90f6-a8100470fe3c,
     PublisherID: b856fa52-54bd-4630-88f6-18e9afc0a9d2,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: bfce49ff-5776-4e5c-a7da-176b76cf3ccc,
     PublisherID: 394cdd4c-f9c1-4c0b-9a99-0c10dd4ecd99,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: bfea8f12-a9bf-48ae-a40a-123db48fef55,
     PublisherID: 642b1d82-cef1-4182-af48-d87320b18cd4,
-    MasterGameID: 6f4aba57-95e9-43fb-8840-c6841c30185b
+    MasterGameID: 6f4aba57-95e9-43fb-8840-c6841c30185b,
+    GameName: Outriders: Worldslayer
   },
   {
     DropRequestID: c043b691-4c20-40a8-bd3f-4e730c743d14,
     PublisherID: 529dafc8-2401-4705-8a47-e7c3abdc049a,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: c05d6c99-c31e-4992-b632-184b7767347c,
     PublisherID: 7ba37c00-d43e-47d6-9e0d-a11c96999f39,
-    MasterGameID: 9907b22d-462a-48b4-aee8-9c0d8a34c063
+    MasterGameID: 9907b22d-462a-48b4-aee8-9c0d8a34c063,
+    GameName: Avowed
   },
   {
     DropRequestID: c0eede01-ec5f-4685-a95d-957cd33806fd,
     PublisherID: d8faf583-8132-47b3-8888-a502b620cf93,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: c12c7521-a60d-44f7-84f5-9a0156fbe576,
     PublisherID: 646ba2fc-0689-42d1-8bcd-8237a167f0b8,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: c1a2603d-f20b-414a-9349-b5be11aa12b4,
     PublisherID: e8aaa6eb-1662-4758-b024-5f70c01112a3,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: c1adb55a-b7c9-4eb7-bb77-5822031e2240,
     PublisherID: 7187ffa5-e40b-41fe-b2e5-81f7a249d700,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: c269a8cd-04e9-441f-bdd9-fc5d29f85ebf,
     PublisherID: 21ebede0-5e3d-46f3-a6fc-c9a9ab26956c,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: c2a72f5b-6615-471e-83d1-a74ccd2b6eee,
     PublisherID: d0ae5de6-6d01-465c-9ebb-c40d7b3a6b01,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: c2d0df38-5764-40b9-bc1b-eaa3652fe0cf,
     PublisherID: 3493ddc6-bfa9-42b1-9f06-45ba59846fb7,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: c3158cbc-488c-48b0-9106-35142aef72d8,
     PublisherID: abdb515b-6114-4240-90f0-708a6df788ca,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: c3332612-8bdb-4c1c-8864-434d08f74025,
     PublisherID: 1e438810-79f7-47a9-9b62-d43402633e2c,
-    MasterGameID: be1c1ca7-c94f-4792-9d2e-d11edfa95ef5
+    MasterGameID: be1c1ca7-c94f-4792-9d2e-d11edfa95ef5,
+    GameName: Tony Hawk 3+4 Remake (Unannounced)
   },
   {
     DropRequestID: c360b31f-a52c-49aa-8514-656061bc1968,
     PublisherID: 428e41b6-858b-48a7-b4fd-a1098c00eae0,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: c3761490-c0c8-4f76-b621-0df6b7791b25,
     PublisherID: bc694c8a-7ddd-4c3f-be0a-c8ca1feb2944,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: c391d5fa-b8e8-4c48-bdfe-a94d9adeff3b,
     PublisherID: 0fd29f6f-3a62-4603-9d25-80279b45eacb,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: c42e265f-a940-4cfa-9d7b-de3653e2809d,
     PublisherID: b0cbad1e-c82d-4156-b310-df617b8081bb,
-    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
   },
   {
     DropRequestID: c4a9290d-e6d2-43c0-8a94-40f452b63ac4,
     PublisherID: f20bedbc-2fc1-4772-bf1c-31e30fea5be7,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: c58fdd1b-6e53-4e5e-9c20-6d6e54c8b91c,
     PublisherID: afb5eb1b-1d4c-4fee-8a3e-fea772cd89d5,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: c6023876-4c8f-4f09-90c4-75a2157dbdeb,
     PublisherID: 34fc926b-4a83-41fd-8494-b5ec368287e1,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: c74e0aa0-0363-424d-9eb0-3174399be379,
     PublisherID: 4eb0a7d4-222a-45c5-9531-0573632566ec,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: c75b9eb3-f805-4f38-a6fe-1308e7cea8be,
     PublisherID: 9f1b8924-d24e-4a6c-ad01-e3c0dbe8a80e,
-    MasterGameID: d29a67ae-e6cd-4fff-b417-e6c1d58cb913
+    MasterGameID: d29a67ae-e6cd-4fff-b417-e6c1d58cb913,
+    GameName: Horizon Call of the Mountain
   },
   {
     DropRequestID: c7779e60-ff4d-4618-9a18-014aa45d171e,
     PublisherID: 9932fdf1-efbd-405d-8cd5-7b10ab797101,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: c7a999ec-11de-472c-a138-96b1e4684a68,
     PublisherID: 52020918-5d72-4fcb-875c-0baf61a94065,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: c7c16a40-8f46-4a7a-8938-149f7c3171ec,
     PublisherID: 46792a98-cb57-4473-a93d-3cbe55f3ed37,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: c8a3c8ce-93e5-4931-ac05-7d51be9d5197,
     PublisherID: ba35296e-a90f-496f-a4b8-24e14fc5db4f,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: c8b3202c-8fcb-408b-98d8-a54d579a4295,
     PublisherID: 36a2e859-178a-4df1-92b1-87825ee1b6f1,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: c8e84b34-c131-4b95-8c9c-93d40a2acc55,
     PublisherID: 5d817ada-858c-4020-b48d-8fe443a902ce,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: c9335f24-46e7-4a5f-a36c-5c0bdf19c950,
     PublisherID: 05cb446f-dc15-4064-8c3c-57e29b20328f,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: c97fd1ed-28cc-424b-90c0-e05a3ccc9f2e,
     PublisherID: cfe917ad-262c-46c6-9f45-616f139bc7a0,
-    MasterGameID: bf6c2ff2-5a02-447f-a66b-8d6e615ec818
+    MasterGameID: bf6c2ff2-5a02-447f-a66b-8d6e615ec818,
+    GameName: Sonic Origins
   },
   {
     DropRequestID: ca111d45-312b-4172-a7ba-dbf164389c38,
     PublisherID: f86b76ff-95b8-4ba9-bc60-e16739b95398,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: ca5fcc8b-b9e9-41af-99e7-ffa91c7a9488,
     PublisherID: 3d6afb77-94d8-4ff8-9217-45948b776dc3,
-    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7
+    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7,
+    GameName: Somerville
   },
   {
     DropRequestID: cad33617-3c36-448d-a98b-6499081db3fc,
     PublisherID: a197c3c8-9e11-4d77-8b7a-d2e4bed779f1,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: cb45cef6-4edd-4cc8-bb92-78ef56467999,
     PublisherID: d98aeb6c-7c45-4e4a-863d-25bded702428,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: cbdf1078-4951-4b44-9a82-fa51c68e1650,
     PublisherID: 09635e47-aa1c-4c31-9e25-16dc07743542,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: cc2e73e6-9bd8-4abb-bbd6-33eb893b8f34,
     PublisherID: f24655ca-2181-40e6-9776-8863b9ea65c4,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: cc719e04-e0e6-4377-b949-7aecdfea5096,
     PublisherID: b79ceab4-3fc6-4a6b-9728-147cd5261e1c,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: cce61862-fd97-43de-8c41-b94990ec1953,
     PublisherID: a58b479b-0739-4856-b23f-e127aff0b298,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: cd1aeff1-d320-4d64-a44e-943403815653,
     PublisherID: 778d39a0-2816-4d44-9198-f1c3e477d50b,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: cd3ef54e-e59b-4c4a-8281-b5270df0bd17,
     PublisherID: 7417fc2a-0a41-444f-a465-1026e2bda416,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: cda06300-a762-4381-a206-da8dea9b6390,
     PublisherID: 84cb9c4e-4347-4161-9589-1cb00c43a1bf,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: cdaad5cc-0f20-4f9c-9627-3a678af157a5,
     PublisherID: 8601b085-2b41-4a1d-b4e9-fc45557d0689,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: cddaede0-cbd0-4dcb-8430-97a48405111e,
     PublisherID: 655a5469-e4b2-409c-86a4-28be2a9f0466,
-    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8
+    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8,
+    GameName: Dead Space (Remake)
   },
   {
     DropRequestID: ce08299e-c27e-453d-8a8a-e55da4db69d2,
     PublisherID: 61407b6f-0558-4a4c-a313-db42c8caab27,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ce23e952-42f8-4cc9-8bdb-73ff58ea6ab4,
     PublisherID: da528138-598b-4b13-a395-58587e252b12,
-    MasterGameID: 073a0efe-66f8-435d-9fa6-36788362e18b
+    MasterGameID: 073a0efe-66f8-435d-9fa6-36788362e18b,
+    GameName: Open Roads
   },
   {
     DropRequestID: ce307621-9c4f-4b29-ad02-848e44814299,
     PublisherID: 12c89657-08da-45bc-b01f-a43bc7e39655,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ce439971-483b-41b6-87b8-384fc0a01620,
     PublisherID: 75c6b1cc-9b1a-4ede-9e3d-eda716863fb0,
-    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85
+    MasterGameID: 25d3ff3f-c428-4002-9ac2-4fe0abbafe85,
+    GameName: Ark II
   },
   {
     DropRequestID: ce665547-728b-4bd2-9f98-09918f1fe61c,
     PublisherID: 407f624d-602f-499c-b2a4-3cef94739952,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ce88528e-ada0-46a4-be9a-bc7aa5f98272,
     PublisherID: 001de124-5bca-41b9-827f-aea730f3940d,
-    MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666
+    MasterGameID: db1550ad-627c-4078-b8b2-f807f094c666,
+    GameName: Marvel’s Midnight Suns
   },
   {
     DropRequestID: cea3af23-4c90-4f48-9a52-9d0c02648d11,
     PublisherID: bc6c0bd1-1d0a-4dc8-82e1-a62af6811b5a,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: cebf1b63-79e4-493e-9e99-114da079ddff,
     PublisherID: a00b4469-d959-45ab-aef5-d8add00a20f4,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: ced72c20-3533-40f4-9f33-d96ae5bedd4c,
     PublisherID: 37f42e8d-0540-484f-ba35-bbc9e502d41d,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: cf50cac4-566a-46e0-b472-ee20d2d46a6c,
     PublisherID: 2985376f-c989-4f3c-9369-83c48b1401af,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: cf79b08b-191b-40aa-9b64-022caa61a102,
     PublisherID: 43204f0f-4993-43b3-aa25-ffa5c2d490a3,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: d0111543-73b9-4fee-ba3f-2d2c61614262,
     PublisherID: dd47e8bb-ae24-4362-a70a-19dd446771b6,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: d016b0f6-a057-4b58-a651-78c1128a95b4,
     PublisherID: e90a35da-4fcd-4b6e-9288-1e5f30ac8287,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: d07c31ec-cda9-49ef-9b25-ff72d4b09219,
     PublisherID: 708382ef-16f3-4111-82b7-18f7cf15e124,
-    MasterGameID: b7b93947-b967-4bd9-acd1-6a85282e91ae
+    MasterGameID: b7b93947-b967-4bd9-acd1-6a85282e91ae,
+    GameName: Splatoon 3
   },
   {
     DropRequestID: d137f4ec-a0d1-43a4-a69b-41e2941b6195,
     PublisherID: 34a3e18f-913e-49e9-be3b-19e4dd39825d,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced 
   },
   {
     DropRequestID: d17c757f-e814-41be-bed4-db5da543310a,
     PublisherID: 85994b6d-200d-4eb6-8a64-ded601d6b2b2,
-    MasterGameID: 4a0abbc6-c413-49dc-8f6f-3c9b43fa14a3
+    MasterGameID: 4a0abbc6-c413-49dc-8f6f-3c9b43fa14a3,
+    GameName: Prince of Persia: The Sands of Time Remake
   },
   {
     DropRequestID: d2019cae-774d-41fa-b374-03e88d27e28d,
     PublisherID: d8594902-665b-4e38-b201-d46e73508fda,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: d218e062-2ae2-47c6-8c70-7492c50f4fa3,
     PublisherID: 914fa80c-47cc-41ab-afe6-049df277d9b2,
-    MasterGameID: f959cbc7-0b91-4a61-9e5b-0002851f216f
+    MasterGameID: f959cbc7-0b91-4a61-9e5b-0002851f216f,
+    GameName: Final Fantasy VII Rebirth
   },
   {
     DropRequestID: d3535eab-97e3-4114-b498-2fff83e3fa3c,
     PublisherID: dd47e8bb-ae24-4362-a70a-19dd446771b6,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: d3862e80-26e8-49b9-b166-a07bc941afaf,
     PublisherID: 6ec0acd8-9731-4bd9-ab29-4c3e0717464f,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: d3c59766-802c-4e44-ac5f-f25bd1cc270c,
     PublisherID: 1c3a309c-3db6-4d79-858b-8df2e9f4c568,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: d4eb889b-4b98-468a-87e8-420b45511c62,
     PublisherID: 84d7ded8-f8d4-4cff-b182-95f20910195f,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: d554f7dd-3433-41bb-81cc-eb677a285383,
     PublisherID: f37cd8bb-e8af-4d3b-9ff1-dec3363064f2,
-    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23
+    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23,
+    GameName: The Invincible
   },
   {
     DropRequestID: d58844f1-b921-42c5-bed4-54d64f12fe16,
     PublisherID: 523b0405-adf0-49d6-8e9f-c4106887a9bf,
-    MasterGameID: 8a35c8bb-55e9-4254-b312-150c7afbfb48
+    MasterGameID: 8a35c8bb-55e9-4254-b312-150c7afbfb48,
+    GameName: Star Wars: Knights of the Old Republic Remake
   },
   {
     DropRequestID: d5e2f48a-5262-4c8f-9e2b-76ad603f82ae,
     PublisherID: a8576fe9-b5a1-415e-849c-05c229a345ff,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: d62b9caf-34c4-483c-97af-c71869db9e30,
     PublisherID: 27a8c398-66e4-4288-aad4-919eb6b66b75,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: d6337d90-d72f-401c-b090-ac95d8d6af81,
     PublisherID: ea1ceeb8-7b96-4a5e-abc4-74f054554c97,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: d6b6c5dc-70e6-479c-bdaa-d8b2cb57cdba,
     PublisherID: f24655ca-2181-40e6-9776-8863b9ea65c4,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: d6c1edf8-b6a6-4481-a142-5f65a8ef2736,
     PublisherID: b0678e73-8736-4a74-912b-f5da1d454bd7,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: d6e2087b-1fd9-4270-bcce-de5dd8b258ba,
     PublisherID: 99195c5d-4500-4995-aa97-20a06311c52d,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: d77c551c-498b-491b-acf5-692c3fcd0f6f,
     PublisherID: 4e8e914f-3a5a-4a6d-9251-8e226625784d,
-    MasterGameID: f959cbc7-0b91-4a61-9e5b-0002851f216f
+    MasterGameID: f959cbc7-0b91-4a61-9e5b-0002851f216f,
+    GameName: Final Fantasy VII Rebirth
   },
   {
     DropRequestID: d7a387a5-4a16-41a1-a9c8-2d36a98a5125,
     PublisherID: b0c21611-f689-42d9-857a-2947b587892e,
-    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23
+    MasterGameID: 233c0b96-8a8f-45af-a432-3cff9c72ca23,
+    GameName: The Invincible
   },
   {
     DropRequestID: d850b762-99a1-4f4e-9a2a-b76bf14fa47d,
     PublisherID: 3f8a0cc3-ee41-4eb1-87aa-43a693663efc,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: d885e49f-007c-4c1b-9e73-762abe9f8777,
     PublisherID: bf99b2c8-2f7a-422d-b4b0-38a9bcd30e4d,
-    MasterGameID: 10d878d0-346a-4294-b4ab-e91fae7734c6
+    MasterGameID: 10d878d0-346a-4294-b4ab-e91fae7734c6,
+    GameName: Kingdom Hearts IV
   },
   {
     DropRequestID: d94acbba-07f5-4803-80f8-7dc0e26dc717,
     PublisherID: 4961378f-440c-415f-bcc6-04dd6c0d8bbb,
-    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23
+    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23,
+    GameName: Frostpunk 2
   },
   {
     DropRequestID: d9778146-7b89-4abf-8d42-5b64c83607ed,
     PublisherID: 962459bf-14a2-4d82-b14e-c9e088c0f3c7,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: d9ef245b-ac5d-4aa6-af0f-3fa072ea94d1,
     PublisherID: e8d37c14-5fd0-4eca-a824-962b25492252,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: d9fd4d21-705f-401c-930a-7497cb790511,
     PublisherID: a58b479b-0739-4856-b23f-e127aff0b298,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: daac754e-e7cc-4bd5-ba44-f8b0e176c375,
     PublisherID: 6ae61a1c-3017-486b-8ce2-ffd50cdd6799,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: dac2b0f3-5d4b-44e4-b358-d910c0dc623f,
     PublisherID: fa836e60-f487-4f93-a851-a933616db8ee,
-    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7
+    MasterGameID: 7aa7e232-ef5f-47db-8d6f-8020b5d584c7,
+    GameName: Somerville
   },
   {
     DropRequestID: db1cd609-cbca-4efe-a4fe-5e426f948986,
     PublisherID: ad3596a6-f114-4a20-840a-337335db43b5,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: dbcf3f93-18ee-4667-afe0-33785b9cdf01,
     PublisherID: 2afe9b18-8c02-47af-a19f-a0abd11cdaf3,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: dc561f87-124e-4c4e-a83f-b8b124d54e78,
     PublisherID: 438fd0b0-3672-4f93-93ff-599caae80297,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: dc70efea-efc3-4d52-9d10-77ec5f6db031,
     PublisherID: 0a08198e-a795-4539-9047-76ceb6008511,
-    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b
+    MasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
+    GameName: Suicide Squad: Kill the Justice League
   },
   {
     DropRequestID: dd2ee12f-501b-4fec-8a0a-40d64df779e7,
     PublisherID: c56bfdc4-e0eb-4c47-94cb-73f006bb0490,
-    MasterGameID: e3140bd1-1d87-4886-9e36-f6f94348285f
+    MasterGameID: e3140bd1-1d87-4886-9e36-f6f94348285f,
+    GameName: The Walking Dead: Saints & Sinners - Chapter 2: Retribution
   },
   {
     DropRequestID: dd40cf39-b68d-4118-82ec-974ab6b217a5,
     PublisherID: bc694c8a-7ddd-4c3f-be0a-c8ca1feb2944,
-    MasterGameID: d29a67ae-e6cd-4fff-b417-e6c1d58cb913
+    MasterGameID: d29a67ae-e6cd-4fff-b417-e6c1d58cb913,
+    GameName: Horizon Call of the Mountain
   },
   {
     DropRequestID: dd8b7a73-6c01-4833-8bdb-0472a3f35bdf,
     PublisherID: 561846c0-e182-42c7-9931-6b195da5468e,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: df43ab98-7a02-48dd-92b9-886098a8653f,
     PublisherID: 8b23cd64-0203-4174-adf5-a33f60ecff4c,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: e04a8f2d-e152-4dc9-ac3f-fa84601c4a3e,
     PublisherID: 3824940a-7a05-4677-9692-6008b7d8b825,
-    MasterGameID: 339659b3-dacc-4939-a72a-55342d0039a6
+    MasterGameID: 339659b3-dacc-4939-a72a-55342d0039a6,
+    GameName: Diplomacy is Not an Option
   },
   {
     DropRequestID: e07f66ae-72b6-4176-965a-6e3777f26b81,
     PublisherID: 597c7397-ccf6-439c-8643-3cb4a1a9ba07,
-    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
   },
   {
     DropRequestID: e0def1af-1be3-498e-a41c-8b3e099b3a54,
     PublisherID: d3fe6992-e969-4f79-8345-0e1f731184aa,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: e1512332-6bda-4301-aeee-3afe9b731fcf,
     PublisherID: b0937b84-aa8d-459b-bb72-f21cd9bd0a5a,
-    MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02
+    MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02,
+    GameName: Dragon Quest III HD-2D
   },
   {
     DropRequestID: e1ae42d8-ac28-417b-b2cf-fe6776f18dad,
     PublisherID: 97290292-ae16-4e3a-a229-32a2512d4194,
-    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce
+    MasterGameID: aaee38c5-a38e-44d3-b62c-b6b291e081ce,
+    GameName: The Day Before
   },
   {
     DropRequestID: e3629a90-1316-4f9f-b3ec-840d8326771c,
     PublisherID: c78d6a26-697a-4c0c-a32f-3e9e02e99381,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: e36dce24-10dd-4bd1-8a8d-14cb447db78d,
     PublisherID: 2307fc54-9fd7-421f-b7fa-35f2e6223f46,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: e3dc9bc4-2185-4317-9121-0ddd07f162b4,
     PublisherID: 9857afa5-31f4-4d4a-b11e-450d72c550c3,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: e4198cf3-cb78-45e3-b6c6-c2c48e497773,
     PublisherID: 0f6445e4-4578-4c00-a391-3b75b4341f34,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: e4d3015a-7919-4ac8-8910-a366ba7a41af,
     PublisherID: 216886dd-2fd5-4cbc-9300-3cb76d530d85,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: e51831fe-27dd-4f5e-bc9a-39790dcb410c,
     PublisherID: cb258c75-1ad4-4077-be39-9361ec2c3d0c,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: e5745865-8062-429d-b456-679f926c8d6f,
     PublisherID: 8980d78d-017f-4a6c-9ec1-6014cf13e688,
-    MasterGameID: 6960a432-875d-4d64-ae5c-a3f2275ab44a
+    MasterGameID: 6960a432-875d-4d64-ae5c-a3f2275ab44a,
+    GameName: Little Devil Inside
   },
   {
     DropRequestID: e6e1fee0-c34b-4f7f-a1a5-d6bb5c84122d,
     PublisherID: 0c8e80a7-1816-4c2f-824c-2b1d5d00d190,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: e7208fd0-7bec-4fec-a0bd-fc0198901b8c,
     PublisherID: 0c6ff53f-14a4-4b20-90d6-984291d917c7,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: e7d85196-f917-4526-ab83-5606e8eb210a,
     PublisherID: df84dcc1-a093-4e0e-bb62-bd857d5f0d1e,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: e8194c4f-c134-4221-bc51-66a15d2a4843,
     PublisherID: d4ca447a-fa20-4517-aa39-220fbe7d2f69,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: e82586b8-d545-4ca0-9e0e-077686b78eae,
     PublisherID: c72c1954-7420-4037-ba93-093e73ddc858,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: e991c38b-0f46-4707-85ca-a27a7c655e16,
     PublisherID: 5c4ccd21-10a5-4dd8-abee-fa590343ecaa,
-    MasterGameID: cd1891df-e07f-4307-ad56-42c4f2e2b82f
+    MasterGameID: cd1891df-e07f-4307-ad56-42c4f2e2b82f,
+    GameName: Demon Throttle
   },
   {
     DropRequestID: e9b99a23-ed6e-4ca6-b535-518c1fe55ff3,
     PublisherID: 43eabc09-eb72-4f36-9c69-52edc970f353,
-    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab
+    MasterGameID: f8af46f4-51d2-477d-aaf8-4207ad1ed8ab,
+    GameName: The Legend of Zelda: Breath of the Wild 2
   },
   {
     DropRequestID: e9bcd918-56b4-4872-834c-54f87e0d8380,
     PublisherID: f20c9cf7-f4fa-484c-9543-5e859c6b44da,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: e9e4b0a4-7ee9-40b0-bd72-c26fd087f0d1,
     PublisherID: 90007d95-8f30-41f1-b683-e4221ec41450,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: ea6abc3c-a800-4782-bfdd-927da4e09404,
     PublisherID: 58c5622e-2c53-4a5e-99c6-defd4989aac0,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: eaee6359-1258-4f69-9f3c-b4571962b229,
     PublisherID: 57b85ce0-63e4-4157-a880-5244b5331398,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: eaff70ae-589b-434b-a177-b10a16b1d3a3,
     PublisherID: f5c3fae6-0245-402b-b8a7-af99899ae108,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: ec139402-3728-478c-803b-0e4811bef45c,
     PublisherID: 27d116c4-45e8-4de3-8792-dd3d4533fb66,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ec35b767-6586-4143-819b-6d191af61239,
     PublisherID: a5e1f5ff-d56d-4a53-a206-4179f7c44d05,
-    MasterGameID: 9d19792f-0c79-446c-8881-4e7c8392d8e3
+    MasterGameID: 9d19792f-0c79-446c-8881-4e7c8392d8e3,
+    GameName: Two Point Campus
   },
   {
     DropRequestID: ec4124be-65e6-434a-bb33-8409d528f33b,
     PublisherID: a2f141fb-6056-41c4-9365-cf399b213aee,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: ec84105c-aee5-4827-91c1-f66ce339d343,
     PublisherID: 7a26228e-d240-48cc-a6d0-b1c0925c9309,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: ec928078-45af-4387-af04-5f07a2f5ab12,
     PublisherID: 32ab1c7e-a1a2-42ac-a3e9-af80e41b2740,
-    MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5
+    MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5,
+    GameName: Advance Wars 1 + 2: Re-boot Camp
   },
   {
     DropRequestID: ed81b193-756d-49d7-86fa-d5938a2182e0,
     PublisherID: e506b0fa-ec9b-4ea6-a4a0-a4b4d1e6f6fd,
-    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8
+    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8,
+    GameName: Dead Space (Remake)
   },
   {
     DropRequestID: ee4bd955-a372-47ac-ad8b-6aa9321d7ed3,
     PublisherID: 2d5725e8-ff2b-4fad-886d-9b17302a4b25,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: ee69bae4-e715-419a-8625-b3e679729e86,
     PublisherID: d98aeb6c-7c45-4e4a-863d-25bded702428,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: ee69cd1c-da64-4eb3-925e-533c937feb13,
     PublisherID: ade56927-768a-497f-b352-b97fe7ca0471,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: ee80bd6c-c9ef-48d1-83df-d7f1d0064e7e,
     PublisherID: cfe87c1a-037d-4669-9d7b-20f7482d6058,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: ee88c1be-678d-42f3-a182-66dcc58c5111,
     PublisherID: af638d82-f6ba-41d6-993a-ffdf21293699,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ef04dc80-5157-4b5a-b1e4-3e629159344a,
     PublisherID: 87882603-99ab-4fba-b54d-bcde01f9c463,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: ef775feb-920b-45b2-9f50-d5eb90be34c5,
     PublisherID: 31bf7633-d0cc-4da6-b592-4cabc15d3527,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f02d1bd3-b6ad-4273-bef9-f982b992ded9,
     PublisherID: b6680a75-68d7-4e04-b810-08d2426076d5,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f04f399a-3190-42b3-a2c6-d1a95810771b,
     PublisherID: 36ab9209-c404-4817-bd02-e55cb522c440,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f05e70fd-0c5d-4a33-b64f-c2c783fb8336,
     PublisherID: d11608ad-1b3e-415b-9305-e22f553a49b5,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f0e1e4a6-7a78-4131-b37e-f6871b87a81b,
     PublisherID: 0f6445e4-4578-4c00-a391-3b75b4341f34,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f1cef186-befe-4668-9bc5-a168f4ee62af,
     PublisherID: 5083307a-f90f-4d26-a54e-bc67dd6c65fa,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: f20720c8-6725-4104-be9e-127bc0103ce9,
     PublisherID: 57b85ce0-63e4-4157-a880-5244b5331398,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: f214949a-90ba-49e2-a89e-ce3a0badf711,
     PublisherID: 19fad094-64e2-421f-aa68-2ab10817e449,
-    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a
+    MasterGameID: 4ed51234-f7e8-4f7f-b071-097aaa059c8a,
+    GameName: Star Wars Jedi: Survivor
   },
   {
     DropRequestID: f2adab14-a552-4a68-8d29-75a5b40efa0b,
     PublisherID: 8fae2c55-d99f-4863-81bb-77f4511c5cb8,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: f2e793ba-bacd-460c-88a1-c19c4b78555f,
     PublisherID: 50bc055b-b7f3-4bb8-b00f-4db9605ac84c,
-    MasterGameID: a67081fe-d1c8-494a-aff7-7950f8976c6b
+    MasterGameID: a67081fe-d1c8-494a-aff7-7950f8976c6b,
+    GameName: Bomb Rush Cyberfunk
   },
   {
     DropRequestID: f31ed9a9-df1e-44f4-9d50-592202b1b4db,
     PublisherID: 63003b4c-fcea-455a-b837-62374fd0a4c9,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f35d09a9-5bfc-40c6-9f3c-79f702395b19,
     PublisherID: 50fc79ce-913a-4a10-b4e5-f47aaf3f1856,
-    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69
+    MasterGameID: 07772dbd-5f52-4e57-9bf6-f8075b9b4c69,
+    GameName: Redfall
   },
   {
     DropRequestID: f5789836-cf6b-468c-a6ad-bd60c0d98234,
     PublisherID: b4934fac-1c1d-48be-a763-761251dbd0bf,
-    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0
+    MasterGameID: f5a2af80-dacb-45c4-bbce-35fc0cfe03b0,
+    GameName: Final Fantasy XVI 
   },
   {
     DropRequestID: f58c5fdd-6309-4160-9af5-a7d33725ebdb,
     PublisherID: 90a945b1-3e4a-40b3-bae3-c950ea1345f7,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: f5c1b328-6567-4a05-81fb-c15d5a7025a6,
     PublisherID: 36505ac0-373d-47b1-b213-f4ff0e8e4cb6,
-    MasterGameID: cda341b4-ca23-419c-92de-24d4197496d9
+    MasterGameID: cda341b4-ca23-419c-92de-24d4197496d9,
+    GameName: Dragon Age: Dreadwolf
   },
   {
     DropRequestID: f63e807b-deb9-4f4a-92b2-4563f1e7099d,
     PublisherID: 0f6445e4-4578-4c00-a391-3b75b4341f34,
-    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141
+    MasterGameID: 8a18fea0-6a20-4706-949d-2ba27a105141,
+    GameName: Starfield
   },
   {
     DropRequestID: f6c38df9-a8a9-490f-9dbc-c0707016a38f,
     PublisherID: c1bfbd58-b191-45c8-8586-b4d062824795,
-    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21
+    MasterGameID: 1482932a-50e5-40de-84ae-c3ab60d33d21,
+    GameName: Homeworld 3
   },
   {
     DropRequestID: f7374c06-b3ec-48d3-8f66-22e6e7ccea64,
     PublisherID: 77e10ce8-9df1-4172-b100-e9366af74f1a,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: f7d75fe6-a0d7-461f-985c-075b539e4e08,
     PublisherID: 81b531dc-aeba-4185-b83e-206531a7b838,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f82940d9-afb7-4702-b9f3-0fe077bf86f7,
     PublisherID: e485ba68-aa40-46f7-bb4c-fe9588212fe3,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: f904b3f8-e8e4-4ed9-911c-5ef2ad46e30d,
     PublisherID: b78a691e-5051-4762-98c2-d8a9dd169419,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: fa52e33f-2f5c-43ae-a355-7f661229afe9,
     PublisherID: a197c3c8-9e11-4d77-8b7a-d2e4bed779f1,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: fab26f82-c8bc-452a-922c-3959fdd7dd20,
     PublisherID: 01291733-28b9-439b-aea2-9b78ee61476c,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: fbad5df9-9595-465d-be6b-558d4dfdda8c,
     PublisherID: b150e2b6-b6cd-4675-90b9-de3e13a2ab94,
-    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545
+    MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
+    GameName: Kerbal Space Program 2
   },
   {
     DropRequestID: fd345bc0-6101-4b54-8394-416a4a12e5ec,
     PublisherID: 2f114a24-7f23-4e66-8d94-53a7788e1aca,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
   },
   {
     DropRequestID: fdad1756-7585-40f4-8acb-ce9623f2b58a,
     PublisherID: 04c77c79-2753-44af-8bff-8a8649a5aa88,
-    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13
+    MasterGameID: 42903d15-1810-4f10-8cba-6cb9f8c4fc13,
+    GameName: Lord of the Rings: Gollum
   },
   {
     DropRequestID: fdc22049-84c6-41f6-ad55-76bc801791c5,
     PublisherID: 8bea3630-c15b-48b1-8674-2408d2dabb0c,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: fdde62be-17a9-476c-8430-5c20dabbcd1e,
     PublisherID: 20d71a51-d8d8-433b-8a59-5980d207b474,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink
   },
   {
     DropRequestID: fe02e36e-d8b2-4902-89e8-50ba12d3d318,
     PublisherID: 8f71f1df-1c6a-4219-9982-046aa142be15,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: fe0d0a10-8167-45a9-ab34-d259801c41d7,
     PublisherID: 0366c857-307d-4faa-b173-110b1c6a906f,
-    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8
+    MasterGameID: 8770afa9-d4ac-406d-873a-8c1ea64258c8,
+    GameName: Dead Space (Remake)
   },
   {
     DropRequestID: fe39c4ce-18da-4f39-b97e-8ae34f6a445a,
     PublisherID: 99fc8152-7dcc-4419-b727-947444790e47,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: fecd18b7-da8f-488a-8ea8-06c8b4d41909,
     PublisherID: e3e68907-2603-4791-86b3-9fc6cd0d5878,
-    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Factions 2
   },
   {
     DropRequestID: fed1c95d-31a5-4e97-807f-4da8027e3aed,
     PublisherID: 7916fbf7-0798-46bd-a24b-a78d20621af9,
-    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade 2
   },
   {
     DropRequestID: fefeeb5b-dd0c-48dc-98e4-94aadc5027af,
     PublisherID: a8101302-156c-4c85-a2f1-78ec1f2e6b34,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   },
   {
     DropRequestID: ff7cbbb1-a100-4a99-8f65-bb4350242e18,
     PublisherID: cb5dde9c-95ee-4dab-b7ed-e287ad94f979,
-    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9
+    MasterGameID: 9da31175-a3dd-4a16-a10a-06d8f5ba27f9,
+    GameName: Forza Motorsport (Xbox Series X)
   }
 ]
