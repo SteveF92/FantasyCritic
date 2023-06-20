@@ -215,7 +215,7 @@ public class LeagueController : BaseLeagueController
         IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
 
         FantasyCriticUser? previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear);
-        IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear);
+        var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
 
         IReadOnlyList<Trade> activeTrades = await _tradeService.GetActiveTradesForLeague(leagueYear);
         IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
@@ -254,7 +254,7 @@ public class LeagueController : BaseLeagueController
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
             validResult.ActiveUsers, completePlayStatus, systemWideValues,
             validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
-            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedPublisherGameIDs,
+            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedByDictionary,
             activeTrades, activeSpecialAuctions, privatePublisherData, gameNewsViewModel);
         return Ok(leagueYearViewModel);
     }
@@ -334,11 +334,11 @@ public class LeagueController : BaseLeagueController
         }
 
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-        IReadOnlySet<Guid> counterPickedPublisherGameIDs = GameUtilities.GetCounterPickedPublisherGameIDs(leagueYear);
+        var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
 
         var currentDate = _clock.GetToday();
         var publisherViewModel = new PublisherViewModel(leagueYear, publisher, currentDate, relationship.InLeague,
-            relationship.InvitedToLeague, systemWideValues, counterPickedPublisherGameIDs);
+            relationship.InvitedToLeague, systemWideValues, counterPickedByDictionary);
         return Ok(publisherViewModel);
     }
 
@@ -921,7 +921,7 @@ public class LeagueController : BaseLeagueController
         var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher);
         var currentDate = _clock.GetToday();
         var viewModels = availableCounterPicks
-            .Select(x => new PublisherGameViewModel(x, currentDate, false, false))
+            .Select(x => new PublisherGameViewModel(x, currentDate, null, false))
             .OrderBy(x => x.GameName).ToList();
 
         return Ok(viewModels);

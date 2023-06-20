@@ -20,7 +20,7 @@ public class PickupBidViewModel
 
         if (pickupBid.ConditionalDropPublisherGame is not null)
         {
-            ConditionalDropPublisherGame = new PublisherGameViewModel(pickupBid.ConditionalDropPublisherGame, currentDate, false, false);
+            ConditionalDropPublisherGame = new PublisherGameViewModel(pickupBid.ConditionalDropPublisherGame, currentDate, null, false);
         }
 
         CounterPick = pickupBid.CounterPick;

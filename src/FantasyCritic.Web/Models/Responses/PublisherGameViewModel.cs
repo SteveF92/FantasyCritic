@@ -2,7 +2,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PublisherGameViewModel
 {
-    public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, bool counterPicked, bool counterPicksBlockDrops)
+    public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, Publisher? counterPickedBy, bool counterPicksBlockDrops)
     {
         PublisherGameID = publisherGame.PublisherGameID;
         GameName = publisherGame.GameName;
@@ -41,8 +41,9 @@ public class PublisherGameViewModel
         BidAmount = publisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.AcquiredInTradeID;
         SlotNumber = publisherGame.SlotNumber;
-        CounterPicked = counterPicked;
-        DropBlocked = counterPicked && counterPicksBlockDrops;
+        CounterPicked = counterPickedBy is not null;
+        CounterPickedBy = counterPickedBy?.PublisherName;
+        DropBlocked = CounterPicked && counterPicksBlockDrops;
     }
 
     public PublisherGameViewModel(FormerPublisherGame publisherGame, LocalDate currentDate)
@@ -109,6 +110,7 @@ public class PublisherGameViewModel
     public bool ManualCriticScore { get; }
     public bool ManualWillNotRelease { get; }
     public bool CounterPicked { get; }
+    public string? CounterPickedBy { get; }
     public bool DropBlocked { get; }
     public Instant? RemovedTimestamp { get; }
     public string? RemovedNote { get; }

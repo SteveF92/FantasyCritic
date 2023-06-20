@@ -3,7 +3,7 @@ using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Lib.Domain;
 
-public class PublisherGame
+public class PublisherGame : IEquatable<PublisherGame>
 {
     public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
         decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID)
@@ -81,4 +81,24 @@ public class PublisherGame
     }
 
     public override string ToString() => GameName;
+
+    public bool Equals(PublisherGame? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return PublisherGameID.Equals(other.PublisherGameID);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((PublisherGame) obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return PublisherGameID.GetHashCode();
+    }
 }

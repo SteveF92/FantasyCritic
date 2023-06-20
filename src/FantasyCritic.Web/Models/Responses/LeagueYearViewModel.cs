@@ -13,7 +13,7 @@ public class LeagueYearViewModel
         CompletePlayStatus completePlayStatus, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
-        PublicBiddingSet? publicBiddingSet, IReadOnlySet<Guid> counterPickedPublisherGameIDs,
+        PublicBiddingSet? publicBiddingSet, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary,
         IEnumerable<Trade> activeTrades, IEnumerable<SpecialAuction> activeSpecialAuctions, PrivatePublisherDataViewModel? privatePublisherData, GameNewsViewModel gameNews)
     {
         var currentDate = currentInstant.ToEasternDate();
@@ -31,7 +31,7 @@ public class LeagueYearViewModel
 
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
-            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedPublisherGameIDs))
+            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedByDictionary))
             .ToList();
 
 
