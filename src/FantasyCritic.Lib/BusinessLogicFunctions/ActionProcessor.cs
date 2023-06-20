@@ -432,7 +432,7 @@ public class ActionProcessor
         if (bestBidsByDraftPosition.Count == 1)
         {
             var singleBid = bestBidsByDraftPosition.Single();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied", _systemWideValues, _currentDate);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied)", _systemWideValues, _currentDate);
         }
 
         throw new Exception($"Inconceivable tie situation for game: {masterGame.GameName} for league year: {leagueYear}");
