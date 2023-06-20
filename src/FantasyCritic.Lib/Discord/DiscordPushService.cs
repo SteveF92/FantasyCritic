@@ -593,15 +593,11 @@ public class DiscordPushService
         foreach (var bidGameAction in leagueActionDictionaryByGame)
         {
             var messageToAdd = $"**{bidGameAction.Key}**\n";
-            foreach (var bid in bidGameAction.Value)
+            var orderedBids = bidGameAction.Value.OrderByDescending(x => x.Successful!.Value).ThenByDescending(x => x.BidAmount).ToList();
+            foreach (var bid in orderedBids)
             {
-                if (!bid.Successful.HasValue)
-                {
-                    throw new Exception($"Bid {bid.BidID} Successful property is null");
-                }
-
                 var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
-                if (bid.Successful.Value)
+                if (bid.Successful!.Value)
                 {
                     messageToAdd += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}\n";
                 }
