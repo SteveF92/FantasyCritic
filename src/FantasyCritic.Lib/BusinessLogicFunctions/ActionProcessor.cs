@@ -163,6 +163,7 @@ public class ActionProcessor
         {
             var leagueYear = singleLeagueYearSet.LeagueYear;
             var orderedSpecialAuctions = singleLeagueYearSet.SpecialAuctionsWithBids.OrderBy(x => x.SpecialAuction.ScheduledEndTime).ToList();
+            List<PickupBid> bidsToProcessForLeague = new List<PickupBid>();
             foreach (var specialAuctionWithBids in orderedSpecialAuctions)
             {
                 var masterGame = specialAuctionWithBids.SpecialAuction.MasterGameYear.MasterGame;
@@ -172,9 +173,11 @@ public class ActionProcessor
                     continue;
                 }
 
-                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, specialAuctionWithBids.Bids, publisherStateSet, true, new List<PublisherGame>());
-                processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
+                bidsToProcessForLeague.AddRange(specialAuctionWithBids.Bids);
             }
+
+            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, bidsToProcessForLeague, publisherStateSet, true, new List<PublisherGame>());
+            processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
         }
 
         ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, noBidsActions);
