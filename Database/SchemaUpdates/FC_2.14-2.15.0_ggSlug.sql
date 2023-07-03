@@ -1,0 +1,5 @@
+ALTER TABLE `tbl_mastergame`
+	ADD COLUMN `GGSlug` VARCHAR(255) NULL DEFAULT NULL AFTER `GGToken`;
+
+ALTER TABLE `tbl_caching_mastergameyear`
+	ADD COLUMN `GGSlug` VARCHAR(255) NULL DEFAULT NULL AFTER `GGToken`;

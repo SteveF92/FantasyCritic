@@ -25,6 +25,7 @@ public class MasterGameYearEntity
         ReleaseDate = masterGameStats.MasterGame.ReleaseDate?.ToDateTimeUnspecified();
         OpenCriticID = masterGameStats.MasterGame.OpenCriticID;
         GGToken = masterGameStats.MasterGame.GGToken;
+        GGSlug = masterGameStats.MasterGame.GGSlug;
         CriticScore = masterGameStats.MasterGame.CriticScore;
         OpenCriticSlug = masterGameStats.MasterGame.OpenCriticSlug;
         Notes = masterGameStats.MasterGame.Notes;
@@ -64,6 +65,7 @@ public class MasterGameYearEntity
     public DateTime? ReleaseDate { get; set; }
     public int? OpenCriticID { get; set; }
     public string? GGToken { get; set; }
+    public string? GGSlug { get; set; }
     public decimal? CriticScore { get; set; }
     public bool HasAnyReviews { get; set; }
     public string? OpenCriticSlug { get; set; }
@@ -132,7 +134,7 @@ public class MasterGameYearEntity
 
         var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate),
             maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
-            releaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,
+            releaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,
             firstCriticScoreTimestamp, false, false, UseSimpleEligibility, DelayContention, ShowNote, addedTimestamp, addedByUser, subGames, tags);
 
         return new MasterGameYear(masterGame, Year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,

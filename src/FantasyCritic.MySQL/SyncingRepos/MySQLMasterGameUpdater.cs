@@ -49,7 +49,6 @@ public class MySQLMasterGameUpdater
             }
         }
 
-
         var paramsObject = new
         {
             betaKeepTags,

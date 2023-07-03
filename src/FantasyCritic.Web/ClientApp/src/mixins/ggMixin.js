@@ -4,7 +4,12 @@ let ggMixin = {
       if (!masterGame.ggToken) {
         return null;
       }
-      return `https://ggapp.io/games/${masterGame.ggToken}`;
+
+      let slug = masterGame.ggSlug;
+      if (!slug) {
+        slug = 'a';
+      }
+      return `https://ggapp.io/games/${masterGame.ggToken}/${slug}`;
     },
     getGGCoverArtLinkForGame(masterGame, width) {
       if (!masterGame.ggCoverArtFileName) {

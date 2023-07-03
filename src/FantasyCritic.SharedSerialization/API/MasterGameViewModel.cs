@@ -37,6 +37,7 @@ public class MasterGameViewModel
         OpenCriticID = masterGame.OpenCriticID;
         OpenCriticSlug = masterGame.OpenCriticSlug;
         GGToken = masterGame.GGToken;
+        GGSlug = masterGame.GGSlug;
         SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
         Tags = masterGame.Tags.Select(x => x.Name).ToList();
         BoxartFileName = masterGame.BoxartFileName;
@@ -87,6 +88,7 @@ public class MasterGameViewModel
     public int? OpenCriticID { get; init; }
     public string? OpenCriticSlug { get; init; }
     public string? GGToken { get; init; }
+    public string? GGSlug { get; init; }
     public IReadOnlyList<MasterGameViewModel>? SubGames { get; init; }
     public IReadOnlyList<string> Tags { get; init; } = null!;
     public string? Notes { get; init; }
@@ -109,7 +111,7 @@ public class MasterGameViewModel
         }
         
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
-            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, AddedTimestamp, DoNotRefreshDate,
+            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,  AddedTimestamp, DoNotRefreshDate,
             DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
     }
 }

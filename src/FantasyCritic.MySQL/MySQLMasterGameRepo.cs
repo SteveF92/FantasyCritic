@@ -150,19 +150,15 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateGGStats(MasterGame masterGame, GGGame ggGame)
     {
-        if (ggGame.CoverArtFileName is null)
-        {
-            return;
-        }
-
-        const string sql = "update tbl_mastergame set GGCoverArtFileName = @ggCoverArtFileName where MasterGameID = @masterGameID;";
+        const string sql = "update tbl_mastergame set GGCoverArtFileName = @ggCoverArtFileName, GGSlug = @ggSlug where MasterGameID = @masterGameID;";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
             new
             {
                 masterGameID = masterGame.MasterGameID,
-                ggCoverArtFileName = ggGame.CoverArtFileName
+                ggCoverArtFileName = ggGame.CoverArtFileName,
+                ggSlug = ggGame.Slug
             });
     }
 

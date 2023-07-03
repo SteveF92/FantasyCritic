@@ -164,7 +164,7 @@ export default {
       return `https://opencritic.com/game/${openCriticID}/a`;
     },
     ggLink(ggToken) {
-      return `https://ggapp.io/games/${ggToken}`;
+      return `https://ggapp.io/games/${ggToken}/a`;
     },
     linkToOpenCritic(request) {
       let linkRequest = {

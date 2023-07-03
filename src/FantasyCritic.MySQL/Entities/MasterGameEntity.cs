@@ -22,6 +22,7 @@ public class MasterGameEntity
         ReleaseDate = masterGame.ReleaseDate;
         OpenCriticID = masterGame.OpenCriticID;
         GGToken = masterGame.GGToken;
+        GGSlug = masterGame.GGSlug;
         CriticScore = masterGame.CriticScore;
         HasAnyReviews = masterGame.HasAnyReviews;
         Notes = masterGame.Notes;
@@ -55,6 +56,7 @@ public class MasterGameEntity
     public LocalDate? ReleaseDate { get; set; }
     public int? OpenCriticID { get; set; }
     public string? GGToken { get; set; }
+    public string? GGSlug { get; set; }
     public decimal? CriticScore { get; set; }
     public bool HasAnyReviews { get; set; }
     public string? OpenCriticSlug { get; set; }
@@ -73,7 +75,7 @@ public class MasterGameEntity
     public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
-            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
+            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
             DoNotRefreshDate, DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, subGames, tags);
     }
 }
