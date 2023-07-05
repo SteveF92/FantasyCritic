@@ -1,11 +1,9 @@
 <template>
   <footer class="footer bg-dark">
-    <div class="container">
-      <div class="row justify-content-between">
-        <div class="footer-logo" col-lg-4>
-          <img src="@/assets/logo-white.png" />
-        </div>
-        <div col-lg-4 col-md-6>
+    <BContainer>
+      <BRow>
+        <BCol class="footer-logo"><img src="@/assets/logo-white.png" /></BCol>
+        <BCol>
           <div>
             <router-link :to="{ name: 'howtoplay' }" title="How To Play">
               <font-awesome-icon icon="book-open" size="lg" fixed-width />
@@ -48,8 +46,8 @@
               <span class="full-nav">Fantasy Critic Plus</span>
             </router-link>
           </div>
-        </div>
-        <div col-lg-4 col-md-6>
+        </BCol>
+        <BCol>
           <div>
             <a href="https://patreon.com/fantasycritic" target="_blank">
               <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
@@ -86,9 +84,9 @@
               <span class="full-contact">GitHub</span>
             </a>
           </div>
-        </div>
-      </div>
-    </div>
+        </BCol>
+      </BRow>
+    </BContainer>
   </footer>
 </template>
 <style scoped>
