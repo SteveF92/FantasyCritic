@@ -62,7 +62,7 @@
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
-      <b-navbar-nav v-if="!authIsBusy" class="ml-auto user-dropdown">
+      <b-navbar-nav v-if="!authIsBusy" class="me-auto mb-2 mb-lg-0">
         <b-nav-item href="https://patreon.com/fantasycritic" target="_blank">
           <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
           <span class="brand-text">Patreon</span>
