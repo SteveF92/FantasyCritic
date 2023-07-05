@@ -17,10 +17,10 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@microsoft/signalr": "^7.0.5",
+    "@microsoft/signalr": "^7.0.7",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.0",
-    "bootstrap-vue-next": "^0.9.4",
+    "bootstrap-vue-next": "^0.9.20",
     "grapheme-breaker-mjs": "^1.0.4",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
@@ -34,12 +34,12 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/eslint-config-prettier": "^7.1.0",
-    "eslint": "^8.42.0",
+    "eslint": "^8.44.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-vue": "^9.14.1",
+    "eslint-plugin-vue": "^9.15.1",
     "prettier": "^2.8.8",
-    "sass": "^1.62.1",
-    "unplugin-vue-components": "^0.25.0",
+    "sass": "^1.63.6",
+    "unplugin-vue-components": "^0.25.1",
     "vite": "^4.3.9"
   }
 }
