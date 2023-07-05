@@ -10,12 +10,12 @@
               <span class="full-nav">How to Play</span>
             </router-link>
           </div>
-          <!-- <div>
+          <div>
             <router-link :to="{ name: 'masterGames' }" title="Games">
               <font-awesome-icon icon="gamepad" size="lg" fixed-width />
               <span class="full-nav">Games</span>
             </router-link>
-          </div> -->
+          </div>
           <div>
             <router-link :to="{ name: 'faq' }" title="FAQ">
               <font-awesome-icon icon="question-circle" size="lg" fixed-width />

@@ -57,6 +57,11 @@ export default {
   props: {
     gameSlot: { type: Object, required: true }
   },
+  data() {
+    return {
+      id: 0
+    };
+  },
   computed: {
     useSmallImages() {
       if (window.innerWidth < 500) {
@@ -96,7 +101,7 @@ export default {
       return this.getGGCoverArtLinkForGame(this.masterGame, width);
     },
     popoverID() {
-      return `mg-popover-${this._uid}`;
+      return `mg-popover-${this.id}`;
     },
     slotLabel() {
       if (this.gameSlot.counterPick) {
@@ -136,6 +141,9 @@ export default {
 
       return this.getMultiBadgeColor(this.gameSlot.specialSlot.requiredTags);
     }
+  },
+  created() {
+    this.id = this.getUniqueID();
   },
   methods: {
     getTag(tagName) {

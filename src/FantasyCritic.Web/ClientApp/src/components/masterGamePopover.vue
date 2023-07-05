@@ -24,10 +24,18 @@ export default {
     masterGame: { type: Object, required: true },
     currentlyIneligible: { type: Boolean }
   },
+  data() {
+    return {
+      id: 0
+    };
+  },
   computed: {
     popoverID() {
-      return `mg-popover-${this._uid}`;
+      return `mg-popover-${this.id}`;
     }
+  },
+  created() {
+    this.id = this.getUniqueID();
   }
 };
 </script>

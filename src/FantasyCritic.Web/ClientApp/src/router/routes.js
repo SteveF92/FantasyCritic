@@ -9,9 +9,9 @@ import Contact from '@/views/contact.vue';
 // import League from '@/views/league.vue';
 // import EditLeague from '@/views/editLeague.vue';
 // import Publisher from '@/views/publisher.vue';
-// import MasterGame from '@/views/masterGame.vue';
-// import MasterGames from '@/views/masterGames.vue';
-// import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
+import MasterGame from '@/views/masterGame.vue';
+import MasterGames from '@/views/masterGames.vue';
+import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
 // import PublicLeagues from '@/views/publicLeagues.vue';
 // import LeagueHistory from '@/views/leagueHistory.vue';
 // import AdminConsole from '@/views/adminConsole.vue';
@@ -101,25 +101,25 @@ export const routes = [
       title: 'Contact',
       isPublic: true
     }
-  }
-  // {
-  //   path: '/games',
-  //   component: MasterGames,
-  //   name: 'masterGames',
-  //   meta: {
-  //     title: 'Games',
-  //     isPublic: true
-  //   }
-  // },
-  // {
-  //   path: '/gameChanges',
-  //   component: RecentMasterGameChanges,
-  //   name: 'gameChanges',
-  //   meta: {
-  //     title: 'Game Changes',
-  //     isPublic: true
-  //   }
-  // },
+  },
+  {
+    path: '/games',
+    component: MasterGames,
+    name: 'masterGames',
+    meta: {
+      title: 'Games',
+      isPublic: true
+    }
+  },
+  {
+    path: '/gameChanges',
+    component: RecentMasterGameChanges,
+    name: 'gameChanges',
+    meta: {
+      title: 'Game Changes',
+      isPublic: true
+    }
+  },
   // {
   //   path: '/masterGameRequest',
   //   component: MasterGameRequest,
@@ -223,16 +223,16 @@ export const routes = [
   //   },
   //   props: true
   // },
-  // {
-  //   path: '/mastergame/:mastergameid',
-  //   component: MasterGame,
-  //   name: 'mastergame',
-  //   meta: {
-  //     title: 'Master Game',
-  //     isPublic: true
-  //   },
-  //   props: true
-  // },
+  {
+    path: '/mastergame/:mastergameid',
+    component: MasterGame,
+    name: 'mastergame',
+    meta: {
+      title: 'Master Game',
+      isPublic: true
+    },
+    props: true
+  }
   // {
   //   path: '/mastergameeditor/:mastergameid',
   //   component: MasterGameEditor,
