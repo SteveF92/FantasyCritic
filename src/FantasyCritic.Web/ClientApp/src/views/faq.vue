@@ -652,11 +652,11 @@
             description of it.
           </p>
 
-          <!-- <div v-if="allTags">
+          <div v-if="allTags">
             <span v-for="tag in allTags" :key="tag.name">
               <masterGameTagBadge :tag-name="tag.name"></masterGameTagBadge>
             </span>
-          </div> -->
+          </div>
         </template>
       </collapseCard>
       <collapseCard>
@@ -1052,17 +1052,16 @@
 </template>
 <script>
 import CollapseCard from '@/components/collapseCard.vue';
-//import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {
-    CollapseCard
-    //MasterGameTagBadge
+    CollapseCard,
+    MasterGameTagBadge
   },
-
   computed: {
     allTags() {
-      return this.$store.getters.allTags;
+      return this.$store.getters['interLeague/allTags'];
     }
   }
 };

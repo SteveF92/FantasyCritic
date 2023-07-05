@@ -31,9 +31,14 @@ export default {
     short: { type: Boolean },
     noPopover: { type: Boolean }
   },
+  data() {
+    return {
+      id: 0
+    };
+  },
   computed: {
     tag() {
-      let allTags = this.$store.getters.allTags;
+      let allTags = this.$store.getters['interLeague/allTags'];
       let singleTag = _.filter(allTags, { name: this.tagName });
       return singleTag[0];
     },
@@ -43,8 +48,11 @@ export default {
       };
     },
     popoverID() {
-      return `mg-badge-popover-${this._uid}`;
+      return `mg-badge-popover-${this.id}`;
     }
+  },
+  created() {
+    this.id = this.getUniqueID();
   }
 };
 </script>

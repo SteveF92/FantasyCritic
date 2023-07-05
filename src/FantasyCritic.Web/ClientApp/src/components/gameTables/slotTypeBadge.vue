@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     getTag(tagName) {
-      let allTags = this.$store.getters.allTags;
+      let allTags = this.$store.getters['interLeague/allTags'];
       let singleTag = _.filter(allTags, { name: tagName });
       return singleTag[0];
     },

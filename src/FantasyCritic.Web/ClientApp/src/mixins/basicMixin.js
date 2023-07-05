@@ -12,10 +12,10 @@ let basicMixin = {
       nextUniqueID: (state) => state.interLeague.uniqueID
     }),
     displayName() {
-      if (!this.$store.getters.userInfo) {
+      if (!this.$store.getters['auth/userInfo']) {
         return;
       }
-      return this.$store.getters.userInfo.displayName;
+      return this.$store.getters['auth/userInfo'].displayName;
     }
   },
   methods: {

@@ -39,9 +39,9 @@ export default {
   computed: {
     tagOptions() {
       if (this.includeSystem) {
-        return this.$store.getters.allTags;
+        return this.$store.getters['interLeague/allTags'];
       }
-      return _.filter(this.$store.getters.allTags, (x) => !x.systemTagOnly);
+      return _.filter(this.$store.getters['interLeague/allTags'], (x) => !x.systemTagOnly);
     }
   },
   watch: {

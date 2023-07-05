@@ -68,7 +68,7 @@ export default {
       this.$emit('input', returnValue);
     },
     getTags(tagNames) {
-      let allTags = this.$store.getters.allTags;
+      let allTags = this.$store.getters['interLeague/allTags'];
       let matchingTags = [];
       tagNames.forEach((tagName) => {
         let match = _.filter(allTags, { name: tagName });
