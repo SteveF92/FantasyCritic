@@ -26,7 +26,7 @@ export default {
     FooterModule
   },
   mounted() {
-    this.$store.dispatch('getUserInfo');
+    this.$store.dispatch('auth/getUserInfo');
   }
 };
 </script>

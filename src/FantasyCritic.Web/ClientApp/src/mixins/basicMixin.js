@@ -4,7 +4,7 @@ import * as Filters from '@/filters.js';
 
 let basicMixin = {
   computed: {
-    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'authIsBusy']),
+    ...mapGetters('auth', ['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'authIsBusy']),
     ...mapState({
       possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions
     }),

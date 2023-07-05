@@ -274,7 +274,7 @@
         <template #header>Can I bid on a game that doesn't come up when I search for games?</template>
         <template #body>
           Unfortunately no. To bid on a game, it must be in the master database. I try to stay on top of upcoming releases, but if a game that you want is missing, you can use the
-          <router-link :to="{ name: 'masterGameRequest' }">master game request form</router-link>
+          <!-- <router-link :to="{ name: 'masterGameRequest' }">master game request form</router-link> -->
           .
         </template>
       </collapseCard>

@@ -29,12 +29,12 @@ let router = createRouter({
 
 router.beforeEach(async function (toRoute, fromRoute, next) {
   if (toRoute.path !== fromRoute.path) {
-    store.commit('clearPublisherStoreData');
-    store.commit('clearLeagueStoreData');
+    store.commit('publisher/clearPublisherStoreData');
+    store.commit('league/clearLeagueStoreData');
   }
 
   if (!store.getters.interLeagueDataLoaded && !store.getters.interLeagueIsBusy) {
-    await store.dispatch('fetchInterLeagueData');
+    await store.dispatch('interLeague/fetchInterLeagueData');
   }
 
   //If we are current, we're good to go
@@ -48,7 +48,7 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
   }
 
   try {
-    await store.dispatch('getUserInfo');
+    await store.dispatch('auth/getUserInfo');
     if (store.getters.isAuth) {
       if (toRoute.meta.publicOnly) {
         next({ path: '/home' });
@@ -60,13 +60,13 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     if (toRoute.meta.isPublic) {
       return next();
     } else {
-      store.commit('clearUserInfo');
+      store.commit('auth/clearUserInfo');
       window.location.href = '/Account/Login';
       return;
     }
   } catch (error) {
     console.log('Router error');
-    store.commit('clearUserInfo');
+    store.commit('auth/clearUserInfo');
     window.location.href = '/Account/Login';
   }
 });

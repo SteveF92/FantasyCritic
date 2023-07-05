@@ -2,8 +2,8 @@ import Welcome from '@/views/welcome.vue';
 // import Home from '@/views/home.vue';
 import About from '@/views/about.vue';
 // import DiscordBot from '@/views/discordBot.vue';
-// import HowToPlay from '@/views/howToPlay.vue';
-// import Faq from '@/views/faq.vue';
+import HowToPlay from '@/views/howToPlay.vue';
+import Faq from '@/views/faq.vue';
 import Contact from '@/views/contact.vue';
 // import CreateLeague from '@/views/createLeague.vue';
 // import League from '@/views/league.vue';
@@ -25,7 +25,7 @@ import Contact from '@/views/contact.vue';
 // import RoyalePublisher from '@/views/royalePublisher.vue';
 import NotFound from '@/views/notFound.vue';
 // import MasterGameEditor from '@/views/masterGameEditor.vue';
-// import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
+import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
 
 export const routes = [
   { path: '/404', component: NotFound },
@@ -48,15 +48,15 @@ export const routes = [
   //     title: 'Home'
   //   }
   // },
-  // {
-  //   path: '/fantasyCriticPlus',
-  //   component: FantasyCriticPlus,
-  //   name: 'fantasyCriticPlus',
-  //   meta: {
-  //     title: 'Fantasy Critic Plus',
-  //     isPublic: true
-  //   }
-  // },
+  {
+    path: '/fantasyCriticPlus',
+    component: FantasyCriticPlus,
+    name: 'fantasyCriticPlus',
+    meta: {
+      title: 'Fantasy Critic Plus',
+      isPublic: true
+    }
+  },
   {
     path: '/about',
     component: About,
@@ -75,24 +75,24 @@ export const routes = [
   //     isPublic: true
   //   }
   // },
-  // {
-  //   path: '/howtoplay',
-  //   component: HowToPlay,
-  //   name: 'howtoplay',
-  //   meta: {
-  //     title: 'How to Play',
-  //     isPublic: true
-  //   }
-  // },
-  // {
-  //   path: '/faq',
-  //   component: Faq,
-  //   name: 'faq',
-  //   meta: {
-  //     title: 'Frequently Asked Questions',
-  //     isPublic: true
-  //   }
-  // },
+  {
+    path: '/howtoplay',
+    component: HowToPlay,
+    name: 'howtoplay',
+    meta: {
+      title: 'How to Play',
+      isPublic: true
+    }
+  },
+  {
+    path: '/faq',
+    component: Faq,
+    name: 'faq',
+    meta: {
+      title: 'Frequently Asked Questions',
+      isPublic: true
+    }
+  },
   {
     path: '/contact',
     component: Contact,
@@ -101,7 +101,7 @@ export const routes = [
       title: 'Contact',
       isPublic: true
     }
-  },
+  }
   // {
   //   path: '/games',
   //   component: MasterGames,

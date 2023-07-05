@@ -15,11 +15,11 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <!-- <b-nav-item :to="{ name: 'howtoplay' }">
+        <b-nav-item :to="{ name: 'howtoplay' }">
           <font-awesome-icon class="topnav-icon" icon="book-open" size="lg" fixed-width />
           <span class="full-nav">How to Play</span>
         </b-nav-item>
-
+        <!-- 
         <b-nav-item :to="{ name: 'criticsRoyale' }">
           <img class="royale-icon topnav-icon" src="@/assets/critics-royale-top-nav.svg" />
           <span class="full-nav">Royale</span>
@@ -28,12 +28,12 @@
         <b-nav-item :to="{ name: 'masterGames' }">
           <font-awesome-icon class="topnav-icon" icon="gamepad" size="lg" fixed-width />
           <span class="full-nav">Games</span>
-        </b-nav-item>
+        </b-nav-item> -->
 
         <b-nav-item :to="{ name: 'faq' }">
           <font-awesome-icon class="topnav-icon" icon="question-circle" size="lg" fixed-width />
           <span class="full-nav">FAQ</span>
-        </b-nav-item> -->
+        </b-nav-item>
 
         <b-nav-item :to="{ name: 'about' }">
           <font-awesome-icon class="topnav-icon" icon="info-circle" size="lg" fixed-width />

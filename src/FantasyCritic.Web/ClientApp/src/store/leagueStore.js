@@ -2,6 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 export default {
+  namespaced: true,
   state: {
     hasError: false,
     forbidden: false,
