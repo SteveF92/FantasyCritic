@@ -7,7 +7,7 @@ namespace FantasyCritic.TestDataScrubber;
 
 internal class Program
 {
-    private const string _basePath = "..\\..\\..\\..\\FantasyCritic.Test\\TestData\\April2023";
+    private const string _basePath = "..\\..\\..\\..\\FantasyCritic.Test\\TestData\\June2023";
     private static readonly string _resultsPath = Path.Combine("..\\..\\..\\", "Results");
     static void Main()
     {

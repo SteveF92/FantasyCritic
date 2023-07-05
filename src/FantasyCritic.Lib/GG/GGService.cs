@@ -78,12 +78,12 @@ public class GGService : IGGService
                 coverPath = split.Last();
             }
 
-            if (typedData.Token is null)
+            if (typedData.Token is null || typedData.Slug is null)
             {
                 return null;
             }
 
-            return new GGGame(typedData.Token, coverPath);
+            return new GGGame(typedData.Token, typedData.Slug, coverPath);
         }
         catch (HttpRequestException httpEx)
         {

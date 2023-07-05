@@ -5,7 +5,7 @@ namespace FantasyCritic.Web.Models.Responses;
 public class PublisherSlotViewModel
 {
     public PublisherSlotViewModel(PublisherSlot slot, LocalDate currentDate, LeagueYear leagueYear,
-        SystemWideValues systemWideValues, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
+        SystemWideValues systemWideValues, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary)
     {
         SlotNumber = slot.SlotNumber;
         OverallSlotNumber = slot.OverallSlotNumber;
@@ -18,7 +18,8 @@ public class PublisherSlotViewModel
 
         if (slot.PublisherGame is not null)
         {
-            PublisherGame = new PublisherGameViewModel(slot.PublisherGame, currentDate, counterPickedPublisherGameIDs.Contains(slot.PublisherGame.PublisherGameID), leagueYear.Options.CounterPicksBlockDrops);
+            var counterPickedBy = counterPickedByDictionary.GetValueOrDefault(slot.PublisherGame);
+            PublisherGame = new PublisherGameViewModel(slot.PublisherGame, currentDate, counterPickedBy, leagueYear.Options.CounterPicksBlockDrops);
         }
 
         EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();

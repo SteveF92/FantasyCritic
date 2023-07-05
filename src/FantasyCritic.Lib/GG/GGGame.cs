@@ -1,3 +1,3 @@
 namespace FantasyCritic.Lib.GG;
 
-public record GGGame(string Token, string? CoverArtFileName);
+public record GGGame(string Token, string Slug, string? CoverArtFileName);

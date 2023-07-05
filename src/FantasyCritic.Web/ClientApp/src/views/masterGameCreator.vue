@@ -157,7 +157,7 @@ export default {
       return 'https://store.steampowered.com/app/' + this.steamID;
     },
     ggLink() {
-      return `https://ggapp.io/games/${this.ggToken}`;
+      return `https://ggapp.io/games/${this.ggToken}/a`;
     }
   },
   async mounted() {

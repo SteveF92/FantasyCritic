@@ -40,7 +40,7 @@ public class CreateMasterGameRequest
             minimumReleaseDate = MinimumReleaseDate.Value;
         }
         Lib.Domain.MasterGame masterGame = new Lib.Domain.MasterGame(Guid.NewGuid(), GameName, EstimatedReleaseDate, minimumReleaseDate, MaximumReleaseDate,
-            EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, false, null, Notes, null, null, null,
+            EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, null, null, false, null, Notes, null, null, null,
             DoNotRefreshDate, DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, now, addedByUser, new List<MasterSubGame>(), tags);
         return masterGame;
     }

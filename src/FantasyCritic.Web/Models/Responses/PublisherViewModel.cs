@@ -3,14 +3,14 @@ namespace FantasyCritic.Web.Models.Responses;
 public class PublisherViewModel
 {
     public PublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, bool userIsInLeague,
-        bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
-        : this(leagueYear, publisher, currentDate, null, userIsInLeague, outstandingInvite, systemWideValues, counterPickedPublisherGameIDs)
+        bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary)
+        : this(leagueYear, publisher, currentDate, null, userIsInLeague, outstandingInvite, systemWideValues, counterPickedByDictionary)
     {
 
     }
 
     public PublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, Publisher? nextDraftPublisher,
-        bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlySet<Guid> counterPickedPublisherGameIDs)
+        bool userIsInLeague, bool outstandingInvite, SystemWideValues systemWideValues, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary)
     {
         PublisherID = publisher.PublisherID;
         LeagueID = leagueYear.League.LeagueID;
@@ -26,14 +26,14 @@ public class PublisherViewModel
 
         Games = publisher.PublisherGames
             .OrderBy(x => x.Timestamp)
-            .Select(x => new PublisherGameViewModel(x, currentDate, counterPickedPublisherGameIDs.Contains(x.PublisherGameID), leagueYear.Options.CounterPicksBlockDrops))
+            .Select(x => new PublisherGameViewModel(x, currentDate, counterPickedByDictionary.GetValueOrDefault(x), leagueYear.Options.CounterPicksBlockDrops))
             .ToList();
         FormerGames = publisher.FormerPublisherGames
             .OrderBy(x => x.PublisherGame.Timestamp)
             .Select(x => new PublisherGameViewModel(x, currentDate))
             .ToList();
         GameSlots = publisher.GetPublisherSlots(leagueYear.Options)
-            .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, systemWideValues, counterPickedPublisherGameIDs))
+            .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, systemWideValues, counterPickedByDictionary))
             .ToList();
 
         AverageCriticScore = publisher.AverageCriticScore;

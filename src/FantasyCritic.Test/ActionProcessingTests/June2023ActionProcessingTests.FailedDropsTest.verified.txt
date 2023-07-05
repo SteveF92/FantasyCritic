@@ -1,0 +1,98 @@
+﻿[
+  {
+    DropRequestID: 09621a53-d1ec-4fdb-904c-5339084d6ed9,
+    PublisherID: a99ddcf7-ac52-431e-97c6-1a181d8287ee,
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade II
+  },
+  {
+    DropRequestID: 1cf9e60e-0775-48c2-a0e1-c4d52f57af52,
+    PublisherID: 2ebb9862-ac30-45a7-9c73-5431b1c31875,
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Multiplayer Game
+  },
+  {
+    DropRequestID: 39a71917-0e9c-4aa8-8940-5651dcdb6cec,
+    PublisherID: b4d74ab0-9053-4610-b9bd-ce56ec05a449,
+    MasterGameID: e466da26-aaa3-4319-876f-dceccb70e794,
+    GameName: Metal Gear Solid Δ: Snake Eater
+  },
+  {
+    DropRequestID: 4c780463-2f32-4b0e-97c9-b3df8dd3e95c,
+    PublisherID: cf64b772-2da0-4090-a65b-943f6ee23bd1,
+    MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
+    GameName: Persona 3 Reload
+  },
+  {
+    DropRequestID: 5fd68f01-497a-42e8-a15e-1b0952696d93,
+    PublisherID: 939b05ef-cc81-4154-8832-4966ea3e18fd,
+    MasterGameID: 7113cc92-1868-488c-ac82-005e820ac40e,
+    GameName: Pragmata
+  },
+  {
+    DropRequestID: 600137af-4f37-4c67-bb45-f61c67d0413f,
+    PublisherID: 3635621c-af89-4cfe-b05d-c691e2824f39,
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade II
+  },
+  {
+    DropRequestID: 65760a67-c603-4bea-b223-98745c1b2abf,
+    PublisherID: 2e1831b0-bc26-4806-b056-36308bcc23ce,
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade II
+  },
+  {
+    DropRequestID: 77d178b6-3c40-4e0e-bfec-8ddec180c057,
+    PublisherID: ba527ccc-bf6c-4078-bf7b-9dc3c0823900,
+    MasterGameID: 5de9fc48-5eaa-4e7a-89ed-ce32a681e684,
+    GameName: The Last of Us Multiplayer Game
+  },
+  {
+    DropRequestID: 958eec44-f8d1-4207-b1cc-885e5339a1c2,
+    PublisherID: ba527ccc-bf6c-4078-bf7b-9dc3c0823900,
+    MasterGameID: 6960a432-875d-4d64-ae5c-a3f2275ab44a,
+    GameName: Little Devil Inside
+  },
+  {
+    DropRequestID: a02b135b-c848-493c-ac2a-ab0e8e8603ff,
+    PublisherID: efdccf6c-645f-47de-b54a-a998884b6204,
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade II
+  },
+  {
+    DropRequestID: af37c99b-78a8-46fd-8dcf-738e89f5f188,
+    PublisherID: 5ed5011d-eaeb-4542-8735-3d086cd7128a,
+    MasterGameID: d79ab5d6-8d9a-4dc3-bbd3-c75975aa8090,
+    GameName: Senua's Saga: Hellblade II
+  },
+  {
+    DropRequestID: c369c236-03de-46b1-8497-628980dd5e4e,
+    PublisherID: 1fe04c4f-de88-4813-a0af-8e95ed56300a,
+    MasterGameID: f959cbc7-0b91-4a61-9e5b-0002851f216f,
+    GameName: Final Fantasy VII Rebirth
+  },
+  {
+    DropRequestID: c6996b2c-b0e9-4496-9690-6c76ac7a8b5c,
+    PublisherID: ba527ccc-bf6c-4078-bf7b-9dc3c0823900,
+    MasterGameID: 28b63e32-29ff-4a7f-8a86-b7fa4387cfe2,
+    GameName: Payday 3
+  },
+  {
+    DropRequestID: d8079c62-dd9d-4e16-98ed-ebdd6af89541,
+    PublisherID: 54429f5f-4af6-4a31-8870-61de0a77b7ab,
+    MasterGameID: 9cd92e93-5fde-4384-bad8-39102595704a,
+    GameName: Warhammer 40,000: Space Marine 2
+  },
+  {
+    DropRequestID: d88771fb-b3c2-48cd-bc7d-99da45eef483,
+    PublisherID: b4d74ab0-9053-4610-b9bd-ce56ec05a449,
+    MasterGameID: 9907b22d-462a-48b4-aee8-9c0d8a34c063,
+    GameName: Avowed
+  },
+  {
+    DropRequestID: df38777e-ed64-4eb5-90c0-4cff38f2830a,
+    PublisherID: fdbe5208-d88b-47fa-8be6-ab019a4e641a,
+    MasterGameID: cdf2795e-6402-46c5-8f0c-e911ac5f8d82,
+    GameName: Lords of the Fallen
+  }
+]

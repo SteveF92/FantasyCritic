@@ -15,6 +15,8 @@ public class FailedPickupBid : IProcessedBid
 
     public string Outcome => FailureReason;
 
+    public override string ToString() => PickupBid.ToString() + "|" + Outcome;
+
     public PickupBid ToFlatBid(Guid processSetID)
     {
         return new PickupBid(PickupBid.BidID, PickupBid.Publisher, PickupBid.LeagueYear, PickupBid.MasterGame,

@@ -28,6 +28,7 @@ public class MasterGameYearViewModel
         OpenCriticID = masterGame.MasterGame.OpenCriticID;
         OpenCriticSlug = masterGame.MasterGame.OpenCriticSlug;
         GGToken = masterGame.MasterGame.GGToken;
+        GGSlug = masterGame.MasterGame.GGSlug;
         SubGames = masterGame.MasterGame.SubGames.Select(x => new MasterGameYearViewModel(x, masterGame, currentDate)).ToList();
         Tags = masterGame.MasterGame.Tags.Select(x => x.Name).ToList();
         ReadableTags = masterGame.MasterGame.Tags.Select(x => x.ReadableName).ToList();
@@ -119,6 +120,7 @@ public class MasterGameYearViewModel
     public int? OpenCriticID { get; }
     public string? OpenCriticSlug { get; }
     public string? GGToken { get; }
+    public string? GGSlug { get; }
     public IReadOnlyList<MasterGameYearViewModel>? SubGames { get; }
     public IReadOnlyList<string> Tags { get; }
     public IReadOnlyList<string> ReadableTags { get; }

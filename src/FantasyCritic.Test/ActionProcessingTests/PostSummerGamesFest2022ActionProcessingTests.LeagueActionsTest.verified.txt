@@ -3303,7 +3303,7 @@
     LeagueID: 27fc09b7-e93a-46e8-8901-d5a58972d00d,
     PublisherID: 369ed511-07a9-485c-97e9-1999ca2baf5a,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pentiment' with a bid of $0. Failure reason: No roster spots available. Attempted to conditionally drop game: Senua's Saga: Hellblade 2 but failed because: Cannot drop a game that you do not have
+    Description: Tried to acquire game 'Pentiment' with a bid of $0. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 27fc09b7-e93a-46e8-8901-d5a58972d00d,
@@ -22863,7 +22863,7 @@
     LeagueID: fb57fbbc-fbb0-4836-89a7-7f6fa27b85fe,
     PublisherID: 9d8b34c1-9302-4a55-ab9d-8c483ee61cc3,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Pentiment' with a bid of $12. Failure reason: Not enough budget.
+    Description: Tried to acquire game 'Pentiment' with a bid of $12. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: fb57fbbc-fbb0-4836-89a7-7f6fa27b85fe,

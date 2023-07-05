@@ -163,6 +163,7 @@ public class ActionProcessor
         {
             var leagueYear = singleLeagueYearSet.LeagueYear;
             var orderedSpecialAuctions = singleLeagueYearSet.SpecialAuctionsWithBids.OrderBy(x => x.SpecialAuction.ScheduledEndTime).ToList();
+            List<PickupBid> bidsToProcessForLeague = new List<PickupBid>();
             foreach (var specialAuctionWithBids in orderedSpecialAuctions)
             {
                 var masterGame = specialAuctionWithBids.SpecialAuction.MasterGameYear.MasterGame;
@@ -172,9 +173,11 @@ public class ActionProcessor
                     continue;
                 }
 
-                var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, specialAuctionWithBids.Bids, publisherStateSet, true, new List<PublisherGame>());
-                processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
+                bidsToProcessForLeague.AddRange(specialAuctionWithBids.Bids);
             }
+
+            var processedBidsForLeagueYear = ProcessPickupsForLeagueYear(leagueYear, bidsToProcessForLeague, publisherStateSet, true, new List<PublisherGame>());
+            processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
         }
 
         ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, noBidsActions);
@@ -259,10 +262,9 @@ public class ActionProcessor
         }
 
         var processDate = _processingTime.ToEasternDate();
-        var winnableBids = GetWinnableBids(updatedLeagueYear, validPickupBids);
-        var winningBids = GetWinningBids(winnableBids);
+        var winningBids = GetWinningBids(updatedLeagueYear, validPickupBids);
 
-        var takenGames = winningBids.Select(x => x.PickupBid.MasterGame);
+        var takenGames = winningBids.Select(x => x.PickupBid.MasterGame).ToHashSet();
         var losingBids = activeBidsForLeague
             .Except(winningBids.Select(x => x.PickupBid))
             .Except(duplicateBids)
@@ -342,17 +344,34 @@ public class ActionProcessor
         return "Publisher was outbid.";
     }
 
-    private IReadOnlyList<SucceededPickupBid> GetWinnableBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear)
+    private IReadOnlyList<SucceededPickupBid> GetWinningBids(LeagueYear leagueYear, IReadOnlyList<ValidPickupBid> activeBidsForLeagueYear)
     {
         List<SucceededPickupBid> winnableBids = new List<SucceededPickupBid>();
-        var groupedByGame = activeBidsForLeagueYear.GroupBy(x => x.PickupBid.MasterGame);
+        var groupedByGame = activeBidsForLeagueYear.GroupToDictionary(x => x.PickupBid.MasterGame);
         foreach (var gameGroup in groupedByGame)
         {
-            var bestBid = GetWinningBidForGame(gameGroup.Key, leagueYear, gameGroup);
+            var bestBid = GetWinningBidForGame(gameGroup.Key, leagueYear, gameGroup.Value);
             winnableBids.Add(bestBid);
         }
 
-        return winnableBids;
+        List<SucceededPickupBid> winningBids = new List<SucceededPickupBid>();
+        var groupedByPublisher = winnableBids.GroupBy(x => x.PickupBid.Publisher);
+        foreach (var publisherGroup in groupedByPublisher)
+        {
+            SucceededPickupBid winningBid = publisherGroup.WhereMin(x => x.PickupBid.Priority).First();
+            winningBids.Add(winningBid);
+        }
+
+        if (!winningBids.Any())
+        {
+            return winningBids;
+        }
+
+        //With each iteration, we only want to take the highest priority bids as finalized winners.
+        //This is because if you have a 1st priority bid that lost this iteration, and a 2nd priority bid that won this iteration, you don't want to actually take that 2nd priority game yet.
+        //The reason is because you might actually win that 1st priority bid on the next iteration, because other users spent their money or slots on the last iteration where you didn't win your 1st priority game.
+        var highestPriorityOverallBids = winningBids.WhereMin(x => x.PickupBid.Priority).ToList();
+        return highestPriorityOverallBids;
     }
 
     private SucceededPickupBid GetWinningBidForGame(MasterGame masterGame, LeagueYear leagueYear, IEnumerable<ValidPickupBid> bidsForGame)
@@ -416,23 +435,10 @@ public class ActionProcessor
         if (bestBidsByDraftPosition.Count == 1)
         {
             var singleBid = bestBidsByDraftPosition.Single();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied", _systemWideValues, _currentDate);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied)", _systemWideValues, _currentDate);
         }
 
         throw new Exception($"Inconceivable tie situation for game: {masterGame.GameName} for league year: {leagueYear}");
-    }
-
-    private static IReadOnlyList<SucceededPickupBid> GetWinningBids(IReadOnlyList<SucceededPickupBid> winnableBids)
-    {
-        List<SucceededPickupBid> winningBids = new List<SucceededPickupBid>();
-        var groupedByPublisher = winnableBids.GroupBy(x => x.PickupBid.Publisher);
-        foreach (var publisherGroup in groupedByPublisher)
-        {
-            SucceededPickupBid winningBid = publisherGroup.WhereMin(x => x.PickupBid.Priority).First();
-            winningBids.Add(winningBid);
-        }
-
-        return winningBids;
     }
 
     private ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, PublisherStateSet publisherStateSet, IEnumerable<LeagueAction> additionalActions)

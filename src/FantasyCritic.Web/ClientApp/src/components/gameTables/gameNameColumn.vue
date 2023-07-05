@@ -106,7 +106,7 @@ export default {
           return 'Locked!';
         },
         content: () => {
-          return 'This game was counter picked, so it cannot be dropped.';
+          return `This game was counter picked by ${this.game.counterPickedBy}, so it cannot be dropped.`;
         }
       };
     },
@@ -117,7 +117,7 @@ export default {
           return 'Counter Picked!';
         },
         content: () => {
-          return 'This game was counter picked!';
+          return `This game was counter picked by ${this.game.counterPickedBy}!`;
         }
       };
     },
