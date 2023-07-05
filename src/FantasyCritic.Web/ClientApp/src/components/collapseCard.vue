@@ -1,5 +1,5 @@
 <template>
-  <b-card no-body class="mb-1">
+  <b-card text-variant="white" no-body class="mb-1">
     <b-card-header header-tag="header" class="p-1" role="tab">
       <div v-b-toggle="'accordion-' + id" class="btn btn-secondary faq-button">
         <font-awesome-icon icon="plus-circle" size="lg" transform="down-2" class="when-closed faq-icon" />
