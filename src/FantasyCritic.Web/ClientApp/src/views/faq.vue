@@ -652,17 +652,17 @@
             description of it.
           </p>
 
-          <div v-if="allTags">
+          <!-- <div v-if="allTags">
             <span v-for="tag in allTags" :key="tag.name">
               <masterGameTagBadge :tag-name="tag.name"></masterGameTagBadge>
             </span>
-          </div>
+          </div> -->
         </template>
       </collapseCard>
       <collapseCard>
         <template #header>How do you decide what kind of a "remake" a game is?</template>
         <template #body>
-          <div v-if="allTags">
+          <!-- <div v-if="allTags">
             <p>There are several "remake" tags, and they go in this order, from "most remade" to "least remade":</p>
 
             <masterGameTagBadge tag-name="Reimagining"></masterGameTagBadge>
@@ -700,7 +700,7 @@
               <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
               Join our Server
             </a>
-          </div>
+          </div> -->
         </template>
       </collapseCard>
       <collapseCard>
@@ -795,7 +795,7 @@
 
           <p>Here are some examples for clarity:</p>
 
-          <table class="table table-striped table-bordered table-responsive-sm">
+          <!-- <table class="table table-striped table-bordered table-responsive-sm">
             <thead>
               <tr class="bg-primary">
                 <th>Game Name</th>
@@ -884,7 +884,7 @@
                 <td>This was originally a Super Famicom game, never released in North America.</td>
               </tr>
             </tbody>
-          </table>
+          </table> -->
         </template>
       </collapseCard>
       <collapseCard>
@@ -1052,28 +1052,17 @@
 </template>
 <script>
 import CollapseCard from '@/components/collapseCard.vue';
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+//import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {
-    CollapseCard,
-    MasterGameTagBadge
+    CollapseCard
+    //MasterGameTagBadge
   },
-  data() {
-    return {
-      lastID: 1
-    };
-  },
+
   computed: {
     allTags() {
       return this.$store.getters.allTags;
-    }
-  },
-  methods: {
-    getCollapseID() {
-      let thisID = this.lastID;
-      this.lastID = this.lastID + 1;
-      return thisID;
     }
   }
 };

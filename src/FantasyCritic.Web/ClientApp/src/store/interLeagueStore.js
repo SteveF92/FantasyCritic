@@ -3,6 +3,7 @@ import axios from 'axios';
 export default {
   namespaced: true,
   state: {
+    uniqueID: 0,
     tags: null,
     isBusy: false,
     possibleLeagueOptions: null,
@@ -53,6 +54,9 @@ export default {
     }
   },
   mutations: {
+    incrementUniqueID(state) {
+      state.uniqueID = state.uniqueID + 1;
+    },
     setBusy(state, isBusyFlag) {
       state.isBusy = isBusyFlag;
     },

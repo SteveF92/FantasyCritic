@@ -8,6 +8,9 @@ let basicMixin = {
     ...mapState({
       possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions
     }),
+    ...mapState({
+      nextUniqueID: (state) => state.interLeague.uniqueID
+    }),
     displayName() {
       if (!this.$store.getters.userInfo) {
         return;
@@ -16,6 +19,10 @@ let basicMixin = {
     }
   },
   methods: {
+    getUniqueID() {
+      this.$store.commit('interLeague/incrementUniqueID');
+      return this.nextUniqueID;
+    },
     makeToast(message) {
       this.$bvToast.toast(message, {
         autoHideDelay: 5000,

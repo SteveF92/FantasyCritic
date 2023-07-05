@@ -89,8 +89,7 @@ export default {
         { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
       ],
       sortBy: 'timestamp',
-      sortDesc: true,
-      lastID: 1
+      sortDesc: true
     };
   },
   watch: {
@@ -112,11 +111,6 @@ export default {
     initializePage() {
       const leaguePageParams = { leagueID: this.leagueid, year: this.year };
       this.$store.dispatch('initializeHistoryPage', leaguePageParams);
-    },
-    getCollapseID() {
-      let thisID = this.lastID;
-      this.lastID = this.lastID + 1;
-      return thisID;
     },
     deleteMessage(message) {
       var model = {
