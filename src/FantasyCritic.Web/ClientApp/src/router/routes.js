@@ -1,7 +1,7 @@
 import Welcome from '@/views/welcome.vue';
 // import Home from '@/views/home.vue';
 import About from '@/views/about.vue';
-// import DiscordBot from '@/views/discordBot.vue';
+import DiscordBot from '@/views/discordBot.vue';
 import HowToPlay from '@/views/howToPlay.vue';
 import Faq from '@/views/faq.vue';
 import Contact from '@/views/contact.vue';
@@ -66,15 +66,15 @@ export const routes = [
       isPublic: true
     }
   },
-  // {
-  //   path: '/discord-bot',
-  //   component: DiscordBot,
-  //   name: 'discordBot',
-  //   meta: {
-  //     title: 'Discord Bot',
-  //     isPublic: true
-  //   }
-  // },
+  {
+    path: '/discord-bot',
+    component: DiscordBot,
+    name: 'discordBot',
+    meta: {
+      title: 'Discord Bot',
+      isPublic: true
+    }
+  },
   {
     path: '/howtoplay',
     component: HowToPlay,
