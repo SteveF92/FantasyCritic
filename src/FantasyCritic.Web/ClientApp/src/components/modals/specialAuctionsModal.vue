@@ -6,7 +6,7 @@
     </div>
     <div v-if="leagueYear.activeSpecialAuctions.length > 0">
       <label>Active Special Auctions</label>
-      <b-table-lite :items="leagueYear.activeSpecialAuctions" :fields="activeSpecialAuctionFields" bordered responsive striped>
+      <!-- <b-table-lite :items="leagueYear.activeSpecialAuctions" :fields="activeSpecialAuctionFields" bordered responsive striped>
         <template #cell(masterGame)="data">
           <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
         </template>
@@ -18,7 +18,7 @@
           <b-badge v-if="data.item.isLocked" variant="danger">Ended</b-badge>
           <b-button v-else variant="danger" @click="cancelSpecialAuction(data.item.masterGameYear)">Cancel</b-button>
         </template>
-      </b-table-lite>
+      </b-table-lite> -->
     </div>
 
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">

@@ -128,7 +128,7 @@
 
             <div v-if="trade.votes.length > 0">
               <h4>Votes</h4>
-              <b-table-lite :items="trade.votes" :fields="voteFields" bordered responsive striped>
+              <!-- <b-table-lite :items="trade.votes" :fields="voteFields" bordered responsive striped>
                 <template #cell(approved)="data">
                   {{ approvedRejected(data.item.approved) }}
                 </template>
@@ -139,7 +139,7 @@
                     <b-button variant="danger" size="sm" @click="deleteVote">Delete Vote</b-button>
                   </template>
                 </template>
-              </b-table-lite>
+              </b-table-lite> -->
             </div>
           </div>
         </div>

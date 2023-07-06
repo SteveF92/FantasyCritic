@@ -1,6 +1,7 @@
 <template>
   <div>
-    <multiselect
+    Tag Selector!
+    <!-- <multiselect
       v-if="tagOptions"
       v-model="internalValue"
       tag-placeholder="Add this as new tag"
@@ -13,19 +14,19 @@
       <template #tag="{ option }">
         <masterGameTagBadge :tag-name="option.name"></masterGameTagBadge>
       </template>
-    </multiselect>
+    </multiselect> -->
   </div>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect';
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+// import Multiselect from 'vue-multiselect';
+// import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import _ from 'lodash';
 
 export default {
   components: {
-    Multiselect,
-    MasterGameTagBadge
+    // Multiselect,
+    // MasterGameTagBadge
   },
   props: {
     value: { type: Array, default: null },
@@ -63,4 +64,4 @@ export default {
 };
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<!-- <style src="vue-multiselect/dist/vue-multiselect.min.css"></style> -->

@@ -46,7 +46,7 @@
               </b-form-checkbox>
               <div v-if="hasReleaseDate">
                 <label for="releaseDate" class="control-label">Release Date</label>
-                <b-form-datepicker v-model="releaseDate" class="form-control"></b-form-datepicker>
+                <!-- <b-form-datepicker v-model="releaseDate" class="form-control"></b-form-datepicker> -->
               </div>
               <div v-if="!hasReleaseDate">
                 <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>

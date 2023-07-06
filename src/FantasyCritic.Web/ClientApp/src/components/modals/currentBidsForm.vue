@@ -23,7 +23,7 @@
           <b-th v-show="!settingPriority">Cancel</b-th>
         </b-tr>
       </b-thead>
-      <draggable v-if="settingPriority" v-model="desiredBidPriorities" tag="tbody" handle=".handle">
+      <!-- <draggable v-if="settingPriority" v-model="desiredBidPriorities" tag="tbody" handle=".handle">
         <b-tr v-for="bid in desiredBidPriorities" :key="bid.bidID">
           <b-td class="handle"><font-awesome-icon icon="bars" size="lg" /></b-td>
           <b-td>{{ bid.masterGame.gameName }}</b-td>
@@ -34,7 +34,7 @@
           <b-td>{{ yesNo(!bid.allowIneligibleSlot) }}</b-td>
           <b-td>{{ yesNo(bid.counterPick) }}</b-td>
         </b-tr>
-      </draggable>
+      </draggable> -->
       <b-tbody v-if="!settingPriority">
         <b-tr v-for="bid in currentBids" :key="bid.bidID">
           <b-td>{{ bid.masterGame.gameName }}</b-td>
@@ -86,7 +86,7 @@
 
 <script>
 import axios from 'axios';
-import draggable from 'vuedraggable';
+// import draggable from 'vuedraggable';
 import _ from 'lodash';
 
 import MasterGameSummary from '@/components/masterGameSummary.vue';
@@ -94,7 +94,7 @@ import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {
-    draggable,
+    // draggable,
     MasterGameSummary
   },
   mixins: [LeagueMixin],

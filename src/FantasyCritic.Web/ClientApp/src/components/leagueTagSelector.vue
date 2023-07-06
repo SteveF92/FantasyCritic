@@ -26,7 +26,7 @@
       </div>
 
       <div class="tag-flex-drag">
-        <draggable class="tag-drag-list bg-secondary" :list="internalValue.allowed" group="tags" @change="onChange">
+        <!-- <draggable class="tag-drag-list bg-secondary" :list="internalValue.allowed" group="tags" @change="onChange">
           <div v-for="element in internalValue.allowed" :key="element" class="tag-drag-item">
             <font-awesome-icon icon="bars" />
             <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
@@ -34,20 +34,20 @@
           <template #header>
             <span class="tag-header">Allowed Tags</span>
           </template>
-        </draggable>
+        </draggable> -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable';
+// import draggable from 'vuedraggable';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import _ from 'lodash';
 
 export default {
   components: {
-    draggable,
+    // draggable,
     MasterGameTagBadge
   },
   props: {
@@ -144,7 +144,7 @@ export default {
 };
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<!-- <style src="vue-multiselect/dist/vue-multiselect.min.css"></style> -->
 <style>
 .reset-button-flex {
   display: flex;

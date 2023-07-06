@@ -7,7 +7,7 @@
           <span>Share</span>
         </b-button>
         <label>Cover Art Mode</label>
-        <toggle-button v-model="editableCoverArtMode" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
+        <!-- <toggle-button v-model="editableCoverArtMode" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" /> -->
       </div>
       <div v-show="!coverArtMode">
         <div class="publisher-header">
@@ -146,12 +146,12 @@ import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import GlobalFunctions from '@/globalFunctions';
 import PublisherMixin from '@/mixins/publisherMixin.js';
-import { ToggleButton } from 'vue-js-toggle-button';
+// import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   components: {
     PlayerGameTable,
-    ToggleButton,
+    // ToggleButton,
     PublisherCoverView
   },
   mixins: [PublisherMixin],

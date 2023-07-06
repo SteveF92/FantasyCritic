@@ -9,7 +9,7 @@
         <h3 v-show="!recentReleasesMode">My Upcoming Releases</h3>
         <h3 v-show="recentReleasesMode">My Recent Releases</h3>
       </template>
-      <toggle-button
+      <!-- <toggle-button
         v-if="isPlusUser"
         v-model="recentReleasesMode"
         class="toggle"
@@ -18,7 +18,7 @@
         :css-colors="true"
         :font-size="13"
         :width="100"
-        :height="28" />
+        :height="28" /> -->
     </span>
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
       <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small>
@@ -56,12 +56,12 @@
 <script>
 import moment from 'moment';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
-import { ToggleButton } from 'vue-js-toggle-button';
+// import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   components: {
-    MasterGamePopover,
-    ToggleButton
+    MasterGamePopover
+    // ToggleButton
   },
   props: {
     gameNews: { type: Object, required: true },

@@ -61,7 +61,7 @@
 
               <div class="form-group">
                 <label for="releaseDate" class="control-label">Release Date</label>
-                <b-form-datepicker v-model="releaseDate" class="form-control"></b-form-datepicker>
+                <!-- <b-form-datepicker v-model="releaseDate" class="form-control"></b-form-datepicker> -->
               </div>
 
               <b-button variant="info" size="sm" @click="propagateDate">Propagate Date</b-button>
@@ -74,19 +74,19 @@
               </div>
               <div class="form-group">
                 <label for="minimumReleaseDate" class="control-label">Minimum Release Date</label>
-                <b-form-datepicker v-model="minimumReleaseDate" class="form-control"></b-form-datepicker>
+                <!-- <b-form-datepicker v-model="minimumReleaseDate" class="form-control"></b-form-datepicker> -->
               </div>
               <div class="form-group">
                 <label for="maximumReleaseDate" class="control-label">Maximum Release Date</label>
-                <b-form-datepicker v-model="maximumReleaseDate" class="form-control"></b-form-datepicker>
+                <!-- <b-form-datepicker v-model="maximumReleaseDate" class="form-control"></b-form-datepicker> -->
               </div>
               <div class="form-group">
                 <label for="earlyAccessReleaseDate" class="control-label">Early Access Release Date</label>
-                <b-form-datepicker v-model="earlyAccessReleaseDate" class="form-control"></b-form-datepicker>
+                <!-- <b-form-datepicker v-model="earlyAccessReleaseDate" class="form-control"></b-form-datepicker> -->
               </div>
               <div class="form-group">
                 <label for="internationalReleaseDate" class="control-label">International Release Date</label>
-                <b-form-datepicker v-model="internationalReleaseDate" class="form-control"></b-form-datepicker>
+                <!-- <b-form-datepicker v-model="internationalReleaseDate" class="form-control"></b-form-datepicker> -->
               </div>
 
               <div class="form-group">

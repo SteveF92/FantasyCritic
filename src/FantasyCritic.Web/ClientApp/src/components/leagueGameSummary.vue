@@ -16,7 +16,7 @@
 
       <span class="single-toggle-section">
         <label>Show Projections</label>
-        <toggle-button v-model="editableShowProjections" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
+        <!-- <toggle-button v-model="editableShowProjections" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" /> -->
       </span>
     </span>
     <div class="row league-summary">
@@ -29,13 +29,13 @@
 </template>
 <script>
 import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable.vue';
-import { ToggleButton } from 'vue-js-toggle-button';
+// import { ToggleButton } from 'vue-js-toggle-button';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {
-    MinimalPlayerGameTable,
-    ToggleButton
+    MinimalPlayerGameTable
+    // ToggleButton
   },
   mixins: [LeagueMixin],
   computed: {

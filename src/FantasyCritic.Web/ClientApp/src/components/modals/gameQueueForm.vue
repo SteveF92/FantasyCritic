@@ -62,7 +62,7 @@
           <th scope="col"></th>
         </tr>
       </thead>
-      <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
+      <!-- <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
         <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
           <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
           <td><masterGamePopover :master-game="queuedGame.masterGame"></masterGamePopover></td>
@@ -79,7 +79,7 @@
             <b-button variant="danger" size="sm" @click="removeQueuedGame(queuedGame)">Remove</b-button>
           </td>
         </tr>
-      </draggable>
+      </draggable> -->
     </table>
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Set Rankings" @click="setQueueRankings" />
@@ -89,7 +89,7 @@
 
 <script>
 import axios from 'axios';
-import draggable from 'vuedraggable';
+// import draggable from 'vuedraggable';
 
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import StatusBadge from '@/components/statusBadge.vue';
@@ -99,7 +99,7 @@ import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {
-    draggable,
+    // draggable,
     PossibleMasterGamesTable,
     StatusBadge,
     SearchSlotTypeBadge,

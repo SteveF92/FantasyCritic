@@ -263,7 +263,7 @@
         </div>
         <div class="form-group">
           <label for="counterPickDeadline" class="control-label">Counter Pick Deadline</label>
-          <b-form-datepicker v-model="internalValue.counterPickDeadline" class="form-control"></b-form-datepicker>
+          <!-- <b-form-datepicker v-model="internalValue.counterPickDeadline" class="form-control"></b-form-datepicker> -->
           <p>
             After this date, a game without a confirmed release date can no longer be counter picked. This is only relevant if your league has "pickup counter picks". The intention for this is to
             prevent players from waiting until the very end of the year to counter pick a game that is almost certain to not release this year.
@@ -274,7 +274,7 @@
         <div class="form-group">
           <label for="mightReleaseDroppableDate" class="control-label">Might Release Droppable Date</label>
           <div class="clearable-date">
-            <b-form-datepicker v-model="internalValue.mightReleaseDroppableDate" class="form-control"></b-form-datepicker>
+            <!-- <b-form-datepicker v-model="internalValue.mightReleaseDroppableDate" class="form-control"></b-form-datepicker> -->
             <b-button variant="warning" size="sm" @click="internalValue.mightReleaseDroppableDate = null">Clear</b-button>
           </div>
 

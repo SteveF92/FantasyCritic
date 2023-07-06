@@ -19,7 +19,7 @@
     <div v-show="showManualSettings">
       <label>Drag and drop to change order.</label>
       <div class="fluid container draft-order-editor bg-secondary">
-        <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
+        <!-- <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
           <transition-group type="transition" :name="'flip-list'">
             <li v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
               <font-awesome-icon icon="bars" class="handle" />
@@ -27,7 +27,7 @@
               {{ publisher.publisherName }} ({{ publisher.playerName }})
             </li>
           </transition-group>
-        </draggable>
+        </draggable> -->
       </div>
 
       <b-button class="confirm-button" variant="primary" size="sm" @click="setDraftOrder('Manual')">Confirm Draft Order</b-button>
@@ -37,12 +37,12 @@
 
 <script>
 import axios from 'axios';
-import draggable from 'vuedraggable';
+// import draggable from 'vuedraggable';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {
-    draggable
+    // draggable
   },
   mixins: [LeagueMixin],
   data() {
