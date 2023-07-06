@@ -33,12 +33,12 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     store.commit('league/clearLeagueStoreData');
   }
 
-  if (!store.getters.interLeagueDataLoaded && !store.getters.interLeagueIsBusy) {
+  if (!store.getters['interLeague/interLeagueDataLoaded'] && !store.getters['interLeague/interLeagueIsBusy']) {
     await store.dispatch('interLeague/fetchInterLeagueData');
   }
 
   //If we are current, we're good to go
-  if (store.getters.isAuth) {
+  if (store.getters['auth/isAuth']) {
     if (toRoute.meta.publicOnly) {
       next({ path: '/home' });
       return;
@@ -49,7 +49,7 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
 
   try {
     await store.dispatch('auth/getUserInfo');
-    if (store.getters.isAuth) {
+    if (store.getters['auth/isAuth']) {
       if (toRoute.meta.publicOnly) {
         next({ path: '/home' });
         return;

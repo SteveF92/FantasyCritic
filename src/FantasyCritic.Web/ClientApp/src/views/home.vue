@@ -80,14 +80,14 @@
       <div class="row">
         <div class="col-lg-8 col-md-12">
           <b-card v-if="gameNews">
-            <gameNews :game-news="gameNews" mode="user" />
+            <!-- <gameNews :game-news="gameNews" mode="user" /> -->
           </b-card>
         </div>
 
         <div class="col-lg-4 col-md-12">
           <hr class="d-md-block d-lg-none" />
           <b-card title="Popular Public Leagues">
-            <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
+            <!-- <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5> -->
 
             <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
               <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
@@ -109,13 +109,13 @@ import _ from 'lodash';
 
 import Tweets from '@/components/tweets.vue';
 import LeagueTable from '@/components/leagueTable.vue';
-import GameNews from '@/components/gameNews.vue';
+// import GameNews from '@/components/gameNews.vue';
 
 export default {
   components: {
     Tweets,
-    LeagueTable,
-    GameNews
+    LeagueTable
+    // GameNews
   },
   data() {
     return {

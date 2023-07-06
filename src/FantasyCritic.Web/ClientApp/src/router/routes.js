@@ -1,5 +1,5 @@
 import Welcome from '@/views/welcome.vue';
-// import Home from '@/views/home.vue';
+import Home from '@/views/home.vue';
 import About from '@/views/about.vue';
 import DiscordBot from '@/views/discordBot.vue';
 import HowToPlay from '@/views/howToPlay.vue';
@@ -12,7 +12,7 @@ import Contact from '@/views/contact.vue';
 import MasterGame from '@/views/masterGame.vue';
 import MasterGames from '@/views/masterGames.vue';
 import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
-// import PublicLeagues from '@/views/publicLeagues.vue';
+//import PublicLeagues from '@/views/publicLeagues.vue';
 // import LeagueHistory from '@/views/leagueHistory.vue';
 // import AdminConsole from '@/views/adminConsole.vue';
 // import MasterGameRequest from '@/views/masterGameRequest.vue';
@@ -40,14 +40,14 @@ export const routes = [
       publicOnly: true
     }
   },
-  // {
-  //   path: '/home',
-  //   component: Home,
-  //   name: 'home',
-  //   meta: {
-  //     title: 'Home'
-  //   }
-  // },
+  {
+    path: '/home',
+    component: Home,
+    name: 'home',
+    meta: {
+      title: 'Home'
+    }
+  },
   {
     path: '/fantasyCriticPlus',
     component: FantasyCriticPlus,
