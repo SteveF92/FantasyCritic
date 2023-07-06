@@ -5,24 +5,13 @@ import { routes } from './routes';
 
 let router = createRouter({
   history: createWebHistory(),
-  scrollBehavior(to, from) {
+  scrollBehavior(to) {
     if (to.hash) {
-      const smoothParams = {
-        selector: to.hash,
+      return {
+        el: to.hash,
         behavior: 'smooth'
       };
-
-      if (!to.meta.delayScroll || to.path === from.path) {
-        return smoothParams;
-      }
-
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(smoothParams);
-        }, 500);
-      });
     }
-    return { x: 0, y: 0 }; // Go to the top of the page if no hash
   },
   routes
 });
