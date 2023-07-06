@@ -1,28 +1,28 @@
 let publisherMixin = {
   computed: {
     moveMode() {
-      return this.$store.getters.moveMode;
+      return this.$store.getters['publisher/moveMode'];
     },
     publisher() {
-      return this.$store.getters.publisher;
+      return this.$store.getters['publisher/publisher'];
     },
     leagueYear() {
-      return this.$store.getters.leagueYear;
+      return this.$store.getters['publisher/leagueYear'];
     },
     gameSlots() {
-      return this.$store.getters.gameSlots;
+      return this.$store.getters['publisher/gameSlots'];
     },
     sortOrderMode() {
-      return this.$store.getters.sortOrderMode;
+      return this.$store.getters['publisher/sortOrderMode'];
     },
     coverArtMode() {
-      return this.$store.getters.coverArtMode;
+      return this.$store.getters['publisher/coverArtMode'];
     },
     includeRemovedInSorted() {
-      return this.$store.getters.includeRemovedInSorted;
+      return this.$store.getters['publisher/includeRemovedInSorted'];
     },
     userIsPublisher() {
-      return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
+      return this.$store.getters['auth/userInfo'] && this.publisher.userID === this.$store.getters['auth/userInfo'].userID;
     },
     hasFormerGames() {
       return this.publisher && this.publisher.formerGames.length > 0;

@@ -168,7 +168,7 @@ export default {
   },
   computed: {
     userIsPublisher() {
-      return this.isAuth && this.publisher.userID === this.$store.getters.userInfo.userID;
+      return this.isAuth && this.publisher.userID === this.$store.getters['auth/userInfo'].userID;
     },
     allFields() {
       let conditionalFields = [];

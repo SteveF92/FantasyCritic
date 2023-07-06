@@ -218,7 +218,7 @@ export default {
       this.masterGame.estimatedReleaseDate = this.masterGame.releaseDate;
     },
     populateTags() {
-      let allTags = this.$store.getters.allTags;
+      let allTags = this.$store.getters['interLeague/allTags'];
       let masterGameTagNames = this.masterGame.tags;
       let matchingTags = _.filter(allTags, (x) => masterGameTagNames.includes(x.name));
       this.tags = matchingTags;

@@ -47,8 +47,8 @@ export default {
         const leagueYearPayload = {
           leagueYear: response.data
         };
-        if (context.getters.userInfo) {
-          leagueYearPayload.userID = context.getters.userInfo.userID;
+        if (context.getters['auth/userInfo']) {
+          leagueYearPayload.userID = context.getters['auth/userInfo'].userID;
         }
 
         context.commit('setLeagueYear', leagueYearPayload);

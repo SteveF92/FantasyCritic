@@ -169,7 +169,7 @@ export default {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
     },
     moveGameError() {
-      return this.$store.getters.moveGameError;
+      return this.$store.getters['publisher/moveGameError'];
     },
     hasIneligibleGame() {
       return _.some(this.publisher.gameSlots, (x) => !x.gameMeetsSlotCriteria);

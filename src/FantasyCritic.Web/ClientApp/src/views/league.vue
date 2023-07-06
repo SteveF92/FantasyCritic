@@ -254,7 +254,7 @@ export default {
         return false;
       }
 
-      let revealIsNext = this.$store.getters.bidTimes.nextPublicBiddingTime < this.$store.getters.bidTimes.nextBidLockTime;
+      let revealIsNext = this.$store.getters['interLeague/bidTimes'].nextPublicBiddingTime < this.$store.getters['interLeague/bidTimes'].nextBidLockTime;
       return revealIsNext;
     },
     hasActiveTrade() {

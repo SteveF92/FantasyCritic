@@ -59,10 +59,10 @@ export default {
       return this.gameSlot.publisherGame;
     },
     moveMode() {
-      return this.$store.getters.moveMode;
+      return this.$store.getters['publisher/moveMode'];
     },
     holdingGame() {
-      return this.$store.getters.holdingGame;
+      return this.$store.getters['publisher/holdingGame'];
     },
     inEligibleText() {
       return {

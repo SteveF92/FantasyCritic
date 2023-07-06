@@ -37,17 +37,17 @@ export default {
         return null;
       }
 
-      return moment(this.$store.getters.bidTimes.nextPublicBiddingTime).toDate();
+      return moment(this.$store.getters['interLeague/bidTimes'].nextPublicBiddingTime).toDate();
     },
     nextBidTime() {
       if (this.mode !== 'NextBid') {
         return null;
       }
 
-      return moment(this.$store.getters.bidTimes.nextBidLockTime).toDate();
+      return moment(this.$store.getters['interLeague/bidTimes'].nextBidLockTime).toDate();
     },
     actionProcessing() {
-      return this.forceActionProcessing || this.$store.getters.bidTimes.actionProcessingMode;
+      return this.forceActionProcessing || this.$store.getters['interLeague/bidTimes'].actionProcessingMode;
     }
   },
   methods: {
