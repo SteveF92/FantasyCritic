@@ -20,10 +20,10 @@
           <span class="full-nav">How to Play</span>
         </b-nav-item>
 
-        <!-- <b-nav-item :to="{ name: 'criticsRoyale' }">
+        <b-nav-item :to="{ name: 'criticsRoyale' }">
           <img class="royale-icon topnav-icon" src="@/assets/critics-royale-top-nav.svg" />
           <span class="full-nav">Royale</span>
-        </b-nav-item> -->
+        </b-nav-item>
 
         <b-nav-item :to="{ name: 'masterGames' }">
           <font-awesome-icon class="topnav-icon" icon="gamepad" size="lg" fixed-width />

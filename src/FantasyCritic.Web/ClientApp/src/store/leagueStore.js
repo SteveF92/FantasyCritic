@@ -17,13 +17,13 @@ export default {
   },
   actions: {
     async initializeLeaguePage(context, leaguePageParams) {
-      context.commit('clearPublisherStoreData');
+      context.commit('publisher/clearPublisherStoreData', null, { root: true });
       context.commit('clearLeagueStoreData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
       await context.dispatch('fetchLeagueYear', leaguePageParams);
     },
     async initializeHistoryPage(context, leaguePageParams) {
-      context.commit('clearPublisherStoreData');
+      context.commit('publisher/clearPublisherStoreData', null, { root: true });
       context.commit('clearLeagueStoreData');
       await context.dispatch('fetchLeagueYear', leaguePageParams);
       await context.dispatch('fetchHistoryData');

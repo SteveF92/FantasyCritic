@@ -287,7 +287,7 @@ export default {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;
       const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
-      await this.$store.dispatch('initializeLeaguePage', leaguePageParams);
+      await this.$store.dispatch('league/initializeLeaguePage', leaguePageParams);
       await this.startHubConnection();
     },
     refreshLeagueYear() {
