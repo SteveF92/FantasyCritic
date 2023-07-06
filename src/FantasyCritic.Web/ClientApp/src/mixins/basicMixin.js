@@ -5,6 +5,7 @@ import * as Filters from '@/filters.js';
 let basicMixin = {
   computed: {
     ...mapGetters('auth', ['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'authIsBusy']),
+    ...mapGetters('modals', ['modals']),
     ...mapState({
       possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions
     }),
@@ -22,6 +23,9 @@ let basicMixin = {
     getUniqueID() {
       this.$store.commit('interLeague/incrementUniqueID');
       return this.nextUniqueID;
+    },
+    toggleModal(modalName) {
+      this.$store.dispatch('modal/toggleModal', modalName);
     },
     makeToast(message) {
       this.$bvToast.toast(message, {

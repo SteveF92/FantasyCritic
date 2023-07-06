@@ -23,7 +23,7 @@
       <div v-if="!userPublisherBusy">
         <div v-if="!userRoyalePublisher && isAuth" class="alert alert-info">
           Create your publisher to start playing!
-          <b-button v-b-modal="'createRoyalePublisher'" class="login-button" variant="primary">Create Publisher</b-button>
+          <b-button @click="toggleModal('createRoyalePublisher')" class="login-button" variant="primary">Create Publisher</b-button>
           <createRoyalePublisherForm :royale-year-quarter="royaleYearQuarter"></createRoyalePublisherForm>
         </div>
         <div v-if="!userRoyalePublisher && !isAuth" class="alert alert-success">

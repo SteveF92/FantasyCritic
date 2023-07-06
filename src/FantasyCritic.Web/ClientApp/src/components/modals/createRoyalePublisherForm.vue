@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="createRoyalePublisher" ref="createRoyalePublisherRef" title="Create Publisher" @hidden="clearData">
+  <b-modal id="createRoyalePublisher" ref="createRoyalePublisherRef" v-model="showModal" title="Create Publisher" @hidden="clearData">
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherName" class="control-label">Publisher Name</label>
@@ -23,6 +23,11 @@ export default {
       publisherName: '',
       errorInfo: ''
     };
+  },
+  computed: {
+    showModal() {
+      return !!this.$store.getters['modal/modals'].createRoyalePublisher;
+    }
   },
   methods: {
     createRoyalePublisher() {
