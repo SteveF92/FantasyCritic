@@ -8,7 +8,7 @@
         <ul>
           <li>
             Please use the
-            <!-- <router-link :to="{ name: 'masterGameRequest' }">Master Game Request form</router-link> -->
+            <router-link :to="{ name: 'masterGameRequest' }">Master Game Request form</router-link>
             for adding new games.
           </li>
           <li>Please use the "Suggest Correction" form, which can be accessed by clicking on a master game link and clicking the "Suggest a Correction" option for correcting existing games.</li>
@@ -78,7 +78,7 @@
         <h3>Other Issues</h3>
         <p>
           I'm always happy to respond to a DM, but if your issue is not an account issue, you can also post in our #tech-support channel in our Discord. In particular, if you have an issue with the
-          <!-- <router-link :to="{ name: 'discordBot' }">Discord Bot</router-link> -->
+          <router-link :to="{ name: 'discordBot' }">Discord Bot</router-link>
           , you should definitely post that in the channel as opposed to a DM.
         </p>
       </div>

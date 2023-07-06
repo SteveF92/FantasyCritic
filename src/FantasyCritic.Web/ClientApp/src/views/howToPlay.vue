@@ -136,7 +136,7 @@
       <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
         <h3>
           If you have any more questions, check out our
-          <!-- <router-link :to="{ name: 'faq' }" title="FAQ">FAQ</router-link> -->
+          <router-link :to="{ name: 'faq' }" title="FAQ">FAQ</router-link>
           page, or
           <router-link :to="{ name: 'contact' }" title="Contact">contact</router-link>
           me directly!

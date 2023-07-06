@@ -274,7 +274,7 @@
         <template #header>Can I bid on a game that doesn't come up when I search for games?</template>
         <template #body>
           Unfortunately no. To bid on a game, it must be in the master database. I try to stay on top of upcoming releases, but if a game that you want is missing, you can use the
-          <!-- <router-link :to="{ name: 'masterGameRequest' }">master game request form</router-link> -->
+          <router-link :to="{ name: 'masterGameRequest' }">master game request form</router-link>
           .
         </template>
       </collapseCard>
@@ -662,7 +662,7 @@
       <collapseCard>
         <template #header>How do you decide what kind of a "remake" a game is?</template>
         <template #body>
-          <!-- <div v-if="allTags">
+          <div v-if="allTags">
             <p>There are several "remake" tags, and they go in this order, from "most remade" to "least remade":</p>
 
             <masterGameTagBadge tag-name="Reimagining"></masterGameTagBadge>
@@ -700,7 +700,7 @@
               <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
               Join our Server
             </a>
-          </div> -->
+          </div>
         </template>
       </collapseCard>
       <collapseCard>
@@ -795,7 +795,7 @@
 
           <p>Here are some examples for clarity:</p>
 
-          <!-- <table class="table table-striped table-bordered table-responsive-sm">
+          <table class="table table-striped table-bordered table-responsive-sm">
             <thead>
               <tr class="bg-primary">
                 <th>Game Name</th>
@@ -884,7 +884,7 @@
                 <td>This was originally a Super Famicom game, never released in North America.</td>
               </tr>
             </tbody>
-          </table> -->
+          </table>
         </template>
       </collapseCard>
       <collapseCard>
