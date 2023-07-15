@@ -3,18 +3,22 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Scheduling;
 
 public class PublicBiddingNotificationTask : IScheduledTask
 {
+    private readonly ILogger<PublicBiddingNotificationTask> _logger;
     private readonly IServiceProvider _serviceProvider;
     public string Schedule => "0 */1 * * *";
 
     public PublicBiddingNotificationTask(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _logger = _serviceProvider.GetRequiredService<ILogger<PublicBiddingNotificationTask>>();
     }
 
     public async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -35,8 +39,8 @@ public class PublicBiddingNotificationTask : IScheduledTask
         var emailSendingService = scope.ServiceProvider.GetRequiredService<EmailSendingService>();
         var discordPushService = scope.ServiceProvider.GetRequiredService<DiscordPushService>();
 
-        await emailSendingService.SendPublicBidEmails(publicBiddingSets);
-        await discordPushService.SendPublicBiddingSummary(publicBiddingSets);
+        await FireAndForgetUtilities.FireAndForgetAsync(_logger, async () => await emailSendingService.SendPublicBidEmails(publicBiddingSets));
+        await FireAndForgetUtilities.FireAndForgetAsync(_logger, async () => await discordPushService.SendPublicBiddingSummary(publicBiddingSets));
     }
 
     private static bool IsTimeToNotify(Instant now)
@@ -67,4 +71,3 @@ public class PublicBiddingNotificationTask : IScheduledTask
         return publicBiddingSets;
     }
 }
-
