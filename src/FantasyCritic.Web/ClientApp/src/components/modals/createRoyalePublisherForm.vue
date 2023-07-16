@@ -25,8 +25,13 @@ export default {
     };
   },
   computed: {
-    showModal() {
-      return !!this.$store.getters['modal/modals'].createRoyalePublisher;
+    showModal: {
+      get() {
+        return !!this.$store.getters['modal/modals'].createRoyalePublisher;
+      },
+      set(value) {
+        this.$store.commit('modal/setModalVisibility', { modalName: 'createRoyalePublisher', visible: value });
+      }
     }
   },
   methods: {
