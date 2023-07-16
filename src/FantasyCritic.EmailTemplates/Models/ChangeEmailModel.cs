@@ -1,10 +1,10 @@
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.Lib.Email.EmailModels;
+namespace FantasyCritic.EmailTemplates.Models;
 
-public class ConfirmEmailModel
+public class ChangeEmailModel
 {
-    public ConfirmEmailModel(FantasyCriticUser user, string link)
+    public ChangeEmailModel(FantasyCriticUser user, string link)
     {
         DisplayName = user.UserName;
         Link = link;

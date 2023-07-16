@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.AWS;
+using FantasyCritic.EmailTemplates;
 using FantasyCritic.Lib.BackgroundServices;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.GG;
@@ -95,6 +96,7 @@ public static class HostingExtensions
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
+        services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
         services.AddScoped<SelectMenuExecutedHandler>();
 
         services.AddScoped<PatreonService>();
@@ -333,6 +335,8 @@ public static class HostingExtensions
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
         }
+
+        services.AddRazorTemplating();
 
         return builder.Build();
     }
