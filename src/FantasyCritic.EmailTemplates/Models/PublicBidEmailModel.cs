@@ -1,8 +1,9 @@
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
 
-namespace FantasyCritic.Lib.Email.EmailModels;
+namespace FantasyCritic.EmailTemplates.Models;
 
 public class PublicBidEmailModel
 {

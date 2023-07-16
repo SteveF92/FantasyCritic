@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.Lib.Email.EmailModels;
+namespace FantasyCritic.EmailTemplates.Models;
 
 public class PasswordResetModel
 {

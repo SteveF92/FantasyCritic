@@ -41,7 +41,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalServices", "Externa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.MasterGameUpdater", "FantasyCritic.MasterGameUpdater\FantasyCritic.MasterGameUpdater.csproj", "{EF41C914-7F9A-46F9-8FD8-56B94CDD9F7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.Postmark", "FantasyCritic.Postmark\FantasyCritic.Postmark.csproj", "{54834C18-ABEE-48FB-AF9C-CFA36007BC2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Postmark", "FantasyCritic.Postmark\FantasyCritic.Postmark.csproj", "{54834C18-ABEE-48FB-AF9C-CFA36007BC2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.EmailTemplates", "FantasyCritic.EmailTemplates\FantasyCritic.EmailTemplates.csproj", "{D7D67A8B-21D0-421D-8264-1D347E5862A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{54834C18-ABEE-48FB-AF9C-CFA36007BC2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54834C18-ABEE-48FB-AF9C-CFA36007BC2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54834C18-ABEE-48FB-AF9C-CFA36007BC2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7D67A8B-21D0-421D-8264-1D347E5862A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7D67A8B-21D0-421D-8264-1D347E5862A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7D67A8B-21D0-421D-8264-1D347E5862A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7D67A8B-21D0-421D-8264-1D347E5862A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

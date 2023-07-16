@@ -1,4 +1,6 @@
-namespace FantasyCritic.Lib.Email.EmailModels;
+using FantasyCritic.Lib.Domain;
+
+namespace FantasyCritic.EmailTemplates.Models;
 
 public class LeagueInviteModel
 {

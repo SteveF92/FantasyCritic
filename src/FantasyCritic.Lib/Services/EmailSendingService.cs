@@ -1,9 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Email.EmailModels;
 using FantasyCritic.Lib.Identity;
-using Serilog;
-using RazorLight;
-using System.IO;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Domain.Combinations;
 
@@ -11,18 +7,18 @@ namespace FantasyCritic.Lib.Services;
 
 public class EmailSendingService
 {
-    private static readonly ILogger _logger = Log.ForContext<EmailSendingService>();
-
     private readonly FantasyCriticUserManager _userManager;
+    private readonly IEmailBuilder _emailBuilder;
     private readonly IEmailSender _emailSender;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly string _baseAddress;
     private readonly bool _isProduction;
 
-    public EmailSendingService(FantasyCriticUserManager userManager, IEmailSender emailSender,
+    public EmailSendingService(FantasyCriticUserManager userManager, IEmailBuilder emailBuilder, IEmailSender emailSender,
         LeagueMemberService leagueMemberService, EnvironmentConfiguration configuration)
     {
         _userManager = userManager;
+        _emailBuilder = emailBuilder;
         _emailSender = emailSender;
         _leagueMemberService = leagueMemberService;
         _baseAddress = configuration.BaseAddress;
@@ -74,10 +70,7 @@ public class EmailSendingService
     {
         string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - This Week's Public Bids";
-        PublicBidEmailModel model = new PublicBidEmailModel(user, publicBiddingSet, _baseAddress, _isProduction);
-
-        var htmlResult = await GetHTMLString("PublicBids.cshtml", model);
-
+        var htmlResult = await _emailBuilder.BuildPublicBidEmail(user, publicBiddingSet, _baseAddress, _isProduction);
         await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
     }
 
@@ -85,10 +78,7 @@ public class EmailSendingService
     {
         string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - Confirm your email address.";
-        ConfirmEmailModel model = new ConfirmEmailModel(user, link);
-
-        var htmlResult = await GetHTMLString("ConfirmEmail.cshtml", model);
-
+        var htmlResult = await _emailBuilder.BuildConfirmEmailEmail(user, link);
         await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
     }
 
@@ -96,10 +86,7 @@ public class EmailSendingService
     {
         string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - Reset Your Password.";
-
-        PasswordResetModel model = new PasswordResetModel(user, link);
-        var htmlResult = await GetHTMLString("PasswordReset.cshtml", model);
-
+        var htmlResult = await _emailBuilder.BuildPasswordResetEmail(user, link);
         await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
     }
 
@@ -107,41 +94,21 @@ public class EmailSendingService
     {
         string emailAddress = user.Email;
         const string emailSubject = "FantasyCritic - Change Your Email.";
-
-        ChangeEmailModel model = new ChangeEmailModel(user, link);
-        var htmlResult = await GetHTMLString("ChangeEmail.cshtml", model);
-
+        var htmlResult = await _emailBuilder.BuildChangeEmailEmail(user, link);
         await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
     }
 
     public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)
     {
         const string emailSubject = "You have been invited to join a FantasyCritic league!";
-
-        LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
-        var htmlResult = await GetHTMLString("SiteInvite.cshtml", model);
-
+        var htmlResult = await _emailBuilder.BuildLeagueInviteEmail(league, baseURL);
         await _emailSender.SendEmailAsync(inviteEmail, emailSubject, htmlResult);
     }
 
     public async Task SendLeagueInviteEmail(string inviteEmail, League league, string baseURL)
     {
         const string emailSubject = "You have been invited to join a FantasyCritic league!";
-
-        LeagueInviteModel model = new LeagueInviteModel(league, baseURL);
-        var htmlResult = await GetHTMLString("LeagueInvite.cshtml", model);
-
+        var htmlResult = await _emailBuilder.BuildSiteInviteEmail(league, baseURL);
         await _emailSender.SendEmailAsync(inviteEmail, emailSubject, htmlResult);
-    }
-
-    private static async Task<string> GetHTMLString(string template, object model)
-    {
-        var templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Email", "EmailTemplates");
-        var engine = new RazorLightEngineBuilder()
-            .UseFileSystemProject(templateFilePath)
-            .UseMemoryCachingProvider()
-            .Build();
-        string htmlResult = await engine.CompileRenderAsync(template, model);
-        return htmlResult;
     }
 }
