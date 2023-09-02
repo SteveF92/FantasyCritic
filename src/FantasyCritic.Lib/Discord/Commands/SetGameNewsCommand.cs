@@ -42,7 +42,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         var requestedSettingEnum = RequestedGameNewsSetting.TryFromValue(setting);
         if (requestedSettingEnum is null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "No Change Made to Game News Configuration",
                 $"An invalid option was selected.\nThe current Game News setting is still **{gameNewsChannel?.GameNewsSetting.Value ?? "Not Set"}**.",
                 Context.User));
@@ -66,7 +66,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         {
             if (!gameChannelIsLeagueChannel && requestedSettingEnum.Equals(RequestedGameNewsSetting.LeagueGamesOnly))
             {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "No Change Made to Game News Configuration",
                     $"You must have a league associated with this channel in order to choose the League Games Only option.\nThe current Game News Setting is still **{gameNewsChannel?.GameNewsSetting.Value ?? "Not Set"}**.",
                     Context.User));
@@ -84,8 +84,13 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                         leagueChannel.ChannelID, true, true);
                 }
 
-                await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Recommended Game News Settings Applied",
-                    BuildGameNewsSettingsDisplayText(RequestedGameNewsSetting.MightReleaseInYear, true, true, tagsToSkip), Context.User));
+                await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
+                    "Recommended Game News Settings Applied",
+                    BuildGameNewsSettingsDisplayText(RequestedGameNewsSetting.MightReleaseInYear,
+                        true,
+                        true,
+                        tagsToSkip),
+                    Context.User));
                 return;
             }
 
@@ -94,7 +99,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                 if (requestedSettingEnum.Equals(RequestedGameNewsSetting.LeagueGamesOnly))
                 {
                     await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.Off);
-                    await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+                    await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                         "Game News Configuration Saved",
                         BuildGameNewsSettingsDisplayText(requestedSettingEnum, true, false, tagsToSkip),
                         Context.User));
@@ -112,7 +117,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                     await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settingEnum);
                     await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, tagsToSkip);
                     await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, Context.Guild.Id, Context.Channel.Id, true, true);
-                    await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+                    await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                         "Game News Configuration Saved",
                         BuildGameNewsSettingsDisplayText(requestedSettingEnum, true, true, tagsToSkip),
                         Context.User));
@@ -146,7 +151,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
 
             var resultText = BuildGameNewsSettingsDisplayText(requestedSettingEnum, includeLeagueGames, notableMisses, tagsToSkip);
 
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "Game News Configuration Saved",
                 resultText,
                 Context.User));

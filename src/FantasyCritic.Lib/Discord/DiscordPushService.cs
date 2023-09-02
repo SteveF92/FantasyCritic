@@ -1,4 +1,5 @@
 using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
@@ -743,11 +744,24 @@ public class DiscordPushService
             user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
         }
 
-        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "New Message from the League Manager",
-            message,
-            user)));
-
+        IEnumerable<Task<RestUserMessage?>> messageTasks;
+        if (user != null)
+        {
+            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
+                "New Message from the League Manager",
+                message,
+                user)));
+        }
+        else
+        {
+            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "New Message from the League Manager",
+                message,
+                new EmbedFooterBuilder
+                {
+                    Text = "Error finding Discord user for League Manager."
+                })));
+        }
         await Task.WhenAll(messageTasks);
     }
 

@@ -53,7 +53,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 $"That year was not found for this league. Are you sure a league year is started for {year.Value}?",
                 Context.User));
@@ -62,7 +62,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         if (leagueChannel == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Getting Publisher",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -71,7 +71,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (publisherOrPlayerName != "" && publisherOrPlayerName.Trim() == "")
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Getting Publisher",
                 "Please provide at least 3 characters to search with.",
                 Context.User));
@@ -82,7 +82,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (!publisherSearchResults.HasAnyResults())
         {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "No Matches Found",
                 "No matches were found.",
                 Context.User));
@@ -95,7 +95,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (message != "")
         {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "Multiple Matches Found",
                 message,
                 Context.User));
@@ -115,7 +115,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (publisherFound == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Getting Publisher",
                 "Something went wrong.",
                 Context.User));
@@ -126,7 +126,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherFound.PublisherID);
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             $"{publisherFound.GetPublisherAndUserDisplayName()} ({leagueChannel.LeagueYear.Year})",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,
@@ -142,7 +142,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Getting Publisher",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -153,7 +153,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (publisherSearchResults.PublisherFoundForDiscordUser == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "No Matches Found",
                 NotFoundByUserErrorMessage,
                 Context.User));
@@ -164,7 +164,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherSearchResults.PublisherFoundForDiscordUser.PublisherID);
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()} ({leagueChannel.LeagueYear.Year})",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,
@@ -180,7 +180,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
         if (leagueChannel == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Getting Publisher",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -191,7 +191,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (publisherSearchResults.PublisherFoundForDiscordUser == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "No Matches Found",
                 NotFoundByUserErrorMessage,
                 Context.User));
@@ -202,7 +202,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
         var publisherUrlBuilder = new PublisherUrlBuilder(_baseAddress, publisherSearchResults.PublisherFoundForDiscordUser.PublisherID);
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             $"{publisherSearchResults.PublisherFoundForDiscordUser.GetPublisherAndUserDisplayName()} ({leagueChannel.LeagueYear.Year})",
             publisherUrlBuilder.BuildUrl("View Publisher"),
             Context.User,

@@ -47,7 +47,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (string.IsNullOrEmpty(leagueId))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Setting League",
                 "A league ID is required.",
                 Context.User));
@@ -56,7 +56,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (!Guid.TryParse(leagueId, out var leagueGuid))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Setting League",
                 $"`{leagueId}` is not a valid league ID.",
                 Context.User));
@@ -66,7 +66,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         var league = await _fantasyCriticRepo.GetLeague(leagueGuid);
         if (league == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Setting League",
                 $"No league was found for the league ID `{leagueId}`.",
                 Context.User));
@@ -80,8 +80,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             {
                 await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
                     "Error Setting League",
-                    responseMessage,
-                    Context.User));
+                    responseMessage));
                 return;
             }
 
@@ -89,7 +88,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             var fantasyCriticUser = await _userStore.FindByLoginAsync("Discord", discordUser.Id.ToString(), CancellationToken.None);
             if (fantasyCriticUser is null)
             {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "Error Setting League",
                     responseMessage,
                     Context.User));
@@ -99,7 +98,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             var usersInLeague = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, dateToCheck.Year);
             if (!usersInLeague.Contains(fantasyCriticUser))
             {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "Error Setting League",
                     responseMessage,
                     Context.User));
@@ -116,13 +115,13 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         {
             if (ex.Message.ToLower().Contains("duplicate"))
             {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "Error Saving Channel Configuration",
                     "This channel is already registered to this league.",
                     Context.User));
                 return;
             }
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Saving Channel Configuration",
                 "There was an error saving this league configuration.",
                 Context.User));
@@ -132,7 +131,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
         var leagueLinkWithName = leagueUrlBuilder.BuildUrl(league.LeagueName);
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             "Channel League Configuration Saved",
             $"Channel configured for League {leagueLinkWithName}.",
             Context.User,

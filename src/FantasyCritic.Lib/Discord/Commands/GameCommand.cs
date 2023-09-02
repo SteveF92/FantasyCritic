@@ -44,7 +44,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 $"That year was not found for this league. Are you sure a league year is started for {year.Value}?",
                 Context.User));
@@ -53,7 +53,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         if (leagueChannel == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -64,7 +64,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (termToSearch.Length < 2)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding Game",
                 "Please provide at least 3 characters to search with.",
                 Context.User));
@@ -75,7 +75,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             leagueChannel.LeagueYear, 3);
         if (!matchingGames.Any())
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding Game",
                 "No games found! Please check your search and try again.",
                 Context.User));
@@ -101,7 +101,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
                 };
             }).ToList();
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             gameEmbeds.Count == 0
                 ? "No Games Found"
                 : $"{gameEmbeds.Count} Game{(gameEmbeds.Count > 1 ? "(s)" : "")} Found",

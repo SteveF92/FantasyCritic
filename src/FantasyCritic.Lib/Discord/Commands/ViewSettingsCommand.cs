@@ -71,7 +71,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             });
         }
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             "Fantasy Critic Bot Settings",
             settingsMessage,
             Context.User,
