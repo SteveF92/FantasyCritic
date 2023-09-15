@@ -23,9 +23,17 @@ public class InterLeagueService
         _discordPushService = discordPushService;
     }
 
-    public Task<SystemWideSettings> GetSystemWideSettings()
+    public async Task<SystemWideSettings> GetSystemWideSettings()
     {
-        return _fantasyCriticRepo.GetSystemWideSettings();
+        var systemWideSettings = await _fantasyCriticRepo.GetSystemWideSettings();
+
+        var bidLockWindow = _clock.IsBidLockWindow();
+        if (bidLockWindow)
+        {
+            return systemWideSettings with { ActionProcessingMode = true };
+        }
+
+        return systemWideSettings;
     }
 
     public Task<SystemWideValues> GetSystemWideValues()
