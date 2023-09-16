@@ -522,7 +522,7 @@ public class FantasyCriticService
     {
         var domainMessage = new ManagerMessage(Guid.NewGuid(), message, isPublic, _clock.GetCurrentInstant(), new List<Guid>());
         await _fantasyCriticRepo.PostNewManagerMessage(leagueYear, domainMessage);
-        await _discordPushService.SendLeagueManagerMessage(leagueYear, message);
+        await _discordPushService.SendLeagueManagerAnnouncementMessage(leagueYear, message);
     }
 
     public Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)

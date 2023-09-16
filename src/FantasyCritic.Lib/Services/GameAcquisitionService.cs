@@ -43,8 +43,15 @@ public class GameAcquisitionService
 
         LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);
-        await _discordPushService.SendLeagueActionMessage(leagueAction);
         await _fantasyCriticRepo.AddPublisherGame(playerGame);
+        if (managerAction)
+        {
+            await _discordPushService.SendLeagueManagerAddPublisherGameMessage(request.Publisher, request.GameName);
+        }
+        else
+        {
+            await _discordPushService.SendLeagueActionMessage(leagueAction);
+        }
 
         return claimResult;
     }
@@ -506,7 +513,7 @@ public class GameAcquisitionService
                 return Result.Failure("That game will be released before the end time you specified.");
             }
         }
-        
+
         var nextBidTime = _clock.GetNextBidTime();
         if (scheduledEndTime > nextBidTime)
         {
