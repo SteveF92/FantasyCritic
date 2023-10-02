@@ -1,21 +1,14 @@
 <template>
   <div class="tweet-area">
     <div class="tweet-timeline">
-      TWEETS!
-      <!-- <Timeline :id="'fantasy_critic'" :source-type="'profile'" :options="{ theme: 'dark', tweetLimit: '3' }" /> -->
+      <TwitterTimeline url="fantasy_critic" description="Loading Tweets..." theme="dark" doNotTrack></TwitterTimeline>
     </div>
   </div>
 </template>
 
-<!-- <script>
-import { Timeline } from 'vue-tweet-embed';
-
-export default {
-  components: {
-    Timeline
-  }
-};
-</script> -->
+<script setup>
+import TwitterTimeline from 'vue-twitter-timeline';
+</script>
 
 <style scoped>
 .tweet-area {

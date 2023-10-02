@@ -29,6 +29,7 @@
     "vue": "^3.3.4",
     "vue-gtag": "^2.0.1",
     "vue-router": "^4.2.5",
+    "vue-twitter-timeline": "^1.0.2",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
