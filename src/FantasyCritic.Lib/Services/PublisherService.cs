@@ -61,13 +61,14 @@ public class PublisherService
         return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
     }
 
-    public Task RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
+    public async Task RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
     {
         var now = _clock.GetCurrentInstant();
         var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager");
         RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
         LeagueAction leagueAction = new LeagueAction(removeGameRequest, now);
-        return _fantasyCriticRepo.ManagerRemovePublisherGame(leagueYear, publisher, publisherGame, formerPublisherGame, leagueAction);
+        await _fantasyCriticRepo.ManagerRemovePublisherGame(leagueYear, publisher, publisherGame, formerPublisherGame, leagueAction);
+        await _discordPushService.SendLeagueManagerRemovePublisherGameMessage(publisher, publisherGame.GameName);
     }
 
     public async Task<Result> EditPublisher(EditPublisherRequest editValues)
