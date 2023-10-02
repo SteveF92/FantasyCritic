@@ -430,9 +430,9 @@ public class AdminService
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
+        var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MinBy(x => x.Year);
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(currentYear!.Year);
-        var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.Options.GrantSuperDrops);
+        var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.PlayStatus.DraftFinished && x.Options.GrantSuperDrops).ToList();
 
         var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
         var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -449,6 +449,11 @@ public class AdminService
         List<LeagueAction> superDropActions = new List<LeagueAction>();
         foreach (var leagueYear in leagueYearsWithSuperDrops)
         {
+            if (!leagueYear.Publishers.Any())
+            {
+                continue;
+            }
+
             var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
             var highestScoringPublisher = publishersWithProjectedPoints.MaxBy(x => x.Value);
             var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < highestScoringPublisher.Value * 0.65m).ToList();

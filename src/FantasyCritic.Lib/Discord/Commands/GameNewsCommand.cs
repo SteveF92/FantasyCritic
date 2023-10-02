@@ -59,7 +59,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
             var user = await _fantasyCriticUserStore.GetFantasyCriticUserForDiscordUser(Context.User.Id);
             if (user == null)
             {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "No User Found",
                     "You must link your Discord account to your Fantasy Critic account on the Fantasy Critic website to use this bot via DM.",
                     Context.User));
@@ -79,8 +79,11 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 .WithDivider("\n--------------------------------\n")
                 .Build();
 
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed($"Your {upcomingOrRecent} Releases ({user.UserName})",
-                string.Join("\n", messagesToSend), Context.User));
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
+                $"Your {upcomingOrRecent} Releases ({user.UserName})",
+                string.Join("\n",
+                    messagesToSend),
+                Context.User));
         }
         else
         {
@@ -88,7 +91,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
             if (leagueChannel == null)
             {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "Error Getting Game News",
                     "No league configuration found for this channel.",
                     Context.User));
@@ -102,7 +105,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
             var gameNewsData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, isRecentReleases, dateToCheck);
             if (gameNewsData.Count == 0)
             {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "Error Getting Game News",
                     "No data found.",
                     Context.User));
@@ -130,7 +133,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 .WithDivider("\n--------------------------------\n")
                 .Build();
 
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 $"{upcomingOrRecent} Publisher Releases",
                 string.Join("\n", messagesToSend),
                 Context.User));

@@ -123,6 +123,30 @@ public static class TimeExtensions
         return now >= superDropsGrantTime;
     }
 
+    public static bool IsBidLockWindow(this IClock clock)
+    {
+        var currentTime = clock.GetCurrentInstant();
+        var nyc = EasternTimeZone;
+        var localDateTime = currentTime.InZone(nyc).LocalDateTime;
+        LocalDate currentDate = localDateTime.Date;
+        if (currentDate.DayOfWeek != IsoDayOfWeek.Saturday)
+        {
+            return false;
+        }
+
+        if (localDateTime.Hour != 20)
+        {
+            return false;
+        }
+
+        if (localDateTime.Minute > 3)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public static Instant GetSuperDropsGrantTime(this IClock clock)
     {
         var currentDate = clock.GetToday();

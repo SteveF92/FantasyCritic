@@ -626,7 +626,6 @@ public class LeagueManagerController : BaseLeagueController
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false, masterGame, null, null);
         ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, false, false, request.AllowIneligibleSlot);
         var viewModel = new ManagerClaimResultViewModel(result);
-
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
         return Ok(viewModel);
     }
@@ -1025,7 +1024,7 @@ public class LeagueManagerController : BaseLeagueController
         var league = validResult.League;
 
         var newManager = await _userManager.FindByIdOrThrowAsync(request.NewManagerUserID);
-        
+
         var transferResult = await _leagueMemberService.TransferLeagueManager(league, newManager);
         if (transferResult.IsFailure)
         {

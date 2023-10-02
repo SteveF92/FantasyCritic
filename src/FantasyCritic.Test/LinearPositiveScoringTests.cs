@@ -30,7 +30,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, null, new LocalDate(2018, 7, 13),
-            null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -50,7 +50,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 7, 13), new LocalDate(2018, 7, 13), null, null, null, new LocalDate(2018, 7, 13),
-            null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 84.8095m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, 83.8095m, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -70,7 +70,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 94.8125m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 94.8125m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -90,7 +90,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -110,7 +110,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 55m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 55m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -130,7 +130,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 45m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 45m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -150,7 +150,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 35m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 35m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -170,7 +170,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 25m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 25m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -190,7 +190,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 15m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 15m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -210,7 +210,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 5m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 5m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -230,7 +230,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 0m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 0m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -250,7 +250,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 10, 20), new LocalDate(2018, 10, 20), null, null, null, new LocalDate(2018, 10, 20),
-            null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -270,7 +270,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2019, 10, 20), new LocalDate(2019, 10, 20), null, null, null, new LocalDate(2019, 10, 20),
-            null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, null, false, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, false, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);
@@ -290,7 +290,7 @@ public class LinearPositiveScoringTests
 
         MasterGame masterGame = new MasterGame(Guid.NewGuid(), "", "",
             new LocalDate(2018, 4, 20), new LocalDate(2018, 4, 20), null, null, null, new LocalDate(2018, 4, 20),
-            null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
+            null, null, null, 65.8559m, true, null, "", "", "", fakeClock.GetCurrentInstant(), false, false, false, false, false,
             fakeClock.GetCurrentInstant(), EmptyUser, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         PublisherGame testGame = new PublisherGame(Guid.NewGuid(), Guid.NewGuid(), "", pickupTime, true, null, false, null, new MasterGameYear(masterGame, 2018), 1, null, null, null, null);

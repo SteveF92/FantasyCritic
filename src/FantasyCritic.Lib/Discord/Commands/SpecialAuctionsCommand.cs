@@ -45,7 +45,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 $"That year was not found for this league. Are you sure a league year is started for {year.Value}?",
                 Context.User));
@@ -54,7 +54,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         if (leagueChannel == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 "No league configuration found for this channel. You may have to specify a year if your league is for an upcoming year.",
                 Context.User));
@@ -67,7 +67,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
 
         if (specialAuctions == null || !specialAuctions.Any())
         {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "No Special Auctions",
                 "There are no special auctions running currently.",
                 Context.User));
@@ -90,7 +90,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
 
         var finalMessage = string.Join("\n", specialAuctionMessages);
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             "Special Auction(s)",
             finalMessage,
             Context.User,

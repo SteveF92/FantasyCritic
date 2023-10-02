@@ -34,7 +34,7 @@ public class LeagueLinkCommand : InteractionModuleBase<SocketInteractionContext>
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 $"That year was not found for this league. Are you sure a league year is started for {year.Value}?",
                 Context.User));
@@ -43,7 +43,7 @@ public class LeagueLinkCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         if (leagueChannel == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Getting League Link",
                 "No league configuration found for this channel.",
                 Context.User));
@@ -53,7 +53,7 @@ public class LeagueLinkCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueUrlBuilder = new LeagueUrlBuilder(_baseAddress, leagueChannel.LeagueYear.League.LeagueID, leagueChannel.LeagueYear.Year);
         var leagueUrl = leagueUrlBuilder.BuildUrl();
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             $"Click here to visit the site for the league {leagueChannel.LeagueYear.League.LeagueName} ({leagueChannel.LeagueYear.Year})",
             "",
             Context.User,

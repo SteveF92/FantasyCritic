@@ -1,4 +1,5 @@
 using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
@@ -419,6 +420,14 @@ public class DiscordPushService
 
     public async Task SendPublisherEditMessage(EditPublisherRequest editPublisherRequest)
     {
+        var messageToSend = $"Publisher **{editPublisherRequest.Publisher.GetPublisherAndUserDisplayName()}** edited by League Manager: {editPublisherRequest.GetActionString()}";
+        var leagueID = editPublisherRequest.Publisher.LeagueYearKey.LeagueID;
+
+        await SendLeagueManagerActionMessage(leagueID, messageToSend);
+    }
+
+    private async Task SendLeagueManagerActionMessage(Guid leagueID, string message)
+    {
         bool shouldRun = await StartBot();
         if (!shouldRun)
         {
@@ -429,17 +438,29 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var channels = await GetChannelsForLeague(editPublisherRequest.Publisher.LeagueYearKey.LeagueID, discordRepo);
+        var channels = await GetChannelsForLeague(leagueID, discordRepo);
         if (!channels.Any())
         {
             return;
         }
 
-        var messageToSend = $"Publisher **{editPublisherRequest.Publisher.GetPublisherAndUserDisplayName()}** edited by League Manager: {editPublisherRequest.GetActionString()}";
+        var leagueManagerActionMessage = $"**League Manager Action**: {message}";
 
-
-        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(messageToSend));
+        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(leagueManagerActionMessage));
         await Task.WhenAll(messageTasks);
+    }
+
+    public async Task SendLeagueManagerAddPublisherGameMessage(Publisher publisher, string gameName)
+    {
+        var messageToSend = $"Publisher **{publisher.GetPublisherAndUserDisplayName()}** has had the game **{gameName}** manually **ADDED** by the League Manager.";
+        await SendLeagueManagerActionMessage(publisher.LeagueYearKey.LeagueID, messageToSend);
+    }
+
+    public async Task SendLeagueManagerRemovePublisherGameMessage(Publisher publisher, string gameName)
+    {
+        var leagueID = publisher.LeagueYearKey.LeagueID;
+        var messageToSend = $"Publisher **{publisher.GetPublisherAndUserDisplayName()}** has had the game **{gameName}** manually **REMOVED** by the League Manager.";
+        await SendLeagueManagerActionMessage(leagueID, messageToSend);
     }
 
     public async Task SendNewPublisherMessage(Publisher publisher)
@@ -717,7 +738,7 @@ public class DiscordPushService
         await Task.WhenAll(messageTasks);
     }
 
-    public async Task SendLeagueManagerMessage(LeagueYear leagueYear, string message)
+    public async Task SendLeagueManagerAnnouncementMessage(LeagueYear leagueYear, string message)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -743,11 +764,24 @@ public class DiscordPushService
             user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
         }
 
-        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "New Message from the League Manager",
-            message,
-            user)));
-
+        IEnumerable<Task<RestUserMessage?>> messageTasks;
+        if (user != null)
+        {
+            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
+                "New Message from the League Manager",
+                message,
+                user)));
+        }
+        else
+        {
+            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "New Message from the League Manager",
+                message,
+                new EmbedFooterBuilder
+                {
+                    Text = "Error finding Discord user for League Manager."
+                })));
+        }
         await Task.WhenAll(messageTasks);
     }
 

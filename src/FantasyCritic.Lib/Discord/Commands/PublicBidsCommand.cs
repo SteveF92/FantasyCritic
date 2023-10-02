@@ -44,7 +44,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 $"That year was not found for this league. Are you sure a league year is started for {year.Value}?",
                 Context.User));
@@ -53,7 +53,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         if (leagueChannel == null)
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Finding League Configuration",
                 "No league configuration found for this channel. You may have to specify a year if your league is for an upcoming year.",
                 Context.User));
@@ -64,7 +64,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SecretBidding))
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Bidding is Secret",
                 "This league does not use public bidding.",
                 Context.User));
@@ -78,7 +78,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (leagueYearPublicBids == null || !leagueYearPublicBids.Any())
         {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "No Public Bids",
                 "No public bids were found for this week.",
                 Context.User));
@@ -94,7 +94,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
             leagueYear.Year)
             .BuildUrl();
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed(
+        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             header,
             finalMessage,
             Context.User,

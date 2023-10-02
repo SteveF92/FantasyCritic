@@ -45,7 +45,7 @@ public class PublisherStateSet
         UpdatePublisher(publisherToEdit, null, null, (int)budget, null);
     }
 
-    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions, bool superDrop)
+    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions, bool superDrop, LocalDate dateOfDrop)
     {
         publisherToEdit = GetPublisher(publisherToEdit.PublisherID);
         if (superDrop)
@@ -57,7 +57,19 @@ public class PublisherStateSet
             }
             throw new Exception("Publisher does not have any super drops.");
         }
-        if (publisherGame.CouldRelease())
+
+        var releaseStatus = publisherGame.WillRelease();
+        bool gameCouldRelease = releaseStatus.CountAsWillRelease;
+        if (releaseStatus == WillReleaseStatus.MightRelease)
+        {
+            if (leagueOptions.MightReleaseDroppableDate.HasValue && dateOfDrop >=
+                leagueOptions.MightReleaseDroppableDate.Value.InYear(dateOfDrop.Year))
+            {
+                gameCouldRelease = false;
+            }
+        }
+
+        if (gameCouldRelease)
         {
             if (leagueOptions.WillReleaseDroppableGames == -1 || leagueOptions.WillReleaseDroppableGames > publisherToEdit.WillReleaseGamesDropped)
             {
