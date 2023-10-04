@@ -209,7 +209,7 @@ public class DiscordPushService
                     }
                 }
 
-                var gameEdits = editsLookup[existingGame];
+                var gameEdits = editsLookup[existingGame].ToList();
                 if (gameEdits.Any())
                 {
                     changeMessages.AddRange(gameEdits.SelectMany(x => x.Changes));
@@ -231,8 +231,29 @@ public class DiscordPushService
             var messagesToSend =
                 gameUpdateMessages
                     .Select(gameUpdateMessage
-                        => $"**{gameUpdateMessage.Key.GameName}**\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}")
-                    .ToList();
+                            =>
+                    {
+                        var gameAndPublisherMessage = $"**{gameUpdateMessage.Key.GameName}**\n";
+
+                        var publishersWithGame =
+                            PublishersWithGame(gameUpdateMessage.Key, combinedChannel.ActiveLeagueYears);
+
+                        if (publishersWithGame.Any())
+                        {
+                            foreach (var publisher in publishersWithGame)
+                            {
+                                var pickedGame = publisher.PublisherGames.FirstOrDefault(g =>
+                                    g.MasterGame?.MasterGame.MasterGameID == gameUpdateMessage.Key.MasterGameID);
+                                if (pickedGame != null)
+                                {
+                                    gameAndPublisherMessage += $"{(pickedGame.CounterPick ? "Counter Picked by" : "Picked by")} {publisher.GetPublisherAndUserDisplayName()}";
+                                }
+                            }
+                        }
+
+                        return
+                            $"{gameAndPublisherMessage}{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
+                    }).ToList();
 
             if (!messagesToSend.Any())
             {
@@ -254,6 +275,27 @@ public class DiscordPushService
         _newMasterGameMessages.Clear();
         _gameCriticScoreUpdateMessages.Clear();
         _masterGameEditMessages.Clear();
+    }
+
+    private static IList<Publisher> PublishersWithGame(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
+    {
+        if (activeLeagueYears == null)
+        {
+            return new List<Publisher>();
+        }
+
+        var publishersWithGame = new List<Publisher>();
+
+        foreach (var leagueYear in activeLeagueYears)
+        {
+            var publisherWithGame = leagueYear.Publishers.FirstOrDefault(p => p.MyMasterGames.Contains(masterGame));
+            if (publisherWithGame != null)
+            {
+                publishersWithGame.Add(publisherWithGame);
+            }
+        }
+
+        return publishersWithGame;
     }
 
     public async Task SendGameReleaseUpdates(IReadOnlyList<MasterGameYear> masterGamesReleasingToday)
