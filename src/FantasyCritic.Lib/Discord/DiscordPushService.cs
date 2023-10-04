@@ -246,7 +246,7 @@ public class DiscordPushService
                                     g.MasterGame?.MasterGame.MasterGameID == gameUpdateMessage.Key.MasterGameID);
                                 if (pickedGame != null)
                                 {
-                                    gameAndPublisherMessage += $"{(pickedGame.CounterPick ? "Counter Picked by" : "Picked by")} {publisher.GetPublisherAndUserDisplayName()}";
+                                    gameAndPublisherMessage += $"\n{(pickedGame.CounterPick ? "Counter Picked by" : "Picked by")} {publisher.GetPublisherAndUserDisplayName()}";
                                 }
                             }
                         }
