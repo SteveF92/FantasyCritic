@@ -228,32 +228,26 @@ public class DiscordPushService
                 }
             }
 
-            var messagesToSend =
-                gameUpdateMessages
-                    .Select(gameUpdateMessage
-                            =>
+            var messagesToSend = gameUpdateMessages
+                .Select(gameUpdateMessage =>
+                {
+                    var gameAndPublisherMessage = $"**{gameUpdateMessage.Key.GameName}**\n";
+                    var publishersWithGame = GetPublishersWithGame(gameUpdateMessage.Key, combinedChannel.ActiveLeagueYears);
+                    if (publishersWithGame.Any())
                     {
-                        var gameAndPublisherMessage = $"**{gameUpdateMessage.Key.GameName}**\n";
-
-                        var publishersWithGame =
-                            PublishersWithGame(gameUpdateMessage.Key, combinedChannel.ActiveLeagueYears);
-
-                        if (publishersWithGame.Any())
+                        foreach (var publisher in publishersWithGame)
                         {
-                            foreach (var publisher in publishersWithGame)
+                            var pickedGame = publisher.PublisherGames.FirstOrDefault(g =>
+                                g.MasterGame?.MasterGame.MasterGameID == gameUpdateMessage.Key.MasterGameID);
+                            if (pickedGame != null)
                             {
-                                var pickedGame = publisher.PublisherGames.FirstOrDefault(g =>
-                                    g.MasterGame?.MasterGame.MasterGameID == gameUpdateMessage.Key.MasterGameID);
-                                if (pickedGame != null)
-                                {
-                                    gameAndPublisherMessage += $"\n**{(pickedGame.CounterPick ? "Counter" : "")} Picked** by **{publisher.GetPublisherAndUserDisplayName()}**";
-                                }
+                                gameAndPublisherMessage += $"\n**{(pickedGame.CounterPick ? "Counter" : "")} Picked** by **{publisher.GetPublisherAndUserDisplayName()}**";
                             }
                         }
+                    }
 
-                        return
-                            $"{gameAndPublisherMessage}\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
-                    }).ToList();
+                    return $"{gameAndPublisherMessage}\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
+                }).ToList();
 
             if (!messagesToSend.Any())
             {
@@ -261,8 +255,7 @@ public class DiscordPushService
             }
 
             Logger.Information("Building a master game update with {gameUpdatesPerChannel} messages.", messagesToSend.Count);
-            var messagesToActuallySend = new MessageListBuilder(messagesToSend,
-                    MaxMessageLength)
+            var messagesToActuallySend = new MessageListBuilder(messagesToSend, MaxMessageLength)
                 .WithDivider("\n")
                 .Build();
 
@@ -277,7 +270,7 @@ public class DiscordPushService
         _masterGameEditMessages.Clear();
     }
 
-    private static IList<Publisher> PublishersWithGame(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
+    private static IReadOnlyList<Publisher> GetPublishersWithGame(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
     {
         if (activeLeagueYears == null)
         {
