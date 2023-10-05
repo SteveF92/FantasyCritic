@@ -246,13 +246,13 @@ public class DiscordPushService
                                     g.MasterGame?.MasterGame.MasterGameID == gameUpdateMessage.Key.MasterGameID);
                                 if (pickedGame != null)
                                 {
-                                    gameAndPublisherMessage += $"\n{(pickedGame.CounterPick ? "Counter Picked by" : "Picked by")} {publisher.GetPublisherAndUserDisplayName()}";
+                                    gameAndPublisherMessage += $"\n**{(pickedGame.CounterPick ? "Counter" : "")} Picked** by **{publisher.GetPublisherAndUserDisplayName()}**";
                                 }
                             }
                         }
 
                         return
-                            $"{gameAndPublisherMessage}{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
+                            $"{gameAndPublisherMessage}\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
                     }).ToList();
 
             if (!messagesToSend.Any())
