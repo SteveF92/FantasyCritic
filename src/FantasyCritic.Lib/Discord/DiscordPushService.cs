@@ -228,23 +228,17 @@ public class DiscordPushService
                 }
             }
 
+            var allPublisherInActiveYears = new List<Publisher>();
+            if (combinedChannel.ActiveLeagueYears is not null)
+            {
+                allPublisherInActiveYears = combinedChannel.ActiveLeagueYears.SelectMany(x => x.Publishers).ToList();
+            }
+
             var messagesToSend = gameUpdateMessages
                 .Select(gameUpdateMessage =>
                 {
-                    var gameAndPublisherMessage = $"**{gameUpdateMessage.Key.GameName}**\n";
-                    var publishersWithGame = GetPublishersWithGame(gameUpdateMessage.Key, combinedChannel.ActiveLeagueYears);
-                    if (publishersWithGame.Any())
-                    {
-                        foreach (var publisher in publishersWithGame)
-                        {
-                            var pickedGame = publisher.PublisherGames.FirstOrDefault(g =>
-                                g.MasterGame?.MasterGame.MasterGameID == gameUpdateMessage.Key.MasterGameID);
-                            if (pickedGame != null)
-                            {
-                                gameAndPublisherMessage += $"\n**{(pickedGame.CounterPick ? "Counter" : "")} Picked** by **{publisher.GetPublisherAndUserDisplayName()}**";
-                            }
-                        }
-                    }
+                    var publisherOfGameNote = GetPublisherOfGameNote(allPublisherInActiveYears, gameUpdateMessage.Key, today);
+                    var gameAndPublisherMessage = $"**{gameUpdateMessage.Key.GameName}** [{publisherOfGameNote}]\n";
 
                     return $"{gameAndPublisherMessage}\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
                 }).ToList();
@@ -270,25 +264,38 @@ public class DiscordPushService
         _masterGameEditMessages.Clear();
     }
 
-    private static IReadOnlyList<Publisher> GetPublishersWithGame(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
+    private static string GetPublisherOfGameNote(IReadOnlyList<Publisher> allPublisherInActiveYears, MasterGame masterGame, LocalDate currentDate)
     {
-        if (activeLeagueYears == null)
-        {
-            return new List<Publisher>();
-        }
+        var standardPickPublisher = allPublisherInActiveYears.FirstOrDefault(x =>
+            x.PublisherGames.Any(y => !y.CounterPick && y.MasterGame is not null &&
+                                      y.MasterGame.MasterGame.Equals(masterGame)));
 
-        var publishersWithGame = new List<Publisher>();
+        var counterPickPublisher = allPublisherInActiveYears.FirstOrDefault(x =>
+            x.PublisherGames.Any(y => y.CounterPick && y.MasterGame is not null &&
+                                      y.MasterGame.MasterGame.Equals(masterGame)));
 
-        foreach (var leagueYear in activeLeagueYears)
+        if (standardPickPublisher is null && counterPickPublisher is null)
         {
-            var publisherWithGame = leagueYear.Publishers.FirstOrDefault(p => p.MyMasterGames.Contains(masterGame));
-            if (publisherWithGame != null)
-            {
-                publishersWithGame.Add(publisherWithGame);
+            if (!masterGame.IsReleased(currentDate) && !masterGame.CriticScore.HasValue)
+            { 
+                return "Available";
             }
+
+            return "Unpublished";
         }
 
-        return publishersWithGame;
+        if (standardPickPublisher is not null && counterPickPublisher is not null)
+        {
+            return $"Picked by **{standardPickPublisher.GetPublisherAndUserDisplayName()}**, Counter Picked by **{counterPickPublisher.GetPublisherAndUserDisplayName()}**";
+        }
+
+        if (standardPickPublisher is not null)
+        {
+            return $"Picked by **{standardPickPublisher.GetPublisherAndUserDisplayName()}**";
+        }
+
+        //Must be just counter pick
+        return $"**Counter Picked** by **{counterPickPublisher!.GetPublisherAndUserDisplayName()}**";
     }
 
     public async Task SendGameReleaseUpdates(IReadOnlyList<MasterGameYear> masterGamesReleasingToday)
