@@ -237,8 +237,14 @@ public class DiscordPushService
             var messagesToSend = gameUpdateMessages
                 .Select(gameUpdateMessage =>
                 {
-                    var publisherOfGameNote = GetPublisherOfGameNote(allPublisherInActiveYears, gameUpdateMessage.Key, today);
-                    var gameAndPublisherMessage = $"**{gameUpdateMessage.Key.GameName}** [{publisherOfGameNote}]\n";
+                    string publisherOfGameNoteFinalString = "";
+                    if (combinedChannel.ActiveLeagueYears is not null)
+                    {
+                        var publisherOfGameNote = GetPublisherOfGameNote(allPublisherInActiveYears, gameUpdateMessage.Key, today);
+                        publisherOfGameNoteFinalString = $" [{publisherOfGameNote}]";
+                    }
+
+                    var gameAndPublisherMessage = $"**{gameUpdateMessage.Key.GameName}**{publisherOfGameNoteFinalString}";
 
                     return $"{gameAndPublisherMessage}\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
                 }).ToList();
