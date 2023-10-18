@@ -92,6 +92,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<DropRequest>> GetActiveDropRequests(LeagueYear leagueYear, Publisher publisher);
     Task<IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>>> GetActiveDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(LeagueYear leagueYear);
+    Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<DropRequest?> GetDropRequest(Guid dropRequestID);
 
     Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher);

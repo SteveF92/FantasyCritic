@@ -610,6 +610,32 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainDrops;
     }
 
+    public async Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears)
+    {
+        const string sql = "select * from vw_league_droprequest where Year = @year and Successful IS NOT NULL";
+        var queryObject = new
+        {
+            year
+        };
+
+        var leagueYearDictionary = allLeagueYears.ToDictionary(x => x.Key);
+        var publisherDictionary = allLeagueYears.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var dropEntities = await connection.QueryAsync<DropRequestEntity>(sql, queryObject);
+        List<DropRequest> domainDrops = new List<DropRequest>();
+        foreach (var dropEntity in dropEntities)
+        {
+            var publisher = publisherDictionary[dropEntity.PublisherID];
+            var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+            var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropEntity.MasterGameID);
+            DropRequest domain = dropEntity.ToDomain(publisher, masterGame, leagueYear);
+            domainDrops.Add(domain);
+        }
+
+        return domainDrops;
+    }
+
     public async Task<DropRequest?> GetDropRequest(Guid dropRequestID)
     {
         await using var connection = new MySqlConnection(_connectionString);

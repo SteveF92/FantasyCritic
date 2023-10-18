@@ -1,15 +1,12 @@
 using System.Reflection;
-using Dapper;
 using Dapper.NodaTime;
+using Faithlife.Utility.Dapper;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.Domain.Trades;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL;
-using FantasyCritic.MySQL.Entities;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using NodaTime;
@@ -18,6 +15,7 @@ namespace FantasyCritic.DBUtility;
 
 class Program
 {
+
     private static string _connectionString = null!;
     private static readonly IClock _clock = SystemClock.Instance;
 
@@ -32,102 +30,108 @@ class Program
         _connectionString = configuration["ConnectionString"]!;
 
         DapperNodaTimeSetup.Register();
-        await FindBadBudgets();
+        await BackfillTopBidsAndDrops();
     }
 
-    private static async Task FindBadBudgets()
+    private static async Task BackfillTopBidsAndDrops()
     {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration(_connectionString, _clock);
         IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(repoConfig, userStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo);
 
-        var supportedYears = await fantasyCriticRepo.GetSupportedYears();
-        var tradeYears = supportedYears.Where(x => x.Year >= 2022).ToList();
-        foreach (var supportedYear in tradeYears)
+        List<PickupBid> allProcessedPickups = new List<PickupBid>();
+        List<DropRequest> allProcessedDrops = new List<DropRequest>();
+        var relevantYears = new List<int>() { 2022, 2023 };
+        foreach (var year in relevantYears)
         {
-            var leagueYearsWithProblemTrades = await GetLeagueYearsWithProblemTrades(supportedYear);
-            foreach (var leagueYearKey in leagueYearsWithProblemTrades)
+            var allLeagueYears = await fantasyCriticRepo.GetLeagueYears(year);
+            var standardLeagueIDs = allLeagueYears.Where(x => x.League.AffectsStats).Select(x => x.League.LeagueID).ToHashSet();
+            var processedPickups = await fantasyCriticRepo.GetProcessedPickupBids(year, allLeagueYears);
+            var processedDrops = await fantasyCriticRepo.GetProcessedDropRequests(year, allLeagueYears);
+
+            allProcessedPickups.AddRange(processedPickups.Where(x => x.ProcessSetID.HasValue && standardLeagueIDs.Contains(x.LeagueYear.League.LeagueID)));
+            allProcessedDrops.AddRange(processedDrops.Where(x => x.ProcessSetID.HasValue && standardLeagueIDs.Contains(x.LeagueYear.League.LeagueID)));
+        }
+
+        var actionProcessingSets = (await fantasyCriticRepo.GetActionProcessingSets()).OrderBy(x => x.ProcessTime).ToList();
+        IReadOnlyList<ActionSetGrouping> groupings = GetGroupings(actionProcessingSets);
+
+        List<TopBidsAndDropsEntity> finalEntities = new List<TopBidsAndDropsEntity>();
+
+        foreach (var actionProcessingGroup in groupings)
+        {
+            var processingSetIDs = actionProcessingGroup.ProcessingSets.Select(x => x.ProcessSetID).ToHashSet();
+            var pickupBidsForSet = allProcessedPickups.Where(x => processingSetIDs.Contains(x.ProcessSetID!.Value)).ToList();
+            var dropsForSet = allProcessedDrops.Where(x => processingSetIDs.Contains(x.ProcessSetID!.Value)).ToList();
+
+            var pickupBidsByYear = pickupBidsForSet.GroupToDictionary(x => x.LeagueYear.Year);
+            var dropsByYear = dropsForSet.GroupToDictionary(x => x.LeagueYear.Year);
+
+            var yearsInGroup = pickupBidsByYear.Keys.Concat(dropsByYear.Keys).Distinct().ToList();
+            foreach (var year in yearsInGroup)
             {
-                var leagueYear = await fantasyCriticRepo.GetLeagueYearOrThrow(leagueYearKey.LeagueID, leagueYearKey.Year);
-                var trades = await fantasyCriticRepo.GetTradesForLeague(leagueYear);
-                var executedTrades = trades.Where(x => x.Status.Equals(TradeStatus.Executed)).ToList();
-                var leagueActions = await fantasyCriticRepo.GetLeagueActions(leagueYear);
-                var nonDraftActions = leagueActions.Where(x => !x.Description.ToLower().Contains("draft")).ToList();
-                var processedBids = await fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
-                var successBids = processedBids.Where(x => x.Successful.HasValue && x.Successful.Value).ToList();
-                var publisherIDs = executedTrades.SelectMany(x => x.GetPublisherIDs()).Distinct().ToList();
-                foreach (var publisherID in publisherIDs)
+                var pickupBidsForYear = pickupBidsByYear[year];
+                var dropsForYear = dropsByYear[year];
+
+                var bidsByMasterGame = pickupBidsForYear.GroupToDictionary(x => x.MasterGame);
+                var dropsByMasterGame = dropsForYear.GroupToDictionary(x => x.MasterGame);
+                var allMasterGames = bidsByMasterGame.Keys.Concat(dropsByMasterGame.Keys).Distinct().ToList();
+
+                foreach (var masterGame in allMasterGames)
                 {
-                    var publisher = leagueYear.GetPublisherByIDOrThrow(publisherID);
-                    var leagueActionsForPublisher = nonDraftActions.Where(x => x.Publisher.PublisherID == publisher.PublisherID).ToList();
-                    var tradesInvolvingPublisher = executedTrades.Where(x => x.GetPublisherIDs().Contains(publisher.PublisherID)).OrderBy(x => x.CompletedTimestamp).ToList();
-                    var successfulBidsForPublisher = successBids.Where(x => x.Publisher.PublisherID == publisher.PublisherID).OrderBy(x => x.Timestamp).ToList();
-                    PrintStatsForPublisher(leagueYear, publisher, leagueActionsForPublisher, tradesInvolvingPublisher, successfulBidsForPublisher);
+                    var bidsForMasterGame = bidsByMasterGame.GetValueOrDefault(masterGame, new List<PickupBid>());
+                    var dropsForMasterGame = dropsByMasterGame.GetValueOrDefault(masterGame, new List<DropRequest>());
+
+                    finalEntities.Add(new TopBidsAndDropsEntity()
+                    {
+                        ProcessDate = actionProcessingGroup.ProcessDate,
+                        MasterGameID = masterGame.MasterGameID,
+                        Year = year,
+                        TotalBidCount = bidsForMasterGame.Count,
+                        SuccessfulBids = bidsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
+                        FailedBids = bidsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
+                        TotalBidLeagues = bidsForMasterGame.Select(x => x.LeagueYear.Key).Distinct().Count(),
+                        TotalBidAmount = (int) bidsForMasterGame.Sum(x => x.BidAmount),
+                        TotalDropCount = dropsForMasterGame.Count,
+                        SuccessfulDrops = dropsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
+                        FailedDrops = dropsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
+                    });
                 }
             }
         }
+
+        await SaveResults(finalEntities);
     }
 
-    private static void PrintStatsForPublisher(LeagueYear leagueYear, Publisher publisher, IReadOnlyList<LeagueAction> leagueActionsForPublisher, IReadOnlyList<Trade> tradesInvolvingPublisher, IReadOnlyList<PickupBid> successfulBidsForPublisher)
+    private static IReadOnlyList<ActionSetGrouping> GetGroupings(IReadOnlyList<ActionProcessingSetMetadata> actionProcessingSets)
     {
-        List<(Instant, object)> rawBudgetEvents = new List<(Instant, object)>();
-        rawBudgetEvents.AddRange(leagueActionsForPublisher.Where(x => x.ActionType == "Publisher Edited" && x.Description.StartsWith("Changed budget")).Select(x => (x.Timestamp, x as object)));
-        rawBudgetEvents.AddRange(successfulBidsForPublisher.Select(x => (x.Timestamp, x as object)));
-        rawBudgetEvents.AddRange(tradesInvolvingPublisher.Select(x => (x.CompletedTimestamp!.Value, x as object)));
+        List<ActionSetGrouping> groupings = new List<ActionSetGrouping>();
 
-        var sortedRawEvents = rawBudgetEvents.OrderBy(x => x.Item1);
-        List<BudgetEvent> budgetEvents = new List<BudgetEvent>();
-        long currentBudget = 100;
-        foreach (var rawEvent in sortedRawEvents)
+        List<ActionProcessingSetMetadata> currentList = new List<ActionProcessingSetMetadata>();
+        for (var index = 0; index < actionProcessingSets.Count; index++)
         {
-            switch (rawEvent.Item2)
+            var actionSet = actionProcessingSets[index];
+            currentList.Add(actionSet);
+            if (actionSet.ProcessName.Contains("Drop/Bid Processing"))
             {
-                case LeagueAction action:
-                    budgetEvents.Add(new BudgetEvent(currentBudget, action));
-                    break;
-                case PickupBid bid:
-                    budgetEvents.Add(new BudgetEvent(currentBudget, bid));
-                    break;
-                case Trade trade:
-                    bool isProposer = trade.Proposer.PublisherID == publisher.PublisherID;
-                    budgetEvents.Add(new BudgetEvent(currentBudget, trade, isProposer));
-                    break;
+                var processDate = actionSet.ProcessTime.ToEasternDate();
+                groupings.Add(new ActionSetGrouping(processDate, currentList));
+                currentList = new List<ActionProcessingSetMetadata>();
             }
-
-            currentBudget = budgetEvents.Last().NewBudget;
         }
 
-        //if (currentBudget == publisher.Budget)
-        //{
-        //    return;
-        //}
-
-        Console.WriteLine("-------------------------------------------------------------");
-        Console.WriteLine($"League: {leagueYear.League.LeagueName} | Publisher: {publisher.PublisherName}");
-        Console.WriteLine($"https://www.fantasycritic.games/league/{leagueYear.League.LeagueID}/{leagueYear.Year}");
-        Console.WriteLine($"https://www.fantasycritic.games/publisher/{publisher.PublisherID}");
-        Console.WriteLine("Starting: 100");
-
-        foreach (var budgetEvent in budgetEvents)
-        {
-            Console.WriteLine($"Event: {budgetEvent.Description} - {budgetEvent.Timestamp}");
-            Console.WriteLine($"\tChange: {budgetEvent.PreviousBudget}->{budgetEvent.NewBudget} ({budgetEvent.Change})");
-        }
-
-        Console.WriteLine($"Expected Budget: {currentBudget}");
-        Console.WriteLine($"Actual Budget: {publisher.Budget}");
-        if (currentBudget != publisher.Budget)
-        {
-            Console.WriteLine("Mismatch!");
-        }
-        Console.WriteLine("-------------------------------------------------------------");
+        return groupings;
     }
 
-    private static async Task<IReadOnlyList<LeagueYearKey>> GetLeagueYearsWithProblemTrades(SupportedYear year)
+    private static async Task SaveResults(IReadOnlyList<TopBidsAndDropsEntity> finalEntities)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var keys = await connection.QueryAsync<LeagueYearKeyEntity>("select distinct LeagueID, Year from tbl_league_trade where Status = 'Executed' AND (ProposerBudgetSendAmount <> 0 OR CounterPartyBudgetSendAmount <> 0) AND Year = @year;", new { year = year.Year });
-        return keys.Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToList();
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.BulkInsertAsync(finalEntities, "tbl_caching_topbidsanddrops", 500, transaction);
+
+        await transaction.CommitAsync();
     }
 }
