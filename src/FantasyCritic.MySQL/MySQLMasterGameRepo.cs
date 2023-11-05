@@ -631,4 +631,14 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
         await transaction.CommitAsync();
     }
+
+    public Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate)
+    {
+        throw new NotImplementedException();
+    }
 }

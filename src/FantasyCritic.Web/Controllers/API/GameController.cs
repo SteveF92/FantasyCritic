@@ -312,4 +312,17 @@ public class GameController : FantasyCriticController
         var vms = recentChanges.Select(x => new CompleteMasterGameChangeViewModel(x, currentDate)).ToList();
         return vms;
     }
+
+    public async Task<ActionResult<List<LocalDate>>> GetProcessingDatesForTopBidsAndDrops()
+    {
+        var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
+        return processingDatesWithData.ToList();
+    }
+
+    public async Task<ActionResult<List<TopBidsAndDropsGame>>> GetTopBidsAndDrops(DateOnly processingDate)
+    {
+        var localDate = LocalDate.FromDateOnly(processingDate);
+        var topBidsAndDrops = await _interLeagueService.GetTopBidsAndDrops(localDate);
+        return topBidsAndDrops.ToList();
+    }
 }

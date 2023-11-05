@@ -211,4 +211,14 @@ public class FakeMasterGameRepo : IMasterGameRepo
     {
         throw new NotImplementedException();
     }
+
+    public Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate)
+    {
+        throw new NotImplementedException();
+    }
 }

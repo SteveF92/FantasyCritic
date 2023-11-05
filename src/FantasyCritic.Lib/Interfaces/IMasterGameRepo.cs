@@ -48,4 +48,7 @@ public interface IMasterGameRepo
     Task<IReadOnlyDictionary<string, MasterGameTag>> GetMasterGameTagDictionary();
     Task UpdateCodeBasedTags(IReadOnlyDictionary<MasterGame, IReadOnlyList<MasterGameTag>> tagsToAdd);
     Task UpdateGGStats(MasterGame masterGame, GGGame ggGame);
+
+    Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops();
+    Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate);
 }

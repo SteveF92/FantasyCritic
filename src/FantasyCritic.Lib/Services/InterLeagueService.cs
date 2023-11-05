@@ -252,4 +252,14 @@ public class InterLeagueService
     {
         _masterGameRepo.ClearMasterGameYearCache();
     }
+
+    public Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops()
+    {
+        return _masterGameRepo.GetProcessingDatesForTopBidsAndDrops();
+    }
+
+    public Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate)
+    {
+        return _masterGameRepo.GetTopBidsAndDrops(processingDate);
+    }
 }
