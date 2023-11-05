@@ -14,7 +14,6 @@ using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
 using FantasyCritic.SharedSerialization.Database;
 using FantasyCritic.Lib.Domain.Combinations;
-
 namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo
@@ -222,6 +221,29 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var allLeagueYears = await GetLeagueYears(activeYear.Year);
             var requestedLeagueYearsForYear = allLeagueYears.Where(x => leagueIDSet.Contains(x.League.LeagueID));
             requestedLeagueYears.AddRange(requestedLeagueYearsForYear);
+        }
+
+        return requestedLeagueYears;
+    }
+
+    private async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForPublishers(IReadOnlySet<Guid> publisherIDs)
+    {
+        const string sql = "select distinct Year from tbl_league_publisher where PublisherID in @publisherIDs";
+        var queryObject = new
+        {
+            publisherIDs
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+
+        var yearsForPublishers = await connection.QueryAsync<int>(sql, queryObject);
+
+        List<LeagueYear> requestedLeagueYears = new List<LeagueYear>();
+        foreach (var year in yearsForPublishers)
+        {
+            var allLeagueYears = await GetLeagueYears(year);
+            var leagueYearsWithOneOfThesePublishers = allLeagueYears.Where(x => x.Publishers.Select(y => y.PublisherID).Intersect(publisherIDs).Any());
+            requestedLeagueYears.AddRange(leagueYearsWithOneOfThesePublishers);
         }
 
         return requestedLeagueYears;
@@ -651,6 +673,76 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         DropRequest domain = dropRequestEntity.ToDomain(publisher, masterGame, leagueYear);
         return domain;
+    }
+
+    public async Task<BidsAndDropsSet> GetPickupBidsAndDropsForProcessingSets(IEnumerable<ActionProcessingSetMetadata> processingSetsToInclude)
+    {
+        var processSetIDs = processingSetsToInclude.Select(x => x.ProcessSetID).ToList();
+
+        const string bidSQL = "select * from vw_league_pickupbid where ProcessSetID in @processSetIDs";
+        const string dropRequestSQL = "select * from vw_league_droprequest where ProcessSetID in @processSetIDs";
+        var queryObject = new
+        {
+            processSetIDs
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var bidEntities = (await connection.QueryAsync<PickupBidEntity>(bidSQL, queryObject)).ToList();
+        var dropEntities = (await connection.QueryAsync<DropRequestEntity>(dropRequestSQL, queryObject)).ToList();
+
+        var allBidPublisherIDs = bidEntities.Select(x => x.PublisherID).Distinct().ToHashSet();
+        var allDropRequestPublisherIDs = dropEntities.Select(x => x.PublisherID).Distinct().ToHashSet();
+        var allPublisherIDs = allBidPublisherIDs.Concat(allDropRequestPublisherIDs).ToHashSet();
+        var allLeagueYearsForPublishers = await GetLeagueYearsForPublishers(allPublisherIDs);
+
+        var leagueYearDictionary = allLeagueYearsForPublishers.ToDictionary(x => x.Key);
+        var publisherDictionary = allLeagueYearsForPublishers.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID);
+        var allPublishersWithBids = allLeagueYearsForPublishers.SelectMany(x => x.Publishers).Where(x => allBidPublisherIDs.Contains(x.PublisherID)).ToList();
+
+        var publisherGameDictionary = allPublishersWithBids
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
+
+        var formerPublisherGameDictionary = allPublishersWithBids
+            .SelectMany(x => x.FormerPublisherGames)
+            .Where(x => x.PublisherGame.MasterGame is not null)
+            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+
+        List<PickupBid> domainBids = new List<PickupBid>();
+        foreach (var bidEntity in bidEntities)
+        {
+            var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
+            var publisher = publisherDictionary[bidEntity.PublisherID];
+            var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
+            domainBids.Add(domain);
+        }
+
+        List<DropRequest> domainDrops = new List<DropRequest>();
+        foreach (var dropEntity in dropEntities)
+        {
+            var publisher = publisherDictionary[dropEntity.PublisherID];
+            var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+            var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropEntity.MasterGameID);
+            DropRequest domain = dropEntity.ToDomain(publisher, masterGame, leagueYear);
+            domainDrops.Add(domain);
+        }
+
+        return new BidsAndDropsSet(domainBids, domainDrops);
+    }
+
+    public async Task InsertTopBidsAndDrops(IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops)
+    {
+        var entities = topBidsAndDrops.Select(x => new TopBidsAndDropsEntity(x)).ToList();
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.BulkInsertAsync(entities, "tbl_caching_topbidsanddrops", 500, transaction);
+
+        await transaction.CommitAsync();
     }
 
     public async Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
@@ -3218,7 +3310,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domains;
     }
 
-    private async Task<List<TagOverride>> ConvertTagOverrideEntities(IEnumerable<TagOverrideEntity> tagOverrideEntities, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    private async Task<IReadOnlyList<TagOverride>> ConvertTagOverrideEntities(IEnumerable<TagOverrideEntity> tagOverrideEntities, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
         var allMasterGames = await _masterGameRepo.GetMasterGames();
         var masterGameDictionary = allMasterGames.ToDictionary(x => x.MasterGameID);
@@ -3240,7 +3332,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainTagOverrides;
     }
 
-    private async Task<List<EligibilityOverride>> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities)
+    private async Task<IReadOnlyList<EligibilityOverride>> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities)
     {
         List<EligibilityOverride> domainEligibilityOverrides = new List<EligibilityOverride>();
         foreach (var entity in eligibilityOverrideEntities)

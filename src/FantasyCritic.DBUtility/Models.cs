@@ -13,11 +13,19 @@ public class TopBidsAndDropsEntity
     public int Year { get; set; }
     public LocalDate ProcessDate { get; set; }
     public Guid MasterGameID { get; set; }
-    public int TotalBidCount { get; set; }
-    public int SuccessfulBids { get; set; }
-    public int FailedBids { get; set; }
-    public int TotalBidLeagues { get; set; }
-    public int TotalBidAmount { get; set; }
+
+    public int TotalStandardBidCount { get; set; }
+    public int SuccessfulStandardBids { get; set; }
+    public int FailedStandardBids { get; set; }
+    public int TotalStandardBidLeagues { get; set; }
+    public int TotalStandardBidAmount { get; set; }
+
+    public int TotalCounterPickBidCount { get; set; }
+    public int SuccessfulCounterPickBids { get; set; }
+    public int FailedCounterPickBids { get; set; }
+    public int TotalCounterPickBidLeagues { get; set; }
+    public int TotalCounterPickBidAmount { get; set; }
+
     public int TotalDropCount { get; set; }
     public int SuccessfulDrops { get; set; }
     public int FailedDrops { get; set; }

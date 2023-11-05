@@ -95,6 +95,9 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<DropRequest?> GetDropRequest(Guid dropRequestID);
 
+    Task<BidsAndDropsSet> GetPickupBidsAndDropsForProcessingSets(IEnumerable<ActionProcessingSetMetadata> processingSetsToInclude);
+    Task InsertTopBidsAndDrops(IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops);
+
     Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher);
     Task QueueGame(QueuedGame queuedGame);
     Task RemoveQueuedGame(QueuedGame queuedGame);

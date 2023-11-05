@@ -263,6 +263,13 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
+    public async Task<IActionResult> UpdateTopBidsAndDrops()
+    {
+        await _adminService.UpdateTopBidsAndDrops();
+        return Ok();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> PushPublicBiddingDiscordMessages()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();

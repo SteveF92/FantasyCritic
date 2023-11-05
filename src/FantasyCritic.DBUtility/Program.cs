@@ -40,6 +40,7 @@ class Program
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(repoConfig, userStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo);
 
+        Console.WriteLine("Gathering data...");
         List<PickupBid> allProcessedPickups = new List<PickupBid>();
         List<DropRequest> allProcessedDrops = new List<DropRequest>();
         var relevantYears = new List<int>() { 2022, 2023 };
@@ -54,11 +55,13 @@ class Program
             allProcessedDrops.AddRange(processedDrops.Where(x => x.ProcessSetID.HasValue && standardLeagueIDs.Contains(x.LeagueYear.League.LeagueID)));
         }
 
+        Console.WriteLine("Gathering action processing sets...");
         var actionProcessingSets = (await fantasyCriticRepo.GetActionProcessingSets()).OrderBy(x => x.ProcessTime).ToList();
         IReadOnlyList<ActionSetGrouping> groupings = GetGroupings(actionProcessingSets);
 
         List<TopBidsAndDropsEntity> finalEntities = new List<TopBidsAndDropsEntity>();
 
+        Console.WriteLine("Parsing data...");
         foreach (var actionProcessingGroup in groupings)
         {
             var processingSetIDs = actionProcessingGroup.ProcessingSets.Select(x => x.ProcessSetID).ToHashSet();
@@ -71,16 +74,19 @@ class Program
             var yearsInGroup = pickupBidsByYear.Keys.Concat(dropsByYear.Keys).Distinct().ToList();
             foreach (var year in yearsInGroup)
             {
-                var pickupBidsForYear = pickupBidsByYear[year];
+                var standardBidsForYear = pickupBidsByYear[year].Where(x => !x.CounterPick).ToList();
+                var counterPickBidsForYear = pickupBidsByYear[year].Where(x => x.CounterPick).ToList();
                 var dropsForYear = dropsByYear[year];
 
-                var bidsByMasterGame = pickupBidsForYear.GroupToDictionary(x => x.MasterGame);
+                var standardBidsByMasterGame = standardBidsForYear.GroupToDictionary(x => x.MasterGame);
+                var counterPickBidsByMasterGame = counterPickBidsForYear.GroupToDictionary(x => x.MasterGame);
                 var dropsByMasterGame = dropsForYear.GroupToDictionary(x => x.MasterGame);
-                var allMasterGames = bidsByMasterGame.Keys.Concat(dropsByMasterGame.Keys).Distinct().ToList();
+                var allMasterGames = standardBidsByMasterGame.Keys.Concat(counterPickBidsByMasterGame.Keys).Concat(dropsByMasterGame.Keys).Distinct().ToList();
 
                 foreach (var masterGame in allMasterGames)
                 {
-                    var bidsForMasterGame = bidsByMasterGame.GetValueOrDefault(masterGame, new List<PickupBid>());
+                    var standardBidsForMasterGame = standardBidsByMasterGame.GetValueOrDefault(masterGame, new List<PickupBid>());
+                    var counterPickBidsForMasterGame = counterPickBidsByMasterGame.GetValueOrDefault(masterGame, new List<PickupBid>());
                     var dropsForMasterGame = dropsByMasterGame.GetValueOrDefault(masterGame, new List<DropRequest>());
 
                     finalEntities.Add(new TopBidsAndDropsEntity()
@@ -88,11 +94,19 @@ class Program
                         ProcessDate = actionProcessingGroup.ProcessDate,
                         MasterGameID = masterGame.MasterGameID,
                         Year = year,
-                        TotalBidCount = bidsForMasterGame.Count,
-                        SuccessfulBids = bidsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
-                        FailedBids = bidsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
-                        TotalBidLeagues = bidsForMasterGame.Select(x => x.LeagueYear.Key).Distinct().Count(),
-                        TotalBidAmount = (int) bidsForMasterGame.Sum(x => x.BidAmount),
+
+                        TotalStandardBidCount = standardBidsForMasterGame.Count,
+                        SuccessfulStandardBids = standardBidsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
+                        FailedStandardBids = standardBidsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
+                        TotalStandardBidLeagues = standardBidsForMasterGame.Select(x => x.LeagueYear.Key).Distinct().Count(),
+                        TotalStandardBidAmount = (int)standardBidsForMasterGame.Sum(x => x.BidAmount),
+
+                        TotalCounterPickBidCount = counterPickBidsForMasterGame.Count,
+                        SuccessfulCounterPickBids = counterPickBidsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
+                        FailedCounterPickBids = counterPickBidsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
+                        TotalCounterPickBidLeagues = counterPickBidsForMasterGame.Select(x => x.LeagueYear.Key).Distinct().Count(),
+                        TotalCounterPickBidAmount = (int)counterPickBidsForMasterGame.Sum(x => x.BidAmount),
+
                         TotalDropCount = dropsForMasterGame.Count,
                         SuccessfulDrops = dropsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
                         FailedDrops = dropsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
@@ -101,6 +115,7 @@ class Program
             }
         }
 
+        Console.WriteLine("Saving results...");
         await SaveResults(finalEntities);
     }
 
