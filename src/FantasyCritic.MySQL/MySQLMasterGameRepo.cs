@@ -632,13 +632,39 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await transaction.CommitAsync();
     }
 
-    public Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops()
+    public async Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops()
     {
-        throw new NotImplementedException();
+        const string sql = "select distinct ProcessDate from tbl_caching_topbidsanddrops";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<LocalDate> dates = await connection.QueryAsync<LocalDate>(sql);
+        return dates.ToList();
     }
 
-    public Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate)
+    public async Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate)
     {
-        throw new NotImplementedException();
+        const string sql = "select * from tbl_caching_topbidsanddrops where ProcessDate = @processingDate";
+        var param = new
+        {
+            processingDate
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<TopBidsAndDropsEntity> entities = await connection.QueryAsync<TopBidsAndDropsEntity>(sql, param);
+
+        List<TopBidsAndDropsGame> domains = new List<TopBidsAndDropsGame>();
+
+        foreach (var entity in entities)
+        {
+            if (!_masterGameYearsCache.ContainsKey(entity.Year))
+            {
+                await GetMasterGameYears(entity.Year);
+            }
+
+            var masterGameYear = _masterGameYearsCache[entity.Year][entity.MasterGameID];
+            domains.Add(entity.ToDomain(masterGameYear));
+        }
+
+        return domains;
     }
 }
