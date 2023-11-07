@@ -103,6 +103,11 @@ public class AdminService
             var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID!.Value);
             if (openCriticGame is not null)
             {
+                if (openCriticGame.Score.HasValue && !masterGame.CriticScore.HasValue)
+                {
+                    _logger.Information($"Game {masterGame.GameName} has just recieved an OpenCritic score of: {openCriticGame.Score})");
+                }
+
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
                 _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score);
                 gamesFetched++;

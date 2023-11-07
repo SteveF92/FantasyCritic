@@ -129,6 +129,12 @@ public class DiscordPushService
         var fantasyCriticRepo = scope.ServiceProvider.GetRequiredService<IFantasyCriticRepo>();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
+        Logger.Information($"Sending master game updates. {_newMasterGameMessages.Count} New MasterGames | {_gameCriticScoreUpdateMessages.Count} Score Updates | {_masterGameEditMessages.Count} Edits");
+        foreach (var scoreUpdate in _gameCriticScoreUpdateMessages)
+        {
+            Logger.Information($"Score Update: {scoreUpdate.Game.GameName} - {scoreUpdate.OldCriticScore} -> {scoreUpdate.NewCriticScore}");
+        }
+
         var allChannels = await GetAllCombinedChannels(discordRepo, fantasyCriticRepo);
         var messageTasks = new List<Task>();
 
