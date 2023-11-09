@@ -1,4 +1,7 @@
 namespace FantasyCritic.Web.Models.Responses;
+
+public record TopBidsAndDropsSetViewModel(IReadOnlyList<TopBidsAndDropsGameViewModel> Data, LocalDate ProcessDate);
+
 public class TopBidsAndDropsGameViewModel
 {
     public TopBidsAndDropsGameViewModel(TopBidsAndDropsGame domain, LocalDate currentDate)
@@ -21,8 +24,8 @@ public class TopBidsAndDropsGameViewModel
         FailedDrops = domain.FailedDrops;
     }
 
-    public required LocalDate ProcessDate { get; init; }
-    public required MasterGameYearViewModel MasterGameYear { get; init; }
+    public LocalDate ProcessDate { get; }
+    public MasterGameYearViewModel MasterGameYear { get; }
     public int TotalStandardBidCount { get; }
     public int SuccessfulStandardBids { get; }
     public int FailedStandardBids { get; }

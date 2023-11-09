@@ -319,25 +319,27 @@ public class GameController : FantasyCriticController
         return processingDatesWithData.ToList();
     }
 
-    public async Task<ActionResult<List<TopBidsAndDropsGame>>> GetTopBidsAndDrops(LocalDate? processingDate)
+    public async Task<ActionResult<TopBidsAndDropsSetViewModel>> GetTopBidsAndDrops(LocalDate? processDate)
     {
         LocalDate dateToUse;
-        if (processingDate.HasValue)
+        if (processDate.HasValue)
         {
-            dateToUse = processingDate.Value;
+            dateToUse = processDate.Value;
         }
         else
         {
             var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
             if (!processingDatesWithData.Any())
             {
-                return new List<TopBidsAndDropsGame>();
+                return NotFound();
             }
 
             dateToUse = processingDatesWithData.Max();
         }
 
         var topBidsAndDrops = await _interLeagueService.GetTopBidsAndDrops(dateToUse);
-        return topBidsAndDrops.ToList();
+        var currentDate = _clock.GetToday();
+        var viewModels = topBidsAndDrops.Select(x => new TopBidsAndDropsGameViewModel(x, currentDate)).ToList();
+        return new TopBidsAndDropsSetViewModel(viewModels, dateToUse);
     }
 }
