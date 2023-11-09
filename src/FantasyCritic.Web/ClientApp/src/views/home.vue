@@ -71,7 +71,7 @@
 
         <div class="col-lg-4 col-md-12">
           <hr class="d-md-block d-lg-none" />
-          <tweets></tweets>
+          <TopBidsAndDrops></TopBidsAndDrops>
         </div>
       </div>
 
@@ -107,15 +107,15 @@
 import axios from 'axios';
 import _ from 'lodash';
 
-import Tweets from '@/components/tweets.vue';
+import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 import LeagueTable from '@/components/leagueTable.vue';
 import GameNews from '@/components/gameNews.vue';
 
 export default {
   components: {
-    Tweets,
     LeagueTable,
-    GameNews
+    GameNews,
+    TopBidsAndDrops
   },
   data() {
     return {
