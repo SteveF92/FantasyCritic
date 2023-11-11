@@ -26,6 +26,7 @@ import RoyalePublisher from '@/views/royalePublisher.vue';
 import NotFound from '@/views/notFound.vue';
 import MasterGameEditor from '@/views/masterGameEditor.vue';
 import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
+import TopBidsAndDrops from '@/views/topBidsAndDrops.vue';
 
 export const routes = [
   { path: '/404', component: NotFound },
@@ -109,6 +110,15 @@ export const routes = [
     meta: {
       title: 'Games',
       isPublic: true
+    }
+  },
+  {
+    path: '/topBidsAndDrops',
+    component: TopBidsAndDrops,
+    name: 'topBidsAndDrops',
+    meta: {
+      title: 'Top Bids And Drops',
+      adminOnly: false
     }
   },
   {
