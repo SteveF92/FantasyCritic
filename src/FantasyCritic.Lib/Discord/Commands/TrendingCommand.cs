@@ -76,9 +76,6 @@ public class TrendingCommand : InteractionModuleBase<SocketInteractionContext>
                 TrendingBidsValue => $"**{g.MasterGameYear.MasterGame.GameName}** ({g.TotalStandardBidCount} bids)",
                 TrendingCounterPicksValue => $"**{g.MasterGameYear.MasterGame.GameName}** ({g.TotalCounterPickBidCount} counter picks)",
                 TrendingDropsValue => $"**{g.MasterGameYear.MasterGame.GameName}** ({g.TotalDropCount} drops)",
-                //TrendingBidsValue => $"**{g.MasterGameYear.MasterGame.GameName}**\n> Total Picks: **{g.TotalStandardBidCount}**\n> Total Spent: **{g.TotalStandardBidAmount:C0}**",
-                //TrendingCounterPicksValue => $"**{g.MasterGameYear.MasterGame.GameName}**\n> Total Counter Picks: **{g.TotalCounterPickBidCount}**\n> Total Spent: **{g.TotalCounterPickBidAmount:C0}**",
-                //TrendingDropsValue => $"**{g.MasterGameYear.MasterGame.GameName}**\n> Total Drops: **{g.TotalDropCount}**",
                 _ => ""
             };
         });
