@@ -36,7 +36,7 @@
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesWillRelease }}</span>
       </template>
       <template #cell(budget)="data">
-        <span v-if="data.item.publisher">{{ data.item.publisher.budget | money }}</span>
+        <span v-if="data.item.publisher">{{ data.item.publisher.budget | money(0) }}</span>
       </template>
     </b-table>
   </div>

@@ -11,12 +11,18 @@
             <template #cell(masterGameYear)="data">
               <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
             </template>
+            <template #cell(totalStandardBidAmount)="data">
+              {{ data.item.totalStandardBidAmount | money(0) }}
+            </template>
           </b-table>
         </b-tab>
         <b-tab title="Top Counter Picks" title-item-class="tab-header">
           <b-table :items="topCounterPicks" :fields="counterPickFields" bordered striped responsive>
             <template #cell(masterGameYear)="data">
               <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+            </template>
+            <template #cell(totalCounterPickBidAmount)="data">
+              {{ data.item.totalCounterPickBidAmount | money(0) }}
             </template>
           </b-table>
         </b-tab>
@@ -51,17 +57,23 @@ export default {
       topBidsAndDrops: [],
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalStandardBidCount', label: 'Bids', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalStandardBidAmount', label: 'Total $', sortable: true, thClass: 'bg-primary' }
+        { key: 'totalStandardBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
+        { key: 'successfulStandardBids', label: 'Number Successful', sortable: true, thClass: 'bg-primary' },
+        { key: 'failedStandardBids', label: 'Number Failed', sortable: true, thClass: 'bg-primary' },
+        { key: 'totalStandardBidAmount', label: 'Total Bid $', sortable: true, thClass: 'bg-primary' }
       ],
       counterPickFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalCounterPickBidCount', label: 'Bids', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalCounterPickBidAmount', label: 'Total $', sortable: true, thClass: 'bg-primary' }
+        { key: 'totalCounterPickBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
+        { key: 'successfulCounterPickBids', label: 'Number Successful', sortable: true, thClass: 'bg-primary' },
+        { key: 'failedCounterPickBids', label: 'Number Failed', sortable: true, thClass: 'bg-primary' },
+        { key: 'totalCounterPickBidAmount', label: 'Total Bid $', sortable: true, thClass: 'bg-primary' }
       ],
       dropFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'successfulDrops', label: 'Drops', sortable: true, thClass: 'bg-primary' }
+        { key: 'totalDropCount', label: 'Total Attempted Drops', sortable: true, thClass: 'bg-primary' },
+        { key: 'successfulDrops', label: 'Successful Drops', sortable: true, thClass: 'bg-primary' },
+        { key: 'failedDrops', label: 'Failed Drops', sortable: true, thClass: 'bg-primary' }
       ]
     };
   },

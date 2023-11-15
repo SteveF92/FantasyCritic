@@ -14,12 +14,18 @@
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
+          <template #cell(totalStandardBidAmount)="data">
+            {{ data.item.totalStandardBidAmount | money(0) }}
+          </template>
         </b-table>
       </b-tab>
       <b-tab title="Top Counter Picks" title-item-class="tab-header">
         <b-table :items="topCounterPicks" :fields="counterPickFields" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+          </template>
+          <template #cell(totalCounterPickBidAmount)="data">
+            {{ data.item.totalCounterPickBidAmount | money(0) }}
           </template>
         </b-table>
       </b-tab>

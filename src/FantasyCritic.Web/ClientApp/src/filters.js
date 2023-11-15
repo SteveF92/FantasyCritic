@@ -18,15 +18,20 @@ Vue.filter('score', function (value, decimals) {
   return value;
 });
 
-Vue.filter('money', function (value) {
+Vue.filter('money', function (value, decimals) {
   if (typeof value !== 'number') {
     return value;
   }
+
+  if (decimals !== 0 && !decimals) {
+    decimals = 2;
+  }
+
   var formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
   });
   return formatter.format(value);
 });
