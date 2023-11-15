@@ -3,15 +3,19 @@
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div class="header-area">
         <h1>Top Bids and Drops</h1>
-        <div v-if="reversedWeeks">
-          <b-dropdown text="Weeks" class="week-select">
-            <b-dropdown-item
-              v-for="processDateOption in reversedWeeks"
-              :key="processDateOption"
-              :active="processDateOption === processDateInternal"
-              :to="{ name: 'topBidsAndDrops', params: { processDate: processDateOption } }">
-              {{ processDateOption }}
-            </b-dropdown-item>
+        <div v-if="processDateOptions">
+          <b-dropdown id="dropdown-1" text="Select Week">
+            <b-dropdown id="dropdown-2" v-for="year in years" :key="year" :text="`${year}`">
+              <b-dropdown id="dropdown-3" v-for="month in months" :key="month" :text="`${month}`">
+                <b-dropdown-item
+                  v-for="processDateOption in getProcessingDatesForYearMonth(year, month)"
+                  :key="processDateOption"
+                  :active="processDateOption === processDateInternal"
+                  :to="{ name: 'topBidsAndDrops', params: { processDate: processDateOption } }">
+                  {{ processDateOption }}
+                </b-dropdown-item>
+              </b-dropdown>
+            </b-dropdown>
           </b-dropdown>
         </div>
       </div>
@@ -54,6 +58,7 @@
 <script>
 import axios from 'axios';
 import _ from 'lodash';
+import moment from 'moment';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
@@ -66,8 +71,11 @@ export default {
   data() {
     return {
       errorInfo: '',
+      isDropdown2Visible: false,
+      isDropdown3Visible: false,
       processDateInternal: null,
       processDateOptions: [],
+      groupedProcessDates: [],
       topBidsAndDrops: [],
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
@@ -92,8 +100,11 @@ export default {
     };
   },
   computed: {
-    reversedWeeks() {
-      return this.processDateOptions.slice().reverse();
+    years() {
+      return Object.keys(this.groupedProcessDates).sort((a, b) => b - a);
+    },
+    months() {
+      return Array.from({ length: 12 }, (_, i) => i + 1);
     },
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
@@ -116,6 +127,25 @@ export default {
   async created() {
     await this.initializePage();
   },
+  mounted() {
+    this.$root.$on('bv::dropdown::show', (bvEvent) => {
+      if (bvEvent.componentId === 'dropdown-2') {
+        this.isDropdown2Visible = true;
+      } else if (bvEvent.componentId === 'dropdown-3') {
+        this.isDropdown3Visible = true;
+      }
+    });
+    this.$root.$on('bv::dropdown::hide', (bvEvent) => {
+      if (bvEvent.componentId === 'dropdown-2') {
+        this.isDropdown2Visible = false;
+      } else if (bvEvent.componentId === 'dropdown-3') {
+        this.isDropdown3Visible = false;
+      }
+      if (this.isDropdown2Visible || this.isDropdown3Visible) {
+        bvEvent.preventDefault();
+      }
+    });
+  },
   methods: {
     async initializePage() {
       try {
@@ -130,9 +160,36 @@ export default {
 
         const weeksResponse = await axios.get('/api/game/GetProcessingDatesForTopBidsAndDrops');
         this.processDateOptions = weeksResponse.data;
+        this.groupedProcessDates = this.groupDatesByYearMonth(this.processDateOptions);
       } catch (error) {
         this.errorInfo = error.response.data;
       }
+    },
+    groupDatesByYearMonth(dateStrings) {
+      const dates = dateStrings.map((dateString) => moment(dateString));
+      const groupedByYear = _.groupBy(dates, (date) => date.year());
+
+      const result = {};
+
+      _.forEach(groupedByYear, (yearDates, year) => {
+        result[year] = {};
+
+        const groupedByMonth = _.groupBy(yearDates, (date) => date.month());
+
+        _.forEach(groupedByMonth, (monthDates, month) => {
+          const monthNumber = parseInt(month) + 1; // Months are zero-indexed in moment.js
+          result[year][monthNumber.toString()] = monthDates.map((date) => date.format('YYYY-MM-DD'));
+        });
+      });
+
+      return result;
+    },
+    getProcessingDatesForYearMonth(year, month) {
+      const numberYear = Number(year);
+      if (this.groupedProcessDates[numberYear] && this.groupedProcessDates[numberYear][month]) {
+        return this.groupedProcessDates[numberYear][month];
+      }
+      return [];
     }
   }
 };
