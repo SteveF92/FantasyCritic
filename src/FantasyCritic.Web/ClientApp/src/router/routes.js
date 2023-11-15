@@ -113,13 +113,14 @@ export const routes = [
     }
   },
   {
-    path: '/topBidsAndDrops',
+    path: '/topBidsAndDrops/:processDate?',
     component: TopBidsAndDrops,
     name: 'topBidsAndDrops',
     meta: {
       title: 'Top Bids And Drops',
       adminOnly: false
-    }
+    },
+    props: true
   },
   {
     path: '/gameChanges',

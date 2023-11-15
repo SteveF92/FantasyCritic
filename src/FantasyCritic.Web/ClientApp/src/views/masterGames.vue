@@ -16,14 +16,17 @@
       </div>
       <hr />
       <div class="row">
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-3">
           <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameRequest' }" class="nav-link request-button">Request new Master Game</b-button>
         </div>
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-3">
           <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameChangeRequest' }" class="nav-link request-button">Suggest a Correction</b-button>
         </div>
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-3">
           <b-button variant="info" :to="{ name: 'gameChanges' }" class="nav-link request-button">See Recent Game Changes</b-button>
+        </div>
+        <div class="col-12 col-lg-3">
+          <b-button variant="info" :to="{ name: 'topBidsAndDrops' }" class="nav-link request-button">See Top Bids/Drops</b-button>
         </div>
       </div>
 

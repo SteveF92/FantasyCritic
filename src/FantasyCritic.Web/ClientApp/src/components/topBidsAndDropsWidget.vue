@@ -1,5 +1,13 @@
 <template>
-  <b-card :title="titleText">
+  <b-card header-class="header">
+    <template #header>
+      <h2 v-if="processDate">
+        <router-link :to="{ name: 'topBidsAndDrops', params: { processDate: processDate } }" title="Trending">Trending (Week ending {{ processDate }})</router-link>
+      </h2>
+      <h2 v-else>
+        <router-link :to="{ name: 'topBidsAndDrops' }" title="Trending">Trending</router-link>
+      </h2>
+    </template>
     <b-tabs pills class="top-bids-and-drops-tabs">
       <b-tab title="Top Bids" title-item-class="tab-header">
         <b-table :items="topBids" :fields="standardBidFields" bordered striped responsive class="top-bids-drops-widget-table">
@@ -9,14 +17,14 @@
         </b-table>
       </b-tab>
       <b-tab title="Top Counter Picks" title-item-class="tab-header">
-        <b-table :items="topCounterPicks" :fields="counterPickFields" bordered striped responsive>
+        <b-table :items="topCounterPicks" :fields="counterPickFields" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
         </b-table>
       </b-tab>
       <b-tab title="Top Drops" title-item-class="tab-header">
-        <b-table :items="topDrops" :fields="dropFields" bordered striped responsive>
+        <b-table :items="topDrops" :fields="dropFields" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
@@ -57,13 +65,6 @@ export default {
     };
   },
   computed: {
-    titleText() {
-      if (!this.processDate) {
-        return 'Trending';
-      }
-
-      return `Trending (Week ending ${this.processDate})`;
-    },
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
       return _.orderBy(relevant, ['successfulStandardBids'], ['desc']).slice(0, 25);
@@ -90,7 +91,28 @@ export default {
 </script>
 
 <style scoped>
+.header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.header h2 {
+  font-size: 25px;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
 .top-bids-drops-widget-table {
   max-height: 500px;
+}
+
+div >>> .tab-header {
+  margin-bottom: 5px;
+}
+
+div >>> .tab-header a {
+  border-radius: 0px;
+  font-weight: bolder;
+  color: white;
 }
 </style>
