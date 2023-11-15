@@ -191,7 +191,7 @@ export default {
       await this.initializePage();
     }
   },
-  async mounted() {
+  async created() {
     await this.initializePage();
   },
   methods: {

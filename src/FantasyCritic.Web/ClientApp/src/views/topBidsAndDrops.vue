@@ -1,7 +1,20 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Top Bids and Drops</h1>
+      <div class="header-area">
+        <h1>Top Bids and Drops</h1>
+        <div v-if="reversedWeeks">
+          <b-dropdown text="Weeks" class="week-select">
+            <b-dropdown-item
+              v-for="processDateOption in reversedWeeks"
+              :key="processDateOption"
+              :active="processDateOption === processDateInternal"
+              :to="{ name: 'topBidsAndDrops', params: { processDate: processDateOption } }">
+              {{ processDateOption }}
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </div>
       <hr />
       <h2 v-if="processDateInternal">For Week Ending {{ processDateInternal | longDate }}</h2>
 
@@ -54,6 +67,7 @@ export default {
     return {
       errorInfo: '',
       processDateInternal: null,
+      processDateOptions: [],
       topBidsAndDrops: [],
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
@@ -78,6 +92,9 @@ export default {
     };
   },
   computed: {
+    reversedWeeks() {
+      return this.processDateOptions.slice().reverse();
+    },
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
       return _.orderBy(relevant, ['successfulStandardBids'], ['desc']);
@@ -91,23 +108,40 @@ export default {
       return _.orderBy(relevant, ['successfulDrops'], ['desc']);
     }
   },
+  watch: {
+    async $route() {
+      await this.initializePage();
+    }
+  },
   async created() {
-    try {
-      this.processDateInternal = this.processDate;
-      let requestPath = '/api/game/GetTopBidsAndDrops';
-      if (this.processDateInternal) {
-        requestPath = `/api/game/GetTopBidsAndDrops?processDate=${this.processDateInternal}`;
+    await this.initializePage();
+  },
+  methods: {
+    async initializePage() {
+      try {
+        this.processDateInternal = this.processDate;
+        let requestPath = '/api/game/GetTopBidsAndDrops';
+        if (this.processDateInternal) {
+          requestPath = `/api/game/GetTopBidsAndDrops?processDate=${this.processDateInternal}`;
+        }
+        const response = await axios.get(requestPath);
+        this.processDateInternal = response.data.processDate;
+        this.topBidsAndDrops = response.data.data;
+
+        const weeksResponse = await axios.get('/api/game/GetProcessingDatesForTopBidsAndDrops');
+        this.processDateOptions = weeksResponse.data;
+      } catch (error) {
+        this.errorInfo = error.response.data;
       }
-      const response = await axios.get(requestPath);
-      this.processDateInternal = response.data.processDate;
-      this.topBidsAndDrops = response.data.data;
-    } catch (error) {
-      this.errorInfo = error.response.data;
     }
   }
 };
 </script>
 <style scoped>
+.header-area {
+  display: flex;
+  justify-content: space-between;
+}
 .top-bids-and-drops-tabs {
   margin-top: 20px;
 }
