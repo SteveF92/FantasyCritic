@@ -1,56 +1,68 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="header-area">
-        <h1>Top Bids and Drops</h1>
-        <div v-if="processDateOptions">
-          <b-dropdown id="dropdown-1" text="Select Week">
-            <b-dropdown id="dropdown-2" v-for="year in years" :key="year" :text="`${year}`">
-              <b-dropdown id="dropdown-3" v-for="month in months" :key="month" :text="`${month}`">
-                <b-dropdown-item
-                  v-for="processDateOption in getProcessingDatesForYearMonth(year, month)"
-                  :key="processDateOption"
-                  :active="processDateOption === processDateInternal"
-                  :to="{ name: 'topBidsAndDrops', params: { processDate: processDateOption } }">
-                  {{ processDateOption }}
-                </b-dropdown-item>
-              </b-dropdown>
-            </b-dropdown>
+      <h1>Top Bids and Drops</h1>
+      <hr />
+
+      <div v-if="processDateInternal && groupedProcessDates && selectedYear && selectedMonthString" class="header-area">
+        <h2>For Week Ending {{ processDateInternal | longDate }}</h2>
+        <div>
+          <b-dropdown id="dropdown-1" :text="selectedYear.toString()">
+            <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectYear(year)">
+              {{ year }}
+            </b-dropdown-item>
+          </b-dropdown>
+          <b-dropdown id="dropdown-2" :text="selectedMonthString">
+            <b-dropdown-item v-for="month in months" :key="month" :active="selectedMonth === month" @click="selectMonth(month)">
+              {{ convertMonth(month) }}
+            </b-dropdown-item>
+          </b-dropdown>
+          <b-dropdown id="dropdown-3" :text="processDateInternal">
+            <b-dropdown-item
+              v-for="processDateOption in getProcessingDatesForYearMonth(selectedYear, selectedMonth)"
+              :key="processDateOption"
+              :active="processDateOption === processDateInternal"
+              :to="{ name: 'topBidsAndDrops', params: { processDate: processDateOption } }">
+              {{ processDateOption }}
+            </b-dropdown-item>
           </b-dropdown>
         </div>
       </div>
-      <hr />
-      <h2 v-if="processDateInternal">For Week Ending {{ processDateInternal | longDate }}</h2>
 
-      <b-tabs pills class="top-bids-and-drops-tabs">
-        <b-tab title="Top Bids" title-item-class="tab-header">
-          <b-table :items="topBids" :fields="standardBidFields" bordered striped responsive class="top-bids-drops-table">
-            <template #cell(masterGameYear)="data">
-              <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
-            </template>
-            <template #cell(totalStandardBidAmount)="data">
-              {{ data.item.totalStandardBidAmount | money(0) }}
-            </template>
-          </b-table>
-        </b-tab>
-        <b-tab title="Top Counter Picks" title-item-class="tab-header">
-          <b-table :items="topCounterPicks" :fields="counterPickFields" bordered striped responsive>
-            <template #cell(masterGameYear)="data">
-              <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
-            </template>
-            <template #cell(totalCounterPickBidAmount)="data">
-              {{ data.item.totalCounterPickBidAmount | money(0) }}
-            </template>
-          </b-table>
-        </b-tab>
-        <b-tab title="Top Drops" title-item-class="tab-header">
-          <b-table :items="topDrops" :fields="dropFields" bordered striped responsive>
-            <template #cell(masterGameYear)="data">
-              <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
-            </template>
-          </b-table>
-        </b-tab>
-      </b-tabs>
+      <div v-if="!this.topBidsAndDrops" class="spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+      </div>
+      <div v-else>
+        <b-tabs pills class="top-bids-and-drops-tabs">
+          <b-tab title="Top Bids" title-item-class="tab-header">
+            <b-table :items="topBids" :fields="standardBidFields" bordered striped responsive class="top-bids-drops-table">
+              <template #cell(masterGameYear)="data">
+                <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+              </template>
+              <template #cell(totalStandardBidAmount)="data">
+                {{ data.item.totalStandardBidAmount | money(0) }}
+              </template>
+            </b-table>
+          </b-tab>
+          <b-tab title="Top Counter Picks" title-item-class="tab-header">
+            <b-table :items="topCounterPicks" :fields="counterPickFields" bordered striped responsive>
+              <template #cell(masterGameYear)="data">
+                <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+              </template>
+              <template #cell(totalCounterPickBidAmount)="data">
+                {{ data.item.totalCounterPickBidAmount | money(0) }}
+              </template>
+            </b-table>
+          </b-tab>
+          <b-tab title="Top Drops" title-item-class="tab-header">
+            <b-table :items="topDrops" :fields="dropFields" bordered striped responsive>
+              <template #cell(masterGameYear)="data">
+                <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+              </template>
+            </b-table>
+          </b-tab>
+        </b-tabs>
+      </div>
     </div>
   </div>
 </template>
@@ -71,12 +83,12 @@ export default {
   data() {
     return {
       errorInfo: '',
-      isDropdown2Visible: false,
-      isDropdown3Visible: false,
+      selectedYear: null,
+      selectedMonth: null,
       processDateInternal: null,
       processDateOptions: [],
-      groupedProcessDates: [],
-      topBidsAndDrops: [],
+      groupedProcessDates: null,
+      topBidsAndDrops: null,
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'totalStandardBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
@@ -106,6 +118,9 @@ export default {
     months() {
       return Array.from({ length: 12 }, (_, i) => i + 1);
     },
+    selectedMonthString() {
+      return this.convertMonth(this.selectedMonth);
+    },
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
       return _.orderBy(relevant, ['successfulStandardBids'], ['desc']);
@@ -127,43 +142,44 @@ export default {
   async created() {
     await this.initializePage();
   },
-  mounted() {
-    this.$root.$on('bv::dropdown::show', (bvEvent) => {
-      if (bvEvent.componentId === 'dropdown-2') {
-        this.isDropdown2Visible = true;
-      } else if (bvEvent.componentId === 'dropdown-3') {
-        this.isDropdown3Visible = true;
-      }
-    });
-    this.$root.$on('bv::dropdown::hide', (bvEvent) => {
-      if (bvEvent.componentId === 'dropdown-2') {
-        this.isDropdown2Visible = false;
-      } else if (bvEvent.componentId === 'dropdown-3') {
-        this.isDropdown3Visible = false;
-      }
-      if (this.isDropdown2Visible || this.isDropdown3Visible) {
-        bvEvent.preventDefault();
-      }
-    });
-  },
   methods: {
     async initializePage() {
       try {
+        this.topBidsAndDrops = null;
         this.processDateInternal = this.processDate;
+
+        const weeksResponse = await axios.get('/api/game/GetProcessingDatesForTopBidsAndDrops');
+        this.processDateOptions = weeksResponse.data;
+        this.groupedProcessDates = this.groupDatesByYearMonth(this.processDateOptions);
+
         let requestPath = '/api/game/GetTopBidsAndDrops';
         if (this.processDateInternal) {
           requestPath = `/api/game/GetTopBidsAndDrops?processDate=${this.processDateInternal}`;
         }
         const response = await axios.get(requestPath);
-        this.processDateInternal = response.data.processDate;
-        this.topBidsAndDrops = response.data.data;
 
-        const weeksResponse = await axios.get('/api/game/GetProcessingDatesForTopBidsAndDrops');
-        this.processDateOptions = weeksResponse.data;
-        this.groupedProcessDates = this.groupDatesByYearMonth(this.processDateOptions);
+        this.processDateInternal = response.data.processDate;
+        this.selectedYear = moment(this.processDateInternal).year();
+        this.selectedMonth = moment(this.processDateInternal).month() + 1;
+        this.topBidsAndDrops = response.data.data;
       } catch (error) {
         this.errorInfo = error.response.data;
       }
+    },
+    selectYear(year) {
+      this.selectedYear = year;
+    },
+    selectMonth(month) {
+      this.selectedMonth = month;
+    },
+    convertMonth(month) {
+      if (!month) {
+        return null;
+      }
+
+      return moment()
+        .month(month - 1)
+        .format('MMMM');
     },
     groupDatesByYearMonth(dateStrings) {
       const dates = dateStrings.map((dateString) => moment(dateString));
@@ -177,17 +193,16 @@ export default {
         const groupedByMonth = _.groupBy(yearDates, (date) => date.month());
 
         _.forEach(groupedByMonth, (monthDates, month) => {
-          const monthNumber = parseInt(month) + 1; // Months are zero-indexed in moment.js
-          result[year][monthNumber.toString()] = monthDates.map((date) => date.format('YYYY-MM-DD'));
+          result[year][month] = monthDates.map((date) => date.format('YYYY-MM-DD'));
         });
       });
 
       return result;
     },
     getProcessingDatesForYearMonth(year, month) {
-      const numberYear = Number(year);
-      if (this.groupedProcessDates[numberYear] && this.groupedProcessDates[numberYear][month]) {
-        return this.groupedProcessDates[numberYear][month];
+      let correctIndexMonth = month - 1;
+      if (this.groupedProcessDates[year] && this.groupedProcessDates[year][correctIndexMonth]) {
+        return this.groupedProcessDates[year][correctIndexMonth];
       }
       return [];
     }
@@ -199,6 +214,12 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
+.spinner {
+  display: flex;
+  justify-content: space-around;
+}
+
 .top-bids-and-drops-tabs {
   margin-top: 20px;
 }
