@@ -1,12 +1,10 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Runtime.Serialization;
 
 namespace FantasyCritic.Lib.Scheduling.Lib.Cron;
 
-[Serializable]
-public sealed class CrontabFieldImpl : IObjectReference
+public sealed class CrontabFieldImpl
 {
     public static readonly CrontabFieldImpl Minute = new CrontabFieldImpl(CrontabFieldKind.Minute, 0, 59, null);
     public static readonly CrontabFieldImpl Hour = new CrontabFieldImpl(CrontabFieldKind.Hour, 0, 23, null);
@@ -71,15 +69,6 @@ public sealed class CrontabFieldImpl : IObjectReference
     {
         get { return _maxValue - _minValue + 1; }
     }
-
-    #region IObjectReference Members
-
-    object IObjectReference.GetRealObject(StreamingContext context)
-    {
-        return FromKind(Kind);
-    }
-
-    #endregion
 
     public static CrontabFieldImpl FromKind(CrontabFieldKind kind)
     {
