@@ -8,7 +8,10 @@
         <router-link :to="{ name: 'topBidsAndDrops' }" title="Trending">Trending</router-link>
       </h2>
     </template>
-    <b-tabs pills class="top-bids-and-drops-tabs">
+    <div v-if="!this.topBidsAndDrops" class="spinner">
+      <font-awesome-icon icon="circle-notch" size="3x" spin :style="{ color: '#D6993A' }" />
+    </div>
+    <b-tabs v-else pills class="top-bids-and-drops-tabs">
       <b-tab title="Top Bids" title-item-class="tab-header">
         <b-table :items="topBids" :fields="standardBidFields" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
@@ -52,7 +55,7 @@ export default {
   data() {
     return {
       processDate: null,
-      topBidsAndDrops: [],
+      topBidsAndDrops: null,
       errorInfo: null,
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
@@ -106,6 +109,11 @@ export default {
   font-size: 25px;
   margin-bottom: 0;
   padding-bottom: 0;
+}
+
+.spinner {
+  display: flex;
+  justify-content: space-around;
 }
 
 .top-bids-drops-widget-table {
