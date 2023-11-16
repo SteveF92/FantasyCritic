@@ -440,7 +440,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         const string sql = "select * from tbl_mastergame_request where RequestID = @requestID";
 
         await using var connection = new MySqlConnection(_connectionString);
-        MasterGameRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameRequestEntity>(sql, new { requestID });
+        MasterGameRequestEntity? entity = await connection.QuerySingleOrDefaultAsync<MasterGameRequestEntity?>(sql, new { requestID });
         if (entity == null)
         {
             return null;
@@ -463,7 +463,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         const string sql = "select * from tbl_mastergame_changerequest where RequestID = @requestID";
 
         await using var connection = new MySqlConnection(_connectionString);
-        MasterGameChangeRequestEntity entity = await connection.QuerySingleOrDefaultAsync<MasterGameChangeRequestEntity>(sql, new { requestID });
+        MasterGameChangeRequestEntity? entity = await connection.QuerySingleOrDefaultAsync<MasterGameChangeRequestEntity?>(sql, new { requestID });
         if (entity == null)
         {
             return null;

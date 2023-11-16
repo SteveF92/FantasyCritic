@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Razor.Templating.Core" Version="1.8.0" />
+    <PackageReference Include="Razor.Templating.Core" Version="1.9.0" />
   </ItemGroup>
 
   <ItemGroup>

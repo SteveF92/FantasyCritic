@@ -42,7 +42,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         const string leagueSQL = "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0;";
-        LeagueEntity leagueEntity = await connection.QuerySingleOrDefaultAsync<LeagueEntity>(leagueSQL, queryObject);
+        LeagueEntity? leagueEntity = await connection.QuerySingleOrDefaultAsync<LeagueEntity?>(leagueSQL, queryObject);
         if (leagueEntity is null)
         {
             return null;
@@ -145,7 +145,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             publisherID
         };
 
-        LeagueYearKeyEntity entity = await connection.QuerySingleOrDefaultAsync<LeagueYearKeyEntity>(sql, queryObject);
+        LeagueYearKeyEntity? entity = await connection.QuerySingleOrDefaultAsync<LeagueYearKeyEntity?>(sql, queryObject);
         if (entity is null)
         {
             return null;
@@ -394,7 +394,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             year
         };
 
-        LeagueYearEntity yearEntity = await connection.QuerySingleOrDefaultAsync<LeagueYearEntity>(sql, queryObject);
+        LeagueYearEntity? yearEntity = await connection.QuerySingleOrDefaultAsync<LeagueYearEntity?>(sql, queryObject);
         if (yearEntity == null)
         {
             return null;
@@ -1492,6 +1492,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var entity = await connection.QuerySingleOrDefaultAsync<LeagueInviteEntity>(
             "select * from tbl_league_invite where tbl_league_invite.InviteID = @inviteID",
             query);
+        if (entity is null)
+        {
+            return null;
+        }
+
         return await ConvertLeagueInviteEntity(entity);
     }
 
@@ -1902,7 +1907,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        PublisherEntity publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEntity>(
+        PublisherEntity? publisherEntity = await connection.QuerySingleOrDefaultAsync<PublisherEntity?>(
             "select tbl_league_publisher.* from tbl_league_publisher " +
             "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
             "where tbl_league_publisher.PublisherID = @publisherID and IsDeleted = 0;",
