@@ -4,7 +4,7 @@
       <h1>Top Bids and Drops</h1>
       <hr />
 
-      <div v-if="processDateInternal && groupedProcessDates && selectedYear && selectedMonthString" class="header-area">
+      <div v-if="processDateInternal && selectedYear && selectedMonthString" class="header-area">
         <h2>For Week Ending {{ processDateInternal | longDate }}</h2>
         <div>
           <b-dropdown id="dropdown-1" :text="selectedYear.toString()">
@@ -87,7 +87,6 @@ export default {
       selectedMonth: null,
       processDateInternal: null,
       processDateOptions: [],
-      groupedProcessDates: null,
       topBidsAndDrops: null,
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
@@ -113,7 +112,14 @@ export default {
   },
   computed: {
     years() {
-      return Object.keys(this.groupedProcessDates).sort((a, b) => b - a);
+      const yearsList = _.map(this.processDateOptions, (date) => {
+        return moment(date).year();
+      });
+
+      const uniqueYearsList = _.uniq(yearsList);
+      const sortedYears = _.sortBy(uniqueYearsList).reverse();
+
+      return sortedYears;
     },
     months() {
       return Array.from({ length: 12 }, (_, i) => i + 1);
@@ -150,7 +156,6 @@ export default {
 
         const weeksResponse = await axios.get('/api/game/GetProcessingDatesForTopBidsAndDrops');
         this.processDateOptions = weeksResponse.data;
-        this.groupedProcessDates = this.groupDatesByYearMonth(this.processDateOptions);
 
         let requestPath = '/api/game/GetTopBidsAndDrops';
         if (this.processDateInternal) {
@@ -181,30 +186,11 @@ export default {
         .month(month - 1)
         .format('MMMM');
     },
-    groupDatesByYearMonth(dateStrings) {
-      const dates = dateStrings.map((dateString) => moment(dateString));
-      const groupedByYear = _.groupBy(dates, (date) => date.year());
-
-      const result = {};
-
-      _.forEach(groupedByYear, (yearDates, year) => {
-        result[year] = {};
-
-        const groupedByMonth = _.groupBy(yearDates, (date) => date.month());
-
-        _.forEach(groupedByMonth, (monthDates, month) => {
-          result[year][month] = monthDates.map((date) => date.format('YYYY-MM-DD'));
-        });
-      });
-
-      return result;
-    },
     getProcessingDatesForYearMonth(year, month) {
-      let correctIndexMonth = month - 1;
-      if (this.groupedProcessDates[year] && this.groupedProcessDates[year][correctIndexMonth]) {
-        return this.groupedProcessDates[year][correctIndexMonth];
-      }
-      return [];
+      return _.filter(this.processDateOptions, (date) => {
+        const momentDate = moment(date);
+        return momentDate.year() === year && momentDate.month() === month - 1; // Moment.js uses 0-indexed months
+      });
     }
   }
 };
