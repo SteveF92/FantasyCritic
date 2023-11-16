@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.MasterGameUpd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Postmark", "FantasyCritic.Postmark\FantasyCritic.Postmark.csproj", "{54834C18-ABEE-48FB-AF9C-CFA36007BC2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.EmailTemplates", "FantasyCritic.EmailTemplates\FantasyCritic.EmailTemplates.csproj", "{D7D67A8B-21D0-421D-8264-1D347E5862A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.EmailTemplates", "FantasyCritic.EmailTemplates\FantasyCritic.EmailTemplates.csproj", "{D7D67A8B-21D0-421D-8264-1D347E5862A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
