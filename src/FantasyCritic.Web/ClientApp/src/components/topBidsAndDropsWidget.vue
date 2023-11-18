@@ -91,7 +91,9 @@ export default {
     try {
       const response = await axios.get('/api/game/GetTopBidsAndDrops');
       this.processDate = response.data.processDate;
-      this.topBidsAndDrops = response.data.data;
+      const allData = response.data.data;
+      const yearWithMostData = response.data.yearWithMostData;
+      this.topBidsAndDrops = allData[yearWithMostData];
     } catch (error) {
       this.errorInfo = error.response.data;
     }

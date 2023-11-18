@@ -7,17 +7,17 @@
       <div v-if="processDateInternal && selectedYear && selectedMonthString" class="header-area">
         <h2>For Week Ending {{ processDateInternal | longDate }}</h2>
         <div>
-          <b-dropdown id="dropdown-1" :text="selectedYear.toString()">
-            <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectYear(year)">
+          <b-dropdown id="year-dropdown" :text="selectedYear.toString()">
+            <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectedYear = year">
               {{ year }}
             </b-dropdown-item>
           </b-dropdown>
-          <b-dropdown id="dropdown-2" :text="selectedMonthString">
-            <b-dropdown-item v-for="month in months" :key="month" :active="selectedMonth === month" @click="selectMonth(month)">
+          <b-dropdown id="month-dropdown" :text="selectedMonthString">
+            <b-dropdown-item v-for="month in months" :key="month" :active="selectedMonth === month" @click="selectedMonth = month">
               {{ convertMonth(month) }}
             </b-dropdown-item>
           </b-dropdown>
-          <b-dropdown id="dropdown-3" :text="processDateInternal">
+          <b-dropdown id="process-date-dropdown" :text="processDateInternal">
             <b-dropdown-item
               v-for="processDateOption in getProcessingDatesForYearMonth(selectedYear, selectedMonth)"
               :key="processDateOption"
@@ -28,6 +28,20 @@
           </b-dropdown>
         </div>
       </div>
+
+      <b-alert v-if="yearOptionsWithinProcessDate && yearOptionsWithinProcessDate.length > 1" show variant="info">
+        This process date contains bids and drops for more than one season, since it was during the time of year when both the current year and the next year are open. This only happens at the end of
+        a year.
+
+        <br />
+        <label class="multiple-season-year-select-label">Select a year:</label>
+
+        <b-dropdown id="year-dropdown" :text="selectedYearWithinProcessDate.toString()">
+          <b-dropdown-item v-for="year in yearOptionsWithinProcessDate" :key="year" :active="selectedYearWithinProcessDate === year" @click="selectedYearWithinProcessDate = year">
+            {{ year }}
+          </b-dropdown-item>
+        </b-dropdown>
+      </b-alert>
 
       <div v-if="!this.topBidsAndDrops" class="spinner">
         <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
@@ -87,7 +101,8 @@ export default {
       selectedMonth: null,
       processDateInternal: null,
       processDateOptions: [],
-      topBidsAndDrops: null,
+      allTopBidsAndDrops: null,
+      selectedYearWithinProcessDate: null,
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'totalStandardBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
@@ -127,6 +142,18 @@ export default {
     selectedMonthString() {
       return this.convertMonth(this.selectedMonth);
     },
+    topBidsAndDrops() {
+      if (!this.allTopBidsAndDrops) {
+        return null;
+      }
+      return this.allTopBidsAndDrops[this.selectedYearWithinProcessDate];
+    },
+    yearOptionsWithinProcessDate() {
+      if (!this.allTopBidsAndDrops) {
+        return null;
+      }
+      return Object.keys(this.allTopBidsAndDrops);
+    },
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
       return _.orderBy(relevant, ['successfulStandardBids'], ['desc']);
@@ -151,7 +178,8 @@ export default {
   methods: {
     async initializePage() {
       try {
-        this.topBidsAndDrops = null;
+        this.allTopBidsAndDrops = null;
+        this.selectedYearWithinProcessDate = null;
         this.processDateInternal = this.processDate;
 
         const weeksResponse = await axios.get('/api/game/GetProcessingDatesForTopBidsAndDrops');
@@ -166,16 +194,11 @@ export default {
         this.processDateInternal = response.data.processDate;
         this.selectedYear = moment(this.processDateInternal).year();
         this.selectedMonth = moment(this.processDateInternal).month() + 1;
-        this.topBidsAndDrops = response.data.data;
+        this.allTopBidsAndDrops = response.data.data;
+        this.selectedYearWithinProcessDate = response.data.yearWithMostData;
       } catch (error) {
         this.errorInfo = error.response.data;
       }
-    },
-    selectYear(year) {
-      this.selectedYear = year;
-    },
-    selectMonth(month) {
-      this.selectedMonth = month;
     },
     convertMonth(month) {
       if (!month) {
@@ -204,6 +227,10 @@ export default {
 .spinner {
   display: flex;
   justify-content: space-around;
+}
+
+.multiple-season-year-select-label {
+  margin-right: 5px;
 }
 
 .top-bids-and-drops-tabs {

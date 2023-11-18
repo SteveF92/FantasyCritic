@@ -1,6 +1,20 @@
+using FantasyCritic.Lib.Utilities;
+
 namespace FantasyCritic.Web.Models.Responses;
 
-public record TopBidsAndDropsSetViewModel(IReadOnlyList<TopBidsAndDropsGameViewModel> Data, LocalDate ProcessDate);
+public class TopBidsAndDropsSetViewModel
+{
+    public TopBidsAndDropsSetViewModel(IReadOnlyList<TopBidsAndDropsGameViewModel> data, LocalDate processDate)
+    {
+        Data = data.GroupToDictionary(x => x.MasterGameYear.Year);
+        YearWithMostData = Data.MaxBy(x => x.Value.Count).Key;
+        ProcessDate = processDate;
+    }
+
+    public IReadOnlyDictionary<int, IReadOnlyList<TopBidsAndDropsGameViewModel>> Data { get; }
+    public int YearWithMostData { get; }
+    public LocalDate ProcessDate { get; }
+}
 
 public class TopBidsAndDropsGameViewModel
 {
