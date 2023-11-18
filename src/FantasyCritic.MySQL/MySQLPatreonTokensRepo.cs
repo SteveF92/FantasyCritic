@@ -15,7 +15,7 @@ public class MySQLPatreonTokensRepo : IPatreonTokensRepo
 
     public async Task<PatreonTokens> GetMostRecentTokens()
     {
-        using var connection = new MySqlConnection(_connectionString);
+        await using var connection = new MySqlConnection(_connectionString);
         var entity = await connection.QuerySingleAsync<PatreonTokensEntity>("select * from tbl_system_patreonkeys order by ID DESC LIMIT 1");
         return entity.ToDomain();
     }
@@ -24,7 +24,7 @@ public class MySQLPatreonTokensRepo : IPatreonTokensRepo
     {
         var entity = new PatreonTokensEntity(keys);
 
-        using var connection = new MySqlConnection(_connectionString);
+        await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync("INSERT into tbl_system_patreonkeys (AccessToken,RefreshToken) values (@AccessToken,@RefreshToken)", entity);
     }
 }

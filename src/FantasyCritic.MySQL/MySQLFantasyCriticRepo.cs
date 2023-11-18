@@ -93,7 +93,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyear", param, commandType: CommandType.StoredProcedure);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyear", param, commandType: CommandType.StoredProcedure);
         var leagueEntity = await resultSets.ReadSingleOrDefaultAsync<LeagueEntity>();
         if (leagueEntity is null)
         {
@@ -1150,7 +1150,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        using var resultSets = await connection.QueryMultipleAsync("sp_getusersinleague", param, commandType: CommandType.StoredProcedure);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getusersinleague", param, commandType: CommandType.StoredProcedure);
         var userEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
         var playStatuses = await resultSets.ReadAsync<LeagueYearStatusEntity>();
         var userYears = await resultSets.ReadAsync<LeagueYearUserEntity>();
@@ -1226,7 +1226,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        using var resultSets = await connection.QueryMultipleAsync("sp_getcombinedleagueyearuserstatus", param, commandType: CommandType.StoredProcedure);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getcombinedleagueyearuserstatus", param, commandType: CommandType.StoredProcedure);
         var userEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
         var playStatuses = await resultSets.ReadAsync<LeagueYearStatusEntity>();
         var userYears = await resultSets.ReadAsync<LeagueYearUserEntity>();
