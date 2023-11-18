@@ -30,7 +30,7 @@
       </div>
 
       <b-alert v-if="yearOptionsWithinProcessDate && yearOptionsWithinProcessDate.length > 1" show variant="info">
-        Since this date was at the end of the year, there was more than one season open when bids and drops were processed.
+        Since this date was at the end of the year, there was more than one season open when bids and drops were processed. You can choose to see the data for either year.
         <br />
         <label class="multiple-season-year-select-label">Select a year:</label>
 
