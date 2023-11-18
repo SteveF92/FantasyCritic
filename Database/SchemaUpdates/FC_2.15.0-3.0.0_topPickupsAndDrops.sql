@@ -3,7 +3,7 @@ ALTER TABLE `tbl_league_pickupbid`
 
 CREATE TABLE `tbl_caching_topbidsanddrops` (
 	`ProcessDate` DATE NOT NULL,
-	`MasterGameID` CHAR(36) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`MasterGameID` CHAR(36) NOT NULL,
 	`Year` INT(10) NOT NULL,
 	`TotalStandardBidCount` INT(10) NOT NULL,
 	`SuccessfulStandardBids` INT(10) NOT NULL,
@@ -22,6 +22,7 @@ CREATE TABLE `tbl_caching_topbidsanddrops` (
 	INDEX `FK_tbl_caching_topbidsanddrops_tbl_mastergame` (`MasterGameID`) USING BTREE,
 	CONSTRAINT `FK_tbl_caching_topbidsanddrops_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON UPDATE NO ACTION ON DELETE NO ACTION
 )
-COLLATE='utf8mb4_general_ci'
 ENGINE=InnoDB
 ;
+
+-- Run the backloader
