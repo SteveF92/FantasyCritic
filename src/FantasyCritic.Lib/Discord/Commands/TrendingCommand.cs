@@ -2,6 +2,7 @@ using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class TrendingCommand : InteractionModuleBase<SocketInteractionContext>
@@ -44,9 +45,13 @@ public class TrendingCommand : InteractionModuleBase<SocketInteractionContext>
         }
 
         var dateToUse = processingDatesWithData.Max();
-        var topBidsAndDrops = await _interLeagueService.GetTopBidsAndDrops(dateToUse);
+        var allTopBidsAndDrops = await _interLeagueService.GetTopBidsAndDrops(dateToUse);
 
-        var trends = topBidsAndDrops
+        var topBidsAndDropsByYear = allTopBidsAndDrops.GroupToDictionary(x => x.MasterGameYear.Year);
+        var yearWithMostData = topBidsAndDropsByYear.MaxBy(x => x.Value.Count).Key;
+        var topBidsAndDropsToUse = topBidsAndDropsByYear[yearWithMostData];
+
+        var trends = topBidsAndDropsToUse
             .Where(g =>
             {
                 return trendingTopic switch
