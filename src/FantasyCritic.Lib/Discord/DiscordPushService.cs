@@ -382,6 +382,38 @@ public class DiscordPushService
         await Task.WhenAll(messageTasks);
     }
 
+    public async Task SendLeagueActionMessage(LeagueManagerAction action)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var leagueId = action.LeagueYearKey.LeagueID;
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+
+        var leagueChannels = await discordRepo.GetLeagueChannels(leagueId);
+
+        var messageTasks = new List<Task>();
+        foreach (var leagueChannel in leagueChannels)
+        {
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            SocketTextChannel? channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+            if (channel is null)
+            {
+                continue;
+            }
+
+            messageTasks.Add(channel.TrySendMessageAsync($"**{action.ActionType}** {action.Description} (at {action.Timestamp.ToEasternDate()})"));
+        }
+
+        await Task.WhenAll(messageTasks);
+    }
+
     public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges)
     {
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();

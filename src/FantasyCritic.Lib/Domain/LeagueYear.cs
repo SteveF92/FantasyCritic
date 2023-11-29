@@ -11,8 +11,6 @@ public class LeagueYear : IEquatable<LeagueYear>
     private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
     private readonly IReadOnlyDictionary<Guid, Publisher> _publisherDictionary;
 
-    private readonly Publisher? _managerPublisher;
-
     public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
         bool draftOrderSet, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
         Instant? draftStartedTimestamp, FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers)
@@ -30,15 +28,6 @@ public class LeagueYear : IEquatable<LeagueYear>
         WinningUser = winningUser;
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
-        if (Publishers.FirstOrDefault()?.User.Id != Guid.Empty)
-        {
-            _managerPublisher = Publishers.SingleOrDefault(x => x.User.Id == league.LeagueManager.Id);
-        }
-        else
-        {
-            //This handles unit tests, which don't have valid user ids. But managers also don't matter for them.
-            _managerPublisher = Publishers.FirstOrDefault();
-        }
 
         StandardGamesTaken = _publisherDictionary.Values.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
     }
@@ -117,20 +106,6 @@ public class LeagueYear : IEquatable<LeagueYear>
         }
 
         return tagOverride.Tags;
-    }
-
-    public Publisher? GetManagerPublisher()
-    {
-        return _managerPublisher;
-    }
-
-    public Publisher GetManagerPublisherOrThrow()
-    {
-        if (_managerPublisher is null)
-        {
-            throw new Exception($"League: {League.LeagueID} has no manager publisher");
-        }
-        return _managerPublisher;
     }
 
     public Publisher? GetUserPublisher(FantasyCriticUser user)

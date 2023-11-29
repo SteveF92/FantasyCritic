@@ -6,13 +6,15 @@ public class ActionProcessingResults
 {
     private ActionProcessingResults(IEnumerable<SucceededPickupBid> successBids, IEnumerable<FailedPickupBid> failedBids,
         IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops, IEnumerable<LeagueAction> leagueActions,
-        PublisherStateSet publisherStateSet, IEnumerable<PublisherGame> addedPublisherGames, IEnumerable<FormerPublisherGame> removedPublisherGames)
+        PublisherStateSet publisherStateSet, IEnumerable<PublisherGame> addedPublisherGames, IEnumerable<FormerPublisherGame> removedPublisherGames,
+        IEnumerable<LeagueManagerAction> leagueManagerActions)
     {
         SuccessBids = successBids.ToList();
         FailedBids = failedBids.ToList();
         SuccessDrops = successDrops.ToList();
         FailedDrops = failedDrops.ToList();
         LeagueActions = leagueActions.ToList();
+        LeagueManagerActions = leagueManagerActions.ToList();
         PublisherStateSet = publisherStateSet;
         AddedPublisherGames = addedPublisherGames.ToList();
         RemovedPublisherGames = removedPublisherGames.ToList();
@@ -23,6 +25,7 @@ public class ActionProcessingResults
     public IReadOnlyList<DropRequest> SuccessDrops { get; }
     public IReadOnlyList<DropRequest> FailedDrops { get; }
     public IReadOnlyList<LeagueAction> LeagueActions { get; }
+    public IReadOnlyList<LeagueManagerAction> LeagueManagerActions { get; }
     public PublisherStateSet PublisherStateSet { get; }
     public IReadOnlyList<PublisherGame> AddedPublisherGames { get; }
     public IReadOnlyList<FormerPublisherGame> RemovedPublisherGames { get; }
@@ -47,27 +50,28 @@ public class ActionProcessingResults
     public ActionProcessingResults MakeCopy()
     {
         return new ActionProcessingResults(SuccessBids, FailedBids, SuccessDrops, FailedDrops, LeagueActions,
-            PublisherStateSet.MakeCopy(), AddedPublisherGames, RemovedPublisherGames);
+            PublisherStateSet.MakeCopy(), AddedPublisherGames, RemovedPublisherGames, LeagueManagerActions);
     }
 
     public static ActionProcessingResults GetEmptyResultsSet(PublisherStateSet publisherStateSet)
     {
         return new ActionProcessingResults(new List<SucceededPickupBid>(), new List<FailedPickupBid>(), new List<DropRequest>(),
-            new List<DropRequest>(), new List<LeagueAction>(), publisherStateSet, new List<PublisherGame>(), new List<FormerPublisherGame>());
+            new List<DropRequest>(), new List<LeagueAction>(), publisherStateSet, new List<PublisherGame>(), new List<FormerPublisherGame>(), new List<LeagueManagerAction>());
     }
 
     public static ActionProcessingResults GetResultsSetFromDropResults(IEnumerable<DropRequest> successDrops, IEnumerable<DropRequest> failedDrops,
         IEnumerable<LeagueAction> leagueActions, PublisherStateSet publisherStateSet, IEnumerable<FormerPublisherGame> droppedPublisherGames)
     {
         return new ActionProcessingResults(new List<SucceededPickupBid>(), new List<FailedPickupBid>(), successDrops,
-            failedDrops, leagueActions, publisherStateSet, new List<PublisherGame>(), droppedPublisherGames);
+            failedDrops, leagueActions, publisherStateSet, new List<PublisherGame>(), droppedPublisherGames, new List<LeagueManagerAction>());
     }
 
     public static ActionProcessingResults GetResultsSetFromBidResults(IEnumerable<SucceededPickupBid> successBids, IEnumerable<FailedPickupBid> simpleFailedBids,
-        IEnumerable<LeagueAction> leagueActions, PublisherStateSet publisherStateSet, IEnumerable<PublisherGame> gamesToAdd, IEnumerable<FormerPublisherGame> droppedPublisherGames)
+        IEnumerable<LeagueAction> leagueActions, PublisherStateSet publisherStateSet, IEnumerable<PublisherGame> gamesToAdd, IEnumerable<FormerPublisherGame> droppedPublisherGames,
+        IEnumerable<LeagueManagerAction> leagueManagerActions)
     {
         return new ActionProcessingResults(successBids, simpleFailedBids, new List<DropRequest>(),
-            new List<DropRequest>(), leagueActions, publisherStateSet, gamesToAdd, droppedPublisherGames);
+            new List<DropRequest>(), leagueActions, publisherStateSet, gamesToAdd, droppedPublisherGames, leagueManagerActions);
     }
 
     public ActionProcessingResults Combine(ActionProcessingResults subProcessingResults)
@@ -80,6 +84,7 @@ public class ActionProcessingResults
             LeagueActions.Concat(subProcessingResults.LeagueActions).DistinctBy(x => x.ActionInternalID),
             subProcessingResults.PublisherStateSet,
             AddedPublisherGames.Concat(subProcessingResults.AddedPublisherGames).DistinctBy(x => x.PublisherGameID),
-            RemovedPublisherGames.Concat(subProcessingResults.RemovedPublisherGames).DistinctBy(x => x.PublisherGame.PublisherGameID));
+            RemovedPublisherGames.Concat(subProcessingResults.RemovedPublisherGames).DistinctBy(x => x.PublisherGame.PublisherGameID),
+            LeagueManagerActions.Concat(subProcessingResults.LeagueManagerActions));
     }
 }

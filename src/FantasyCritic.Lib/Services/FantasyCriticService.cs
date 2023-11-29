@@ -154,20 +154,12 @@ public class FantasyCriticService
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
             tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
 
-        var managerPublisher = leagueYear.GetManagerPublisher();
         var differenceString = options.GetDifferenceString(leagueYear.Options);
         if (differenceString is not null)
         {
-            if (managerPublisher is not null)
-            {
-                LeagueAction settingsChangeAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString, true);
-                await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
-                await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
-            }
-            else
-            {
-                await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments);
-            }
+            LeagueManagerAction settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString);
+            await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
+            await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
         }
 
         return Result.Success();
@@ -314,8 +306,6 @@ public class FantasyCriticService
     public async Task ManuallySetWillNotRelease(LeagueYear leagueYear, PublisherGame publisherGame, bool willNotRelease)
     {
         await _fantasyCriticRepo.ManuallySetWillNotRelease(publisherGame, willNotRelease);
-        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
-
         string description;
         if (willNotRelease)
         {
@@ -326,8 +316,8 @@ public class FantasyCriticService
             description = $"{publisherGame.GameName}'s manual 'Will Not Release' setting was cleared.";
         }
 
-        LeagueAction eligibilityAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "'Will not release' Overridden", description, true);
-        await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
+        LeagueManagerAction eligibilityAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "'Will not release' Overridden", description);
+        await _fantasyCriticRepo.AddLeagueManagerAction(eligibilityAction);
     }
 
     public Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
@@ -480,7 +470,6 @@ public class FantasyCriticService
             await _fantasyCriticRepo.SetEligibilityOverride(leagueYear, masterGame, eligible.Value);
         }
 
-        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         string description;
         if (!eligible.HasValue)
         {
@@ -495,26 +484,25 @@ public class FantasyCriticService
             description = $"{masterGame.GameName} was manually set to 'Ineligible'";
         }
 
-        LeagueAction eligibilityAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Eligibility Setting Changed", description, true);
-        await _fantasyCriticRepo.AddLeagueAction(eligibilityAction);
+        LeagueManagerAction eligibilityAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Eligibility Setting Changed", description);
+        await _fantasyCriticRepo.AddLeagueManagerAction(eligibilityAction);
     }
 
     public async Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, List<MasterGameTag> requestedTags)
     {
         await _fantasyCriticRepo.SetTagOverride(leagueYear, masterGame, requestedTags);
-        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         if (requestedTags.Any())
         {
             var tagNames = string.Join(", ", requestedTags.Select(x => x.ReadableName));
             string description = $"{masterGame.GameName}'s tags were set to: '{tagNames}'.";
-            LeagueAction tagAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Tags Overriden", description, true);
-            await _fantasyCriticRepo.AddLeagueAction(tagAction);
+            LeagueManagerAction tagAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Tags Overriden", description);
+            await _fantasyCriticRepo.AddLeagueManagerAction(tagAction);
         }
         else
         {
             string description = $"{masterGame.GameName}'s tags were reset to default.";
-            LeagueAction tagAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Tags Override Cleared", description, true);
-            await _fantasyCriticRepo.AddLeagueAction(tagAction);
+            LeagueManagerAction tagAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Tags Override Cleared", description);
+            await _fantasyCriticRepo.AddLeagueManagerAction(tagAction);
         }
     }
 

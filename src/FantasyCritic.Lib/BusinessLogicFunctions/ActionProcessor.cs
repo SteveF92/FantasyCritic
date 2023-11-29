@@ -143,7 +143,7 @@ public class ActionProcessor
                 processedBids = processedBids.AppendSet(processedBidsForLeagueYear);
             }
 
-            ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, new List<LeagueAction>());
+            ActionProcessingResults bidResults = GetBidProcessingResults(processedBids.SuccessBids, processedBids.FailedBids, publisherStateSet, new List<LeagueManagerAction>());
             var newResults = runningResults.Combine(bidResults);
             var remainingBids = flatAllBids.Except(processedBids.ProcessedBids);
             runningActiveBids = remainingBids.GroupToDictionary(x => x.LeagueYear);
@@ -158,7 +158,7 @@ public class ActionProcessor
         var allPublishers = leagueYearSpecialAuctions.SelectMany(x => x.LeagueYear.Publishers);
         var publisherStateSet = new PublisherStateSet(allPublishers);
         var processedBids = new ProcessedBidSet();
-        List<LeagueAction> noBidsActions = new List<LeagueAction>();
+        List<LeagueManagerAction> noBidsActions = new List<LeagueManagerAction>();
         foreach (var singleLeagueYearSet in leagueYearSpecialAuctions)
         {
             var leagueYear = singleLeagueYearSet.LeagueYear;
@@ -169,7 +169,7 @@ public class ActionProcessor
                 var masterGame = specialAuctionWithBids.SpecialAuction.MasterGameYear.MasterGame;
                 if (!specialAuctionWithBids.Bids.Any())
                 {
-                    noBidsActions.Add(new LeagueAction(leagueYear.GetManagerPublisherOrThrow(), _processingTime, "Special Auction Ended", $"Special Auction for: '{masterGame.GameName}' ended with no bids and no winner.", false));
+                    noBidsActions.Add(new LeagueManagerAction(leagueYear.Key, _processingTime, "Special Auction Ended", $"Special Auction for: '{masterGame.GameName}' ended with no bids and no winner."));
                     continue;
                 }
 
@@ -441,7 +441,8 @@ public class ActionProcessor
         throw new Exception($"Inconceivable tie situation for game: {masterGame.GameName} for league year: {leagueYear}");
     }
 
-    private ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, PublisherStateSet publisherStateSet, IEnumerable<LeagueAction> additionalActions)
+    private ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, PublisherStateSet publisherStateSet,
+        IEnumerable<LeagueManagerAction> leagueManagerActions)
     {
         List<PublisherGame> gamesToAdd = new List<PublisherGame>();
         List<LeagueAction> leagueActions = new List<LeagueAction>();
@@ -474,9 +475,8 @@ public class ActionProcessor
             conditionalDroppedGames.Add(formerPublisherGame);
         }
 
-        leagueActions.AddRange(additionalActions);
         ActionProcessingResults bidProcessingResults = ActionProcessingResults.GetResultsSetFromBidResults(successBids, failedBids,
-            leagueActions, publisherStateSet, gamesToAdd, conditionalDroppedGames);
+            leagueActions, publisherStateSet, gamesToAdd, conditionalDroppedGames, leagueManagerActions);
         return bidProcessingResults;
     }
 }

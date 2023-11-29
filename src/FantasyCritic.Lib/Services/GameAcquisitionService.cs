@@ -560,12 +560,10 @@ public class GameAcquisitionService
 
         var specialAuction = new SpecialAuction(Guid.NewGuid(), leagueYear.Key, masterGameYear, now, scheduledEndTime, false);
 
-        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         string actionDescription = $"Created special auction for '{masterGame.GameName}'.";
-        LeagueAction action = new LeagueAction(managerPublisher, now, "Created Special Auction", actionDescription, true);
+        LeagueManagerAction action = new LeagueManagerAction(leagueYear.Key, now, "Created Special Auction", actionDescription);
 
         await _fantasyCriticRepo.CreateSpecialAuction(specialAuction, action);
-
         await _discordPushService.SendSpecialAuctionMessage(specialAuction, "create");
 
         return Result.Success();
@@ -603,9 +601,8 @@ public class GameAcquisitionService
             return Result.Failure("You can't cancel a special auction within 10 minutes of it ending.");
         }
 
-        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         string actionDescription = $"Cancelled special auction for '{specialAuction.MasterGameYear.MasterGame.GameName}'.";
-        LeagueAction action = new LeagueAction(managerPublisher, now, "Cancelled Special Auction", actionDescription, true);
+        LeagueManagerAction action = new LeagueManagerAction(leagueYear.Key, now, "Cancelled Special Auction", actionDescription);
 
         await _fantasyCriticRepo.CancelSpecialAuction(specialAuction, action);
         await _discordPushService.SendSpecialAuctionMessage(specialAuction, "cancel");

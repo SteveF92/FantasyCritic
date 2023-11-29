@@ -78,10 +78,9 @@ public class DraftService
             return Result.Failure("Some of the positions are not valid.");
         }
 
-        var managerPublisher = leagueYear.GetManagerPublisherOrThrow();
         string draftOrderDescription = string.Join("\n", draftPositions.Select(x => $"• {x.Value}: {x.Key.PublisherName}"));
         string actionDescription = $"{draftOrderType.ActionDescription} \n {draftOrderDescription}";
-        LeagueAction draftSetAction = new LeagueAction(managerPublisher, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription, true);
+        LeagueManagerAction draftSetAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription);
         await _discordPushService.SendLeagueActionMessage(draftSetAction);
 
         await _fantasyCriticRepo.SetDraftOrder(draftPositions, draftSetAction);

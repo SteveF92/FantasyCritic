@@ -15,7 +15,7 @@ public interface IFantasyCriticRepo
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
     Task AddNewLeagueYear(League league, int year, LeagueOptions options);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments);
-    Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction);
+    Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction);
 
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league);
@@ -104,6 +104,7 @@ public interface IFantasyCriticRepo
     Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks);
 
     Task AddLeagueAction(LeagueAction action);
+    Task AddLeagueManagerAction(LeagueManagerAction action);
     Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear);
     Task<IReadOnlyList<LeagueAction>> GetLeagueActions(int year);
     Task ChangePublisherName(Publisher publisher, string publisherName);
@@ -115,7 +116,7 @@ public interface IFantasyCriticRepo
     Task ResetDraft(LeagueYear leagueYear, Instant timestamp);
 
     Task SetDraftPause(LeagueYear leagueYear, bool pause);
-    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueAction draftSetAction);
+    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueManagerAction draftSetAction);
     Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
     Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
     Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags);
@@ -153,8 +154,8 @@ public interface IFantasyCriticRepo
     Task ExpireTrades(List<Trade> tradesToExpire, Instant expireTimestamp);
     Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions();
     Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear);
-    Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action);
-    Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueAction action);
+    Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
+    Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
     Task GrantSuperDrops(IEnumerable<Publisher> publishersToGrantSuperDrop, IEnumerable<LeagueAction> superDropActions);
     Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears);
 }
