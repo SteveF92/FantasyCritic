@@ -100,11 +100,11 @@
             !
           </div>
         </div>
-        <div v-if="!leagueYear.userIsActive && league.userIsInLeague">
+        <div v-if="!leagueYear.userIsActive && league.userIsInLeague && !league.isManager">
           <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
         </div>
 
-        <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
+        <div v-if="(leagueYear.userIsActive || league.isManager) && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
           <h2>This year is not active yet!</h2>
           <ul>
             <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>

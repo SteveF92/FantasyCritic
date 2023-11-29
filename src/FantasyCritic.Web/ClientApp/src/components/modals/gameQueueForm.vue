@@ -145,7 +145,7 @@ export default {
       this.isBusy = true;
 
       axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID)
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID + '&publisherid=' + this.userPublisher.publisherID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.showingTopAvailable = true;
@@ -163,7 +163,7 @@ export default {
       let base64Slot = btoa(slotJSON);
       let urlEncodedSlot = encodeURI(base64Slot);
       axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&slotInfo=' + urlEncodedSlot)
+        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&publisherid=' + this.userPublisher.publisherID + '&slotInfo=' + urlEncodedSlot)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;

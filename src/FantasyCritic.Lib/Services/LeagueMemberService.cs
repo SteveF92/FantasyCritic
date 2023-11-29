@@ -46,11 +46,6 @@ public class LeagueMemberService
                 continue;
             }
 
-            if (leagueYear.League.LeagueManager.Id == userToChange.Key.Id)
-            {
-                return Result.Failure("Can't change the league manager's active status.");
-            }
-
             bool userIsInLeague = playersInLeague.Any(x => x.Id == userToChange.Key.Id);
             if (!userIsInLeague)
             {

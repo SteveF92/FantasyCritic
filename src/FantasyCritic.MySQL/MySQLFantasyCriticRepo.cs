@@ -833,7 +833,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_league_action(LeagueID,Year,Timestamp,ActionType,Description) VALUES " +
+            "insert into tbl_league_manageraction(LeagueID,Year,Timestamp,ActionType,Description) VALUES " +
             "(@LeagueID,@Year,@Timestamp,@ActionType,@Description);", entity);
     }
 
@@ -3189,7 +3189,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         LeagueManagerActionEntity entity = new LeagueManagerActionEntity(action);
 
         await connection.ExecuteAsync(
-            "insert into tbl_league_action(LeagueID,Year,Timestamp,ActionType,Description) VALUES " +
+            "insert into tbl_league_manageraction(LeagueID,Year,Timestamp,ActionType,Description) VALUES " +
             "(@LeagueID,@Year,@Timestamp,@ActionType,@Description);", entity, transaction);
     }
 

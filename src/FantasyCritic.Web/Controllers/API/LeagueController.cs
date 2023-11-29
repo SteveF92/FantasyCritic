@@ -868,7 +868,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
-    public async Task<IActionResult> TopAvailableGames(int year, Guid leagueID, string? slotInfo)
+    public async Task<IActionResult> TopAvailableGames(int year, Guid leagueID, Guid publisherID, string? slotInfo)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
@@ -877,10 +877,9 @@ public class LeagueController : BaseLeagueController
         }
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
-        var currentUser = validResult.CurrentUser!;
 
-        var userPublisher = leagueYear.GetUserPublisher(currentUser);
-        if (userPublisher is null)
+        var publisher = leagueYear.Publishers.SingleOrDefault(x => x.PublisherID == publisherID);
+        if (publisher is null)
         {
             return BadRequest();
         }
@@ -896,11 +895,11 @@ public class LeagueController : BaseLeagueController
             }
             var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
             var leagueTagRequirements = slotInfoObject.GetLeagueTagStatus(tagDictionary);
-            topAvailableGames = await _gameSearchingService.GetTopAvailableGamesForSlot(leagueYear, userPublisher, leagueTagRequirements);
+            topAvailableGames = await _gameSearchingService.GetTopAvailableGamesForSlot(leagueYear, publisher, leagueTagRequirements);
         }
         else
         {
-            topAvailableGames = await _gameSearchingService.GetTopAvailableGames(leagueYear, userPublisher);
+            topAvailableGames = await _gameSearchingService.GetTopAvailableGames(leagueYear, publisher);
         }
 
         var currentDate = _clock.GetToday();

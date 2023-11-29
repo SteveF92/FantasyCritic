@@ -134,6 +134,7 @@
         <changePublisherNameForm></changePublisherNameForm>
         <changePublisherIconForm></changePublisherIconForm>
         <changePublisherSloganForm></changePublisherSloganForm>
+        <editAutoDraftForm></editAutoDraftForm>
       </template>
 
       <addNewLeagueYearForm></addNewLeagueYearForm>
@@ -141,7 +142,6 @@
       <manageActivePlayersForm></manageActivePlayersForm>
       <createPublisherForUserForm></createPublisherForUserForm>
       <editDraftOrderForm></editDraftOrderForm>
-      <editAutoDraftForm></editAutoDraftForm>
       <managerDraftGameForm></managerDraftGameForm>
       <managerDraftCounterPickForm></managerDraftCounterPickForm>
       <undoLastDraftActionModal></undoLastDraftActionModal>
