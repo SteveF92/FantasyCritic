@@ -1,6 +1,9 @@
 <template>
   <div>
     <b-modal id="addNewLeagueYear" ref="addNewLeagueYearRef" title="Start new Year" @show="fetchAvailableYears">
+      <div class="alert alert-info">
+        Starting a new year will not impact your current year. You will always be able to access all years of your league, and starting a new year does not end your current year.
+      </div>
       <div class="form-horizontal">
         <div class="form-group">
           <label for="selectedYear" class="control-label">New Year to Play</label>
