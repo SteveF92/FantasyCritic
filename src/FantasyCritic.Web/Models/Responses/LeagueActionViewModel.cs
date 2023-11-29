@@ -4,10 +4,10 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueActionViewModel
 {
-    public LeagueActionViewModel(LeagueYear leagueYear, LeagueAction leagueAction)
+    public LeagueActionViewModel(LeagueYear leagueYear, ILeagueAction leagueAction)
     {
         LeagueName = leagueYear.League.LeagueName;
-        PublisherName = leagueAction.Publisher.PublisherName;
+        PublisherName = leagueAction.PublisherNameOrManager;
         Timestamp = leagueAction.Timestamp;
         ActionType = leagueAction.ActionType;
         Description = leagueAction.Description;

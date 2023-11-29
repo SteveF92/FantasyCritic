@@ -1,6 +1,6 @@
 namespace FantasyCritic.Lib.Domain.LeagueActions;
 
-public class LeagueManagerAction
+public class LeagueManagerAction : ILeagueAction
 {
     public LeagueManagerAction(LeagueYearKey leagueYearKey, Instant timestamp, string actionType, string description)
     {
@@ -16,4 +16,7 @@ public class LeagueManagerAction
     public string ActionType { get; }
     public string Description { get; }
     public Guid ActionInternalID { get; }
+
+    public string PublisherNameOrManager => "Manager";
+    public bool ManagerAction => true;
 }

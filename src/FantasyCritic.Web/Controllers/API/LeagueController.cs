@@ -279,8 +279,10 @@ public class LeagueController : BaseLeagueController
         }
 
         var leagueActions = await _fantasyCriticService.GetLeagueActions(leagueYear);
+        var leagueManagerActions = await _fantasyCriticService.GetLeagueManagerActions(leagueYear);
+        var joinedActions = leagueActions.Cast<ILeagueAction>().Concat(leagueManagerActions).ToList();
 
-        var viewModels = leagueActions.Select(x => new LeagueActionViewModel(leagueYear, x));
+        var viewModels = joinedActions.Select(x => new LeagueActionViewModel(leagueYear, x));
         viewModels = viewModels.OrderByDescending(x => x.Timestamp);
         return Ok(viewModels);
     }

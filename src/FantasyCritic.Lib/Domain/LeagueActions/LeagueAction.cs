@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain.LeagueActions;
 
-public class LeagueAction
+public class LeagueAction : ILeagueAction
 {
     public LeagueAction(Publisher publisher, Instant timestamp, string actionType, string description,
         bool managerAction)
@@ -175,6 +175,8 @@ public class LeagueAction
     public string Description { get; }
     public bool ManagerAction { get; }
     public Guid ActionInternalID { get; }
+
+    public string PublisherNameOrManager => Publisher.PublisherName;
 
     public bool IsFailed => Description.Contains("Game is no longer eligible");
 

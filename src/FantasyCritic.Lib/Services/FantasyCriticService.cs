@@ -325,6 +325,11 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueActions(leagueYear);
     }
 
+    public Task<IReadOnlyList<LeagueManagerAction>> GetLeagueManagerActions(LeagueYear leagueYear)
+    {
+        return _fantasyCriticRepo.GetLeagueManagerActions(leagueYear);
+    }
+
     public async Task<IReadOnlyList<LeagueActionProcessingSet>> GetLeagueActionProcessingSets(LeagueYear leagueYear)
     {
         var processSets = await _interLeagueService.GetActionProcessingSets();

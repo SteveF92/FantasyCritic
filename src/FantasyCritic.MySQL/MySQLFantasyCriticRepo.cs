@@ -866,6 +866,28 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return leagueActions;
     }
 
+    public async Task<IReadOnlyList<LeagueManagerAction>> GetLeagueManagerActions(LeagueYear leagueYear)
+    {
+        string sql =
+            """
+            select LeagueID,Year,Timestamp,ActionType,Description
+            from tbl_league_manageraction
+            where  LeagueID = @leagueID AND Year = @leagueYear;
+            """;
+
+        var param = new
+        {
+            leagueID = leagueYear.League.LeagueID,
+            leagueYear = leagueYear.Year
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<LeagueManagerActionEntity>(sql, param);
+
+        List<LeagueManagerAction> leagueActions = entities.Select(x => x.ToDomain()).ToList();
+        return leagueActions;
+    }
+
     public async Task<IReadOnlyList<LeagueAction>> GetLeagueActions(int year)
     {
         var leagueYears = await GetLeagueYears(year);
