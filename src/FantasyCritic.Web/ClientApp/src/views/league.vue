@@ -104,7 +104,7 @@
           <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
         </div>
 
-        <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft && userPublisher" class="alert alert-warning">
+        <div v-if="leagueYear.userIsActive && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
           <h2>This year is not active yet!</h2>
           <ul>
             <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
@@ -114,10 +114,15 @@
 
         <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
           <p>You need to create your publisher for this year.</p>
-          <p v-if="league.isManager">You can't invite players or change any settings until you create your publisher.</p>
           <b-button v-b-modal="'createPublisher'" variant="primary" class="mx-2">Create Publisher</b-button>
           <createPublisherForm :league-year="leagueYear"></createPublisherForm>
         </div>
+
+        <div v-if="leagueYear.userIsActive && !userPublisher && league.isManager" class="alert alert-info">
+          Alternatively, if you want to manage this league without playing in it, you will need to set yourself as "inactive" by going to "Manager Active Players" in the Manage League menu.
+        </div>
+
+        <div v-if="league.isManager && !leagueYear.playStatus.playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
 
         <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
           <div class="alert alert-success">

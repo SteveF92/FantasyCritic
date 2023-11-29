@@ -15,7 +15,7 @@
         <tr v-for="(value, name) in internalPlayerActive" :key="name">
           <td>{{ value.displayName }}</td>
           <td>
-            <input v-model="value.active" type="checkbox" :disabled="value.manager" />
+            <input v-model="value.active" type="checkbox" />
           </td>
         </tr>
       </tbody>
@@ -44,9 +44,6 @@ export default {
     this.setCurrentActivePlayers();
   },
   methods: {
-    userIsManager(user) {
-      return this.league.leagueManager.userID === user.userID;
-    },
     userIsActive(user) {
       let matchingPlayer = _.find(this.leagueYear.players, function (item) {
         return item.user && item.user.userID === user.userID;
@@ -59,11 +56,9 @@ export default {
       let outerScope = this;
       this.league.players.forEach(function (player) {
         let playerIsActive = outerScope.userIsActive(player);
-        let playerIsManager = outerScope.userIsManager(player);
         outerScope.internalPlayerActive[player.userID] = {
           displayName: player.displayName,
-          active: playerIsActive,
-          manager: playerIsManager
+          active: playerIsActive
         };
       });
       this.showTable = true;
