@@ -827,6 +827,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "(@PublisherID,@Timestamp,@ActionType,@Description,@ManagerAction);", entity);
     }
 
+    public async Task AddLeagueManagerAction(LeagueManagerAction action)
+    {
+        LeagueManagerActionEntity entity = new LeagueManagerActionEntity(action);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(
+            "insert into tbl_league_action(LeagueID,Year,Timestamp,ActionType,Description) VALUES " +
+            "(@LeagueID,@Year,@Timestamp,@ActionType,@Description);", entity);
+    }
+
     public async Task<IReadOnlyList<LeagueAction>> GetLeagueActions(LeagueYear leagueYear)
     {
         string sql =
@@ -955,7 +965,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string gameDeleteSQL = "delete from tbl_league_publishergame where PublisherID in @publisherIDs";
         string draftResetSQL = $"update tbl_league_year SET PlayStatus = '{PlayStatus.NotStartedDraft.Value}' WHERE LeagueID = @leagueID and Year = @year";
 
-        LeagueAction resetDraftAction = new LeagueAction(leagueYear.GetManagerPublisher()!, timestamp, "Draft Reset", "Draft was reset.", true);
+        LeagueManagerAction resetDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Draft Reset", "Draft was reset.");
         var paramsObject = new
         {
             leagueID = leagueYear.League.LeagueID,
@@ -968,7 +978,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(gameDeleteSQL, paramsObject, transaction);
         await connection.ExecuteAsync(draftResetSQL, paramsObject, transaction);
-        await AddLeagueAction(resetDraftAction, connection, transaction);
+        await AddLeagueManagerAction(resetDraftAction, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -1062,9 +1072,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments) => EditLeagueYearInternal(leagueYear, slotAssignments, null);
 
-    public Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction settingsChangeAction) => EditLeagueYearInternal(leagueYear, slotAssignments, settingsChangeAction);
+    public Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction) => EditLeagueYearInternal(leagueYear, slotAssignments, settingsChangeAction);
 
-    private async Task EditLeagueYearInternal(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueAction? settingsChangeAction)
+    private async Task EditLeagueYearInternal(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction? settingsChangeAction)
     {
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus, leagueYear.DraftOrderSet);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
@@ -1096,7 +1106,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
         if (settingsChangeAction is not null)
         {
-            await AddLeagueAction(settingsChangeAction, connection, transaction);
+            await AddLeagueManagerAction(settingsChangeAction, connection, transaction);
         }
         await transaction.CommitAsync();
     }
@@ -2303,7 +2313,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domains;
     }
 
-    public async Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueAction action)
+    public async Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action)
     {
         const string sql =
             "INSERT INTO tbl_league_specialauction(SpecialAuctionID,LeagueID,Year,MasterGameID,CreationTime,ScheduledEndTime,Processed) " +
@@ -2316,12 +2326,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
 
         await connection.ExecuteAsync(sql, entity, transaction);
-        await AddLeagueAction(action, connection, transaction);
+        await AddLeagueManagerAction(action, connection, transaction);
 
         await transaction.CommitAsync();
     }
 
-    public async Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueAction action)
+    public async Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action)
     {
         const string sql = "DELETE FROM tbl_league_specialauction WHERE LeagueID = @LeagueID AND Year = @Year AND MasterGameID = @MasterGameID;";
         var entity = new SpecialAuctionEntity(specialAuction);
@@ -2331,7 +2341,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
 
         await connection.ExecuteAsync(sql, entity, transaction);
-        await AddLeagueAction(action, connection, transaction);
+        await AddLeagueManagerAction(action, connection, transaction);
 
         await transaction.CommitAsync();
     }
@@ -2686,11 +2696,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainGames;
     }
 
-    public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueAction leagueAction)
+    public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueManagerAction leagueAction)
     {
         const string updateDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
         const string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 1 WHERE LeagueID = @LeagueID AND Year = @Year;";
-        var leagueYearKey = new LeagueYearKeyEntity(leagueAction.Publisher.LeagueYearKey);
+        var leagueYearKey = new LeagueYearKeyEntity(leagueAction.LeagueYearKey);
         var tempPositions = draftPositions.Select(x => new SetDraftOrderEntity(x.Key.PublisherID, x.Value + 100));
         var finalPositions = draftPositions.Select(x => new SetDraftOrderEntity(x.Key.PublisherID, x.Value));
 
@@ -2700,7 +2710,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await connection.ExecuteAsync(updateDraftOrderSQL, tempPositions, transaction);
         await connection.ExecuteAsync(updateDraftOrderSQL, finalPositions, transaction);
-        await AddLeagueAction(leagueAction, connection, transaction);
+        await AddLeagueManagerAction(leagueAction, connection, transaction);
         await connection.ExecuteAsync(setFlagSQL, leagueYearKey, transaction);
 
         await transaction.CommitAsync();
@@ -3151,6 +3161,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     }
 
     private static Task AddLeagueAction(LeagueAction action, MySqlConnection connection, MySqlTransaction transaction) => AddLeagueActions(new List<LeagueAction>() { action }, connection, transaction);
+
+    private static async Task AddLeagueManagerAction(LeagueManagerAction action, MySqlConnection connection, MySqlTransaction transaction)
+    {
+        LeagueManagerActionEntity entity = new LeagueManagerActionEntity(action);
+
+        await connection.ExecuteAsync(
+            "insert into tbl_league_action(LeagueID,Year,Timestamp,ActionType,Description) VALUES " +
+            "(@LeagueID,@Year,@Timestamp,@ActionType,@Description);", entity, transaction);
+    }
 
     private static Task AddLeagueActions(IEnumerable<LeagueAction> actions, MySqlConnection connection, MySqlTransaction transaction)
     {
