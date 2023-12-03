@@ -83,3 +83,36 @@ public class RequiredRelationship
     public bool MustBeLeagueManager { get; }
     public bool MustBePublisher { get; }
 }
+
+public class ConferenceUserRelationship
+{
+    public ConferenceUserRelationship(bool inConference, bool conferenceManager, bool isAdmin)
+    {
+        InConference = inConference;
+        ConferenceManager = conferenceManager;
+        IsAdmin = isAdmin;
+    }
+
+    public bool InConference { get; }
+    public bool ConferenceManager { get; }
+    public bool IsAdmin { get; }
+}
+
+public class ConferenceRequiredRelationship
+{
+    public static readonly ConferenceRequiredRelationship AllowAnonymous = new ConferenceRequiredRelationship(false, false, false);
+    public static readonly ConferenceRequiredRelationship LoggedIn = new ConferenceRequiredRelationship(true, false, false);
+    public static readonly ConferenceRequiredRelationship InConference = new ConferenceRequiredRelationship(true, true, false);
+    public static readonly ConferenceRequiredRelationship ConferenceManager = new ConferenceRequiredRelationship(true, true, true);
+
+    private ConferenceRequiredRelationship(bool mustBeLoggedIn, bool mustBeInConference, bool mustBeConferenceManager)
+    {
+        MustBeLoggedIn = mustBeLoggedIn;
+        MustBeInConference = mustBeInConference;
+        MustBeConferenceManager = mustBeConferenceManager;
+    }
+
+    public bool MustBeLoggedIn { get; }
+    public bool MustBeInConference { get; }
+    public bool MustBeConferenceManager { get; }
+}

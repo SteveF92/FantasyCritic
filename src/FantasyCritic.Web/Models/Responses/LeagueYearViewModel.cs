@@ -34,7 +34,6 @@ public class LeagueYearViewModel
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedByDictionary))
             .ToList();
 
-
         var publisherRankings = leagueYear.Publishers
             .Select(x => new
                 {

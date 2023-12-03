@@ -94,6 +94,7 @@ public static class HostingExtensions
         services.AddScoped<IMasterGameRepo, MySQLMasterGameRepo>();
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
+        services.AddScoped<IConferenceRepo, MySQLConferenceRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
         services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
@@ -124,6 +125,7 @@ public static class HostingExtensions
         services.AddScoped<TradeService>();
         services.AddScoped<FantasyCriticService>();
         services.AddScoped<RoyaleService>();
+        services.AddScoped<ConferenceService>();
         services.AddScoped<EmailSendingService>();
 
         //Email Services

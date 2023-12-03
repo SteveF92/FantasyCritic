@@ -10,12 +10,15 @@ public abstract class BaseLeagueController : FantasyCriticController
     protected readonly FantasyCriticService _fantasyCriticService;
     protected readonly InterLeagueService _interLeagueService;
     protected readonly LeagueMemberService _leagueMemberService;
+    protected readonly ConferenceService _conferenceService;
 
-    protected BaseLeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService, LeagueMemberService leagueMemberService) : base(userManager)
+    protected BaseLeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
+        LeagueMemberService leagueMemberService, ConferenceService conferenceService) : base(userManager)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
         _leagueMemberService = leagueMemberService;
+        _conferenceService = conferenceService;
     }
 
     protected async Task<GenericResultRecord<LeagueRecord>> GetExistingLeague(Guid leagueID, RequiredRelationship requiredRelationship)
@@ -232,5 +235,15 @@ public abstract class BaseLeagueController : FantasyCriticController
             leagueYearPublisherRecord.ValidResult.CurrentUser, leagueYearPublisherRecord.ValidResult.LeagueYear,
             leagueYearPublisherRecord.ValidResult.Publisher, publisherGame,
             leagueYearPublisherRecord.ValidResult.Relationship), null);
+    }
+
+    protected Task<GenericResultRecord<ConferenceRecord>> GetExistingConference(Guid conferenceID, ConferenceRequiredRelationship requiredRelationship)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected Task<GenericResultRecord<ConferenceYearRecord>> GetExistingConferenceYear(Guid conferenceID, int year, ConferenceRequiredRelationship requiredRelationship)
+    {
+        throw new NotImplementedException();
     }
 }

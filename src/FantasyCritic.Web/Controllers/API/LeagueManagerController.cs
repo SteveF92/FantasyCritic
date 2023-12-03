@@ -33,9 +33,9 @@ public class LeagueManagerController : BaseLeagueController
 
     public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
-        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService, TradeService tradeService,
+        EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService, TradeService tradeService, ConferenceService conferenceService,
         EnvironmentConfiguration environmentConfiguration)
-        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
+        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService)
     {
         _draftService = draftService;
         _publisherService = publisherService;

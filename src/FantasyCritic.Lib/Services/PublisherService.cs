@@ -14,10 +14,7 @@ public class PublisherService
     private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
 
-    public PublisherService(IFantasyCriticRepo fantasyCriticRepo,
-        DiscordPushService discordPushService,
-        InterLeagueService interLeagueService,
-        IClock clock)
+    public PublisherService(IFantasyCriticRepo fantasyCriticRepo, DiscordPushService discordPushService, InterLeagueService interLeagueService, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _discordPushService = discordPushService;

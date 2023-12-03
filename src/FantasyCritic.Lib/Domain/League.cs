@@ -4,12 +4,13 @@ namespace FantasyCritic.Lib.Domain;
 
 public class League : IEquatable<League>
 {
-    public League(Guid leagueID, string leagueName, FantasyCriticUser leagueManager, IEnumerable<int> years,
+    public League(Guid leagueID, string leagueName, FantasyCriticUser leagueManager, Guid? conferenceID, IEnumerable<int> years,
         bool publicLeague, bool testLeague, bool customRulesLeague, bool archived, int numberOfFollowers)
     {
         LeagueID = leagueID;
         LeagueName = leagueName;
         LeagueManager = leagueManager;
+        ConferenceID = conferenceID;
         Years = years.ToList();
         PublicLeague = publicLeague;
         TestLeague = testLeague;
@@ -21,6 +22,7 @@ public class League : IEquatable<League>
     public Guid LeagueID { get; }
     public string LeagueName { get; }
     public FantasyCriticUser LeagueManager { get; }
+    public Guid? ConferenceID { get; }
     public IReadOnlyList<int> Years { get; }
     public bool PublicLeague { get; }
     public bool TestLeague { get; }

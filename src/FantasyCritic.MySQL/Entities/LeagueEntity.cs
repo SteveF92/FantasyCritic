@@ -14,6 +14,7 @@ internal class LeagueEntity
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
         LeagueManager = league.LeagueManager.Id;
+        ConferenceID = league.ConferenceID;
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         CustomRulesLeague = league.CustomRulesLeague;
@@ -23,6 +24,7 @@ internal class LeagueEntity
     public Guid LeagueID { get; set; }
     public string LeagueName { get; set; } = null!;
     public Guid LeagueManager { get; set; }
+    public Guid? ConferenceID { get; set; }
     public bool PublicLeague { get; set; }
     public bool TestLeague { get; set; }
     public bool CustomRulesLeague { get; set; }
@@ -31,7 +33,7 @@ internal class LeagueEntity
 
     public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years)
     {
-        League parameters = new League(LeagueID, LeagueName, manager, years, PublicLeague, TestLeague, CustomRulesLeague, Archived, NumberOfFollowers);
+        League parameters = new League(LeagueID, LeagueName, manager, ConferenceID, years, PublicLeague, TestLeague, CustomRulesLeague, Archived, NumberOfFollowers);
         return parameters;
     }
 }

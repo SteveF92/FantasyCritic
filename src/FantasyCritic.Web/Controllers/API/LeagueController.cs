@@ -41,8 +41,8 @@ public class LeagueController : BaseLeagueController
 
     public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
-        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService)
-        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService)
+        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService, ConferenceService conferenceService)
+        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService)
     {
         _draftService = draftService;
         _gameSearchingService = gameSearchingService;
@@ -99,7 +99,7 @@ public class LeagueController : BaseLeagueController
             viewModels.Add(new LeagueWithStatusViewModel(league, isManager, true, true, oneShotLeagues.Contains(league.LeagueID)));
         }
 
-        var sortedViewModels = viewModels.OrderBy(l => l.LeagueName);
+        var sortedViewModels = viewModels.OrderBy(l => l.LeagueName).ToList();
         return Ok(sortedViewModels);
     }
 
@@ -1411,3 +1411,4 @@ public class LeagueController : BaseLeagueController
         return leagueYearPublisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, true, currentDate)).ToList();
     }
 }
+

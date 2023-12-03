@@ -1368,7 +1368,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueEntities = await connection.QueryAsync<LeagueEntity>(sql, queryObject);
         }
 
-        IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
+        IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities.ToList());
         return leagues;
     }
 
@@ -1482,7 +1482,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 query);
         }
 
-        IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities);
+        IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities.ToList());
         return leagues;
     }
 
@@ -2596,9 +2596,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return supportedYear;
     }
 
-    private async Task<IReadOnlyList<League>> ConvertLeagueEntitiesToDomain(IEnumerable<LeagueEntity> leagueEntities)
+    private async Task<IReadOnlyList<League>> ConvertLeagueEntitiesToDomain(IReadOnlyList<LeagueEntity> leagueEntities)
     {
-        var relevantUserIDs = leagueEntities.Select(x => x.LeagueManager).Distinct();
+        var relevantUserIDs = leagueEntities.Select(x => x.LeagueManager).Distinct().ToList();
         var relevantUsers = await _userStore.GetUsers(relevantUserIDs);
         var userDictionary = relevantUsers.ToDictionary(x => x.Id);
 
@@ -2611,7 +2611,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<League> leagues = new List<League>();
         IEnumerable<LeagueYearEntity> allLeagueYears = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
         var leagueYearLookup = allLeagueYears.ToLookup(x => x.LeagueID);
-        var oneShotLeagues = await GetLeaguesWithMostRecentYearOneShot();
 
         foreach (var leagueEntity in leagueEntities)
         {
