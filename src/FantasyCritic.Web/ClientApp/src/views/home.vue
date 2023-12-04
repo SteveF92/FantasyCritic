@@ -17,6 +17,7 @@
         </div>
         <div v-if="activeRoyaleYearQuarter" class="row main-buttons">
           <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
+          <b-button v-if="isPlusUser" variant="primary" :to="{ name: 'createConference' }" class="main-button">Create a Conference</b-button>
           <b-button
             v-if="!userRoyalePublisher"
             variant="primary"

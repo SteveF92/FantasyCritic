@@ -6,6 +6,7 @@ import HowToPlay from '@/views/howToPlay.vue';
 import Faq from '@/views/faq.vue';
 import Contact from '@/views/contact.vue';
 import CreateLeague from '@/views/createLeague.vue';
+import CreateConference from '@/views/createConference.vue';
 import League from '@/views/league.vue';
 import EditLeague from '@/views/editLeague.vue';
 import Publisher from '@/views/publisher.vue';
@@ -162,6 +163,14 @@ export const routes = [
     name: 'createLeague',
     meta: {
       title: 'Create League'
+    }
+  },
+  {
+    path: '/createConference',
+    component: CreateConference,
+    name: 'createConference',
+    meta: {
+      title: 'Create Conference'
     }
   },
   {
