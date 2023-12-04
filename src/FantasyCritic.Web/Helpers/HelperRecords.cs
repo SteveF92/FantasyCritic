@@ -9,7 +9,7 @@ public record LeagueYearRecord(FantasyCriticUser? CurrentUser, LeagueYear League
 public record LeagueYearPublisherRecord(FantasyCriticUser? CurrentUser, LeagueYear LeagueYear, Publisher Publisher, PublisherUserRelationship Relationship);
 public record LeagueYearPublisherGameRecord(FantasyCriticUser? CurrentUser, LeagueYear LeagueYear, Publisher Publisher, PublisherGame PublisherGame, PublisherUserRelationship Relationship);
 
-public record ConferenceRecord(FantasyCriticUser? CurrentUser, Conference Conference, IReadOnlyList<FantasyCriticUserRemovable> PlayersInConference,
+public record ConferenceRecord(FantasyCriticUser? CurrentUser, Conference Conference, IReadOnlyList<FantasyCriticUser> PlayersInConference,
     ConferenceUserRelationship Relationship, IReadOnlyList<ConferenceLeague> ConferenceLeagues);
-public record ConferenceYearRecord(FantasyCriticUser? CurrentUser, ConferenceYear ConferenceYear, IReadOnlyList<FantasyCriticUserRemovable> PlayersInConference,
+public record ConferenceYearRecord(FantasyCriticUser? CurrentUser, ConferenceYear ConferenceYear, IReadOnlyList<FantasyCriticUser> PlayersInConference,
     ConferenceUserRelationship Relationship, IReadOnlyList<ConferenceLeagueYear> ConferenceLeagueYears);

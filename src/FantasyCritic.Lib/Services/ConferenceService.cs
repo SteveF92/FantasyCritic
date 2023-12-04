@@ -53,4 +53,19 @@ public class ConferenceService
     {
         return _conferenceRepo.GetConferencesForUser(user);
     }
+
+    public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference)
+    {
+        return _conferenceRepo.GetUsersInConference(conference);
+    }
+
+    public Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference)
+    {
+        return _conferenceRepo.GetLeaguesInConference(conference);
+    }
+
+    public Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
+    {
+        return _conferenceRepo.GetLeagueYearsInConferenceYear(conferenceYear);
+    }
 }

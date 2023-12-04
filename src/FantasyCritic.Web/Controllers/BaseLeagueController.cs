@@ -237,13 +237,83 @@ public abstract class BaseLeagueController : FantasyCriticController
             leagueYearPublisherRecord.ValidResult.Relationship), null);
     }
 
-    protected Task<GenericResultRecord<ConferenceRecord>> GetExistingConference(Guid conferenceID, ConferenceRequiredRelationship requiredRelationship)
+    protected async Task<GenericResultRecord<ConferenceRecord>> GetExistingConference(Guid conferenceID, ConferenceRequiredRelationship requiredRelationship)
     {
-        throw new NotImplementedException();
+        var currentUserRecord = await GetCurrentUser();
+        if ((requiredRelationship.MustBeLoggedIn || requiredRelationship.MustBeInConference || requiredRelationship.MustBeConferenceManager) && currentUserRecord.IsFailure)
+        {
+            return GetFailedResult<ConferenceRecord>(Unauthorized());
+        }
+
+        var conference = await _conferenceService.GetConference(conferenceID);
+        if (conference is null)
+        {
+            return GetFailedResult<ConferenceRecord>(BadRequest("Conference does not exist."));
+        }
+
+        var playersInConference = await _conferenceService.GetUsersInConference(conference);
+        bool isInConference = false;
+        bool isConferenceManager = false;
+        bool userIsAdmin = false;
+        if (currentUserRecord.IsSuccess)
+        {
+            userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
+            isConferenceManager = conference.ConferenceManager.Id == currentUserRecord.Value.Id;
+            if (requiredRelationship.MustBeConferenceManager && !isConferenceManager)
+            {
+                return GetFailedResult<ConferenceRecord>(Forbid());
+            }
+
+            isInConference = isConferenceManager || playersInConference.Any(x => x.Id == currentUserRecord.Value.Id);
+        }
+
+        if (!isInConference && requiredRelationship.MustBeInConference)
+        {
+            return UnauthorizedOrForbid<ConferenceRecord>(currentUserRecord.IsSuccess);
+        }
+
+        var conferenceLeagues = await _conferenceService.GetLeaguesInConference(conference);
+        ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
+        return new GenericResultRecord<ConferenceRecord>(new ConferenceRecord(currentUserRecord.ToNullable(), conference, playersInConference, relationship, conferenceLeagues), null);
     }
 
-    protected Task<GenericResultRecord<ConferenceYearRecord>> GetExistingConferenceYear(Guid conferenceID, int year, ConferenceRequiredRelationship requiredRelationship)
+    protected async Task<GenericResultRecord<ConferenceYearRecord>> GetExistingConferenceYear(Guid conferenceID, int year, ConferenceRequiredRelationship requiredRelationship)
     {
-        throw new NotImplementedException();
+        var currentUserRecord = await GetCurrentUser();
+        if ((requiredRelationship.MustBeLoggedIn || requiredRelationship.MustBeInConference || requiredRelationship.MustBeConferenceManager) && currentUserRecord.IsFailure)
+        {
+            return GetFailedResult<ConferenceYearRecord>(Unauthorized());
+        }
+
+        var conferenceYear = await _conferenceService.GetConferenceYear(conferenceID, year);
+        if (conferenceYear is null)
+        {
+            return GetFailedResult<ConferenceYearRecord>(BadRequest("Conference year does not exist."));
+        }
+
+        var playersInConference = await _conferenceService.GetUsersInConference(conferenceYear.Conference);
+        bool isInConference = false;
+        bool isConferenceManager = false;
+        bool userIsAdmin = false;
+        if (currentUserRecord.IsSuccess)
+        {
+            userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
+            isConferenceManager = conferenceYear.Conference.ConferenceManager.Id == currentUserRecord.Value.Id;
+            if (requiredRelationship.MustBeConferenceManager && !isConferenceManager)
+            {
+                return GetFailedResult<ConferenceYearRecord>(Forbid());
+            }
+
+            isInConference = isConferenceManager || playersInConference.Any(x => x.Id == currentUserRecord.Value.Id);
+        }
+
+        if (!isInConference && requiredRelationship.MustBeInConference)
+        {
+            return UnauthorizedOrForbid<ConferenceYearRecord>(currentUserRecord.IsSuccess);
+        }
+
+        var conferenceLeagueYears = await _conferenceService.GetLeagueYearsInConferenceYear(conferenceYear);
+        ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
+        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, playersInConference, relationship, conferenceLeagueYears), null);
     }
 }

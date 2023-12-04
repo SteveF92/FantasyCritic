@@ -1,12 +1,12 @@
 namespace FantasyCritic.Lib.Domain.Conferences;
 public class ConferenceLeagueYear
 {
-    public ConferenceLeagueYear(ConferenceLeague league, SupportedYear supportedYear)
+    public ConferenceLeagueYear(ConferenceLeague league, int year)
     {
         League = league;
-        SupportedYear = supportedYear;
+        Year = year;
     }
 
     public ConferenceLeague League { get; }
-    public SupportedYear SupportedYear { get; }
+    public int Year { get; }
 }

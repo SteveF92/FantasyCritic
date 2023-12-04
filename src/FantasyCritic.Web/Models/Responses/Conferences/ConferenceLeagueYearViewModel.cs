@@ -8,7 +8,7 @@ public class ConferenceLeagueYearViewModel
     {
         LeagueID = domain.League.LeagueID;
         LeagueName = domain.League.LeagueName;
-        Year = domain.SupportedYear.Year;
+        Year = domain.Year;
     }
 
     public Guid LeagueID { get; }

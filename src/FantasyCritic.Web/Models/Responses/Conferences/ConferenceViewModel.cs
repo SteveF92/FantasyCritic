@@ -9,24 +9,24 @@ public class ConferenceViewModel
     {
         ConferenceID = domain.ConferenceID;
         ConferenceName = domain.ConferenceName;
-        ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager, false);
+        ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager);
         IsManager = isManager;
         Years = domain.Years;
         CustomRulesConference = domain.CustomRulesConference;
         UserIsInConference = userIsInConference;
     }
     
-    public ConferenceViewModel(Conference domain, bool isManager, bool userIsInConference, IEnumerable<FantasyCriticUserRemovable> players, IEnumerable<ConferenceLeague> conferenceLeagues)
+    public ConferenceViewModel(Conference domain, bool isManager, bool userIsInConference, IEnumerable<FantasyCriticUser> players, IEnumerable<ConferenceLeague> conferenceLeagues)
     {
         ConferenceID = domain.ConferenceID;
         ConferenceName = domain.ConferenceName;
-        ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager, false);
+        ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager);
         IsManager = isManager;
         Years = domain.Years;
         CustomRulesConference = domain.CustomRulesConference;
         UserIsInConference = userIsInConference;
 
-        Players = players.Select(x => new ConferencePlayerViewModel(domain, x.User, x.Removable)).ToList();
+        Players = players.Select(x => new ConferencePlayerViewModel(domain, x)).ToList();
 
         LeaguesInConference = conferenceLeagues.Select(x => new ConferenceLeagueViewModel(x)).ToList();
         PrimaryLeague = LeaguesInConference.Single(x => x.LeagueID == domain.PrimaryLeagueID);
