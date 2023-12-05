@@ -57,7 +57,7 @@ public class ConferenceController : BaseLeagueController
             return BadRequest(conference.Error);
         }
 
-        return Ok();
+        return Ok(conference.Value.ConferenceID);
     }
 
     [HttpPost]

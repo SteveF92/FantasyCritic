@@ -8,6 +8,7 @@ import Contact from '@/views/contact.vue';
 import CreateLeague from '@/views/createLeague.vue';
 import CreateConference from '@/views/createConference.vue';
 import League from '@/views/league.vue';
+import Conference from '@/views/conference.vue';
 import EditLeague from '@/views/editLeague.vue';
 import Publisher from '@/views/publisher.vue';
 import MasterGame from '@/views/masterGame.vue';
@@ -190,6 +191,27 @@ export const routes = [
 
       return {
         leagueid: route.params.leagueid,
+        year: parsedYear
+      };
+    }
+  },
+  {
+    path: '/conference/:conferenceid/:year',
+    component: Conference,
+    name: 'conference',
+    meta: {
+      title: 'Conference',
+      isPublic: true,
+      delayScroll: true
+    },
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
+
+      return {
+        conferenceid: route.params.conferenceid,
         year: parsedYear
       };
     }

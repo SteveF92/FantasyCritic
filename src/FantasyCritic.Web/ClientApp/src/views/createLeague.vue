@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Create a league</h1>
+      <h1>Create a League</h1>
       <hr />
       <div v-show="errorInfo" class="alert alert-danger">
         <h2>Error!</h2>

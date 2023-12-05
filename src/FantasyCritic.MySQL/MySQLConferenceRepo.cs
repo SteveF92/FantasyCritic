@@ -10,13 +10,13 @@ namespace FantasyCritic.MySQL;
 public class MySQLConferenceRepo : IConferenceRepo
 {
     private readonly string _connectionString;
-    private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly MySQLFantasyCriticRepo _fantasyCriticRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
 
-    public MySQLConferenceRepo(RepositoryConfiguration configuration, IFantasyCriticRepo fantasyCriticRepo, IReadOnlyFantasyCriticUserStore userStore)
+    public MySQLConferenceRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo)
     {
         _connectionString = configuration.ConnectionString;
-        _fantasyCriticRepo = fantasyCriticRepo;
+        _fantasyCriticRepo = new MySQLFantasyCriticRepo(configuration, userStore, masterGameRepo);
         _userStore = userStore;
     }
 
@@ -36,16 +36,13 @@ public class MySQLConferenceRepo : IConferenceRepo
             (@ConferenceID,@Year,0)
             """;
 
-        await using (var connection = new MySqlConnection(_connectionString))
-        {
-            await connection.OpenAsync();
-            await using var transaction = await connection.BeginTransactionAsync();
-            await connection.ExecuteAsync(createConferenceSQL, conferenceEntity, transaction);
-            await connection.ExecuteAsync(createConferenceYearSQL, conferenceYearEntity, transaction);
-            await transaction.CommitAsync();
-        }
-
-        await _fantasyCriticRepo.CreateLeague(primaryLeague, year, options);
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await _fantasyCriticRepo.CreateLeagueInTransaction(primaryLeague, year, options, connection, transaction);
+        await connection.ExecuteAsync(createConferenceSQL, conferenceEntity, transaction);
+        await connection.ExecuteAsync(createConferenceYearSQL, conferenceYearEntity, transaction);
+        await transaction.CommitAsync();
     }
 
     public async Task<Conference?> GetConference(Guid conferenceID)
