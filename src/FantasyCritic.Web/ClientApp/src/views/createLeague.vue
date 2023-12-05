@@ -154,7 +154,7 @@ export default {
     };
   },
   methods: {
-    postRequest() {
+    async postRequest() {
       this.leagueYearSettings.year = this.initialYear;
       let selectedLeagueOptions = {
         leagueName: this.leagueName,
@@ -164,19 +164,18 @@ export default {
         leagueYearSettings: this.leagueYearSettings
       };
 
-      axios
-        .post('/api/leagueManager/createLeague', selectedLeagueOptions)
-        .then(() => {
-          this.$router.push({ name: 'home' });
-        })
-        .catch((error) => {
-          this.errorInfo = error.response.data;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-          });
+      try {
+        const response = await axios.post('/api/leagueManager/createLeague', selectedLeagueOptions);
+        const newLeagueID = response.data;
+        this.$router.push({ name: 'league', params: { leagueid: newLeagueID, year: this.initialYear } });
+      } catch (error) {
+        this.errorInfo = error.response.data;
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
         });
+      }
     }
   }
 };

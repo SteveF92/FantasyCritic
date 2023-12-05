@@ -81,7 +81,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest(league.Error);
         }
 
-        return Ok();
+        return Ok(league.Value.LeagueID);
     }
 
     [HttpGet("{id}")]
