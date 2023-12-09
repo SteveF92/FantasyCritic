@@ -18,10 +18,26 @@ public class PrivatePublisherDataViewModel
 
         HashSet<MasterGame> myPublisherMasterGames = userPublisher.MyMasterGames;
 
-        QueuedGames = queuedGames.Select(x =>
-            new QueuedGameViewModel(x, masterGameYearDictionary[x.MasterGame.MasterGameID], currentDate, publisherMasterGames.Contains(x.MasterGame),
-                myPublisherMasterGames.Contains(x.MasterGame)
-            )).OrderBy(x => x.Rank).ToList();
+        List<QueuedGameViewModel> queuedGameVMs = new List<QueuedGameViewModel>();
+
+        foreach (var queuedGame in queuedGames)
+        {
+            bool taken = publisherMasterGames.Contains(queuedGame.MasterGame);
+            bool alreadyOwned = myPublisherMasterGames.Contains(queuedGame.MasterGame);
+            
+            if (masterGameYearDictionary.TryGetValue(queuedGame.MasterGame.MasterGameID, out var masterGameYear))
+            {
+                
+                queuedGameVMs.Add(new QueuedGameViewModel(queuedGame, masterGameYear, currentDate, taken, alreadyOwned));
+            }
+            else
+            {
+                var defaultMasterGameYear = new MasterGameYear(queuedGame.MasterGame, leagueYear.Year);
+                queuedGameVMs.Add(new QueuedGameViewModel(queuedGame, defaultMasterGameYear, currentDate, taken, alreadyOwned));
+            }
+        }
+
+        QueuedGames = queuedGameVMs;
     }
 
     public IReadOnlyList<PickupBidViewModel> MyActiveBids { get; }
