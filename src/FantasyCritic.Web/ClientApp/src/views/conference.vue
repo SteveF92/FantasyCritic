@@ -6,7 +6,28 @@
       </div>
       <div v-if="errorInfo" class="alert alert-danger" role="alert">{{ errorInfo }}</div>
       <div v-if="conferenceYear">
-        <h1>{{ conference.conferenceName }}</h1>
+        <div class="row">
+          <div class="conference-header-row">
+            <div class="conference-header-flex">
+              <div class="conference-name">
+                <h1>
+                  {{ conference.conferenceName }}
+                </h1>
+              </div>
+
+              <div class="selector-area">
+                <b-form-select v-model="selectedYear" :options="conference.years" class="year-selector" @change="changeConferenceYear" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="conference-manager-info">
+          <h4>Conference Manager:</h4>
+          <span class="conference-manager-info-item">{{ conference.conferenceManager.displayName }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -43,7 +64,49 @@ export default {
       this.selectedYear = this.year;
       const conferencePageParams = { conferenceID: this.conferenceid, year: this.year };
       await this.$store.dispatch('initializeConferencePage', conferencePageParams);
+    },
+    changeConferenceYear(newVal) {
+      var parameters = {
+        conferenceid: this.conferenceid,
+        year: newVal
+      };
+      this.$router.push({ name: 'conference', params: parameters });
     }
   }
 };
 </script>
+<style scoped>
+.conference-manager-info {
+  display: flex;
+  flex-direction: row;
+}
+.conference-manager-info-item {
+  padding-left: 5px;
+  padding-top: 3px;
+}
+
+.conference-header-row {
+  width: 100%;
+}
+
+.conference-header-flex {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.selector-area {
+  display: flex;
+  align-items: flex-start;
+}
+
+.year-selector {
+  width: 100px;
+}
+
+.conference-name {
+  display: block;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+</style>
