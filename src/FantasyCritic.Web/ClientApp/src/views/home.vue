@@ -156,79 +156,79 @@ export default {
     await Promise.all(tasks);
   },
   methods: {
-    fetchMyLeagues() {
-      return axios
-        .get('/api/League/MyLeagues')
-        .then((response) => {
-          this.myLeagues = response.data;
-          this.fetchingLeagues = false;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchMyLeagues() {
+      try {
+        const response = await axios.get('/api/League/MyLeagues');
+        this.myLeagues = response.data;
+        this.fetchingLeagues = false;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
-    fetchInvitedLeagues() {
-      return axios
-        .get('/api/League/MyInvites')
-        .then((response) => {
-          this.invitedLeagues = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchInvitedLeagues() {
+      try {
+        const response = await axios.get('/api/League/MyInvites');
+        this.invitedLeagues = response.data;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
-    fetchFollowedLeagues() {
-      return axios
-        .get('/api/League/FollowedLeagues')
-        .then((response) => {
-          this.myFollowedLeagues = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchFollowedLeagues() {
+      try {
+        const response = await axios.get('/api/League/FollowedLeagues');
+        this.myFollowedLeagues = response.data;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
-    fetchSupportedYears() {
-      return axios
-        .get('/api/game/SupportedYears')
-        .then((response) => {
-          let supportedYears = response.data;
-          let openYears = _.filter(supportedYears, { openForPlay: true });
-          let finishedYears = _.filter(supportedYears, { finished: true });
-          this.supportedYears = openYears.concat(finishedYears).map(function (v) {
-            return v.year;
-          });
-          this.selectedYear = this.supportedYears[0];
-          this.fetchPublicLeaguesForYear(this.selectedYear);
-        })
-        .catch(() => {});
+    async fetchSupportedYears() {
+      try {
+        const response = await axios.get('/api/game/SupportedYears');
+        let supportedYears = response.data;
+        let openYears = _.filter(supportedYears, { openForPlay: true });
+        let finishedYears = _.filter(supportedYears, { finished: true });
+        this.supportedYears = openYears.concat(finishedYears).map(function (v) {
+          return v.year;
+        });
+        this.selectedYear = this.supportedYears[0];
+        this.fetchPublicLeaguesForYear(this.selectedYear);
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
-    fetchActiveRoyaleYearQuarter() {
-      return axios
-        .get('/api/royale/ActiveRoyaleQuarter')
-        .then((response) => {
-          this.activeRoyaleYearQuarter = response.data;
-          this.fetchUserRoyalePublisher();
-        })
-        .catch(() => {});
+    async fetchActiveRoyaleYearQuarter() {
+      try {
+        const response = await axios.get('/api/royale/ActiveRoyaleQuarter');
+        this.activeRoyaleYearQuarter = response.data;
+        this.fetchUserRoyalePublisher();
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
-    fetchPublicLeaguesForYear(year) {
-      return axios
-        .get('/api/league/PublicLeagues/' + year + '?count=10')
-        .then((response) => {
-          this.publicLeagues = response.data;
-        })
-        .catch(() => {});
+    async fetchPublicLeaguesForYear(year) {
+      try {
+        const response = await axios.get('/api/league/PublicLeagues/' + year + '?count=10');
+        this.publicLeagues = response.data;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
-    fetchGameNews() {
-      return axios
-        .get('/api/league/MyGameNews/')
-        .then((response) => {
-          this.gameNews = response.data;
-        })
-        .catch(() => {});
+    async fetchGameNews() {
+      try {
+        const response = await axios.get('/api/league/MyGameNews/');
+        this.gameNews = response.data;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
-    fetchUserRoyalePublisher() {
+    async fetchUserRoyalePublisher() {
       this.userRoyalePublisher = null;
-      return axios
-        .get('/api/royale/GetUserRoyalePublisher/' + this.activeRoyaleYearQuarter.year + '/' + this.activeRoyaleYearQuarter.quarter)
-        .then((response) => {
-          this.userRoyalePublisher = response.data;
-        })
-        .catch(() => {});
+      try {
+        const response = await axios.get('/api/royale/GetUserRoyalePublisher/' + this.activeRoyaleYearQuarter.year + '/' + this.activeRoyaleYearQuarter.quarter);
+        this.userRoyalePublisher = response.data;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     }
   }
 };

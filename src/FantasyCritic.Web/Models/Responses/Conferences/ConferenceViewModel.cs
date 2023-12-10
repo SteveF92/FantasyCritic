@@ -12,6 +12,7 @@ public class ConferenceViewModel
         ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager);
         IsManager = isManager;
         Years = domain.Years;
+        ActiveYear = domain.Years.Max();
         CustomRulesConference = domain.CustomRulesConference;
         UserIsInConference = userIsInConference;
     }
@@ -23,6 +24,7 @@ public class ConferenceViewModel
         ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager);
         IsManager = isManager;
         Years = domain.Years;
+        ActiveYear = domain.Years.Max();
         CustomRulesConference = domain.CustomRulesConference;
         UserIsInConference = userIsInConference;
 
@@ -37,6 +39,7 @@ public class ConferenceViewModel
     public ConferencePlayerViewModel ConferenceManager { get; }
     public bool IsManager { get; }
     public IReadOnlyList<int> Years { get; }
+    public int ActiveYear { get; }
     public bool CustomRulesConference { get; }
     public bool UserIsInConference { get; }
 

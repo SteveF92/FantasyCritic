@@ -112,28 +112,6 @@ public class ConferenceController : BaseLeagueController
         return Ok(conferenceYearViewModel);
     }
 
-    public async Task<IActionResult> MyConferences(int? year)
-    {
-        var currentUser = await GetCurrentUserOrThrow();
-
-        IReadOnlyList<Conference> myConferences = await _conferenceService.GetConferencesForUser(currentUser);
-
-        List<ConferenceViewModel> viewModels = new List<ConferenceViewModel>();
-        foreach (var conference in myConferences)
-        {
-            if (year.HasValue && !conference.Years.Contains(year.Value))
-            {
-                continue;
-            }
-
-            bool isManager = (conference.ConferenceManager.Id == currentUser.Id);
-            viewModels.Add(new ConferenceViewModel(conference, isManager, true));
-        }
-
-        var sortedViewModels = viewModels.OrderBy(x => x.ConferenceName).ToList();
-        return Ok(sortedViewModels);
-    }
-
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]

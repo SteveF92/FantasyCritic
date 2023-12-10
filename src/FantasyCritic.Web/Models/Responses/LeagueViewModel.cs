@@ -9,6 +9,8 @@ public class LeagueViewModel
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
         LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
+        ConferenceID = league.ConferenceID;
+        ConferenceName = league.ConferenceName;
         IsManager = isManager;
         Archived = league.Archived;
         Years = league.Years;
@@ -26,6 +28,8 @@ public class LeagueViewModel
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
         LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
+        ConferenceID = league.ConferenceID;
+        ConferenceName = league.ConferenceName;
         IsManager = isManager;
         Archived = league.Archived;
         Years = league.Years;
@@ -48,6 +52,8 @@ public class LeagueViewModel
     public Guid LeagueID { get; }
     public string LeagueName { get; }
     public PlayerViewModel LeagueManager { get; }
+    public Guid? ConferenceID { get; }
+    public string? ConferenceName { get; }
     public bool IsManager { get; }
     public IReadOnlyList<PlayerViewModel>? Players { get; }
     public LeagueInviteViewModel? OutstandingInvite { get; }

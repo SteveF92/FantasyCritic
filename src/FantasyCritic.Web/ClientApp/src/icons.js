@@ -56,7 +56,8 @@ import {
   faEyeSlash,
   faLinkSlash,
   faFlag,
-  faBook
+  faBook,
+  faGlobe
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faCircle as regCircle, faSquare as regSquare, faCopy as regCopy } from '@fortawesome/free-regular-svg-icons';
@@ -131,7 +132,8 @@ library.add(
   faLinkSlash,
   faFlag,
   regCopy,
-  faBook
+  faBook,
+  faGlobe
 );
 
 export { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText };

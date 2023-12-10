@@ -31,10 +31,10 @@ public class ConferenceService
             return Result.Failure<Conference>("That scoring mode is no longer supported.");
         }
 
-        var conferenceID = Guid.NewGuid();
         IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
-        League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, conferenceID, years, true, false, parameters.CustomRulesConference, false, 0);
-        Conference newConference = new Conference(conferenceID, parameters.ConferenceName, parameters.Manager, years, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
+        //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
+        League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, years, true, false, parameters.CustomRulesConference, false, 0);
+        Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, years, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
         await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newConference);
     }
@@ -47,11 +47,6 @@ public class ConferenceService
     public Task<ConferenceYear?> GetConferenceYear(Guid conferenceID, int year)
     {
         return _conferenceRepo.GetConferenceYear(conferenceID, year);
-    }
-
-    public Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser user)
-    {
-        return _conferenceRepo.GetConferencesForUser(user);
     }
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference)

@@ -1,5 +1,4 @@
 using System.Data;
-using System.Data.Common;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Domain.Calculations;
@@ -1072,8 +1071,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string createLeagueSQL =
             """
-            insert into tbl_league(LeagueID,LeagueName,LeagueManager,PublicLeague,TestLeague,CustomRulesLeague) VALUES
-            (@LeagueID,@LeagueName,@LeagueManager,@PublicLeague,@TestLeague,@CustomRulesLeague);
+            insert into tbl_league(LeagueID,LeagueName,LeagueManager,ConferenceID,PublicLeague,TestLeague,CustomRulesLeague) VALUES
+            (@LeagueID,@LeagueName,@LeagueManager,@ConferenceID,@PublicLeague,@TestLeague,@CustomRulesLeague);
             """;
 
         const string createLeagueYearSQL =
@@ -3224,7 +3223,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "delete from tbl_league_publishergame where PublisherGameID in @publisherGameIDs;", new { publisherGameIDs }, transaction);
     }
 
-    public async Task AddPlayerToLeague(League league, FantasyCriticUser inviteUser)
+    public async Task AddPlayerToLeague(League league, FantasyCriticUser user)
     {
         var mostRecentYear = await this.GetLeagueYearOrThrow(league.LeagueID, league.Years.Max());
         bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
@@ -3233,16 +3232,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        await AddPlayerToLeagueInternal(league, inviteUser, mostRecentYear.Year, mostRecentYearNotStarted, connection, transaction);
+        await AddPlayerToLeagueInternal(league, user, mostRecentYear.Year, mostRecentYearNotStarted, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    private async Task AddPlayerToLeagueInternal(League league, FantasyCriticUser inviteUser, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
+    private async Task AddPlayerToLeagueInternal(League league, FantasyCriticUser user, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new
         {
             leagueID = league.LeagueID,
-            userID = inviteUser.Id,
+            userID = user.Id,
         };
 
         await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
@@ -3254,7 +3253,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var userActiveObject = new
         {
             leagueID = league.LeagueID,
-            userID = inviteUser.Id,
+            userID = user.Id,
             activeYear = leagueYear
         };
         await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);

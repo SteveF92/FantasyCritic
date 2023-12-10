@@ -7,6 +7,8 @@ public class LeagueWithStatusViewModel
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
         LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
+        ConferenceID = league.ConferenceID;
+        ConferenceName = league.ConferenceName;
         IsManager = isManager;
         Archived = league.Archived;
         Years = league.Years;
@@ -22,6 +24,8 @@ public class LeagueWithStatusViewModel
     public Guid LeagueID { get; }
     public string LeagueName { get; }
     public PlayerViewModel LeagueManager { get; }
+    public Guid? ConferenceID { get; }
+    public string? ConferenceName { get; }
     public bool IsManager { get; }
     public IReadOnlyList<int> Years { get; }
     public int ActiveYear { get; }

@@ -2,36 +2,30 @@
   <b-table :items="leagues" :fields="leagueFields" thead-class="hidden_header" bordered striped>
     <template #cell(leagueName)="data">
       <div class="row-flex">
-        <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-icon">
-          <font-awesome-icon v-if="leagueIcon !== 'user'" :icon="leagueIcon" size="2x" />
-          <template v-else>
-            <template v-if="data.item.customRulesLeague">
-              <font-awesome-layers v-if="data.item.isManager">
-                <font-awesome-icon icon="cog" transform="right-26 down-15" />
-                <font-awesome-icon icon="book" size="2x" transform="left-1 down-2" />
-              </font-awesome-layers>
-              <font-awesome-icon v-else icon="book" size="2x" transform="right-1" />
-            </template>
+        <div class="league-icon-area">
+          <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-icon">
+            <font-awesome-icon v-if="leagueIcon !== 'user'" :icon="leagueIcon" size="2x" />
             <template v-else>
-              <template v-if="data.item.oneShotMode">
-                <font-awesome-layers v-if="data.item.isManager">
-                  <font-awesome-icon icon="cog" transform="right-16 down-5" />
-                  <font-awesome-icon icon="1" size="2x" transform="right-2 down-2" />
-                </font-awesome-layers>
-                <font-awesome-icon v-else icon="1" size="2x" transform="right-4" />
-              </template>
-              <template v-else>
-                <template v-if="!data.item.oneShotMode">
-                  <font-awesome-icon v-if="data.item.isManager" icon="user-cog" size="2x" />
-                  <font-awesome-icon v-else icon="user" size="2x" />
-                </template>
-              </template>
+              <font-awesome-icon v-if="data.item.conferenceID" icon="globe" size="2x" transform="left-1" />
+              <font-awesome-icon v-if="!data.item.conferenceID && data.item.customRulesLeague" icon="book" size="2x" />
+              <font-awesome-icon v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.oneShotMode" icon="1" size="2x" transform="right-3" />
+              <font-awesome-icon v-if="!data.item.conferenceID && !data.item.customRulesLeague && !data.item.oneShotMode" icon="user" size="2x" />
             </template>
-          </template>
-        </router-link>
+          </router-link>
+        </div>
         <div>
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-link">{{ data.item.leagueName }}</router-link>
-          <div v-if="data.item.leagueManager" class="manager">Manager: {{ data.item.leagueManager.displayName }}</div>
+          <div v-if="data.item.conferenceID" class="league-detail">
+            Conference:
+            <router-link :to="{ name: 'conference', params: { conferenceid: data.item.conferenceID, year: data.item.activeYear } }" class="conference-link">{{ data.item.conferenceName }}</router-link>
+          </div>
+          <div v-if="data.item.leagueManager" class="league-detail">
+            Manager:
+            <span v-if="data.item.leagueManager.userID === userInfo.userID" class="text-bold">
+              {{ data.item.leagueManager.displayName }}
+            </span>
+            <span v-else>{{ data.item.leagueManager.displayName }}</span>
+          </div>
         </div>
         <div v-show="showArchive" class="archive-button-section">
           <font-awesome-icon v-b-popover.hover.focus.rightbottom="'Archive this league (only affects you)'" class="archive-button fake-link" icon="archive" @click="setArchive(data.item, true)" />
@@ -86,11 +80,17 @@ table >>> .hidden_header {
   display: flex;
 }
 
+.league-icon-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .league-icon {
-  margin-top: 5px;
-  margin-right: 17px;
   width: 40px;
   font-size: 20px;
+  margin-right: 18px;
+  margin-left: 5px;
 }
 
 .league-link {
@@ -99,7 +99,7 @@ table >>> .hidden_header {
   padding-bottom: 0;
 }
 
-.manager {
+.league-detail {
   margin-top: 0;
   padding-top: 0;
   font-size: 14px;

@@ -35,6 +35,10 @@
             </div>
           </div>
         </div>
+        <div v-if="league.conferenceID">
+          Part of Conference:
+          <router-link :to="{ name: 'conference', params: { conferenceid: league.conferenceID, year: year } }" class="conference-link">{{ league.conferenceName }}</router-link>
+        </div>
         <hr />
 
         <div class="league-manager-info">
@@ -284,8 +288,8 @@ export default {
       }
     }
   },
-  mounted() {
-    this.initializePage();
+  async created() {
+    await this.initializePage();
   },
   methods: {
     async initializePage() {
