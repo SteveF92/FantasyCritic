@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
@@ -82,5 +83,16 @@ public static class RepositoryInterfaceExtensions
     public static Task<FantasyCriticUser?> GetFantasyCriticUserForDiscordUser(this IReadOnlyFantasyCriticUserStore repo, ulong discordUserId)
     {
         return repo.FindByLoginAsync("Discord", discordUserId.ToString(), CancellationToken.None);
+    }
+
+    public static async Task<Conference> GetConferenceOrThrow(this IConferenceRepo repo, Guid id)
+    {
+        var result = await repo.GetConference(id);
+        if (result is null)
+        {
+            throw new Exception($"Conference not found: {id}");
+        }
+
+        return result;
     }
 }

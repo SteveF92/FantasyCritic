@@ -412,7 +412,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        if (league.LeagueID != request.LeagueID)
+        if (inviteLink.League.LeagueID != request.LeagueID)
         {
             return BadRequest();
         }

@@ -136,25 +136,82 @@ public class ConferenceController : BaseLeagueController
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
-    public Task<IActionResult> CreateInviteLink([FromBody] CreateConferenceInviteLinkRequest request)
+    public async Task<IActionResult> CreateInviteLink([FromBody] CreateConferenceInviteLinkRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+
+        IReadOnlyList<ConferenceInviteLink> activeLinks = await _conferenceService.GetActiveInviteLinks(validResult.Conference);
+        if (activeLinks.Count >= 2)
+        {
+            return BadRequest("You can't have more than 2 invite links active.");
+        }
+
+        await _conferenceService.CreateInviteLink(validResult.Conference);
+        return Ok();
     }
 
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
-    public Task<IActionResult> DeleteInviteLink([FromBody] DeleteConferenceInviteLinkRequest request)
+    public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteConferenceInviteLinkRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+
+        var activeLinks = await _conferenceService.GetActiveInviteLinks(validResult.Conference);
+        var thisLink = activeLinks.SingleOrDefault(x => x.InviteID == request.InviteID);
+        if (thisLink is null)
+        {
+            return BadRequest();
+        }
+
+        await _conferenceService.DeactivateInviteLink(thisLink);
+        return Ok();
     }
 
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
-    public Task<IActionResult> JoinWithInviteLink([FromBody] JoinConferenceWithInviteLinkRequest request)
+    public async Task<IActionResult> JoinWithInviteLink([FromBody] JoinConferenceWithInviteLinkRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.AllowAnonymous);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
+
+        var inviteLink = await _conferenceService.GetInviteLinkByInviteCode(request.InviteCode);
+        if (inviteLink is null)
+        {
+            return BadRequest();
+        }
+
+        if (inviteLink.Conference.ConferenceID != request.ConferenceID)
+        {
+            return BadRequest();
+        }
+
+        Result result = await _conferenceService.AcceptInviteLink(inviteLink, currentUser);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]

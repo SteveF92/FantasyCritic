@@ -68,4 +68,45 @@ public class ConferenceService
     {
         return _conferenceRepo.EditConference(conference, newConferenceName, newCustomRulesConference);
     }
+
+    public async Task<bool> UserIsInConference(Conference conference, FantasyCriticUser user)
+    {
+        var playersInConference = await GetUsersInConference(conference);
+        return playersInConference.Any(x => x.Id == user.Id);
+    }
+
+    public async Task<IReadOnlyList<ConferenceInviteLink>> GetActiveInviteLinks(Conference conference)
+    {
+        IReadOnlyList<ConferenceInviteLink> inviteLinks = await _conferenceRepo.GetInviteLinks(conference);
+        return inviteLinks.Where(x => x.Active).ToList();
+    }
+
+    public Task CreateInviteLink(Conference conference)
+    {
+        ConferenceInviteLink inviteLink = new ConferenceInviteLink(Guid.NewGuid(), conference, Guid.NewGuid(), true);
+        return _conferenceRepo.SaveInviteLink(inviteLink);
+    }
+
+    public Task DeactivateInviteLink(ConferenceInviteLink inviteLink)
+    {
+        return _conferenceRepo.DeactivateInviteLink(inviteLink);
+    }
+
+    public Task<ConferenceInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode)
+    {
+        return _conferenceRepo.GetInviteLinkByInviteCode(inviteCode);
+    }
+
+    public async Task<Result> AcceptInviteLink(ConferenceInviteLink inviteLink, FantasyCriticUser inviteUser)
+    {
+        bool userInConference = await UserIsInConference(inviteLink.Conference, inviteUser);
+        if (userInConference)
+        {
+            return Result.Failure("User is already in conference.");
+        }
+
+        await _conferenceRepo.AddPlayerToConference(inviteLink.Conference, inviteUser);
+
+        return Result.Success();
+    }
 }

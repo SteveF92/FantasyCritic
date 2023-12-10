@@ -11,4 +11,10 @@ public interface IConferenceRepo
     Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference);
     Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear);
     Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference);
+    
+    Task<IReadOnlyList<ConferenceInviteLink>> GetInviteLinks(Conference conference);
+    Task SaveInviteLink(ConferenceInviteLink inviteLink);
+    Task DeactivateInviteLink(ConferenceInviteLink inviteLink);
+    Task<ConferenceInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode);
+    Task AddPlayerToConference(Conference conference, FantasyCriticUser inviteUser);
 }

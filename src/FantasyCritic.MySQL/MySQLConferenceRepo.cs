@@ -203,4 +203,59 @@ public class MySQLConferenceRepo : IConferenceRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(conferenceSQL, queryObject);
     }
+
+    public async Task<IReadOnlyList<ConferenceInviteLink>> GetInviteLinks(Conference conference)
+    {
+        var query = new
+        {
+            conferenceID = conference.ConferenceID
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<ConferenceInviteLinkEntity>("select * from tbl_conference_invitelink where ConferenceID = @conferenceID;", query);
+
+        var inviteLinks = results.Select(x => x.ToDomain(conference)).ToList();
+        return inviteLinks;
+    }
+
+    public async Task SaveInviteLink(ConferenceInviteLink inviteLink)
+    {
+        const string sql = """
+                           insert into tbl_conference_invitelink(InviteID,ConferenceID,InviteCode,Active) VALUES 
+                           (@InviteID,@ConferenceID,@InviteCode,@Active);
+                           """;
+        ConferenceInviteLinkEntity entity = new ConferenceInviteLinkEntity(inviteLink);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, entity);
+    }
+
+    public async Task DeactivateInviteLink(ConferenceInviteLink inviteLink)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync("update tbl_conference_invitelink SET Active = 0 where InviteID = @inviteID;", new { inviteID = inviteLink.InviteID });
+    }
+
+    public async Task<ConferenceInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var result = await connection.QuerySingleOrDefaultAsync<ConferenceInviteLinkEntity>("select * from tbl_conference_invitelink where InviteCode = @inviteCode and Active = 1;", new { inviteCode });
+
+        if (result is null)
+        {
+            return null;
+        }
+
+        var conference = await this.GetConferenceOrThrow(result.ConferenceID);
+        return result.ToDomain(conference);
+    }
+
+    public async Task AddPlayerToConference(Conference conference, FantasyCriticUser inviteUser)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await AddPlayerToConferenceInternal(conference, inviteUser, connection, transaction);
+        await transaction.CommitAsync();
+    }
 }
