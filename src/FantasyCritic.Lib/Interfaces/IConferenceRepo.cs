@@ -10,4 +10,5 @@ public interface IConferenceRepo
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference);
     Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference);
     Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear);
+    Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference);
 }

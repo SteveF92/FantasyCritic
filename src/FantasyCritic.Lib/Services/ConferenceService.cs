@@ -63,4 +63,9 @@ public class ConferenceService
     {
         return _conferenceRepo.GetLeagueYearsInConferenceYear(conferenceYear);
     }
+
+    public Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference)
+    {
+        return _conferenceRepo.EditConference(conference, newConferenceName, newCustomRulesConference);
+    }
 }

@@ -189,4 +189,18 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         return leaguesInConference;
     }
+
+    public async Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference)
+    {
+        const string conferenceSQL = "update tbl_conference set ConferenceName = @conferenceName, CustomRulesConference = @customRulesConference where ConferenceID = @conferenceID;";
+        var queryObject = new
+        {
+            conferenceID = conference.ConferenceID,
+            conferenceName = newConferenceName,
+            customRulesConference = newCustomRulesConference
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(conferenceSQL, queryObject);
+    }
 }

@@ -71,9 +71,30 @@ public class ConferenceController : BaseLeagueController
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
-    public Task<IActionResult> EditConference([FromBody] EditConferenceRequest request)
+    public async Task<IActionResult> EditConference([FromBody] EditConferenceRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+
+        if (string.IsNullOrWhiteSpace(request.ConferenceName))
+        {
+            return BadRequest("You cannot have a blank conference name.");
+        }
+
+        bool currentlyAffectsStats = !validResult.Conference.CustomRulesConference;
+        bool requestedToAffectStats = !request.CustomRulesConference;
+        if (!currentlyAffectsStats && requestedToAffectStats)
+        {
+            return BadRequest("You cannot convert a conference from a conference that does not affect the site's stats into one that does. Contact us for assistance if you believe this is a special case.");
+        }
+
+        await _conferenceService.EditConference(validResult.Conference, request.ConferenceName, request.CustomRulesConference);
+        return Ok();
     }
 
     [AllowAnonymous]
