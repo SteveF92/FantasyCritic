@@ -28,6 +28,13 @@
           <h4>Conference Manager:</h4>
           <span class="conference-manager-info-item">{{ conference.conferenceManager.displayName }}</span>
         </div>
+
+        <b-table :items="conferenceYear.leagueYears" :fields="leagueYearFields" bordered small responsive striped>
+          <template #cell(leagueName)="data">
+            <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: year } }" class="league-link">{{ data.item.leagueName }}</router-link>
+          </template>
+          <template #cell(leagueManager)="data">{{ data.item.leagueManager.displayName }}</template>
+        </b-table>
       </div>
     </div>
   </div>
@@ -43,7 +50,11 @@ export default {
   data() {
     return {
       selectedYear: null,
-      errorInfo: null
+      errorInfo: null,
+      leagueYearFields: [
+        { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
+        { key: 'leagueManager', label: 'League Manager', thClass: 'bg-primary' }
+      ]
     };
   },
   computed: {
