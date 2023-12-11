@@ -461,7 +461,7 @@
       <collapseCard>
         <template #header>Can you trade for a game that you have already counter picked?</template>
         <template #body>
-          The system will let you do it. This would mean you would have a game as both a standard game and a counter pick, which is guarunteed to get you exactly 0 points no matter what. Your league
+          The system will let you do it. This would mean you would have a game as both a standard game and a counter pick, which is guaranteed to get you exactly 0 points no matter what. Your league
           might want to decide that this isn't allowed in your league though.
         </template>
       </collapseCard>
