@@ -53,6 +53,15 @@ public class MySQLConferenceRepo : IConferenceRepo
         await transaction.CommitAsync();
     }
 
+    public async Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await _fantasyCriticRepo.CreateLeagueInTransaction(newLeague, primaryLeagueYear.Year, primaryLeagueYear.Options, connection, transaction);
+        await transaction.CommitAsync();
+    }
+
     private async Task AddPlayerToConferenceInternal(Conference conference, FantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new

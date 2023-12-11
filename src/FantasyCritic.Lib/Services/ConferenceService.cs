@@ -6,12 +6,14 @@ namespace FantasyCritic.Lib.Services;
 public class ConferenceService
 {
     private readonly IConferenceRepo _conferenceRepo;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
 
-    public ConferenceService(IConferenceRepo conferenceRepo, InterLeagueService interLeagueService, IClock clock)
+    public ConferenceService(IConferenceRepo conferenceRepo, IFantasyCriticRepo fantasyCriticRepo, InterLeagueService interLeagueService, IClock clock)
     {
         _conferenceRepo = conferenceRepo;
+        _fantasyCriticRepo = fantasyCriticRepo;
         _interLeagueService = interLeagueService;
         _clock = clock;
     }
@@ -37,6 +39,32 @@ public class ConferenceService
         Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, years, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
         await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newConference);
+    }
+
+    public async Task<Result> AddLeagueToConference(Conference conference, int year, string leagueName, FantasyCriticUser leagueManager)
+    {
+        var usersInConference = await GetUsersInConference(conference);
+        if (usersInConference.All(x => x.Id != leagueManager.Id))
+        {
+            return Result.Failure("Desired league manager is not in conference.");
+        }
+
+        var conferenceYear = await GetConferenceYear(conference.ConferenceID, year);
+        if (conferenceYear is null)
+        {
+            return Result.Failure($"Conference is not active in {year}.");
+        }
+
+        var primaryLeagueYear = await _fantasyCriticRepo.GetLeagueYear(conference.PrimaryLeagueID, year);
+        if (primaryLeagueYear is null)
+        {
+            return Result.Failure("Primary league is not active in that year.");
+        }
+
+        IEnumerable<int> years = new List<int>() { year };
+        League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager, conference.ConferenceID, conference.ConferenceName, years, true, false, conference.CustomRulesConference, false, 0);
+        await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague);
+        return Result.Success();
     }
 
     public Task<Conference?> GetConference(Guid conferenceID)

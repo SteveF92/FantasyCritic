@@ -63,6 +63,45 @@ public class ConferenceController : BaseLeagueController
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
+    public async Task<IActionResult> AddLeagueToConference([FromBody] AddLeagueToConferenceRequest request)
+    {
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+        var validResult = conferenceRecord.ValidResult!;
+
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.Year);
+        if (selectedSupportedYear is null)
+        {
+            return BadRequest("That year is not supported.");
+        }
+
+        if (!selectedSupportedYear.OpenForCreation)
+        {
+            return BadRequest("That year is not open for play.");
+        }
+
+        var leagueManager = await _userManager.FindByIdAsync(request.LeagueManager.ToString());
+        if (leagueManager is null)
+        {
+            return BadRequest("Desired league manager does not exist.");
+        }
+
+        var newLeagueResult = await _conferenceService.AddLeagueToConference(validResult.Conference, request.Year, request.LeagueName, leagueManager);
+        if (newLeagueResult.IsFailure)
+        {
+            return BadRequest(newLeagueResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Authorize("Write")]
+    [Authorize("PlusUser")]
     public Task<IActionResult> AddNewConferenceYear([FromBody] NewConferenceYearRequest request)
     {
         throw new NotImplementedException();
@@ -212,14 +251,6 @@ public class ConferenceController : BaseLeagueController
         }
 
         return Ok();
-    }
-
-    [HttpPost]
-    [Authorize("Write")]
-    [Authorize("PlusUser")]
-    public Task<IActionResult> AddLeagueToConference([FromBody] AddLeagueToConferenceRequest request)
-    {
-        throw new NotImplementedException();
     }
 
     [HttpPost]
