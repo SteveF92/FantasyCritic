@@ -1023,7 +1023,11 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueRecord.ValidResult!;
         var league = validResult.League;
 
-        var newManager = await _userManager.FindByIdOrThrowAsync(request.NewManagerUserID);
+        var newManager = await _userManager.FindByIdAsync(request.NewManagerUserID.ToString());
+        if (newManager is null)
+        {
+            return BadRequest("That user does not exist.");
+        }
 
         var transferResult = await _leagueMemberService.TransferLeagueManager(league, newManager);
         if (transferResult.IsFailure)

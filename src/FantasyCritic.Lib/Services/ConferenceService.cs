@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -135,6 +136,18 @@ public class ConferenceService
 
         await _conferenceRepo.AddPlayerToConference(inviteLink.Conference, inviteUser);
 
+        return Result.Success();
+    }
+
+    public async Task<Result> TransferConferenceManager(Conference conference, FantasyCriticUser newManager)
+    {
+        var usersInLeague = await GetUsersInConference(conference);
+        if (!usersInLeague.Contains(newManager))
+        {
+            return Result.Failure("That player is not in the conference.");
+        }
+
+        await _conferenceRepo.TransferConferenceManager(conference, newManager);
         return Result.Success();
     }
 }

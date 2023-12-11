@@ -18,4 +18,5 @@ public interface IConferenceRepo
     Task DeactivateInviteLink(ConferenceInviteLink inviteLink);
     Task<ConferenceInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode);
     Task AddPlayerToConference(Conference conference, FantasyCriticUser inviteUser);
+    Task TransferConferenceManager(Conference conference, FantasyCriticUser newManager);
 }

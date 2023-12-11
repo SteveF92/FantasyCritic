@@ -267,4 +267,19 @@ public class MySQLConferenceRepo : IConferenceRepo
         await AddPlayerToConferenceInternal(conference, inviteUser, connection, transaction);
         await transaction.CommitAsync();
     }
+
+    public async Task TransferConferenceManager(Conference conference, FantasyCriticUser newManager)
+    {
+        const string sql = "UPDATE tbl_conference SET ConferenceManager = @newManagerUserID WHERE ConferenceID = @conferenceID;";
+
+        var transferObject = new
+        {
+            conferenceID = conference.ConferenceID,
+            newManagerUserID = newManager.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await connection.ExecuteAsync(sql, transferObject);
+    }
 }

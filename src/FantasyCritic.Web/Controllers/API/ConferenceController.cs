@@ -255,9 +255,36 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("Write")]
-    public Task<IActionResult> PromoteNewConferenceManager([FromBody] PromoteNewConferenceManagerRequest request)
+    public async Task<IActionResult> PromoteNewConferenceManager([FromBody] PromoteNewConferenceManagerRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+        var conference = validResult.Conference;
+
+        var newManager = await _userManager.FindByIdAsync(request.NewManagerUserID.ToString());
+        if (newManager is null)
+        {
+            return BadRequest("That user does not exist.");
+        }
+
+        var newManagerIsPlusUser = await _userManager.IsInRoleAsync(newManager, "PlusUser");
+        if (!newManagerIsPlusUser)
+        {
+            return BadRequest("Conference managers must be Fantasy Critic Plus subscribers.");
+        }
+
+        var transferResult = await _conferenceService.TransferConferenceManager(conference, newManager);
+        if (transferResult.IsFailure)
+        {
+            return BadRequest(transferResult.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]
