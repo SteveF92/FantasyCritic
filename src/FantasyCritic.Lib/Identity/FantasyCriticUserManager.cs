@@ -118,6 +118,11 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         return _userStore.GetDonors();
     }
 
+    public Task<IReadOnlyList<FantasyCriticUser>> GetUsers(IEnumerable<Guid> userIDs)
+    {
+        return _userStore.GetUsers(userIDs);
+    }
+
     public Task SetGeneralSettings(FantasyCriticUser user, GeneralUserSettings generalSettings)
     {
         return _userStore.SetGeneralSettings(user, generalSettings);

@@ -319,9 +319,57 @@ public class ConferenceController : BaseLeagueController
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
-    public Task<IActionResult> AssignLeaguePlayers([FromBody] AssignLeaguePlayersRequest request)
+    public async Task<IActionResult> AssignLeaguePlayers([FromBody] AssignLeaguePlayersRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+
+        var mostRecentYear = validResult.Conference.Years.Max();
+        var conferenceYear = await _conferenceService.GetConferenceYear(validResult.Conference.ConferenceID, mostRecentYear);
+
+        var allRequestedUsers = await _userManager.GetUsers(request.LeagueAssignments.Values);
+        var userDictionary = allRequestedUsers.ToDictionary(x => x.Id);
+
+        var leaguesInConference = await _conferenceService.GetLeaguesInConference(validResult.Conference);
+        var leagueDictionary = leaguesInConference.ToDictionary(x => x.LeagueID);
+
+        Dictionary<ConferenceLeague, List<FantasyCriticUser>> userAssignments = new Dictionary<ConferenceLeague, List<FantasyCriticUser>>();
+        foreach (var assignment in request.LeagueAssignments)
+        {
+            var league = leagueDictionary.GetValueOrDefault(assignment.Key);
+            if (league is null)
+            {
+                return BadRequest("One or more of the requested leagues does not exist.");
+            }
+
+            var user = userDictionary.GetValueOrDefault(assignment.Value);
+            if (user is null)
+            {
+                return BadRequest("One or more of the requested users does not exist.");
+            }
+
+            if (userAssignments.ContainsKey(league))
+            {
+                userAssignments[league].Add(user);
+            }
+            else
+            {
+                userAssignments.Add(league, new List<FantasyCriticUser> { user });
+            }
+        }
+        
+        var assignResult = await _conferenceService.AssignLeaguePlayers(conferenceYear, userAssignments);
+        if (assignResult.IsFailure)
+        {
+            return BadRequest(assignResult.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]

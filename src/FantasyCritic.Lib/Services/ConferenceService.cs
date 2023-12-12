@@ -177,4 +177,9 @@ public class ConferenceService
     {
         return _conferenceRepo.EditDraftStatusForConferenceYear(conferenceYear, openForDrafting);
     }
+
+    public async Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, Dictionary<ConferenceLeague, List<FantasyCriticUser>> userAssignments)
+    {
+        throw new NotImplementedException();
+    }
 }
