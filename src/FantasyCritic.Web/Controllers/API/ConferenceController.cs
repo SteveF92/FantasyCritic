@@ -290,9 +290,30 @@ public class ConferenceController : BaseLeagueController
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
-    public Task<IActionResult> ReassignLeagueManager([FromBody] PromoteNewLeagueManagerWithinConferenceRequest request)
+    public async Task<IActionResult> ReassignLeagueManager([FromBody] PromoteNewLeagueManagerWithinConferenceRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+        var conference = validResult.Conference;
+
+        var newManager = await _userManager.FindByIdAsync(request.NewManagerUserID.ToString());
+        if (newManager is null)
+        {
+            return BadRequest("That user does not exist.");
+        }
+        
+        var transferResult = await _conferenceService.ReassignLeagueManager(conference, request.LeagueID, newManager);
+        if (transferResult.IsFailure)
+        {
+            return BadRequest(transferResult.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]
@@ -306,9 +327,34 @@ public class ConferenceController : BaseLeagueController
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]
-    public Task<IActionResult> EditDraftStatusForConferenceYear([FromBody] EditDraftStatusForConferenceYearRequest request)
+    public async Task<IActionResult> EditDraftStatusForConferenceYear([FromBody] EditDraftStatusForConferenceYearRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceYearRecord.FailedResult is not null)
+        {
+            return conferenceYearRecord.FailedResult;
+        }
+
+        var validResult = conferenceYearRecord.ValidResult!;
+
+        if (request.OpenForDrafting && validResult.ConferenceYear.OpenForDrafting)
+        {
+            return BadRequest("Conference is already open for drafting.");
+        }
+
+        if (!request.OpenForDrafting && !validResult.ConferenceYear.OpenForDrafting)
+        {
+            return BadRequest("Conference is already closed for drafting.");
+        }
+
+        var supportedYear = await _interLeagueService.GetSupportedYear(request.Year);
+        if (!supportedYear.OpenForPlay && request.OpenForDrafting)
+        {
+            return BadRequest($"This year is not yet open for play. It will become available on {supportedYear.StartDate}.");
+        }
+
+        await _conferenceService.EditDraftStatusForConferenceYear(validResult.ConferenceYear, request.OpenForDrafting);
+        return Ok();
     }
 
     [HttpPost]

@@ -282,4 +282,20 @@ public class MySQLConferenceRepo : IConferenceRepo
         await connection.OpenAsync();
         await connection.ExecuteAsync(sql, transferObject);
     }
+
+    public async Task EditDraftStatusForConferenceYear(ConferenceYear conferenceYear, bool openForDrafting)
+    {
+        const string sql = "UPDATE tbl_conference_year SET OpenForPlay = @openForDrafting WHERE ConferenceID = @conferenceID AND Year = @year;";
+
+        var param = new
+        {
+            conferenceID = conferenceYear.Conference.ConferenceID,
+            year = conferenceYear.Year,
+            openForDrafting
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await connection.ExecuteAsync(sql, param);
+    }
 }

@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -149,5 +148,33 @@ public class ConferenceService
 
         await _conferenceRepo.TransferConferenceManager(conference, newManager);
         return Result.Success();
+    }
+
+    public async Task<Result> ReassignLeagueManager(Conference conference, Guid leagueID, FantasyCriticUser newManager)
+    {
+        var league = await _fantasyCriticRepo.GetLeague(leagueID);
+        if (league is null)
+        {
+            return Result.Failure("League does not exist.");
+        }
+
+        if (league.ConferenceID != conference.ConferenceID)
+        {
+            return Result.Failure("League is not in this conference.");
+        }
+
+        var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(leagueID);
+        if (!usersInLeague.Contains(newManager))
+        {
+            return Result.Failure("That player is not in the league.");
+        }
+
+        await _fantasyCriticRepo.TransferLeagueManager(league, newManager);
+        return Result.Success();
+    }
+
+    public Task EditDraftStatusForConferenceYear(ConferenceYear conferenceYear, bool openForDrafting)
+    {
+        return _conferenceRepo.EditDraftStatusForConferenceYear(conferenceYear, openForDrafting);
     }
 }

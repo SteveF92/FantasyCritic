@@ -19,4 +19,5 @@ public interface IConferenceRepo
     Task<ConferenceInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode);
     Task AddPlayerToConference(Conference conference, FantasyCriticUser inviteUser);
     Task TransferConferenceManager(Conference conference, FantasyCriticUser newManager);
+    Task EditDraftStatusForConferenceYear(ConferenceYear conferenceYear, bool openForDrafting);
 }
