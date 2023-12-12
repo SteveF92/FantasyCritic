@@ -24,9 +24,12 @@
 
         <hr />
 
-        <div class="conference-manager-info">
-          <h4>Conference Manager:</h4>
-          <span class="conference-manager-info-item">{{ conference.conferenceManager.displayName }}</span>
+        <div class="conference-manager-section">
+          <div class="conference-manager-info">
+            <h4>Conference Manager:</h4>
+            <span class="conference-manager-info-item">{{ conference.conferenceManager.displayName }}</span>
+          </div>
+          <ConferenceManagerActions v-if="isConferenceManager"></ConferenceManagerActions>
         </div>
 
         <b-table :items="conferenceYear.leagueYears" :fields="leagueYearFields" bordered small responsive striped>
@@ -41,8 +44,12 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 
 export default {
+  components: {
+    ConferenceManagerActions
+  },
   props: {
     conferenceid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -58,7 +65,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['conference', 'conferenceYear', 'hasError'])
+    ...mapGetters(['conference', 'conferenceYear', 'hasError']),
+    isConferenceManager() {
+      return this.conference && this.conference.isManager;
+    }
   },
   watch: {
     async $route(to, from) {
@@ -87,10 +97,18 @@ export default {
 };
 </script>
 <style scoped>
+.conference-manager-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .conference-manager-info {
   display: flex;
   flex-direction: row;
 }
+
 .conference-manager-info-item {
   padding-left: 5px;
   padding-top: 3px;
