@@ -5,10 +5,13 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.MySQL.Entities.Identity;
+using Serilog;
 
 namespace FantasyCritic.MySQL;
 public class MySQLConferenceRepo : IConferenceRepo
 {
+    private static readonly ILogger _logger = Log.ForContext<MySQLConferenceRepo>();
+    
     private readonly string _connectionString;
     private readonly MySQLFantasyCriticRepo _fantasyCriticRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
@@ -297,5 +300,35 @@ public class MySQLConferenceRepo : IConferenceRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await connection.ExecuteAsync(sql, param);
+    }
+
+    public async Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, IReadOnlyDictionary<ConferenceLeague, IReadOnlyList<FantasyCriticUser>> userAssignments)
+    {
+        //Start transaction
+        //Save any existing publishers
+        //Delete the publishers
+        //Delete the user assignments
+        //Insert new user assignments
+        //Recreate the publishers that existed
+        //Commit
+        //If at any point, something fails, rollback and return error.
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+
+            await transaction.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error assigning league players.");
+            await transaction.RollbackAsync();
+            return Result.Failure("Something went wrong when re-assigning users.");
+        }
+
+        return Result.Success();
     }
 }

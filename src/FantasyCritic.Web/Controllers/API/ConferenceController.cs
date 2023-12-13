@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Models.Requests.Conferences;
 using FantasyCritic.Web.Models.Responses.Conferences;
@@ -331,9 +332,13 @@ public class ConferenceController : BaseLeagueController
 
         var mostRecentYear = validResult.Conference.Years.Max();
         var conferenceYear = await _conferenceService.GetConferenceYear(validResult.Conference.ConferenceID, mostRecentYear);
+        if (conferenceYear is null)
+        {
+            throw new Exception($"Something went wrong with conference years for conference: {request.ConferenceID} and year: {mostRecentYear}");
+        }
 
-        var allRequestedUsers = await _userManager.GetUsers(request.LeagueAssignments.Values);
-        var userDictionary = allRequestedUsers.ToDictionary(x => x.Id);
+        var allUsersInConference = await _conferenceService.GetUsersInConference(validResult.Conference);
+        var userDictionary = allUsersInConference.ToDictionary(x => x.Id);
 
         var leaguesInConference = await _conferenceService.GetLeaguesInConference(validResult.Conference);
         var leagueDictionary = leaguesInConference.ToDictionary(x => x.LeagueID);
@@ -344,13 +349,13 @@ public class ConferenceController : BaseLeagueController
             var league = leagueDictionary.GetValueOrDefault(assignment.Key);
             if (league is null)
             {
-                return BadRequest("One or more of the requested leagues does not exist.");
+                return BadRequest("One or more of the requested leagues is not in the conference.");
             }
 
             var user = userDictionary.GetValueOrDefault(assignment.Value);
             if (user is null)
             {
-                return BadRequest("One or more of the requested users does not exist.");
+                return BadRequest("One or more of the requested users is not in the conference.");
             }
 
             if (userAssignments.ContainsKey(league))
@@ -363,7 +368,7 @@ public class ConferenceController : BaseLeagueController
             }
         }
         
-        var assignResult = await _conferenceService.AssignLeaguePlayers(conferenceYear, userAssignments);
+        var assignResult = await _conferenceService.AssignLeaguePlayers(conferenceYear, userAssignments.SealDictionary());
         if (assignResult.IsFailure)
         {
             return BadRequest(assignResult.Error);

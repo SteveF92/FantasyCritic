@@ -178,8 +178,30 @@ public class ConferenceService
         return _conferenceRepo.EditDraftStatusForConferenceYear(conferenceYear, openForDrafting);
     }
 
-    public async Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, Dictionary<ConferenceLeague, List<FantasyCriticUser>> userAssignments)
+    public async Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, IReadOnlyDictionary<ConferenceLeague, IReadOnlyList<FantasyCriticUser>> userAssignments)
     {
-        throw new NotImplementedException();
+        var leagueYears = await GetFullLeagueYearsInConferenceYear(conferenceYear);
+        if (leagueYears.Any(x => x.PlayStatus.PlayStarted))
+        {
+            return Result.Failure("Draft has already started for one of the leagues, you can no longer re-assign players. You must reset all drafts if you wish to re-assign players.");
+        }
+
+        var result = await _conferenceRepo.AssignLeaguePlayers(conferenceYear, userAssignments);
+        return result;
+    }
+
+    public async Task<IReadOnlyList<LeagueYear>> GetFullLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
+    {
+        List<LeagueYear> leagueYears = new List<LeagueYear>();
+        foreach (var leagueID in conferenceYear.Conference.LeaguesInConference)
+        {
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueID, conferenceYear.Year);
+            if (leagueYear is not null)
+            {
+                leagueYears.Add(leagueYear);
+            }
+        }
+
+        return leagueYears;
     }
 }
