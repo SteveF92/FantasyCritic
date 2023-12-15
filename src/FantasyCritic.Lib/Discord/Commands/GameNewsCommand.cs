@@ -102,6 +102,15 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
             var leagueYearPublisherPairs =
                 leagueYear.Publishers.Select(publisher => new LeagueYearPublisherPair(leagueYear, publisher));
 
+            if (leagueYear.Publishers.Count == 0 || leagueYear.Publishers.Sum(p => p.PublisherGames.Count) == 0)
+            {
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+                    "Error Getting Game News",
+                    "No publisher games found, have you done your draft yet?",
+                    Context.User));
+                return;
+            }
+
             var gameNewsData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, isRecentReleases, dateToCheck);
             if (gameNewsData.Count == 0)
             {
@@ -109,6 +118,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                     "Error Getting Game News",
                     "No data found.",
                     Context.User));
+                return;
             }
 
             var messages = new List<string>();
