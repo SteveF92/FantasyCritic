@@ -297,7 +297,7 @@ public static class GameEligibilityFunctions
         MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
         List<ClaimError> claimErrors = new List<ClaimError>();
 
-        bool manuallyEligible = eligibilityFactors.OverridenEligibility.HasValue && eligibilityFactors.OverridenEligibility.Value;
+        bool manuallyEligible = eligibilityFactors.OverridenEligibility.HasValue && eligibilityFactors.OverridenEligibility.Value && !dropping;
         bool released = masterGame.IsReleased(currentDate);
         if (released && !partOfSpecialAuction)
         {
