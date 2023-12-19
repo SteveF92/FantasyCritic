@@ -4,11 +4,14 @@
       {{ errorInfo }}
     </div>
     <div>
+      <label>To invite players to your conference, create a link, and send it to anyone you want to invite.</label>
       <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
         <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
         <b-button v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied" variant="info" size="sm">Copy</b-button>
         <b-button variant="danger" size="sm" @click="deleteInviteLink(inviteLink)">Delete</b-button>
       </div>
+      <br />
+      <b-button variant="primary" size="sm" @click="createInviteLink()">Create Invite Link</b-button>
     </div>
   </b-modal>
 </template>
@@ -42,7 +45,7 @@ export default {
     },
     async deleteInviteLink(inviteLink) {
       const model = {
-        leagueID: this.league.leagueID,
+        conferenceID: this.conference.conferenceID,
         inviteID: inviteLink.inviteID
       };
 
