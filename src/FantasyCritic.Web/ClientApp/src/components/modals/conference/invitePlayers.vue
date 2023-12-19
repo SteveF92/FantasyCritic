@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     async createInviteLink() {
-      var model = {
+      const model = {
         conferenceID: this.conference.conferenceID
       };
 

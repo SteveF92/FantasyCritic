@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     changePublisherIcon() {
-      var model = {
+      const model = {
         publisherID: this.userPublisher.publisherID,
         publisherIcon: this.newPublisherIcon
       };

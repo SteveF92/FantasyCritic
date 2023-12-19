@@ -32,7 +32,7 @@ export default {
     resetDraft() {
       this.resetConfirmation = '';
       this.$refs.resetDraftModalRef.hide();
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year
       };

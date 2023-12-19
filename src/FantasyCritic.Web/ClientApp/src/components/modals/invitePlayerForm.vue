@@ -112,7 +112,7 @@ export default {
       this.makeToast('Invite Link copied to clipboard.');
     },
     deleteInviteLink(inviteLink) {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         inviteID: inviteLink.inviteID
       };

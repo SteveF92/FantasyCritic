@@ -134,7 +134,7 @@ export default {
       let desiredBidPriorityIDs = this.desiredBidPriorities.map(function (v) {
         return v.bidID;
       });
-      var model = {
+      const model = {
         publisherID: this.userPublisher.publisherID,
         BidPriorities: desiredBidPriorityIDs
       };
@@ -148,7 +148,7 @@ export default {
       this.conditionalDrop = bid.conditionalDropPublisherGame;
     },
     editBid() {
-      var request = {
+      let request = {
         bidID: this.bidBeingEdited.bidID,
         publisherID: this.userPublisher.publisherID,
         bidAmount: this.bidAmount
@@ -174,7 +174,7 @@ export default {
         });
     },
     cancelBid(bid) {
-      var model = {
+      const model = {
         bidID: bid.bidID,
         publisherID: this.userPublisher.publisherID
       };

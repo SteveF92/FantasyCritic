@@ -127,19 +127,19 @@ export default {
         });
     },
     addGame() {
-      var gameName = '';
+      let gameName = '';
       if (this.claimMasterGame !== null) {
         gameName = this.claimMasterGame.gameName;
       } else if (this.claimUnlistedGame !== null) {
         gameName = this.claimUnlistedGame;
       }
 
-      var masterGameID = null;
+      let masterGameID = null;
       if (this.claimMasterGame !== null) {
         masterGameID = this.claimMasterGame.masterGameID;
       }
 
-      var request = {
+      const request = {
         publisherID: this.claimPublisher.publisherID,
         gameName: gameName,
         counterPick: this.claimCounterPick,

@@ -174,7 +174,7 @@ export default {
         });
     },
     async addGameToQueue() {
-      var request = {
+      const request = {
         publisherID: this.userPublisher.publisherID,
         masterGameID: this.gameToQueue.masterGameID
       };
@@ -195,7 +195,7 @@ export default {
       let desiredMasterGameIDs = this.desiredQueueRanks.map(function (v) {
         return v.masterGame.masterGameID;
       });
-      var model = {
+      const model = {
         publisherID: this.userPublisher.publisherID,
         queueRanks: desiredMasterGameIDs
       };
@@ -205,7 +205,7 @@ export default {
       this.initializeDesiredRankings();
     },
     async removeQueuedGame(game) {
-      var model = {
+      const model = {
         publisherID: this.userPublisher.publisherID,
         masterGameID: game.masterGame.masterGameID
       };

@@ -102,7 +102,7 @@ export default {
       return player.userID === this.league.leagueManager.userID;
     },
     async removePlayer() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         userID: this.playerToRemove.userID
       };

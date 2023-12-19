@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     async removePublisher() {
-      var model = {
+      const model = {
         publisherID: this.publisherToRemove.publisherID
       };
 

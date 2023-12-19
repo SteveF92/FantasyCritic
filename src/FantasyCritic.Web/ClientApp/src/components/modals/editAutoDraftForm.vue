@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     setAutoDraft() {
-      var model = {
+      const model = {
         publisherID: this.userPublisher.publisherID,
         autoDraft: this.isAutoDraft
       };

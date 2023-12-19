@@ -59,7 +59,7 @@ export default {
   methods: {
     setArchive(league, status) {
       league.archived = status;
-      var model = {
+      const model = {
         leagueID: league.leagueID,
         archive: status
       };

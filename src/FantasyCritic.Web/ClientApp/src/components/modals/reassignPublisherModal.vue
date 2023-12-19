@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     async reassignPublisher() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         publisherID: this.publisherToReassign.publisherID,

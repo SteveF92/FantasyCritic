@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     changePublisherName() {
-      var model = {
+      const model = {
         publisherID: this.userPublisher.publisherID,
         publisherName: this.newPublisherName
       };

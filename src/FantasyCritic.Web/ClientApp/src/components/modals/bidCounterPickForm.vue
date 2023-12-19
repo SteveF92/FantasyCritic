@@ -102,7 +102,7 @@ export default {
         });
     },
     bidGame() {
-      var request = {
+      const request = {
         publisherID: this.userPublisher.publisherID,
         masterGameID: this.bidCounterPick.masterGame.masterGameID,
         bidAmount: this.bidAmount,

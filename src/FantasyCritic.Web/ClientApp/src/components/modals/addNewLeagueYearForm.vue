@@ -46,7 +46,7 @@ export default {
       }
     },
     async addNewLeagueYear() {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         year: this.selectedYear
       };

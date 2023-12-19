@@ -89,7 +89,7 @@ export default {
         .catch(() => {});
     },
     associateGame() {
-      var request = {
+      const request = {
         publisherID: this.associatePublisher.publisherID,
         publisherGameID: this.associatePublisherGame.publisherGameID,
         masterGameID: this.associateMasterGame.masterGameID,

@@ -116,12 +116,12 @@ export default {
     addGame() {
       this.isBusy = true;
 
-      var masterGameID = null;
+      let masterGameID = null;
       if (this.purchaseRoyaleGame !== null) {
         masterGameID = this.purchaseRoyaleGame.masterGame.masterGameID;
       }
 
-      var request = {
+      let request = {
         publisherID: this.userRoyalePublisher.publisherID,
         masterGameID: masterGameID
       };
@@ -137,7 +137,7 @@ export default {
 
           let gameName = this.purchaseRoyaleGame.masterGame.gameName;
           let purchaseCost = this.purchaseRoyaleGame.cost;
-          var purchaseInfo = {
+          const purchaseInfo = {
             gameName,
             purchaseCost
           };

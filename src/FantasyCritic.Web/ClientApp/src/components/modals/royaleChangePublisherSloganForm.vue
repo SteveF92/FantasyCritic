@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     changePublisherSlogan() {
-      var model = {
+      const model = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherSlogan: this.newPublisherSlogan
       };

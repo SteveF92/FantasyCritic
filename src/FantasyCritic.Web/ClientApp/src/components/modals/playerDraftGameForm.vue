@@ -201,19 +201,19 @@ export default {
     },
     addGame() {
       this.isBusy = true;
-      var gameName = '';
+      let gameName = '';
       if (this.draftMasterGame !== null) {
         gameName = this.draftMasterGame.gameName;
       } else if (this.draftUnlistedGame !== null) {
         gameName = this.draftUnlistedGame;
       }
 
-      var masterGameID = null;
+      let masterGameID = null;
       if (this.draftMasterGame !== null) {
         masterGameID = this.draftMasterGame.masterGameID;
       }
 
-      var request = {
+      const request = {
         publisherID: this.userPublisher.publisherID,
         gameName: gameName,
         counterPick: this.draftCounterPick,

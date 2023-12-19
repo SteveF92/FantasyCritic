@@ -84,7 +84,7 @@ export default {
         this.removeManualPublisherGameScore();
         return;
       }
-      var model = {
+      const model = {
         publisherGameID: this.manuallyScoreGame.publisherGameID,
         publisherID: this.manuallyScoreGamePublisher.publisherID,
         manualCriticScore: this.manualScore
@@ -102,7 +102,7 @@ export default {
         });
     },
     removeManualPublisherGameScore() {
-      var model = {
+      const model = {
         publisherGameID: this.manuallyScoreGame.publisherGameID,
         publisherID: this.manuallyScoreGamePublisher.publisherID
       };

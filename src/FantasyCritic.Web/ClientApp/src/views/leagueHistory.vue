@@ -119,7 +119,7 @@ export default {
       return thisID;
     },
     deleteMessage(message) {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year,
         messageID: message.messageID

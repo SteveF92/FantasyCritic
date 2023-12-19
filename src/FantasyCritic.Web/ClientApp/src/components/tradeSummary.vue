@@ -206,7 +206,7 @@ export default {
     isInLeagueButNotInvolved() {
       let involvedParties = [this.trade.proposerUserID, this.trade.counterPartyUserID];
       let allUserIDsInLeague = this.leagueYear.players.map((x) => x.user.userID);
-      var nonInvolvedParties = _.difference(allUserIDsInLeague, involvedParties);
+      let nonInvolvedParties = _.difference(allUserIDsInLeague, involvedParties);
       return nonInvolvedParties.includes(this.userInfo.userID);
     },
     canVote() {
@@ -244,7 +244,7 @@ export default {
       this.sendGenericTradeRequest('leagueManager/RejectTrade', 'Trade has been rejected.');
     },
     sendGenericTradeRequest(endPoint, message) {
-      var model = {
+      const model = {
         tradeID: this.trade.tradeID,
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year
@@ -259,7 +259,7 @@ export default {
         });
     },
     vote(approved) {
-      var model = {
+      const model = {
         tradeID: this.trade.tradeID,
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
@@ -277,7 +277,7 @@ export default {
         });
     },
     deleteVote() {
-      var model = {
+      const model = {
         tradeID: this.trade.tradeID,
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year

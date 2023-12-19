@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     resetEligibility(eligibilityOverride) {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         masterGameID: eligibilityOverride.masterGame.masterGameID,
@@ -108,7 +108,7 @@ export default {
         .catch(() => {});
     },
     setEligibility(masterGame, eligible) {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         masterGameID: masterGame.masterGameID,

@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     dropGame() {
-      var request = {
+      const request = {
         publisherID: this.userPublisher.publisherID,
         publisherGameID: this.gameToDrop.publisherGameID
       };

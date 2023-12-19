@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     manuallySetWillNotRelease(willNotRelease) {
-      var model = {
+      const model = {
         publisherGameID: this.manuallySetWillNotReleaseGame.publisherGameID,
         publisherID: this.manuallySetWillNotReleasePublisher.publisherID,
         willNotRelease: willNotRelease

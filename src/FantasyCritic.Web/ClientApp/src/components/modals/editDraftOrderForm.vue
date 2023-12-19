@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     async setDraftOrder(draftOrderType) {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         draftOrderType: draftOrderType

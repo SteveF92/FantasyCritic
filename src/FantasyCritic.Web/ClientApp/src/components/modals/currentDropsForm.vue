@@ -27,7 +27,7 @@ export default {
   mixins: [LeagueMixin],
   methods: {
     cancelDrop(dropRequest) {
-      var model = {
+      const model = {
         publisherID: this.userPublisher.publisherID,
         dropRequestID: dropRequest.dropRequestID
       };

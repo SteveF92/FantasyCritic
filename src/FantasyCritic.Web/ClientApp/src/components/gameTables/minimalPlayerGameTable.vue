@@ -97,9 +97,9 @@ export default {
         return false;
       }
 
-      var roundedTotal = Math.round(this.publisher.totalFantasyPoints);
-      var fantasyPoints = this.publisher.games.map((x) => x.fantasyPoints);
-      var roundedFantasyPoints = fantasyPoints.map((x) => Math.round(x));
+      const roundedTotal = Math.round(this.publisher.totalFantasyPoints);
+      const fantasyPoints = this.publisher.games.map((x) => x.fantasyPoints);
+      const roundedFantasyPoints = fantasyPoints.map((x) => Math.round(x));
       let roundedSum = roundedFantasyPoints.reduce((partialSum, a) => partialSum + a, 0);
       roundedSum += this.getEmptyCounterPickSlotPoints;
       return roundedTotal !== roundedSum;
@@ -109,10 +109,10 @@ export default {
         return 0;
       }
 
-      var expectedNumberOfCounterPicks = this.leagueYear.settings.counterPicks;
-      var numberCounterPicks = this.publisher.games.filter((x) => x.counterPick).length;
-      var emptySlots = expectedNumberOfCounterPicks - numberCounterPicks;
-      var points = emptySlots * -15;
+      const expectedNumberOfCounterPicks = this.leagueYear.settings.counterPicks;
+      const numberCounterPicks = this.publisher.games.filter((x) => x.counterPick).length;
+      const emptySlots = expectedNumberOfCounterPicks - numberCounterPicks;
+      const points = emptySlots * -15;
       return points;
     },
     roundingWarning() {

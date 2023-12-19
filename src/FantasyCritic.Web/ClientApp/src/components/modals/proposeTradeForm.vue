@@ -166,7 +166,7 @@ export default {
         return;
       }
 
-      var request = {
+      const request = {
         proposerPublisherID: this.userPublisher.publisherID,
         counterPartyPublisherID: this.counterParty.publisherID,
         proposerPublisherGameIDs: this.proposerPublisherGames.map((x) => x.game.publisherGameID),

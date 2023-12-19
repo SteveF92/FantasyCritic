@@ -77,7 +77,7 @@ export default {
       this.newSuperDropsAvailable = selectedPublisher.superDropsAvailable;
     },
     makeEditRequest() {
-      var model = {
+      const model = {
         publisherID: this.editPublisher.publisherID,
         publisherName: this.newPublisherName,
         budget: this.newBudget,

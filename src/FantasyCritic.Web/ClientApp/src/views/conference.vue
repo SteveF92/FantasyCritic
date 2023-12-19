@@ -107,14 +107,14 @@ export default {
       await this.$store.dispatch('initializeConferencePage', conferencePageParams);
     },
     changeConferenceYear(newVal) {
-      var parameters = {
+      const parameters = {
         conferenceid: this.conferenceid,
         year: newVal
       };
       this.$router.push({ name: 'conference', params: parameters });
     },
     async joinWithInviteLink() {
-      var model = {
+      const model = {
         conferenceID: this.conference.conferenceID,
         inviteCode: this.conferenceInviteCode
       };

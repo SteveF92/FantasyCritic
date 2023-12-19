@@ -100,7 +100,7 @@ export default {
       const dateObject = new Date(this.scheduledEndTime);
       const utcDate = dateObject.toISOString();
 
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         masterGameID: this.specialAuctionMasterGame.masterGameID,
@@ -116,7 +116,7 @@ export default {
       }
     },
     async cancelSpecialAuction(masterGameYear) {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         masterGameID: masterGameYear.masterGameID

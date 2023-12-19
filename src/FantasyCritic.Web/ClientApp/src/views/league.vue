@@ -307,14 +307,14 @@ export default {
       this.$store.dispatch('getBidTimes');
     },
     changeLeagueYear(newVal) {
-      var parameters = {
+      const parameters = {
         leagueid: this.leagueid,
         year: newVal
       };
       this.$router.push({ name: 'league', params: parameters });
     },
     acceptInvite() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID
       };
       axios
@@ -325,7 +325,7 @@ export default {
         .catch(() => {});
     },
     declineInvite() {
-      var model = {
+      const model = {
         inviteID: this.league.outstandingInvite.inviteID
       };
       axios
@@ -336,7 +336,7 @@ export default {
         .catch(() => {});
     },
     joinWithInviteLink() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         inviteCode: this.inviteCode
       };
@@ -350,7 +350,7 @@ export default {
         });
     },
     startDraft() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year
       };
@@ -363,7 +363,7 @@ export default {
         .catch(() => {});
     },
     followLeague() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID
       };
       axios
@@ -374,7 +374,7 @@ export default {
         .catch(() => {});
     },
     unfollowLeague() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID
       };
       axios
@@ -385,7 +385,7 @@ export default {
         .catch(() => {});
     },
     dismissRecentManagerMessage() {
-      var model = {
+      const model = {
         messageID: this.mostRecentManagerMessage.messageID
       };
       axios

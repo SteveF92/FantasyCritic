@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     createPublisher() {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         userID: this.playerToCreatePublisherFor.user.userID,

@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     selectCounterPick() {
-      var request = {
+      let request = {
         publisherID: this.nextPublisherUp.publisherID,
         gameName: this.selectedCounterPick.gameName,
         counterPick: true,

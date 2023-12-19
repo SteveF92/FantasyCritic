@@ -31,7 +31,7 @@ export default {
   computed: {},
   methods: {
     postNewMessage() {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year,
         message: this.messageText,

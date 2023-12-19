@@ -249,7 +249,7 @@ export default {
       this.$refs.sellRoyaleGameModalRef.show();
     },
     sellGame() {
-      var request = {
+      const request = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID
       };
@@ -271,7 +271,7 @@ export default {
       this.$refs.setAdvertisingMoneyModalRef.show();
     },
     setBudget() {
-      var request = {
+      const request = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID,
         advertisingMoney: this.advertisingBudgetToSet

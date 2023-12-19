@@ -218,7 +218,7 @@ export default {
       await this.fetchRoyaleQuarters();
       if (!this.year || !this.quarter) {
         const mostRecentQuarter = this.royaleYearQuarterOptions[this.royaleYearQuarterOptions.length - 1];
-        var parameters = {
+        const parameters = {
           year: mostRecentQuarter.year.toString(),
           quarter: mostRecentQuarter.quarter.toString()
         };

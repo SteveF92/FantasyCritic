@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     promoteNewManager() {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         newManagerUserID: this.newManager.userID
       };

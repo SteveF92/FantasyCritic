@@ -170,7 +170,7 @@ export default {
       if (!gameRows) {
         return [];
       }
-      for (var i = 0; i < gameRows.length; ++i) {
+      for (let i = 0; i < gameRows.length; ++i) {
         if (gameRows[i].error) {
           gameRows[i]._rowVariant = 'danger';
         }

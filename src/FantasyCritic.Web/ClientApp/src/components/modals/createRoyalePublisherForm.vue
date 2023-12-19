@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     createRoyalePublisher() {
-      var model = {
+      const model = {
         year: this.royaleYearQuarter.year,
         quarter: this.royaleYearQuarter.quarter,
         publisherName: this.publisherName

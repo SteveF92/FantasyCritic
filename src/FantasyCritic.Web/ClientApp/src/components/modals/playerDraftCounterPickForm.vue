@@ -41,7 +41,7 @@ export default {
   methods: {
     selectCounterPick() {
       this.isBusy = true;
-      var request = {
+      let request = {
         publisherID: this.userPublisher.publisherID,
         gameName: this.selectedCounterPick.gameName,
         counterPick: true,

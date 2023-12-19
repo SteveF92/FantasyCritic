@@ -13,7 +13,7 @@ export default {
   methods: {
     async setPause() {
       let newPause = !this.draftIsPaused;
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year,
         pause: newPause

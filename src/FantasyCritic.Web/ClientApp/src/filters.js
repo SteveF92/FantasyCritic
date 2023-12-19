@@ -27,7 +27,7 @@ Vue.filter('money', function (value, decimals) {
     decimals = 2;
   }
 
-  var formatter = new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: decimals,

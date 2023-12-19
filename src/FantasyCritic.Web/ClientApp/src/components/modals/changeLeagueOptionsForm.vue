@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     async changeleagueName() {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         leagueName: this.newleagueName,
         publicLeague: this.publicLeague,

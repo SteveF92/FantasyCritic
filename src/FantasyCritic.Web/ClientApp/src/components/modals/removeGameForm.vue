@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     removePublisherGame() {
-      var model = {
+      const model = {
         publisherGameID: this.removeGame.publisherGameID,
         publisherID: this.removeGamePublisher.publisherID
       };

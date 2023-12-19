@@ -84,7 +84,7 @@ export default {
       if (!standings) {
         return [];
       }
-      for (var i = 0; i < standings.length; ++i) {
+      for (let i = 0; i < standings.length; ++i) {
         if (!standings[i].publisher) {
           continue;
         }
@@ -111,7 +111,7 @@ export default {
   },
   methods: {
     rescindInvite(inviteID, inviteName) {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.league.leagueID,
         inviteID: inviteID
       };

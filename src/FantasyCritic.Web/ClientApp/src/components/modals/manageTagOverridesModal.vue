@@ -87,7 +87,7 @@ export default {
   },
   methods: {
     resetTags(tagOverride) {
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         masterGameID: tagOverride.masterGame.masterGameID,
@@ -115,7 +115,7 @@ export default {
     setTags(masterGame) {
       let tagNames = _.map(this.chosenTags, 'name');
 
-      var model = {
+      const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         masterGameID: masterGame.masterGameID,
