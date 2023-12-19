@@ -43,13 +43,14 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import ConferenceMixin from '@/mixins/conferenceMixin.js';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 
 export default {
   components: {
     ConferenceManagerActions
   },
+  mixins: [ConferenceMixin],
   props: {
     conferenceid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -63,12 +64,6 @@ export default {
         { key: 'leagueManager', label: 'League Manager', thClass: 'bg-primary' }
       ]
     };
-  },
-  computed: {
-    ...mapGetters(['conference', 'conferenceYear', 'hasError']),
-    isConferenceManager() {
-      return this.conference && this.conference.isManager;
-    }
   },
   watch: {
     async $route(to, from) {
