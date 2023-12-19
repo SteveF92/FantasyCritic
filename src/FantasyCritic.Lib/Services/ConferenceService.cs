@@ -204,4 +204,14 @@ public class ConferenceService
 
         return leagueYears;
     }
+
+    public Task<IReadOnlySet<Guid>> GetLeaguesInConferenceUserIsIn(ConferenceYear conferenceYear, FantasyCriticUser? user)
+    {
+        if (user is null)
+        {
+            return Task.FromResult<IReadOnlySet<Guid>>(new HashSet<Guid>());
+        }
+        
+        return _conferenceRepo.GetLeaguesInConferenceUserIsIn(conferenceYear, user);
+    }
 }

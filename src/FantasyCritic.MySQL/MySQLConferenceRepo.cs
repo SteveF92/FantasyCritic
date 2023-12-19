@@ -1,4 +1,3 @@
-using Dapper;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
@@ -7,7 +6,6 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.MySQL.Entities.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Serilog;
 
 namespace FantasyCritic.MySQL;
@@ -136,7 +134,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference)
     {
-        const string userSQL = "select tbl_user.* from tbl_user join tbl_conference_hasuser where ConferenceID = @conferenceID;";
+        const string userSQL = "select tbl_user.* from tbl_user join tbl_conference_hasuser on tbl_conference_hasuser.UserID = tbl_user.UserID where ConferenceID = @conferenceID;";
         var queryObject = new
         {
             conferenceID = conference.ConferenceID
@@ -146,6 +144,26 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         var userEntities = (await connection.QueryAsync<FantasyCriticUserEntity>(userSQL, queryObject)).ToList();
         return userEntities.Select(x => x.ToDomain()).ToList();
+    }
+
+    public async Task<IReadOnlySet<Guid>> GetLeaguesInConferenceUserIsIn(ConferenceYear conferenceYear, FantasyCriticUser user)
+    {
+        const string sql = """
+                           SELECT tbl_league_activeplayer.LeagueID FROM tbl_league_activeplayer
+                           JOIN tbl_league ON tbl_league_activeplayer.LeagueID = tbl_league.LeagueID
+                           WHERE tbl_league.ConferenceID = @conferenceID AND tbl_league_activeplayer.Year = @YEAR AND tbl_league_activeplayer.UserID = @userID;
+                           """;
+        var queryObject = new
+        {
+            conferenceID = conferenceYear.Conference.ConferenceID,
+            year = conferenceYear.Year,
+            userID = user.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(sql, queryObject);
+
+        return leagueIDs.ToHashSet();
     }
 
     public async Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference)

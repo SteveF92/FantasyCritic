@@ -3,16 +3,26 @@ import axios from 'axios';
 export default {
   state: {
     hasError: false,
-    conferenceYear: null
+    conferenceYear: null,
+    conferenceInviteCode: false
   },
   getters: {
     hasError: (state) => state.hasError,
     conferenceYear: (state) => state.conferenceYear,
-    conference: (state) => state.conferenceYear.conference
+    conference: (state) => state.conferenceYear.conference,
+    conferenceInviteCode: (state) => state.conferenceInviteCode
   },
   actions: {
     async initializeConferencePage(context, conferencePageParams) {
       context.commit('clearConferenceStoreData');
+      context.commit('setConferenceInviteCode', conferencePageParams.inviteCode);
+      await context.dispatch('fetchConferenceYear', conferencePageParams);
+    },
+    async refreshConferenceYear(context) {
+      const conferencePageParams = {
+        conferenceID: context.state.conferenceYear.conference.conferenceID,
+        year: context.state.conferenceYear.year
+      };
       await context.dispatch('fetchConferenceYear', conferencePageParams);
     },
     async fetchConferenceYear(context, conferencePageParams) {
@@ -37,6 +47,9 @@ export default {
     setConferenceYear(state, conferenceYear) {
       state.conferenceYear = conferenceYear;
       document.title = conferenceYear.conference.conferenceName + ' - Fantasy Critic';
+    },
+    setConferenceInviteCode(state, conferenceInviteCode) {
+      state.conferenceInviteCode = conferenceInviteCode;
     }
   }
 };

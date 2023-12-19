@@ -24,6 +24,25 @@
 
         <hr />
 
+        <div v-if="conferenceInviteCode && !conference.userIsInConference" class="alert alert-secondary">
+          You have been invited to join this conference.
+          <b-button v-if="isAuth" variant="primary" class="mx-2" @click="joinWithInviteLink()">Join Conference</b-button>
+          <template v-else>
+            <b-button variant="info" href="/Account/Login">
+              <span>Log In</span>
+              <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
+            </b-button>
+            <b-button variant="primary" href="/Account/Register">
+              <span>Sign Up</span>
+              <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
+            </b-button>
+          </template>
+        </div>
+
+        <div v-if="conference.userIsInConference && !conferenceYear.openForDrafting && !conferenceYear.userIsInAtLeastOneLeague" class="alert alert-info">
+          You have joined the conference, but your conference manager has not yet assigned you to any of the leagues in the conference.
+        </div>
+
         <div class="conference-manager-section">
           <div class="conference-manager-info">
             <h4>Conference Manager:</h4>
@@ -34,7 +53,10 @@
 
         <b-table :items="conferenceYear.leagueYears" :fields="leagueYearFields" bordered small responsive striped>
           <template #cell(leagueName)="data">
-            <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: year } }" class="league-link">{{ data.item.leagueName }}</router-link>
+            <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: year } }" class="league-link">
+              {{ data.item.leagueName }}
+            </router-link>
+            <font-awesome-icon v-if="!data.item.userIsInLeague" icon="user" v-b-popover.hover="'You are in this league.'" />
           </template>
           <template #cell(leagueManager)="data">{{ data.item.leagueManager.displayName }}</template>
         </b-table>
@@ -43,6 +65,8 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
+
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 
@@ -78,7 +102,8 @@ export default {
   methods: {
     async initializePage() {
       this.selectedYear = this.year;
-      const conferencePageParams = { conferenceID: this.conferenceid, year: this.year };
+      const inviteCode = this.$route.query.inviteCode;
+      const conferencePageParams = { conferenceID: this.conferenceid, year: this.year, inviteCode };
       await this.$store.dispatch('initializeConferencePage', conferencePageParams);
     },
     changeConferenceYear(newVal) {
@@ -87,6 +112,19 @@ export default {
         year: newVal
       };
       this.$router.push({ name: 'conference', params: parameters });
+    },
+    async joinWithInviteLink() {
+      var model = {
+        conferenceID: this.conference.conferenceID,
+        inviteCode: this.conferenceInviteCode
+      };
+
+      try {
+        await axios.post('/api/conference/JoinWithInviteLink', model);
+        await this.refreshConferenceYear();
+      } catch (error) {
+        this.errorInfo = 'Something went wrong joining the conference.';
+      }
     }
   }
 };

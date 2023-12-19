@@ -172,7 +172,7 @@ public class ConferenceController : BaseLeagueController
         var conferenceViewModel = new ConferenceViewModel(validResult.ConferenceYear.Conference, validResult.Relationship.ConferenceManager,
             validResult.Relationship.InConference, validResult.PlayersInConference, conferenceLeagues);
 
-        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears);
+        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears, validResult.LeaguesThatUserIsIn);
         return Ok(conferenceYearViewModel);
     }
 
@@ -225,7 +225,6 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("Write")]
-    [Authorize("PlusUser")]
     public async Task<IActionResult> JoinWithInviteLink([FromBody] JoinConferenceWithInviteLinkRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.AllowAnonymous);

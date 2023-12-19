@@ -313,7 +313,8 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         var conferenceLeagueYears = await _conferenceService.GetLeagueYearsInConferenceYear(conferenceYear);
+        var leaguesThatUserIsIn = await _conferenceService.GetLeaguesInConferenceUserIsIn(conferenceYear, currentUserRecord.ToNullable());
         ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
-        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, playersInConference, relationship, conferenceLeagueYears), null);
+        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, playersInConference, relationship, conferenceLeagueYears, leaguesThatUserIsIn), null);
     }
 }
