@@ -56,7 +56,7 @@
             <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: year } }" class="league-link">
               {{ data.item.leagueName }}
             </router-link>
-            <font-awesome-icon v-if="!data.item.userIsInLeague" icon="user" v-b-popover.hover="'You are in this league.'" />
+            <font-awesome-icon v-if="data.item.userIsInLeague" icon="user" v-b-popover.hover="'You are in this league.'" />
           </template>
           <template #cell(leagueManager)="data">{{ data.item.leagueManager.displayName }}</template>
         </b-table>
