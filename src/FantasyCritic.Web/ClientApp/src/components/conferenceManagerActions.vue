@@ -9,7 +9,6 @@
       <b-dropdown-item v-b-modal="'editConferenceSettings'">Edit Conference Settings</b-dropdown-item>
       <b-dropdown-item v-b-modal="'promoteNewConferenceManager'">Promote New Conference Manager</b-dropdown-item>
       <b-dropdown-item v-b-modal="'reassignLeagueManager'">Reassign League Managers</b-dropdown-item>
-      <b-dropdown-item v-b-modal="'startNewConferenceYear'">Start New Year</b-dropdown-item>
     </b-dropdown>
     <div>
       <AddLeagueToConference></AddLeagueToConference>
@@ -18,7 +17,6 @@
       <InvitePlayers></InvitePlayers>
       <PromoteNewConferenceManager></PromoteNewConferenceManager>
       <ReassignLeagueManager></ReassignLeagueManager>
-      <StartNewConferenceYear></StartNewConferenceYear>
     </div>
   </div>
 </template>
@@ -29,7 +27,6 @@ import EditConferenceSettings from '@/components/modals/conference/editConferenc
 import InvitePlayers from '@/components/modals/conference/invitePlayers.vue';
 import PromoteNewConferenceManager from '@/components/modals/conference/promoteNewConferenceManager.vue';
 import ReassignLeagueManager from '@/components/modals/conference/reassignLeagueManager.vue';
-import StartNewConferenceYear from '@/components/modals/conference/startNewConferenceYear.vue';
 
 export default {
   components: {
@@ -38,8 +35,7 @@ export default {
     EditConferenceSettings,
     InvitePlayers,
     PromoteNewConferenceManager,
-    ReassignLeagueManager,
-    StartNewConferenceYear
+    ReassignLeagueManager
   }
 };
 </script>
