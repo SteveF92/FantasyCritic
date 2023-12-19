@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
@@ -17,13 +18,15 @@ public class ConferenceController : BaseLeagueController
 {
     private readonly IClock _clock;
     private readonly ILogger<ConferenceController> _logger;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public ConferenceController(IClock clock, ILogger<ConferenceController> logger, FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService,
-        InterLeagueService interLeagueService, LeagueMemberService leagueMemberService, ConferenceService conferenceService)
+        InterLeagueService interLeagueService, LeagueMemberService leagueMemberService, ConferenceService conferenceService, EnvironmentConfiguration environmentConfiguration)
         : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService)
     {
         _clock = clock;
         _logger = logger;
+        _environmentConfiguration = environmentConfiguration;
     }
 
     [HttpPost]
@@ -252,6 +255,23 @@ public class ConferenceController : BaseLeagueController
         }
 
         return Ok();
+    }
+
+    [HttpGet("{conferenceID}")]
+    public async Task<IActionResult> InviteLinks(Guid conferenceID)
+    {
+        var conferenceRecord = await GetExistingConference(conferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+        var validResult = conferenceRecord.ValidResult!;
+        var conference = validResult.Conference;
+
+        int currentYear = conference.Years.Max();
+        IReadOnlyList<ConferenceInviteLink> activeLinks = await _conferenceService.GetActiveInviteLinks(conference);
+        var viewModels = activeLinks.Select(x => new ConferenceInviteLinkViewModel(x, currentYear, _environmentConfiguration.BaseAddress));
+        return Ok(viewModels);
     }
 
     [HttpPost]

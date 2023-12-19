@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     invitePlayer() {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID,
         inviteEmail: this.inviteEmail,
         inviteDisplayName: this.inviteDisplayName,
@@ -96,7 +96,7 @@ export default {
         });
     },
     createInviteLink() {
-      var model = {
+      const model = {
         leagueID: this.league.leagueID
       };
       axios
