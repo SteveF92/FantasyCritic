@@ -9,7 +9,8 @@ public interface IConferenceRepo
     Task<Conference?> GetConference(Guid conferenceID);
     Task<ConferenceYear?> GetConferenceYear(Guid conferenceID, int year);
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference);
-    Task<IReadOnlySet<Guid>> GetLeaguesInConferenceUserIsIn(ConferenceYear conferenceYear, FantasyCriticUser user);
+    Task<IReadOnlyList<ConferencePlayer>> GetPlayersInConference(Conference conference);
+    Task RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser);
     Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference);
     Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear);
     Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference);

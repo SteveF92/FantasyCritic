@@ -1,27 +1,14 @@
 using FantasyCritic.Lib.Domain.Conferences;
-using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.Responses.Conferences;
 
 public class ConferenceViewModel
 {
-    public ConferenceViewModel(Conference domain, bool isManager, bool userIsInConference)
+    public ConferenceViewModel(Conference domain, bool isManager, bool userIsInConference, IReadOnlyList<ConferencePlayer> players, IEnumerable<ConferenceLeague> conferenceLeagues)
     {
         ConferenceID = domain.ConferenceID;
         ConferenceName = domain.ConferenceName;
-        ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager);
-        IsManager = isManager;
-        Years = domain.Years;
-        ActiveYear = domain.Years.Max();
-        CustomRulesConference = domain.CustomRulesConference;
-        UserIsInConference = userIsInConference;
-    }
-    
-    public ConferenceViewModel(Conference domain, bool isManager, bool userIsInConference, IEnumerable<FantasyCriticUser> players, IEnumerable<ConferenceLeague> conferenceLeagues)
-    {
-        ConferenceID = domain.ConferenceID;
-        ConferenceName = domain.ConferenceName;
-        ConferenceManager = new ConferencePlayerViewModel(domain, domain.ConferenceManager);
+        ConferenceManager = new ConferencePlayerViewModel(domain, players.Single(x => x.User.Id == domain.ConferenceManager.Id));
         IsManager = isManager;
         Years = domain.Years;
         ActiveYear = domain.Years.Max();

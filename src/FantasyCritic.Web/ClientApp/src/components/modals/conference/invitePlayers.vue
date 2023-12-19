@@ -1,9 +1,10 @@
 <template>
-  <b-modal id="invitePlayers" ref="invitePlayersRef" title="Invite Players" hide-footer @hidden="clearData" @show="fetchInviteLinks">
+  <b-modal id="invitePlayers" ref="invitePlayersRef" title="Invite/Remove Players" hide-footer @hidden="clearData" @show="fetchInviteLinks" size="lg">
     <div v-show="errorInfo" class="alert alert-danger">
       {{ errorInfo }}
     </div>
     <div>
+      <h3 class="text-black">Invite Links</h3>
       <label>To invite players to your conference, create a link, and send it to anyone you want to invite.</label>
       <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
         <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
@@ -12,6 +13,15 @@
       </div>
       <br />
       <b-button variant="primary" size="sm" @click="createInviteLink()">Create Invite Link</b-button>
+    </div>
+    <hr />
+    <h3 class="text-black">Remove Players</h3>
+    <div>
+      <b-table :items="conference.players" :fields="conferencePlayerFields" bordered small responsive striped>
+        <template #cell(removePlayer)="data">
+          <b-button size="sm" variant="danger" @click="removePlayer(data.item.userID)">Remove Player</b-button>
+        </template>
+      </b-table>
     </div>
   </b-modal>
 </template>
@@ -24,7 +34,13 @@ export default {
   data() {
     return {
       inviteLinks: null,
-      errorInfo: ''
+      errorInfo: '',
+      conferencePlayerFields: [
+        { key: 'displayName', label: 'Username', thClass: 'bg-primary' },
+        { key: 'numberOfLeaguesIn', label: 'Leagues In', thClass: 'bg-primary' },
+        { key: 'numberOfLeaguesManaging', label: 'Leagues Managing', thClass: 'bg-primary' },
+        { key: 'removePlayer', label: '', thClass: 'bg-primary' }
+      ]
     };
   },
   methods: {
@@ -64,6 +80,19 @@ export default {
         this.errorInfo = error.response.data;
       }
     },
+    async removePlayer(userID) {
+      const model = {
+        conferenceID: this.conference.conferenceID,
+        userID: userID
+      };
+
+      try {
+        await axios.post('/api/conference/RemovePlayerFromConference', model);
+        await this.refreshConferenceYear();
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
+    },
     clearData() {
       this.inviteLinks = null;
     }
@@ -71,16 +100,6 @@ export default {
 };
 </script>
 <style scoped>
-.email-form {
-  margin-bottom: 10px;
-}
-.text-black {
-  color: black !important;
-}
-.display-number-label {
-  font-size: 35px;
-  margin-right: 3px;
-}
 .invite-link {
   display: flex;
 }

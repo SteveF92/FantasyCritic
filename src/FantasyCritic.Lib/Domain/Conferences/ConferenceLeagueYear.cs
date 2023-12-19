@@ -9,4 +9,5 @@ public class ConferenceLeagueYear
 
     public ConferenceLeague League { get; }
     public int Year { get; }
+    public LeagueYearKey LeagueYearKey => new LeagueYearKey(League.LeagueID, Year);
 }

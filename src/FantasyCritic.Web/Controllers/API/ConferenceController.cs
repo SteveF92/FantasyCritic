@@ -172,7 +172,7 @@ public class ConferenceController : BaseLeagueController
         var conferenceViewModel = new ConferenceViewModel(validResult.ConferenceYear.Conference, validResult.Relationship.ConferenceManager,
             validResult.Relationship.InConference, validResult.PlayersInConference, conferenceLeagues);
 
-        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears, validResult.LeaguesThatUserIsIn);
+        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears, validResult.PlayersInConference, validResult.CurrentUser);
         return Ok(conferenceYearViewModel);
     }
 
@@ -271,6 +271,34 @@ public class ConferenceController : BaseLeagueController
         IReadOnlyList<ConferenceInviteLink> activeLinks = await _conferenceService.GetActiveInviteLinks(conference);
         var viewModels = activeLinks.Select(x => new ConferenceInviteLinkViewModel(x, currentYear, _environmentConfiguration.BaseAddress));
         return Ok(viewModels);
+    }
+
+    [HttpPost]
+    [Authorize("Write")]
+    public async Task<IActionResult> RemovePlayerFromConference([FromBody] RemovePlayerFromConferenceRequest request)
+    {
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+
+        var validResult = conferenceRecord.ValidResult!;
+        var conference = validResult.Conference;
+
+        var removeUser = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (removeUser is null)
+        {
+            return BadRequest("That user does not exist.");
+        }
+
+        var removeResult = await _conferenceService.RemovePlayerFromConference(conference, removeUser);
+        if (removeResult.IsFailure)
+        {
+            return BadRequest(removeResult.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]

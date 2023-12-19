@@ -82,6 +82,11 @@ public class ConferenceService
         return _conferenceRepo.GetUsersInConference(conference);
     }
 
+    public Task<IReadOnlyList<ConferencePlayer>> GetPlayersInConference(Conference conference)
+    {
+        return _conferenceRepo.GetPlayersInConference(conference);
+    }
+
     public Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference)
     {
         return _conferenceRepo.GetLeaguesInConference(conference);
@@ -205,13 +210,23 @@ public class ConferenceService
         return leagueYears;
     }
 
-    public Task<IReadOnlySet<Guid>> GetLeaguesInConferenceUserIsIn(ConferenceYear conferenceYear, FantasyCriticUser? user)
+    public async Task<Result> RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser)
     {
-        if (user is null)
+        if (conference.ConferenceManager.Equals(removeUser))
         {
-            return Task.FromResult<IReadOnlySet<Guid>>(new HashSet<Guid>());
+            return Result.Failure("You cannot remove the conference manager from the conference.");
         }
-        
-        return _conferenceRepo.GetLeaguesInConferenceUserIsIn(conferenceYear, user);
+
+        foreach (var league in conference.LeaguesInConference)
+        {
+            var leaguePlayers = await _fantasyCriticRepo.GetUsersInLeague(league);
+            if (leaguePlayers.Contains(removeUser))
+            {
+                return Result.Failure("That player has already joined at least one league in the conference, so they cannot be removed from the conference without first being removed from all leagues.");
+            }
+        }
+
+        await _conferenceRepo.RemovePlayerFromConference(conference, removeUser);
+        return Result.Success();
     }
 }

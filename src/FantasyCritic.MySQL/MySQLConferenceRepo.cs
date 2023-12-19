@@ -146,24 +146,64 @@ public class MySQLConferenceRepo : IConferenceRepo
         return userEntities.Select(x => x.ToDomain()).ToList();
     }
 
-    public async Task<IReadOnlySet<Guid>> GetLeaguesInConferenceUserIsIn(ConferenceYear conferenceYear, FantasyCriticUser user)
+    public async Task<IReadOnlyList<ConferencePlayer>> GetPlayersInConference(Conference conference)
     {
-        const string sql = """
-                           SELECT tbl_league_activeplayer.LeagueID FROM tbl_league_activeplayer
-                           JOIN tbl_league ON tbl_league_activeplayer.LeagueID = tbl_league.LeagueID
-                           WHERE tbl_league.ConferenceID = @conferenceID AND tbl_league_activeplayer.Year = @YEAR AND tbl_league_activeplayer.UserID = @userID;
-                           """;
+        const string leagueManagerSQL = "select LeagueID, LeagueManager from tbl_league where ConferenceID = @conferenceID;";
+        const string leagueUserSQL = """
+                                     select tbl_league_hasuser.LeagueID, tbl_league_hasuser.UserID
+                                     from tbl_league_hasuser join tbl_league on tbl_league_hasuser.LeagueID = tbl_league.LeagueID
+                                     where tbl_league.ConferenceID = @conferenceID;
+                                     """;
+        const string activePlayerSQL = """
+                                       SELECT tbl_league_activeplayer.LeagueID, tbl_league_activeplayer.Year, tbl_league_activeplayer.UserID FROM tbl_league_activeplayer
+                                       JOIN tbl_league ON tbl_league_activeplayer.LeagueID = tbl_league.LeagueID
+                                       WHERE tbl_league.ConferenceID = @conferenceID;
+                                       """;
+
         var queryObject = new
         {
-            conferenceID = conferenceYear.Conference.ConferenceID,
-            year = conferenceYear.Year,
-            userID = user.Id
+            conferenceID = conference.ConferenceID
+        };
+
+        var usersInConference = await GetUsersInConference(conference);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var leagueManagers = await connection.QueryAsync<LeagueManagerEntity>(leagueManagerSQL, queryObject);
+        var leagueUsers = await connection.QueryAsync<LeagueUserEntity>(leagueUserSQL, queryObject);
+        var leagueActivePlayers = await connection.QueryAsync<LeagueActivePlayerEntity>(activePlayerSQL, queryObject);
+
+        var leagueManagerLookup = leagueManagers.ToLookup(x => x.LeagueManager);
+        var leagueUserLookup = leagueUsers.ToLookup(x => x.UserID);
+        var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
+
+        List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
+        foreach (var user in usersInConference)
+        {
+            var leaguesManaged = leagueManagerLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
+            var leaguesIn = leagueUserLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
+            var leagueYearsActiveIn = leagueActivePlayerLookup[user.Id].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
+            var player = new ConferencePlayer(user, leaguesManaged, leaguesIn, leagueYearsActiveIn);
+            conferencePlayers.Add(player);
+        }
+        
+        return conferencePlayers;
+    }
+
+    public async Task RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser)
+    {
+        const string sql = """
+                           delete from tbl_conference_hasuser
+                           where ConferenceID = @conferenceID and UserID = @userID;
+                           """;
+        
+        var deleteParam = new
+        {
+            conferenceID = conference.ConferenceID,
+            userID = removeUser.Id
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(sql, queryObject);
-
-        return leagueIDs.ToHashSet();
+        await connection.ExecuteAsync(sql, deleteParam);
     }
 
     public async Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference)

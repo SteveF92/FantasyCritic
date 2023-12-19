@@ -251,7 +251,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<ConferenceRecord>(BadRequest("Conference does not exist."));
         }
 
-        var playersInConference = await _conferenceService.GetUsersInConference(conference);
+        var playersInConference = await _conferenceService.GetPlayersInConference(conference);
         bool isInConference = false;
         bool isConferenceManager = false;
         bool userIsAdmin = false;
@@ -264,7 +264,7 @@ public abstract class BaseLeagueController : FantasyCriticController
                 return GetFailedResult<ConferenceRecord>(Forbid());
             }
 
-            isInConference = isConferenceManager || playersInConference.Any(x => x.Id == currentUserRecord.Value.Id);
+            isInConference = isConferenceManager || playersInConference.Any(x => x.User.Id == currentUserRecord.Value.Id);
         }
 
         if (!isInConference && requiredRelationship.MustBeInConference)
@@ -291,7 +291,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<ConferenceYearRecord>(BadRequest("Conference year does not exist."));
         }
 
-        var playersInConference = await _conferenceService.GetUsersInConference(conferenceYear.Conference);
+        var playersInConference = await _conferenceService.GetPlayersInConference(conferenceYear.Conference);
         bool isInConference = false;
         bool isConferenceManager = false;
         bool userIsAdmin = false;
@@ -304,7 +304,7 @@ public abstract class BaseLeagueController : FantasyCriticController
                 return GetFailedResult<ConferenceYearRecord>(Forbid());
             }
 
-            isInConference = isConferenceManager || playersInConference.Any(x => x.Id == currentUserRecord.Value.Id);
+            isInConference = isConferenceManager || playersInConference.Any(x => x.User.Id == currentUserRecord.Value.Id);
         }
 
         if (!isInConference && requiredRelationship.MustBeInConference)
@@ -313,8 +313,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         var conferenceLeagueYears = await _conferenceService.GetLeagueYearsInConferenceYear(conferenceYear);
-        var leaguesThatUserIsIn = await _conferenceService.GetLeaguesInConferenceUserIsIn(conferenceYear, currentUserRecord.ToNullable());
         ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
-        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, playersInConference, relationship, conferenceLeagueYears, leaguesThatUserIsIn), null);
+        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, playersInConference, relationship, conferenceLeagueYears), null);
     }
 }
