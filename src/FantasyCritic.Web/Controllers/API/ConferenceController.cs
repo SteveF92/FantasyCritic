@@ -69,6 +69,12 @@ public class ConferenceController : BaseLeagueController
     [Authorize("PlusUser")]
     public async Task<IActionResult> AddLeagueToConference([FromBody] AddLeagueToConferenceRequest request)
     {
+        var requestValid = request.IsValid();
+        if (requestValid.IsFailure)
+        {
+            return BadRequest(requestValid.Error);
+        }
+        
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
         if (conferenceRecord.FailedResult is not null)
         {
