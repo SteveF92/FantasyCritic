@@ -266,6 +266,7 @@ public class MySQLConferenceRepo : IConferenceRepo
     public async Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference)
     {
         const string conferenceSQL = "update tbl_conference set ConferenceName = @conferenceName, CustomRulesConference = @customRulesConference where ConferenceID = @conferenceID;";
+        const string leagueSQL = "update tbl_league set CustomRulesLeague = @customRulesConference where ConferenceID = @conferenceID;";
         var queryObject = new
         {
             conferenceID = conference.ConferenceID,
@@ -274,7 +275,11 @@ public class MySQLConferenceRepo : IConferenceRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(conferenceSQL, queryObject);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(conferenceSQL, queryObject, transaction);
+        await connection.ExecuteAsync(leagueSQL, queryObject, transaction);
+        await transaction.CommitAsync();
     }
 
     public async Task<IReadOnlyList<ConferenceInviteLink>> GetInviteLinks(Conference conference)

@@ -10,6 +10,12 @@ let conferenceMixin = {
   methods: {
     refreshConferenceYear() {
       return this.$store.dispatch('refreshConferenceYear');
+    },
+    async notifyAction(message) {
+      await this.$store.dispatch('refreshConferenceYear');
+      if (message) {
+        this.makeToast(message);
+      }
     }
   }
 };

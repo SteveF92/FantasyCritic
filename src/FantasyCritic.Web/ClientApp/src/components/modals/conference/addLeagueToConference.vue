@@ -1,11 +1,15 @@
 <template>
-  <b-modal id="addLeagueToConference" ref="addLeagueToConferenceRef" title="Add League to Conference" @hidden="clearData">
+  <b-modal id="addLeagueToConference" ref="addLeagueToConferenceRef" title="Add League to Conference" size="lg" @hidden="clearData">
     <div class="alert alert-info">
-      All leagues added to your conference will start with the same options as the first league in the conference. You only need to chose the league name, and the league manager. Both can be changed
+      All leagues added to your conference will start with the same options as the primary league in the conference. You only need to chose the league name, and the league manager. Both can be changed
       later.
       <br />
-
+      <br />
       The league manager can be any user in the conference, including you (the conference manager).
+      <br />
+      <br />
+      Note! You should make sure you are happy with the settings in the primary league (how many games per player, what games are allowed, etc.) before creating additional leagues. While you can
+      change league settings after they are created, it's easier to get it all right from the start.
     </div>
 
     <div class="form-horizontal">
@@ -57,7 +61,7 @@ export default {
       try {
         await axios.post('/api/conference/AddLeagueToConference', model);
         this.$refs.addLeagueToConferenceRef.hide();
-        await this.refreshConferenceYear();
+        await this.notifyAction('A new league has been added.');
       } catch (error) {
         this.errorInfo = error.response.data;
       }
