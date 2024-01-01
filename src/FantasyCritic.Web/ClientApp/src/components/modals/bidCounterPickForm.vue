@@ -159,6 +159,7 @@ export default {
 
 .search-tags {
   display: flex;
+  flex-wrap: wrap;
   padding: 5px;
   background: rgba(50, 50, 50, 0.7);
   border-radius: 5px;
