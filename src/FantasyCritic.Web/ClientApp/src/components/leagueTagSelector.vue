@@ -97,11 +97,6 @@ export default {
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     }
   },
-  watch: {
-    value() {
-      this.initializeValues();
-    }
-  },
   mounted() {
     this.initializeValues();
   },
