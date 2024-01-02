@@ -327,7 +327,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             }
         }
 
-        return winners.SealDictionary();
+        return winners.ToDictionary(x => x.Key, y => (IReadOnlyList<RoyaleYearQuarter>) y.Value.OrderBy(x => x.YearQuarter).ToList());
     }
 
     public async Task StartNewQuarter(YearQuarter nextQuarter)
