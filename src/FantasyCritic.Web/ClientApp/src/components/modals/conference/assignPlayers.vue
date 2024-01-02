@@ -1,3 +1,3 @@
 <template>
-  <b-modal id="assignPlayers" ref="assignPlayersRef" title="Assign Players"></b-modal>
+  <b-modal id="assignPlayers" ref="assignPlayersRef" title="Assign Players" size="lg"></b-modal>
 </template>
