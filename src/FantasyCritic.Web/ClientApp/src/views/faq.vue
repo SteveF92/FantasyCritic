@@ -234,8 +234,8 @@
         <template #header>How does the 'public' bidding system work?</template>
         <template #body>
           <p>
-            This option is new for 2022. It is very similar to the standard 'secret' system, with one critical difference. The week is divided into two sections - the 'secret' section, and the
-            'public' section. From Saturday night, after the previous week of bids process, until Thursday night at 8PM Eastern, all bids are made privately, just like they are in the standard system.
+            The 'public' bidding is very similar to the standard 'secret' system, with one critical difference. The week is divided into two sections - the 'secret' section, and the 'public' section.
+            From Saturday night, after the previous week of bids process, until Thursday night at 8PM Eastern, all bids are made privately, just like they are in the standard system.
           </p>
 
           <p>
@@ -252,6 +252,19 @@
             The intention of this system to help prevent one "highly tuned in" player from dominating a league by always being the first to know about new games. If half of your players frequently
             find themselves saying something like: "Hey I didn't even know that game got announced and you already picked it up for $1. I have no shot at winning!", then you should consider this
             setting. If your leagues are already very competitive, we reccommend sticking with the 'secret' bidding system.
+          </p>
+
+          <p>Since this feature was first added, some players have found ways to "game the system" a bit. Examples include:</p>
+          <ul>
+            <li>Bidding $0 on a game that you expect to be bad, with the intention of baiting another player into bidding on and winning the game.</li>
+            <li>
+              Bidding on more game than you have spots remaining, to disguise your true intentions. For example, you have one slot left, and you bid on 20 games, with the game you actually want at
+              priority 1 with the highest dollar value.
+            </li>
+          </ul>
+          <p>
+            Both of these examples should be considered "bad faith bidding", or, bidding on a game that you don't actually intend to win. I have not figure out a way to have the site stop players from
+            doing these things, but league managers should be aware of them and discourage them. They violate the spirit of the system.
           </p>
         </template>
       </collapseCard>
@@ -728,7 +741,7 @@
             access. This is true even if they get reviews while in early access, which is rare.
           </p>
           <p>
-            However, new for 2023, leagues can choose to enable "Only Needs Score" mode, which would mean that an early access game that gets reviews and an OpenCritic score
+            However, starting with the 2023 season, leagues can choose to enable "Only Needs Score" mode, which would mean that an early access game that gets reviews and an OpenCritic score
             <em>would</em>
             count for points.
           </p>
@@ -989,9 +1002,9 @@
         <template #header>What is a 'Special Game Slot'?</template>
         <template #body>
           <p>
-            New for 2022, special roster slots allow your league to specify a requirement of certain game types in each roster, including games that are banned in your normal league rules. For example
-            even if your league doesn’t allow yearly installments, you can require each publisher to have one yearly installment on their roster. This slot will only give points for games that meet
-            its designated requirements.
+            Special game slots allow your league to specify a requirement of certain game types in each roster, including games that are banned in your normal league rules. For example even if your
+            league doesn’t allow yearly installments, you can require each publisher to have one yearly installment on their roster. This slot will only give points for games that meet its designated
+            requirements.
           </p>
 
           <p>
