@@ -22,5 +22,5 @@ public interface IConferenceRepo
     Task AddPlayerToConference(Conference conference, FantasyCriticUser inviteUser);
     Task TransferConferenceManager(Conference conference, FantasyCriticUser newManager);
     Task EditDraftStatusForConferenceYear(ConferenceYear conferenceYear, bool openForDrafting);
-    Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, IReadOnlyDictionary<ConferenceLeague, IReadOnlyList<FantasyCriticUser>> userAssignments);
+    Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, IReadOnlyList<ConferenceLeague> conferenceLeagues, IReadOnlyDictionary<ConferenceLeague, IReadOnlyList<FantasyCriticUser>> userAssignments);
 }

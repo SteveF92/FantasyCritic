@@ -9,13 +9,13 @@ public class ConferencePlayerViewModel
         UserID = conferencePlayer.User.Id;
         DisplayName = conferencePlayer.User.UserName;
         IsConferenceManager = conference.ConferenceManager.Equals(conferencePlayer.User);
-        NumberOfLeaguesIn = conferencePlayer.LeaguesIn.Count;
-        NumberOfLeaguesManaging = conferencePlayer.LeaguesManaging.Count;
+        LeaguesIn = conferencePlayer.LeaguesIn;
+        LeaguesManaging = conferencePlayer.LeaguesManaging;
     }
 
     public Guid UserID { get; }
     public string DisplayName { get; }
     public bool IsConferenceManager { get; }
-    public int NumberOfLeaguesIn { get; }
-    public int NumberOfLeaguesManaging { get; }
+    public IReadOnlySet<Guid> LeaguesIn { get; }
+    public IReadOnlySet<Guid> LeaguesManaging { get; }
 }

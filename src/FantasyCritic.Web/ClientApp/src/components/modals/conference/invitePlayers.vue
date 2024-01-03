@@ -37,8 +37,8 @@ export default {
       errorInfo: '',
       conferencePlayerFields: [
         { key: 'displayName', label: 'Username', thClass: 'bg-primary' },
-        { key: 'numberOfLeaguesIn', label: 'Leagues In', thClass: 'bg-primary' },
-        { key: 'numberOfLeaguesManaging', label: 'Leagues Managing', thClass: 'bg-primary' },
+        { key: 'leaguesIn.length', label: 'Leagues In', thClass: 'bg-primary' },
+        { key: 'leaguesManaging.length', label: 'Leagues Managing', thClass: 'bg-primary' },
         { key: 'removePlayer', label: '', thClass: 'bg-primary' }
       ]
     };

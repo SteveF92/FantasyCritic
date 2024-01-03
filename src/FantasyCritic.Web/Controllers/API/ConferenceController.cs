@@ -405,23 +405,27 @@ public class ConferenceController : BaseLeagueController
                 return BadRequest("One or more of the requested leagues is not in the conference.");
             }
 
-            var user = userDictionary.GetValueOrDefault(assignment.Value);
-            if (user is null)
+            foreach (var userID in assignment.Value)
             {
-                return BadRequest("One or more of the requested users is not in the conference.");
-            }
+                var user = userDictionary.GetValueOrDefault(userID);
+                if (user is null)
+                {
+                    return BadRequest("One or more of the requested users is not in the conference.");
+                }
 
-            if (userAssignments.ContainsKey(league))
-            {
-                userAssignments[league].Add(user);
+                if (userAssignments.ContainsKey(league))
+                {
+                    userAssignments[league].Add(user);
+                }
+                else
+                {
+                    userAssignments.Add(league, new List<FantasyCriticUser> { user });
+                }
             }
-            else
-            {
-                userAssignments.Add(league, new List<FantasyCriticUser> { user });
-            }
+            
         }
         
-        var assignResult = await _conferenceService.AssignLeaguePlayers(conferenceYear, userAssignments.SealDictionary());
+        var assignResult = await _conferenceService.AssignLeaguePlayers(conferenceYear, leaguesInConference, userAssignments.SealDictionary());
         if (assignResult.IsFailure)
         {
             return BadRequest(assignResult.Error);

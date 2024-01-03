@@ -17,7 +17,7 @@ public class ConferenceViewModel
 
         Players = players.Select(x => new ConferencePlayerViewModel(domain, x)).ToList();
 
-        LeaguesInConference = conferenceLeagues.Select(x => new ConferenceLeagueViewModel(x)).ToList();
+        LeaguesInConference = conferenceLeagues.Select(x => new ConferenceLeagueViewModel(x)).OrderByDescending(x => x.LeagueID == domain.PrimaryLeagueID).ToList();
         PrimaryLeague = LeaguesInConference.Single(x => x.LeagueID == domain.PrimaryLeagueID);
     }
 
