@@ -8,6 +8,7 @@
       <ul>
         <li><router-link :to="{ hash: '#general' }">General</router-link></li>
         <li><router-link :to="{ hash: '#league-creation' }">League Creation</router-link></li>
+        <li><router-link :to="{ hash: '#conferences' }">Conferences</router-link></li>
         <li><router-link :to="{ hash: '#drafting' }">Drafting</router-link></li>
         <li><router-link :to="{ hash: '#bidding-system' }">Bidding System</router-link></li>
         <li><router-link :to="{ hash: '#dropping-games' }">Dropping Games</router-link></li>
@@ -154,6 +155,56 @@
         </template>
       </collapseCard>
       <br />
+
+      <h2><a id="conferences">Conferences</a></h2>
+      <collapseCard>
+        <template #header>What are conferences?</template>
+        <template #body>
+          Conferences are a new feature for 2024. They are intended for large groups that do not fit into one league. If you have a group of, say, 50 people, there has not been a good way for you to
+          play Fantasy Critic until now. With conferences, you can split your group into seperate leagues, but keep those leagues linked together. This allows you to see cross-league standings, makes
+          management easier, and more.
+        </template>
+      </collapseCard>
+      <collapseCard>
+        <template #header>Are there requirements to use conferences?</template>
+        <template #body>
+          The conference manager must be a
+          <router-link :to="{ name: 'fantasyCriticPlus' }" title="Fantasy Critic Plus">Fantasy Critic Plus</router-link>
+          user, which is a Patreon tier. Everyone else in the conference can be a regular user.
+        </template>
+      </collapseCard>
+      <collapseCard>
+        <template #header>How do I get started with conferences?</template>
+        <template #body>
+          After creating a conference, you will create the Primary League, with all the settings that entails. By default, you will be the manager of this league. From there, there are a few steps to
+          take:
+          <ol>
+            <li>Invite more players to your conference.</li>
+            <li>Create more leagues with settings copied from the Primary League.</li>
+            <li>Assign players to the various leagues.</li>
+          </ol>
+        </template>
+      </collapseCard>
+      <collapseCard>
+        <template #header>Who manages the leagues in the conference?</template>
+        <template #body>
+          Any user in the conference can manage any league in the conference, even if they are not in that specific league. So there are a few reasonable options:
+          <ul>
+            <li>The conference manager manages and players in the Primary League, and assigns chosen conference members to manage the other leagues.</li>
+            <li>The conference manager manages all leagues and plays in all of them.</li>
+            <li>The conference manager manages all leagues, but only plays in one of them (probably the Primary League).</li>
+            <li>The conference manager doesn't play in or manage any leagues, just oversees things.</li>
+          </ul>
+        </template>
+      </collapseCard>
+      <collapseCard>
+        <template #header>What happens if a league manager decides to break agreed upon conference rules?</template>
+        <template #body>
+          At the technical level, the league managers still have full control over the leagues, such as changing rules, adding/removing games and players, etc. However, when a league is a part of a
+          conference, the conference manager always has the ability to take league manager powers away from a player and make a different player from the conference the new league manager. Hopefully
+          this feature is very rarely used, but it is there in case it is needed.
+        </template>
+      </collapseCard>
 
       <h2><a id="drafting">Drafting</a></h2>
       <collapseCard>
