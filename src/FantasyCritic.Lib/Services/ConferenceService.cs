@@ -168,10 +168,10 @@ public class ConferenceService
             return Result.Failure("League is not in this conference.");
         }
 
-        var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(leagueID);
-        if (!usersInLeague.Contains(newManager))
+        var usersInConference = await _conferenceRepo.GetUsersInConference(conference);
+        if (!usersInConference.Contains(newManager))
         {
-            return Result.Failure("That player is not in the league.");
+            return Result.Failure("That player is not in the conference.");
         }
 
         await _fantasyCriticRepo.TransferLeagueManager(league, newManager);

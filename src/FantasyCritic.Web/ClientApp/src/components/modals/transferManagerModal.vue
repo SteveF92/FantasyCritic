@@ -28,22 +28,18 @@ export default {
   },
   computed: {
     players() {
-      return this.league.players;
+      return this.league.players.filter((x) => x.userID !== this.userInfo.userID);
     }
   },
   methods: {
-    promoteNewManager() {
+    async promoteNewManager() {
       const model = {
         leagueID: this.league.leagueID,
         newManagerUserID: this.newManager.userID
       };
-      axios
-        .post('/api/leagueManager/PromoteNewLeagueManager', model)
-        .then(() => {
-          this.$refs.transferManagerFormRef.hide();
-          this.notifyAction('You have transferred league manager status.');
-        })
-        .catch(() => {});
+      await axios.post('/api/leagueManager/PromoteNewLeagueManager', model);
+      this.$refs.transferManagerFormRef.hide();
+      this.notifyAction('You have transferred league manager status.');
     },
     clearData() {
       this.newManager = null;
