@@ -77,18 +77,30 @@
           Podcast - airs in about a week. I couldn't be more excited for people to start playing. I hope you find it as entertaining as my friends and I already have.
         </p>
 
-        <h4>2 Years later</h4>
+        <h4>2021 Update</h4>
         <p>
-          Fantasy Critic has now been live for 2 full years. The site has grown from just my closest friends
-          <span class="inside-joke">(and one buddy)</span>
-          to nearly ten thousand users. There are now a handful of extremely engaged users that frequently assist with answering user questions, fixing errors with the games list, and even
-          contributing code. It's so incredible to me to see this community spring up around this thing I created. If you've been a user for a while, or you're just starting now, please know that I'm
-          super happy to have you here.
+          Fantasy Critic has now been live for 2 full years. The site has grown from just my closest friends to nearly ten thousand users. There are now a handful of extremely engaged users that
+          frequently assist with answering user questions, fixing errors with the games list, and even contributing code. It's so incredible to me to see this community spring up around this thing I
+          created. If you've been a user for a while, or you're just starting now, please know that I'm super happy to have you here.
         </p>
         <p>
           The site continues to grow in features as well. In late 2019 I added "Critic's Royale", with the goal of making the site easier to jump into. 2020 saw the addition of "game dropping", which
           was intended to keep people engaged throughout the year, even if some of their games get delayed. For 2021, the big new feature so far is a streamlining of the "eligibility" system, which
           let's you choose what games you can select in your leagues. I have more planned for later in the year as well, including a way to handle "shadow drops".
+        </p>
+
+        <h4>2024 Update</h4>
+        <p>
+          At the time I'm writing this, Fantasy Critic has now been live for 5 years. The site is close to thirty thousand users and is great shape overall. A few years ago I had the opportunity to
+          spend a few months working on the site full time, which was a great experience. Many new features were added during that time, and I started a Patreon which really helps to cover the server
+          costs to run the site. While the pace of updates has slowed since then, Fantasy Critic is still a very important project to me and I will continue to manage and update it for years to come.
+        </p>
+
+        <p>
+          2024 brings a few new features, most notably Conferences, which are intended to be used for groups that are too big to fit in one league. Another feature that deserves special mention is the
+          official Discord bot, which actually debuted late in the 2022 season but has now become an essential part of the site. For that, I need to give big thanks to
+          <a href="https://rardk.com" target="_blank">rardk64</a>
+          for this, who has been a great partner in development these past few years.
         </p>
       </div>
       <hr />
@@ -119,7 +131,14 @@
       <h2>Technical Credits</h2>
       <div class="text-well">
         <h3>Software Packages</h3>
-        <p>This site uses the following software packages heavily, and I wouldn't be able to create this site without them.</p>
+        <p>
+          This site uses the following software packages heavily, and I wouldn't be able to create this site without them. For full credits, check out the source code on
+          <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">
+            GitHub
+            <font-awesome-icon icon="external-link-alt" size="sm" />
+          </a>
+          .
+        </p>
 
         <ul>
           <li>ASP.NET Core</li>
@@ -129,7 +148,7 @@
           <li>IdentityServer</li>
           <li>Bootstrap</li>
           <li>Vue-Bootstrap</li>
-          <li>Webpack</li>
+          <li>Vite</li>
           <li>SignalR</li>
           <li>NodaTime</li>
           <li>Dapper</li>
@@ -137,23 +156,21 @@
           <li>MoreLINQ</li>
           <li>CSharpFunctionalExtensions</li>
           <li>Patreon.Net</li>
-          <li>RazorLight</li>
-          <li>NLog</li>
+          <li>Razor.Templating.Core</li>
+          <li>Serilog</li>
           <li>NUnit</li>
           <li>CSVHelper</li>
           <li>Python Packages (sklearn, numpy, pandas)</li>
+          <li>Discord.Net</li>
         </ul>
 
         <h3>Other Credits</h3>
         <ul>
           <li>
-            <a href="https://wildermuth.com/" target="_blank">Shawn Wildermuth</a>
-            , whose ASP.NET Core + Vue.JS tutorial gave me a great introduction to Vue.JS.
+            <a href="https://rardk.com/" target="_blank">rardk64</a>
+            , for co-developing the official Discord Bot with me.
           </li>
-          <li>
-            <a href="https://github.com/TrilonIO/aspnetcore-Vue-starter" target="_blank">Mark Piesak</a>
-            , for his excellent ASP.NET Core + Vue.JS template, which I used for a number of years.
-          </li>
+          <li>krahazed (Todd Coward), who works hard to keep the Master Games list accurate and up to date.</li>
           <li>
             <a href="https://github.com/AndrewKralovec" target="_blank">Andrew Kralovec</a>
             , for additional front end development.
@@ -165,6 +182,14 @@
           <li>
             <a href="https://twitter.com/WhatsGoode1" target="_blank">Matt Goode</a>
             , for the draft notification sound.
+          </li>
+          <li>
+            <a href="https://wildermuth.com/" target="_blank">Shawn Wildermuth</a>
+            , whose ASP.NET Core + Vue.JS tutorial gave me a great introduction to Vue.JS.
+          </li>
+          <li>
+            <a href="https://github.com/TrilonIO/aspnetcore-Vue-starter" target="_blank">Mark Piesak</a>
+            , for his excellent ASP.NET Core + Vue.JS template, which I used for a number of years.
           </li>
         </ul>
       </div>
@@ -202,23 +227,18 @@ export default {
       error: null
     };
   },
-  mounted() {
-    this.fetchDonors();
+  async created() {
+    await this.fetchDonors();
   },
   methods: {
-    fetchDonors() {
-      axios
-        .get('/api/general/donors')
-        .then((response) => {
-          this.donors = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchDonors() {
+      try {
+        const response = await axios.get('/api/general/donors');
+        this.donors = response.data;
+      } catch (error) {
+        this.error = error.response.data;
+      }
     }
   }
 };
 </script>
-<style>
-.inside-joke {
-  font-size: 0;
-}
-</style>
