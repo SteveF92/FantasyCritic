@@ -3491,6 +3491,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await connection.ExecuteAsync(sql, finishObject);
+        _supportedYearCache = null;
     }
 
     private async Task<PublisherGame?> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,

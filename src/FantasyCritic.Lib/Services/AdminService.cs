@@ -62,13 +62,8 @@ public class AdminService
     public async Task FullDataRefresh()
     {
         await RefreshCriticInfo();
-        await Task.Delay(1000);
         await RefreshGGInfo(false);
-
-        await Task.Delay(1000);
         await RefreshCaches();
-        await Task.Delay(1000);
-
         await UpdateFantasyPoints();
     }
 
@@ -274,8 +269,13 @@ public class AdminService
             var endDate = new LocalDate(supportedYear.Year, 12, 31);
             if (nycNow.Date > endDate)
             {
-                _logger.Information($"Automatically setting {supportedYear} as finished because date/time is: {nycNow}");
+                _logger.Information($"Beginning end of year process for {supportedYear} because date/time is: {nycNow}");
+
+                await RefreshCriticInfo();
+                await RefreshCaches();
                 await _interLeagueService.FinishYear(supportedYear);
+                await UpdateFantasyPoints();
+
                 var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
                 await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);
             }
