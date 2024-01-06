@@ -242,11 +242,18 @@ public class LeagueController : BaseLeagueController
             privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate, masterGameYearDictionary);
         }
 
+        bool conferenceDraftsNotEnabled = false;
+        if (leagueYear.League.ConferenceID.HasValue)
+        {
+            var conferenceYear = await _conferenceService.GetConferenceYear(leagueYear.League.ConferenceID.Value, leagueYear.Year);
+            conferenceDraftsNotEnabled = !conferenceYear!.OpenForDrafting;
+        }
+
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
         var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
         var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, true, currentDate)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager);
+        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);

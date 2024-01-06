@@ -19,7 +19,7 @@ public static class DraftFunctions
         return true;
     }
 
-    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager)
+    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
         if (leagueYear.PlayStatus.PlayStarted)
         {
@@ -36,7 +36,7 @@ public static class DraftFunctions
 
         if (activeUsers.Count() > 20)
         {
-            errors.Add("You cannot have more than 20 players in the league.");
+            errors.Add("You cannot have more than 20 players in the league. You should consider a conference.");
         }
 
         if (leagueYear.Publishers.Count != activeUsers.Count())
@@ -52,6 +52,11 @@ public static class DraftFunctions
         if (!leagueYear.DraftOrderSet)
         {
             errors.Add(isManager ? "You must set the draft order." : "Your league manager must set the draft order.");
+        }
+
+        if (conferenceDraftsNotEnabled)
+        {
+            errors.Add("The conference manager has not enabled drafting yet.");
         }
 
         return errors;
