@@ -43,6 +43,44 @@
           You have joined the conference, but your conference manager has not yet assigned you to any of the leagues in the conference.
         </div>
 
+        <template v-if="isConferenceManager && !conferenceYear.openForDrafting">
+          <div class="alert alert-info">
+            Now that your conference is created, here are the next steps:
+            <ol>
+              <li>Invite more players to your conference.</li>
+              <li>Create additional leagues based off of the primary league. You will need to choose a league manager for each league.</li>
+              <li>Assign all players in the conference to a league.</li>
+              <li>Enable drafting.</li>
+            </ol>
+            All of these actions can be accessed in the "Manager Actions" dropdown below.
+          </div>
+
+          <div class="alert alert-info">
+            <p v-if="numberOfPlayersInConferenceNotInAnyLeague > 1">
+              Your conference currently contains {{ numberOfPlayersInConference }} players, {{ numberOfPlayersInConferenceNotInAnyLeague }} of which have not been assigned to a league.
+            </p>
+            <p v-if="numberOfPlayersInConferenceNotInAnyLeague === 1">
+              Your conference currently contains {{ numberOfPlayersInConference }} players, {{ numberOfPlayersInConferenceNotInAnyLeague }} of which has not been assigned to a league.
+            </p>
+            <p v-else>Your conference currently contains {{ numberOfPlayersInConference }} players, all of which have been assigned to a league.</p>
+            <p>
+              It is recommended that you get your entire conference set up in terms of players before you enable drafting, but if you are ready now, click the button below to allow each league to
+              begin drafting. Each league manager still choose when to actually start the draft, but they cannot do so until you enable drafting at the conference level.
+            </p>
+            <b-button variant="success" @click="editDraftStatusForConferenceYear(true)">Enable Drafting</b-button>
+          </div>
+        </template>
+
+        <template v-if="conferenceYear.openForDrafting && numberOfLeaguesFinishedDrafting !== conferenceYear.leagueYears.length">
+          <div v-if="isConferenceManager && conferenceYear.openForDrafting" class="alert alert-success">
+            Your conference is ready to begin drafting! League managers can start drafts just like normal leagues.
+          </div>
+
+          <div class="alert alert-success">
+            There are currently {{ numberOfLeaguesStartedDrafting }} leagues drafting, and {{ numberOfLeaguesNotStartedDrafting }} that still need to start their drafts.
+          </div>
+        </template>
+
         <div class="conference-manager-section">
           <div class="conference-manager-info">
             <h4>Conference Manager:</h4>
@@ -58,6 +96,7 @@
             </router-link>
             <font-awesome-icon v-if="data.item.isPrimaryLeague" icon="chess-king" v-b-popover.hover="'This is the primary league, from which all other leagues share settings.'" />
             <font-awesome-icon v-if="data.item.userIsInLeague" icon="user" v-b-popover.hover="'You are in this league.'" />
+            <font-awesome-icon v-if="data.item.draftStarted && !data.item.draftFinal" icon="list-ol" v-b-popover.hover="'This league is currently drafting.'" />
           </template>
           <template #cell(leagueManager)="data">{{ data.item.leagueManager.displayName }}</template>
         </b-table>
@@ -89,6 +128,23 @@ export default {
         { key: 'leagueManager', label: 'League Manager', thClass: 'bg-primary' }
       ]
     };
+  },
+  computed: {
+    numberOfPlayersInConference() {
+      return this.conference.players.length;
+    },
+    numberOfPlayersInConferenceNotInAnyLeague() {
+      return this.conference.players.filter((x) => x.leaguesIn.length === 0).length;
+    },
+    numberOfLeaguesNotStartedDrafting() {
+      return this.conferenceYear.leagueYears.filter((x) => !x.draftStarted).length;
+    },
+    numberOfLeaguesStartedDrafting() {
+      return this.conferenceYear.leagueYears.filter((x) => x.draftStarted & !x.draftFinished).length;
+    },
+    numberOfLeaguesFinishedDrafting() {
+      return this.conferenceYear.leagueYears.filter((x) => x.draftFinished).length;
+    }
   },
   watch: {
     async $route(to, from) {
@@ -125,6 +181,19 @@ export default {
         await this.refreshConferenceYear();
       } catch (error) {
         this.errorInfo = 'Something went wrong joining the conference.';
+      }
+    },
+    async editDraftStatusForConferenceYear(enable) {
+      const model = {
+        conferenceID: this.conference.conferenceID,
+        year: this.conferenceYear.year,
+        openForDrafting: enable
+      };
+      try {
+        await axios.post('/api/conference/EditDraftStatusForConferenceYear', model);
+        await this.notifyAction('Draft Status updated for conference.');
+      } catch (error) {
+        this.errorInfo = error.response.data;
       }
     }
   }

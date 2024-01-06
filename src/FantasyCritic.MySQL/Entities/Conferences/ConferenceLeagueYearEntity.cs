@@ -9,9 +9,12 @@ internal class ConferenceLeagueYearEntity
     public Guid LeagueManager { get; set; }
     public int Year { get; set; }
 
+    public bool DraftStarted { get; set; }
+    public bool DraftFinished { get; set; }
+
     public ConferenceLeagueYear ToDomain(FantasyCriticUser leagueManager)
     {
         var league = new ConferenceLeague(LeagueID, LeagueName, leagueManager);
-        return new ConferenceLeagueYear(league, Year);
+        return new ConferenceLeagueYear(league, Year, DraftStarted, DraftFinished);
     }
 }

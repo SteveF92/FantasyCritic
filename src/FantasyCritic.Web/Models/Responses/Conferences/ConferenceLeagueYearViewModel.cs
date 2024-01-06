@@ -18,6 +18,9 @@ public class ConferenceLeagueYearViewModel
         }
 
         IsPrimaryLeague = isPrimaryLeague;
+
+        DraftStarted = domain.DraftStarted;
+        DraftFinished = domain.DraftFinished;
     }
 
     public Guid LeagueID { get; }
@@ -26,4 +29,7 @@ public class ConferenceLeagueYearViewModel
     public PlayerViewModel LeagueManager { get; }
     public bool UserIsInLeague { get; }
     public bool IsPrimaryLeague { get; }
+
+    public bool DraftStarted { get; }
+    public bool DraftFinished { get; }
 }

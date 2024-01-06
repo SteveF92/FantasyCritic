@@ -285,7 +285,9 @@ public class MySQLConferenceRepo : IConferenceRepo
     public async Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
     {
         const string leagueYearSQL = """
-                                     select tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager, tbl_league_year.Year 
+                                     select tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager, tbl_league_year.Year,
+                                     tbl_league_year.PlayStatus <> "NotStartedDraft" AS DraftStarted,
+                                     tbl_league_year.PlayStatus = "DraftFinal" AS DraftFinished
                                      from tbl_league_year join tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID 
                                      where ConferenceID = @conferenceID and Year = @year;
                                      """;
@@ -404,7 +406,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task EditDraftStatusForConferenceYear(ConferenceYear conferenceYear, bool openForDrafting)
     {
-        const string sql = "UPDATE tbl_conference_year SET OpenForPlay = @openForDrafting WHERE ConferenceID = @conferenceID AND Year = @year;";
+        const string sql = "UPDATE tbl_conference_year SET OpenForDrafting = @openForDrafting WHERE ConferenceID = @conferenceID AND Year = @year;";
 
         var param = new
         {
