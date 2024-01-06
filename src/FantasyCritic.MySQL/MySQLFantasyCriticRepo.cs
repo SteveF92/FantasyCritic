@@ -268,9 +268,18 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers)
+    public async Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers, bool recalculate)
     {
-        const string sql = "update tbl_league_year SET WinningUserID = @WinningUserID WHERE LeagueID = @LeagueID AND Year = @Year AND WinningUserID is null;";
+        string sql = "";
+        if (recalculate)
+        {
+            sql = "update tbl_league_year set WinningUserID = @WinningUserID where LeagueID = @LeagueID and Year = @Year;";
+        }
+        else
+        {
+            sql = "update tbl_league_year set WinningUserID = @WinningUserID where LeagueID = @LeagueID and Year = @Year and WinningUserID is null;";
+        }
+        
         List<LeagueYearWinnerUpdateEntity> updateEntities = winningUsers.Select(x => new LeagueYearWinnerUpdateEntity(x)).ToList();
         var updateBatches = updateEntities.Chunk(1000).ToList();
         await using var connection = new MySqlConnection(_connectionString);

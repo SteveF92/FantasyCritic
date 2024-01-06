@@ -53,6 +53,13 @@ public class AdminController : FantasyCriticController
         return Ok();
     }
 
+    [HttpPost]
+    public async Task<IActionResult> RecalculateWinners()
+    {
+        await _adminService.RefreshCaches();
+        return Ok();
+    }
+
     public async Task<ActionResult<ActionedGameSetViewModel>> ActionProcessingDryRun()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();

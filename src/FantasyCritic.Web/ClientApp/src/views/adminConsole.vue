@@ -38,6 +38,7 @@
           <b-button variant="danger" @click="takePostAction('Admin', 'ProcessActions')">Process Actions</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
+          <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
         </div>
 
         <h2>Other</h2>

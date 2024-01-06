@@ -189,7 +189,7 @@ public class AdminService
         {
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(finishedYear.Year);
             var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year, leagueYears);
-            await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers);
+            await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, false);
         }
 
         _logger.Information("Done updating fantasy points");
@@ -207,6 +207,15 @@ public class AdminService
         }
 
         _logger.Information("Done updating royale fantasy points");
+    }
+
+    public async Task RecalculateWinners()
+    {
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var mostRecentFinishedYear = supportedYears.Where(x => x.Finished).OrderByDescending(x => x.Year).First();
+        IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(mostRecentFinishedYear.Year);
+        var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(mostRecentFinishedYear.Year, leagueYears);
+        await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, true);
     }
 
     public async Task RefreshCaches()
