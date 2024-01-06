@@ -18,6 +18,11 @@ public class ConferenceService
         _clock = clock;
     }
 
+    public Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser currentUser)
+    {
+        return _conferenceRepo.GetConferencesForUser(currentUser);
+    }
+
     public async Task<Result<Conference>> CreateConference(ConferenceCreationParameters parameters)
     {
         LeagueOptions options = new LeagueOptions(parameters.LeagueYearParameters);

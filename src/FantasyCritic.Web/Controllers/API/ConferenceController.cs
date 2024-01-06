@@ -29,6 +29,19 @@ public class ConferenceController : BaseLeagueController
         _environmentConfiguration = environmentConfiguration;
     }
 
+    public async Task<IActionResult> MyConferences()
+    {
+        var currentUser = await GetCurrentUserOrThrow();
+        var conferences = await _conferenceService.GetConferencesForUser(currentUser);
+
+        var viewModels = conferences
+            .Select(conference => new MinimalConferenceViewModel(conference, conference.ConferenceManager.Equals(currentUser)))
+            .OrderBy(x => x.ConferenceName)
+            .ToList();
+
+        return Ok(viewModels);
+    }
+
     [HttpPost]
     [Authorize("Write")]
     [Authorize("PlusUser")]

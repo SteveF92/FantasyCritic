@@ -52,6 +52,9 @@
                 </template>
                 <leagueTable :leagues="invitedLeagues" :league-icon="'envelope'"></leagueTable>
               </b-tab>
+              <b-tab v-if="myConferences && myConferences.length > 0" title="My Conferences" title-item-class="tab-header">
+                <conferenceTable :conferences="myConferences"></conferenceTable>
+              </b-tab>
               <b-tab title="Followed Leagues" title-item-class="tab-header">
                 <div v-if="myFollowedLeagues && myFollowedLeagues.length > 0">
                   <leagueTable :leagues="myFollowedLeagues" :league-icon="'users'"></leagueTable>
@@ -110,11 +113,13 @@ import _ from 'lodash';
 
 import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 import LeagueTable from '@/components/leagueTable.vue';
+import ConferenceTable from '@/components/conferenceTable.vue';
 import GameNews from '@/components/gameNews.vue';
 
 export default {
   components: {
     LeagueTable,
+    ConferenceTable,
     GameNews,
     TopBidsAndDrops
   },
@@ -124,6 +129,7 @@ export default {
       myLeagues: [],
       invitedLeagues: [],
       myFollowedLeagues: [],
+      myConferences: [],
       selectedYear: null,
       supportedYears: [],
       activeRoyaleYearQuarter: null,
@@ -152,7 +158,15 @@ export default {
     }
   },
   async mounted() {
-    const tasks = [this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchSupportedYears(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
+    const tasks = [
+      this.fetchMyLeagues(),
+      this.fetchFollowedLeagues(),
+      this.fetchInvitedLeagues(),
+      this.fetchMyConferences(),
+      this.fetchSupportedYears(),
+      this.fetchGameNews(),
+      this.fetchActiveRoyaleYearQuarter()
+    ];
     await Promise.all(tasks);
   },
   methods: {
@@ -177,6 +191,14 @@ export default {
       try {
         const response = await axios.get('/api/League/FollowedLeagues');
         this.myFollowedLeagues = response.data;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
+    },
+    async fetchMyConferences() {
+      try {
+        const response = await axios.get('/api/Conference/MyConferences');
+        this.myConferences = response.data;
       } catch (error) {
         this.errorInfo = error.response.data;
       }

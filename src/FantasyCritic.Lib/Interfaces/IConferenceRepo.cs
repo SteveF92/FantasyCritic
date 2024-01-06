@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Identity;
 namespace FantasyCritic.Lib.Interfaces;
 public interface IConferenceRepo
 {
+    Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser user);
     Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options);
     Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague);
     Task<Conference?> GetConference(Guid conferenceID);

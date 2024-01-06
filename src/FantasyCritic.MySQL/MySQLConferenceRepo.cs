@@ -24,6 +24,56 @@ public class MySQLConferenceRepo : IConferenceRepo
         _userStore = userStore;
     }
 
+    public async Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser user)
+    {
+        const string conferenceSQL =
+            """
+            select tbl_conference.* 
+            from tbl_conference join tbl_conference_hasuser on tbl_conference.ConferenceID = tbl_conference_hasuser.ConferenceID
+            where UserID = @userID and IsDeleted = 0;
+            """;
+
+        var queryObject = new
+        {
+            userID = user.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+
+        var conferenceEntities = (await connection.QueryAsync<ConferenceEntity>(conferenceSQL, queryObject)).ToList();
+
+        var managerUserIDs = conferenceEntities.Select(x => x.ConferenceManager).ToList();
+        var managers = await _userStore.GetUsers(managerUserIDs);
+        var managerDictionary = managers.ToDictionary(x => x.Id);
+
+        var conferenceQueryObject = new
+        {
+            conferenceIDs = conferenceEntities.Select(x => x.ConferenceID).ToList(),
+        };
+
+        const string conferenceYearSQL = "select ConferenceID, Year from tbl_conference_year where ConferenceID in @conferenceIDs;";
+        const string leaguesInConferenceSQL = "select ConferenceID, LeagueID from tbl_league where ConferenceID in @conferenceIDs;";
+
+        IEnumerable<(Guid ConferenceID, int Year)> conferenceYears = await connection.QueryAsync<(Guid ConferenceID, int Year)>(conferenceYearSQL, conferenceQueryObject);
+        IEnumerable<(Guid ConferenceID, Guid LeagueID)> leagues = await connection.QueryAsync<(Guid ConferenceID, Guid LeagueID)>(leaguesInConferenceSQL, conferenceQueryObject);
+
+        var conferenceYearLookup = conferenceYears.ToLookup(x => x.ConferenceID);
+        var leagueLookup = leagues.ToLookup(x => x.ConferenceID);
+
+        List<Conference> conferences = new List<Conference>();
+        foreach (var conferenceEntity in conferenceEntities)
+        {
+            FantasyCriticUser conferenceManager = managerDictionary[conferenceEntity.ConferenceManager];
+            var yearsForConference = conferenceYearLookup[conferenceEntity.ConferenceID].Select(x => x.Year);
+            var leaguesForConference = leagueLookup[conferenceEntity.ConferenceID].Select(x => x.LeagueID);
+
+            Conference conference = conferenceEntity.ToDomain(conferenceManager, yearsForConference, leaguesForConference);
+            conferences.Add(conference);
+        }
+
+        return conferences;
+    }
+
     public async Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options)
     {
         ConferenceEntity conferenceEntity = new ConferenceEntity(conference);
