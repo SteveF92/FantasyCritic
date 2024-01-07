@@ -43,7 +43,7 @@ class Program
         Console.WriteLine("Gathering data...");
         List<PickupBid> allProcessedPickups = new List<PickupBid>();
         List<DropRequest> allProcessedDrops = new List<DropRequest>();
-        var relevantYears = new List<int>() { 2022, 2023 };
+        var relevantYears = new List<int>() { 2022, 2023, 2024 };
         foreach (var year in relevantYears)
         {
             var allLeagueYears = await fantasyCriticRepo.GetLeagueYears(year);
@@ -74,9 +74,9 @@ class Program
             var yearsInGroup = pickupBidsByYear.Keys.Concat(dropsByYear.Keys).Distinct().ToList();
             foreach (var year in yearsInGroup)
             {
-                var standardBidsForYear = pickupBidsByYear[year].Where(x => !x.CounterPick).ToList();
-                var counterPickBidsForYear = pickupBidsByYear[year].Where(x => x.CounterPick).ToList();
-                var dropsForYear = dropsByYear[year];
+                var standardBidsForYear = pickupBidsByYear.GetValueOrDefault(year, new List<PickupBid>()).Where(x => !x.CounterPick).ToList();
+                var counterPickBidsForYear = pickupBidsByYear.GetValueOrDefault(year, new List<PickupBid>()).Where(x => x.CounterPick).ToList();
+                var dropsForYear = dropsByYear.GetValueOrDefault(year, new List<DropRequest>());
 
                 var standardBidsByMasterGame = standardBidsForYear.GroupToDictionary(x => x.MasterGame);
                 var counterPickBidsByMasterGame = counterPickBidsForYear.GroupToDictionary(x => x.MasterGame);
