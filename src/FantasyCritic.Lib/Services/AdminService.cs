@@ -179,7 +179,7 @@ public class AdminService
         foreach (var activeYear in activeYears)
         {
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(activeYear.Year);
-            var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(activeYear.Year, leagueYears);
+            var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(activeYear.Year, leagueYears, false);
             await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats.PublisherGameCalculatedStats);
             await PushDiscordScoreChangeMessages(leagueYears, calculatedStats.PublisherGameCalculatedStats);
         }
@@ -188,7 +188,7 @@ public class AdminService
         foreach (var finishedYear in finishedYears)
         {
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(finishedYear.Year);
-            var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year, leagueYears);
+            var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year, leagueYears, false);
             await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, false);
         }
 
@@ -214,7 +214,7 @@ public class AdminService
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var mostRecentFinishedYear = supportedYears.Where(x => x.Finished).OrderByDescending(x => x.Year).First();
         IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(mostRecentFinishedYear.Year);
-        var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(mostRecentFinishedYear.Year, leagueYears);
+        var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(mostRecentFinishedYear.Year, leagueYears, true);
         await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, true);
     }
 

@@ -224,7 +224,7 @@ public class FantasyCriticService
         await _fantasyCriticRepo.SetPlayersActive(league, year, mostRecentActivePlayers);
     }
 
-    public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears)
+    public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears, bool recalculateWinners)
     {
         Dictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
         IReadOnlyList<Publisher> allPublishersForYear = leagueYears.SelectMany(x => x.Publishers).ToList();
@@ -240,7 +240,6 @@ public class FantasyCriticService
             var leagueYear = leagueYearDictionary[publishersForLeagueYear.Key];
             foreach (var publisher in sortedLeagueYearPublishers)
             {
-                decimal totalPointsForPublisher = 0m;
                 var slots = publisher.GetPublisherSlots(leagueYear.Options).Where(x => x.PublisherGame is not null).ToList();
                 foreach (var publisherSlot in slots)
                 {
@@ -252,13 +251,10 @@ public class FantasyCriticService
                     decimal? fantasyPoints = publisherSlot.GetFantasyPoints(pointsShouldCount, leagueYear.Options.ReleaseSystem, leagueYear.Options.ScoringSystem, currentDate);
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     publisherGameCalculatedStats.Add(publisherSlot.PublisherGame!.PublisherGameID, stats);
-                    if (fantasyPoints.HasValue)
-                    {
-                        totalPointsForPublisher += fantasyPoints.Value;
-                    }
                 }
 
-                if (totalPointsForPublisher >= highestPoints && leagueYear.WinningUser is null)
+                decimal totalPointsForPublisher = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
+                if (totalPointsForPublisher >= highestPoints && (leagueYear.WinningUser is null || recalculateWinners))
                 {
                     highestPoints = totalPointsForPublisher;
                     winningUsers[publisher.LeagueYearKey] = publisher.User;

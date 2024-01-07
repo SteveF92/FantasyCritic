@@ -56,7 +56,7 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> RecalculateWinners()
     {
-        await _adminService.RefreshCaches();
+        await _adminService.RecalculateWinners();
         return Ok();
     }
 
