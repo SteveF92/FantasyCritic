@@ -6,7 +6,7 @@ namespace FantasyCritic.Web.Models.Responses.Conferences;
 public class ConferenceYearViewModel
 {
     public ConferenceYearViewModel(ConferenceViewModel conferenceViewModel, ConferenceYear domain, IEnumerable<ConferenceLeagueYear> conferenceLeagueYears,
-        IReadOnlyList<ConferencePlayer> conferencePlayers, FantasyCriticUser? currentUser)
+        IReadOnlyList<ConferencePlayer> conferencePlayers, FantasyCriticUser? currentUser, IReadOnlyList<ConferenceYearStanding> standings)
     {
         Conference = conferenceViewModel;
         Year = domain.Year;
@@ -20,6 +20,8 @@ public class ConferenceYearViewModel
             .OrderByDescending(x => x.IsPrimaryLeague).ToList();
 
         UserIsInAtLeastOneLeague = LeagueYears.Any(x => x.UserIsInLeague);
+
+        Standings = standings.Select(x => new ConferenceYearStandingViewModel(x)).ToList();
     }
 
     public ConferenceViewModel Conference { get; }
@@ -28,4 +30,5 @@ public class ConferenceYearViewModel
     public bool OpenForDrafting { get; }
     public IReadOnlyList<ConferenceLeagueYearViewModel> LeagueYears { get; }
     public bool UserIsInAtLeastOneLeague { get; }
+    public IReadOnlyList<ConferenceYearStandingViewModel> Standings { get; }
 }

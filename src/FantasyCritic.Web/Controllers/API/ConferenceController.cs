@@ -186,12 +186,13 @@ public class ConferenceController : BaseLeagueController
         }
 
         var validResult = conferenceYearRecord.ValidResult!;
-        
+        var conferenceYearStandings = await _conferenceService.GetConferenceYearStandings(validResult.ConferenceYear);
+
         var conferenceLeagues = validResult.ConferenceLeagueYears.Select(x => x.League).ToList();
         var conferenceViewModel = new ConferenceViewModel(validResult.ConferenceYear.Conference, validResult.Relationship.ConferenceManager,
             validResult.Relationship.InConference, validResult.PlayersInConference, conferenceLeagues);
 
-        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears, validResult.PlayersInConference, validResult.CurrentUser);
+        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears, validResult.PlayersInConference, validResult.CurrentUser, conferenceYearStandings);
         return Ok(conferenceYearViewModel);
     }
 

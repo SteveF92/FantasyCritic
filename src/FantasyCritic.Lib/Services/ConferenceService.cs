@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Conferences;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
@@ -233,5 +234,27 @@ public class ConferenceService
 
         await _conferenceRepo.RemovePlayerFromConference(conference, removeUser);
         return Result.Success();
+    }
+
+    public async Task<IReadOnlyList<ConferenceYearStanding>> GetConferenceYearStandings(ConferenceYear conferenceYear)
+    {
+        var leagueYears = await GetFullLeagueYearsInConferenceYear(conferenceYear);
+        var systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var currentDate = _clock.GetToday();
+        
+        List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
+        foreach (var leagueYear in leagueYears)
+        {
+            var supportedYear = leagueYear.SupportedYear;
+            var leagueOptions = leagueYear.Options;
+            foreach (var publisher in leagueYear.Publishers)
+            {
+                var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.Year, publisher.PublisherID, publisher.User.UserName, publisher.PublisherName,
+                    publisher.GetTotalFantasyPoints(supportedYear, leagueOptions), publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
+                standings.Add(standing);
+            }
+        }
+
+        return standings.OrderByDescending(x => x.FantasyPoints).ToList();
     }
 }
