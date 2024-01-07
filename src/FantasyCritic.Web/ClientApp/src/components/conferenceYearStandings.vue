@@ -4,7 +4,7 @@
 
     <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
       <template #cell(leagueName)="data">
-        <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: year } }" class="league-link">
+        <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year } }" class="league-link">
           {{ data.item.leagueName }}
         </router-link>
       </template>

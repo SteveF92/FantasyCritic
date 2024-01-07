@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses.Conferences;
 
 public class ConferenceYearStandingViewModel
 {
-    public ConferenceYearStandingViewModel(ConferenceYearStanding domain)
+    public ConferenceYearStandingViewModel(ConferenceYearStanding domain, int ranking, int projectedRanking)
     {
         LeagueID = domain.LeagueID;
         LeagueName = domain.LeagueName;
@@ -13,7 +13,9 @@ public class ConferenceYearStandingViewModel
         DisplayName = domain.DisplayName;
         PublisherName = domain.PublisherName;
         TotalFantasyPoints = domain.TotalFantasyPoints;
-        ProjectedPoints = domain.ProjectedPoints;
+        ProjectedFantasyPoints = domain.ProjectedFantasyPoints;
+        Ranking = ranking;
+        ProjectedRanking = projectedRanking;
     }
     
     public Guid LeagueID { get; }
@@ -23,5 +25,7 @@ public class ConferenceYearStandingViewModel
     public string DisplayName { get; }
     public string PublisherName { get; }
     public decimal TotalFantasyPoints { get; }
-    public decimal ProjectedPoints { get; }
+    public decimal ProjectedFantasyPoints { get; }
+    public int Ranking { get; }
+    public int ProjectedRanking { get; }
 }

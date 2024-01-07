@@ -21,7 +21,34 @@ public class ConferenceYearViewModel
 
         UserIsInAtLeastOneLeague = LeagueYears.Any(x => x.UserIsInLeague);
 
-        Standings = standings.Select(x => new ConferenceYearStandingViewModel(x)).ToList();
+        var publisherRankings = standings
+            .Select(x => new
+                {
+                    x.PublisherID,
+                    Ranking = standings.Count(y => y.TotalFantasyPoints > x.TotalFantasyPoints) + 1
+                }
+            )
+            .ToDictionary(x => x.PublisherID, x => x.Ranking);
+
+        var publisherProjectedRankings = standings
+            .Select(x => new
+                {
+                    x.PublisherID,
+                    Ranking = standings.Count(y => y.ProjectedFantasyPoints > x.ProjectedFantasyPoints) + 1
+                }
+            )
+            .ToDictionary(x => x.PublisherID, x => x.Ranking);
+
+        var standingVMs = new List<ConferenceYearStandingViewModel>();
+
+        foreach (var standing in standings)
+        {
+            var ranking = publisherRankings[standing.PublisherID];
+            var projectedRanking = publisherProjectedRankings[standing.PublisherID];
+            standingVMs.Add(new ConferenceYearStandingViewModel(standing, ranking, projectedRanking));
+        }
+
+        Standings = standingVMs;
     }
 
     public ConferenceViewModel Conference { get; }

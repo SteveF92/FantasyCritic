@@ -96,7 +96,7 @@
             </router-link>
             <font-awesome-icon v-if="data.item.isPrimaryLeague" icon="chess-king" v-b-popover.hover="'This is the primary league, from which all other leagues share settings.'" />
             <font-awesome-icon v-if="data.item.userIsInLeague" icon="user" v-b-popover.hover="'You are in this league.'" />
-            <font-awesome-icon v-if="data.item.draftStarted && !data.item.draftFinal" icon="list-ol" v-b-popover.hover="'This league is currently drafting.'" />
+            <font-awesome-icon v-if="data.item.draftStarted && !data.item.draftFinished" icon="list-ol" v-b-popover.hover="'This league is currently drafting.'" />
           </template>
           <template #cell(leagueManager)="data">{{ data.item.leagueManager.displayName }}</template>
         </b-table>
