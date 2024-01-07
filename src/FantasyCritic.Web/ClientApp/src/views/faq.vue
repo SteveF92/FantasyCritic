@@ -190,7 +190,7 @@
         <template #body>
           Any user in the conference can manage any league in the conference, even if they are not in that specific league. So there are a few reasonable options:
           <ul>
-            <li>The conference manager manages and players in the Primary League, and assigns chosen conference members to manage the other leagues.</li>
+            <li>The conference manager manages and plays in the Primary League, and assigns chosen conference members to manage the other leagues.</li>
             <li>The conference manager manages all leagues and plays in all of them.</li>
             <li>The conference manager manages all leagues, but only plays in one of them (probably the Primary League).</li>
             <li>The conference manager doesn't play in or manage any leagues, just oversees things.</li>

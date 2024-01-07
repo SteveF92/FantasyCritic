@@ -100,7 +100,7 @@
           2024 brings a few new features, most notably Conferences, which are intended to be used for groups that are too big to fit in one league. Another feature that deserves special mention is the
           official Discord bot, which actually debuted late in the 2022 season but has now become an essential part of the site. For that, I need to give big thanks to
           <a href="https://rardk.com" target="_blank">rardk64</a>
-          for this, who has been a great partner in development these past few years.
+          , who has been a great partner in development these past few years.
         </p>
       </div>
       <hr />
