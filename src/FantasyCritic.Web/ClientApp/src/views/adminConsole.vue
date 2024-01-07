@@ -38,7 +38,6 @@
           <b-button variant="danger" @click="takePostAction('Admin', 'ProcessActions')">Process Actions</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
         </div>
 
         <h2>Other</h2>
@@ -50,6 +49,7 @@
           <b-button variant="danger" @click="takePostAction('Admin', 'ExpireTrades')">Expire Trades</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
           <b-button variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
+          <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
         </div>
 
         <h2>Database</h2>
