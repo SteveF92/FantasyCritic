@@ -430,7 +430,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                                             """;
 
         const string publisherEntitiesSQL = """
-                                            select tbl_league_publisher.PublisherID, tbl_league_publisher.LeagueID, tbl_league_publisher.Year, tbl_league_Publisher.UserID
+                                            select tbl_league_publisher.PublisherID, tbl_league_publisher.LeagueID, tbl_league_publisher.Year, tbl_league_publisher.UserID
                                             from tbl_league_publisher
                                             join tbl_league on tbl_league_publisher.LeagueID = tbl_league.LeagueID 
                                             where tbl_league.ConferenceID = @conferenceID AND tbl_league_publisher.Year = @year;
