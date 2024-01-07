@@ -48,7 +48,7 @@
           <div v-if="readyToSetupLeagueYear">
             <hr />
             <div class="text-well">
-              <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" fresh-settings></leagueYearSettings>
+              <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" fresh-settings conference-mode></leagueYearSettings>
             </div>
           </div>
 

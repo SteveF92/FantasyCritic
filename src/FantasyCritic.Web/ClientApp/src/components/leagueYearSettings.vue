@@ -8,7 +8,8 @@
 
       <div v-if="freshSettings">
         <div class="form-group">
-          <label for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+          <label v-if="!conferenceMode" for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
+          <label v-if="conferenceMode" for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in each league in this conference?</label>
           <ValidationProvider v-slot="{ errors }" rules="required|min_value:2|max_value:20|integer">
             <input id="intendedNumberOfPlayers" v-model="intendedNumberOfPlayers" name="Intended Number of Players" type="text" class="form-control input" @input="fullAutoUpdate()" />
             <span class="text-danger">{{ errors[0] }}</span>
@@ -307,7 +308,8 @@ export default {
     year: { type: Number, required: true },
     editMode: { type: Boolean },
     currentNumberOfPlayers: { type: Number, default: null },
-    freshSettings: { type: Boolean, required: true }
+    freshSettings: { type: Boolean, required: true },
+    conferenceMode: { type: Boolean }
   },
   data() {
     return {
