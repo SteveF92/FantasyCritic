@@ -3,7 +3,7 @@ using FantasyCritic.Lib.Discord.Models;
 namespace FantasyCritic.Lib.Interfaces;
 public interface IDiscordRepo
 {
-    Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year);
+    Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, LeagueYear leagueYear);
     Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates, bool sendNotableMisses);
     Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting);
     Task SetSkippedGameNewsTags(ulong guildID, ulong channelID, IEnumerable<MasterGameTag> skippedTags);

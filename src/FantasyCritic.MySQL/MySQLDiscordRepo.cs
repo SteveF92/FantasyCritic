@@ -19,11 +19,11 @@ public class MySQLDiscordRepo : IDiscordRepo
         _connectionString = configuration.ConnectionString;
     }
 
-    public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int year)
+    public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, LeagueYear leagueYear)
     {
         await using var connection = new MySqlConnection(_connectionString);
         var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, null);
-        var existingLeague = await GetLeagueChannel(guildID, channelID, year);
+        var existingLeague = await GetLeagueChannel(guildID, channelID, leagueYear);
         var sql = existingLeague == null
             ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,SendLeagueMasterGameUpdates,SendNotableMisses) VALUES (@GuildID, @ChannelID, @LeagueID, @SendLeagueMasterGameUpdates, @SendNotableMisses)"
             : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
@@ -200,18 +200,10 @@ public class MySQLDiscordRepo : IDiscordRepo
             : leagueChannelEntity.ToDomain(leagueYear);
     }
 
-    public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, int year)
+    private async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, LeagueYear leagueYear)
     {
         var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
-        if (leagueChannelEntity is null)
-        {
-            return null;
-        }
-
-        var leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueChannelEntity.LeagueID, year);
-        return leagueYear is null
-            ? null
-            : leagueChannelEntity.ToDomain(leagueYear);
+        return leagueChannelEntity?.ToDomain(leagueYear);
     }
 
     public async Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID)

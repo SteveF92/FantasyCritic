@@ -108,8 +108,17 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         try
         {
-            await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id,
-                dateToCheck.Year);
+            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(new Guid(leagueId), dateToCheck.Year);
+            if (leagueYear is null)
+            {
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+                    "Error Saving Channel Configuration",
+                    $"This league has not been set up for the {dateToCheck.Year} year yet.",
+                    Context.User));
+                return;
+            }
+
+            await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id, leagueYear);
         }
         catch (Exception ex)
         {
