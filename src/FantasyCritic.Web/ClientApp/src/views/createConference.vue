@@ -156,7 +156,7 @@ export default {
       try {
         const response = await axios.post('/api/conference/createConference', selectedConferenceOptions);
         const newConferenceID = response.data;
-        this.$router.push({ name: 'conference', params: { conferenceID: newConferenceID, year: this.initialYear } });
+        this.$router.push({ name: 'conference', params: { conferenceid: newConferenceID, year: this.initialYear } });
       } catch (error) {
         this.errorInfo = error.response.data;
         window.scroll({
