@@ -100,6 +100,8 @@
           </template>
           <template #cell(leagueManager)="data">{{ data.item.leagueManager.displayName }}</template>
         </b-table>
+
+        <conferenceYearStandings></conferenceYearStandings>
       </div>
     </div>
   </div>
@@ -109,10 +111,12 @@ import axios from 'axios';
 
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
+import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 
 export default {
   components: {
-    ConferenceManagerActions
+    ConferenceManagerActions,
+    ConferenceYearStandings
   },
   mixins: [ConferenceMixin],
   props: {

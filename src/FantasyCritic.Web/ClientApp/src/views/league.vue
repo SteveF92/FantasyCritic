@@ -182,7 +182,7 @@
             <leagueActions></leagueActions>
           </div>
           <div class="col-xl-9 col-lg-8 col-md-12">
-            <leagueYearStandings :league="league" :league-year="leagueYear"></leagueYearStandings>
+            <leagueYearStandings></leagueYearStandings>
             <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
               <gameNews :game-news="gameNews" mode="league" />
               <br />

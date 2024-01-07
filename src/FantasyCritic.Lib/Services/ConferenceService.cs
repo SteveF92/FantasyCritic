@@ -249,12 +249,12 @@ public class ConferenceService
             var leagueOptions = leagueYear.Options;
             foreach (var publisher in leagueYear.Publishers)
             {
-                var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.Year, publisher.PublisherID, publisher.User.UserName, publisher.PublisherName,
+                var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.League.LeagueName, leagueYear.Year, publisher.PublisherID, publisher.User.UserName, publisher.PublisherName,
                     publisher.GetTotalFantasyPoints(supportedYear, leagueOptions), publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
                 standings.Add(standing);
             }
         }
 
-        return standings.OrderByDescending(x => x.FantasyPoints).ToList();
+        return standings.OrderByDescending(x => x.TotalFantasyPoints).ToList();
     }
 }

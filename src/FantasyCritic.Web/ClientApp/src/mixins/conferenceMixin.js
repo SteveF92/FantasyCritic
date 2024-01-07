@@ -5,6 +5,9 @@ let conferenceMixin = {
     ...mapGetters(['conference', 'conferenceYear', 'hasError', 'conferenceInviteCode']),
     isConferenceManager() {
       return this.conference && this.conference.isManager;
+    },
+    playStarted() {
+      return this.conferenceYear.leagueYears.some((x) => x.draftFinished);
     }
   },
   methods: {
