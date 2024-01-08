@@ -17,7 +17,7 @@ public class ConferenceYearViewModel
             new ConferenceLeagueYearViewModel(x,
                 conferencePlayers.Where(y => y.YearsActiveIn.Contains(x.LeagueYearKey)).ToList(), currentUser,
                 x.League.LeagueID == domain.Conference.PrimaryLeagueID))
-            .OrderByDescending(x => x.IsPrimaryLeague).ToList();
+            .OrderByDescending(x => x.IsPrimaryLeague).ThenBy(x => x.LeagueName).ToList();
 
         UserIsInAtLeastOneLeague = LeagueYears.Any(x => x.UserIsInLeague);
 
