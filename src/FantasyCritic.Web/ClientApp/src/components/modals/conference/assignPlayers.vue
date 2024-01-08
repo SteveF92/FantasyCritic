@@ -21,16 +21,18 @@
     <div class="player-flex-container">
       <div v-for="(value, leagueID) in editableLeagueAssignments" :key="leagueID" class="player-flex-drag">
         <draggable class="player-drag-list bg-secondary" :list="value" group="players">
-          <div v-for="element in value" :key="element.userID" class="player-drag-item">
-            <font-awesome-icon icon="bars" />
-            {{ element.displayName }}
+          <div v-if="!leaguesLocked[leagueID]">
+            <div v-for="element in value" :key="element.userID" class="player-drag-item">
+              <font-awesome-icon icon="bars" />
+              {{ element.displayName }}
+            </div>
           </div>
           <template #header>
             <div class="assign-league-header">
               <span class="player-header">{{ leagueNames[leagueID] }}</span>
 
-              <font-awesome-icon v-if="!leaguesLocked[leagueID]" icon="lock-open" size="lg" class="lock-icon" @click="lockLeague(leagueID)" />
-              <font-awesome-icon v-if="leaguesLocked[leagueID]" icon="lock" size="lg" class="lock-icon" @click="unlockLeague(leagueID)" />
+              <font-awesome-icon v-if="!leaguesLocked[leagueID]" icon="minus-circle" size="lg" class="lock-icon" @click="lockLeague(leagueID)" />
+              <font-awesome-icon v-if="leaguesLocked[leagueID]" icon="plus-circle" size="lg" class="lock-icon" @click="unlockLeague(leagueID)" />
             </div>
           </template>
         </draggable>
