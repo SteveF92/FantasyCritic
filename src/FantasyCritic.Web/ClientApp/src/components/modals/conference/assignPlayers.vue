@@ -19,14 +19,19 @@
     </draggable>
 
     <div class="player-flex-container">
-      <div v-for="(value, name) in editableLeagueAssignments" :key="name" class="player-flex-drag">
+      <div v-for="(value, leagueID) in editableLeagueAssignments" :key="leagueID" class="player-flex-drag">
         <draggable class="player-drag-list bg-secondary" :list="value" group="players">
           <div v-for="element in value" :key="element.userID" class="player-drag-item">
             <font-awesome-icon icon="bars" />
             {{ element.displayName }}
           </div>
           <template #header>
-            <span class="player-header">{{ leagueNames[name] }}</span>
+            <div class="assign-league-header">
+              <span class="player-header">{{ leagueNames[leagueID] }}</span>
+
+              <font-awesome-icon v-if="!leaguesLocked[leagueID]" icon="lock-open" size="lg" class="lock-icon" @click="lockLeague(leagueID)" />
+              <font-awesome-icon v-if="leaguesLocked[leagueID]" icon="lock" size="lg" class="lock-icon" @click="unlockLeague(leagueID)" />
+            </div>
           </template>
         </draggable>
       </div>
@@ -56,7 +61,8 @@ export default {
       initialUnassignedPlayers: null,
       initialLeagueAssignments: null,
       editableUnassignedPlayers: null,
-      editableLeagueAssignments: null
+      editableLeagueAssignments: null,
+      leaguesLocked: null
     };
   },
   created() {
@@ -73,10 +79,12 @@ export default {
       this.initialUnassignedPlayers = unassignedPlayers;
 
       let leagueAssignments = {};
+      let leaguesLocked = {};
       let leagueNames = {};
       for (const league of this.conference.leaguesInConference) {
         leagueAssignments[league.leagueID] = [];
         leagueNames[league.leagueID] = league.leagueName;
+        leaguesLocked[league.leagueID] = false;
       }
 
       for (const player of this.conference.players) {
@@ -87,9 +95,16 @@ export default {
 
       this.leagueNames = leagueNames;
       this.initialLeagueAssignments = leagueAssignments;
+      this.leaguesLocked = leaguesLocked;
 
       this.editableUnassignedPlayers = _.cloneDeep(this.initialUnassignedPlayers);
       this.editableLeagueAssignments = _.cloneDeep(this.initialLeagueAssignments);
+    },
+    lockLeague(leagueID) {
+      this.leaguesLocked[leagueID] = true;
+    },
+    unlockLeague(leagueID) {
+      this.leaguesLocked[leagueID] = false;
     },
     resetChanges() {
       this.editableUnassignedPlayers = _.cloneDeep(this.initialUnassignedPlayers);
@@ -153,10 +168,21 @@ export default {
   background-color: #5b6977 !important;
   border: 1px solid #ddd;
 }
+
+.assign-league-header {
+  display: flex;
+  justify-content: space-between;
+}
+
 .player-header {
   padding-left: 10px;
   font-size: 20px;
   font-weight: bold;
   color: #d6993a;
+}
+
+.lock-icon {
+  padding-right: 10px;
+  padding-top: 5px;
 }
 </style>
