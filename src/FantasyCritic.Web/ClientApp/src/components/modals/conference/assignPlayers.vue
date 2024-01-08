@@ -8,34 +8,33 @@
       directly, using the normal (non-conference) invite system.
     </div>
 
-    <draggable class="player-drag-list bg-secondary" :list="editableUnassignedPlayers" group="players">
-      <div v-for="element in editableUnassignedPlayers" :key="element.userID" class="player-drag-item">
-        <font-awesome-icon icon="bars" />
-        {{ element.displayName }}
-      </div>
-      <template #header>
-        <span class="player-header">Unassigned Players</span>
-      </template>
-    </draggable>
+    <div class="player-drag-list bg-secondary">
+      <h4 class="player-header">Unassigned Players</h4>
+      <draggable :list="editableUnassignedPlayers" group="players">
+        <div v-for="element in editableUnassignedPlayers" :key="element.userID" class="player-drag-item">
+          <font-awesome-icon icon="bars" />
+          {{ element.displayName }}
+        </div>
+      </draggable>
+    </div>
 
     <div class="player-flex-container">
       <div v-for="(value, leagueID) in editableLeagueAssignments" :key="leagueID" class="player-flex-drag">
-        <draggable class="player-drag-list bg-secondary" :list="value" group="players">
-          <div v-if="!leaguesLocked[leagueID]">
+        <div class="player-drag-list bg-secondary">
+          <h4 class="assign-league-header">
+            <span class="player-header">{{ leagueNames[leagueID] }}</span>
+            <font-awesome-icon v-if="!leaguesLocked[leagueID]" icon="minus-circle" size="lg" class="lock-icon" @click="lockLeague(leagueID)" />
+            <font-awesome-icon v-if="leaguesLocked[leagueID]" icon="plus-circle" size="lg" class="lock-icon" @click="unlockLeague(leagueID)" />
+          </h4>
+
+          <draggable v-if="!leaguesLocked[leagueID]" :list="value" group="players">
             <div v-for="element in value" :key="element.userID" class="player-drag-item">
               <font-awesome-icon icon="bars" />
               {{ element.displayName }}
             </div>
-          </div>
-          <template #header>
-            <div class="assign-league-header">
-              <span class="player-header">{{ leagueNames[leagueID] }}</span>
-
-              <font-awesome-icon v-if="!leaguesLocked[leagueID]" icon="minus-circle" size="lg" class="lock-icon" @click="lockLeague(leagueID)" />
-              <font-awesome-icon v-if="leaguesLocked[leagueID]" icon="plus-circle" size="lg" class="lock-icon" @click="unlockLeague(leagueID)" />
-            </div>
-          </template>
-        </draggable>
+            <template #header></template>
+          </draggable>
+        </div>
       </div>
     </div>
     <template #modal-footer>
