@@ -430,7 +430,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                                             """;
 
         const string publisherEntitiesSQL = """
-                                            select tbl_league_publisher.PublisherID, tbl_league_publisher.LeagueID, tbl_league_publisher.Year, tbl_league_publisher.UserID
+                                            select tbl_league_publisher.PublisherID, tbl_league_publisher.LeagueID, tbl_league_publisher.Year, tbl_league_publisher.UserID, tbl_league_publisher.DraftPosition
                                             from tbl_league_publisher
                                             join tbl_league on tbl_league_publisher.LeagueID = tbl_league.LeagueID 
                                             where tbl_league.ConferenceID = @conferenceID AND tbl_league_publisher.Year = @year;
@@ -439,6 +439,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         const string publisherUpdateSQL = "UPDATE tbl_league_publisher SET LeagueID = @LeagueID WHERE PublisherID = @PublisherID;";
         const string deleteExistingLeagueUserSQL = "delete from tbl_league_hasuser where LeagueID = @LeagueID AND UserID = @UserID;";
         const string deleteExistingLeagueYearActivePlayerSQL = "delete from tbl_league_activeplayer where LeagueID = @LeagueID AND Year = @Year AND UserID = @UserID;";
+        const string fixDraftOrderSQL = "update tbl_league_publisher SET DraftPosition = @draftPosition where PublisherID = @publisherID;";
 
         var conferenceParam = new
         {
@@ -478,7 +479,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         try
         {
             var currentLeagueUsers = (await connection.QueryAsync<LeagueHasUserEntity>(currentLeagueUserSQL, conferenceParam, transaction)).ToList();
-            var currentPublisherEntities = await connection.QueryAsync<PublisherEntity>(publisherEntitiesSQL, conferenceParam, transaction);
+            var currentPublisherEntities = (await connection.QueryAsync<PublisherEntity>(publisherEntitiesSQL, conferenceParam, transaction)).ToList();
 
             var leagueUserLookup = currentLeagueUsers.ToLookup(x => x.LeagueID);
 
@@ -525,7 +526,8 @@ public class MySQLConferenceRepo : IConferenceRepo
                     UserID = x
                 }));
             }
-            
+
+            List<LeagueYearKey> leagueYearsToFixDraftOrders = new List<LeagueYearKey>();
             List<PublisherEntity> publishersToUpdate = new List<PublisherEntity>();
             foreach (var publisher in currentPublisherEntities)
             {
@@ -535,6 +537,9 @@ public class MySQLConferenceRepo : IConferenceRepo
                     continue;
                 }
 
+                leagueYearsToFixDraftOrders.Add(new LeagueYearKey(publisher.LeagueID, publisher.Year));
+                leagueYearsToFixDraftOrders.Add(new LeagueYearKey(userNewLeague.LeagueID, publisher.Year));
+
                 publishersToUpdate.Add(new PublisherEntity()
                 {
                     PublisherID = publisher.PublisherID,
@@ -543,6 +548,34 @@ public class MySQLConferenceRepo : IConferenceRepo
                     UserID = publisher.UserID
                 });
             }
+            leagueYearsToFixDraftOrders = leagueYearsToFixDraftOrders.Distinct().ToList();
+
+            var publisherLookup = currentPublisherEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
+            List<SetDraftOrderEntity> tempDraftOrderEntities = new List<SetDraftOrderEntity>();
+            List<SetDraftOrderEntity> finalDraftOrderEntities = new List<SetDraftOrderEntity>();
+            for (var i = 0; i < leagueYearsToFixDraftOrders.Count; i++)
+            {
+                var leagueYear = leagueYearsToFixDraftOrders[i];
+                var existingPublishersInLeagueYear = publisherLookup[leagueYear].ToList();
+                var existingPublisherIDsInLeagueYear = existingPublishersInLeagueYear.Select(x => x.PublisherID).ToHashSet();
+
+                var tempEntities = existingPublishersInLeagueYear.Select(pub => new SetDraftOrderEntity(pub.PublisherID, null));
+                tempDraftOrderEntities.AddRange(tempEntities);
+
+                var publishersMovedOutOfThisLeagueYearIDs = publishersToUpdate
+                    .Where(x => existingPublisherIDsInLeagueYear.Contains(x.PublisherID) && x.LeagueID != leagueYear.LeagueID)
+                    .Select(x => x.PublisherID)
+                    .ToHashSet();
+                var publishersMovedIntoThisLeagueYear = publishersToUpdate.Where(x => !existingPublisherIDsInLeagueYear.Contains(x.PublisherID) && x.LeagueID == leagueYear.LeagueID).ToList();
+
+                var existingPublishersPlusMoveIns = existingPublishersInLeagueYear.Concat(publishersMovedIntoThisLeagueYear).ToList();
+                var finalNewPublishers = existingPublishersPlusMoveIns.Where(x => !publishersMovedOutOfThisLeagueYearIDs.Contains(x.PublisherID)).ToList();
+
+                var finalEntities = finalNewPublishers.OrderBy(x => x.DraftPosition).Select((pub, index) => new SetDraftOrderEntity(pub.PublisherID, index + 1));
+                finalDraftOrderEntities.AddRange(finalEntities);
+            }
+
+            await connection.ExecuteAsync(fixDraftOrderSQL, tempDraftOrderEntities, transaction);
 
             //Add users to new leagues
             await connection.BulkInsertAsync(newUsersToAdd, "tbl_league_hasuser", 500, transaction);
@@ -563,7 +596,9 @@ public class MySQLConferenceRepo : IConferenceRepo
             {
                 await connection.ExecuteAsync(deleteExistingLeagueUserSQL, userToRemove, transaction);
             }
-            
+
+            await connection.ExecuteAsync(fixDraftOrderSQL, finalDraftOrderEntities, transaction);
+
             await transaction.CommitAsync();
         }
         catch (Exception ex)
