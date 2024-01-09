@@ -39,7 +39,7 @@
           </template>
         </div>
 
-        <div v-if="conference.userIsInConference && !conferenceYear.openForDrafting && !conferenceYear.userIsInAtLeastOneLeague" class="alert alert-info">
+        <div v-if="conference.userIsInConference && !conferenceYear.openForDrafting && !conferenceYear.userIsInAtLeastOneLeague" class="alert alert-warning">
           You have joined the conference, but your conference manager has not yet assigned you to any of the leagues in the conference.
         </div>
 
