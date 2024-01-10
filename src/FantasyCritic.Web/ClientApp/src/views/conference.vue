@@ -4,8 +4,13 @@
       <div v-if="hasError" class="alert alert-danger" role="alert">
         Something went wrong with this conference. Contact us on Twitter or Discord for support. Please include the conference ID in your message (Linking the URL will do).
       </div>
+
       <div v-if="errorInfo" class="alert alert-danger" role="alert">{{ errorInfo }}</div>
       <div v-if="conferenceYear">
+        <div v-if="isConferenceManager && !isPlusUser" class="alert alert-danger" role="alert">
+          Your Fantasy Critic Plus membership has expired. In order to continue acting as conference manager, you must resubscribe to Fantasy Critic Plus. The only conference action you can take while
+          not a Fantasy Critic Plus member is to pass the conference manager role to another player in your conference.
+        </div>
         <div class="row">
           <div class="conference-header-row">
             <div class="conference-header-flex">
