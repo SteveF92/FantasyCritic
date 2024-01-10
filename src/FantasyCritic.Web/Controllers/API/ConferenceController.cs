@@ -287,6 +287,7 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
+    [Authorize("PlusUser")]
     public async Task<IActionResult> RemovePlayerFromConference([FromBody] RemovePlayerFromConferenceRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
