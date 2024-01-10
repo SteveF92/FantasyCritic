@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace FantasyCritic.Web.Filters;
+namespace FantasyCritic.Web.Authorization;
 
 // Handler to be able to look at the context when authorization completes
 // Allows you to look at success or failure and the user info
 // Not necessary in Production, only for debugging
-public class FantasyCriticAuthorizationHandler : IAuthorizationHandler
+public class FantasyCriticAuthorizationDebugHandler : IAuthorizationHandler
 {
     public Task HandleAsync(AuthorizationHandlerContext context)
     {

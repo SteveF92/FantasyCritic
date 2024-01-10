@@ -19,7 +19,6 @@ using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
-using FantasyCritic.Web.Filters;
 using FantasyCritic.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +39,7 @@ using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.EventHandlers;
 using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Web.Authorization;
 
 namespace FantasyCritic.Web;
 
@@ -320,7 +320,7 @@ public static class HostingExtensions
         if (environment.IsDevelopment())
         {
             // Only in Development, used for debugging
-            services.AddTransient<IAuthorizationHandler, FantasyCriticAuthorizationHandler>();
+            services.AddTransient<IAuthorizationHandler, FantasyCriticAuthorizationDebugHandler>();
         }
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
