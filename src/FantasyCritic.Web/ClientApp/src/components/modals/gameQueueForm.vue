@@ -2,13 +2,15 @@
   <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearAllData" @show="getTopGames">
     <div class="form-group">
       <h3 class="text-black">Add Game to Watchlist</h3>
-      <label for="searchGameName" class="control-label">Game Name</label>
-      <div class="input-group game-search-input">
-        <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
-        <span class="input-group-btn">
-          <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
-        </span>
-      </div>
+      <form class="form-horizontal" role="form" @submit.prevent="searchGame">
+        <label for="searchGameName" class="control-label">Game Name</label>
+        <div class="input-group game-search-input">
+          <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
+          <span class="input-group-btn">
+            <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
+          </span>
+        </div>
+      </form>
     </div>
 
     <div v-if="!leagueYear.settings.hasSpecialSlots">
