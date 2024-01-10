@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="editConferenceSettings" ref="editConferenceSettingsRef" title="Change League Options" @hidden="clearData">
+  <b-modal id="editConferenceSettings" ref="editConferenceSettingsRef" title="Change Conference Options" @hidden="clearData">
     <div class="alert alert-info">If you want to edit the actual game settings, like how many games per player, or what games are allowed, you'll need to do that inside each of the leagues.</div>
     <div class="form-horizontal">
       <div class="form-group">
