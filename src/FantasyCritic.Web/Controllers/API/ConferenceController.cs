@@ -43,7 +43,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> CreateConference([FromBody] CreateConferenceRequest request)
     {
@@ -78,7 +77,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> AddLeagueToConference([FromBody] AddLeagueToConferenceRequest request)
     {
@@ -87,7 +85,7 @@ public class ConferenceController : BaseLeagueController
         {
             return BadRequest(requestValid.Error);
         }
-        
+
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
         if (conferenceRecord.FailedResult is not null)
         {
@@ -123,7 +121,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public Task<IActionResult> AddNewConferenceYear([FromBody] NewConferenceYearRequest request)
     {
@@ -131,7 +128,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> EditConference([FromBody] EditConferenceRequest request)
     {
@@ -197,7 +193,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> CreateInviteLink([FromBody] CreateConferenceInviteLinkRequest request)
     {
@@ -220,7 +215,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteConferenceInviteLinkRequest request)
     {
@@ -244,7 +238,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> JoinWithInviteLink([FromBody] JoinConferenceWithInviteLinkRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.AllowAnonymous);
@@ -294,7 +287,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RemovePlayerFromConference([FromBody] RemovePlayerFromConferenceRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -322,7 +314,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> PromoteNewConferenceManager([FromBody] PromoteNewConferenceManagerRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -356,7 +347,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> ReassignLeagueManager([FromBody] PromoteNewLeagueManagerWithinConferenceRequest request)
     {
@@ -374,7 +364,7 @@ public class ConferenceController : BaseLeagueController
         {
             return BadRequest("That user does not exist.");
         }
-        
+
         var transferResult = await _conferenceService.ReassignLeagueManager(conference, request.LeagueID, newManager);
         if (transferResult.IsFailure)
         {
@@ -385,7 +375,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> AssignLeaguePlayers([FromBody] AssignLeaguePlayersRequest request)
     {
@@ -436,9 +425,9 @@ public class ConferenceController : BaseLeagueController
                     userAssignments.Add(league, new List<FantasyCriticUser> { user });
                 }
             }
-            
+
         }
-        
+
         var assignResult = await _conferenceService.AssignLeaguePlayers(conferenceYear, leaguesInConference, userAssignments.SealDictionary());
         if (assignResult.IsFailure)
         {
@@ -449,7 +438,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public async Task<IActionResult> EditDraftStatusForConferenceYear([FromBody] EditDraftStatusForConferenceYearRequest request)
     {
@@ -482,7 +470,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public Task<IActionResult> PostNewConferenceManagerMessage([FromBody] PostNewConferenceManagerMessageRequest request)
     {
@@ -490,7 +477,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     [Authorize("PlusUser")]
     public Task<IActionResult> DeleteConferenceManagerMessage([FromBody] DeleteConferenceManagerMessageRequest request)
     {
@@ -498,7 +484,6 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public Task<IActionResult> DismissManagerMessage([FromBody] DismissConferenceManagerMessageRequest request)
     {
         throw new NotImplementedException();

@@ -374,7 +374,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> AcceptInvite([FromBody] AcceptInviteRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
@@ -401,7 +400,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> JoinWithInviteLink([FromBody] JoinWithInviteLinkRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
@@ -446,7 +444,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CreatePublisher([FromBody] CreatePublisherRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotStarted);
@@ -479,7 +476,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ChangePublisherName([FromBody] ChangePublisherNameRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
@@ -501,7 +497,6 @@ public class LeagueController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
-    [Authorize("Write")]
     public async Task<IActionResult> ChangePublisherIcon([FromBody] ChangePublisherIconRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
@@ -517,7 +512,6 @@ public class LeagueController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
-    [Authorize("Write")]
     public async Task<IActionResult> ChangePublisherSlogan([FromBody] ChangePublisherSloganRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
@@ -532,7 +526,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetAutoDraft([FromBody] SetAutoDraftRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftNotFinished);
@@ -556,7 +549,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeclineInvite([FromBody] DeleteInviteRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -577,7 +569,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> MakePickupBid([FromBody] PickupBidRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -621,7 +612,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> EditPickupBid([FromBody] PickupBidEditRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -656,7 +646,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeletePickupBid([FromBody] PickupBidDeleteRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -688,7 +677,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetBidPriorities([FromBody] BidPriorityOrderRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -729,7 +717,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DraftGame([FromBody] DraftGameRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.ActiveDraft);
@@ -790,7 +777,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> FollowLeague([FromBody] FollowLeagueRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
@@ -812,7 +798,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> UnfollowLeague([FromBody] FollowLeagueRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LoggedIn);
@@ -936,7 +921,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> MakeDropRequest([FromBody] DropGameRequestRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -961,7 +945,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> UseSuperDrop([FromBody] DropGameRequestRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -981,7 +964,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeleteDropRequest([FromBody] DropGameRequestDeleteRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1034,7 +1016,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> AddGameToQueue([FromBody] AddGameToQueueRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.AnyYearNotFinished);
@@ -1059,7 +1040,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeleteQueuedGame([FromBody] QueuedGameDeleteRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.AnyYearNotFinished);
@@ -1083,7 +1063,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetQueueRankings([FromBody] QueueRankingRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.AnyYearNotFinished);
@@ -1123,7 +1102,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ReorderPublisherGames([FromBody] ReorderPublisherGamesRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.AnyYearNotFinished);
@@ -1155,7 +1133,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetArchiveStatus([FromBody] SetArchiveStatusRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.InLeague);
@@ -1173,7 +1150,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DismissManagerMessage([FromBody] DismissManagerMessageRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -1188,7 +1164,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ProposeTrade([FromBody] ProposeTradeRequest request)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(request.ProposerPublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1211,7 +1186,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RescindTrade([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1244,7 +1218,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> AcceptTrade([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1277,7 +1250,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1310,7 +1282,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> VoteOnTrade([FromBody] TradeVoteRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1346,7 +1317,6 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeleteTradeVote([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);

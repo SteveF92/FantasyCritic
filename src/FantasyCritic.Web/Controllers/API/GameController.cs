@@ -151,7 +151,6 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -162,7 +161,6 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CreateMasterGameChangeRequest([FromBody] MasterGameChangeRequestRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -178,7 +176,6 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeleteMasterGameRequest([FromBody] MasterGameRequestDeletionRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -199,7 +196,6 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeleteMasterGameChangeRequest([FromBody] MasterGameChangeRequestDeletionRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -220,7 +216,6 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DismissMasterGameRequest([FromBody] MasterGameRequestDismissRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -241,7 +236,6 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DismissMasterGameChangeRequest([FromBody] MasterGameChangeRequestDismissRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();

@@ -224,12 +224,6 @@ public static class HostingExtensions
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole("FactChecker");
             });
-
-            options.AddPolicy("Write", policy =>
-            {
-                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
-                policy.RequireAuthenticatedUser();
-            });
         });
 
         services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>

@@ -48,7 +48,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CreateLeague([FromBody] CreateLeagueRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -111,7 +110,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> AddNewLeagueYear([FromBody] NewLeagueYearRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -161,7 +159,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ChangeLeagueOptions([FromBody] ChangeLeagueOptionsRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -189,7 +186,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> EditLeagueYearSettings([FromBody] LeagueYearSettingsViewModel request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
@@ -220,7 +216,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> InvitePlayer([FromBody] CreateInviteRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -275,7 +270,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CreateInviteLink([FromBody] CreateInviteLinkRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -298,7 +292,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteInviteLinkRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -339,7 +332,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RescindInvite([FromBody] DeleteInviteRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -365,7 +357,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RemovePlayer([FromBody] PlayerRemoveRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -427,7 +418,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ReassignPublisher([FromBody] ReassignPublisherRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -448,7 +438,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CreatePublisherForUser([FromBody] CreatePublisherForUserRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
@@ -487,7 +476,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> EditPublisher([FromBody] PublisherEditRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
@@ -510,7 +498,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RemovePublisher([FromBody] PublisherRemoveRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
@@ -533,7 +520,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetPlayerActiveStatus([FromBody] LeaguePlayerActiveRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
@@ -572,7 +558,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetAutoDraft([FromBody] ManagerSetAutoDraftRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotFinished);
@@ -604,7 +589,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ManagerClaimGame([FromBody] ClaimGameRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -631,7 +615,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ManagerAssociateGame([FromBody] AssociateGameRequest request)
     {
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -661,7 +644,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RemovePublisherGame([FromBody] GameRemoveRequest request)
     {
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -681,14 +663,12 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public Task<IActionResult> ManuallyScorePublisherGame([FromBody] ManualPublisherGameScoreRequest request)
     {
         return UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, request.ManualCriticScore);
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public Task<IActionResult> RemoveManualPublisherGameScore([FromBody] RemoveManualPublisherGameScoreRequest request)
     {
         return UpdateManualCriticScore(request.PublisherID, request.PublisherGameID, null);
@@ -713,7 +693,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ManuallySetWillNotRelease([FromBody] ManualPublisherGameWillNotReleaseRequest request)
     {
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -731,7 +710,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> StartDraft([FromBody] StartDraftRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.PlayOpenDraftNotStarted);
@@ -750,7 +728,7 @@ public class LeagueManagerController : BaseLeagueController
                 return BadRequest("The conference is not open for drafting.");
             }
         }
-        
+
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
         var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager, false);
         if (!completePlayStatus.ReadyToDraft)
@@ -770,7 +748,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ResetDraft([FromBody] ResetDraftRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.DuringDraft);
@@ -788,7 +765,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetDraftOrder([FromBody] DraftOrderRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftNotStarted);
@@ -842,7 +818,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ManagerDraftGame([FromBody] ManagerDraftGameRequest request)
     {
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.ActiveDraft);
@@ -904,7 +879,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetDraftPause([FromBody] DraftPauseRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.DuringDraft);
@@ -922,7 +896,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> UndoLastDraftAction([FromBody] UndoLastDraftActionRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.DraftPaused);
@@ -946,7 +919,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligibilityOverrideRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
@@ -980,7 +952,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> SetGameTagOverride([FromBody] TagOverrideRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
@@ -1029,7 +1000,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> PromoteNewLeagueManager([FromBody] PromoteNewLeagueManagerRequest request)
     {
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
@@ -1056,7 +1026,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> PostNewManagerMessage([FromBody] PostNewManagerMessageRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
@@ -1073,7 +1042,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> DeleteManagerMessage([FromBody] DeleteManagerMessageRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
@@ -1094,7 +1062,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1119,7 +1086,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> ExecuteTrade([FromBody] BasicTradeRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1144,7 +1110,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CreateSpecialAuction([FromBody] CreateSpecialAuctionRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
@@ -1169,7 +1134,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [Authorize("Write")]
     public async Task<IActionResult> CancelSpecialAuction([FromBody] CancelSpecialAuctionRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
