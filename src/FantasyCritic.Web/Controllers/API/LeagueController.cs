@@ -266,6 +266,39 @@ public class LeagueController : BaseLeagueController
         return Ok(leagueYearViewModel);
     }
 
+    [HttpGet("{year}")]
+    public async Task<IActionResult> GetMyPublishers(int year)
+    {
+        var currentUser = await GetCurrentUserOrThrow();
+
+        var publishers = await _publisherService.GetMinimalPublishersForUser(currentUser.Id, year);
+
+        var viewModels = publishers.Select(p =>
+            new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year));
+        return Ok(viewModels);
+    }
+
+    [HttpGet("{leagueID}")]
+    public async Task<IActionResult> GetQueuedGameYearsForLeague(Guid publisherID, Guid leagueID)
+    {
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
+        if (publisherRecord.FailedResult is not null)
+        {
+            return publisherRecord.FailedResult;
+        }
+        var validResult = publisherRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var publisher = validResult.Publisher;
+
+        var queuedGames = await _publisherService.GetQueuedGames(publisher);
+
+        var currentDate = _clock.GetToday();
+        var queuedPossibleGames = await _gameSearchingService.GetQueuedPossibleGames(leagueYear, publisher, queuedGames);
+        var viewModels = queuedPossibleGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(100).ToList();
+
+        return Ok(viewModels);
+    }
+
     [AllowAnonymous]
     public async Task<IActionResult> GetLeagueActions(Guid leagueID, int year)
     {

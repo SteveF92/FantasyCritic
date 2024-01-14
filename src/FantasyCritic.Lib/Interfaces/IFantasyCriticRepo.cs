@@ -158,4 +158,5 @@ public interface IFantasyCriticRepo
     Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
     Task GrantSuperDrops(IEnumerable<Publisher> publishersToGrantSuperDrop, IEnumerable<LeagueAction> superDropActions);
     Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears);
+    Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year);
 }

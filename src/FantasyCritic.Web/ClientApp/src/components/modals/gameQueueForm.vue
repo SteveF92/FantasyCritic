@@ -14,10 +14,23 @@
     </div>
 
     <div v-if="!leagueYear.settings.hasSpecialSlots">
-      <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
+      <div class="watchlist-flex-area">
+        <b-button variant="secondary" class="show-top-button" @click="getTopGames">Top Available Games</b-button>
+        <b-dropdown text="My Other Watchlists">
+          <b-dropdown-item v-for="publisher in otherPublishers" @click="getOtherPublisher(publisher)">Publisher {{ publisher.publisherName }}, League: {{ publisher.leagueName }}</b-dropdown-item>
+        </b-dropdown>
+      </div>
     </div>
     <div v-else>
-      <h5 class="text-black">Top Available by Slot</h5>
+      <div class="watchlist-flex-area">
+        <h5 class="text-black">Top Available by Slot</h5>
+        <b-dropdown text="My Other Watchlists">
+          <b-dropdown-item v-for="publisher in otherPublishers" @click="getOtherPublisher(publisher)">
+            <span class="publisher-name">{{ publisher.publisherName }}</span>
+            ({{ publisher.leagueName }})
+          </b-dropdown-item>
+        </b-dropdown>
+      </div>
       <span class="search-tags">
         <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click.native="getTopGames"></searchSlotTypeBadge>
         <searchSlotTypeBadge
@@ -39,8 +52,10 @@
     </div>
 
     <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
+    <h3 v-if="showingOtherLeagueWatchlist" class="text-black">Watchlist for {{ selectedOtherPublisher.publisherName }} in {{ selectedOtherPublisher.leagueName }}</h3>
 
     <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possible-games="possibleMasterGames" @input="addGameToQueue"></possibleMasterGamesTable>
+    <div v-if="possibleMasterGames.length === 0" class="alert alert-info">No games available to display.</div>
 
     <div v-if="queueResult && !queueResult.success" class="alert alert-danger bid-error">
       <h3 class="alert-heading">Error!</h3>
@@ -92,6 +107,7 @@
 <script>
 import axios from 'axios';
 import draggable from 'vuedraggable';
+import _ from 'lodash';
 
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import StatusBadge from '@/components/statusBadge.vue';
@@ -116,14 +132,22 @@ export default {
       desiredQueueRanks: [],
       gameToQueue: null,
       showingTopAvailable: false,
+      showingOtherLeagueWatchlist: false,
       isBusy: false,
-      selectedSlotIndex: 0
+      selectedSlotIndex: 0,
+      otherPublishers: [],
+      selectedOtherPublisher: null
     };
   },
-  mounted() {
+  async created() {
     this.initializeDesiredRankings();
+    await this.getMyPublishers();
   },
   methods: {
+    async getMyPublishers() {
+      const myPublishers = await axios.get(`/api/league/GetMyPublishers/${this.leagueYear.year}`);
+      this.otherPublishers = myPublishers.data.filter((p) => p.publisherID !== this.userPublisher.publisherID);
+    },
     initializeDesiredRankings() {
       this.desiredQueueRanks = this.queuedGames;
     },
@@ -151,6 +175,24 @@ export default {
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.showingTopAvailable = true;
+          this.isBusy = false;
+        })
+        .catch(() => {
+          this.isBusy = false;
+        });
+    },
+    getOtherPublisher(otherPublisher) {
+      this.clearDataExceptSearch();
+
+      this.selectedSlotIndex = 0;
+      this.isBusy = true;
+
+      axios
+        .get('/api/league/CurrentQueuedGameYears/' + otherPublisher.publisherID)
+        .then((response) => {
+          this.possibleMasterGames = response.data;
+          this.selectedOtherPublisher = otherPublisher;
+          this.showingOtherLeagueWatchlist = true;
           this.isBusy = false;
         })
         .catch(() => {
@@ -216,6 +258,18 @@ export default {
       await this.notifyAction('Game removed from watchlist.');
       this.initializeDesiredRankings();
     },
+    getQueueForLeague() {
+      axios
+        .get('/api/league/GetWatchListForAnotherLeagueYear?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
+        .then((response) => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingTopAvailable = true;
+        })
+        .catch(() => {
+          this.isBusy = false;
+        });
+    },
     clearAllData() {
       this.clearQueueData();
       this.searchGameName = null;
@@ -230,6 +284,8 @@ export default {
       this.queueResult = null;
       this.possibleMasterGames = [];
       this.showingTopAvailable = false;
+      this.showingOtherLeagueWatchlist = false;
+      this.selectedOtherPublisher = null;
       this.isBusy = false;
     }
   }
@@ -247,5 +303,16 @@ export default {
 
 .show-top-button {
   margin-bottom: 10px;
+}
+
+.watchlist-flex-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.publisher-name {
+  font-style: italic;
 }
 </style>

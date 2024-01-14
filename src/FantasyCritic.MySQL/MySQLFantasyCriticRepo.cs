@@ -279,7 +279,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             sql = "update tbl_league_year set WinningUserID = @WinningUserID where LeagueID = @LeagueID and Year = @Year and WinningUserID is null;";
         }
-        
+
         List<LeagueYearWinnerUpdateEntity> updateEntities = winningUsers.Select(x => new LeagueYearWinnerUpdateEntity(x)).ToList();
         var updateBatches = updateEntities.Chunk(1000).ToList();
         await using var connection = new MySqlConnection(_connectionString);
@@ -962,7 +962,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague)
     {
         string sql = "update tbl_league SET LeagueName = @leagueName, PublicLeague = @publicLeague, TestLeague = @testLeague, CustomRulesLeague = @customRulesLeague where LeagueID = @leagueID;";
-        var param = new {leagueID = league.LeagueID, leagueName, publicLeague, testLeague, customRulesLeague};
+        var param = new { leagueID = league.LeagueID, leagueName, publicLeague, testLeague, customRulesLeague };
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, param);
     }
@@ -1974,6 +1974,22 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return publisher;
     }
 
+    public async Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        const string minimalPublisherSQL = "SELECT PublisherID, PublisherName, l.LeagueID, LeagueName, `Year` FROM tbl_league_publisher p JOIN tbl_league l ON p.LeagueID = l.LeagueID WHERE UserID = @userID AND `Year`=@year";
+
+        var queryObject = new
+        {
+            userID,
+            year
+        };
+
+        var minimalPublisherEntities = await connection.QueryAsync<MinimalPublisherEntity>(minimalPublisherSQL, queryObject);
+        
+        return minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
+    }
+
     public async Task AddPublisherGame(PublisherGame publisherGame)
     {
         PublisherGameEntity entity = new PublisherGameEntity(publisherGame);
@@ -2306,7 +2322,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return updatedTrade;
     }
 
-    public async  Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions()
+    public async Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions()
     {
         const string sql = "select * from tbl_league_specialauction where Processed = 0;";
 
@@ -3261,7 +3277,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             return;
         }
-        
         var userActiveObject = new
         {
             leagueID = league.LeagueID,
