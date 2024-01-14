@@ -5,12 +5,18 @@
       <b-button variant="warning" class="reset-button" @click="resetValues">Reset Changes</b-button>
     </div>
     <div v-show="showWarning && !showDanger && !showPortDanger" class="alert alert-warning">You've chosen slightly non-standard settings. Be sure this is what you want.</div>
+    <div v-show="showEarlyAccessWarning" class="alert alert-warning">
+      The settings you've chosen will allow an early access game to be drafted/bid on, but only
+      <em>before</em>
+      the game enters early access. This is a reasonable choice, but be careful - it's very rare for a game to go enter early access and then see a full release within the same year. For this reason,
+      allowing early access games is more of a pitfall than anything else.
+    </div>
+    <div v-show="showEarlyAccessDanger" class="alert alert-warning">If you ban 'Planned for Early Access' you must also ban 'Currently in Early Access'. See the FAQ page for an explanation.</div>
     <div v-show="showDanger && !showPortDanger" class="alert alert-danger">
       The settings you have selected are REALLY not recommended, unless you really know what you are doing and want a highly custom league.
     </div>
     <div v-show="showPortDanger" class="alert alert-danger">
-      Please, please, don't allow the tag 'Port'. These games very very rarely get new Open Critic pages, so we usually end up assigning the points from the original game. You're free to allow the
-      tag, but please be aware that this is an "unsupported" feature.
+      Please, please, don't allow the tag 'Port'. These games very very rarely get new Open Critic pages. You're free to allow the tag, but please be aware that this is an "unsupported" feature.
     </div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">
@@ -73,9 +79,6 @@ export default {
       return _.filter(this.$store.getters.allTags, (x) => !x.systemTagOnly);
     },
     showWarning() {
-      if (this.gameMode === 'Beginner') {
-        return false;
-      }
       let recommendedAllowedTags = ['Reimagining'];
       let recommendedBannedTags = ['DirectorsCut', 'ReleasedInternationally', 'CurrentlyInEarlyAccess'];
       let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
@@ -83,7 +86,7 @@ export default {
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showDanger() {
-      let recommendedAllowedTags = ['NewGame', 'NewGamingFranchise', 'PlannedForEarlyAccess', 'WillReleaseInternationallyFirst'];
+      let recommendedAllowedTags = ['NewGame', 'NewGamingFranchise', 'WillReleaseInternationallyFirst'];
       let recommendedBannedTags = ['Port'];
       let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
       let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
@@ -95,6 +98,12 @@ export default {
       let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
       let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
+    },
+    showEarlyAccessWarning() {
+      return this.internalValue.allowed.includes('PlannedForEarlyAccess') && !this.internalValue.allowed.includes('CurrentlyInEarlyAccess');
+    },
+    showEarlyAccessDanger() {
+      return this.internalValue.allowed.includes('CurrentlyInEarlyAccess') && !this.internalValue.allowed.includes('PlannedForEarlyAccess');
     }
   },
   mounted() {

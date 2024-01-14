@@ -427,7 +427,7 @@ export default {
         this.internalValue.unlimitedWillNotReleaseDroppableGames = false;
       }
 
-      let alwaysBannedTags = ['Port', 'CurrentlyInEarlyAccess', 'ReleasedInternationally'];
+      let alwaysBannedTags = ['Port', 'PlannedForEarlyAccess', 'CurrentlyInEarlyAccess', 'ReleasedInternationally'];
       let standardBannedTags = ['YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster', 'ExpansionPack'];
 
       let bannedTags = alwaysBannedTags;
@@ -459,13 +459,9 @@ export default {
         return;
       }
 
-      let includeYearlyInstallmentSlot = this.intendedNumberOfPlayers < 5;
       let includeExpansionPackSlot = numberOfSpecialSlots >= 2;
       let includeRemakeSlot = numberOfSpecialSlots >= 2;
       let numberNonNGFSlots = 0;
-      if (includeYearlyInstallmentSlot) {
-        numberNonNGFSlots++;
-      }
       if (includeExpansionPackSlot) {
         numberNonNGFSlots++;
       }
@@ -486,14 +482,6 @@ export default {
         });
       }
 
-      if (includeYearlyInstallmentSlot) {
-        this.internalValue.specialGameSlots.push({
-          specialSlotPosition: slotIndex,
-          requiredTags: ['YearlyInstallment']
-        });
-        slotIndex++;
-      }
-
       if (includeExpansionPackSlot) {
         this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
@@ -505,7 +493,7 @@ export default {
       if (includeRemakeSlot) {
         this.internalValue.specialGameSlots.push({
           specialSlotPosition: slotIndex,
-          requiredTags: ['Remake', 'PartialRemake', 'DirectorsCut']
+          requiredTags: ['Reimagining', 'Remake', 'PartialRemake', 'DirectorsCut']
         });
         slotIndex++;
       }
