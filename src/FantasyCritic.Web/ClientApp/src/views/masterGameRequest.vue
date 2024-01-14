@@ -71,16 +71,32 @@
               <div class="alert alert-info">
                 In particular, please indicate if this game needs any special tags. Such as:
                 <ul>
-                  <li>Is this game currently in early access?</li>
+                  <li>Is this game currently in early access or planned for early access?</li>
                   <li>Is this game the start of a new franchise or part of an existing one?</li>
+                  <li>Is this game a remake, remaster, or something like that?</li>
                 </ul>
               </div>
               <input id="requestNote" v-model="requestNote" name="requestNote" class="form-control input" />
             </div>
 
+            <div v-if="showUnannouncedWarning" class="alert alert-warning">
+              <p>It looks like you are requesting an unannounced or rumored game. While there are many of these games on the site, we are trying to scale back on adding them.</p>
+              <p>
+                If you are requesting this in order to draft it, we ask that you would instead use the "Unlisted Game" feature, which will allow you to draft a game not on the Master Game list. The
+                game can be linked to a master game later if it does in fact get announced.
+              </p>
+              <p>
+                If you are requesting this in order to bid on it, then it will need to be added to the master games list. Please use the 'notes' field above to provide an explanation of your situation
+                and as much detail on this predicted game as you can.
+              </p>
+              <b-form-checkbox v-model="unannouncedCheckbox">
+                <span class="checkbox-label">I have read and understand this message.</span>
+              </b-form-checkbox>
+            </div>
+
             <div class="form-group">
               <div class="right-button">
-                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validDate" />
+                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validDate || !validUnannounced" />
               </div>
             </div>
           </form>
@@ -154,7 +170,8 @@ export default {
       estimatedReleaseDate: '',
       hasReleaseDate: false,
       wantToPickup: false,
-      nearCertainInterested: false
+      nearCertainInterested: false,
+      unannouncedCheckbox: false
     };
   },
   computed: {
@@ -163,6 +180,28 @@ export default {
     },
     validDate() {
       return !!this.estimatedReleaseDate || !!this.releaseDate;
+    },
+    showUnannouncedWarning() {
+      const fieldsToCheck = [this.gameName, this.estimatedReleaseDate, this.requestNote];
+      const keywords = ['unannounced', 'rumor'];
+
+      for (const variable of fieldsToCheck) {
+        for (const word of keywords) {
+          if (variable.toLowerCase().includes(word.toLowerCase())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    validUnannounced() {
+      if (!this.showUnannouncedWarning) {
+        return true;
+      }
+      if (!this.requestNote || this.requestNote.length < 20) {
+        return false;
+      }
+      return this.unannouncedCheckbox;
     }
   },
   async mounted() {
