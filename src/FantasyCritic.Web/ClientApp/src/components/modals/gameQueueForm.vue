@@ -18,7 +18,8 @@
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Top Available Games</b-button>
         <b-dropdown text="My Other Watchlists">
           <b-dropdown-item v-for="publisher in otherPublishers" :key="publisher.publisherID" @click="getOtherPublisher(publisher)">
-            Publisher {{ publisher.publisherName }}, League: {{ publisher.leagueName }}
+            <span class="publisher-name">{{ publisher.publisherName }}</span>
+            ({{ publisher.leagueName }})
           </b-dropdown-item>
         </b-dropdown>
       </div>
