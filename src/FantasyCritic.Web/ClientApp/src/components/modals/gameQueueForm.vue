@@ -17,7 +17,9 @@
       <div class="watchlist-flex-area">
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Top Available Games</b-button>
         <b-dropdown text="My Other Watchlists">
-          <b-dropdown-item v-for="publisher in otherPublishers" @click="getOtherPublisher(publisher)">Publisher {{ publisher.publisherName }}, League: {{ publisher.leagueName }}</b-dropdown-item>
+          <b-dropdown-item v-for="publisher in otherPublishers" :key="publisher.publisherID" @click="getOtherPublisher(publisher)">
+            Publisher {{ publisher.publisherName }}, League: {{ publisher.leagueName }}
+          </b-dropdown-item>
         </b-dropdown>
       </div>
     </div>
@@ -25,7 +27,7 @@
       <div class="watchlist-flex-area">
         <h5 class="text-black">Top Available by Slot</h5>
         <b-dropdown text="My Other Watchlists">
-          <b-dropdown-item v-for="publisher in otherPublishers" @click="getOtherPublisher(publisher)">
+          <b-dropdown-item v-for="publisher in otherPublishers" :key="publisher.publisherID" @click="getOtherPublisher(publisher)">
             <span class="publisher-name">{{ publisher.publisherName }}</span>
             ({{ publisher.leagueName }})
           </b-dropdown-item>
@@ -107,7 +109,6 @@
 <script>
 import axios from 'axios';
 import draggable from 'vuedraggable';
-import _ from 'lodash';
 
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import StatusBadge from '@/components/statusBadge.vue';
@@ -257,18 +258,6 @@ export default {
       await axios.post('/api/league/DeleteQueuedGame', model);
       await this.notifyAction('Game removed from watchlist.');
       this.initializeDesiredRankings();
-    },
-    getQueueForLeague() {
-      axios
-        .get('/api/league/GetWatchListForAnotherLeagueYear?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingTopAvailable = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
     },
     clearAllData() {
       this.clearQueueData();

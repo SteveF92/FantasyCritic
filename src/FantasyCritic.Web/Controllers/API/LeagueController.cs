@@ -278,8 +278,8 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
-    [HttpGet("{leagueID}")]
-    public async Task<IActionResult> GetQueuedGameYearsForLeague(Guid publisherID, Guid leagueID)
+    [HttpGet("{publisherID}")]
+    public async Task<IActionResult> GetQueuedGameYearsForLeague(Guid publisherID)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
         if (publisherRecord.FailedResult is not null)
