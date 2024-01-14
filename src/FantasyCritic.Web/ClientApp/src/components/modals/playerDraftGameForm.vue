@@ -12,9 +12,11 @@
       <div v-if="!leagueYear.settings.hasSpecialSlots">
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="showUnlistedField">Draft Unlisted Game</b-button>
       </div>
       <div v-else>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="showUnlistedField">Draft Unlisted Game</b-button>
         <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
           <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click.native="getTopGames"></searchSlotTypeBadge>
@@ -32,7 +34,7 @@
         </span>
       </div>
 
-      <div v-if="!draftMasterGame">
+      <div v-if="!draftMasterGame && !showingUnlistedField">
         <div v-if="isBusy" class="game-list-spinner">
           <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
         </div>
@@ -43,15 +45,15 @@
         <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
       </div>
 
-      <div v-show="searched && !draftMasterGame" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
-        <div>
+      <div v-show="(searched && !draftMasterGame) || showingUnlistedField" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+        <div v-if="!showingUnlistedField">
           <span v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
           <span v-show="possibleMasterGames.length === 0">No games were found.</span>
           <b-button variant="primary" size="sm" class="unlisted-button" @click="showUnlistedField">Select unlisted game</b-button>
         </div>
 
         <div v-if="showingUnlistedField">
-          <label for="draftUnlistedGame" class="control-label">Custom Game Name</label>
+          <h4>Custom Game Name</h4>
           <div class="input-group game-search-input">
             <input id="draftUnlistedGame" v-model="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
           </div>

@@ -128,7 +128,14 @@ export default {
           return 'Not Linked to Master Game';
         },
         content: () => {
-          return 'This is a "custom game" that has not been linked to a master game. The league manager can link it using "associate game" in the sidebar.';
+          if (!this.hasSpecialSlots) {
+            return 'This is a "custom game" that has not been linked to a master game. The league manager can link it using "associate game" in the sidebar.';
+          } else {
+            return (
+              'This is a "custom game" that has not been linked to a master game. The league manager can link it using "associate game" in the sidebar. ' +
+              'Since there is no way for the site to know what kind of game this is, it can be moved into any slot.'
+            );
+          }
         }
       };
     },
@@ -268,7 +275,11 @@ export default {
   height: 25px;
   border-radius: 4px;
   color: #ffffff;
-  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+  text-shadow:
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black;
 }
 
 .lock-icon {
