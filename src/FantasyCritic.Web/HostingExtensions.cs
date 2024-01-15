@@ -98,7 +98,6 @@ public static class HostingExtensions
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
         services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
-        services.AddScoped<SelectMenuExecutedHandler>();
 
         services.AddScoped<PatreonService>();
 
