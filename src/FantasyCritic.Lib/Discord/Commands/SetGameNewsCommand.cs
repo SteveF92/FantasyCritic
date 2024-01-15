@@ -123,7 +123,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
                         Context.User));
 
                     var includeLeagueGamesMenuComponent = BuildYesOrNoSelectMenuComponent("include-league-games");
-                    await FollowupAsync(IncludeLeagueGamesQuestion, components: includeLeagueGamesMenuComponent, ephemeral: true);
+                    await FollowupAsync(IncludeLeagueGamesQuestion, components: includeLeagueGamesMenuComponent);
                 }
             }
         }

@@ -2,7 +2,6 @@ using Discord.WebSocket;
 using Discord;
 using Discord.Interactions;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Discord.EventHandlers;
 
 namespace FantasyCritic.Lib.Discord;
 public class DiscordBotService
@@ -11,19 +10,16 @@ public class DiscordBotService
     private readonly DiscordSocketClient _client;
     private readonly IServiceProvider _serviceProvider;
     private readonly FantasyCriticDiscordConfiguration _botConfiguration;
-    private readonly SelectMenuExecutedHandler _selectMenuExecutedHandler;
 
     public DiscordBotService(InteractionService interactionService,
         IServiceProvider serviceProvider,
         FantasyCriticDiscordConfiguration botConfiguration,
-        SelectMenuExecutedHandler selectMenuExecutedHandler,
         DiscordSocketClient client)
     {
         _client = client;
         _interactionService = interactionService;
         _serviceProvider = serviceProvider;
         _botConfiguration = botConfiguration;
-        _selectMenuExecutedHandler = selectMenuExecutedHandler;
     }
 
     public async Task InitializeBotAsync()
@@ -33,7 +29,6 @@ public class DiscordBotService
         _client.Log += Log;
         await _interactionService.AddModulesAsync(typeof(DiscordBotService).Assembly, _serviceProvider);
         _client.InteractionCreated += HandleInteraction;
-        _client.SelectMenuExecuted += _selectMenuExecutedHandler.OnSelectMenuExecuted;
         await _client.LoginAsync(TokenType.Bot, _botConfiguration.BotToken);
         await _client.StartAsync();
     }

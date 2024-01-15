@@ -59,7 +59,6 @@ public class Program
             .AddSingleton<DiscordBotService>()
             .AddSingleton(repositoryConfiguration)
             .AddScoped<IDiscordRepo, MySQLDiscordRepo>()
-            .AddScoped<SelectMenuExecutedHandler>()
             .AddScoped<DiscordPushService>()
             .AddScoped<IMasterGameRepo, MySQLMasterGameRepo>()
             .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
