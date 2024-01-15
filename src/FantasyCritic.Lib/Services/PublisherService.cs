@@ -252,11 +252,6 @@ public class PublisherService
             return Result.Failure("Publisher not found.");
         }
 
-        if (publisherToReassign.User.Id == leagueYear.League.LeagueManager.Id)
-        {
-            return Result.Failure("You cannot reassign your publisher to someone else.");
-        }
-
         await _fantasyCriticRepo.ReassignPublisher(leagueYear, publisherToReassign, newUser);
         return Result.Success();
     }

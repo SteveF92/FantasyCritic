@@ -42,7 +42,7 @@
     </div>
 
     <template #modal-footer>
-      <input class="btn btn-primary" value="Reassign Publisher" @click="reassignPublisher" :disabled="!readyToReassign" />
+      <input type="submit" class="btn btn-primary" value="Reassign Publisher" @click="reassignPublisher" :disabled="!readyToReassign" />
     </template>
   </b-modal>
 </template>
