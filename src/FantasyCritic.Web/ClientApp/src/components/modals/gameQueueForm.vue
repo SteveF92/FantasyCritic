@@ -18,8 +18,8 @@
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Top Available Games</b-button>
         <b-dropdown text="My Other Watchlists">
           <b-dropdown-item v-for="publisher in otherPublishers" :key="publisher.publisherID" @click="getOtherPublisher(publisher)">
-            <span class="publisher-name">{{ publisher.publisherName }}</span>
-            ({{ publisher.leagueName }})
+            <div>{{ publisher.leagueName }}</div>
+            <div class="publisher-name">{{ publisher.publisherName }}</div>
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -29,8 +29,8 @@
         <h5 class="text-black">Top Available by Slot</h5>
         <b-dropdown text="My Other Watchlists">
           <b-dropdown-item v-for="publisher in otherPublishers" :key="publisher.publisherID" @click="getOtherPublisher(publisher)">
-            <span class="publisher-name">{{ publisher.publisherName }}</span>
-            ({{ publisher.leagueName }})
+            <div>{{ publisher.leagueName }}</div>
+            <div class="publisher-name">{{ publisher.publisherName }}</div>
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -304,5 +304,6 @@ export default {
 
 .publisher-name {
   font-style: italic;
+  font-size: 12px;
 }
 </style>
