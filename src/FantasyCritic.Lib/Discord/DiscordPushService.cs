@@ -51,8 +51,7 @@ public class DiscordPushService
         _discordFormatter = discordFormatter;
         DiscordSocketConfig socketConfig = new()
         {
-            GatewayIntents = GatewayIntents.AllUnprivileged,
-            AlwaysDownloadUsers = true,
+            GatewayIntents = GatewayIntents.AllUnprivileged
         };
         _client = new DiscordSocketClient(socketConfig);
         _botIsReady = false;

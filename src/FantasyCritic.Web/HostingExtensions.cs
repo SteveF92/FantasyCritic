@@ -177,8 +177,7 @@ public static class HostingExtensions
             //Discord request service
             DiscordSocketConfig socketConfig = new()
             {
-                GatewayIntents = GatewayIntents.AllUnprivileged,
-                AlwaysDownloadUsers = true,
+                GatewayIntents = GatewayIntents.AllUnprivileged
             };
             var fantasyCriticSettings = new FantasyCriticSettings
             {

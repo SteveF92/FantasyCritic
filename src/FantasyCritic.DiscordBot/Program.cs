@@ -27,8 +27,7 @@ public class Program
     private readonly ServiceProvider _serviceProvider;
     private readonly DiscordSocketConfig _socketConfig = new()
     {
-        GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
-        AlwaysDownloadUsers = true,
+        GatewayIntents = GatewayIntents.AllUnprivileged
     };
 
     public Program()
