@@ -104,14 +104,19 @@
                 <ul>
                   <li><router-link :to="{ hash: '#league' }">See League Information</router-link></li>
                   <li><router-link :to="{ hash: '#league-options' }">See League Options</router-link></li>
-                  <li><router-link :to="{ hash: '#link' }">Get a Link to the League</router-link></li>
+                  <li><router-link :to="{ hash: '#link-to-league' }">Get a Link to the League</router-link></li>
+                  <li><router-link :to="{ hash: '#conference' }">See Conference Information</router-link></li>
+                  <li><router-link :to="{ hash: '#link-to-conference' }">Get a Link to the Conference</router-link></li>
                   <li><router-link :to="{ hash: '#publisher' }">See Publisher Information</router-link></li>
                   <li><router-link :to="{ hash: '#game' }">Search for a Game</router-link></li>
                   <li><router-link :to="{ hash: '#game-news' }">View Upcoming or Recent League Releases</router-link></li>
                   <li><router-link :to="{ hash: '#public-bids' }">View Public Bids for the Current Week</router-link></li>
                   <li><router-link :to="{ hash: '#special-auctions' }">View Current Special Auctions</router-link></li>
+                  <li><router-link :to="{ hash: '#trending' }">View Trending Bids and Drops</router-link></li>
                   <li><router-link :to="{ hash: '#set-league' }">Set Up a League in your Channel</router-link></li>
                   <li><router-link :to="{ hash: '#remove-league' }">Remove the League in your Channel</router-link></li>
+                  <li><router-link :to="{ hash: '#set-conference' }">Set Up a Conference in your Channel</router-link></li>
+                  <li><router-link :to="{ hash: '#remove-conference' }">Remove the Conference in your Channel</router-link></li>
                   <li><router-link :to="{ hash: '#set-bid-alert-role' }">Set a Role to Alert for Bid Information</router-link></li>
                   <li><router-link :to="{ hash: '#set-game-news' }">Configure Game News Announcements</router-link></li>
                   <li><router-link :to="{ hash: '#view-settings' }">View Bot Settings</router-link></li>
@@ -133,8 +138,8 @@
                     </span>
                   </p>
                   <span>
-                    Displays the list of publishers in the league, ordered by their current rankings from first to last place. It will also display the publishers' current scores, their project
-                    scored, and the number of games they have.
+                    Displays the list of publishers in the league, ordered by their current rankings from first to last place. It will also display the publishers' current scores, their projected
+                    scores, and the number of games they have.
                   </span>
                 </div>
                 <hr />
@@ -157,10 +162,10 @@
                 </div>
                 <hr />
                 <div class="discord-command-explanation">
-                  <h5 id="link">Get a Link to the League</h5>
+                  <h5 id="link-to-league">Get a Link to the League</h5>
                   <p>
                     <span class="command-label">Command:</span>
-                    <code>/link</code>
+                    <code>/link-to-league</code>
                   </p>
                   <p>
                     <span class="discord-param-text">
@@ -172,6 +177,45 @@
                     </span>
                   </p>
                   <span>Provides a link to the league's page on the Fantasy Critic site.</span>
+                </div>
+                <hr />
+                <div class="discord-command-explanation">
+                  <h5 id="conference">See Conference Information</h5>
+                  <p>
+                    <span class="command-label">Command:</span>
+                    <code>/conference</code>
+                  </p>
+                  <p>
+                    <span class="discord-param-text">
+                      <span class="param-label">Parameters:</span>
+                      <p>
+                        <code>year:</code>
+                        [optional] The year for the league. Defaults to earliest active year.
+                      </p>
+                    </span>
+                  </p>
+                  <span>
+                    Displays the list of all publishers in every league in the conference, ordered by their current rankings from first to last place conference-wide. It will also display the
+                    publishers' current scores and their projected scores.
+                  </span>
+                </div>
+                <hr />
+                <div class="discord-command-explanation">
+                  <h5 id="link-to-conference">Get a Link to the Conference</h5>
+                  <p>
+                    <span class="command-label">Command:</span>
+                    <code>/link-to-conference</code>
+                  </p>
+                  <p>
+                    <span class="discord-param-text">
+                      <span class="param-label">Parameters:</span>
+                      <p>
+                        <code>year:</code>
+                        [optional] The year for the conference. Defaults to earliest active year.
+                      </p>
+                    </span>
+                  </p>
+                  <span>Provides a link to the conference's page on the Fantasy Critic site.</span>
                 </div>
                 <hr />
                 <div class="discord-command-explanation">
@@ -277,6 +321,38 @@
                 </div>
                 <hr />
                 <div class="discord-command-explanation">
+                  <h5 id="trending">View Trending Bids and Drops</h5>
+                  <p>
+                    <span class="command-label">Command:</span>
+                    <code>/trending</code>
+                  </p>
+                  <p>
+                    <span class="discord-param-text">
+                      <span class="param-label">Parameters:</span>
+                      <p class="parameter-explanation">
+                        <code>trending_topic:</code>
+                        The type of trending topic you would like to see. You can choose from the following options:
+                      </p>
+                      <ul>
+                        <li>
+                          <strong>Bids</strong>
+                          - The top bids on the site from the most recent processing day.
+                        </li>
+                        <li>
+                          <strong>Counter Picks</strong>
+                          - The top counter picks on the site from the most recent processing day.
+                        </li>
+                        <li>
+                          <strong>Drops</strong>
+                          - The top drops on the site from the most recent processing day.
+                        </li>
+                      </ul>
+                    </span>
+                  </p>
+                  <span>Displays trending bids, drops, and counter picks for the most recent bid/drop processing day.</span>
+                </div>
+                <hr />
+                <div class="discord-command-explanation">
                   <h5 id="set-league">Set Up a League in your Channel</h5>
                   <p>
                     <span class="command-label">Command:</span>
@@ -292,7 +368,7 @@
                         icon next to your league name. You can also find it in the URL for your league.
                         <br />
                         <strong>Example:</strong>
-                        https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2023
+                        https://www.fantasycritic.games/league/LEAGUE_ID_HERE/YEAR
                       </p>
                     </span>
                   </p>
@@ -311,6 +387,38 @@
                     <code>/remove-league</code>
                   </p>
                   <span>Allows you to remove your league from a Discord channel.</span>
+                </div>
+                <hr />
+                <div class="discord-command-explanation">
+                  <h5 id="set-conference">Set Up a Conference in your Channel</h5>
+                  <p>
+                    <span class="command-label">Command:</span>
+                    <code>/set-conference</code>
+                  </p>
+                  <p>
+                    <span class="discord-param-text">
+                      <span class="param-label">Parameters:</span>
+                      <p class="parameter-explanation">
+                        <code>conference_id:</code>
+                        The ID for your conference. You can get it by clicking the
+                        <font-awesome-icon :icon="['far', 'copy']" />
+                        icon next to your conference name. You can also find it in the URL for your conference.
+                        <br />
+                        <strong>Example:</strong>
+                        https://www.fantasycritic.games/conference/CONFERENCE_ID_HERE/YEAR
+                      </p>
+                    </span>
+                  </p>
+                  <span>Allows you to connect your conference to a Discord channel.</span>
+                </div>
+                <hr />
+                <div class="discord-command-explanation">
+                  <h5 id="remove-conference">Remove the Conference in your Channel</h5>
+                  <p>
+                    <span class="command-label">Command:</span>
+                    <code>/remove-conference</code>
+                  </p>
+                  <span>Allows you to remove your conference from a Discord channel.</span>
                 </div>
                 <hr />
                 <div class="discord-command-explanation">

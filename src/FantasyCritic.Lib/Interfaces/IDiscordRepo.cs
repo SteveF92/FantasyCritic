@@ -10,6 +10,7 @@ public interface IDiscordRepo
     Task SetSkippedGameNewsTags(ulong guildID, ulong channelID, IEnumerable<MasterGameTag> skippedTags);
     Task SetBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? bidAlertRoleID);
     Task<bool> DeleteLeagueChannel(ulong guildID, ulong channelID);
+    Task<bool> DeleteConferenceChannel(ulong guildID, ulong channelID);
     Task<IReadOnlyList<MinimalLeagueChannel>> GetAllLeagueChannels();
     Task<IReadOnlyList<GameNewsChannel>> GetAllGameNewsChannels();
     Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID);

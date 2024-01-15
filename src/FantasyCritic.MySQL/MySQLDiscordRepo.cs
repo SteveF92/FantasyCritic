@@ -129,6 +129,19 @@ public class MySQLDiscordRepo : IDiscordRepo
         return rowsDeleted >= 1;
     }
 
+    public async Task<bool> DeleteConferenceChannel(ulong guildID, ulong channelID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
+        {
+            guildID,
+            channelID
+        };
+        var sql = "DELETE FROM tbl_discord_conferencechannel WHERE GuildID=@guildID AND ChannelID=@channelID";
+        var rowsDeleted = await connection.ExecuteAsync(sql, queryObject);
+        return rowsDeleted >= 1;
+    }
+
     public async Task<IReadOnlyList<MinimalLeagueChannel>> GetAllLeagueChannels()
     {
         await using var connection = new MySqlConnection(_connectionString);
