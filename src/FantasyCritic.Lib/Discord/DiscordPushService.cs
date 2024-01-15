@@ -289,7 +289,7 @@ public class DiscordPushService
         if (standardPickPublisher is null && counterPickPublisher is null)
         {
             if (!masterGame.IsReleased(currentDate) && !masterGame.CriticScore.HasValue)
-            { 
+            {
                 return "Available";
             }
 
@@ -591,23 +591,27 @@ public class DiscordPushService
         var messageTasks = new List<Task>();
         foreach (var publicBiddingSet in publicBiddingSets)
         {
-            if (!publicBiddingSet.MasterGames.Any())
-            {
-                continue;
-            }
-
             var leagueChannels = channelLookup[publicBiddingSet.LeagueYear.League.LeagueID].ToList();
             if (!leagueChannels.Any())
             {
                 continue;
             }
 
-            var gameMessages = publicBiddingSet.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
-
             var leagueLink = new LeagueUrlBuilder(_baseAddress, publicBiddingSet.LeagueYear.League.LeagueID, publicBiddingSet.LeagueYear.Year).BuildUrl();
-            var finalMessage = string.Join("\n", gameMessages);
             var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
             var header = $"Public Bids (Week of {lastSunday:MMMM dd, yyyy})";
+
+            string finalMessage;
+
+            if (publicBiddingSet.MasterGames.Any())
+            {
+                var gameMessages = publicBiddingSet.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
+                finalMessage = string.Join("\n", gameMessages);
+            }
+            else
+            {
+                finalMessage = "There were no bids this week.";
+            }
 
             foreach (var leagueChannel in leagueChannels)
             {
