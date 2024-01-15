@@ -35,7 +35,7 @@ public class GameSearchingService
         {
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
-                publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
+                publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate, false);
             possibleMasterGames.Add(possibleMasterGame);
         }
 
@@ -63,7 +63,7 @@ public class GameSearchingService
         return gamesToReturn;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, LeagueYear leagueYear, Publisher currentPublisher)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> SearchGames(string searchName, LeagueYear leagueYear, Publisher? currentPublisher)
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
@@ -71,20 +71,25 @@ public class GameSearchingService
             .Select(x => x.MasterGame!.MasterGame)
             .ToHashSet();
 
-        HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
+        IReadOnlyList<PublisherSlot> openNonCounterPickSlots = new List<PublisherSlot>();
+        IReadOnlySet<MasterGame> myPublisherMasterGames = new HashSet<MasterGame>();
+        if (currentPublisher is not null)
+        {
+            myPublisherMasterGames = currentPublisher.MyMasterGames;
+            var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+            openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
+        }
 
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, false);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
-        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
         foreach (var masterGame in matchingMasterGames)
         {
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots, publisherMasterGames,
-                myPublisherMasterGames, eligibilityFactors, currentDate);
+                myPublisherMasterGames, eligibilityFactors, currentDate, currentPublisher is null);
             possibleMasterGames.Add(possibleMasterGame);
         }
 
@@ -112,7 +117,7 @@ public class GameSearchingService
         {
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
-                publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
+                publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate, false);
 
             if (!possibleMasterGame.IsAvailable)
             {
@@ -183,7 +188,7 @@ public class GameSearchingService
 
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
-                publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate);
+                publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate, false);
             possibleMasterGames.Add(possibleMasterGame);
         }
 
@@ -191,8 +196,8 @@ public class GameSearchingService
     }
 
     public static PossibleMasterGameYear GetPossibleMasterGameYear(MasterGameYear masterGame, IReadOnlyList<PublisherSlot> openNonCounterPickSlots,
-        HashSet<MasterGame> publisherStandardMasterGames, HashSet<MasterGame> myPublisherMasterGames,
-        MasterGameWithEligibilityFactors eligibilityFactors, LocalDate currentDate)
+        IReadOnlySet<MasterGame> publisherStandardMasterGames, IReadOnlySet<MasterGame> myPublisherMasterGames,
+        MasterGameWithEligibilityFactors eligibilityFactors, LocalDate currentDate, bool skipPublisherFields)
     {
         bool isEligible = SlotEligibilityFunctions.GameIsEligibleInLeagueYear(eligibilityFactors);
         bool taken = publisherStandardMasterGames.Contains(masterGame.MasterGame);
@@ -200,7 +205,7 @@ public class GameSearchingService
         bool isReleased = masterGame.MasterGame.IsReleased(currentDate);
         WillReleaseStatus willReleaseStatus = masterGame.GetWillReleaseStatus();
         bool hasScore = masterGame.MasterGame.CriticScore.HasValue;
-        bool isEligibleInOpenSlot = SlotEligibilityFunctions.GameIsEligibleInOpenSlot(openNonCounterPickSlots, eligibilityFactors);
+        bool isEligibleInOpenSlot = skipPublisherFields || SlotEligibilityFunctions.GameIsEligibleInOpenSlot(openNonCounterPickSlots, eligibilityFactors);
 
         PossibleMasterGameYear possibleMasterGame = new PossibleMasterGameYear(masterGame, taken, alreadyOwned, isEligible, isEligibleInOpenSlot, isReleased, willReleaseStatus, hasScore);
         return possibleMasterGame;

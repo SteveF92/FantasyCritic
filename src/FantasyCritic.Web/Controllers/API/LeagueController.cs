@@ -875,11 +875,6 @@ public class LeagueController : BaseLeagueController
         var currentUser = validResult.CurrentUser!;
 
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
-        if (userPublisher is null)
-        {
-            return BadRequest();
-        }
-
         var currentDate = _clock.GetToday();
         var matchingGames = await _gameSearchingService.SearchGames(gameName, leagueYear, userPublisher);
         var viewModels = matchingGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(50).ToList();
