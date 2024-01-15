@@ -30,6 +30,21 @@
         <hr />
         <div class="row">
           <div class="col-lg-12 col-xl-6">
+            <h3>Conferences</h3>
+            <p>
+              Plus users have the ability to form "conferences", which are made of up of more than one league. This feature is intended to be used by large groups of 20 or more users who want to all
+              play Fantasy Critic together.
+            </p>
+            <p>
+              Any user can be in a conference, but only Plus Users can form and manage a conference. For more details, check out the
+              <router-link :to="{ name: 'faq', hash: '#conferences' }">Conferences</router-link>
+              page.
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-lg-12 col-xl-6">
             <h3>Cover Art View</h3>
             <p>Plus users can view any publisher in a more visual way, as shown below. There's also a share button to easily share the image to social media.</p>
           </div>
