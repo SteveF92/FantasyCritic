@@ -242,13 +242,7 @@ public class LeagueController : BaseLeagueController
             privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate, masterGameYearDictionary);
         }
 
-        bool conferenceDraftsNotEnabled = false;
-        if (leagueYear.League.ConferenceID.HasValue)
-        {
-            var conferenceYear = await _conferenceService.GetConferenceYear(leagueYear.League.ConferenceID.Value, leagueYear.Year);
-            conferenceDraftsNotEnabled = !conferenceYear!.OpenForDrafting;
-        }
-
+        bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
         var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
         var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, true, currentDate)).ToList();

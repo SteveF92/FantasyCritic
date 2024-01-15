@@ -720,13 +720,9 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
-        if (leagueYear.League.ConferenceID.HasValue)
+        if (leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value)
         {
-            var conferenceYear = await _conferenceService.GetConferenceYear(leagueYear.League.ConferenceID.Value, leagueYear.Year);
-            if (!conferenceYear!.OpenForDrafting)
-            {
-                return BadRequest("The conference is not open for drafting.");
-            }
+            return BadRequest("The conference is not open for drafting.");
         }
 
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
@@ -777,13 +773,7 @@ public class LeagueManagerController : BaseLeagueController
 
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
 
-        bool conferenceDraftsNotEnabled = false;
-        if (leagueYear.League.ConferenceID.HasValue)
-        {
-            var conferenceYear = await _conferenceService.GetConferenceYear(leagueYear.League.ConferenceID.Value, leagueYear.Year);
-            conferenceDraftsNotEnabled = !conferenceYear!.OpenForDrafting;
-        }
-
+        bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager, conferenceDraftsNotEnabled);
         if (!completePlayStatus.ReadyToSetDraftOrder)
         {

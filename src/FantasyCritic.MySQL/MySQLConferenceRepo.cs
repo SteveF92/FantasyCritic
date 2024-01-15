@@ -77,7 +77,7 @@ public class MySQLConferenceRepo : IConferenceRepo
     public async Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options)
     {
         ConferenceEntity conferenceEntity = new ConferenceEntity(conference);
-        ConferenceYearEntity conferenceYearEntity = new ConferenceYearEntity(conference, year, false);
+        ConferenceYearEntity conferenceYearEntity = new ConferenceYearEntity(conference, year);
 
         const string createConferenceSQL =
             """
@@ -99,7 +99,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await _fantasyCriticRepo.CreateLeagueInTransaction(primaryLeague, year, options, connection, transaction);
+        await _fantasyCriticRepo.CreateLeagueInTransaction(primaryLeague, year, options, true, connection, transaction);
         await connection.ExecuteAsync(createConferenceSQL, conferenceEntity, transaction);
         await connection.ExecuteAsync(setConferenceIDSQL, setConferenceIDParameters, transaction);
         await connection.ExecuteAsync(createConferenceYearSQL, conferenceYearEntity, transaction);
@@ -112,7 +112,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await _fantasyCriticRepo.CreateLeagueInTransaction(newLeague, primaryLeagueYear.Year, primaryLeagueYear.Options, connection, transaction);
+        await _fantasyCriticRepo.CreateLeagueInTransaction(newLeague, primaryLeagueYear.Year, primaryLeagueYear.Options, true, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -287,7 +287,8 @@ public class MySQLConferenceRepo : IConferenceRepo
         const string leagueYearSQL = """
                                      select tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager, tbl_league_year.Year,
                                      tbl_league_year.PlayStatus <> "NotStartedDraft" AS DraftStarted,
-                                     tbl_league_year.PlayStatus = "DraftFinal" AS DraftFinished
+                                     tbl_league_year.PlayStatus = "DraftFinal" AS DraftFinished,
+                                     ConferenceLocked
                                      from tbl_league_year join tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID 
                                      where ConferenceID = @conferenceID and Year = @year;
                                      """;
@@ -404,15 +405,15 @@ public class MySQLConferenceRepo : IConferenceRepo
         await connection.ExecuteAsync(sql, transferObject);
     }
 
-    public async Task EditDraftStatusForConferenceYear(ConferenceYear conferenceYear, bool openForDrafting)
+    public async Task SetConferenceLeagueLockStatus(LeagueYear leagueYear, bool locked)
     {
-        const string sql = "UPDATE tbl_conference_year SET OpenForDrafting = @openForDrafting WHERE ConferenceID = @conferenceID AND Year = @year;";
+        const string sql = "UPDATE tbl_league_year SET ConferenceLocked = @locked WHERE LeagueID = @leagueID AND Year = @year;";
 
         var param = new
         {
-            conferenceID = conferenceYear.Conference.ConferenceID,
-            year = conferenceYear.Year,
-            openForDrafting
+            leagueID = leagueYear.Key.LeagueID,
+            year = leagueYear.Year,
+            locked
         };
 
         await using var connection = new MySqlConnection(_connectionString);
@@ -453,6 +454,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         var leagueHasPlayerInPreviousYear = new Dictionary<ConferenceLeague, List<FantasyCriticUser>>();
         var previousYears = conferenceYear.Conference.Years.Where(x => x < conferenceYear.Year).ToList();
+        var lockedLeagueYears = new HashSet<LeagueYearKey>();
         foreach (var previousYear in previousYears)
         {
             var previousConferenceYear = await GetConferenceYear(conferenceYear.Conference.ConferenceID, previousYear);
@@ -468,6 +470,11 @@ public class MySQLConferenceRepo : IConferenceRepo
                 foreach (var publisher in fullLeagueYear!.Publishers)
                 {
                     leagueHasPlayerInPreviousYear[conferenceLeagueYear.League].Add(publisher.User);
+                }
+
+                if (conferenceLeagueYear.ConferenceLocked)
+                {
+                    lockedLeagueYears.Add(conferenceLeagueYear.LeagueYearKey);
                 }
             }
         }
@@ -573,6 +580,18 @@ public class MySQLConferenceRepo : IConferenceRepo
 
                 var finalEntities = finalNewPublishers.OrderBy(x => x.DraftPosition).Select((pub, index) => new SetDraftOrderEntity(pub.PublisherID, index + 1));
                 finalDraftOrderEntities.AddRange(finalEntities);
+            }
+
+            var leagueYearsBeingChanged = new HashSet<LeagueYearKey>();
+            leagueYearsBeingChanged.UnionWith(newActivePlayersToAdd.Select(x => new LeagueYearKey(x.LeagueID, x.Year)));
+            leagueYearsBeingChanged.UnionWith(activePlayersToRemove.Select(x => new LeagueYearKey(x.LeagueID, x.Year)));
+
+            var lockedLeagueYearsBeingChanged = leagueYearsBeingChanged.Intersect(lockedLeagueYears).ToList();
+            if (lockedLeagueYearsBeingChanged.Any())
+            {
+                var leagueIDs = lockedLeagueYearsBeingChanged.Select(x => x.LeagueID).ToHashSet();
+                var leagueNames = conferenceLeagues.Where(x => leagueIDs.Contains(x.LeagueID)).Select(x => x.LeagueName).ToList();
+                return Result.Failure($"Cannot edit the following leagues because they have been locked: {string.Join(", ", leagueNames)}");
             }
 
             await connection.ExecuteAsync(fixDraftOrderSQL, tempDraftOrderEntities, transaction);

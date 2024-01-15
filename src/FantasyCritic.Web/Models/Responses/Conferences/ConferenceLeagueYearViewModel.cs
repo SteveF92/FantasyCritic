@@ -19,6 +19,7 @@ public class ConferenceLeagueYearViewModel
 
         IsPrimaryLeague = isPrimaryLeague;
 
+        ConferenceLocked = domain.ConferenceLocked;
         DraftStarted = domain.DraftStarted;
         DraftFinished = domain.DraftFinished;
     }
@@ -30,6 +31,7 @@ public class ConferenceLeagueYearViewModel
     public bool UserIsInLeague { get; }
     public bool IsPrimaryLeague { get; }
 
+    public bool ConferenceLocked { get; }
     public bool DraftStarted { get; }
     public bool DraftFinished { get; }
 }

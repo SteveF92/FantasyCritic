@@ -24,7 +24,7 @@ public class PublisherStateSet
         return new LeagueYear(leagueYear.League, leagueYear.SupportedYear, leagueYear.Options,
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, leagueYear.EligibilityOverrides,
             leagueYear.TagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser,
-            updatedPublishersInLeague);
+            updatedPublishersInLeague, leagueYear.ConferenceLocked);
     }
 
     public void AcquireGameForPublisher(Publisher publisherToEdit, PublisherGame game, uint bidAmount)

@@ -184,19 +184,8 @@ public class ConferenceService
         return Result.Success();
     }
 
-    public Task EditDraftStatusForConferenceYear(ConferenceYear conferenceYear, bool openForDrafting)
-    {
-        return _conferenceRepo.EditDraftStatusForConferenceYear(conferenceYear, openForDrafting);
-    }
-
     public async Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, IReadOnlyList<ConferenceLeague> conferenceLeagues, IReadOnlyDictionary<ConferenceLeague, IReadOnlyList<FantasyCriticUser>> userAssignments)
     {
-        var leagueYears = await GetFullLeagueYearsInConferenceYear(conferenceYear);
-        if (leagueYears.Any(x => x.PlayStatus.PlayStarted))
-        {
-            return Result.Failure("Draft has already started for one of the leagues, you can no longer re-assign players. You must reset all drafts if you wish to re-assign players.");
-        }
-
         var result = await _conferenceRepo.AssignLeaguePlayers(conferenceYear, conferenceLeagues, userAssignments);
         return result;
     }
@@ -256,5 +245,10 @@ public class ConferenceService
         }
 
         return standings.OrderByDescending(x => x.TotalFantasyPoints).ToList();
+    }
+
+    public Task SetConferenceLeagueLockStatus(LeagueYear leagueYear, bool locked)
+    {
+        return _conferenceRepo.SetConferenceLeagueLockStatus(leagueYear, locked);
     }
 }

@@ -11,10 +11,11 @@ internal class ConferenceLeagueYearEntity
 
     public bool DraftStarted { get; set; }
     public bool DraftFinished { get; set; }
+    public bool ConferenceLocked { get; set; }
 
     public ConferenceLeagueYear ToDomain(FantasyCriticUser leagueManager)
     {
         var league = new ConferenceLeague(LeagueID, LeagueName, leagueManager);
-        return new ConferenceLeagueYear(league, Year, DraftStarted, DraftFinished);
+        return new ConferenceLeagueYear(league, Year, ConferenceLocked, DraftStarted, DraftFinished);
     }
 }

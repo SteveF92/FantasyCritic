@@ -152,7 +152,7 @@ public class FantasyCriticService
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
-            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers);
+            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked);
 
         var differenceString = options.GetDifferenceString(leagueYear.Options);
         if (differenceString is not null)

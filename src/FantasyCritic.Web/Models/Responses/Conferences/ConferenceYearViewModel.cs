@@ -11,7 +11,6 @@ public class ConferenceYearViewModel
         Conference = conferenceViewModel;
         Year = domain.Year;
         SupportedYear = new SupportedYearViewModel(domain.SupportedYear);
-        OpenForDrafting = domain.OpenForDrafting;
 
         LeagueYears = conferenceLeagueYears.Select(x =>
             new ConferenceLeagueYearViewModel(x,
@@ -54,7 +53,6 @@ public class ConferenceYearViewModel
     public ConferenceViewModel Conference { get; }
     public int Year { get; }
     public SupportedYearViewModel SupportedYear { get; }
-    public bool OpenForDrafting { get; }
     public IReadOnlyList<ConferenceLeagueYearViewModel> LeagueYears { get; }
     public bool UserIsInAtLeastOneLeague { get; }
     public IReadOnlyList<ConferenceYearStandingViewModel> Standings { get; }

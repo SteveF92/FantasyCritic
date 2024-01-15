@@ -8,19 +8,17 @@ internal class ConferenceYearEntity
         
     }
     
-    public ConferenceYearEntity(Conference conference, int year, bool openForDrafting)
+    public ConferenceYearEntity(Conference conference, int year)
     {
         ConferenceID = conference.ConferenceID;
         Year = year;
-        OpenForDrafting = openForDrafting;
     }
 
     public Guid ConferenceID { get; set; }
     public int Year { get; set; }
-    public bool OpenForDrafting { get; set; }
     
     public ConferenceYear ToDomain(Conference conference, SupportedYear supportedYear)
     {
-        return new ConferenceYear(conference, supportedYear, OpenForDrafting);
+        return new ConferenceYear(conference, supportedYear);
     }
 }

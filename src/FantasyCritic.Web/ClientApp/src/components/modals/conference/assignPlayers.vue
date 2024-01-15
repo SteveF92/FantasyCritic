@@ -22,18 +22,45 @@
       <div v-for="(value, leagueID) in editableLeagueAssignments" :key="leagueID" class="player-flex-drag">
         <div class="player-drag-list bg-secondary">
           <h4 class="assign-league-header">
-            <span class="player-header">{{ leagueNames[leagueID] }}</span>
-            <font-awesome-icon v-if="!leaguesLocked[leagueID]" icon="minus-circle" size="lg" class="lock-icon" @click="lockLeague(leagueID)" />
-            <font-awesome-icon v-if="leaguesLocked[leagueID]" icon="plus-circle" size="lg" class="lock-icon" @click="unlockLeague(leagueID)" />
+            <font-awesome-icon
+              v-if="!leaguesLocked[leagueID]"
+              icon="lock-open"
+              size="lg"
+              class="unlock-icon"
+              @click="setLockStatus(leagueID, true)"
+              v-b-popover.hover.focus.top="'Lock League (Enables Drafting)'" />
+            <font-awesome-icon
+              v-if="leaguesLocked[leagueID] && !leaguesDraftStarted[leagueID]"
+              icon="lock"
+              size="lg"
+              class="lock-icon"
+              @click="setLockStatus(leagueID, false)"
+              v-b-popover.hover.focus.top="'Unlock league (Enables Player Re-Assignment)'" />
+            <font-awesome-icon
+              v-if="leaguesDraftStarted[leagueID]"
+              icon="lock"
+              size="lg"
+              class="lock-icon draft-lock-icon"
+              v-b-popover.hover.focus.rightbottom="'League has already started drafting'" />
+            <span class="league-name-header">{{ leagueNames[leagueID] }}</span>
+            <font-awesome-icon v-if="!leaguesCollapsed[leagueID]" icon="minus-circle" size="lg" class="collapse-icon" @click="collapseLeague(leagueID)" />
+            <font-awesome-icon v-if="leaguesCollapsed[leagueID]" icon="plus-circle" size="lg" class="collapse-icon" @click="uncollapseLeague(leagueID)" />
           </h4>
 
-          <draggable v-if="!leaguesLocked[leagueID]" :list="value" group="players">
-            <div v-for="element in value" :key="element.userID" class="player-drag-item">
-              <font-awesome-icon icon="bars" />
-              {{ element.displayName }}
-            </div>
-            <template #header></template>
-          </draggable>
+          <template v-if="!leaguesCollapsed[leagueID]">
+            <draggable v-if="!leaguesLocked[leagueID]" :list="value" group="players">
+              <div v-for="element in value" :key="element.userID" class="player-drag-item">
+                <font-awesome-icon icon="bars" />
+                {{ element.displayName }}
+              </div>
+              <template #header></template>
+            </draggable>
+            <ol v-if="leaguesLocked[leagueID]">
+              <li v-for="element in value" :key="element.userID">
+                {{ element.displayName }}
+              </li>
+            </ol>
+          </template>
         </div>
       </div>
     </div>
@@ -63,7 +90,9 @@ export default {
       initialLeagueAssignments: null,
       editableUnassignedPlayers: null,
       editableLeagueAssignments: null,
-      leaguesLocked: null
+      leaguesCollapsed: null,
+      leaguesLocked: null,
+      leaguesDraftsStarted: null
     };
   },
   created() {
@@ -80,12 +109,21 @@ export default {
       this.initialUnassignedPlayers = unassignedPlayers;
 
       let leagueAssignments = {};
-      let leaguesLocked = {};
+      let leaguesCollapsed = {};
       let leagueNames = {};
+      let leaguesLocked = {};
+      let leaguesDraftStarted = {};
       for (const league of this.conference.leaguesInConference) {
         leagueAssignments[league.leagueID] = [];
         leagueNames[league.leagueID] = league.leagueName;
-        leaguesLocked[league.leagueID] = false;
+        leaguesCollapsed[league.leagueID] = false;
+        leaguesLocked[league.leagueID] = league.conferenceLocked;
+        leaguesDraftStarted[league.leagueID] = league.draftStarted;
+      }
+
+      for (const leagueYear of this.conferenceYear.leagueYears) {
+        leaguesLocked[leagueYear.leagueID] = leagueYear.conferenceLocked;
+        leaguesDraftStarted[leagueYear.leagueID] = leagueYear.draftStarted;
       }
 
       for (const player of this.conference.players) {
@@ -96,16 +134,32 @@ export default {
 
       this.leagueNames = leagueNames;
       this.initialLeagueAssignments = leagueAssignments;
+      this.leaguesCollapsed = leaguesCollapsed;
       this.leaguesLocked = leaguesLocked;
+      this.leaguesDraftStarted = leaguesDraftStarted;
 
       this.editableUnassignedPlayers = _.cloneDeep(this.initialUnassignedPlayers);
       this.editableLeagueAssignments = _.cloneDeep(this.initialLeagueAssignments);
     },
-    lockLeague(leagueID) {
-      this.leaguesLocked[leagueID] = true;
+    collapseLeague(leagueID) {
+      this.leaguesCollapsed[leagueID] = true;
     },
-    unlockLeague(leagueID) {
-      this.leaguesLocked[leagueID] = false;
+    uncollapseLeague(leagueID) {
+      this.leaguesCollapsed[leagueID] = false;
+    },
+    async setLockStatus(leagueID, locked) {
+      const model = {
+        conferenceID: this.conference.conferenceID,
+        year: this.conferenceYear.year,
+        leagueID: leagueID,
+        locked: locked
+      };
+      try {
+        await axios.post('/api/conference/SetConferenceLeagueLockStatus', model);
+        this.leaguesLocked[leagueID] = locked;
+      } catch (error) {
+        this.errorInfo = error.response.data;
+      }
     },
     resetChanges() {
       this.editableUnassignedPlayers = _.cloneDeep(this.initialUnassignedPlayers);
@@ -163,7 +217,7 @@ export default {
 .player-drag-item {
   margin: 10px;
   position: relative;
-  display: block;
+  display: bcollapse;
   padding: 10px 15px;
   margin-bottom: -1px;
   background-color: #5b6977 !important;
@@ -175,15 +229,31 @@ export default {
   justify-content: space-between;
 }
 
-.player-header {
+.league-name-header {
   padding-left: 10px;
   font-size: 20px;
   font-weight: bold;
   color: #d6993a;
 }
 
+.unlock-icon {
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
 .lock-icon {
-  padding-right: 10px;
-  padding-top: 5px;
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-right: 12px;
+}
+
+.draft-lock-icon {
+  color: #888888;
+}
+
+.collapse-icon {
+  margin-left: 5px;
+  margin-right: 10px;
+  margin-top: 5px;
 }
 </style>

@@ -440,7 +440,7 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
-    public async Task<IActionResult> EditDraftStatusForConferenceYear([FromBody] EditDraftStatusForConferenceYearRequest request)
+    public async Task<IActionResult> SetConferenceLeagueLockStatus([FromBody] SetConferenceLeagueLockStatusRequest request)
     {
         var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
         if (conferenceYearRecord.FailedResult is not null)
@@ -448,25 +448,37 @@ public class ConferenceController : BaseLeagueController
             return conferenceYearRecord.FailedResult;
         }
 
-        var validResult = conferenceYearRecord.ValidResult!;
+        var validConferenceResult = conferenceYearRecord.ValidResult!;
 
-        if (request.OpenForDrafting && validResult.ConferenceYear.OpenForDrafting)
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.AllowAnonymous, RequiredYearStatus.AnyYearNotFinished);
+        if (leagueYearRecord.FailedResult is not null)
         {
-            return BadRequest("Conference is already open for drafting.");
+            return leagueYearRecord.FailedResult;
         }
 
-        if (!request.OpenForDrafting && !validResult.ConferenceYear.OpenForDrafting)
+        var validLeagueYearResult = leagueYearRecord.ValidResult!;
+        if (validLeagueYearResult.LeagueYear.League.ConferenceID != validConferenceResult.ConferenceYear.Conference.ConferenceID)
         {
-            return BadRequest("Conference is already closed for drafting.");
+            return Forbid("That league is not in that conference.");
         }
 
-        var supportedYear = await _interLeagueService.GetSupportedYear(request.Year);
-        if (!supportedYear.OpenForPlay && request.OpenForDrafting)
+        if (validLeagueYearResult.LeagueYear.PlayStatus.PlayStarted && !request.Locked)
         {
-            return BadRequest($"This year is not yet open for play. It will become available on {supportedYear.StartDate}.");
+            return BadRequest("You cannot unlock a league that has already started their draft.");
         }
 
-        await _conferenceService.EditDraftStatusForConferenceYear(validResult.ConferenceYear, request.OpenForDrafting);
+        if (validLeagueYearResult.LeagueYear.ConferenceLocked.HasValue && validLeagueYearResult.LeagueYear.ConferenceLocked.Value && request.Locked)
+        {
+            return BadRequest("That league is already locked.");
+        }
+
+        if (validLeagueYearResult.LeagueYear.ConferenceLocked.HasValue && !validLeagueYearResult.LeagueYear.ConferenceLocked.Value && !request.Locked)
+        {
+            return BadRequest("That league is already unlocked.");
+        }
+
+        await _conferenceService.SetConferenceLeagueLockStatus(validLeagueYearResult.LeagueYear, request.Locked);
         return Ok();
     }
 
