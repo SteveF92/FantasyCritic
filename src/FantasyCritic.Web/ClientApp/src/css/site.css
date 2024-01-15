@@ -56,7 +56,7 @@ a.btn,
 input.btn,
 button.btn {
   border-radius: 0;
-  height: 40px;
+  min-height: 40px;
   color: white;
   border: none;
   font-weight: bold;
