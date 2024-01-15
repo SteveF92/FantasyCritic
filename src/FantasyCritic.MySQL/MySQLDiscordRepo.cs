@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities.Discord;
 
@@ -8,13 +9,15 @@ public class MySQLDiscordRepo : IDiscordRepo
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
+    private readonly IConferenceRepo _conferenceRepo;
     private readonly IClock _clock;
     private readonly string _connectionString;
 
-    public MySQLDiscordRepo(RepositoryConfiguration configuration, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock)
+    public MySQLDiscordRepo(RepositoryConfiguration configuration, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IConferenceRepo conferenceRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
+        _conferenceRepo = conferenceRepo;
         _clock = clock;
         _connectionString = configuration.ConnectionString;
     }
@@ -28,6 +31,17 @@ public class MySQLDiscordRepo : IDiscordRepo
             ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,SendLeagueMasterGameUpdates,SendNotableMisses) VALUES (@GuildID, @ChannelID, @LeagueID, @SendLeagueMasterGameUpdates, @SendNotableMisses)"
             : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
+    }
+
+    public async Task SetConferenceChannel(Guid conferenceID, ulong guildID, ulong channelID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var conferenceChannelEntity = new ConferenceChannelEntity(guildID, channelID, conferenceID);
+        var existingChannel = await GetConferenceChannelEntity(guildID, channelID);
+        var sql = existingChannel == null
+            ? "INSERT INTO tbl_discord_conferencechannel (GuildID,ChannelID,ConferenceID) VALUES (@GuildID, @ChannelID, @ConferenceID)"
+            : "UPDATE tbl_discord_conferencechannel SET ConferenceID=@ConferenceID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
+        await connection.ExecuteAsync(sql, conferenceChannelEntity);
     }
 
     public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates, bool sendNotableMisses)
@@ -200,6 +214,44 @@ public class MySQLDiscordRepo : IDiscordRepo
             : leagueChannelEntity.ToDomain(leagueYear);
     }
 
+    public async Task<ConferenceChannel?> GetConferenceChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null)
+    {
+        var conferenceChannelEntity = await GetConferenceChannelEntity(guildID, channelID);
+        if (conferenceChannelEntity is null)
+        {
+            return null;
+        }
+
+        ConferenceYear? conferenceYear = null;
+
+        if (year != null)
+        {
+            conferenceYear = await _conferenceRepo.GetConferenceYear(conferenceChannelEntity.ConferenceID, year.Value);
+        }
+        else
+        {
+            var conference = await _conferenceRepo.GetConference(conferenceChannelEntity.ConferenceID);
+            if (conference is null)
+            {
+                return null;
+            }
+            var supportedYear = supportedYears
+                .OrderBy(y => y.Year)
+                .FirstOrDefault(y => !y.Finished && conference.Years.Contains(y.Year));
+            if (supportedYear == null)
+            {
+                return null;
+            }
+
+            conferenceYear = await _conferenceRepo.GetConferenceYear(conferenceChannelEntity.ConferenceID, supportedYear.Year);
+        }
+
+        return conferenceYear is null
+            ? null
+            : conferenceChannelEntity.ToDomain(conferenceYear);
+    }
+
+
     private async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, LeagueYear leagueYear)
     {
         var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
@@ -249,6 +301,21 @@ public class MySQLDiscordRepo : IDiscordRepo
 
         var leagueChannelEntity = await connection.QuerySingleOrDefaultAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
         return leagueChannelEntity;
+    }
+
+    private async Task<ConferenceChannelEntity?> GetConferenceChannelEntity(ulong guildID, ulong channelID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
+        {
+            guildID,
+            channelID
+        };
+
+        const string leagueChannelSQL = "select * from tbl_discord_conferencechannel WHERE GuildID = @guildID AND ChannelID = @channelID";
+
+        var conferenceChannelEntity = await connection.QuerySingleOrDefaultAsync<ConferenceChannelEntity>(leagueChannelSQL, queryObject);
+        return conferenceChannelEntity;
     }
 
     public async Task RemoveAllLeagueChannelsForLeague(Guid leagueID)

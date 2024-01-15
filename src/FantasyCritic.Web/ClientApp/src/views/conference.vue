@@ -17,6 +17,9 @@
               <div class="conference-name">
                 <h1>
                   {{ conference.conferenceName }}
+                  <span v-clipboard:copy="conferenceid" v-clipboard:success="conferenceIDCopied">
+                    <font-awesome-icon v-b-popover.hover.focus="'Copy Conference ID to Clipboard'" :icon="['far', 'copy']" size="xs" class="fake-link" />
+                  </span>
                 </h1>
               </div>
 

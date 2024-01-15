@@ -4,6 +4,7 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IDiscordRepo
 {
     Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID);
+    Task SetConferenceChannel(Guid conferenceID, ulong guildID, ulong channelID);
     Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates, bool sendNotableMisses);
     Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting);
     Task SetSkippedGameNewsTags(ulong guildID, ulong channelID, IEnumerable<MasterGameTag> skippedTags);
@@ -14,6 +15,7 @@ public interface IDiscordRepo
     Task<IReadOnlyList<MinimalLeagueChannel>> GetLeagueChannels(Guid leagueID);
     Task<MinimalLeagueChannel?> GetMinimalLeagueChannel(ulong guildID, ulong channelID);
     Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null);
+    Task<ConferenceChannel?> GetConferenceChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null);
     Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID);
     Task RemoveAllLeagueChannelsForLeague(Guid leagueID);
 }

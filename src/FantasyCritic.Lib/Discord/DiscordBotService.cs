@@ -30,10 +30,10 @@ public class DiscordBotService
     {
         _client.Ready += Client_Ready;
         _interactionService.Log += Log;
+        _client.Log += Log;
         await _interactionService.AddModulesAsync(typeof(DiscordBotService).Assembly, _serviceProvider);
         _client.InteractionCreated += HandleInteraction;
         _client.SelectMenuExecuted += _selectMenuExecutedHandler.OnSelectMenuExecuted;
-
         await _client.LoginAsync(TokenType.Bot, _botConfiguration.BotToken);
         await _client.StartAsync();
     }

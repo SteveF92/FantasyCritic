@@ -27,7 +27,7 @@ public class Program
     private readonly ServiceProvider _serviceProvider;
     private readonly DiscordSocketConfig _socketConfig = new()
     {
-        GatewayIntents = GatewayIntents.AllUnprivileged,
+        GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
         AlwaysDownloadUsers = true,
     };
 
@@ -65,6 +65,8 @@ public class Program
             .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
             .AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>()
             .AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>()
+            .AddScoped<IConferenceRepo, MySQLConferenceRepo>()
+            .AddScoped<ConferenceService>()
             .AddScoped<InterLeagueService>()
             .AddScoped<PublisherService>()
             .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()

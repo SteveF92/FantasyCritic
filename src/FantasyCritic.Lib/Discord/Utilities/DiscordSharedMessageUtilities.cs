@@ -1,5 +1,7 @@
 using FantasyCritic.Lib.Discord.UrlBuilders;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Discord.Utilities;
@@ -62,6 +64,37 @@ public static class DiscordSharedMessageUtilities
                         previousYearWinner, isFinal);
                 });
         return publisherLines.ToList();
+    }
+
+    public static IList<string> RankConferencePublishers(IReadOnlyList<ConferenceYearStanding> conferenceYearStandings, bool isFinal = false)
+    {
+        var conferencePublisherStandings = conferenceYearStandings.Select((c, index) =>
+            BuildConferencePublisherLine(index + 1, c.PublisherName, c.DisplayName, c.TotalFantasyPoints, c.ProjectedFantasyPoints, isFinal));
+        return conferencePublisherStandings.ToList();
+    }
+
+    private static string BuildConferencePublisherLine(int rank, string publisherName, string displayName,
+        decimal totalFantasyPoints, decimal projectedFantasyPoints, bool isFinal)
+    {
+        var shouldHighlight = ShouldPublisherBeHighlighted(rank, isFinal);
+
+        var conferencePublisherLine = $"**{rank}.** ";
+
+        var trophyEmoji = "";
+        if (isFinal && rank == 1)
+        {
+            trophyEmoji = " 🏆";
+        }
+
+        conferencePublisherLine += shouldHighlight
+            ? $"__**{publisherName} ({displayName})**__{trophyEmoji}\n"
+            : $"**{publisherName} ({displayName})**{trophyEmoji}\n";
+        conferencePublisherLine += $"> **{Math.Round(totalFantasyPoints, 1)} points**";
+        if (!isFinal)
+        {
+            conferencePublisherLine += $" *(Projected: {Math.Round(projectedFantasyPoints, 1)})*\n";
+        }
+        return conferencePublisherLine;
     }
 
     private static string BuildPublisherLine(int rank,
