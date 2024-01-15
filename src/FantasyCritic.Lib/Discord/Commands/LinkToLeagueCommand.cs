@@ -6,14 +6,14 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class LeagueLinkCommand : InteractionModuleBase<SocketInteractionContext>
+public class LinkToLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public LeagueLinkCommand(IDiscordRepo discordRepo,
+    public LinkToLeagueCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
@@ -24,7 +24,7 @@ public class LeagueLinkCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    [SlashCommand("link", "Get a link to the league.")]
+    [SlashCommand("link-to-league", "Get a link to the league.")]
     public async Task GetLeagueLink(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null
         )
