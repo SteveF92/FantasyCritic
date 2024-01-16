@@ -51,7 +51,13 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      standingFieldsInternal: [
+      draftNotFinishedStandingsFields: [
+        { key: 'userName', label: 'User', thClass: 'bg-primary' },
+        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+        { key: 'draftPosition', label: 'Draft Position', thClass: 'bg-primary', sortable: true },
+        { key: 'gamesWillRelease', label: 'Games Drafted', thClass: 'bg-primary', sortable: true }
+      ],
+      midYearStandingsFields: [
         { key: 'userName', label: 'User', thClass: 'bg-primary' },
         { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
         { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
@@ -60,24 +66,41 @@ export default {
         { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
         { key: 'budget', label: 'Budget', thClass: 'bg-primary' }
       ],
+      yearFinishedStandingsFields: [
+        { key: 'userName', label: 'User', thClass: 'bg-primary' },
+        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
+        { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
+        { key: 'budget', label: 'Budget', thClass: 'bg-primary' }
+      ],
       sortBy: 'totalFantasyPoints',
       sortDesc: true
     };
   },
+  created() {
+    if (!this.leagueYear.playStatus.draftFinished) {
+      this.sortBy = 'draftPosition';
+      this.sortDesc = false;
+    }
+  },
   computed: {
     standingFields() {
-      let fieldsToUse = this.standingFieldsInternal;
+      if (!this.leagueYear.playStatus.draftFinished) {
+        return this.draftNotFinishedStandingsFields;
+      }
+
+      if (!this.leagueYear.supportedYear.finished) {
+        if (this.oneShotMode) {
+          return this.midYearStandingsFields.slice(0, -1);
+        }
+        return this.midYearStandingsFields;
+      }
+
       if (this.oneShotMode) {
-        fieldsToUse = fieldsToUse.slice(0, -1);
+        return this.yearFinishedStandingsFields.slice(0, -1);
       }
 
-      if (this.leagueYear.supportedYear.finished) {
-        fieldsToUse = fieldsToUse.slice(0, 2).concat(fieldsToUse.slice(2 + 1));
-        fieldsToUse = fieldsToUse.slice(0, 4).concat(fieldsToUse.slice(4 + 1));
-        fieldsToUse[2].label = 'Points';
-      }
-
-      return fieldsToUse;
+      return this.yearFinishedStandingsFields;
     },
     standings() {
       let standings = this.leagueYear.players;
