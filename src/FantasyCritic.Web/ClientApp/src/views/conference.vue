@@ -47,11 +47,11 @@
           </template>
         </div>
 
-        <div v-if="conference.userIsInConference && !conferenceYear.openForDrafting && !conferenceYear.userIsInAtLeastOneLeague" class="alert alert-warning">
+        <div v-if="conference.userIsInConference && !conferenceYear.userIsInAtLeastOneLeague" class="alert alert-warning">
           You have joined the conference, but your conference manager has not yet assigned you to any of the leagues in the conference.
         </div>
 
-        <template v-if="isConferenceManager && !conferenceYear.openForDrafting">
+        <template v-if="isConferenceManager && numberOfLeaguesFinishedDrafting === 0">
           <div class="alert alert-info">
             Now that your conference is created, here are the next steps:
             <ol>
@@ -76,11 +76,7 @@
           </div>
         </template>
 
-        <template v-if="conferenceYear.openForDrafting && numberOfLeaguesFinishedDrafting !== conferenceYear.leagueYears.length">
-          <div v-if="isConferenceManager && conferenceYear.openForDrafting" class="alert alert-success">
-            Your conference is ready to begin drafting! League managers can start drafts just like normal leagues.
-          </div>
-
+        <template v-if="numberOfLeaguesFinishedDrafting > 0 && numberOfLeaguesFinishedDrafting !== conferenceYear.leagueYears.length">
           <div class="alert alert-success">
             There are currently {{ numberOfLeaguesStartedDrafting }} leagues drafting, and {{ numberOfLeaguesNotStartedDrafting }} that still need to start their drafts.
           </div>

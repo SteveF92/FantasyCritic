@@ -86,8 +86,8 @@ public class MySQLConferenceRepo : IConferenceRepo
             """;
         const string createConferenceYearSQL =
             """
-            insert into tbl_conference_year(ConferenceID,Year,OpenForDrafting) VALUES
-            (@ConferenceID,@Year,0)
+            insert into tbl_conference_year(ConferenceID,Year) VALUES
+            (@ConferenceID,@Year)
             """;
         const string setConferenceIDSQL =
             """
