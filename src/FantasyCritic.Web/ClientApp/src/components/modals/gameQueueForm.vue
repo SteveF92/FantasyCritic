@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearAllData" @show="getTopGames">
+  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearAllData" @show="onOpen">
     <div class="form-group">
       <h3 class="text-black">Add Game to Watchlist</h3>
       <form class="form-horizontal" role="form" @submit.prevent="searchGame">
@@ -167,21 +167,23 @@ export default {
           this.isBusy = false;
         });
     },
-    getTopGames() {
+    async onOpen() {
+      await this.$store.dispatch('refreshLeagueYear');
+      await this.getTopGames();
+    },
+    async getTopGames() {
       this.clearDataExceptSearch();
       this.selectedSlotIndex = 0;
       this.isBusy = true;
 
-      axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID + '&publisherid=' + this.userPublisher.publisherID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.showingTopAvailable = true;
-          this.isBusy = false;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+      try {
+        const response = await axios.get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID + '&publisherid=' + this.userPublisher.publisherID);
+        this.possibleMasterGames = response.data;
+        this.showingTopAvailable = true;
+        this.isBusy = false;
+      } catch (error) {
+        this.isBusy = false;
+      }
     },
     getOtherPublisher(otherPublisher) {
       this.clearDataExceptSearch();
