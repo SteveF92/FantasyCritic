@@ -61,6 +61,10 @@
               <li>Once a given league has all of the players that you want, you can "lock" the league, which allows those players to start their draft.</li>
             </ol>
             All of these actions can be accessed in the "Manager Actions" dropdown below.
+            <br />
+            <br />
+            Alternatively, you can also invite players using the standard league-level invite links. That will allow players to join that specific league inside the conference. You will still need to
+            "lock" the league via the "Assign Players to League" Conference Manager action in order to enable drafting for that league.
           </div>
 
           <div class="alert alert-info">

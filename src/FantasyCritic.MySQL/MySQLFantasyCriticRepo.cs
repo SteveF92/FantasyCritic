@@ -3295,6 +3295,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             activeYear = leagueYear
         };
         await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
+
+        if (league.ConferenceID.HasValue)
+        {
+            var conferenceUserAddObject = new
+            {
+                conferenceID = league.ConferenceID.Value,
+                userID = user.Id,
+            };
+
+            await connection.ExecuteAsync("insert into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceUserAddObject, transaction);
+        }
     }
 
     private async Task<IReadOnlyList<LeagueInvite>> ConvertLeagueInviteEntities(IEnumerable<LeagueInviteEntity> entities)
