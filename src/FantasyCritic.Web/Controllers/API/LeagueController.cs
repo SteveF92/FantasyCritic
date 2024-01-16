@@ -1017,18 +1017,33 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpGet("{publisherID}")]
-    public async Task<IActionResult> CurrentQueuedGameYears(Guid publisherID)
+    public async Task<IActionResult> CurrentQueuedGameYears(Guid publisherID, Guid? otherPublisherID)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
         }
+
         var validResult = publisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var queuedGames = await _publisherService.GetQueuedGames(publisher);
+        IReadOnlyList<QueuedGame> queuedGames;
+        if (otherPublisherID.HasValue)
+        {
+            var otherPublisherRecord = await GetExistingLeagueYearAndPublisher(otherPublisherID.Value, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.Any);
+            if (otherPublisherRecord.FailedResult is not null)
+            {
+                return otherPublisherRecord.FailedResult;
+            }
+
+            queuedGames = await _publisherService.GetQueuedGames(otherPublisherRecord.ValidResult!.Publisher);
+        }
+        else
+        {
+            queuedGames = await _publisherService.GetQueuedGames(publisher);
+        }
 
         var currentDate = _clock.GetToday();
         var queuedPossibleGames = await _gameSearchingService.GetQueuedPossibleGames(leagueYear, publisher, queuedGames);

@@ -192,7 +192,7 @@ export default {
       this.isBusy = true;
 
       axios
-        .get('/api/league/CurrentQueuedGameYears/' + otherPublisher.publisherID)
+        .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID + `?otherPublisherID=${otherPublisher.publisherID}`)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.selectedOtherPublisher = otherPublisher;
