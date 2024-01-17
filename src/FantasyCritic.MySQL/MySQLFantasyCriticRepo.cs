@@ -1235,6 +1235,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             bool userRemovable = !league.LeagueManager.Equals(user);
             foreach (var year in startedYears)
             {
+                if (!userYearsDictionary.ContainsKey(year))
+                {
+                    continue;
+                }
                 var userPlayedInYear = userYearsDictionary[year].Contains(user.Id);
                 if (userPlayedInYear)
                 {
