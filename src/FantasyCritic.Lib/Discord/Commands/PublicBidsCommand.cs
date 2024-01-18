@@ -71,6 +71,15 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
+        if (!_gameAcquisitionService.IsInPublicBiddingWindow(leagueYear))
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+                "Bids Not Revealed Yet",
+                "The league is not in the public bidding window yet.",
+                Context.User));
+            return;
+        }
+
         var allPublicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(dateToCheck.Year);
 
         var leagueYearPublicBids =
