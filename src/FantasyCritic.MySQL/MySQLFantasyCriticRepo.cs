@@ -3308,7 +3308,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 userID = user.Id,
             };
 
-            await connection.ExecuteAsync("insert into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceUserAddObject, transaction);
+            await connection.ExecuteAsync("insert ignore into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceUserAddObject, transaction);
         }
     }
 
