@@ -108,6 +108,11 @@ public class DraftService
 
     public async Task<bool> RunAutoDraftAndCheckIfComplete(LeagueYear leagueYear)
     {
+        if (!leagueYear.PlayStatus.DraftIsActive)
+        {
+            return false;
+        }
+
         var autoDraftResult = await AutoDraftForLeague(leagueYear, 0, 0);
         var draftComplete = await CompleteDraft(leagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
         return draftComplete;
