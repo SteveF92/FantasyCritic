@@ -71,7 +71,10 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        if (!_gameAcquisitionService.IsInPublicBiddingWindow(leagueYear))
+        IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
+        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
+
+        if (publicBiddingGames is null)
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Bids Not Revealed Yet",
@@ -80,12 +83,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        var allPublicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(dateToCheck.Year);
-
-        var leagueYearPublicBids =
-            allPublicBiddingGames.FirstOrDefault(g => g.LeagueYear.League.LeagueID == leagueYear.League.LeagueID)?.MasterGames;
-
-        if (leagueYearPublicBids == null || !leagueYearPublicBids.Any())
+        if (!publicBiddingGames.MasterGames.Any())
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "No Public Bids",
@@ -94,7 +92,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        var gameMessages = leagueYearPublicBids.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
+        var gameMessages = publicBiddingGames.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
         var finalMessage = string.Join("\n", gameMessages);
         var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
         var header = $"Public Bids (Week of {lastSunday:MMMM dd, yyyy})";
