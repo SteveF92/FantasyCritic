@@ -129,10 +129,15 @@ public class Publisher : IEquatable<Publisher>
 
     public IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueOptions leagueOptions)
     {
+        return GetPublisherSlots(leagueOptions, PublisherGames);
+    }
+
+    public static IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueOptions leagueOptions, IReadOnlyList<PublisherGame> publisherGames)
+    {
         List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
 
         int overallSlotNumber = 0;
-        var standardGamesBySlot = PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+        var standardGamesBySlot = publisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
         for (int standardGameIndex = 0; standardGameIndex < leagueOptions.StandardGames; standardGameIndex++)
         {
             PublisherGame? standardGame = standardGamesBySlot.GetValueOrDefault(standardGameIndex);
@@ -142,7 +147,7 @@ public class Publisher : IEquatable<Publisher>
             overallSlotNumber++;
         }
 
-        var counterPicksBySlot = PublisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
+        var counterPicksBySlot = publisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
         for (int counterPickIndex = 0; counterPickIndex < leagueOptions.CounterPicks; counterPickIndex++)
         {
             PublisherGame? counterPick = counterPicksBySlot.GetValueOrDefault(counterPickIndex);

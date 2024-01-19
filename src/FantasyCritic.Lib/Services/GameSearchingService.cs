@@ -15,7 +15,7 @@ public class GameSearchingService
         _clock = clock;
     }
 
-    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetAllPossibleMasterGameYearsForLeagueYear(LeagueYear leagueYear, Publisher currentPublisher, int year)
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetAllPossibleMasterGameYearsForLeagueYear(LeagueYear leagueYear, Publisher? currentPublisher, int year)
     {
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
@@ -23,11 +23,11 @@ public class GameSearchingService
             .Select(x => x.MasterGame!.MasterGame)
             .ToHashSet();
 
-        HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
+        HashSet<MasterGame> myPublisherMasterGames = currentPublisher?.MyMasterGames ?? new HashSet<MasterGame>();
 
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+        var slots = Publisher.GetPublisherSlots(leagueYear.Options, new List<PublisherGame>());
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();

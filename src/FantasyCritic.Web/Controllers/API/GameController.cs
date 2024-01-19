@@ -139,11 +139,6 @@ public class GameController : FantasyCriticController
         }
 
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
-        if (userPublisher is null)
-        {
-            return BadRequest();
-        }
-
         var possibleMasterGames = await _gameSearchingService.GetAllPossibleMasterGameYearsForLeagueYear(leagueYear, userPublisher, year);
         var currentDate = _clock.GetToday();
         var viewModels = possibleMasterGames.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).ToList();
