@@ -2,6 +2,7 @@ using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -37,6 +38,17 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         )
     {
         await DeferAsync();
+
+        if (!Context.Channel.HasPermissionToSendMessagesInChannel(Context.Client.CurrentUser.Id))
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+                "No Change Made to Game News Configuration",
+                "❌ The bot does not have permission to send messages in this channel and cannot be set up for Game News." +
+                "\nPlease give the bot the **Send Messages** permission in this channel and try again.",
+                Context.User));
+            return;
+        }
+
         var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
 
         var requestedSettingEnum = RequestedGameNewsSetting.TryFromValue(setting);

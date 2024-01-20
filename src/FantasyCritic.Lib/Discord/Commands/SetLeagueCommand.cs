@@ -1,7 +1,10 @@
+using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
+using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using Serilog;
@@ -130,9 +133,17 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
         var leagueLinkWithName = leagueUrlBuilder.BuildUrl(league.LeagueName);
 
+        var hasPermissionToSendMessages = Context.Channel.HasPermissionToSendMessagesInChannel(Context.Client.CurrentUser.Id);
+        var permissionToSendMessagesText = hasPermissionToSendMessages
+            ? "✅ The bot permissions are set up correctly to send league updates in this channel."
+            : "❌ **WARNING:** The bot does NOT have permissions to send messages in this channel and you will not be able to receive league updates." +
+              "\nPlease give the bot the **Send Messages** permission in this channel to receive league updates (Note: you won't need to run this command again).";
+
+        var messageText = $"Channel configured for League {leagueLinkWithName}.\n{permissionToSendMessagesText}";
+
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             "Channel League Configuration Saved",
-            $"Channel configured for League {leagueLinkWithName}.",
+            messageText,
             Context.User,
             null,
             leagueUrlBuilder.GetOnlyUrl()));

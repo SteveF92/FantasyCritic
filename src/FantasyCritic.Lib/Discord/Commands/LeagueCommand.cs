@@ -72,7 +72,7 @@ public class LeagueCommand : InteractionModuleBase<SocketInteractionContext>
             .BuildUrl();
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
-            $"{leagueYear.League.LeagueName} {leagueYear.Year}",
+            $"{leagueYear.League.LeagueName} ({leagueYear.Year})",
             string.Join("\n", publisherLines),
             Context.User,
             url: leagueUrl));

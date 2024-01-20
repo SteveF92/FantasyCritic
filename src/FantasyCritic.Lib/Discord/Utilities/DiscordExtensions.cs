@@ -44,4 +44,24 @@ public static class DiscordExtensions
         return null;
 
     }
+
+    public static bool HasPermissionToSendMessagesInChannel(this ISocketMessageChannel channel, ulong userID)
+    {
+        if (channel is not IGuildChannel guildChannel)
+        {
+            return false;
+        }
+        if (guildChannel.Guild is not SocketGuild guild)
+        {
+            return false;
+        }
+
+        var botUserInGuild = guild.Users.FirstOrDefault(u => u.Id == userID);
+        if (botUserInGuild == null)
+        {
+            return false;
+        }
+        var permissions = botUserInGuild.GetPermissions(guildChannel);
+        return permissions.SendMessages;
+    }
 }
