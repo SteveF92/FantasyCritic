@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Test.TestUtilities;
@@ -19,6 +20,6 @@ public class TestPublisherEntity
     public Publisher ToDomain(IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
     {
         return new Publisher(PublisherID, new LeagueYearKey(LeagueID, Year), FantasyCriticUser.GetFakeUser(), PublisherID.ToString(), null, null, DraftPosition,
-            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, false);
+            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftMode.Off);
     }
 }

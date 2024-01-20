@@ -1,3 +1,3 @@
 namespace FantasyCritic.Web.Models.Requests.League;
 
-public record SetAutoDraftRequest(Guid PublisherID, bool AutoDraft);
+public record SetAutoDraftRequest(Guid PublisherID, string Mode);

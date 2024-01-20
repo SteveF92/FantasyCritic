@@ -564,7 +564,13 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        await _publisherService.SetAutoDraft(publisher, request.AutoDraft);
+        var parsedMode = AutoDraftMode.TryFromValue(request.Mode);
+        if (parsedMode is null)
+        {
+            return BadRequest();
+        }
+
+        await _publisherService.SetAutoDraft(publisher, parsedMode);
 
         var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear);
         if (draftComplete)

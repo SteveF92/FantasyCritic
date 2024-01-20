@@ -22,7 +22,7 @@ public class PublisherViewModel
         PlayerName = publisher.User.UserName;
         Year = leagueYear.Year;
         DraftPosition = publisher.DraftPosition;
-        AutoDraft = publisher.AutoDraft;
+        AutoDraftMode = publisher.AutoDraftMode.Value;
 
         Games = publisher.PublisherGames
             .OrderBy(x => x.Timestamp)
@@ -85,7 +85,7 @@ public class PublisherViewModel
     public string PlayerName { get; }
     public int Year { get; }
     public int DraftPosition { get; }
-    public bool AutoDraft { get; }
+    public string AutoDraftMode { get; }
     public IReadOnlyList<PublisherGameViewModel> Games { get; }
     public IReadOnlyList<PublisherGameViewModel> FormerGames { get; }
     public IReadOnlyList<PublisherSlotViewModel> GameSlots { get; }

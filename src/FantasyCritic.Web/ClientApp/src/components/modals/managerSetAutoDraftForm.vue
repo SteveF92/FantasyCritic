@@ -2,10 +2,11 @@
   <b-modal id="managerSetAutoDraftForm" ref="managerSetAutoDraftFormRef" title="Edit Auto Draft">
     <div class="alert alert-info">You can use this form to turn on or turn off autodraft for one of your players.</div>
 
-    <b-form-group class="form-checkbox-group stacked checkboxes">
-      <b-form-checkbox v-for="publisher in publishers" :key="publisher.publisherID" v-model="publisher.autoDraft" :data="publisher">
-        {{ publisher.publisherName }}
-      </b-form-checkbox>
+    <b-form-group class="form-checkbox-group">
+      <div v-for="publisher in publishers" :key="publisher.publisherID" class="publisher-autodraft">
+        <label>{{ publisher.publisherName }}</label>
+        <b-form-select v-model="publisher.autoDraftMode" :options="autoDraftOptions"></b-form-select>
+      </div>
     </b-form-group>
 
     <template #modal-footer>
@@ -20,11 +21,20 @@ import LeagueMixin from '@/mixins/leagueMixin.js';
 export default {
   name: 'ManagerSetAutoDraftForm',
   mixins: [LeagueMixin],
+  data() {
+    return {
+      autoDraftOptions: [
+        { text: 'Off', value: 'Off' },
+        { text: "Standard Games Only (Don't AutoDraft Counter Picks)", value: 'StandardGamesOnly' },
+        { text: 'On (Including Counter Picks)', value: 'All' }
+      ]
+    };
+  },
   methods: {
     setAutoDraft() {
       let autoDraftSettings = {};
       for (let i = 0; i < this.publishers.length; i++) {
-        autoDraftSettings[this.publishers[i].publisherID] = this.publishers[i].autoDraft;
+        autoDraftSettings[this.publishers[i].publisherID] = this.publishers[i].autoDraftMode;
       }
 
       const model = {
@@ -43,3 +53,11 @@ export default {
   }
 };
 </script>
+<style scoped>
+.publisher-autodraft {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+</style>

@@ -568,6 +568,13 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
+        var parsedEnums = request.PublisherAutoDraft.ToDictionary(x => x.Key, y => AutoDraftMode.TryFromValue(y.Value));
+
+        if (parsedEnums.Any(x => x.Value is null))
+        {
+            return BadRequest();
+        }
+
         foreach (var requestPublisher in request.PublisherAutoDraft)
         {
             var publisher = leagueYear.GetPublisherByID(requestPublisher.Key);
@@ -576,7 +583,8 @@ public class LeagueManagerController : BaseLeagueController
                 return Forbid();
             }
 
-            await _publisherService.SetAutoDraft(publisher, requestPublisher.Value);
+            var mode = parsedEnums[requestPublisher.Key];
+            await _publisherService.SetAutoDraft(publisher, mode!);
         }
 
         var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear);

@@ -36,7 +36,7 @@ public interface IFantasyCriticRepo
 
     Task<LeagueInvite?> GetInvite(Guid inviteID);
     Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser);
-    Task SetAutoDraft(Publisher publisher, bool autoDraft);
+    Task SetAutoDraft(Publisher publisher, AutoDraftMode mode);
     Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league);
     Task SaveInvite(LeagueInvite leagueInvite);
     Task AcceptInvite(LeagueInvite leagueInvite, FantasyCriticUser user);

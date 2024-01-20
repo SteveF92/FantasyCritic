@@ -133,7 +133,7 @@ public class DraftService
             }
 
             var nextPublisher = draftStatus.NextDraftPublisher;
-            if (!nextPublisher.AutoDraft)
+            if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
             {
                 return (standardGamesAdded, counterPicksAdded);
             }
@@ -167,6 +167,7 @@ public class DraftService
                     .Select(x => x.MasterGame)
                     .Concat(availableGamesEligibleInRemainingSlots.Select(x => x.MasterGame.MasterGame));
 
+                bool addedAGame = false;
                 foreach (var possibleGame in gamesToTake)
                 {
                     var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
@@ -174,12 +175,23 @@ public class DraftService
                     if (autoDraftResult.Success)
                     {
                         standardGamesAdded++;
+                        addedAGame = true;
                         break;
                     }
+                }
+
+                if (!addedAGame)
+                {
+                    return (standardGamesAdded, counterPicksAdded);
                 }
             }
             else if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
             {
+                if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.StandardGamesOnly))
+                {
+                    return (standardGamesAdded, counterPicksAdded);
+                }
+
                 var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher)
                     .SelectMany(x => x.PublisherGames)
                     .Where(x => !x.CounterPick)
@@ -187,6 +199,8 @@ public class DraftService
                 var possibleGames = otherPublisherGames.Select(x => x.MasterGame!)
                     .Where(x => x.AdjustedPercentCounterPick.HasValue)
                     .OrderByDescending(x => x.AdjustedPercentCounterPick);
+
+                bool addedAGame = false;
                 foreach (var possibleGame in possibleGames)
                 {
                     var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
@@ -194,8 +208,14 @@ public class DraftService
                     if (autoDraftResult.Success)
                     {
                         counterPicksAdded++;
+                        addedAGame = true;
                         break;
                     }
+                }
+
+                if (!addedAGame)
+                {
+                    return (standardGamesAdded, counterPicksAdded);
                 }
             }
             else

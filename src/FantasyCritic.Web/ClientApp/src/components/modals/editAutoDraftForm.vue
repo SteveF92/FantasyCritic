@@ -7,9 +7,8 @@
       <br />
       For counterpicks, the game with the highest counterpick % site-wide will be chosen.
     </div>
-    <b-form inline>
-      <b-form-checkbox v-model="isAutoDraft" class="mb-2 mr-sm-2 mb-sm-0">Auto Draft</b-form-checkbox>
-    </b-form>
+    <b-form-select v-model="autoDraftMode" :options="autoDraftOptions"></b-form-select>
+
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
     </template>
@@ -23,27 +22,28 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      isAutoDraft: null
+      autoDraftMode: null,
+      autoDraftOptions: [
+        { text: 'Off', value: 'Off' },
+        { text: "Standard Games Only (Don't AutoDraft Counter Picks)", value: 'StandardGamesOnly' },
+        { text: 'On (Including Counter Picks)', value: 'All' }
+      ]
     };
   },
   mounted() {
-    this.isAutoDraft = this.userPublisher.autoDraft;
+    this.autoDraftMode = this.userPublisher.autoDraftMode;
   },
   methods: {
     setAutoDraft() {
       const model = {
         publisherID: this.userPublisher.publisherID,
-        autoDraft: this.isAutoDraft
+        mode: this.autoDraftMode
       };
       axios
         .post('/api/league/setAutoDraft', model)
         .then(() => {
           this.$refs.editAutoDraftFormRef.hide();
-          let autoDraftStatus = 'off.';
-          if (this.isAutoDraft) {
-            autoDraftStatus = 'on.';
-          }
-          this.notifyAction('Auto draft set to ' + autoDraftStatus);
+          this.notifyAction('Auto draft set to ' + this.autoDraftMode);
         })
         .catch(() => {});
     }

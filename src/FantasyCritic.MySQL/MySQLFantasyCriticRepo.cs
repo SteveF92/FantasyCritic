@@ -952,11 +952,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             });
     }
 
-    public async Task SetAutoDraft(Publisher publisher, bool autoDraft)
+    public async Task SetAutoDraft(Publisher publisher, AutoDraftMode mode)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync("update tbl_league_publisher SET AutoDraft = @autoDraft where PublisherID = @publisherID;",
-            new { publisherID = publisher.PublisherID, autoDraft });
+        await connection.ExecuteAsync("update tbl_league_publisher SET AutoDraftMode = @autoDraftMode where PublisherID = @publisherID;",
+            new { publisherID = publisher.PublisherID, autoDraftMode = mode.Value });
     }
 
     public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague)

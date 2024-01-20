@@ -62,6 +62,7 @@ internal class Program
     {
         using var reader = new StreamReader(Path.Combine(_basePath, "Publishers.csv"));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Context.RegisterClassMap<LeagueYearEntityMap>();
         var publishers = csv.GetRecords<TestPublisherEntity>().ToList();
         return publishers;
     }

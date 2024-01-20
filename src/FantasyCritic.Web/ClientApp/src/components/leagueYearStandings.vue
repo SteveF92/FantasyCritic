@@ -11,7 +11,10 @@
       <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
           <router-link :to="{ hash: `#${data.item.publisher.publisherID}` }">{{ data.item.publisher.publisherName }}</router-link>
-          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraft" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
+          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraftMode === 'On'" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
+          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge badge-pill badge-primary badge-info">
+            Auto Draft (No CPKs)
+          </span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">&lt;Not Created&gt;</span>
         <span v-if="!data.item.user">
@@ -222,5 +225,9 @@ div >>> tr.table-success td {
 .previous-year-winner {
   margin-left: 4px;
   color: #d6993a;
+}
+
+.publisher-badge {
+  margin-left: 5px;
 }
 </style>

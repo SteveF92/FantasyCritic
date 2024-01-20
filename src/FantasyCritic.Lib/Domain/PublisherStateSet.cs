@@ -157,7 +157,7 @@ public class PublisherStateSet
 
         return new Publisher(publisherToEdit.PublisherID, publisherToEdit.LeagueYearKey, publisherToEdit.User, publisherToEdit.PublisherName, publisherToEdit.PublisherIcon, publisherToEdit.PublisherSlogan,
             publisherToEdit.DraftPosition, newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, freeGamesDropped, willNotReleaseGamesDropped,
-            willReleaseGamesDropped, superDropsAvailable, publisherToEdit.AutoDraft);
+            willReleaseGamesDropped, superDropsAvailable, publisherToEdit.AutoDraftMode);
     }
 
     private enum DropType

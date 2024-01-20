@@ -31,7 +31,7 @@ public class PublisherService
             draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
         }
 
-        Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear.Key, user, publisherName, null, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, false);
+        Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear.Key, user, publisherName, null, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, AutoDraftMode.Off);
         await _fantasyCriticRepo.CreatePublisher(publisher);
         await _discordPushService.SendNewPublisherMessage(publisher);
         return publisher;
@@ -53,9 +53,9 @@ public class PublisherService
         return _fantasyCriticRepo.ChangePublisherSlogan(publisher, publisherSlogan);
     }
 
-    public Task SetAutoDraft(Publisher publisher, bool autoDraft)
+    public Task SetAutoDraft(Publisher publisher, AutoDraftMode autoDraftMode)
     {
-        return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraft);
+        return _fantasyCriticRepo.SetAutoDraft(publisher, autoDraftMode);
     }
 
     public async Task RemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)

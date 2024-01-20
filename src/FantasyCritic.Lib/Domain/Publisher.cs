@@ -10,7 +10,7 @@ public class Publisher : IEquatable<Publisher>
 
     public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, string? publisherSlogan,
         int draftPosition, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
-        int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, bool autoDraft)
+        int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, AutoDraftMode autoDraftMode)
     {
         PublisherID = publisherID;
         LeagueYearKey = leagueYearKey;
@@ -26,7 +26,7 @@ public class Publisher : IEquatable<Publisher>
         WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
         WillReleaseGamesDropped = willReleaseGamesDropped;
         SuperDropsAvailable = superDropsAvailable;
-        AutoDraft = autoDraft;
+        AutoDraftMode = autoDraftMode;
     }
 
     public Guid PublisherID { get; }
@@ -43,7 +43,7 @@ public class Publisher : IEquatable<Publisher>
     public int WillNotReleaseGamesDropped { get; }
     public int WillReleaseGamesDropped { get; }
     public int SuperDropsAvailable { get; }
-    public bool AutoDraft { get; }
+    public AutoDraftMode AutoDraftMode { get; }
 
     public decimal? AverageCriticScore
     {
@@ -185,7 +185,7 @@ public class Publisher : IEquatable<Publisher>
     {
         var newPublisherGames = PublisherGames.Select(x => x.GetUpdatedPublisherGameWithNewScores(calculatedStats)).ToList();
         return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition, newPublisherGames,
-            FormerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraft);
+            FormerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftMode);
     }
     
     public HashSet<MasterGame> MyMasterGames => PublisherGames
@@ -254,7 +254,7 @@ public class Publisher : IEquatable<Publisher>
     {
         return new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
             null,null, 0, new List<PublisherGame>(),
-            new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, false);
+            new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, AutoDraftMode.Off);
     }
 
     public string GetPublisherAndUserDisplayName()
