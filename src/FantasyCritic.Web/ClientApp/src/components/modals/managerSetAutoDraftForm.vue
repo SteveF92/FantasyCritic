@@ -25,7 +25,7 @@ export default {
     return {
       autoDraftOptions: [
         { text: 'Off', value: 'Off' },
-        { text: "Standard Games Only (Don't AutoDraft Counter Picks)", value: 'StandardGamesOnly' },
+        { text: "Standard Games Only (Don't Auto Draft Counter Picks)", value: 'StandardGamesOnly' },
         { text: 'On (Including Counter Picks)', value: 'All' }
       ]
     };
