@@ -191,6 +191,9 @@ export default {
       } catch (error) {
         this.errorInfo = 'Something went wrong joining the conference.';
       }
+    },
+    conferenceIDCopied() {
+      this.makeToast('Conference ID copied to clipboard.');
     }
   }
 };
