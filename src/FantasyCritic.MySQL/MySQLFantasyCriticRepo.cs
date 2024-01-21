@@ -702,6 +702,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var allBidPublisherIDs = bidEntities.Select(x => x.PublisherID).Distinct().ToHashSet();
         var allDropRequestPublisherIDs = dropEntities.Select(x => x.PublisherID).Distinct().ToHashSet();
         var allPublisherIDs = allBidPublisherIDs.Concat(allDropRequestPublisherIDs).ToHashSet();
+
+        _userStore.ClearUserCache();
         var allLeagueYearsForPublishers = await GetLeagueYearsForPublishers(allPublisherIDs);
 
         var leagueYearDictionary = allLeagueYearsForPublishers.ToDictionary(x => x.Key);
@@ -1819,10 +1821,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             year
         };
 
-        var allUsers = await _userStore.GetAllUsers();
-        var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
-
-
         string sql = "select tbl_league_publisher.* from tbl_league_publisher " +
                      "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
                      "where tbl_league_publisher.Year = @year and tbl_league.IsDeleted = 0;";
@@ -1840,6 +1838,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         IReadOnlyList<FormerPublisherGame> allDomainFormerGames = await GetAllFormerPublisherGamesForYear(year, includeDeleted);
         var domainGameLookup = allDomainGames.ToLookup(x => x.PublisherID);
         var domainFormerGameLookup = allDomainFormerGames.ToLookup(x => x.PublisherGame.PublisherID);
+
+        var allUsers = await _userStore.GetAllUsers();
+        var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
 
         List<Publisher> publishers = new List<Publisher>();
         foreach (var entity in publisherEntities)

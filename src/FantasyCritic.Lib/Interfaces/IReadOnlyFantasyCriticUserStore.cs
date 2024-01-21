@@ -4,6 +4,7 @@ namespace FantasyCritic.Lib.Interfaces;
 
 public interface IReadOnlyFantasyCriticUserStore
 {
+    void ClearUserCache();
     Task<FantasyCriticUser?> FindByIdAsync(string userId, CancellationToken cancellationToken);
     Task<IReadOnlyList<FantasyCriticUser>> GetAllUsers();
     Task<IReadOnlyList<FantasyCriticUser>> GetUsers(IEnumerable<Guid> userIDs);

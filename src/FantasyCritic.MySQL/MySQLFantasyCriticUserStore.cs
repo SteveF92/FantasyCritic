@@ -20,6 +20,11 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         _clock = configuration.Clock;
     }
 
+    public void ClearUserCache()
+    {
+        _userCache = null;
+    }
+
     public async Task<IdentityResult> CreateAsync(FantasyCriticUser user, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
