@@ -437,6 +437,13 @@ public class MySQLConferenceRepo : IConferenceRepo
                                             where tbl_league.ConferenceID = @conferenceID AND tbl_league_publisher.Year = @year;
                                             """;
 
+        const string activePlayersSQL = """
+                                            select tbl_league_activeplayer.LeagueID, tbl_league_activeplayer.UserID, tbl_league_activeplayer.Year
+                                            from tbl_league_activeplayer
+                                            join tbl_league on tbl_league_activeplayer.LeagueID = tbl_league.LeagueID
+                                            where tbl_league.ConferenceID = @conferenceID AND tbl_league_activeplayer.Year = @year;
+                                            """;
+
         const string publisherUpdateSQL = "UPDATE tbl_league_publisher SET LeagueID = @LeagueID WHERE PublisherID = @PublisherID;";
         const string deleteExistingLeagueUserSQL = "delete from tbl_league_hasuser where LeagueID = @LeagueID AND UserID = @UserID;";
         const string deleteExistingLeagueYearActivePlayerSQL = "delete from tbl_league_activeplayer where LeagueID = @LeagueID AND Year = @Year AND UserID = @UserID;";
@@ -452,7 +459,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        var leagueHasPlayerInPreviousYear = new Dictionary<ConferenceLeague, List<FantasyCriticUser>>();
+        var leagueHasPlayerInPreviousYear = new Dictionary<ConferenceLeague, HashSet<FantasyCriticUser>>();
         var previousYears = conferenceYear.Conference.Years.Where(x => x < conferenceYear.Year).ToList();
         var lockedLeagueYears = new HashSet<LeagueYearKey>();
         foreach (var previousYear in previousYears)
@@ -463,7 +470,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             {
                 if (!leagueHasPlayerInPreviousYear.ContainsKey(conferenceLeagueYear.League))
                 {
-                    leagueHasPlayerInPreviousYear.Add(conferenceLeagueYear.League, new List<FantasyCriticUser>());
+                    leagueHasPlayerInPreviousYear.Add(conferenceLeagueYear.League, new HashSet<FantasyCriticUser>());
                 }
 
                 var fullLeagueYear = await _fantasyCriticRepo.GetLeagueYear(conferenceLeagueYear.League.LeagueID, conferenceLeagueYear.Year);
@@ -487,6 +494,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         {
             var currentLeagueUsers = (await connection.QueryAsync<LeagueHasUserEntity>(currentLeagueUserSQL, conferenceParam, transaction)).ToList();
             var currentPublisherEntities = (await connection.QueryAsync<PublisherEntity>(publisherEntitiesSQL, conferenceParam, transaction)).ToList();
+            var currentActivePlayerEntities = (await connection.QueryAsync<LeagueActivePlayerEntity>(activePlayersSQL, conferenceParam, transaction)).ToList();
 
             var leagueUserLookup = currentLeagueUsers.ToLookup(x => x.LeagueID);
 
@@ -522,11 +530,15 @@ public class MySQLConferenceRepo : IConferenceRepo
             {
                 var usersCurrentlyInLeague = leagueUserLookup[leagueUsers.Key.LeagueID];
                 var userIDsCurrentlyInLeague = usersCurrentlyInLeague.Select(x => x.UserID).ToList();
+                var activePlayerUsersIDsCurrentlyInLeague = currentActivePlayerEntities
+                    .Where(x => x.LeagueID == leagueUsers.Key.LeagueID && x.Year == conferenceYear.Year)
+                    .Select(x => x.UserID).ToList();
                 var userIDsRequestedToBeInLeague = leagueUsers.Value.Select(x => x.Id).ToList();
                 var usersThatShouldBeAdded = userIDsRequestedToBeInLeague.Except(userIDsCurrentlyInLeague).ToList();
+                var activePlayersThatShouldBeAdded = userIDsRequestedToBeInLeague.Except(activePlayerUsersIDsCurrentlyInLeague).ToList();
 
                 newUsersToAdd.AddRange(usersThatShouldBeAdded.Select(x => new LeagueHasUserEntity() { LeagueID = leagueUsers.Key.LeagueID, UserID = x }));
-                newActivePlayersToAdd.AddRange(usersThatShouldBeAdded.Select(x => new LeagueYearActivePlayer()
+                newActivePlayersToAdd.AddRange(usersThatShouldBeAdded.Concat(activePlayersThatShouldBeAdded).Distinct().Select(x => new LeagueYearActivePlayer()
                 {
                     LeagueID = leagueUsers.Key.LeagueID,
                     Year = conferenceYear.Year,
@@ -538,7 +550,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             List<PublisherEntity> publishersToUpdate = new List<PublisherEntity>();
             foreach (var publisher in currentPublisherEntities)
             {
-                var userNewLeague = newUsersToAdd.FirstOrDefault(x => x.UserID == publisher.UserID);
+                var userNewLeague = newActivePlayersToAdd.FirstOrDefault(x => x.UserID == publisher.UserID);
                 if (userNewLeague is null)
                 {
                     continue;

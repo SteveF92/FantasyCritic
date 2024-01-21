@@ -11,6 +11,7 @@ public class ConferencePlayerViewModel
         IsConferenceManager = conference.ConferenceManager.Equals(conferencePlayer.User);
         LeaguesIn = conferencePlayer.LeaguesIn;
         LeaguesManaging = conferencePlayer.LeaguesManaging;
+
     }
 
     public Guid UserID { get; }

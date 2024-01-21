@@ -33,7 +33,7 @@ public class ConferenceViewModel
     public bool CustomRulesConference { get; }
     public bool UserIsInConference { get; }
 
-    public IReadOnlyList<ConferencePlayerViewModel>? Players { get; }
-    public ConferenceLeagueViewModel? PrimaryLeague { get; }
-    public IReadOnlyList<ConferenceLeagueViewModel>? LeaguesInConference { get; }
+    public IReadOnlyList<ConferencePlayerViewModel> Players { get; }
+    public ConferenceLeagueViewModel PrimaryLeague { get; }
+    public IReadOnlyList<ConferenceLeagueViewModel> LeaguesInConference { get; }
 }

@@ -48,6 +48,7 @@ public class ConferenceYearViewModel
         }
 
         Standings = standingVMs;
+        PlayersForYear = conferencePlayers.Select(x => new ConferenceYearPlayerViewModel(domain, x)).ToList();
     }
 
     public ConferenceViewModel Conference { get; }
@@ -56,4 +57,5 @@ public class ConferenceYearViewModel
     public IReadOnlyList<ConferenceLeagueYearViewModel> LeagueYears { get; }
     public bool UserIsInAtLeastOneLeague { get; }
     public IReadOnlyList<ConferenceYearStandingViewModel> Standings { get; }
+    public IReadOnlyList<ConferenceYearPlayerViewModel> PlayersForYear { get; }
 }

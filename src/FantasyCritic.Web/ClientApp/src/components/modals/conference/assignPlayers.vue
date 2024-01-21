@@ -4,8 +4,13 @@
       {{ errorInfo }}
     </div>
     <div class="alert alert-info">
-      This form allows you assign each of your conference's players to a league. If you want a player to be in more than one league, you'll need to do that manually by inviting them to the league
-      directly, using the normal (non-conference) invite system.
+      <p class="text-white">
+        This form allows you assign each of your conference's players to a league. If you want a player to be in more than one league, you'll need to do that manually by inviting them to the league
+        directly, using the normal (non-conference) invite system.
+      </p>
+      <p class="text-white">
+        If you are getting errors with this form, try using the direct league invite system, as that should handle more complex cases. We're still working out the bugs in the conference system.
+      </p>
     </div>
 
     <div class="player-drag-list bg-secondary">
@@ -126,8 +131,8 @@ export default {
         leaguesDraftStarted[leagueYear.leagueID] = leagueYear.draftStarted;
       }
 
-      for (const player of this.conference.players) {
-        for (const leagueIn of player.leaguesIn) {
+      for (const player of this.conferenceYear.playersForYear) {
+        for (const leagueIn of player.leaguesActiveIn) {
           leagueAssignments[leagueIn].push(player);
         }
       }
