@@ -910,7 +910,12 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("Can't undo a drafted game if no games have been drafted.");
         }
 
-        await _draftService.UndoLastDraftAction(leagueYear);
+        var result = await _draftService.UndoLastDraftAction(leagueYear);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
 
         return Ok();

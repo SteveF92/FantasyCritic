@@ -52,14 +52,35 @@ public class DraftService
         }
     }
 
-    public async Task UndoLastDraftAction(LeagueYear leagueYear)
+    public async Task<Result> UndoLastDraftAction(LeagueYear leagueYear)
     {
-        var publisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames);
-        var newestGame = publisherGames.WhereMax(x => x.Timestamp).First();
+        var publisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
+        if (!leagueYear.PlayStatus.PlayStarted || leagueYear.PlayStatus.DraftFinished)
+        {
+            return Result.Failure("Cannot undo a draft game when the draft is not active.");
+        }
 
-        var publisher = leagueYear.Publishers.Single(x => x.PublisherGames.Select(y => y.PublisherGameID).Contains(newestGame.PublisherGameID));
+        if (!publisherGames.Any())
+        {
+            return Result.Failure("Cannot undo a draft game when no games have been drafted yet.");
+        }
 
-        await _publisherService.RemovePublisherGame(leagueYear, publisher, newestGame);
+        var counterPicks = publisherGames.Where(x => x.CounterPick).ToList();
+
+        PublisherGame publisherGameToUndo;
+        if (!counterPicks.Any())
+        {
+            publisherGameToUndo = publisherGames.MaxBy(x => x.OverallDraftPosition)!;
+        }
+        else
+        {
+            publisherGameToUndo = counterPicks.MaxBy(x => x.OverallDraftPosition)!;
+        }
+
+        var publisher = leagueYear.Publishers.Single(x => x.PublisherID == publisherGameToUndo.PublisherID);
+        await _publisherService.RemovePublisherGame(leagueYear, publisher, publisherGameToUndo);
+
+        return Result.Success();
     }
 
     public async Task<Result> SetDraftOrder(LeagueYear leagueYear, DraftOrderType draftOrderType, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
