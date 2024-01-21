@@ -1,6 +1,12 @@
 <template>
   <b-modal id="managerSetAutoDraftForm" ref="managerSetAutoDraftFormRef" title="Edit Auto Draft">
-    <div class="alert alert-info">You can use this form to turn on or turn off autodraft for one of your players.</div>
+    <div class="alert alert-info">
+      <p class="text-white">You can use this form to turn on or turn off autodraft for one of your players.</p>
+      <p class="text-white">
+        If you turn on the 'Standard Games Only' mode, then the site will not autodraft counter picks for that player. They will need to make their selections themselves, or you can draft for them as
+        league manager.
+      </p>
+    </div>
 
     <b-form-group class="form-checkbox-group">
       <div v-for="publisher in publishers" :key="publisher.publisherID" class="publisher-autodraft">
@@ -56,7 +62,7 @@ export default {
 <style scoped>
 .publisher-autodraft {
   display: flex;
-  align-items: end;
+  align-items: center;
   gap: 10px;
   margin-bottom: 10px;
 }
