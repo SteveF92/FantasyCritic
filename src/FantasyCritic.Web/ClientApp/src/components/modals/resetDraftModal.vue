@@ -39,7 +39,7 @@ export default {
       axios
         .post('/api/leagueManager/ResetDraft', model)
         .then(() => {
-          this.notifyAction('Draft has been reset.');
+          this.notifyAction('Draft has been reset.', false);
         })
         .catch(() => {});
     },

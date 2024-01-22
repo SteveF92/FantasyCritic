@@ -108,8 +108,10 @@ let leagueMixin = {
     }
   },
   methods: {
-    async notifyAction(message) {
-      await this.$store.dispatch('refreshLeagueYear');
+    async notifyAction(message, refresh = true) {
+      if (refresh) {
+        await this.$store.dispatch('refreshLeagueYear');
+      }
       if (message) {
         this.makeToast(message);
       }

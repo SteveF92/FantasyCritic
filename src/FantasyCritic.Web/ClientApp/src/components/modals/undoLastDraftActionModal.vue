@@ -25,7 +25,7 @@ export default {
       axios
         .post('/api/leagueManager/UndoLastDraftAction', model)
         .then(() => {
-          this.notifyAction('Last action was undone.');
+          this.notifyAction('Last action was undone.', false);
         })
         .catch(() => {});
     }

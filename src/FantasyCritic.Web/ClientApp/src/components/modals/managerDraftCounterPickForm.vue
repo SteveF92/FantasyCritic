@@ -68,7 +68,7 @@ export default {
           }
 
           this.$refs.managerDraftCounterPickFormRef.hide();
-          this.notifyAction(this.selectedCounterPick.gameName + ' selected as a counter pick by ' + this.nextPublisherUp.publisherName);
+          this.notifyAction(this.selectedCounterPick.gameName + ' selected as a counter pick by ' + this.nextPublisherUp.publisherName, false);
           this.selectedCounterPick = null;
         })
         .catch(() => {

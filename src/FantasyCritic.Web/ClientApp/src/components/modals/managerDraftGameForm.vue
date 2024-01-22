@@ -225,7 +225,7 @@ export default {
           }
 
           this.$refs.managerDraftGameFormRef.hide();
-          this.notifyAction(gameName + ' drafted by ' + this.nextPublisherUp.publisherName);
+          this.notifyAction(gameName + ' drafted by ' + this.nextPublisherUp.publisherName, false);
           this.clearData();
         })
         .catch(() => {});

@@ -234,7 +234,7 @@ export default {
           }
 
           this.$refs.playerDraftGameFormRef.hide();
-          this.notifyAction('You have drafted: ' + gameName);
+          this.notifyAction('You have drafted: ' + gameName, false);
           this.clearData();
         })
         .catch(() => {});

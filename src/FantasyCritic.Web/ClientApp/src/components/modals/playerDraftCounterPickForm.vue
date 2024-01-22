@@ -62,7 +62,7 @@ export default {
           }
 
           this.$refs.playerDraftCounterPickFormRef.hide();
-          this.notifyAction('You have selected ' + this.selectedCounterPick.gameName + ' as a counter pick.');
+          this.notifyAction('You have selected ' + this.selectedCounterPick.gameName + ' as a counter pick.', false);
           this.selectedCounterPick = null;
         })
         .catch(() => {

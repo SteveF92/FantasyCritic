@@ -24,7 +24,7 @@ export default {
         if (!newPause) {
           pauseMessage = 'Draft has been un-paused.';
         }
-        this.notifyAction(pauseMessage);
+        this.notifyAction(pauseMessage, false);
         this.$refs.setPauseModalRef.hide();
       } catch (error) {
         console.log(error);
