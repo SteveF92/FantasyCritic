@@ -21,9 +21,9 @@
       <div class="fluid container draft-order-editor bg-secondary">
         <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
           <transition-group type="transition" :name="'flip-list'">
-            <li v-for="publisher in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
+            <li v-for="(publisher, index) in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
               <font-awesome-icon icon="bars" class="handle" />
-              <span class="badge">{{ publisher.draftPosition }}</span>
+              <span class="badge">{{ index + 1 }}</span>
               {{ publisher.publisherName }} ({{ publisher.playerName }})
             </li>
           </transition-group>
