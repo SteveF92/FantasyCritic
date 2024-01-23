@@ -623,6 +623,21 @@ public class AdminService
         return _fantasyCriticRepo.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
     }
 
+    public async Task UpdateDailyPublisherStatistics()
+    {
+        _logger.Information("Updating daily publisher statistics.");
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var today = _clock.GetToday();
+        
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var activeYears = supportedYears.Where(x => !x.Finished && x.OpenForPlay).ToList();
+
+        foreach (var activeYear in activeYears)
+        {
+            await _fantasyCriticRepo.UpdateDailyPublisherStatistics(activeYear.Year, today, systemWideValues);
+        }
+    }
+
     private async Task UpdateSystemWideValues(IReadOnlyList<LeagueYear> allLeagueYears)
     {
         _logger.Information("Updating system wide values");

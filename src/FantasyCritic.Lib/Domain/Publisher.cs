@@ -261,4 +261,67 @@ public class Publisher : IEquatable<Publisher>
     {
         return $"{PublisherName} ({User.UserName})";
     }
+
+    public PublisherStatistics GetPublisherStatistics(LocalDate date, LeagueYear leagueYear, SystemWideValues systemWideValues)
+    {
+        byte numberOfStandardGames = 0, numberOfStandardGamesReleased = 0, numberOfStandardGamesExpectedToRelease = 0, numberOfStandardGamesNotExpectedToRelease = 0,
+            numberOfCounterPicks = 0, numberOfCounterPicksReleased = 0, numberOfCounterPicksExpectedToRelease = 0, numberOfCounterPicksNotExpectedToRelease = 0;
+
+        foreach (var game in PublisherGames)
+        {
+            if (!game.CounterPick)
+            {
+                numberOfStandardGames++;
+
+                if (game.MasterGame is not null && game.MasterGame.MasterGame.IsReleased(date))
+                {
+                    numberOfStandardGamesReleased++;
+                }
+
+                if (game.WillRelease().CountAsWillRelease)
+                {
+                    numberOfStandardGamesExpectedToRelease++;
+                }
+
+                if (!game.WillRelease().CountAsWillRelease)
+                {
+                    numberOfStandardGamesNotExpectedToRelease++;
+                }
+            }
+            else
+            {
+                numberOfCounterPicks++;
+
+                if (game.MasterGame is not null && game.MasterGame.MasterGame.IsReleased(date))
+                {
+                    numberOfCounterPicksReleased++;
+                }
+
+                if (game.WillRelease().CountAsWillRelease)
+                {
+                    numberOfCounterPicksExpectedToRelease++;
+                }
+
+                if (!game.WillRelease().CountAsWillRelease)
+                {
+                    numberOfCounterPicksNotExpectedToRelease++;
+                }
+            }
+        }
+
+        return new PublisherStatistics(PublisherID, date)
+        {
+            FantasyPoints = GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options),
+            ProjectedPoints = GetProjectedFantasyPoints(leagueYear, systemWideValues, date),
+            RemainingBudget = (ushort) Budget,
+            NumberOfStandardGames = numberOfStandardGames,
+            NumberOfStandardGamesReleased = numberOfStandardGamesReleased,
+            NumberOfStandardGamesExpectedToRelease = numberOfStandardGamesExpectedToRelease,
+            NumberOfStandardGamesNotExpectedToRelease = numberOfStandardGamesNotExpectedToRelease,
+            NumberOfCounterPicks = numberOfCounterPicks,
+            NumberOfCounterPicksReleased = numberOfCounterPicksReleased,
+            NumberOfCounterPicksExpectedToRelease = numberOfCounterPicksExpectedToRelease,
+            NumberOfCounterPicksNotExpectedToRelease = numberOfCounterPicksNotExpectedToRelease
+        };
+    }
 }

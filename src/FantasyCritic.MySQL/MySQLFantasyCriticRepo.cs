@@ -14,6 +14,7 @@ using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
 using FantasyCritic.SharedSerialization.Database;
 using FantasyCritic.Lib.Domain.Combinations;
+using System.Transactions;
 namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo
@@ -3582,6 +3583,25 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync("delete from tbl_caching_leagueyear", transaction: transaction);
         await connection.BulkInsertAsync<LeagueYearCacheEntity>(leagueYearEntities, "tbl_caching_leagueyear", 500, transaction);
+        await transaction.CommitAsync();
+    }
+
+    public async Task UpdateDailyPublisherStatistics(int year, LocalDate currentDate, SystemWideValues systemWideValues)
+    {
+        var leagueYears = await GetLeagueYears(year);
+
+        var statistics = leagueYears
+            .SelectMany(ly => ly.Publishers.Select(p => new { LeagueYear = ly, Publisher = p }))
+            .Select(item => item.Publisher.GetPublisherStatistics(currentDate, item.LeagueYear, systemWideValues))
+            .ToList();
+
+        var statisticsEntities = statistics.Select(x => new PublisherStatisticsEntity(x)).ToList();
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.BulkInsertAsync(statisticsEntities, "tbl_league_publisherstatistics", 500, transaction, insertIgnore: true);
         await transaction.CommitAsync();
     }
 }

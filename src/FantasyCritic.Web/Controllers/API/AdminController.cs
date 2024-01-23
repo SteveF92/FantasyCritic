@@ -277,6 +277,13 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
+    public async Task<IActionResult> UpdateDailyPublisherStatistics()
+    {
+        await _adminService.UpdateDailyPublisherStatistics();
+        return Ok();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> PushPublicBiddingDiscordMessages()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
