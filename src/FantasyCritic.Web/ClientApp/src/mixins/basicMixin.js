@@ -14,12 +14,34 @@ let basicMixin = {
       return this.$store.getters.userInfo.displayName;
     }
   },
+  data() {
+    return {
+      toastCount: 0
+    };
+  },
   methods: {
     makeToast(message) {
-      this.$bvToast.toast(message, {
-        autoHideDelay: 5000,
-        variant: 'info',
+      // Use a shorter name for this.$createElement
+      const ce = this.$createElement;
+      const id = `my-toast-${this.toastCount++}`;
+      const vNodesMsg = ce('div', { class: ['toast-flex'] }, [
+        ce('span', {}, message),
+        ce('font-awesome-icon', {
+          class: ['toast-close'],
+          props: { icon: 'xmark', size: 'xl' },
+          on: {
+            click: () => {
+              this.$bvToast.hide(id);
+            }
+          }
+        })
+      ]);
+      // Create the title
+      // Pass the VNodes as an array for message and title
+      this.$bvToast.toast([vNodesMsg], {
+        id: id,
         solid: true,
+        variant: 'info',
         noCloseButton: true
       });
     },

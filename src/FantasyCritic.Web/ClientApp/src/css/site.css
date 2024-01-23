@@ -266,3 +266,14 @@ img.critic-royale-nav {
   justify-content: space-around;
   margin-bottom: 10px;
 }
+
+.toast-flex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toast-close:hover{
+  color: black;
+  cursor: pointer;
+}
