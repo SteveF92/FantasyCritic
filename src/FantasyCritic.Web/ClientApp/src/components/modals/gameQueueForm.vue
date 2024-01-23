@@ -231,9 +231,11 @@ export default {
       try {
         const response = await axios.post('/api/league/AddGameToQueue', request);
         this.queueResult = response.data;
+        if (this.queueResult.success) {
+          await this.notifyAction('Game added to watchlist.');
+          this.initializeDesiredRankings();
+        }
         this.isBusy = false;
-        await this.notifyAction('Game added to watchlist.');
-        this.initializeDesiredRankings();
       } catch (error) {
         this.isBusy = false;
         this.errorInfo = error;
