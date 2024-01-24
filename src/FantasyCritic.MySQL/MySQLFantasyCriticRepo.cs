@@ -3593,6 +3593,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var leagueYears = await GetLeagueYears(year);
 
         var statistics = leagueYears
+            .Where(x => x.PlayStatus.DraftFinished)
             .SelectMany(ly => ly.Publishers.Select(p => new { LeagueYear = ly, Publisher = p }))
             .Select(item => item.Publisher.GetPublisherStatistics(currentDate, item.LeagueYear, systemWideValues))
             .ToList();
