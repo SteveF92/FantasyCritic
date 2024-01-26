@@ -7,11 +7,13 @@ namespace FantasyCritic.Lib.Services;
 public class GameSearchingService
 {
     private readonly InterLeagueService _interLeagueService;
+    private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly IClock _clock;
 
-    public GameSearchingService(InterLeagueService interLeagueService, IClock clock)
+    public GameSearchingService(InterLeagueService interLeagueService, GameAcquisitionService gameAcquisitionService, IClock clock)
     {
         _interLeagueService = interLeagueService;
+        _gameAcquisitionService = gameAcquisitionService;
         _clock = clock;
     }
 
@@ -48,7 +50,7 @@ public class GameSearchingService
         var matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, true);
         var gamesInLeague = leagueYear.GetGamesInLeague();
         var matchingGamesInLeague = matchingMasterGames.Where(x => gamesInLeague.Contains(x)).ToList();
-        
+
         IReadOnlyList<MasterGameYear> gamesToReturn;
         if (matchingGamesInLeague.Any())
         {
@@ -59,7 +61,7 @@ public class GameSearchingService
             gamesToReturn = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, true);
             gamesToReturn = gamesToReturn.Take(maxNonIdealMatches).ToList();
         }
-        
+
         return gamesToReturn;
     }
 
@@ -189,6 +191,45 @@ public class GameSearchingService
             var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
             PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
                 publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate, false);
+            possibleMasterGames.Add(possibleMasterGame);
+        }
+
+        return possibleMasterGames;
+    }
+
+    public async Task<IReadOnlyList<PossibleMasterGameYear>> GetPublicBiddingAvailableGames(LeagueYear leagueYear, Publisher currentPublisher)
+    {
+        HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => !x.CounterPick && x.MasterGame is not null)
+            .Select(x => x.MasterGame!.MasterGame)
+            .ToHashSet();
+
+        HashSet<MasterGame> myPublisherMasterGames = currentPublisher.MyMasterGames;
+
+        var activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
+        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
+        if (publicBiddingGames == null)
+        {
+            return new List<PossibleMasterGameYear>();
+        }
+        var publicBiddingMasterGameYears = publicBiddingGames.MasterGames.Select(m => m.MasterGameYear).ToList();
+        List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
+        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+        var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
+
+        LocalDate currentDate = _clock.GetToday();
+        foreach (var masterGame in publicBiddingMasterGameYears)
+        {
+            var eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame.MasterGame, currentDate);
+            PossibleMasterGameYear possibleMasterGame = GetPossibleMasterGameYear(masterGame, openNonCounterPickSlots,
+                publisherMasterGames, myPublisherMasterGames, eligibilityFactors, currentDate, false);
+
+            if (!possibleMasterGame.IsAvailable)
+            {
+                continue;
+            }
+
             possibleMasterGames.Add(possibleMasterGame);
         }
 

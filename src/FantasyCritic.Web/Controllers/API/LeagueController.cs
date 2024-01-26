@@ -928,6 +928,30 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
+    public async Task<IActionResult> ThisWeeksPublicBiddingGames(int year, Guid leagueID, Guid publisherID)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+
+        var publisher = leagueYear.Publishers.SingleOrDefault(x => x.PublisherID == publisherID);
+        if (publisher is null)
+        {
+            return BadRequest();
+        }
+
+        var publicBiddingMasterGameYears = await _gameSearchingService.GetPublicBiddingAvailableGames(leagueYear, publisher);
+
+        var currentDate = _clock.GetToday();
+        var viewModels = publicBiddingMasterGameYears.Select(x => new PossibleMasterGameYearViewModel(x, currentDate)).Take(100).ToList();
+
+        return Ok(viewModels);
+    }
+
     public async Task<IActionResult> PossibleCounterPicks(Guid publisherID)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);

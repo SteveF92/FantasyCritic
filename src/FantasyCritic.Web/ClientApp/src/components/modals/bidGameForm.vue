@@ -30,9 +30,11 @@
       <div v-if="!leagueYear.settings.hasSpecialSlots">
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="leagueYear.publicBiddingGames">Show This Week's Bids</b-button>
       </div>
       <div v-else>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="leagueYear.publicBiddingGames">Show This Week's Bids</b-button>
         <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
           <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click.native="getTopGames"></searchSlotTypeBadge>
@@ -242,6 +244,20 @@ export default {
       this.isBusy = true;
       axios
         .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
+        .then((response) => {
+          this.possibleMasterGames = response.data;
+          this.isBusy = false;
+          this.showingQueuedGames = true;
+        })
+        .catch(() => {
+          this.isBusy = false;
+        });
+    },
+    getThisWeeksPublicBids() {
+      this.clearDataExceptSearch();
+      this.isBusy = true;
+      axios
+        .get('/api/league/ThisWeeksPublicBiddingGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&publisherid=' + this.userPublisher.publisherID)
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
