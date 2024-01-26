@@ -60,7 +60,8 @@
         <div v-if="!bidMasterGame">
           <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
           <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
-          <h3 v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
+          <h3 v-show="showingPublicBids" class="text-black">This Week's Public Bids</h3>
+          <h3 v-show="!showingTopAvailable && !showingQueuedGames && !showingPublicBids && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
           <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
         </div>
       </div>
@@ -154,6 +155,7 @@ export default {
       errorInfo: '',
       showingTopAvailable: false,
       showingQueuedGames: false,
+      showingPublicBids: false,
       searched: false,
       isBusy: false,
       requestIsBusy: false,
@@ -261,7 +263,7 @@ export default {
         .then((response) => {
           this.possibleMasterGames = response.data;
           this.isBusy = false;
-          this.showingQueuedGames = true;
+          this.showingPublicBids = true;
         })
         .catch(() => {
           this.isBusy = false;
@@ -324,9 +326,12 @@ export default {
       this.possibleMasterGames = [];
       this.searched = false;
       this.showingTopAvailable = false;
+      this.showingQueuedGames = false;
+      this.showingPublicBids = false;
       this.isBusy = false;
       this.requestIsBusy = false;
       this.conditionalDrop = null;
+      this.selectedSlotIndex = null;
     },
     clearData() {
       this.clearDataExceptSearch();
