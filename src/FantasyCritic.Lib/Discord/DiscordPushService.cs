@@ -709,7 +709,11 @@ public class DiscordPushService
                 var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
                 if (bid.Successful!.Value)
                 {
-                    messageToAdd += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}\n";
+                    messageToAdd += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}";
+                    messageToAdd +=
+                        bid is { ConditionalDropResult.Result.IsSuccess: true, ConditionalDropPublisherGame: not null }
+                            ? $"Dropped game '{bid.ConditionalDropPublisherGame.GameName}' conditionally.\n"
+                            : "\n";
                 }
                 else
                 {
