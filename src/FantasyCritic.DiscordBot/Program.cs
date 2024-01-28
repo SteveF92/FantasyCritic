@@ -10,7 +10,6 @@ using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Discord.EventHandlers;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;

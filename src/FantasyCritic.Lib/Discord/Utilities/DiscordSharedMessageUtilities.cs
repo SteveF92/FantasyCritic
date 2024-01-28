@@ -1,7 +1,7 @@
 using FantasyCritic.Lib.Discord.UrlBuilders;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
+using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Discord.Utilities;
@@ -169,6 +169,36 @@ public static class DiscordSharedMessageUtilities
             return false;
         }
         return rank == 1;
+    }
+
+    public static string BuildBidResultMessage(PickupBid bid)
+    {
+        var message = "";
+        var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
+        if (bid.Successful!.Value)
+        {
+            message += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}";
+            if (bid is { ConditionalDropResult.Result.IsSuccess: true, ConditionalDropPublisherGame: not null })
+            {
+                message += $"Dropped game '{bid.ConditionalDropPublisherGame.GameName}' conditionally.";
+            }
+        }
+        else
+        {
+            message += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} did not succeed: {bid.Outcome} {counterPickMessage}\n";
+        }
+        return message;
+    }
+
+    public static string BuildDropResultMessage(DropRequest drop)
+    {
+        if (!drop.Successful.HasValue)
+        {
+            throw new Exception($"Drop {drop.DropRequestID} Successful property is null");
+        }
+
+        var statusMessage = drop.Successful.Value ? "Successful" : "Failed";
+        return $"**{drop.Publisher.GetPublisherAndUserDisplayName()}**: {drop.MasterGame.GameName} (Drop {statusMessage})";
     }
 
     public static string BuildPublicBidGameMessage(PublicBiddingMasterGame publicBid)

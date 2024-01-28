@@ -706,19 +706,7 @@ public class DiscordPushService
             var orderedBids = bidGameAction.Value.OrderByDescending(x => x.Successful!.Value).ThenByDescending(x => x.BidAmount).ToList();
             foreach (var bid in orderedBids)
             {
-                var counterPickMessage = bid.CounterPick ? "(🎯 Counter Pick)" : "";
-                if (bid.Successful!.Value)
-                {
-                    messageToAdd += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}";
-                    messageToAdd +=
-                        bid is { ConditionalDropResult.Result.IsSuccess: true, ConditionalDropPublisherGame: not null }
-                            ? $"Dropped game '{bid.ConditionalDropPublisherGame.GameName}' conditionally.\n"
-                            : "\n";
-                }
-                else
-                {
-                    messageToAdd += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} did not succeed: {bid.Outcome} {counterPickMessage}\n";
-                }
+                messageToAdd += $"{DiscordSharedMessageUtilities.BuildBidResultMessage(bid)}\n";
             }
 
             bidMessages.Add($"{messageToAdd}");
@@ -740,13 +728,7 @@ public class DiscordPushService
         var dropMessages = new List<string>();
         foreach (var drop in leagueAction.Drops)
         {
-            if (!drop.Successful.HasValue)
-            {
-                throw new Exception($"Drop {drop.DropRequestID} Successful property is null");
-            }
-
-            var statusMessage = drop.Successful.Value ? "Successful" : "Failed";
-            var messageToAdd = $"**{drop.Publisher.GetPublisherAndUserDisplayName()}**: {drop.MasterGame.GameName} (Drop {statusMessage})";
+            var messageToAdd = DiscordSharedMessageUtilities.BuildDropResultMessage(drop);
             dropMessages.Add(messageToAdd);
         }
 

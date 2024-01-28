@@ -1,3 +1,4 @@
+using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
@@ -8,17 +9,18 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Discord.Commands;
-public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
+public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
+    private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
-    public PublicBidsCommand(IDiscordRepo discordRepo,
-        IFantasyCriticRepo fantasyCriticRepo,
+    public BidResultsCommand(IDiscordRepo discordRepo,
+        FantasyCriticService fantasyCriticService,
         InterLeagueService interLeagueService,
         GameAcquisitionService gameAcquisitionService,
         IClock clock,
@@ -26,6 +28,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
+        _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
         _gameAcquisitionService = gameAcquisitionService;
         _clock = clock;
@@ -33,8 +36,8 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
-    [SlashCommand("public-bids", "View the current public bids for this week.")]
-    public async Task GetPublicBids(
+    [SlashCommand("bid-results", "View the most recent bid results.")]
+    public async Task GetBidResults(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
         await DeferAsync();
@@ -60,40 +63,24 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
 
         var leagueYear = leagueChannel.LeagueYear;
 
-        if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SecretBidding))
+        var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear);
+
+        if (!leagueActionSets.Any())
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
-                "Bidding is Secret",
-                "This league does not use public bidding.",
+                "No Actions To Report",
+                "This league does not have any actions yet to report.",
                 Context.User));
             return;
         }
 
-        IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
-        var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
+        var leagueActionSetToReport = leagueActionSets.OrderByDescending(s => s.ProcessTime).First();
 
-        if (publicBiddingGames is null)
-        {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
-                "Bids Not Revealed Yet",
-                "The league is not in the public bidding window yet.",
-                Context.User));
-            return;
-        }
+        var bidResultMessages = leagueActionSetToReport.Bids.Select(DiscordSharedMessageUtilities.BuildBidResultMessage).ToList();
+        var dropResultMessages = leagueActionSetToReport.Drops.Select(DiscordSharedMessageUtilities.BuildDropResultMessage).ToList();
 
-        if (!publicBiddingGames.MasterGames.Any())
-        {
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
-                "No Public Bids",
-                "No public bids were found for this week.",
-                Context.User));
-            return;
-        }
-
-        var gameMessages = publicBiddingGames.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
-        var finalMessage = string.Join("\n", gameMessages);
         var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
-        var header = $"Public Bids (Week of {lastSunday:MMMM dd, yyyy})";
+        var header = $"Bid/Drop Results (Week of {lastSunday:MMMM dd, yyyy})";
 
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
             leagueYear.Year)
@@ -101,8 +88,23 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             header,
-            finalMessage,
+            "",
             Context.User,
+            new List<EmbedFieldBuilder>
+            {
+              new()
+              {
+                  Name = "Bids",
+                  Value = bidResultMessages.Any() ? string.Join("\n", bidResultMessages) : "No bids this week.",
+                  IsInline = false,
+              },
+              new()
+              {
+              Name = "Drops",
+              Value = dropResultMessages.Any() ? string.Join("\n", dropResultMessages) : "No drops this week.",
+              IsInline = false,
+            }
+            },
             url: leagueUrl));
     }
 }
