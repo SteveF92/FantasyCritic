@@ -597,8 +597,8 @@ public class DiscordPushService
             }
 
             var leagueLink = new LeagueUrlBuilder(_baseAddress, publicBiddingSet.LeagueYear.League.LeagueID, publicBiddingSet.LeagueYear.Year).BuildUrl();
-            var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
-            var header = $"Public Bids (Week ending {lastSunday:MMMM dd, yyyy})";
+            var bidProcessingDate = _clock.GetNextBidTime().ToEasternDate();
+            var header = $"Public Bids (Week ending {bidProcessingDate:MMMM dd, yyyy})";
 
             string finalMessage;
 

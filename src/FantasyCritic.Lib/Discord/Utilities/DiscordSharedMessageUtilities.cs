@@ -228,14 +228,6 @@ public static class DiscordSharedMessageUtilities
         return gameMessage;
     }
 
-    public static DateTime GetLastSunday()
-    {
-        var currentDate = DateTime.Now;
-        var currentDayOfWeek = (int)currentDate.DayOfWeek;
-        var lastSundayDate = currentDate.AddDays(-currentDayOfWeek);
-        return lastSundayDate;
-    }
-
     public static string BuildRemainingTimeMessage(Duration duration)
     {
         return $"{(duration.Days > 0 ? $"{duration.Days} days, " : "")}{(duration.Hours > 0 ? $"{duration.Hours} hours, " : "")}{duration.Minutes} minutes";
