@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -41,7 +42,6 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
         await DeferAsync();
-        var dateToCheck = _clock.GetGameEffectiveDate(year);
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
@@ -64,8 +64,8 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
         var leagueYear = leagueChannel.LeagueYear;
 
         var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear);
-
-        if (!leagueActionSets.Any())
+        var normalActionSets = leagueActionSets.Where(x => !x.ProcessName.Contains("Special Auction")).ToList();
+        if (!normalActionSets.Any())
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "No Actions To Report",
@@ -74,13 +74,28 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        var leagueActionSetToReport = leagueActionSets.OrderByDescending(s => s.ProcessTime).First();
+        //For testing
+        //var leagueActionSetToReport = normalActionSets.Single(x => x.ProcessTime.ToEasternDate().ToISOString() == "2023-11-11");
 
-        var bidResultMessages = leagueActionSetToReport.Bids.Select(DiscordSharedMessageUtilities.BuildBidResultMessage).ToList();
+        var leagueActionSetToReport = normalActionSets.OrderByDescending(s => s.ProcessTime).First();
+        var bidsByGame = leagueActionSetToReport.Bids.GroupToDictionary(x => x.MasterGame);
+
+        var bidResultMessages = new List<string>();
+        foreach (var bidGameAction in bidsByGame)
+        {
+            var messageToAdd = $"**{bidGameAction.Key}**\n";
+            var orderedBids = bidGameAction.Value.OrderByDescending(x => x.Successful!.Value).ThenByDescending(x => x.BidAmount).ToList();
+            foreach (var bid in orderedBids)
+            {
+                messageToAdd += $"{DiscordSharedMessageUtilities.BuildBidResultMessage(bid)}\n";
+            }
+
+            bidResultMessages.Add($"{messageToAdd}");
+        }
+
         var dropResultMessages = leagueActionSetToReport.Drops.Select(DiscordSharedMessageUtilities.BuildDropResultMessage).ToList();
 
-        var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
-        var header = $"Bid/Drop Results (Week of {lastSunday:MMMM dd, yyyy})";
+        var header = $"Bid/Drop Results (Week ending {leagueActionSetToReport.ProcessTime.ToEasternDate():MMMM dd, yyyy})";
 
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
             leagueYear.Year)

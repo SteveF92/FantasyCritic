@@ -20,4 +20,6 @@ public class LeagueActionProcessingSet
     public IReadOnlyList<PickupBid> Bids { get; }
 
     public bool HasActions => Drops.Any() || Bids.Any();
+
+    public override string ToString() => $"{ProcessName}|{ProcessTime}";
 }

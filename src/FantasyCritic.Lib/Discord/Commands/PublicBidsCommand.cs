@@ -93,7 +93,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         var gameMessages = publicBiddingGames.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
         var finalMessage = string.Join("\n", gameMessages);
         var lastSunday = DiscordSharedMessageUtilities.GetLastSunday();
-        var header = $"Public Bids (Week of {lastSunday:MMMM dd, yyyy})";
+        var header = $"Public Bids (Week ending {lastSunday:MMMM dd, yyyy})";
 
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
             leagueYear.Year)
