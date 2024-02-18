@@ -115,14 +115,14 @@ public class TradeService
     public async Task<IReadOnlyList<Trade>> GetTradesForLeague(LeagueYear leagueYear)
     {
         var trades = await _fantasyCriticRepo.GetTradesForLeague(leagueYear);
-        return trades;
+        return trades.OrderByDescending(x => x.ProposedTimestamp).ToList();
     }
 
     public async Task<IReadOnlyList<Trade>> GetActiveTradesForLeague(LeagueYear leagueYear)
     {
         var allTrades = await GetTradesForLeague(leagueYear);
         var activeTrades = allTrades.Where(x => x.Status.IsActive).ToList();
-        return activeTrades;
+        return activeTrades.OrderByDescending(x => x.ProposedTimestamp).ToList();
     }
 
     public async Task<Result> RescindTrade(Trade trade)
