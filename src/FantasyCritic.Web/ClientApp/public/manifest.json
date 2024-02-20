@@ -17,7 +17,7 @@
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "maskable"
-    },
+    }
   ],
   "display": "standalone",
   "start_url": "/",
