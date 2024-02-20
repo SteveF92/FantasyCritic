@@ -22,7 +22,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A032410D-85DA-46DB-A149-18DFC4C6EC1F}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		global.json = global.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.DBUtility", "FantasyCritic.DBUtility\FantasyCritic.DBUtility.csproj", "{C7AAA97D-179D-42CE-83E9-9C4900D21DDA}"
