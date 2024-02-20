@@ -13,7 +13,6 @@
       "type": "image/png"
     }
   ],
-  "start_url": "https://www.fantasycritic.games/home",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#d6993a"
