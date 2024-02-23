@@ -44,14 +44,19 @@ public class GameSearchingService
         return possibleMasterGames;
     }
 
-    public async Task<IReadOnlyList<MasterGameYear>> SearchGamesWithLeaguePriority(string searchName, LeagueYear leagueYear, int maxNonIdealMatches)
+    public async Task<IReadOnlyList<MasterGameYear>> SearchGamesWithLeaguePriority(string searchName, LeagueYear? leagueYear, int year, int maxNonIdealMatches)
     {
-        var masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
-        var matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, true);
-        var gamesInLeague = leagueYear.GetGamesInLeague();
-        var matchingGamesInLeague = matchingMasterGames.Where(x => gamesInLeague.Contains(x)).ToList();
-
         IReadOnlyList<MasterGameYear> gamesToReturn;
+        List<MasterGameYear> matchingGamesInLeague = [];
+        var masterGames = await _interLeagueService.GetMasterGameYears(year);
+
+        if (leagueYear != null)
+        {
+            var matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, true);
+            var gamesInLeague = leagueYear.GetGamesInLeague();
+            matchingGamesInLeague = matchingMasterGames.Where(gamesInLeague.Contains).ToList();
+        }
+
         if (matchingGamesInLeague.Any())
         {
             gamesToReturn = matchingGamesInLeague;

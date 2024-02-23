@@ -6,6 +6,7 @@ using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GameCommand : InteractionModuleBase<SocketInteractionContext>
@@ -50,15 +51,15 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
                 Context.User));
             return;
         }
-        var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
-        if (leagueChannel == null)
-        {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
-                "Error Finding League Configuration",
-                "No league configuration found for this channel.",
-                Context.User));
-            return;
-        }
+        LeagueChannel? leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
+        //if (leagueChannel == null)
+        //{
+        //    await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+        //        "Error Finding League Configuration",
+        //        "No league configuration found for this channel.",
+        //        Context.User));
+        //    return;
+        //}
 
         var termToSearch = gameName.ToLower().Trim();
 
@@ -72,7 +73,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         }
 
         var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch,
-            leagueChannel.LeagueYear, 3);
+            leagueChannel?.LeagueYear, dateToCheck.Year, 3);
         if (!matchingGames.Any())
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
@@ -85,8 +86,8 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         var gamesToDisplay = matchingGames
             .Select(game => new MatchedGameDisplay(game)
             {
-                PublisherWhoPicked = FindPublisherWithGame(leagueChannel.LeagueYear, game, false),
-                PublisherWhoCounterPicked = FindPublisherWithGame(leagueChannel.LeagueYear, game, true)
+                PublisherWhoPicked = leagueChannel != null ? FindPublisherWithGame(leagueChannel.LeagueYear, game, false) : null,
+                PublisherWhoCounterPicked = leagueChannel != null ? FindPublisherWithGame(leagueChannel.LeagueYear, game, true) : null
             }).ToList();
 
         var gameEmbeds = gamesToDisplay
@@ -96,7 +97,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
                 return new EmbedFieldBuilder
                 {
                     Name = masterGameYear.MasterGame.GameName,
-                    Value = BuildGameDisplayText(matchedGameDisplay, leagueChannel.LeagueYear, dateToCheck),
+                    Value = BuildGameDisplayText(matchedGameDisplay, leagueChannel?.LeagueYear, dateToCheck),
                     IsInline = false
                 };
             }).ToList();
@@ -110,7 +111,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             gameEmbeds));
     }
 
-    private string BuildGameDisplayText(MatchedGameDisplay matchedGameDisplay, LeagueYear leagueYear, LocalDate dateToCheck)
+    private string BuildGameDisplayText(MatchedGameDisplay matchedGameDisplay, LeagueYear? leagueYear, LocalDate dateToCheck)
     {
         var gameFound = matchedGameDisplay.GameFound;
 
@@ -125,7 +126,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         }
         else
         {
-            var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear.Options.ScoringSystem, false);
+            var projectedScore = gameFound.GetProjectedFantasyPoints(leagueYear?.Options.ScoringSystem ?? ScoringSystem.GetDefaultScoringSystem(dateToCheck.Year), false);
             gameDisplayText += $"\n**Projected Score:** {Math.Round(projectedScore, 1)}";
         }
 
@@ -133,33 +134,37 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         gameDisplayText += $"\n**% Drafted:** {(gameFound.PercentStandardGame == 0 ? "N/A" : $"{Math.Round(gameFound.PercentStandardGame * 100, 0)}%")}";
         gameDisplayText += $"\n**% Counter Picked:** {(gameFound.PercentCounterPick == 0 ? "N/A" : $"{Math.Round(gameFound.PercentCounterPick * 100, 0)}%")}";
 
-        var publisherWhoPicked = matchedGameDisplay.PublisherWhoPicked;
-        if (publisherWhoPicked != null)
+        if (leagueYear != null)
         {
-            var score = gameFound.GetFantasyPoints(leagueYear.Options.ReleaseSystem, leagueYear.Options.ScoringSystem, false, dateToCheck);
-            gameDisplayText +=
-                $"\n**Picked:** {publisherWhoPicked.GetPublisherAndUserDisplayName()}";
 
-            if (!gameFound.CouldRelease())
+            var publisherWhoPicked = matchedGameDisplay.PublisherWhoPicked;
+            if (publisherWhoPicked != null)
             {
-                gameDisplayText += " (Will Not Release This Year)";
+                var score = gameFound.GetFantasyPoints(leagueYear.Options.ReleaseSystem, leagueYear.Options.ScoringSystem, false, dateToCheck);
+                gameDisplayText +=
+                    $"\n**Picked:** {publisherWhoPicked.GetPublisherAndUserDisplayName()}";
+
+                if (!gameFound.CouldRelease())
+                {
+                    gameDisplayText += " (Will Not Release This Year)";
+                }
+                else if (score.HasValue)
+                {
+                    gameDisplayText += $" ({score.Value})";
+                }
             }
-            else if (score.HasValue)
-            {
-                gameDisplayText += $" ({score.Value})";
-            }
-        }
 
-        var publisherWhoCounterPicked = matchedGameDisplay.PublisherWhoCounterPicked;
-        if (publisherWhoCounterPicked != null)
-        {
-            var score = gameFound.GetFantasyPoints(leagueYear.Options.ReleaseSystem, leagueYear.Options.ScoringSystem, true, dateToCheck);
-            gameDisplayText +=
-                $"\n**Counter Picked:** {publisherWhoCounterPicked.GetPublisherAndUserDisplayName()}";
-
-            if (score.HasValue)
+            var publisherWhoCounterPicked = matchedGameDisplay.PublisherWhoCounterPicked;
+            if (publisherWhoCounterPicked != null)
             {
-                gameDisplayText += $" ({score.Value})";
+                var score = gameFound.GetFantasyPoints(leagueYear.Options.ReleaseSystem, leagueYear.Options.ScoringSystem, true, dateToCheck);
+                gameDisplayText +=
+                    $"\n**Counter Picked:** {publisherWhoCounterPicked.GetPublisherAndUserDisplayName()}";
+
+                if (score.HasValue)
+                {
+                    gameDisplayText += $" ({score.Value})";
+                }
             }
         }
 
