@@ -51,16 +51,8 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
                 Context.User));
             return;
         }
-        LeagueChannel? leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
-        //if (leagueChannel == null)
-        //{
-        //    await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
-        //        "Error Finding League Configuration",
-        //        "No league configuration found for this channel.",
-        //        Context.User));
-        //    return;
-        //}
 
+        LeagueChannel? leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears, year);
         var termToSearch = gameName.ToLower().Trim();
 
         if (termToSearch.Length < 2)
@@ -72,8 +64,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch,
-            leagueChannel?.LeagueYear, dateToCheck.Year, 3);
+        var matchingGames = await _gameSearchingService.SearchGamesWithLeaguePriority(termToSearch, dateToCheck.Year, 3, leagueChannel?.LeagueYear);
         if (!matchingGames.Any())
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
@@ -136,7 +127,6 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
 
         if (leagueYear != null)
         {
-
             var publisherWhoPicked = matchedGameDisplay.PublisherWhoPicked;
             if (publisherWhoPicked != null)
             {
