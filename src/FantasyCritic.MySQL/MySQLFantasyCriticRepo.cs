@@ -14,7 +14,6 @@ using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
 using FantasyCritic.SharedSerialization.Database;
 using FantasyCritic.Lib.Domain.Combinations;
-using System.Transactions;
 namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo

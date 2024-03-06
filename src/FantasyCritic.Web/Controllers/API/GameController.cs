@@ -331,4 +331,14 @@ public class GameController : FantasyCriticController
         var viewModels = topBidsAndDrops.Select(x => new TopBidsAndDropsGameViewModel(x, currentDate)).ToList();
         return new TopBidsAndDropsSetViewModel(viewModels, dateToUse);
     }
+
+    [HttpGet("{masterGameID}")]
+    public async Task<IActionResult> LeagueYearsWithMasterGame(Guid masterGameID)
+    {
+        var currentUserResult = await GetCurrentUser();
+        var leagueYearsWithMasterGame = await _interLeagueService.GetLeagueYearsWithMasterGame(currentUserResult.Value.Id, masterGameID);
+        var viewModels = leagueYearsWithMasterGame.Select(l =>
+            new LeagueYearWithMasterGameViewModel(l.LeagueID, l.LeagueName, l.Year, l.IsCounterPick)).ToList();
+        return Ok(viewModels);
+    }
 }

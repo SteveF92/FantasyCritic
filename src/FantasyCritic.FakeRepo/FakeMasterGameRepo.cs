@@ -221,4 +221,9 @@ public class FakeMasterGameRepo : IMasterGameRepo
     {
         throw new NotImplementedException();
     }
+
+    public Task<IReadOnlyList<LeagueYearWithMasterGame>> GetLeagueYearsWithMasterGameForUser(Guid userID, Guid masterGameID)
+    {
+        throw new NotImplementedException();
+    }
 }

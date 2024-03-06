@@ -51,4 +51,5 @@ public interface IMasterGameRepo
 
     Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops();
     Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate);
+    Task<IReadOnlyList<LeagueYearWithMasterGame>> GetLeagueYearsWithMasterGameForUser(Guid userID, Guid masterGameID);
 }

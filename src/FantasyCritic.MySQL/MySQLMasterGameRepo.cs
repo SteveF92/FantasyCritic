@@ -262,7 +262,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         const string sql = "select * from tbl_mastergame_changelog where MasterGameID = @MasterGameID order by Timestamp";
         await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql, new { masterGame.MasterGameID } );
+        IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql, new { masterGame.MasterGameID });
 
         return entities.Select(entity => entity.ToDomain(masterGame, userDictionary[entity.ChangedByUserID])).ToList();
     }
@@ -482,6 +482,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return entity.ToDomain(user, masterGame, responseUser);
     }
 
+
+
     public async Task DeleteMasterGameRequest(MasterGameRequest request)
     {
         var deleteObject = new
@@ -666,5 +668,19 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         return domains;
+    }
+
+    public async Task<IReadOnlyList<LeagueYearWithMasterGame>> GetLeagueYearsWithMasterGameForUser(Guid userID,
+        Guid masterGameID)
+    {
+        const string sql = "SELECT p.LeagueID, l.LeagueName, p.`Year`, pg.CounterPick FROM tbl_league_publishergame pg " +
+                           "JOIN tbl_league_publisher p ON pg.PublisherID = p.PublisherID " +
+                           "JOIN tbl_league l ON p.LeagueID = l.LeagueID " +
+                           "WHERE p.UserID = @userID " +
+                           "AND pg.MasterGameID=@masterGameID;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var leagueYearsWithMasterGameEntities = await connection.QueryAsync<LeagueYearsWithMasterGameEntity>(sql, new { userID = userID, masterGameID = masterGameID });
+        return leagueYearsWithMasterGameEntities.Select(l => l.ToDomain()).ToList();
     }
 }

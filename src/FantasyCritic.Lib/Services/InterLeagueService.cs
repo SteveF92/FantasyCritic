@@ -262,4 +262,9 @@ public class InterLeagueService
     {
         return _masterGameRepo.GetTopBidsAndDrops(processingDate);
     }
+
+    public Task<IReadOnlyList<LeagueYearWithMasterGame>> GetLeagueYearsWithMasterGame(Guid userID, Guid masterGameID)
+    {
+        return _masterGameRepo.GetLeagueYearsWithMasterGameForUser(userID, masterGameID);
+    }
 }

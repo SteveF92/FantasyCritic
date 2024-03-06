@@ -76,6 +76,18 @@
               <li>Counter Picked in {{ masterGameYear.adjustedPercentCounterPick | percent(1) }} of leagues where it is published.</li>
             </ul>
           </div>
+
+          <div class="text-well">
+            <h2>Your Leagues with this Game</h2>
+
+            <ul v-if="leaguesWithGame.length > 0">
+              <li v-for="league in leaguesWithGame" :key="league.leagueID">
+                <a :href="leagueLink(league.leagueID, league.year)">{{ league.leagueName }} ({{ league.year }})</a>
+                ({{ league.isCounterPick ? 'Counter Picked' : 'Picked' }})
+              </li>
+            </ul>
+            <p v-else>You don't have this game in any leagues.</p>
+          </div>
         </div>
       </div>
 
@@ -118,6 +130,7 @@ export default {
     return {
       masterGame: null,
       masterGameYears: [],
+      leaguesWithGame: [],
       changeLog: [],
       error: '',
       baseChangeLogFields: [
@@ -166,12 +179,14 @@ export default {
       await this.fetchMasterGame();
       await this.fetchMasterGameChangeLog();
       await this.fetchMasterGameYears();
+      await this.fetchLeaguesWithMasterGame();
     }
   },
   async mounted() {
     await this.fetchMasterGame();
     await this.fetchMasterGameChangeLog();
     await this.fetchMasterGameYears();
+    await this.fetchLeaguesWithMasterGame();
   },
   methods: {
     async fetchMasterGame() {
@@ -197,6 +212,35 @@ export default {
       } catch (error) {
         this.error = error.response.data;
       }
+    },
+    async fetchLeaguesWithMasterGame() {
+      try {
+        const response = await axios.get('/api/game/LeagueYearsWithMasterGame/' + this.mastergameid);
+        this.leaguesWithGame = response.data.sort((l1, l2) => {
+          if (l1.year > l2.year) {
+            return -1;
+          }
+          if (l1.year < l2.year) {
+            return 1;
+          }
+
+          const leagueName1 = l1.leagueName.toLowerCase();
+          const leagueName2 = l2.leagueName.toLowerCase();
+
+          if (leagueName1 < leagueName2) {
+            return -1;
+          }
+          if (leagueName1 > leagueName2) {
+            return 1;
+          }
+          return 0;
+        });
+      } catch (error) {
+        this.error = error.response.data;
+      }
+    },
+    leagueLink(leagueId, year) {
+      return `/league/${leagueId}/${year}`;
     }
   }
 };

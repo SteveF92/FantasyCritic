@@ -15,24 +15,18 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IDiscordRepo _discordRepo;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly GameAcquisitionService _gameAcquisitionService;
-    private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly string _baseAddress;
 
     public BidResultsCommand(IDiscordRepo discordRepo,
         FantasyCriticService fantasyCriticService,
         InterLeagueService interLeagueService,
-        GameAcquisitionService gameAcquisitionService,
-        IClock clock,
         IDiscordFormatter discordFormatter,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
-        _gameAcquisitionService = gameAcquisitionService;
-        _clock = clock;
         _discordFormatter = discordFormatter;
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
@@ -73,9 +67,6 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
                 Context.User));
             return;
         }
-
-        //For testing
-        //var leagueActionSetToReport = normalActionSets.Single(x => x.ProcessTime.ToEasternDate().ToISOString() == "2023-11-11");
 
         var leagueActionSetToReport = normalActionSets.OrderByDescending(s => s.ProcessTime).First();
         var bidsByGame = leagueActionSetToReport.Bids.GroupToDictionary(x => x.MasterGame);
