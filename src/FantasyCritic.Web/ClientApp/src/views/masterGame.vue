@@ -49,6 +49,18 @@
             </b-table>
           </div>
 
+          <div class="text-well league-game-section">
+            <h2>Your Leagues with this Game</h2>
+
+            <ul v-if="leaguesWithGame.length > 0">
+              <li v-for="league in leaguesWithGame" :key="league.leagueID">
+                <a :href="leagueLink(league.leagueID, league.year)">{{ league.leagueName }} ({{ league.year }})</a>
+                ({{ league.isCounterPick ? 'Counter Picked' : 'Picked' }})
+              </li>
+            </ul>
+            <p v-else>You don't have this game in any leagues.</p>
+          </div>
+
           <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-section">
             <h2>Stats for {{ masterGameYear.year }}</h2>
             <ul>
@@ -75,18 +87,6 @@
 
               <li>Counter Picked in {{ masterGameYear.adjustedPercentCounterPick | percent(1) }} of leagues where it is published.</li>
             </ul>
-          </div>
-
-          <div class="text-well">
-            <h2>Your Leagues with this Game</h2>
-
-            <ul v-if="leaguesWithGame.length > 0">
-              <li v-for="league in leaguesWithGame" :key="league.leagueID">
-                <a :href="leagueLink(league.leagueID, league.year)">{{ league.leagueName }} ({{ league.year }})</a>
-                ({{ league.isCounterPick ? 'Counter Picked' : 'Picked' }})
-              </li>
-            </ul>
-            <p v-else>You don't have this game in any leagues.</p>
           </div>
         </div>
       </div>
@@ -251,7 +251,8 @@ export default {
   margin-right: 4px;
 }
 
-.master-game-section {
+.master-game-section,
+.league-game-section {
   margin-top: 20px;
   margin-bottom: 20px;
 }
