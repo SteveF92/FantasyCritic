@@ -49,16 +49,15 @@
             </b-table>
           </div>
 
-          <div class="text-well league-game-section">
+          <div v-if="leaguesWithGame.length > 0" class="text-well league-game-section">
             <h2>Your Leagues with this Game</h2>
 
-            <ul v-if="leaguesWithGame.length > 0">
+            <ul>
               <li v-for="league in leaguesWithGame" :key="league.leagueID">
                 <a :href="leagueLink(league.leagueID, league.year)">{{ league.leagueName }} ({{ league.year }})</a>
-                ({{ league.isCounterPick ? 'Counter Picked' : 'Picked' }})
+                <span v-if="league.isCounterPick" class="counter-pick-label">(Counter Picked)</span>
               </li>
             </ul>
-            <p v-else>You don't have this game in any leagues.</p>
           </div>
 
           <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-section">
@@ -176,19 +175,18 @@ export default {
   },
   watch: {
     async $route() {
-      await this.fetchMasterGame();
-      await this.fetchMasterGameChangeLog();
-      await this.fetchMasterGameYears();
-      await this.fetchLeaguesWithMasterGame();
+      await this.loadAll();
     }
   },
   async mounted() {
-    await this.fetchMasterGame();
-    await this.fetchMasterGameChangeLog();
-    await this.fetchMasterGameYears();
-    await this.fetchLeaguesWithMasterGame();
+    await this.loadAll();
   },
   methods: {
+    async loadAll() {
+      await this.fetchMasterGame();
+      const tasks = [this.fetchMasterGameChangeLog(), this.fetchMasterGameYears(), this.fetchLeaguesWithMasterGame()];
+      await Promise.all(tasks);
+    },
     async fetchMasterGame() {
       try {
         const response = await axios.get('/api/game/MasterGame/' + this.mastergameid);
@@ -279,5 +277,9 @@ export default {
 
 .master-game-section {
   margin-top: 10px;
+}
+
+.counter-pick-label {
+  margin-left: 3px;
 }
 </style>
