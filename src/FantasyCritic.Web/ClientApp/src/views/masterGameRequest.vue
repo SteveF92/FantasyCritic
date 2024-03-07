@@ -96,7 +96,7 @@
 
             <div class="form-group">
               <div class="right-button">
-                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validDate || !validUnannounced" />
+                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validDate || !validUnannounced || isBusy" />
               </div>
             </div>
           </form>
@@ -171,7 +171,8 @@ export default {
       hasReleaseDate: false,
       wantToPickup: false,
       nearCertainInterested: false,
-      unannouncedCheckbox: false
+      unannouncedCheckbox: false,
+      isBusy: false
     };
   },
   computed: {
@@ -231,6 +232,7 @@ export default {
       }
 
       try {
+        this.isBusy = true;
         await axios.post('/api/game/CreateMasterGameRequest', request);
         this.showSent = true;
         window.scroll({
@@ -242,6 +244,8 @@ export default {
         await this.fetchMyRequests();
       } catch (error) {
         this.errorInfo = error.response.data;
+      } finally {
+        this.isBusy = false;
       }
     },
     clearData() {

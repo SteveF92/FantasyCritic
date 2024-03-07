@@ -53,7 +53,7 @@
 
                 <div class="form-group">
                   <div class="right-button">
-                    <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+                    <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || isBusy" />
                   </div>
                 </div>
               </form>
@@ -134,7 +134,8 @@ export default {
         visibility: 'visible',
         width: '12px',
         height: '20px'
-      }
+      },
+      isBusy: false
     };
   },
   async mounted() {
@@ -162,6 +163,7 @@ export default {
       };
 
       try {
+        this.isBusy = true;
         await axios.post('/api/game/CreateMasterGameChangeRequest', request);
         this.showSent = true;
         window.scroll({
@@ -173,6 +175,8 @@ export default {
         await this.fetchMyRequests();
       } catch (error) {
         this.errorInfo = error.response.datga;
+      } finally {
+        this.isBusy = false;
       }
     },
     clearData() {
