@@ -153,7 +153,7 @@
     </div>
 
     <div class="row">
-      <div class="col-lg-5 col-md-12 offset-lg-1 col-md-0">
+      <div class="col-10 offset-1">
         <h2>Frequently Asked Questions</h2>
         <div class="full-welcome">
           <homeFaq></homeFaq>
@@ -170,12 +170,6 @@
           </div>
         </div>
       </div>
-
-      <div class="col-lg-5 col-md-10 offset-lg-0 offset-md-1">
-        <div class="tweet-section">
-          <tweets></tweets>
-        </div>
-      </div>
     </div>
 
     <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
@@ -188,12 +182,10 @@
 <script>
 import SiteCounts from '@/components/siteCounts.vue';
 import HomeFaq from '@/components/homeFAQ.vue';
-import Tweets from '@/components/tweets.vue';
 
 export default {
   components: {
     HomeFaq,
-    Tweets,
     SiteCounts
   }
 };
@@ -299,10 +291,6 @@ export default {
 
 .faq-button {
   text-align: center;
-}
-
-.tweet-section {
-  margin-top: 15px;
 }
 
 .critic-royale-logo-area {
