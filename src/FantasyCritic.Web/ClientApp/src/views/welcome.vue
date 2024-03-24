@@ -124,7 +124,7 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="list-ol" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
               </font-awesome-layers>
               <span class="feature-description">Assemble your dream team</span>
             </div>
@@ -133,9 +133,9 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="trophy" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="crown" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
               </font-awesome-layers>
-              <span class="feature-description">Win big (bragging rights)</span>
+              <span class="feature-description">Claim the crown</span>
             </div>
           </div>
           <div class="col-sm-12 col-md-6">
