@@ -1,78 +1,76 @@
 <template>
-  <div>
-    <div class="col-md-10 offset-md-1 col-sm-12">
-      <div v-if="royaleYearQuarterOptions && selectedYear" class="quarter-selection">
-        <b-dropdown id="dropdown-1" :text="selectedYear.toString()">
-          <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectYear(year)">
-            {{ year }}
-          </b-dropdown-item>
-        </b-dropdown>
-        <b-dropdown :text="`Q${quarter}`">
-          <b-dropdown-item
-            v-for="royaleYearQuarterOption in quartersInSelectedYear"
-            :key="royaleYearQuarterOption.year + '-' + royaleYearQuarterOption.quarter"
-            :active="royaleYearQuarterOption.year === year && royaleYearQuarterOption.quarter === quarter"
-            :to="{ name: 'criticsRoyale', params: { year: royaleYearQuarterOption.year, quarter: royaleYearQuarterOption.quarter } }">
-            {{ royaleYearQuarterOption.year }}-Q{{ royaleYearQuarterOption.quarter }}
-          </b-dropdown-item>
-        </b-dropdown>
-      </div>
-      <div class="critic-royale-header-area bg-secondary">
-        <img class="critic-royale-header" src="@/assets/critic-royale-logo.svg" />
-      </div>
+  <div class="col-md-10 offset-md-1 col-sm-12">
+    <div v-if="royaleYearQuarterOptions && selectedYear" class="quarter-selection">
+      <b-dropdown id="dropdown-1" :text="selectedYear.toString()">
+        <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectYear(year)">
+          {{ year }}
+        </b-dropdown-item>
+      </b-dropdown>
+      <b-dropdown :text="`Q${quarter}`">
+        <b-dropdown-item
+          v-for="royaleYearQuarterOption in quartersInSelectedYear"
+          :key="royaleYearQuarterOption.year + '-' + royaleYearQuarterOption.quarter"
+          :active="royaleYearQuarterOption.year === year && royaleYearQuarterOption.quarter === quarter"
+          :to="{ name: 'criticsRoyale', params: { year: royaleYearQuarterOption.year, quarter: royaleYearQuarterOption.quarter } }">
+          {{ royaleYearQuarterOption.year }}-Q{{ royaleYearQuarterOption.quarter }}
+        </b-dropdown-item>
+      </b-dropdown>
+    </div>
+    <div class="critic-royale-header-area bg-secondary">
+      <img class="critic-royale-header" src="@/assets/critic-royale-logo.svg" />
+    </div>
 
-      <div class="critic-royale-header-area-simple">
-        <h1>Critics Royale</h1>
-      </div>
+    <div class="critic-royale-header-area-simple">
+      <h1>Critics Royale</h1>
+    </div>
 
-      <div v-if="!userPublisherBusy && !userRoyalePublisher && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
-        <div v-if="isAuth" class="alert alert-info">
-          Create your publisher to start playing!
-          <b-button v-b-modal="'createRoyalePublisher'" class="login-button" variant="primary">Create Publisher</b-button>
-          <createRoyalePublisherForm :royale-year-quarter="royaleYearQuarter"></createRoyalePublisherForm>
-        </div>
-        <div v-if="!isAuth" class="alert alert-success">
-          Sign up or log in to start playing now!
-          <b-button variant="info" href="/Account/Login">
-            <span>Log In</span>
-            <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
-          </b-button>
-          <b-button variant="primary" href="/Account/Register">
-            <span>Sign Up</span>
-            <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
-          </b-button>
-        </div>
+    <div v-if="!userPublisherBusy && !userRoyalePublisher && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
+      <div v-if="isAuth" class="alert alert-info">
+        Create your publisher to start playing!
+        <b-button v-b-modal="'createRoyalePublisher'" class="login-button" variant="primary">Create Publisher</b-button>
+        <createRoyalePublisherForm :royale-year-quarter="royaleYearQuarter"></createRoyalePublisherForm>
       </div>
-
-      <div class="leaderboard-header">
-        <h2>Leaderboards {{ year }}-Q{{ quarter }}</h2>
-        <b-button v-if="royaleStandings && userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }">View My Publisher</b-button>
+      <div v-if="!isAuth" class="alert alert-success">
+        Sign up or log in to start playing now!
+        <b-button variant="info" href="/Account/Login">
+          <span>Log In</span>
+          <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
+        </b-button>
+        <b-button variant="primary" href="/Account/Register">
+          <span>Sign Up</span>
+          <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
+        </b-button>
       </div>
+    </div>
 
-      <div v-if="royaleStandings">
-        <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
-          <template #cell(ranking)="data">
-            <template v-if="data.item.ranking">
-              {{ data.item.ranking }}
-            </template>
-            <template v-else>--</template>
+    <div class="leaderboard-header">
+      <h2>Leaderboards {{ year }}-Q{{ quarter }}</h2>
+      <b-button v-if="royaleStandings && userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }">View My Publisher</b-button>
+    </div>
+
+    <div v-if="royaleStandings">
+      <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
+        <template #cell(ranking)="data">
+          <template v-if="data.item.ranking">
+            {{ data.item.ranking }}
           </template>
-          <template #cell(publisherName)="data">
-            <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID } }">
-              {{ data.item.publisherName }}
-            </router-link>
-          </template>
-          <template #cell(playerName)="data">
-            {{ data.item.playerName }}
-            <font-awesome-icon v-if="data.item.previousQuarterWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-quarter-winner" />
-            <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
-          </template>
-        </b-table>
-        <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
-      </div>
-      <div v-else class="spinner">
-        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
-      </div>
+          <template v-else>--</template>
+        </template>
+        <template #cell(publisherName)="data">
+          <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID } }">
+            {{ data.item.publisherName }}
+          </router-link>
+        </template>
+        <template #cell(playerName)="data">
+          {{ data.item.playerName }}
+          <font-awesome-icon v-if="data.item.previousQuarterWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-quarter-winner" />
+          <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
+        </template>
+      </b-table>
+      <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+    </div>
+    <div v-else class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
     </div>
 
     <h3>What is Critics Royale?</h3>
