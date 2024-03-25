@@ -49,13 +49,14 @@ public class GameSearchingService
         var masterGames = await _interLeagueService.GetMasterGameYears(year);
         var matchingMasterGames = MasterGameSearching.SearchMasterGameYears(searchName, masterGames, true);
 
-        IReadOnlyList<MasterGameYear> gamesToReturn;
+        IReadOnlyList<MasterGameYear> gamesToReturn = new List<MasterGameYear>();
         if (leagueYear != null)
         {
             var gamesInLeague = leagueYear.GetGamesInLeague();
             gamesToReturn = matchingMasterGames.Intersect(gamesInLeague).ToList();
         }
-        else
+
+        if (!gamesToReturn.Any())
         {
             gamesToReturn = matchingMasterGames.Take(maxNonIdealMatches).ToList();
         }
