@@ -73,6 +73,13 @@
           </option>
         </b-form-select>
       </div>
+      <div v-if="leagueYear.settings.hasSpecialSlots" class="form-check">
+        <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+        <label class="form-check-label">
+          Allow bid to succeed even if there are no slots this game is eligible in.
+          <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
+        </label>
+      </div>
       <b-button variant="primary" class="full-width-button" :disabled="isBusy" @click="editBid">Edit Bid</b-button>
       <div v-if="editBidResult && !editBidResult.success" class="alert alert-danger bid-error">
         <h3 class="alert-heading">Error!</h3>
@@ -111,7 +118,8 @@ export default {
       defaultCondtionalDrop: {
         value: null,
         gameName: '<No condtional drop>'
-      }
+      },
+      allowIneligibleSlot: false
     };
   },
   computed: {
@@ -119,6 +127,20 @@ export default {
       let list = _.filter(this.userPublisher.games, { counterPick: false });
       list.unshift(this.defaultCondtionalDrop);
       return list;
+    },
+    allowIneligibleText() {
+      return {
+        html: true,
+        title: () => {
+          return 'What does this mean?';
+        },
+        content: () => {
+          return (
+            'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
+            'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
+          );
+        }
+      };
     }
   },
   watch: {
@@ -146,12 +168,14 @@ export default {
       this.bidBeingEdited = bid;
       this.bidAmount = bid.bidAmount;
       this.conditionalDrop = bid.conditionalDropPublisherGame;
+      this.allowIneligibleSlot = bid.allowIneligibleSlot;
     },
     editBid() {
       let request = {
         bidID: this.bidBeingEdited.bidID,
         publisherID: this.userPublisher.publisherID,
-        bidAmount: this.bidAmount
+        bidAmount: this.bidAmount,
+        allowIneligibleSlot: this.allowIneligibleSlot
       };
 
       if (this.conditionalDrop) {
