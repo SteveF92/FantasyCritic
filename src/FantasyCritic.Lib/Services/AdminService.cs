@@ -316,14 +316,30 @@ public class AdminService
 
         var dayOfWeek = nycNow.DayOfWeek;
         var timeOfDay = nycNow.TimeOfDay;
-        var earliestTimeToSet = new LocalTime(19, 59);
-        var latestTimeToSet = new LocalTime(20, 59);
-        if (dayOfWeek == TimeExtensions.ActionProcessingDay && timeOfDay > earliestTimeToSet && timeOfDay < latestTimeToSet)
+        var earliestTimeToSetActionProcessingOn = new LocalTime(19, 59);
+        var latestTimeToSetActionProcessingOn = new LocalTime(20, 59);
+        if (dayOfWeek == TimeExtensions.ActionProcessingDay && timeOfDay > earliestTimeToSetActionProcessingOn && timeOfDay < latestTimeToSetActionProcessingOn)
         {
             _logger.Information($"Automatically setting action processing mode = true because date/time is: {nycNow}");
             await _interLeagueService.SetActionProcessingMode(true);
             _logger.Information("Snapshotting database");
             await _rdsManager.SnapshotRDS(now);
+        }
+
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (systemWideSettings.ActionProcessingMode)
+        {
+            var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
+            if (actionProcessingSets.Any())
+            {
+                var mostRecentSet = actionProcessingSets.MaxBy(x => x.ProcessTime)!;
+                var timeSinceMostRecentProcessing = now - mostRecentSet.ProcessTime;
+                if (timeSinceMostRecentProcessing < Duration.FromHours(4))
+                {
+                    //If last processing was less than 4 hours ago, turn action processing mode off.
+                    await _interLeagueService.SetActionProcessingMode(false);
+                }
+            }
         }
     }
 
