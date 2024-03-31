@@ -293,8 +293,6 @@ public class GameAcquisitionService
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
-        await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount, allowIneligibleSlot);
-
         var currentDate = _clock.GetToday();
         MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
         var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear.Options, eligibilityFactors, bid.CounterPick, validDropSlot, false, false, allowIneligibleSlot);
@@ -302,6 +300,8 @@ public class GameAcquisitionService
         {
             return new ClaimResult(slotResult.ClaimErrors, null);
         }
+
+        await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount, allowIneligibleSlot);
 
         return new ClaimResult(slotResult.SlotNumber.Value);
     }
