@@ -131,8 +131,13 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return null;
     }
 
-    public decimal? GetRealOrUpcomingFantasyPoints(ScoringSystem scoringSystem, bool counterPick)
+    public decimal? GetRealOrUpcomingFantasyPoints(ReleaseSystem releaseSystem, ScoringSystem scoringSystem, bool counterPick)
     {
+        if (releaseSystem.Equals(ReleaseSystem.OnlyNeedsScore) && MasterGame.CriticScore.HasValue)
+        {
+            return scoringSystem.GetPointsForScore(MasterGame.CriticScore.Value, counterPick);
+        }
+
         if (!CouldRelease())
         {
             return 0m;

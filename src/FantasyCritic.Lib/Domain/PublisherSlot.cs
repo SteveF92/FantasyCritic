@@ -42,10 +42,10 @@ public class PublisherSlot
         return SlotEligibilityFunctions.GetClaimErrorsForSlot(this, eligibilityFactors);
     }
 
-    public decimal GetRealUpcomingOrProjectedFantasyPoints(SupportedYear supportedYear, bool gameIsValidInSlot, ScoringSystem scoringSystem,
-        SystemWideValues systemWideValues, int standardGamesTaken, int numberOfStandardGames, LocalDate currentDate)
+    public decimal GetRealUpcomingOrProjectedFantasyPoints(SupportedYear supportedYear, bool gameIsValidInSlot, ReleaseSystem releaseSystem, ScoringSystem scoringSystem,
+        SystemWideValues systemWideValues, int standardGamesTaken, int numberOfStandardGames)
     {
-        var fantasyPoints = GetRealOrUpcomingFantasyPoints(gameIsValidInSlot, scoringSystem, currentDate);
+        var fantasyPoints = GetRealOrUpcomingFantasyPoints(gameIsValidInSlot, releaseSystem, scoringSystem);
         if (fantasyPoints.HasValue)
         {
             return fantasyPoints.Value;
@@ -83,7 +83,7 @@ public class PublisherSlot
         return 0m;
     }
 
-    public decimal? GetRealOrUpcomingFantasyPoints(bool gameIsValidInSlot, ScoringSystem scoringSystem, LocalDate currentDate)
+    public decimal? GetRealOrUpcomingFantasyPoints(bool gameIsValidInSlot, ReleaseSystem releaseSystem, ScoringSystem scoringSystem)
     {
         if (PublisherGame is null)
         {
@@ -98,7 +98,7 @@ public class PublisherSlot
             return null;
         }
 
-        var calculatedScore = PublisherGame.MasterGame.GetRealOrUpcomingFantasyPoints(scoringSystem, CounterPick);
+        var calculatedScore = PublisherGame.MasterGame.GetRealOrUpcomingFantasyPoints(releaseSystem, scoringSystem, CounterPick);
         if (gameIsValidInSlot)
         {
             return calculatedScore;

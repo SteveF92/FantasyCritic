@@ -99,8 +99,8 @@ public class Publisher : IEquatable<Publisher>
         foreach (var slot in slots)
         {
             bool countSlotAsValid = ineligiblePointsShouldCount || slot.SlotIsValid(leagueYear);
-            var slotScore = slot.GetRealUpcomingOrProjectedFantasyPoints(leagueYear.SupportedYear, countSlotAsValid, leagueOptions.ScoringSystem, systemWideValues,
-                leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames, currentDate);
+            var slotScore = slot.GetRealUpcomingOrProjectedFantasyPoints(leagueYear.SupportedYear, countSlotAsValid, leagueOptions.ReleaseSystem, leagueOptions.ScoringSystem, systemWideValues,
+                leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames);
             projectedScore += slotScore;
         }
 
