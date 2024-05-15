@@ -32,12 +32,12 @@
         <h2>Bids</h2>
         <div>
           <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
-          <b-button variant="info" href="/api/Admin/ComparableActionProcessingDryRun">Comparable Action Processing Dry Run</b-button>
-          <b-button variant="warning" @click="takePostAction('Admin', 'TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
-          <b-button variant="info" @click="takePostAction('Admin', 'TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'ProcessActions')">Process Actions</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
+          <b-button variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Action Processing Dry Run</b-button>
+          <b-button variant="warning" @click="takePostAction('ActionRunner', 'TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
+          <b-button variant="info" @click="takePostAction('ActionRunner', 'TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
+          <b-button variant="danger" @click="takePostAction('ActionRunner', 'ProcessActions')">Process Actions</b-button>
+          <b-button variant="danger" @click="takePostAction('ActionRunner', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
+          <b-button variant="danger" @click="takePostAction('ActionRunner', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
         </div>
       </div>
 
@@ -60,7 +60,7 @@
         <h2>Database</h2>
         <div>
           <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
-          <b-button variant="warning" @click="takePostAction('Admin', 'SnapshotDatabase')">Snapshot Database</b-button>
+          <b-button variant="warning" @click="takePostAction('ActionRunner', 'SnapshotDatabase')">Snapshot Database</b-button>
         </div>
       </div>
     </div>
@@ -166,7 +166,7 @@ export default {
       this.isBusy = true;
 
       try {
-        const response = await axios.get('/api/admin/GetRecentDatabaseSnapshots');
+        const response = await axios.get('/api/ActionRunner/GetRecentDatabaseSnapshots');
         this.recentSnapshots = response.data;
       } catch (error) {
         this.errorInfo = error;

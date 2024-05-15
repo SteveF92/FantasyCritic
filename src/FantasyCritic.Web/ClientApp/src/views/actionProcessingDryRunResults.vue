@@ -86,7 +86,7 @@ export default {
   methods: {
     fetchActionedGames() {
       axios
-        .get('/api/admin/ActionProcessingDryRun')
+        .get('/api/ActionRunner/ActionProcessingDryRun')
         .then((response) => {
           this.dryRunResults = response.data;
         })
