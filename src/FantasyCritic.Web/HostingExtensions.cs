@@ -37,7 +37,6 @@ using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
 using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Discord.EventHandlers;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Web.Authorization;
 

@@ -1,6 +1,5 @@
 using System.Reflection;
 using Dapper.NodaTime;
-using Faithlife.Utility.Dapper;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;

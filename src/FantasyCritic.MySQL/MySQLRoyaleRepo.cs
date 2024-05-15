@@ -3,7 +3,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
-using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
 
 namespace FantasyCritic.MySQL;

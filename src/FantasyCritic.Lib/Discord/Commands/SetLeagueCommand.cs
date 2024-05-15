@@ -1,6 +1,4 @@
-using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
