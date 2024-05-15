@@ -594,7 +594,7 @@ public class LeagueController : BaseLeagueController
 
         if (!string.Equals(invite.EmailAddress, currentUser.Email, StringComparison.OrdinalIgnoreCase))
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _leagueMemberService.DeleteInvite(invite);
@@ -663,7 +663,7 @@ public class LeagueController : BaseLeagueController
 
         if (maybeBid.Publisher.PublisherID != publisher.PublisherID)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         PublisherGame? conditionalDropPublisherGame = null;
@@ -697,7 +697,7 @@ public class LeagueController : BaseLeagueController
 
         if (bid.Publisher.PublisherID != publisher.PublisherID)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         Result result = await _gameAcquisitionService.RemovePickupBid(bid);
@@ -1034,7 +1034,7 @@ public class LeagueController : BaseLeagueController
 
         if (dropRequest.Publisher.PublisherID != publisher.PublisherID)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         Result result = await _gameAcquisitionService.RemoveDropRequest(dropRequest);
@@ -1272,7 +1272,7 @@ public class LeagueController : BaseLeagueController
         bool userIsProposer = (currentUser.Id == trade.Proposer.User.Id);
         if (!userIsProposer)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         Result result = await _tradeService.RescindTrade(trade);
@@ -1304,7 +1304,7 @@ public class LeagueController : BaseLeagueController
         bool userIsCounterParty = (currentUser.Id == trade.CounterParty.User.Id);
         if (!userIsCounterParty)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         Result result = await _tradeService.AcceptTrade(trade);
@@ -1336,7 +1336,7 @@ public class LeagueController : BaseLeagueController
         bool userIsCounterParty = (currentUser.Id == trade.CounterParty.User.Id);
         if (!userIsCounterParty)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         Result result = await _tradeService.RejectTradeByCounterParty(trade);
@@ -1371,7 +1371,7 @@ public class LeagueController : BaseLeagueController
         bool userIsInLeagueButNotInTrade = validUserIDs.Contains(currentUser.Id);
         if (!userIsInLeagueButNotInTrade)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         Result result = await _tradeService.VoteOnTrade(trade, currentUser, request.Approved, request.Comment);
@@ -1406,7 +1406,7 @@ public class LeagueController : BaseLeagueController
         bool userIsInLeagueButNotInTrade = validUserIDs.Contains(currentUser.Id);
         if (!userIsInLeagueButNotInTrade)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         Result result = await _tradeService.DeleteTradeVote(trade, currentUser);

@@ -460,7 +460,7 @@ public class ConferenceController : BaseLeagueController
         var validLeagueYearResult = leagueYearRecord.ValidResult!;
         if (validLeagueYearResult.LeagueYear.League.ConferenceID != validConferenceResult.ConferenceYear.Conference.ConferenceID)
         {
-            return Forbid("That league is not in that conference.");
+            return StatusCode(403, "That league is not in that conference.");
         }
 
         if (validLeagueYearResult.LeagueYear.PlayStatus.PlayStarted && !request.Locked)

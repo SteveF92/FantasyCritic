@@ -349,7 +349,7 @@ public class LeagueManagerController : BaseLeagueController
 
         if (invite.League.LeagueID != validResult.League.LeagueID)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _leagueMemberService.DeleteInvite(invite);
@@ -580,7 +580,7 @@ public class LeagueManagerController : BaseLeagueController
             var publisher = leagueYear.GetPublisherByID(requestPublisher.Key);
             if (publisher is null)
             {
-                return Forbid();
+                return StatusCode(403);
             }
 
             var mode = parsedEnums[requestPublisher.Key];

@@ -47,7 +47,7 @@ public abstract class FantasyCriticController : ControllerBase
     {
         if (hasUser)
         {
-            return new GenericResultRecord<T>(null, Forbid());
+            return new GenericResultRecord<T>(null, StatusCode(403));
         }
 
         return new GenericResultRecord<T>(null, Unauthorized());
@@ -57,7 +57,7 @@ public abstract class FantasyCriticController : ControllerBase
     {
         if (hasUser)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         return Unauthorized();

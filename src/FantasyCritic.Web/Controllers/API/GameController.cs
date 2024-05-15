@@ -183,7 +183,7 @@ public class GameController : FantasyCriticController
 
         if (domainRequest.User.Id != currentUser.Id)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _interLeagueService.DeleteMasterGameRequest(domainRequest);
@@ -203,7 +203,7 @@ public class GameController : FantasyCriticController
 
         if (domainRequest.User.Id != currentUser.Id)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _interLeagueService.DeleteMasterGameChangeRequest(domainRequest);
@@ -223,7 +223,7 @@ public class GameController : FantasyCriticController
 
         if (domainRequest.User.Id != currentUser.Id)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _interLeagueService.DismissMasterGameRequest(domainRequest);
@@ -243,7 +243,7 @@ public class GameController : FantasyCriticController
 
         if (domainRequest.User.Id != currentUser.Id)
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _interLeagueService.DismissMasterGameChangeRequest(domainRequest);

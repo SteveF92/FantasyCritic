@@ -106,7 +106,7 @@ public class RoyaleController : FantasyCriticController
 
         if (!publisher.User.Equals(currentUser))
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _royaleService.ChangePublisherName(publisher, request.PublisherName);
@@ -126,7 +126,7 @@ public class RoyaleController : FantasyCriticController
 
         if (!publisher.User.Equals(currentUser))
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _royaleService.ChangePublisherIcon(publisher, request.PublisherIcon);
@@ -146,7 +146,7 @@ public class RoyaleController : FantasyCriticController
 
         if (!publisher.User.Equals(currentUser))
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _royaleService.ChangePublisherSlogan(publisher, request.PublisherSlogan);
@@ -249,7 +249,7 @@ public class RoyaleController : FantasyCriticController
 
         if (!publisher.User.Equals(currentUser))
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         var masterGame = await _interLeagueService.GetMasterGameYear(request.MasterGameID, publisher.YearQuarter.YearQuarter.Year);
@@ -284,7 +284,7 @@ public class RoyaleController : FantasyCriticController
 
         if (!publisher.User.Equals(currentUser))
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _royaleSemaphore.WaitAsync();
@@ -323,7 +323,7 @@ public class RoyaleController : FantasyCriticController
 
         if (!publisher.User.Equals(currentUser))
         {
-            return Forbid();
+            return StatusCode(403);
         }
 
         await _royaleSemaphore.WaitAsync();
