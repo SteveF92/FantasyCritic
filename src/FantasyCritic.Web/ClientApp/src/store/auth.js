@@ -11,6 +11,7 @@ export default {
     userInfo: (state) => state.userInfo,
     authIsBusy: (state) => state.isBusy,
     isAdmin: (state) => state.userInfo && state.userInfo.roles.includes('Admin'),
+    isActionRunner: (state) => state.userInfo && state.userInfo.roles.includes('ActionRunner'),
     isFactChecker: (state) => state.userInfo && state.userInfo.roles.includes('FactChecker'),
     isBetaTester: (state) => state.userInfo && state.userInfo.roles.includes('BetaTester'),
     isPlusUser: (state) => state.userInfo && state.userInfo.roles.includes('PlusUser')

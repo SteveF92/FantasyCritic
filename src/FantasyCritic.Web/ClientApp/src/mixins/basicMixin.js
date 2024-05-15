@@ -3,7 +3,7 @@ import GlobalFunctions from '@/globalFunctions';
 
 let basicMixin = {
   computed: {
-    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'authIsBusy']),
+    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'authIsBusy']),
     ...mapState({
       possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions
     }),

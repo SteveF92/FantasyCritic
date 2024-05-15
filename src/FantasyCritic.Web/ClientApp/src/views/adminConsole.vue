@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <div v-if="isAdmin">
+      <div v-if="isActionRunner">
         <h2>Bids</h2>
         <div>
           <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
@@ -39,7 +39,9 @@
           <b-button variant="danger" @click="takePostAction('Admin', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
         </div>
+      </div>
 
+      <div v-if="isAdmin">
         <h2>Other</h2>
         <div>
           <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
@@ -52,7 +54,9 @@
           <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
           <b-button variant="info" @click="takePostAction('Admin', 'UpdateDailyPublisherStatistics')">Update Daily Publisher Statistics</b-button>
         </div>
+      </div>
 
+      <div v-if="isActionRunner">
         <h2>Database</h2>
         <div>
           <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
