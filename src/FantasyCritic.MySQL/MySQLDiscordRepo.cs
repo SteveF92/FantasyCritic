@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities.Discord;
@@ -188,6 +189,20 @@ public class MySQLDiscordRepo : IDiscordRepo
 
         var leagueChannels = await connection.QueryAsync<LeagueChannelEntity>(leagueChannelSQL, queryObject);
         return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
+    }
+
+    public async Task<IReadOnlyList<MinimalConferenceChannel>> GetConferenceChannels(Guid conferenceID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
+        {
+            conferenceID
+        };
+
+        const string conferenceChannelSQL = "select * from tbl_discord_conferencechannel WHERE ConferenceID = @conferenceID";
+
+        var conferenceChannels = await connection.QueryAsync<ConferenceChannelEntity>(conferenceChannelSQL, queryObject);
+        return conferenceChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
     public async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null)

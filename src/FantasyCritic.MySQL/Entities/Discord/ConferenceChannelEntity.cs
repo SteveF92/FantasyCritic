@@ -23,4 +23,6 @@ internal class ConferenceChannelEntity
     {
         return new ConferenceChannel(conferenceYear, GuildID, ChannelID);
     }
+
+    public MinimalConferenceChannel ToMinimalDomain() => new MinimalConferenceChannel(ConferenceID, GuildID, ChannelID);
 }

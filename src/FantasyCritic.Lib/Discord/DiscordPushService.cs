@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
@@ -840,6 +841,53 @@ public class DiscordPushService
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
+    public async Task SendConferenceManagerAnnouncementMessage(ConferenceYear conferenceYear, string message)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+        var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
+
+        var channels = await GetChannelsForConference(conferenceYear.Conference.ConferenceID, discordRepo);
+        if (!channels.Any())
+        {
+            return;
+        }
+
+        SocketUser? user = null;
+        var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(conferenceYear.Conference.ConferenceManager, userStore);
+        if (leagueManagerDiscordUser != null)
+        {
+            user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
+        }
+
+        IEnumerable<Task<RestUserMessage?>> messageTasks;
+        if (user != null)
+        {
+            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
+                "New Message from the League Manager",
+                message,
+                user)));
+        }
+        else
+        {
+            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
+                "New Message from the League Manager",
+                message,
+                new EmbedFooterBuilder
+                {
+                    Text = "Error finding Discord user for League Manager."
+                })));
+        }
+        await Task.WhenAll(messageTasks);
+    }
+
     public async Task SendFinalYearStandings(IReadOnlyList<LeagueYear> leagueYears, LocalDate dateToCheck)
     {
         bool shouldRun = await StartBot();
@@ -956,7 +1004,13 @@ public class DiscordPushService
         return GetSocketTextChannels(leagueChannels);
     }
 
-    private IReadOnlyList<SocketTextChannel> GetSocketTextChannels(IEnumerable<MinimalLeagueChannel> leagueChannels)
+    private async Task<IReadOnlyList<SocketTextChannel>> GetChannelsForConference(Guid conferenceID, IDiscordRepo discordRepo)
+    {
+        var conferenceChannels = await discordRepo.GetConferenceChannels(conferenceID);
+        return GetSocketTextChannels(conferenceChannels);
+    }
+
+    private IReadOnlyList<SocketTextChannel> GetSocketTextChannels(IEnumerable<IDiscordChannel> leagueChannels)
     {
         var channels = new List<SocketTextChannel>();
         foreach (var leagueChannel in leagueChannels)

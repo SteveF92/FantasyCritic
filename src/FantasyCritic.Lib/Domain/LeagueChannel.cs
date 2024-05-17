@@ -1,8 +1,9 @@
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Lib.Domain;
 
-public record MinimalLeagueChannel(Guid LeagueID, ulong GuildID, ulong ChannelID, bool SendLeagueMasterGameUpdates, bool SendNotableMisses, ulong? BidAlertRoleID)
+public record MinimalLeagueChannel(Guid LeagueID, ulong GuildID, ulong ChannelID, bool SendLeagueMasterGameUpdates, bool SendNotableMisses, ulong? BidAlertRoleID) : IDiscordChannel
 {
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 

@@ -24,4 +24,8 @@ public interface IConferenceRepo
     Task TransferConferenceManager(Conference conference, FantasyCriticUser newManager);
     Task SetConferenceLeagueLockStatus(LeagueYear leagueYear, bool locked);
     Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, IReadOnlyList<ConferenceLeague> conferenceLeagues, IReadOnlyDictionary<ConferenceLeague, IReadOnlyList<FantasyCriticUser>> userAssignments);
+
+    Task PostNewManagerMessage(ConferenceYear conferenceYear, ManagerMessage message);
+    Task<Result> DeleteManagerMessage(ConferenceYear conferenceYear, Guid messageID);
+    Task<Result> DismissManagerMessage(Guid messageID, Guid userId);
 }

@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -10,13 +11,15 @@ public class ConferenceService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
+    private readonly DiscordPushService _discordPushService;
 
-    public ConferenceService(IConferenceRepo conferenceRepo, IFantasyCriticRepo fantasyCriticRepo, InterLeagueService interLeagueService, IClock clock)
+    public ConferenceService(IConferenceRepo conferenceRepo, IFantasyCriticRepo fantasyCriticRepo, InterLeagueService interLeagueService, IClock clock, DiscordPushService discordPushService)
     {
         _conferenceRepo = conferenceRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _interLeagueService = interLeagueService;
         _clock = clock;
+        _discordPushService = discordPushService;
     }
 
     public Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser currentUser)
@@ -250,5 +253,22 @@ public class ConferenceService
     public Task SetConferenceLeagueLockStatus(LeagueYear leagueYear, bool locked)
     {
         return _conferenceRepo.SetConferenceLeagueLockStatus(leagueYear, locked);
+    }
+
+    public async Task PostNewManagerMessage(ConferenceYear conferenceYear, string message, bool isPublic)
+    {
+        var domainMessage = new ManagerMessage(Guid.NewGuid(), message, isPublic, _clock.GetCurrentInstant(), new List<Guid>());
+        await _conferenceRepo.PostNewManagerMessage(conferenceYear, domainMessage);
+        await _discordPushService.SendConferenceManagerAnnouncementMessage(conferenceYear, message);
+    }
+
+    public Task<Result> DeleteManagerMessage(ConferenceYear conferenceYear, Guid messageID)
+    {
+        return _conferenceRepo.DeleteManagerMessage(conferenceYear, messageID);
+    }
+
+    public Task<Result> DismissManagerMessage(Guid messageID, Guid userId)
+    {
+        return _conferenceRepo.DismissManagerMessage(messageID, userId);
     }
 }

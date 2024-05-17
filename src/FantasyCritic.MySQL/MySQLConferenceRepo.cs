@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -637,6 +638,54 @@ public class MySQLConferenceRepo : IConferenceRepo
             _logger.Error(ex, "Error assigning league players.");
             await transaction.RollbackAsync();
             return Result.Failure("Something went wrong when re-assigning users.");
+        }
+
+        return Result.Success();
+    }
+
+    public async Task PostNewManagerMessage(ConferenceYear conferenceYear, ManagerMessage message)
+    {
+        var entity = new ConferenceManagerMessageEntity(conferenceYear, message);
+        const string sql = "INSERT INTO tbl_conference_managermessage(MessageID,ConferenceID,Year,MessageText,IsPublic,Timestamp,Deleted) VALUES " +
+                           "(@MessageID,@LeagueID,@Year,@MessageText,@IsPublic,@Timestamp,0);";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, entity);
+    }
+
+    public async Task<Result> DeleteManagerMessage(ConferenceYear conferenceYear, Guid messageID)
+    {
+        const string sql = "UPDATE tbl_conference_managermessage SET Deleted = 1 WHERE MessageID = @messageId AND ConferenceID = @leagueID AND Year = @year;";
+        var paramsObject = new
+        {
+            messageID,
+            conferenceID = conferenceYear.Conference.ConferenceID,
+            year = conferenceYear.Year
+        };
+
+        await using (var connection = new MySqlConnection(_connectionString))
+        {
+            var rowsDeleted = await connection.ExecuteAsync(sql, paramsObject);
+            if (rowsDeleted != 1)
+            {
+                return Result.Failure("Invalid request");
+            }
+        }
+
+        return Result.Success();
+    }
+
+    public async Task<Result> DismissManagerMessage(Guid messageID, Guid userId)
+    {
+        const string sql = "INSERT IGNORE INTO `tbl_conference_managermessagedismissal` " +
+                           "(`MessageID`, `UserID`) VALUES(@messageId, @userID);";
+        await using (var connection = new MySqlConnection(_connectionString))
+        {
+            var rowsAdded = await connection.ExecuteAsync(sql, new { messageID, userId });
+            if (rowsAdded != 1)
+            {
+                return Result.Failure("Invalid request");
+            }
         }
 
         return Result.Success();

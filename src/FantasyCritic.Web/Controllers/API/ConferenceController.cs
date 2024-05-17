@@ -484,21 +484,55 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
-    public Task<IActionResult> PostNewConferenceManagerMessage([FromBody] PostNewConferenceManagerMessageRequest request)
+    public async Task<IActionResult> PostNewConferenceManagerMessage([FromBody] PostNewConferenceManagerMessageRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceYearRecord.FailedResult is not null)
+        {
+            return conferenceYearRecord.FailedResult;
+        }
+
+        var validResult = conferenceYearRecord.ValidResult!;
+        var conferenceYear = validResult.ConferenceYear;
+
+        await _conferenceService.PostNewManagerMessage(conferenceYear, request.Message, request.IsPublic);
+
+        return Ok();
     }
 
     [HttpPost]
     [Authorize("PlusUser")]
-    public Task<IActionResult> DeleteConferenceManagerMessage([FromBody] DeleteConferenceManagerMessageRequest request)
+    public async Task<IActionResult> DeleteConferenceManagerMessage([FromBody] DeleteConferenceManagerMessageRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceYearRecord.FailedResult is not null)
+        {
+            return conferenceYearRecord.FailedResult;
+        }
+
+        var validResult = conferenceYearRecord.ValidResult!;
+        var conferenceYear = validResult.ConferenceYear;
+
+        Result result = await _conferenceService.DeleteManagerMessage(conferenceYear, request.MessageID);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]
-    public Task<IActionResult> DismissManagerMessage([FromBody] DismissConferenceManagerMessageRequest request)
+    public async Task<IActionResult> DismissManagerMessage([FromBody] DismissConferenceManagerMessageRequest request)
     {
-        throw new NotImplementedException();
+        var currentUser = await GetCurrentUserOrThrow();
+
+        Result result = await _conferenceService.DismissManagerMessage(request.MessageID, currentUser.Id);
+        if (result.IsFailure)
+        {
+            return BadRequest();
+        }
+
+        return Ok();
     }
 }
