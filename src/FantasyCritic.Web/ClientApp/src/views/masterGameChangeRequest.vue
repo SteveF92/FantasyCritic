@@ -174,7 +174,7 @@ export default {
         this.clearData();
         await this.fetchMyRequests();
       } catch (error) {
-        this.errorInfo = error.response.datga;
+        this.errorInfo = error.response.data;
       } finally {
         this.isBusy = false;
       }
