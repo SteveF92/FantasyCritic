@@ -136,7 +136,7 @@ public class DiscordPushService
         }
 
         var allChannels = await GetAllCombinedChannels(discordRepo, fantasyCriticRepo);
-        var messageTasks = new List<Task>();
+        var preparedMessages = new List<PreparedDiscordMessage>();
 
         var today = _clock.GetToday();
         foreach (var combinedChannel in allChannels)
@@ -265,11 +265,11 @@ public class DiscordPushService
                 .WithDivider("\n")
                 .Build();
 
-            messageTasks.AddRange(messagesToActuallySend.Select(message => textChannel.TrySendMessageAsync(message, flags: MessageFlags.SuppressEmbeds)));
+            preparedMessages.AddRange(messagesToActuallySend.Select(message => new PreparedDiscordMessage(textChannel, message)));
         }
 
-        Logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", messageTasks.Count);
-        await Task.WhenAll(messageTasks);
+        Logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", preparedMessages.Count);
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages, MessageFlags.SuppressEmbeds);
 
         _newMasterGameMessages.Clear();
         _gameCriticScoreUpdateMessages.Clear();
@@ -324,7 +324,7 @@ public class DiscordPushService
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
         var allChannels = await GetAllCombinedChannels(discordRepo, fantasyCriticRepo);
-        var messageTasks = new List<Task>();
+        var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var combinedChannel in allChannels)
         {
             var guild = _client.GetGuild(combinedChannel.GuildID);
@@ -344,10 +344,10 @@ public class DiscordPushService
 
             var releaseMessages = relevantGamesForLeague.Select(x => $"**{x.MasterGame.GameName}** has released!");
             var releaseMessage = string.Join("\n", releaseMessages);
-            messageTasks.Add(textChannel.TrySendMessageAsync(releaseMessage));
+            preparedMessages.Add(new PreparedDiscordMessage(textChannel, releaseMessage));
         }
 
-        await Task.WhenAll(messageTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendLeagueActionMessage(LeagueAction action)
@@ -366,7 +366,7 @@ public class DiscordPushService
 
         var leagueChannels = await discordRepo.GetLeagueChannels(leagueId);
 
-        var messageTasks = new List<Task>();
+        var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueChannel in leagueChannels)
         {
             var guild = _client.GetGuild(leagueChannel.GuildID);
@@ -376,10 +376,10 @@ public class DiscordPushService
                 continue;
             }
 
-            messageTasks.Add(channel.TrySendMessageAsync($"**{action.Publisher.GetPublisherAndUserDisplayName()}** {action.Description} (at {action.Timestamp.ToEasternDate()})"));
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"**{action.Publisher.GetPublisherAndUserDisplayName()}** {action.Description} (at {action.Timestamp.ToEasternDate()})"));
         }
 
-        await Task.WhenAll(messageTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendLeagueActionMessage(LeagueManagerAction action)
@@ -398,7 +398,7 @@ public class DiscordPushService
 
         var leagueChannels = await discordRepo.GetLeagueChannels(leagueId);
 
-        var messageTasks = new List<Task>();
+        var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueChannel in leagueChannels)
         {
             var guild = _client.GetGuild(leagueChannel.GuildID);
@@ -408,10 +408,10 @@ public class DiscordPushService
                 continue;
             }
 
-            messageTasks.Add(channel.TrySendMessageAsync($"**{action.ActionType}** {action.Description} (at {action.Timestamp.ToEasternDate()})"));
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"**{action.ActionType}** {action.Description} (at {action.Timestamp.ToEasternDate()})"));
         }
 
-        await Task.WhenAll(messageTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges)
@@ -470,12 +470,8 @@ public class DiscordPushService
 
         if (embedFieldBuilders.Any())
         {
-            var tasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-                "Publisher Score Updates",
-                "",
-                null,
-                embedFieldBuilders)));
-            await Task.WhenAll(tasks);
+            var embeds = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: _discordFormatter.BuildRegularEmbed("Publisher Score Updates", "", null, embedFieldBuilders)));
+            await DiscordRateLimitUtilities.RateLimitMessages(embeds);
         }
     }
 
@@ -499,9 +495,8 @@ public class DiscordPushService
 
         var messageToSend = $"Publisher **{oldPublisherName}** ({publisher.User.UserName}) is now known as **{newPublisherName}**";
 
-
-        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(messageToSend));
-        await Task.WhenAll(messageTasks);
+        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, messageToSend));
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendPublisherEditMessage(EditPublisherRequest editPublisherRequest)
@@ -532,8 +527,8 @@ public class DiscordPushService
 
         var leagueManagerActionMessage = $"**League Manager Action**: {message}";
 
-        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(leagueManagerActionMessage));
-        await Task.WhenAll(messageTasks);
+        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, leagueManagerActionMessage));
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendLeagueManagerAddPublisherGameMessage(Publisher publisher, string gameName)
@@ -569,8 +564,8 @@ public class DiscordPushService
 
         var messageToSend = $"Publisher **{publisher.GetPublisherAndUserDisplayName()}** has joined the league!";
 
-        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(messageToSend));
-        await Task.WhenAll(messageTasks);
+        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, messageToSend));
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendPublicBiddingSummary(IEnumerable<LeagueYearPublicBiddingSet> publicBiddingSets)
@@ -588,7 +583,7 @@ public class DiscordPushService
         var allChannels = await discordRepo.GetAllLeagueChannels();
         var channelLookup = allChannels.ToLookup(c => c.LeagueID);
 
-        var messageTasks = new List<Task>();
+        var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var publicBiddingSet in publicBiddingSets)
         {
             var leagueChannels = channelLookup[publicBiddingSet.LeagueYear.League.LeagueID].ToList();
@@ -625,18 +620,15 @@ public class DiscordPushService
                 SocketRole? roleToMention = null;
                 if (leagueChannel.BidAlertRoleID != null)
                 {
-                    roleToMention =
-                        channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
+                    roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
                 }
 
-                messageTasks.Add(channel.TrySendMessageAsync(roleToMention?.Mention ?? "", embed: _discordFormatter.BuildRegularEmbed(
-                    header,
-                    finalMessage,
-                    url: leagueLink)));
+                var embed = _discordFormatter.BuildRegularEmbed(header, finalMessage, url: leagueLink);
+                preparedMessages.Add(new PreparedDiscordMessage(channel, roleToMention?.Mention ?? "", embed));
             }
         }
 
-        await Task.WhenAll(messageTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendActionProcessingSummary(IReadOnlyList<LeagueActionProcessingSet> leagueActionSets)
@@ -654,7 +646,7 @@ public class DiscordPushService
         var allChannels = await discordRepo.GetAllLeagueChannels();
         var channelLookup = allChannels.ToLookup(c => c.LeagueID);
 
-        var dropTasks = new List<Task>();
+        var dropMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueAction in leagueActionSets)
         {
             var leagueChannels = channelLookup[leagueAction.LeagueYear.League.LeagueID].ToList();
@@ -663,12 +655,12 @@ public class DiscordPushService
                 continue;
             }
 
-            dropTasks.Add(SendAllDropMessages(leagueAction, leagueChannels));
+            dropMessages.AddRange(GetAllDropMessages(leagueAction, leagueChannels));
         }
 
-        await Task.WhenAll(dropTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(dropMessages);
 
-        var bidTasks = new List<Task>();
+        var bidMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueAction in leagueActionSets)
         {
             var leagueChannels = channelLookup[leagueAction.LeagueYear.League.LeagueID].ToList();
@@ -677,13 +669,13 @@ public class DiscordPushService
                 continue;
             }
 
-            bidTasks.Add(SendAllBidMessages(leagueAction, leagueChannels));
+            bidMessages.AddRange(GetAllBidMessages(leagueAction, leagueChannels));
         }
 
-        await Task.WhenAll(bidTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(bidMessages);
     }
 
-    private async Task SendAllBidMessages(LeagueActionProcessingSet leagueAction, IEnumerable<MinimalLeagueChannel> leagueChannels)
+    private IReadOnlyList<PreparedDiscordMessage> GetAllBidMessages(LeagueActionProcessingSet leagueAction, IEnumerable<MinimalLeagueChannel> leagueChannels)
     {
         var bidMessages = new List<string>();
         var leagueActionDictionaryByGame = new Dictionary<string, List<PickupBid>>();
@@ -696,8 +688,7 @@ public class DiscordPushService
             }
             else
             {
-                leagueActionDictionaryByGame.Add(leagueActionBid.MasterGame.GameName,
-                    new List<PickupBid> { leagueActionBid });
+                leagueActionDictionaryByGame.Add(leagueActionBid.MasterGame.GameName, new List<PickupBid> { leagueActionBid });
             }
         }
 
@@ -713,40 +704,36 @@ public class DiscordPushService
             bidMessages.Add($"{messageToAdd}");
         }
 
-        if (bidMessages.Any())
+        if (!bidMessages.Any())
         {
-            var messageListToSend = new MessageListBuilder(bidMessages,
-                MaxMessageLength)
-            .WithTitle("Bids", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
+            return new List<PreparedDiscordMessage>();
+        }
+
+        var messageListToSend = new MessageListBuilder(bidMessages, MaxMessageLength)
+            .WithTitle("Bids", [TextStyleOption.Bold, TextStyleOption.Underline], "\n", 1)
             .WithDivider("\n")
             .Build();
-            await SendAllMessagesToAllLeagueChannels(leagueChannels, messageListToSend, true);
-        }
+        return GetAllMessagesForAllLeagueChannels(leagueChannels, messageListToSend, true);
     }
 
-    private async Task SendAllDropMessages(LeagueActionProcessingSet leagueAction, IEnumerable<MinimalLeagueChannel> leagueChannels)
+    private IReadOnlyList<PreparedDiscordMessage> GetAllDropMessages(LeagueActionProcessingSet leagueAction, IEnumerable<MinimalLeagueChannel> leagueChannels)
     {
-        var dropMessages = new List<string>();
-        foreach (var drop in leagueAction.Drops)
+        if (!leagueAction.Drops.Any())
         {
-            var messageToAdd = DiscordSharedMessageUtilities.BuildDropResultMessage(drop);
-            dropMessages.Add(messageToAdd);
+            return new List<PreparedDiscordMessage>();
         }
 
-        if (dropMessages.Any())
-        {
-            var dropMessageListToSend = new MessageListBuilder(dropMessages,
-                MaxMessageLength)
-            .WithTitle("Drops", new[] { TextStyleOption.Bold, TextStyleOption.Underline }, "\n", 1)
+        var dropMessages = leagueAction.Drops.Select(DiscordSharedMessageUtilities.BuildDropResultMessage).ToList();
+        var dropMessageListToSend = new MessageListBuilder(dropMessages, MaxMessageLength)
+            .WithTitle("Drops", [TextStyleOption.Bold, TextStyleOption.Underline], "\n", 1)
             .WithDivider("\n")
             .Build();
-            await SendAllMessagesToAllLeagueChannels(leagueChannels, dropMessageListToSend, false);
-        }
+        return GetAllMessagesForAllLeagueChannels(leagueChannels, dropMessageListToSend);
     }
 
-    private async Task SendAllMessagesToAllLeagueChannels(IEnumerable<MinimalLeagueChannel> leagueChannels, IReadOnlyList<string> messageListToSend, bool mentionRole = false)
+    private IReadOnlyList<PreparedDiscordMessage> GetAllMessagesForAllLeagueChannels(IEnumerable<MinimalLeagueChannel> leagueChannels, IReadOnlyList<string> messageListToSend, bool mentionRole = false)
     {
-        var messageTasks = new List<Task>();
+        var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueChannel in leagueChannels)
         {
             var guild = _client.GetGuild(leagueChannel.GuildID);
@@ -762,11 +749,11 @@ public class DiscordPushService
 
             foreach (var messageToSend in messageListToSend)
             {
-                messageTasks.Add(channel.TrySendMessageAsync($"{roleToMention?.Mention ?? ""}\n{messageToSend}"));
+                preparedMessages.Add(new PreparedDiscordMessage(channel, $"{roleToMention?.Mention ?? ""}\n{messageToSend}"));
             }
         }
 
-        await Task.WhenAll(messageTasks);
+        return preparedMessages;
     }
 
     public async Task SendTradeUpdateMessage(Trade trade)
@@ -804,14 +791,9 @@ public class DiscordPushService
                 trade.LeagueYear.Year)
             .BuildUrl();
 
-        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-            "Trade Update",
-            header,
-            null,
-            embedFieldBuilders,
-            leagueUrl)));
-
-        await Task.WhenAll(messageTasks);
+        var embed = _discordFormatter.BuildRegularEmbed("Trade Update", header, null, embedFieldBuilders, leagueUrl);
+        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: embed));
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendLeagueManagerAnnouncementMessage(LeagueYear leagueYear, string message)
@@ -840,25 +822,23 @@ public class DiscordPushService
             user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
         }
 
-        IEnumerable<Task<RestUserMessage?>> messageTasks;
+        List<PreparedDiscordMessage> preparedMessages;
         if (user != null)
         {
-            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
-                "New Message from the League Manager",
-                message,
-                user)));
+            var embed = _discordFormatter.BuildRegularEmbedWithUserFooter("New Message from the League Manager", message, user);
+            preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: embed)).ToList();
         }
         else
         {
-            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-                "New Message from the League Manager",
-                message,
-                new EmbedFooterBuilder
-                {
-                    Text = "Error finding Discord user for League Manager."
-                })));
+            var embedFooter = new EmbedFooterBuilder
+            {
+                Text = "Error finding Discord user for League Manager."
+            };
+            var embed = _discordFormatter.BuildRegularEmbed("New Message from the League Manager", message, embedFooter);
+            preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: embed)).ToList();
         }
-        await Task.WhenAll(messageTasks);
+
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     public async Task SendFinalYearStandings(IReadOnlyList<LeagueYear> leagueYears, LocalDate dateToCheck)
@@ -876,7 +856,7 @@ public class DiscordPushService
 
         var systemWideValues = await fantasyCriticRepo.GetSystemWideValues();
 
-        var messageTasks = new List<Task>();
+        var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueYear in leagueYears)
         {
             var previousYearWinner = await fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, leagueYear.Year - 1);
@@ -902,14 +882,12 @@ public class DiscordPushService
                     continue;
                 }
 
-                messageTasks.Add(textChannel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-                    $"Final Standings for {leagueYear.League.LeagueName} ({leagueYear.Year})",
-                    publisherStrings,
-                    url: leagueUrl)));
+                var embed = _discordFormatter.BuildRegularEmbed($"Final Standings for {leagueYear.League.LeagueName} ({leagueYear.Year})", publisherStrings, url: leagueUrl);
+                preparedMessages.Add(new PreparedDiscordMessage(textChannel, Embed: embed));
             }
         }
 
-        await Task.WhenAll(messageTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
@@ -1032,8 +1010,7 @@ public class DiscordPushService
             return;
         }
 
-        var messageTasks = new List<Task>();
-
+        var preparedMessages = new List<PreparedDiscordMessage>();
         var leagueLink = new LeagueUrlBuilder(_baseAddress, specialAuction.LeagueYearKey.LeagueID, specialAuction.LeagueYearKey.Year).BuildUrl();
 
         foreach (var leagueChannel in leagueChannels)
@@ -1048,8 +1025,7 @@ public class DiscordPushService
             SocketRole? roleToMention = null;
             if (leagueChannel.BidAlertRoleID != null)
             {
-                roleToMention =
-                    channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
+                roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
             }
 
             var currentInstant = _clock.GetCurrentInstant();
@@ -1098,15 +1074,11 @@ public class DiscordPushService
                 continue;
             }
 
-            messageTasks.Add(textChannel.TrySendMessageAsync(roleToMention?.Mention ?? "", embed: _discordFormatter.BuildRegularEmbed(
-            title,
-            "",
-            null,
-            embedFieldBuilders,
-            leagueLink)));
+            var embed = _discordFormatter.BuildRegularEmbed(title, "", null, embedFieldBuilders, leagueLink);
+            preparedMessages.Add(new PreparedDiscordMessage(textChannel, roleToMention?.Mention ?? "", embed));
         }
 
-        await Task.WhenAll(messageTasks);
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
     private static async Task<IReadOnlyList<CombinedChannel>> GetAllCombinedChannels(IDiscordRepo discordRepo, IFantasyCriticRepo fantasyCriticRepo)

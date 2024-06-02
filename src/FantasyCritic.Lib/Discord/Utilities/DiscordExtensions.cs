@@ -42,7 +42,6 @@ public static class DiscordExtensions
         }
 
         return null;
-
     }
 
     public static bool HasPermissionToSendMessagesInChannel(this ISocketMessageChannel channel, ulong userID)
