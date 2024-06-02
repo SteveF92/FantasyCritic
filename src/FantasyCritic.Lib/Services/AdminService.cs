@@ -326,21 +326,21 @@ public class AdminService
             await _rdsManager.SnapshotRDS(now);
         }
 
-        //var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        //if (systemWideSettings.ActionProcessingMode)
-        //{
-        //    var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
-        //    if (actionProcessingSets.Any())
-        //    {
-        //        var mostRecentSet = actionProcessingSets.MaxBy(x => x.ProcessTime)!;
-        //        var timeSinceMostRecentProcessing = now - mostRecentSet.ProcessTime;
-        //        if (timeSinceMostRecentProcessing < Duration.FromHours(4))
-        //        {
-        //            //If last processing was less than 4 hours ago, turn action processing mode off.
-        //            await _interLeagueService.SetActionProcessingMode(false);
-        //        }
-        //    }
-        //}
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (systemWideSettings.ActionProcessingMode)
+        {
+            var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
+            if (actionProcessingSets.Any())
+            {
+                var mostRecentSet = actionProcessingSets.MaxBy(x => x.ProcessTime)!;
+                var timeSinceMostRecentProcessing = now - mostRecentSet.ProcessTime;
+                if (timeSinceMostRecentProcessing < Duration.FromHours(4))
+                {
+                    //If last processing was less than 4 hours ago, turn action processing mode off.
+                    await _interLeagueService.SetActionProcessingMode(false);
+                }
+            }
+        }
     }
 
     public async Task UpdatePatreonRoles()
