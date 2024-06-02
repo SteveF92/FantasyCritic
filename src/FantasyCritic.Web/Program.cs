@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Amazon;
-using Amazon.CloudWatchLogs;
 using Microsoft.AspNetCore.Hosting;
 using Dapper.NodaTime;
 using FantasyCritic.AWS;
@@ -12,8 +11,9 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
-using Serilog.Sinks.AwsCloudWatch;
 using System.IO;
+using Amazon.CloudWatchLogs;
+using Serilog.Sinks.AwsCloudWatch;
 
 namespace FantasyCritic.Web;
 
