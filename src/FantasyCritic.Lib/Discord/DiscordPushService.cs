@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
@@ -33,9 +34,9 @@ public class DiscordPushService
     private readonly bool _enabled;
     private readonly string _baseAddress;
 
-    private readonly List<NewMasterGameMessage> _newMasterGameMessages = new();
-    private readonly List<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = new();
-    private readonly List<MasterGameEditMessage> _masterGameEditMessages = new();
+    private readonly ConcurrentBag<NewMasterGameMessage> _newMasterGameMessages = new();
+    private readonly ConcurrentBag<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = new();
+    private readonly ConcurrentBag<MasterGameEditMessage> _masterGameEditMessages = new();
 
     public DiscordPushService(
         FantasyCriticDiscordConfiguration configuration,
