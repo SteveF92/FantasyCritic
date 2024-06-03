@@ -255,6 +255,11 @@ public class ConferenceService
         return _conferenceRepo.SetConferenceLeagueLockStatus(leagueYear, locked);
     }
 
+    public Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(ConferenceYear conferenceYear)
+    {
+        return _conferenceRepo.GetManagerMessages(conferenceYear);
+    }
+
     public async Task PostNewManagerMessage(ConferenceYear conferenceYear, string message, bool isPublic)
     {
         var domainMessage = new ManagerMessage(Guid.NewGuid(), message, isPublic, _clock.GetCurrentInstant(), new List<Guid>());

@@ -25,6 +25,7 @@ public interface IConferenceRepo
     Task SetConferenceLeagueLockStatus(LeagueYear leagueYear, bool locked);
     Task<Result> AssignLeaguePlayers(ConferenceYear conferenceYear, IReadOnlyList<ConferenceLeague> conferenceLeagues, IReadOnlyDictionary<ConferenceLeague, IReadOnlyList<FantasyCriticUser>> userAssignments);
 
+    Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(ConferenceYear conferenceYear);
     Task PostNewManagerMessage(ConferenceYear conferenceYear, ManagerMessage message);
     Task<Result> DeleteManagerMessage(ConferenceYear conferenceYear, Guid messageID);
     Task<Result> DismissManagerMessage(Guid messageID, Guid userId);

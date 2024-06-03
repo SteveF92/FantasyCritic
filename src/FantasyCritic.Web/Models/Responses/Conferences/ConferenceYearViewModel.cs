@@ -6,7 +6,7 @@ namespace FantasyCritic.Web.Models.Responses.Conferences;
 public class ConferenceYearViewModel
 {
     public ConferenceYearViewModel(ConferenceViewModel conferenceViewModel, ConferenceYear domain, IEnumerable<ConferenceLeagueYear> conferenceLeagueYears,
-        IReadOnlyList<ConferencePlayer> conferencePlayers, FantasyCriticUser? currentUser, IReadOnlyList<ConferenceYearStanding> standings)
+        IReadOnlyList<ConferencePlayer> conferencePlayers, FantasyCriticUser? accessingUser, IReadOnlyList<ConferenceYearStanding> standings, IEnumerable<ManagerMessage> managerMessages)
     {
         Conference = conferenceViewModel;
         Year = domain.Year;
@@ -14,7 +14,7 @@ public class ConferenceYearViewModel
 
         LeagueYears = conferenceLeagueYears.Select(x =>
             new ConferenceLeagueYearViewModel(x,
-                conferencePlayers.Where(y => y.YearsActiveIn.Contains(x.LeagueYearKey)).ToList(), currentUser,
+                conferencePlayers.Where(y => y.YearsActiveIn.Contains(x.LeagueYearKey)).ToList(), accessingUser,
                 x.League.LeagueID == domain.Conference.PrimaryLeagueID))
             .OrderByDescending(x => x.IsPrimaryLeague).ThenBy(x => x.LeagueName).ToList();
 
@@ -49,6 +49,12 @@ public class ConferenceYearViewModel
 
         Standings = standingVMs;
         PlayersForYear = conferencePlayers.Select(x => new ConferenceYearPlayerViewModel(domain, x)).ToList();
+
+        ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x, x.IsDismissed(accessingUser))).OrderBy(x => x.Timestamp).ToList();
+        if (!Conference.UserIsInConference)
+        {
+            ManagerMessages = ManagerMessages.Where(x => x.IsPublic).ToList();
+        }
     }
 
     public ConferenceViewModel Conference { get; }
@@ -58,4 +64,5 @@ public class ConferenceYearViewModel
     public bool UserIsInAtLeastOneLeague { get; }
     public IReadOnlyList<ConferenceYearStandingViewModel> Standings { get; }
     public IReadOnlyList<ConferenceYearPlayerViewModel> PlayersForYear { get; }
+    public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
 }

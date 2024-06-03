@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -641,6 +640,42 @@ public class MySQLConferenceRepo : IConferenceRepo
         }
 
         return Result.Success();
+    }
+
+    public async Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(ConferenceYear conferenceYear)
+    {
+        const string messageSQL = "select * from tbl_conference_managermessage where ConferenceID = @conferenceID AND Year = @year AND Deleted = 0;";
+        var queryObject = new
+        {
+            conferenceID = conferenceYear.Conference.ConferenceID,
+            year = conferenceYear.Year
+        };
+
+        const string dismissSQL = "select * from tbl_conference_managermessagedismissal where MessageID in @messageIDs;";
+
+        IEnumerable<ManagerMessageEntity> messageEntities;
+        IEnumerable<ManagerMessageDismissalEntity> dismissalEntities;
+        await using (var connection = new MySqlConnection(_connectionString))
+        {
+            messageEntities = await connection.QueryAsync<ManagerMessageEntity>(messageSQL, queryObject);
+
+            var messageIDs = messageEntities.Select(x => x.MessageID);
+            var dismissQueryObject = new
+            {
+                messageIDs
+            };
+            dismissalEntities = await connection.QueryAsync<ManagerMessageDismissalEntity>(dismissSQL, dismissQueryObject);
+        }
+
+        List<ManagerMessage> domainMessages = new List<ManagerMessage>();
+        var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
+        foreach (var messageEntity in messageEntities)
+        {
+            var dismissedUserIDs = dismissalLookup[messageEntity.MessageID].Select(x => x.UserID);
+            domainMessages.Add(messageEntity.ToDomain(dismissedUserIDs));
+        }
+
+        return domainMessages;
     }
 
     public async Task PostNewManagerMessage(ConferenceYear conferenceYear, ManagerMessage message)
