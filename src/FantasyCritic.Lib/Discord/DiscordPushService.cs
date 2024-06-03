@@ -93,7 +93,6 @@ public class DiscordPushService
         }
         Log.Warning("Discord bot is not ready, cannot send message.");
         return false;
-
     }
 
     public void QueueNewMasterGameMessage(MasterGame masterGame)
