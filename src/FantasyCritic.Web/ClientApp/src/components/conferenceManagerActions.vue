@@ -4,7 +4,7 @@
       <b-dropdown-item v-b-modal="'invitePlayers'">Invite/Remove Players</b-dropdown-item>
       <b-dropdown-item v-b-modal="'addLeagueToConference'">Add League to Conference</b-dropdown-item>
       <b-dropdown-item v-b-modal="'assignPlayers'">Assign Players to Leagues</b-dropdown-item>
-      <b-dropdown-item disabled>Post New Manager Message</b-dropdown-item>
+      <b-dropdown-item v-b-modal="'conferenceManagerMessageForm'">Post New Manager Message</b-dropdown-item>
       <b-dropdown-divider></b-dropdown-divider>
       <b-dropdown-item v-b-modal="'editConferenceSettings'">Edit Conference Settings</b-dropdown-item>
       <b-dropdown-item v-b-modal="'promoteNewConferenceManager'">Promote New Conference Manager</b-dropdown-item>
@@ -13,6 +13,7 @@
     <div>
       <AddLeagueToConference></AddLeagueToConference>
       <AssignPlayers></AssignPlayers>
+      <ConferenceManagerMessageModal></ConferenceManagerMessageModal>
       <EditConferenceSettings></EditConferenceSettings>
       <InvitePlayers></InvitePlayers>
       <PromoteNewConferenceManager></PromoteNewConferenceManager>
@@ -23,6 +24,7 @@
 <script>
 import AddLeagueToConference from '@/components/modals/conference/addLeagueToConference.vue';
 import AssignPlayers from '@/components/modals/conference/assignPlayers.vue';
+import ConferenceManagerMessageModal from '@/components/modals/conference/conferenceManagerMessageModal.vue';
 import EditConferenceSettings from '@/components/modals/conference/editConferenceSettings.vue';
 import InvitePlayers from '@/components/modals/conference/invitePlayers.vue';
 import PromoteNewConferenceManager from '@/components/modals/conference/promoteNewConferenceManager.vue';
@@ -32,6 +34,7 @@ export default {
   components: {
     AddLeagueToConference,
     AssignPlayers,
+    ConferenceManagerMessageModal,
     EditConferenceSettings,
     InvitePlayers,
     PromoteNewConferenceManager,

@@ -682,7 +682,7 @@ public class MySQLConferenceRepo : IConferenceRepo
     {
         var entity = new ConferenceManagerMessageEntity(conferenceYear, message);
         const string sql = "INSERT INTO tbl_conference_managermessage(MessageID,ConferenceID,Year,MessageText,IsPublic,Timestamp,Deleted) VALUES " +
-                           "(@MessageID,@LeagueID,@Year,@MessageText,@IsPublic,@Timestamp,0);";
+                           "(@MessageID,@ConferenceID,@Year,@MessageText,@IsPublic,@Timestamp,0);";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
