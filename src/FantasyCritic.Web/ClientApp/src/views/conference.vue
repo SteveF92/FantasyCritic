@@ -91,7 +91,12 @@
             <h4>Conference Manager:</h4>
             <span class="conference-manager-info-item">{{ conference.conferenceManager.displayName }}</span>
           </div>
+
           <ConferenceManagerActions v-if="isConferenceManager"></ConferenceManagerActions>
+        </div>
+
+        <div v-if="conferenceYear.managerMessages.length > 0" class="conference-manager-message-section">
+          <router-link :to="{ name: 'conferenceYearHistory', params: { conferenceid: conference.conferenceid, year: conferenceYear.year } }">See all manager messages</router-link>
         </div>
 
         <b-table :items="conferenceYear.leagueYears" :fields="leagueYearFields" bordered small responsive striped>
@@ -205,7 +210,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 10px;
 }
 
 .conference-manager-info {
@@ -216,6 +220,10 @@ export default {
 .conference-manager-info-item {
   padding-left: 5px;
   padding-top: 3px;
+}
+
+.conference-manager-message-section {
+  margin-bottom: 10px;
 }
 
 .conference-header-row {
