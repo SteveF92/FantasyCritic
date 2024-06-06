@@ -16,6 +16,7 @@ import MasterGames from '@/views/masterGames.vue';
 import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
 import PublicLeagues from '@/views/publicLeagues.vue';
 import LeagueHistory from '@/views/leagueHistory.vue';
+import ConferenceHistory from '@/views/conferenceHistory.vue';
 import AdminConsole from '@/views/adminConsole.vue';
 import MasterGameRequest from '@/views/masterGameRequest.vue';
 import MasterGameChangeRequest from '@/views/masterGameChangeRequest.vue';
@@ -251,6 +252,26 @@ export const routes = [
 
       return {
         leagueid: route.params.leagueid,
+        year: parsedYear
+      };
+    }
+  },
+  {
+    path: '/conferenceHistory/:conferenceid/:year',
+    component: ConferenceHistory,
+    name: 'conferenceHistory',
+    meta: {
+      title: 'Conference History',
+      isPublic: true
+    },
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
+
+      return {
+        conferenceid: route.params.conferenceid,
         year: parsedYear
       };
     }

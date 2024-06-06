@@ -21,6 +21,9 @@
                     <font-awesome-icon v-b-popover.hover.focus="'Copy Conference ID to Clipboard'" :icon="['far', 'copy']" size="xs" class="fake-link" />
                   </span>
                 </h1>
+                <div v-if="conferenceYear.managerMessages.length > 0" class="conference-manager-message-section">
+                  <router-link :to="{ name: 'conferenceHistory', params: { conferenceid: conference.conferenceID, year: conferenceYear.year } }">Conference History</router-link>
+                </div>
               </div>
 
               <div class="selector-area">
@@ -95,9 +98,10 @@
           <ConferenceManagerActions v-if="isConferenceManager"></ConferenceManagerActions>
         </div>
 
-        <div v-if="conferenceYear.managerMessages.length > 0" class="conference-manager-message-section">
-          <router-link :to="{ name: 'conferenceYearHistory', params: { conferenceid: conference.conferenceid, year: conferenceYear.year } }">See all manager messages</router-link>
-        </div>
+        <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
+          <h5>Manager's Message ({{ mostRecentManagerMessage.timestamp | dateTime }})</h5>
+          <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
+        </b-alert>
 
         <b-table :items="conferenceYear.leagueYears" :fields="leagueYearFields" bordered small responsive striped>
           <template #cell(leagueName)="data">
@@ -158,6 +162,18 @@ export default {
     },
     numberOfLeaguesFinishedDrafting() {
       return this.conferenceYear.leagueYears.filter((x) => x.draftFinished).length;
+    },
+    mostRecentManagerMessage() {
+      if (!this.conferenceYear || !this.conferenceYear.managerMessages || this.conferenceYear.managerMessages.length === 0) {
+        return null;
+      }
+
+      let mostRecentMessage = this.conferenceYear.managerMessages[this.conferenceYear.managerMessages.length - 1];
+      if (mostRecentMessage.isDismissed) {
+        return null;
+      }
+
+      return mostRecentMessage;
     }
   },
   watch: {
@@ -199,6 +215,13 @@ export default {
     },
     conferenceIDCopied() {
       this.makeToast('Conference ID copied to clipboard.');
+    },
+    async dismissRecentManagerMessage() {
+      const model = {
+        messageID: this.mostRecentManagerMessage.messageID
+      };
+      await axios.post('/api/conference/DismissManagerMessage', model);
+      this.refreshLeagueYear();
     }
   }
 };

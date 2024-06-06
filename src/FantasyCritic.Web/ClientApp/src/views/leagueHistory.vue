@@ -118,18 +118,14 @@ export default {
       this.lastID = this.lastID + 1;
       return thisID;
     },
-    deleteMessage(message) {
+    async deleteMessage(message) {
       const model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year,
         messageID: message.messageID
       };
-      axios
-        .post('/api/leagueManager/DeleteManagerMessage', model)
-        .then(() => {
-          this.fetchLeagueYear();
-        })
-        .catch(() => {});
+      await axios.post('/api/leagueManager/DeleteManagerMessage', model);
+      this.fetchLeagueYear();
     }
   }
 };

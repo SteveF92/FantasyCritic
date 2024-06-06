@@ -384,16 +384,12 @@ export default {
         })
         .catch(() => {});
     },
-    dismissRecentManagerMessage() {
+    async dismissRecentManagerMessage() {
       const model = {
         messageID: this.mostRecentManagerMessage.messageID
       };
-      axios
-        .post('/api/league/DismissManagerMessage', model)
-        .then(() => {
-          this.refreshLeagueYear();
-        })
-        .catch(() => {});
+      await axios.post('/api/league/DismissManagerMessage', model);
+      this.refreshLeagueYear();
     },
     async startHubConnection() {
       if (!this.leagueYear || !this.leagueYear.playStatus.playStarted || this.leagueYear.draftFinished) {
