@@ -13,6 +13,7 @@
           </div>
           <hr />
         </div>
+        <b-alert :show="conferenceYear.managerMessages && conferenceYear.managerMessages.length === 0">Conference Manager Messages would show up here, but there are none to show.</b-alert>
       </div>
     </div>
   </div>
@@ -49,8 +50,8 @@ export default {
         year: this.conferenceYear.year,
         messageID: message.messageID
       };
-      await axios.post('/api/conference/DeleteManagerMessage', model);
-      this.fetchLeagueYear();
+      await axios.post('/api/conference/DeleteConferenceManagerMessage', model);
+      this.refreshConferenceYear();
     }
   }
 };

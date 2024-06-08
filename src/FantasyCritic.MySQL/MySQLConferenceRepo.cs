@@ -690,7 +690,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task<Result> DeleteManagerMessage(ConferenceYear conferenceYear, Guid messageID)
     {
-        const string sql = "UPDATE tbl_conference_managermessage SET Deleted = 1 WHERE MessageID = @messageId AND ConferenceID = @leagueID AND Year = @year;";
+        const string sql = "UPDATE tbl_conference_managermessage SET Deleted = 1 WHERE MessageID = @messageId AND ConferenceID = @conferenceID AND Year = @year;";
         var paramsObject = new
         {
             messageID,
