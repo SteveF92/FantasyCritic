@@ -131,16 +131,6 @@ public static class HostingExtensions
         //services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
         services.AddScoped<IEmailSender>(_ => new PostmarkEmailSender(postmarkAPIKey, "admin@fantasycritic.games"));
 
-        if (environment.IsProduction() || environment.IsStaging())
-        {
-            var tempFolder = Path.Combine(rootFolder, "Temp");
-            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"]!, awsBucket, tempFolder));
-        }
-        else
-        {
-            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
-        }
-
         services.AddScoped<AdminService>();
 
         services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
