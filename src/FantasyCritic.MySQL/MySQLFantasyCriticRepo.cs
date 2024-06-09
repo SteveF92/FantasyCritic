@@ -38,7 +38,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var param = new
         {
-            userID
+            P_UserID = userID
         };
 
         await using var resultSets = await connection.QueryMultipleAsync("sp_getbasicdata", param, commandType: CommandType.StoredProcedure);
@@ -48,6 +48,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var supportedYearEntities = await resultSets.ReadAsync<SupportedYearEntity>();
 
         var domainUser = userEntity?.ToDomain();
+        if (!userID.HasValue)
+        {
+            domainUser = null;
+        }
         var systemWideSettings = new SystemWideSettings(systemWideSettingsEntity.ActionProcessingMode, systemWideSettingsEntity.RefreshOpenCritic);
         var tags = tagEntities.Select(x => x.ToDomain()).ToList();
         var supportedYears = supportedYearEntities.Select(x => x.ToDomain()).ToList();
