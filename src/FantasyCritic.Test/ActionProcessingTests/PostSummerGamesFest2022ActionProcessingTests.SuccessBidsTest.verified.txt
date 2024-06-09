@@ -4578,6 +4578,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 21725d37-002a-48ab-8020-41a8d7035aa9,
+    PublisherID: 618ab4c4-a704-4f2a-9c65-a9f68a371f1c,
+    MasterGameID: df3725cb-db76-44ff-85e7-149f6fcce752,
+    GameName: Lightyear Frontier,
+    CounterPick: false,
+    Priority: 1,
+    BidAmount: 6,
+    ProjectedPointsAtTimeOfBid: 47.454031625263300000000000001,
+    SlotNumber: 8,
+    Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
     BidID: 217605cb-062f-4c1b-b4b5-6d4c8d98b9f6,
     PublisherID: ecce5192-ac9e-432e-832d-d5747650ed27,
     MasterGameID: 9d19792f-0c79-446c-8881-4e7c8392d8e3,
@@ -11558,7 +11572,7 @@
     Priority: 2,
     BidAmount: 11,
     ProjectedPointsAtTimeOfBid: 47.454031625263300000000000001,
-    SlotNumber: 8,
+    SlotNumber: 9,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null

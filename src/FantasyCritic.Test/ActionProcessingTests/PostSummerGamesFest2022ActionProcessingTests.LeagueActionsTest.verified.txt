@@ -8522,8 +8522,8 @@
   {
     LeagueID: 60f3a4ef-c232-4db5-ab57-5984ae1b4a6e,
     PublisherID: 618ab4c4-a704-4f2a-9c65-a9f68a371f1c,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Lightyear Frontier' with a bid of $6. Failure reason: Game is no longer eligible: That game is not scheduled to be released in 2022.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Lightyear Frontier' with a bid of $6
   },
   {
     LeagueID: 60f3a4ef-c232-4db5-ab57-5984ae1b4a6e,

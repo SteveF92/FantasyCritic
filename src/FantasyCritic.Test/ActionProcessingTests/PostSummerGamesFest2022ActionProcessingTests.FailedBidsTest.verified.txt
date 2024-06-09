@@ -740,16 +740,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: 21725d37-002a-48ab-8020-41a8d7035aa9,
-    PublisherID: 618ab4c4-a704-4f2a-9c65-a9f68a371f1c,
-    MasterGameID: df3725cb-db76-44ff-85e7-149f6fcce752,
-    GameName: Lightyear Frontier,
-    BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 47.454031625263300000000000001,
-    FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2022.,
-    Outcome: Game is no longer eligible: That game is not scheduled to be released in 2022.
-  },
-  {
     BidID: 2183a40f-ade6-42eb-9e1a-5d6b6df75048,
     PublisherID: 31bf7633-d0cc-4da6-b592-4cabc15d3527,
     MasterGameID: 4cd89dba-9ddf-458a-9599-4a5bdb032ac9,

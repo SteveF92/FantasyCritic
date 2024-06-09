@@ -8068,8 +8068,16 @@
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     GameName: Pentiment,
     CounterPick: false,
-    SlotNumber: 8,
+    SlotNumber: 9,
     BidAmount: 11
+  },
+  {
+    PublisherID: 618ab4c4-a704-4f2a-9c65-a9f68a371f1c,
+    MasterGameID: df3725cb-db76-44ff-85e7-149f6fcce752,
+    GameName: Lightyear Frontier,
+    CounterPick: false,
+    SlotNumber: 8,
+    BidAmount: 6
   },
   {
     PublisherID: 618d19f8-a0d2-44d2-b5a6-a0aa8ba29091,
