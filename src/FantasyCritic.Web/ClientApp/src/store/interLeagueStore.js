@@ -19,35 +19,15 @@ export default {
       context.commit('setBusy', true);
 
       try {
-        const tasks = [context.dispatch('getAllTags'), context.dispatch('getPossibleLeagueOptions'), context.dispatch('getBidTimes')];
-        await Promise.all(tasks);
+        const response = await axios.get('/api/General/BasicData');
+        context.commit('setTags', response.data.masterGameTags);
+        context.commit('setPossibleLeagueOptions', response.data.leagueOptions);
+        context.commit('setBidTimes', response.data.bidTimes);
         context.commit('setDataLoaded', true);
+      } catch (error) {
+        console.log(error);
       } finally {
         context.commit('setBusy', false);
-      }
-    },
-    async getAllTags(context) {
-      try {
-        const response = await axios.get('/api/Game/GetMasterGameTags');
-        context.commit('setTags', response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getPossibleLeagueOptions(context) {
-      try {
-        const response = await axios.get('/api/League/LeagueOptions');
-        context.commit('setPossibleLeagueOptions', response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getBidTimes(context) {
-      try {
-        const response = await axios.get('/api/General/BidTimes');
-        context.commit('setBidTimes', response.data);
-      } catch (error) {
-        console.log(error);
       }
     }
   },

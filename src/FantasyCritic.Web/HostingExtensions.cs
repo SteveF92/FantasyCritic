@@ -306,7 +306,8 @@ public static class HostingExtensions
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            });
+            })
+            .AddControllersAsServices();
 
         services.AddRazorPages();
         services.AddSignalR();

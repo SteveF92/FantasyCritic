@@ -8,6 +8,7 @@ namespace FantasyCritic.Web.Controllers;
 public abstract class FantasyCriticController : ControllerBase
 {
     protected readonly FantasyCriticUserManager _userManager;
+    private FantasyCriticUser? _currentUser;
 
     protected FantasyCriticController(FantasyCriticUserManager userManager)
     {
@@ -16,10 +17,20 @@ public abstract class FantasyCriticController : ControllerBase
 
     protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
     {
+        if (User is null)
+        {
+            return Result.Failure<FantasyCriticUser>("Not authenticated.");
+        }
+
         var userID = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
         if (userID is null)
         {
             return Result.Failure<FantasyCriticUser>("Can't get User ID");
+        }
+
+        if (_currentUser is not null && _currentUser.Id.ToString() == userID)
+        {
+            return Result.Success(_currentUser);
         }
 
         var currentUser = await _userManager.FindByIdAsync(userID);
@@ -28,6 +39,7 @@ public abstract class FantasyCriticController : ControllerBase
             return Result.Failure<FantasyCriticUser>("User does not exist.");
         }
 
+        _currentUser = currentUser;
         return Result.Success(currentUser);
     }
 

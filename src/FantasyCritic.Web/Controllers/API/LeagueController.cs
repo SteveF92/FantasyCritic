@@ -55,7 +55,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> LeagueOptions()
+    public async Task<ActionResult<LeagueOptionsViewModel>> LeagueOptions()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished);
