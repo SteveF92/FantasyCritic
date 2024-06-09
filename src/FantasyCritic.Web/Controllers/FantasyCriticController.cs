@@ -1,5 +1,7 @@
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Helpers;
+using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers;
@@ -15,14 +17,28 @@ public abstract class FantasyCriticController : ControllerBase
         _userManager = userManager;
     }
 
-    protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
+    //The null conditional after User is required! Don't remove it even if Visual Studio says it's unneeded.
+    protected string? GetUserIDFromClaims() => User?.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+    protected Guid? GetUserIDGuidFromClaims()
     {
-        if (User is null)
+        var userID = GetUserIDFromClaims();
+        if (userID is null)
         {
-            return Result.Failure<FantasyCriticUser>("Not authenticated.");
+            return null;
         }
 
-        var userID = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        return Guid.Parse(userID);
+    }
+
+    protected void SetCachedCurrentUser(FantasyCriticUser currentUser)
+    {
+        _currentUser = currentUser;
+    }
+
+    protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
+    {
+        var userID = GetUserIDFromClaims();
         if (userID is null)
         {
             return Result.Failure<FantasyCriticUser>("Can't get User ID");
@@ -73,5 +89,16 @@ public abstract class FantasyCriticController : ControllerBase
         }
 
         return Unauthorized();
+    }
+
+    protected static LeagueOptionsViewModel BuildLeagueOptionsViewModel(IReadOnlyList<SupportedYear> supportedYears)
+    {
+        var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished).Select(x => x.Year);
+        LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
+            PickupSystem.GetAllPossibleValues(), TiebreakSystem.GetAllPossibleValues(),
+            ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues(),
+            ReleaseSystem.GetAllPossibleValues());
+
+        return viewModel;
     }
 }

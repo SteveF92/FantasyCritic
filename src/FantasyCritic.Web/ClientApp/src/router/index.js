@@ -43,7 +43,7 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
   }
 
   if (!store.getters.interLeagueDataLoaded && !store.getters.interLeagueIsBusy) {
-    await store.dispatch('fetchInterLeagueData');
+    await store.dispatch('fetchBasicData');
   }
 
   //If we are current, we're good to go

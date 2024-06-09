@@ -5,7 +5,6 @@ using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -58,25 +57,7 @@ public class LeagueController : BaseLeagueController
     public async Task<ActionResult<LeagueOptionsViewModel>> LeagueOptions()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished);
-
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsSuccess)
-        {
-            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUserResult.Value, "BetaTester");
-            if (userIsBetaUser)
-            {
-                var betaYears = supportedYears.Where(x => x.OpenForBetaUsers);
-                openYears = openYears.Concat(betaYears).Distinct();
-            }
-        }
-
-        var openYearInts = openYears.Select(x => x.Year);
-        LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYearInts, DraftSystem.GetAllPossibleValues(),
-            PickupSystem.GetAllPossibleValues(), TiebreakSystem.GetAllPossibleValues(),
-            ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues(),
-            ReleaseSystem.GetAllPossibleValues());
-
+        var viewModel = BuildLeagueOptionsViewModel(supportedYears);
         return Ok(viewModel);
     }
 

@@ -1,25 +1,24 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.SharedSerialization.API;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
-public class GeneralController : ControllerBase
+public class GeneralController : FantasyCriticController
 {
     private readonly InterLeagueService _interLeagueService;
-    private readonly FantasyCriticUserManager _userManager;
     private readonly IClock _clock;
     private readonly GameController _gameController;
     private readonly LeagueController _leagueController;
 
     public GeneralController(InterLeagueService interLeagueService, FantasyCriticUserManager userManager, IClock clock,
-        GameController gameController, LeagueController leagueController)
+        GameController gameController, LeagueController leagueController) : base(userManager)
     {
         _interLeagueService = interLeagueService;
-        _userManager = userManager;
         _clock = clock;
         _gameController = gameController;
         _leagueController = leagueController;
@@ -39,27 +38,37 @@ public class GeneralController : ControllerBase
 
     public async Task<ActionResult<BidTimesViewModel>> BidTimes()
     {
-        var nextPublicRevealTime = _clock.GetNextPublicRevealTime();
-        var nextBidTime = _clock.GetNextBidTime();
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        return Ok(new BidTimesViewModel(nextPublicRevealTime, nextBidTime, systemWideSettings.ActionProcessingMode));
+        var vm = BuildBidTimesViewModel(systemWideSettings);
+        return Ok(vm);
     }
 
     public async Task<ActionResult> BasicData()
     {
-        var bidsTask = BidTimes();
-        var tagsTask = _gameController.GetMasterGameTags();
-        var leagueOptions = _leagueController.LeagueOptions();
+        var userID = GetUserIDGuidFromClaims();
+        var basicData = await _interLeagueService.GetBasicData(userID);
+        if (basicData.CurrentUser is not null)
+        {
+            SetCachedCurrentUser(basicData.CurrentUser);
+        }
 
-        await Task.WhenAll([bidsTask, tagsTask, leagueOptions]);
-
+        var bidTimes = BuildBidTimesViewModel(basicData.SystemWideSettings);
+        var masterGameTags = basicData.MasterGameTags.Select(x => new MasterGameTagViewModel(x)).ToList();
+        var leagueOptions = BuildLeagueOptionsViewModel(basicData.SupportedYears);
         var vm = new
         {
-            BidTimes = (await bidsTask).Value,
-            MasterGameTags = (await tagsTask).Value,
-            LeagueOptions = (await leagueOptions).Value,
+            BidTimes = bidTimes,
+            MasterGameTags = masterGameTags,
+            LeagueOptions = leagueOptions,
         };
 
         return Ok(vm);
+    }
+
+    private BidTimesViewModel BuildBidTimesViewModel(SystemWideSettings systemWideSettings)
+    {
+        var nextPublicRevealTime = _clock.GetNextPublicRevealTime();
+        var nextBidTime = _clock.GetNextBidTime();
+        return new BidTimesViewModel(nextPublicRevealTime, nextBidTime, systemWideSettings.ActionProcessingMode);
     }
 }

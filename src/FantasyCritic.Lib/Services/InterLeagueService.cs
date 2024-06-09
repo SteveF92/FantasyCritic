@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
@@ -21,6 +22,11 @@ public class InterLeagueService
         _masterGameRepo = masterGameRepo;
         _clock = clock;
         _discordPushService = discordPushService;
+    }
+
+    public Task<BasicData> GetBasicData(Guid? userID)
+    {
+        return _fantasyCriticRepo.GetBasicData(userID);
     }
 
     public async Task<SystemWideSettings> GetSystemWideSettings()

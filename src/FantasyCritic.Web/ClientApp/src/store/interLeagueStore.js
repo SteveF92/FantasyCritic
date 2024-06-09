@@ -15,7 +15,7 @@ export default {
     bidTimes: (state) => state.bidTimes
   },
   actions: {
-    async fetchInterLeagueData(context) {
+    async fetchBasicData(context) {
       context.commit('setBusy', true);
 
       try {
