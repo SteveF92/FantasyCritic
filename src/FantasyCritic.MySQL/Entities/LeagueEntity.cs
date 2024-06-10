@@ -36,6 +36,9 @@ internal class LeagueEntity
     public int NumberOfFollowers { get; set; }
     public bool Archived { get; set; }
 
+    public bool UserIsInLeague { get; set; }
+    public bool UserIsFollowingLeague { get; set; }
+
     public string ManagerDisplayName { get; set; } = null!;
     public string ManagerEmailAddress { get; set; } = null!;
 

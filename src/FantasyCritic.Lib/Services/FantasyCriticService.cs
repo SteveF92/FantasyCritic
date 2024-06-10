@@ -402,11 +402,6 @@ public class FantasyCriticService
         await _fantasyCriticRepo.DeleteLeague(league);
     }
 
-    public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
-    {
-        return _fantasyCriticRepo.GetFollowedLeagues(currentUser);
-    }
-
     public Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league)
     {
         return _fantasyCriticRepo.GetLeagueFollowers(league);
@@ -430,8 +425,8 @@ public class FantasyCriticService
             return Result.Failure("Can't follow a league you are in.");
         }
 
-        var followedLeagues = await GetFollowedLeagues(user);
-        bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
+        var leaguesForUser = await _fantasyCriticRepo.GetLeaguesForUser(user);
+        bool userIsFollowingLeague = leaguesForUser.Any(x => x.UserIsFollowingLeague && x.League.LeagueID == league.LeagueID);
         if (userIsFollowingLeague)
         {
             return Result.Failure("User is already following that league.");
@@ -443,8 +438,8 @@ public class FantasyCriticService
 
     public async Task<Result> UnfollowLeague(League league, FantasyCriticUser user)
     {
-        var followedLeagues = await GetFollowedLeagues(user);
-        bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
+        var leaguesForUser = await _fantasyCriticRepo.GetLeaguesForUser(user);
+        bool userIsFollowingLeague = leaguesForUser.Any(x => x.UserIsFollowingLeague && x.League.LeagueID == league.LeagueID);
         if (!userIsFollowingLeague)
         {
             return Result.Failure("User is not following that league.");

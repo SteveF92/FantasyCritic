@@ -66,7 +66,6 @@ public class LeagueController : BaseLeagueController
         var currentUser = await GetCurrentUserOrThrow();
 
         var myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
-
         var viewModels = new List<LeagueWithStatusViewModel>();
         foreach (var league in myLeagues)
         {
@@ -76,26 +75,11 @@ public class LeagueController : BaseLeagueController
             }
 
             bool isManager = (league.League.LeagueManager.UserID == currentUser.Id);
-            viewModels.Add(new LeagueWithStatusViewModel(league.League, isManager, true, true, league.MostRecentYearOneShot));
+            viewModels.Add(new LeagueWithStatusViewModel(league.League, isManager, league.UserIsInLeague, league.UserIsFollowingLeague, league.MostRecentYearOneShot));
         }
 
         var sortedViewModels = viewModels.OrderBy(l => l.LeagueName).ToList();
         return Ok(sortedViewModels);
-    }
-
-    public async Task<IActionResult> FollowedLeagues()
-    {
-        var currentUser = await GetCurrentUserOrThrow();
-
-        IReadOnlyList<League> leaguesFollowing = await _fantasyCriticService.GetFollowedLeagues(currentUser);
-
-        List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
-        foreach (var league in leaguesFollowing)
-        {
-            viewModels.Add(new LeagueViewModel(league, false, false, true));
-        }
-
-        return Ok(viewModels);
     }
 
     public async Task<IActionResult> MyInvites()

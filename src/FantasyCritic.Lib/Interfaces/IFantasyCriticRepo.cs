@@ -30,7 +30,6 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year);
     Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher();
 
-    Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser user);
     Task FollowLeague(League league, FantasyCriticUser user);
     Task UnfollowLeague(League league, FantasyCriticUser user);
 
