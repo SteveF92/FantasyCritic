@@ -158,14 +158,15 @@ export default {
   },
   async mounted() {
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
-    const tasks = [this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchMyConferences(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
+    const tasks = [this.fetchMyLeagues(), this.fetchInvitedLeagues(), this.fetchMyConferences(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
     await Promise.all(tasks);
   },
   methods: {
     async fetchMyLeagues() {
       try {
         const response = await axios.get('/api/League/MyLeagues');
-        this.myLeagues = response.data;
+        this.myLeagues = response.data.filter((x) => x.userIsInLeague);
+        this.myFollowedLeagues = response.data.filter((x) => x.userIsFollowingLeague);
         this.fetchingLeagues = false;
       } catch (error) {
         this.errorInfo = error.response.data;
@@ -175,14 +176,6 @@ export default {
       try {
         const response = await axios.get('/api/League/MyInvites');
         this.invitedLeagues = response.data;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchFollowedLeagues() {
-      try {
-        const response = await axios.get('/api/League/FollowedLeagues');
-        this.myFollowedLeagues = response.data;
       } catch (error) {
         this.errorInfo = error.response.data;
       }

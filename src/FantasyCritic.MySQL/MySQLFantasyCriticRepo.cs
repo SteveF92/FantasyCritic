@@ -1400,7 +1400,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
         {
-            userID = user.Id,
+            P_UserID = user.Id,
         };
 
         var resultSets = await connection.QueryMultipleAsync("sp_getleaguesforuser", queryObject, commandType: CommandType.StoredProcedure);
