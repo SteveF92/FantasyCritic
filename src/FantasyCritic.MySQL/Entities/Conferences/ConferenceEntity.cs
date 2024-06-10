@@ -14,7 +14,7 @@ internal class ConferenceEntity
     {
         ConferenceID = domain.ConferenceID;
         ConferenceName = domain.ConferenceName;
-        ConferenceManager = domain.ConferenceManager.Id;
+        ConferenceManager = domain.ConferenceManager.UserID;
         PrimaryLeagueID = domain.PrimaryLeagueID;
         CustomRulesConference = domain.CustomRulesConference;
     }
@@ -25,7 +25,7 @@ internal class ConferenceEntity
     public Guid PrimaryLeagueID { get; set; }
     public bool CustomRulesConference { get; set; }
 
-    public Conference ToDomain(FantasyCriticUser manager, IEnumerable<int> years, IEnumerable<Guid> leaguesInConference)
+    public Conference ToDomain(MinimalFantasyCriticUser manager, IEnumerable<int> years, IEnumerable<Guid> leaguesInConference)
     {
         return new Conference(ConferenceID, ConferenceName, manager, years, CustomRulesConference, PrimaryLeagueID, leaguesInConference);
     }

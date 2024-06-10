@@ -12,7 +12,7 @@ public class MinimalConferenceViewModel
         Years = domain.Years;
         ActiveYear = domain.Years.Max();
         CustomRulesConference = domain.CustomRulesConference;
-        ConferenceManagerDisplayName = domain.ConferenceManager.UserName;
+        ConferenceManagerDisplayName = domain.ConferenceManager.DisplayName;
     }
 
     public Guid ConferenceID { get; }

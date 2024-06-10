@@ -67,7 +67,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             var yearsForConference = conferenceYearLookup[conferenceEntity.ConferenceID].Select(x => x.Year);
             var leaguesForConference = leagueLookup[conferenceEntity.ConferenceID].Select(x => x.LeagueID);
 
-            Conference conference = conferenceEntity.ToDomain(conferenceManager, yearsForConference, leaguesForConference);
+            Conference conference = conferenceEntity.ToDomain(conferenceManager.ToMinimal(), yearsForConference, leaguesForConference);
             conferences.Add(conference);
         }
 
@@ -116,12 +116,12 @@ public class MySQLConferenceRepo : IConferenceRepo
         await transaction.CommitAsync();
     }
 
-    private async Task AddPlayerToConferenceInternal(Conference conference, FantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
+    private async Task AddPlayerToConferenceInternal(Conference conference, IMinimalFantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new
         {
             conferenceID = conference.ConferenceID,
-            userID = user.Id,
+            userID = user.UserID,
         };
 
         await connection.ExecuteAsync("insert into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", userAddObject, transaction);
@@ -151,7 +151,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
         IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(leaguesInConferenceSQL, queryObject);
 
-        Conference conference = conferenceEntity.ToDomain(manager, years, leagueIDs);
+        Conference conference = conferenceEntity.ToDomain(manager.ToMinimal(), years, leagueIDs);
         return conference;
     }
 

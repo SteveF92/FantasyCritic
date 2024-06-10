@@ -66,7 +66,7 @@ public class ConferenceController : BaseLeagueController
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
-        ConferenceCreationParameters domainRequest = request.ToDomain(currentUser, tagDictionary);
+        ConferenceCreationParameters domainRequest = request.ToDomain(currentUser.ToMinimal(), tagDictionary);
         var conference = await _conferenceService.CreateConference(domainRequest);
         if (conference.IsFailure)
         {

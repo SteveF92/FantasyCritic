@@ -816,11 +816,7 @@ public class DiscordPushService
         }
 
         SocketUser? user = null;
-        var fakedFullUser = new FantasyCriticUser()
-        {
-            Id = leagueYear.League.LeagueManager.UserID
-        };
-        var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(fakedFullUser, userStore);
+        var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(leagueYear.League.LeagueManager, userStore);
         if (leagueManagerDiscordUser != null)
         {
             user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
@@ -941,9 +937,14 @@ public class DiscordPushService
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
-    private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
+    private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(MinimalFantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
     {
-        var externalLogins = await userStore.GetLoginsAsync(fantasyCriticUser, CancellationToken.None);
+        var fakedFullUser = new FantasyCriticUser()
+        {
+            Id = fantasyCriticUser.UserID
+        };
+
+        var externalLogins = await userStore.GetLoginsAsync(fakedFullUser, CancellationToken.None);
         var discordProviderKey = externalLogins.SingleOrDefault(x => x.LoginProvider == "discord")?.ProviderKey;
         if (discordProviderKey is not null)
         {
