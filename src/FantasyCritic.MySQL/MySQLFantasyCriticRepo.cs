@@ -1401,17 +1401,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             userID = user.Id,
         };
 
-        const string sql = """
-                            select vw_league.*, tbl_league_hasuser.Archived, tbl_user.DisplayName
-                            from vw_league 
-                            join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID)
-                            join tbl_user on tbl_user.UserID = vw_league.LeagueManager
-                            where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;
-                            
-                            select LeagueID, Year from tbl_league_year join tbl_league_hasuser on (tbl_league_year.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;
-                           """;
-        var resultSets = await connection.QueryMultipleAsync(sql, queryObject);
-        var leagueEntities = await resultSets.ReadAsync<LeagueWithManagerEntity>();
+        var resultSets = await connection.QueryMultipleAsync("sp_getleaguesforuser", queryObject, commandType: CommandType.StoredProcedure);
+        var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
         var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
 

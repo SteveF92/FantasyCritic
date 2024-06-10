@@ -20,6 +20,9 @@ internal class LeagueEntity
         TestLeague = league.TestLeague;
         CustomRulesLeague = league.CustomRulesLeague;
         NumberOfFollowers = league.NumberOfFollowers;
+
+        ManagerDisplayName = league.LeagueManager.DisplayName;
+        ManagerEmailAddress = league.LeagueManager.EmailAddress;
     }
 
     public Guid LeagueID { get; set; }
@@ -33,9 +36,15 @@ internal class LeagueEntity
     public int NumberOfFollowers { get; set; }
     public bool Archived { get; set; }
 
-    public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years)
+    public string ManagerDisplayName { get; set; } = null!;
+    public string ManagerEmailAddress { get; set; } = null!;
+
+    public bool MostRecentYearOneShot { get; set; }
+
+    public League ToDomain(IEnumerable<int> years)
     {
-        League parameters = new League(LeagueID, LeagueName, manager, ConferenceID, ConferenceName, years, PublicLeague, TestLeague, CustomRulesLeague, Archived, NumberOfFollowers);
+        var minimalManager = new MinimalFantasyCriticUser(LeagueManager, ManagerDisplayName, ManagerEmailAddress);
+        League parameters = new League(LeagueID, LeagueName, minimalManager, ConferenceID, ConferenceName, years, PublicLeague, TestLeague, CustomRulesLeague, Archived, NumberOfFollowers);
         return parameters;
     }
 }

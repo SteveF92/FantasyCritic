@@ -44,7 +44,7 @@ public class ConferenceService
 
         IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
         //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
-        League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, years, true, false, parameters.CustomRulesConference, false, 0);
+        League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager.ToMinimal(), null, parameters.ConferenceName, years, true, false, parameters.CustomRulesConference, false, 0);
         Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, years, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
         await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newConference);
@@ -71,7 +71,7 @@ public class ConferenceService
         }
 
         IEnumerable<int> years = new List<int>() { year };
-        League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager, conference.ConferenceID, conference.ConferenceName, years, true, false, conference.CustomRulesConference, false, 0);
+        League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager.ToMinimal(), conference.ConferenceID, conference.ConferenceName, years, true, false, conference.CustomRulesConference, false, 0);
         await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague);
         return Result.Success();
     }
