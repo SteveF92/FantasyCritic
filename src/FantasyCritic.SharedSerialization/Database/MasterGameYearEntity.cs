@@ -50,7 +50,7 @@ public class MasterGameYearEntity
         PeakHypeFactor = masterGameStats.PeakHypeFactor;
         LinearRegressionHypeFactor = masterGameStats.LinearRegressionHypeFactor;
         AddedTimestamp = masterGameStats.MasterGame.AddedTimestamp.ToDateTimeUtc();
-        AddedByUserID = masterGameStats.MasterGame.AddedByUser.Id;
+        AddedByUserID = masterGameStats.MasterGame.AddedByUser.UserID;
     }
 
     public Guid MasterGameID { get; set; }
@@ -92,7 +92,7 @@ public class MasterGameYearEntity
     public DateTime AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
-    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
+    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, MinimalFantasyCriticUser addedByUser)
     {
         LocalDate? releaseDate = null;
         if (ReleaseDate.HasValue)

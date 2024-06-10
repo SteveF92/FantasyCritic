@@ -34,9 +34,10 @@ internal static class MasterGameFactory
     private static MasterGame CreateMasterGame(string guid, string name, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate, LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate,
         LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID, decimal? criticScore, string boxartFileName, string firstCriticScoreTimestamp, bool doNotRefreshDate, bool doNotRefreshAnything, string addedTimestamp)
     {
+        var user = new MinimalFantasyCriticUser(Guid.Empty, "", "");
         var game = new MasterGame(Guid.Parse(guid), name, estimatedReleaseDate, minimumReleaseDate, maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
             releaseDate, openCriticID, null, null, criticScore, criticScore.HasValue, "a", null, "", boxartFileName, InstantPattern.ExtendedIso.Parse(firstCriticScoreTimestamp).GetValueOrThrow(), doNotRefreshDate,
-            doNotRefreshAnything, false, false, false, InstantPattern.ExtendedIso.Parse(addedTimestamp).GetValueOrThrow(), new FantasyCriticUser(){Id = Guid.Empty}, new List<MasterSubGame>(), new List<MasterGameTag>());
+            doNotRefreshAnything, false, false, false, InstantPattern.ExtendedIso.Parse(addedTimestamp).GetValueOrThrow(), user, new List<MasterSubGame>(), new List<MasterGameTag>());
 
         return game;
     }

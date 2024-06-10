@@ -31,7 +31,7 @@ public class CreateMasterGameRequest
     public string? GGToken { get; init; }
     public string? Notes { get; init; }
 
-    public Lib.Domain.MasterGame ToDomain(IClock clock, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
+    public Lib.Domain.MasterGame ToDomain(IClock clock, IEnumerable<MasterGameTag> tags, MinimalFantasyCriticUser addedByUser)
     {
         var now = clock.GetCurrentInstant();
         LocalDate minimumReleaseDate = now.ToEasternDate().PlusDays(1);

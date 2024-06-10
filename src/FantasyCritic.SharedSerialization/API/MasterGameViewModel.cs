@@ -43,7 +43,7 @@ public class MasterGameViewModel
         BoxartFileName = masterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.GGCoverArtFileName;
         AddedTimestamp = masterGame.AddedTimestamp;
-        AddedByUser = new FantasyCriticUserViewModel(masterGame.AddedByUser);
+        AddedByUser = new MinimalFantasyCriticUserViewModel(masterGame.AddedByUser);
 
         Error = error;
         NumberOutstandingCorrections = numberOutstandingCorrections;
@@ -95,7 +95,7 @@ public class MasterGameViewModel
     public string? BoxartFileName { get; init; }
     public string? GGCoverArtFileName { get; init; }
     public Instant AddedTimestamp { get; init; }
-    public FantasyCriticUserViewModel? AddedByUser { get; init; }
+    public MinimalFantasyCriticUserViewModel AddedByUser { get; init; }
     public bool Error { get; init; }
     public int NumberOutstandingCorrections { get; init; }
 
@@ -112,6 +112,6 @@ public class MasterGameViewModel
         
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,  AddedTimestamp, DoNotRefreshDate,
-            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
+            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, AddedByUser.ToDomain(), new List<MasterSubGame>(), tags);
     }
 }
