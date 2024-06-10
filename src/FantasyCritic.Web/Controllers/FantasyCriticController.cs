@@ -20,22 +20,6 @@ public abstract class FantasyCriticController : ControllerBase
     //The null conditional after User is required! Don't remove it even if Visual Studio says it's unneeded.
     protected string? GetUserIDFromClaims() => User?.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
 
-    protected Guid? GetUserIDGuidFromClaims()
-    {
-        var userID = GetUserIDFromClaims();
-        if (userID is null)
-        {
-            return null;
-        }
-
-        return Guid.Parse(userID);
-    }
-
-    protected void SetCachedCurrentUser(FantasyCriticUser currentUser)
-    {
-        _currentUser = currentUser;
-    }
-
     protected async Task<Result<FantasyCriticUser>> GetCurrentUser()
     {
         var userID = GetUserIDFromClaims();

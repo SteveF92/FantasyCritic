@@ -45,22 +45,13 @@ public class GeneralController : FantasyCriticController
 
     public async Task<ActionResult> BasicData()
     {
-        var userID = GetUserIDGuidFromClaims();
-        var basicData = await _interLeagueService.GetBasicData(userID);
-
-        FantasyCriticUserViewModel? userVM = null;
-        if (basicData.CurrentUser is not null)
-        {
-            SetCachedCurrentUser(basicData.CurrentUser);
-            userVM = new FantasyCriticUserViewModel(basicData.CurrentUser);
-        }
+        var basicData = await _interLeagueService.GetBasicData();
 
         var bidTimes = BuildBidTimesViewModel(basicData.SystemWideSettings);
         var masterGameTags = basicData.MasterGameTags.Select(x => new MasterGameTagViewModel(x)).ToList();
         var leagueOptions = BuildLeagueOptionsViewModel(basicData.SupportedYears);
         var vm = new
         {
-            CurrentUser = userVM,
             BidTimes = bidTimes,
             MasterGameTags = masterGameTags,
             LeagueOptions = leagueOptions,

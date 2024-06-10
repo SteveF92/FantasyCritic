@@ -33,31 +33,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         _masterGameRepo = masterGameRepo;
     }
 
-    public async Task<BasicData> GetBasicData(Guid? userID)
+    public async Task<BasicData> GetBasicData()
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var param = new
-        {
-            P_UserID = userID
-        };
 
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getbasicdata", param, commandType: CommandType.StoredProcedure);
-        var userEntity = await resultSets.ReadSingleOrDefaultAsync<FantasyCriticUserEntity>();
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getbasicdata", commandType: CommandType.StoredProcedure);
         var systemWideSettingsEntity = await resultSets.ReadSingleAsync<SystemWideSettingsEntity>();
         var tagEntities = await resultSets.ReadAsync<MasterGameTagEntity>();
         var supportedYearEntities = await resultSets.ReadAsync<SupportedYearEntity>();
 
-        var domainUser = userEntity?.ToDomain();
-        if (!userID.HasValue)
-        {
-            domainUser = null;
-        }
         var systemWideSettings = new SystemWideSettings(systemWideSettingsEntity.ActionProcessingMode, systemWideSettingsEntity.RefreshOpenCritic);
         var tags = tagEntities.Select(x => x.ToDomain()).ToList();
         var supportedYears = supportedYearEntities.Select(x => x.ToDomain()).ToList();
         _supportedYearCache = supportedYears;
 
-        return new BasicData(domainUser, systemWideSettings, tags, supportedYears);
+        return new BasicData(systemWideSettings, tags, supportedYears);
     }
 
     public async Task<League?> GetLeague(Guid id)

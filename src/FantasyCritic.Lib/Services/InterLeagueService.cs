@@ -24,9 +24,9 @@ public class InterLeagueService
         _discordPushService = discordPushService;
     }
 
-    public Task<BasicData> GetBasicData(Guid? userID)
+    public Task<BasicData> GetBasicData()
     {
-        return _fantasyCriticRepo.GetBasicData(userID);
+        return _fantasyCriticRepo.GetBasicData();
     }
 
     public async Task<SystemWideSettings> GetSystemWideSettings()
