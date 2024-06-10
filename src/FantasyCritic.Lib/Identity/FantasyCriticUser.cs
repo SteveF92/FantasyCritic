@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Identity;
 
-public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUser>
+public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUser>, IMinimalFantasyCriticUser
 {
     public FantasyCriticUser()
     {
@@ -92,4 +92,8 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
         return new FantasyCriticUser(Guid.Empty, "<Non-Existent User>", null, 0, "", "", false, "", "", false, null,
             Instant.MinValue, GeneralUserSettings.Default, false);
     }
+
+    public Guid UserID => Id;
+    public string DisplayName => UserName;
+    public string EmailAddress => Email;
 }

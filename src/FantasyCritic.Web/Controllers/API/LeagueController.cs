@@ -217,7 +217,7 @@ public class LeagueController : BaseLeagueController
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
-            validResult.ActiveUsers, completePlayStatus, systemWideValues,
+            validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList(), completePlayStatus, systemWideValues,
             validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedByDictionary,
             activeTrades, activeSpecialAuctions, privatePublisherData, gameNewsViewModel);
