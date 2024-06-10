@@ -23,7 +23,7 @@ public interface IFantasyCriticRepo
     Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear);
 
     Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
-    Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange);
+    Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange);
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
     Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league);
     Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user);
@@ -56,7 +56,7 @@ public interface IFantasyCriticRepo
     Task AddPublisherGame(PublisherGame publisherGame);
     Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
     Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
-    Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates);
+    Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<int, Guid?> slotStates);
 
 
     Task<IReadOnlyList<SupportedYear>> GetSupportedYears();

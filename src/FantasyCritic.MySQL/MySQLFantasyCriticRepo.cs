@@ -1330,7 +1330,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(insertSQL, insertObjects);
     }
 
-    public async Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange)
+    public async Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange)
     {
         const string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";
         const string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
@@ -2518,7 +2518,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(sql, finalUpdates, transaction);
     }
 
-    public async Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
+    public async Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<int, Guid?> slotStates)
     {
         var realOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
         var tempOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
