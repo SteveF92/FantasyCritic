@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
@@ -50,11 +51,14 @@ public class GeneralController : FantasyCriticController
         var bidTimes = BuildBidTimesViewModel(basicData.SystemWideSettings);
         var masterGameTags = basicData.MasterGameTags.Select(x => new MasterGameTagViewModel(x)).ToList();
         var leagueOptions = BuildLeagueOptionsViewModel(basicData.SupportedYears);
+        var supportedYears = basicData.SupportedYears.Select(x => new SupportedYearViewModel(x)).ToList();
+
         var vm = new
         {
             BidTimes = bidTimes,
             MasterGameTags = masterGameTags,
             LeagueOptions = leagueOptions,
+            SupportedYears = supportedYears
         };
 
         return Ok(vm);

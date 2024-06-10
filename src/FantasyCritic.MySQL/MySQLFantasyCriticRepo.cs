@@ -89,7 +89,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<League> leagues = new List<League>();
         var allUsers = await _userStore.GetAllUsers();
         var userDictionary = allUsers.ToDictionary(x => x.Id);
-        var oneShotLeagues = await GetLeaguesWithMostRecentYearOneShot();
         foreach (var leagueEntity in leagueEntities)
         {
             FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="interLeagueDataLoaded">
     <div class="col-lg-10 offset-lg-1 col-md-12">
       <div class="row">
         <div class="header-row">
@@ -86,8 +86,6 @@ export default {
       eligibilityFilter: null,
       takenStatusFilter: null,
       unreleasedOnlyFilter: false,
-      selectableYears: [],
-      supportedYears: [],
       flatMasterGameYears: null,
       possibleMasterGameYears: null,
       myLeaguesForYear: [],
@@ -95,6 +93,9 @@ export default {
     };
   },
   computed: {
+    selectableYears() {
+      return this.supportedYears.map((x) => x.year);
+    },
     gamesToShow() {
       if (this.flatMasterGameYears) {
         if (!this.unreleasedOnlyFilter) {
@@ -137,57 +138,33 @@ export default {
       return this.supportedYears.filter((x) => x.year === this.selectedYear)[0].openForPlay;
     }
   },
-  mounted() {
-    this.fetchSupportedYears();
+  async mounted() {
+    this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
+    await Promise.all([this.fetchGamesForYear(), this.fetchMyLeaguesForYear()]);
   },
   methods: {
-    fetchSupportedYears() {
-      axios
-        .get('/api/game/SupportedYears')
-        .then((response) => {
-          this.supportedYears = response.data;
-          this.selectableYears = this.supportedYears.map((x) => x.year);
-          this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
-          this.fetchGamesForYear();
-          this.fetchMyLeaguesForYear();
-        })
-        .catch(() => {});
-    },
-    fetchGamesForYear() {
+    async fetchGamesForYear() {
       this.isBusy = true;
       this.flatMasterGameYears = null;
       this.possibleMasterGameYears = null;
 
       if (!this.selectedLeague) {
-        axios
-          .get('/api/game/MasterGameYear/' + this.selectedYear)
-          .then((response) => {
-            this.flatMasterGameYears = response.data;
-            this.isBusy = false;
-          })
-          .catch(() => {});
+        const response = await axios.get('/api/game/MasterGameYear/' + this.selectedYear);
+        this.flatMasterGameYears = response.data;
       } else {
-        axios
-          .get(`/api/game/MasterGameYearInLeagueContext/${this.selectedYear}?leagueID=${this.selectedLeague.leagueID}`)
-          .then((response) => {
-            this.possibleMasterGameYears = response.data;
-            this.isBusy = false;
-          })
-          .catch(() => {});
+        const response = await axios.get(`/api/game/MasterGameYearInLeagueContext/${this.selectedYear}?leagueID=${this.selectedLeague.leagueID}`);
+        this.possibleMasterGameYears = response.data;
       }
+
+      this.isBusy = false;
     },
-    fetchMyLeaguesForYear() {
-      axios
-        .get('/api/League/MyLeagues?year=' + this.selectedYear)
-        .then((response) => {
-          let allLeaguesForYear = response.data;
-          this.myLeaguesForYear = _.filter(allLeaguesForYear, { testLeague: false });
-        })
-        .catch(() => {});
+    async fetchMyLeaguesForYear() {
+      const response = await axios.get('/api/League/MyLeagues?year=' + this.selectedYear);
+      let allLeaguesForYear = response.data;
+      this.myLeaguesForYear = _.filter(allLeaguesForYear, { testLeague: false });
     },
-    changeYear() {
-      this.fetchGamesForYear();
-      this.fetchMyLeaguesForYear();
+    async changeYear() {
+      await Promise.all([this.fetchGamesForYear(), this.fetchMyLeaguesForYear()]);
     },
     clearLeagueFilter() {
       this.eligibilityFilter = null;

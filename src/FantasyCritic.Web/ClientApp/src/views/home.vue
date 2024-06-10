@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="interLeagueDataLoaded">
     <div v-if="userInfo && !userInfo.emailConfirmed" class="alert alert-warning">
       <div>Your email address has not been confirmed. You cannot accept league invites via email until you do so.</div>
       <div>Check your email account for an email from us.</div>
@@ -131,7 +131,6 @@ export default {
       myFollowedLeagues: [],
       myConferences: [],
       selectedYear: null,
-      supportedYears: [],
       activeRoyaleYearQuarter: null,
       publicLeagues: [],
       userRoyalePublisher: null,
@@ -158,15 +157,8 @@ export default {
     }
   },
   async mounted() {
-    const tasks = [
-      this.fetchMyLeagues(),
-      this.fetchFollowedLeagues(),
-      this.fetchInvitedLeagues(),
-      this.fetchMyConferences(),
-      this.fetchSupportedYears(),
-      this.fetchGameNews(),
-      this.fetchActiveRoyaleYearQuarter()
-    ];
+    this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
+    const tasks = [this.fetchMyLeagues(), this.fetchFollowedLeagues(), this.fetchInvitedLeagues(), this.fetchMyConferences(), this.fetchGameNews(), this.fetchActiveRoyaleYearQuarter()];
     await Promise.all(tasks);
   },
   methods: {
@@ -199,21 +191,6 @@ export default {
       try {
         const response = await axios.get('/api/Conference/MyConferences');
         this.myConferences = response.data;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchSupportedYears() {
-      try {
-        const response = await axios.get('/api/game/SupportedYears');
-        let supportedYears = response.data;
-        let openYears = _.filter(supportedYears, { openForPlay: true });
-        let finishedYears = _.filter(supportedYears, { finished: true });
-        this.supportedYears = openYears.concat(finishedYears).map(function (v) {
-          return v.year;
-        });
-        this.selectedYear = this.supportedYears[0];
-        this.fetchPublicLeaguesForYear(this.selectedYear);
       } catch (error) {
         this.errorInfo = error.response.data;
       }

@@ -6,6 +6,7 @@ export default {
     isBusy: false,
     possibleLeagueOptions: null,
     bidTimes: null,
+    supportedYears: null,
     dataLoaded: false
   },
   getters: {
@@ -23,6 +24,7 @@ export default {
         context.commit('setTags', response.data.masterGameTags);
         context.commit('setPossibleLeagueOptions', response.data.leagueOptions);
         context.commit('setBidTimes', response.data.bidTimes);
+        context.commit('setSupportedYears', response.data.supportedYears);
         context.commit('setDataLoaded', true);
       } catch (error) {
         console.log(error);
@@ -41,8 +43,8 @@ export default {
     setTags(state, tags) {
       state.tags = tags;
     },
-    clearTags(state) {
-      state.tags = null;
+    setSupportedYears(state, supportedYears) {
+      state.supportedYears = supportedYears;
     },
     setPossibleLeagueOptions(state, possibleLeagueOptions) {
       state.possibleLeagueOptions = possibleLeagueOptions;
