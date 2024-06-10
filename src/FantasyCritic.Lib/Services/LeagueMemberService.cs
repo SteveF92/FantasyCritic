@@ -156,14 +156,9 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetOutstandingInvitees(league);
     }
 
-    public Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user)
+    public Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user)
     {
         return _fantasyCriticRepo.GetLeaguesForUser(user);
-    }
-
-    public Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
-    {
-        return _fantasyCriticRepo.GetLeaguesWithMostRecentYearOneShot();
     }
 
     public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser user)

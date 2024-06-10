@@ -146,7 +146,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var domainTagOverrides = await ConvertTagOverrideEntities(tagOverrideEntities, tagDictionary);
         var publishers = await ConvertPublisherEntities(usersInLeagueEntities, publisherEntities, publisherGameEntities,
             formerPublisherGameEntities, year);
-        
+
         LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
             winningUser, publishers);
         return leagueYear;
@@ -937,7 +937,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 leagueActions.Add(entity.ToDomain(publisher));
             }
         }
-        
+
         return leagueActions;
     }
 
@@ -1123,7 +1123,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(createLeagueYearSQL, leagueYearEntity, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
-        await AddPlayerToLeagueInternal(league, league.LeagueManager, initialYear, true, connection, transaction);
+        await AddPlayerToLeagueInternal(league, league.LeagueManager.UserID, initialYear, true, connection, transaction);
     }
 
     public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction)
@@ -1393,32 +1393,37 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return result > 0;
     }
 
-    public async Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user)
+    public async Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user)
     {
-        IEnumerable<LeagueEntity> leagueEntities;
-        await using (var connection = new MySqlConnection(_connectionString))
+        await using var connection = new MySqlConnection(_connectionString);
+        var queryObject = new
         {
-            var queryObject = new
-            {
-                userID = user.Id,
-            };
+            userID = user.Id,
+        };
 
-            const string sql = "select vw_league.*, tbl_league_hasuser.Archived from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;";
-            leagueEntities = await connection.QueryAsync<LeagueEntity>(sql, queryObject);
+        const string sql = """
+                            select vw_league.*, tbl_league_hasuser.Archived, tbl_user.DisplayName
+                            from vw_league 
+                            join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID)
+                            join tbl_user on tbl_user.UserID = vw_league.LeagueManager
+                            where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;
+                            
+                            select LeagueID, Year from tbl_league_year join tbl_league_hasuser on (tbl_league_year.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;
+                           """;
+        var resultSets = await connection.QueryMultipleAsync(sql, queryObject);
+        var leagueEntities = await resultSets.ReadAsync<LeagueWithManagerEntity>();
+        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
+        var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
+
+        var leaguesWithStatus = new List<LeagueWithMostRecentYearStatus>();
+        foreach (var leagueEntity in leagueEntities)
+        {
+            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
+            League league = leagueEntity.ToDomain(years);
+            leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.MostRecentYearOneShot));
         }
 
-        IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities.ToList());
-        return leagues;
-    }
-
-    public async Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
-    {
-        const string sql = "SELECT distinct LeagueID " +
-                           "FROM (SELECT LeagueID, YEAR, OneShotMode, ROW_NUMBER() OVER (PARTITION BY LeagueID ORDER BY Year DESC) ranked_order FROM tbl_caching_leagueyear) subQuery " +
-                           "WHERE subQuery.ranked_order = 1 AND subQuery.OneShotMode = 1;";
-        await using var connection = new MySqlConnection(_connectionString);
-        var leagueIDs = await connection.QueryAsync<Guid>(sql);
-        return leagueIDs.ToHashSet();
+        return leaguesWithStatus;
     }
 
     public async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year)
@@ -1446,8 +1451,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                      "where tbl_league_year.Year = @year and tbl_league_hasuser.UserID = @userID";
         IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
         List<LeagueYear> leagueYears = new List<LeagueYear>();
-        IReadOnlyList<League> leagues = await GetLeaguesForUser(user);
-        Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
+        var leagues = await GetLeaguesForUser(user);
+        var leaguesDictionary = leagues.ToDictionary(x => x.League.LeagueID, y => y.League);
 
         foreach (var entity in yearEntities)
         {
@@ -2020,7 +2025,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         var minimalPublisherEntities = await connection.QueryAsync<MinimalPublisherEntity>(minimalPublisherSQL, queryObject);
-        
+
         return minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
     }
 
@@ -3294,16 +3299,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        await AddPlayerToLeagueInternal(league, user, mostRecentYear.Year, mostRecentYearNotStarted, connection, transaction);
+        await AddPlayerToLeagueInternal(league, user.Id, mostRecentYear.Year, mostRecentYearNotStarted, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    private async Task AddPlayerToLeagueInternal(League league, FantasyCriticUser user, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
+    private async Task AddPlayerToLeagueInternal(League league, Guid userIDToAdd, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new
         {
             leagueID = league.LeagueID,
-            userID = user.Id,
+            userID = userIDToAdd,
         };
 
         await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
@@ -3314,7 +3319,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var userActiveObject = new
         {
             leagueID = league.LeagueID,
-            userID = user.Id,
+            userID = userIDToAdd,
             activeYear = leagueYear
         };
         await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
@@ -3324,7 +3329,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var conferenceUserAddObject = new
             {
                 conferenceID = league.ConferenceID.Value,
-                userID = user.Id,
+                userID = userIDToAdd,
             };
 
             await connection.ExecuteAsync("insert ignore into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceUserAddObject, transaction);

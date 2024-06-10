@@ -65,6 +65,8 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
             SecurityStamp, PasswordHash, TwoFactorEnabled, AuthenticatorKey, LastChangedCredentials, generalSettings, IsDeleted);
     }
 
+    public MinimalFantasyCriticUser ToMinimal() => new MinimalFantasyCriticUser(Id, UserName, Email);
+
     public bool Equals(FantasyCriticUser? other)
     {
         if (ReferenceEquals(null, other)) return false;

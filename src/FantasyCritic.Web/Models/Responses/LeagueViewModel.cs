@@ -40,7 +40,7 @@ public class LeagueViewModel
             OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite, currentUser);
         }
 
-        Players = players.Select(x => new PlayerViewModel(league, x.User, x.Removable)).ToList();
+        Players = players.Select(x => new PlayerViewModel(league, x.User.ToMinimal(), x.Removable)).ToList();
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         CustomRulesLeague = league.CustomRulesLeague;

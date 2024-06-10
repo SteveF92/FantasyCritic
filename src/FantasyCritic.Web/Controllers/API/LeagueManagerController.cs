@@ -367,7 +367,7 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueRecord.ValidResult!;
         var league = validResult.League;
 
-        if (league.LeagueManager.Id == request.UserID)
+        if (league.LeagueManager.UserID == request.UserID)
         {
             return BadRequest("Can't remove the league manager.");
         }

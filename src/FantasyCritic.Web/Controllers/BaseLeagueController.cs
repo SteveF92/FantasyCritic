@@ -43,7 +43,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         if (currentUserRecord.IsSuccess)
         {
             userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-            isLeagueManager = league.LeagueManager.Id == currentUserRecord.Value.Id;
+            isLeagueManager = league.LeagueManager.UserID == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
                 return GetFailedResult<LeagueRecord>(Forbid());
@@ -113,7 +113,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         if (currentUserRecord.IsSuccess)
         {
             userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-            isLeagueManager = leagueYear.League.LeagueManager.Id == currentUserRecord.Value.Id;
+            isLeagueManager = leagueYear.League.LeagueManager.UserID == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
             {
                 return GetFailedResult<LeagueYearRecord>(Forbid());

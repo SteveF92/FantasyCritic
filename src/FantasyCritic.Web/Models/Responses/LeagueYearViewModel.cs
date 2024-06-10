@@ -59,7 +59,7 @@ public class LeagueYearViewModel
             var publisher = leagueYear.GetUserPublisher(user);
             if (publisher is null)
             {
-                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, false));
+                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user.ToMinimal(), false));
                 allPublishersMade = false;
             }
             else
@@ -67,7 +67,7 @@ public class LeagueYearViewModel
                 int ranking = publisherRankings[publisher.PublisherID];
                 int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
                 bool isPreviousYearWinner = previousYearWinner is not null && previousYearWinner.Id == user.Id;
-                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
+                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user.ToMinimal(), publisher, currentDate, systemWideValues,
                     userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner, ranking, projectedRanking));
             }
         }

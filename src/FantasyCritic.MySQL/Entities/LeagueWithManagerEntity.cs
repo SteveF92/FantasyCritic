@@ -1,27 +1,8 @@
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities;
-
-internal class LeagueEntity
+internal class LeagueWithManagerEntity
 {
-    public LeagueEntity()
-    {
-
-    }
-
-    public LeagueEntity(League league)
-    {
-        LeagueID = league.LeagueID;
-        LeagueName = league.LeagueName;
-        LeagueManager = league.LeagueManager.UserID;
-        ConferenceID = league.ConferenceID;
-        ConferenceName = league.ConferenceName;
-        PublicLeague = league.PublicLeague;
-        TestLeague = league.TestLeague;
-        CustomRulesLeague = league.CustomRulesLeague;
-        NumberOfFollowers = league.NumberOfFollowers;
-    }
-
     public Guid LeagueID { get; set; }
     public string LeagueName { get; set; } = null!;
     public Guid LeagueManager { get; set; }
@@ -32,10 +13,22 @@ internal class LeagueEntity
     public bool CustomRulesLeague { get; set; }
     public int NumberOfFollowers { get; set; }
     public bool Archived { get; set; }
+    public bool MostRecentYearOneShot { get; set; }
 
-    public League ToDomain(FantasyCriticUser manager, IEnumerable<int> years)
+    //Manager Fields
+    public string DisplayName { get; set; } = null!;
+
+    public League ToDomain(IEnumerable<int> years)
     {
+        var manager = ToManagerDomain();
         League parameters = new League(LeagueID, LeagueName, manager, ConferenceID, ConferenceName, years, PublicLeague, TestLeague, CustomRulesLeague, Archived, NumberOfFollowers);
         return parameters;
+    }
+
+    private FantasyCriticUser ToManagerDomain()
+    {
+        var generalSettings = new GeneralUserSettings(false);
+        FantasyCriticUser domain = new FantasyCriticUser(LeagueManager, DisplayName, null, 0, "", "", false, null, null, false, null, Instant.MinValue, generalSettings, false);
+        return domain;
     }
 }

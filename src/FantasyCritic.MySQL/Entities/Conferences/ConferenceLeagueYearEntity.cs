@@ -15,7 +15,7 @@ internal class ConferenceLeagueYearEntity
 
     public ConferenceLeagueYear ToDomain(FantasyCriticUser leagueManager)
     {
-        var league = new ConferenceLeague(LeagueID, LeagueName, leagueManager);
+        var league = new ConferenceLeague(LeagueID, LeagueName, leagueManager.ToMinimal());
         return new ConferenceLeagueYear(league, Year, ConferenceLocked, DraftStarted, DraftFinished);
     }
 }

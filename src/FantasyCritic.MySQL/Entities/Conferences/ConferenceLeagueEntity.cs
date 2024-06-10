@@ -10,6 +10,6 @@ internal class ConferenceLeagueEntity
 
     public ConferenceLeague ToDomain(FantasyCriticUser leagueManager)
     {
-        return new ConferenceLeague(LeagueID, LeagueName, leagueManager);
+        return new ConferenceLeague(LeagueID, LeagueName, leagueManager.ToMinimal());
     }
 }

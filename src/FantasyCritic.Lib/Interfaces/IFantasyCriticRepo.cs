@@ -26,8 +26,7 @@ public interface IFantasyCriticRepo
     Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange);
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
     Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league);
-    Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user);
-    Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot();
+    Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user);
     Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year);
     Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher();
 

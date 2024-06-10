@@ -816,7 +816,11 @@ public class DiscordPushService
         }
 
         SocketUser? user = null;
-        var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(leagueYear.League.LeagueManager, userStore);
+        var fakedFullUser = new FantasyCriticUser()
+        {
+            Id = leagueYear.League.LeagueManager.UserID
+        };
+        var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(fakedFullUser, userStore);
         if (leagueManagerDiscordUser != null)
         {
             user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;

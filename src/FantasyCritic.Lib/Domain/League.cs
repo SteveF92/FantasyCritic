@@ -9,7 +9,7 @@ public class League : IEquatable<League>
     {
         LeagueID = leagueID;
         LeagueName = leagueName;
-        LeagueManager = leagueManager;
+        LeagueManager = leagueManager.ToMinimal();
         ConferenceID = conferenceID;
         ConferenceName = conferenceName;
         Years = years.ToList();
@@ -22,7 +22,7 @@ public class League : IEquatable<League>
 
     public Guid LeagueID { get; }
     public string LeagueName { get; }
-    public FantasyCriticUser LeagueManager { get; }
+    public MinimalFantasyCriticUser LeagueManager { get; }
     public Guid? ConferenceID { get; }
     public string? ConferenceName { get; }
     public IReadOnlyList<int> Years { get; }

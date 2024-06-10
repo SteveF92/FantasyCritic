@@ -5,21 +5,21 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PlayerViewModel
 {
-    public PlayerViewModel(League league, FantasyCriticUser user, bool removable)
+    public PlayerViewModel(League league, MinimalFantasyCriticUser user, bool removable)
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        UserID = user.Id;
-        DisplayName = user.UserName;
+        UserID = user.UserID;
+        DisplayName = user.DisplayName;
         Removable = removable;
     }
 
-    public PlayerViewModel(ConferenceLeague league, FantasyCriticUser user, bool removable)
+    public PlayerViewModel(ConferenceLeague league, MinimalFantasyCriticUser user, bool removable)
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        UserID = user.Id;
-        DisplayName = user.UserName;
+        UserID = user.UserID;
+        DisplayName = user.DisplayName;
         Removable = removable;
     }
 
