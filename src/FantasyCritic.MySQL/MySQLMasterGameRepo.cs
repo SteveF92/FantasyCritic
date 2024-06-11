@@ -64,7 +64,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 .Where(x => tagAssociations.Contains(x.Name))
                 .ToList();
 
-            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
+            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID].ToMinimal());
             masterGames.Add(domain);
         }
 
@@ -98,7 +98,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 .Where(x => tagAssociations.Contains(x.Name))
                 .ToList();
 
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID].ToMinimal());
             masterGames.Add(domain);
         }
 
