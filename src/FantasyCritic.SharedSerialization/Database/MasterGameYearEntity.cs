@@ -92,6 +92,9 @@ public class MasterGameYearEntity
     public DateTime AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
+    public string AddedByUserDisplayName { get; set; } = null!;
+
+
     public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, VeryMinimalFantasyCriticUser addedByUser)
     {
         LocalDate? releaseDate = null;
