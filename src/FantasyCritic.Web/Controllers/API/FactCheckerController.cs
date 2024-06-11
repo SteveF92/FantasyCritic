@@ -47,7 +47,7 @@ public class FactCheckerController : FantasyCriticController
         }
 
         var currentUser = await GetCurrentUserOrThrow();
-        MasterGame masterGame = viewModel.ToDomain(_clock, tags, currentUser.ToMinimal());
+        MasterGame masterGame = viewModel.ToDomain(_clock, tags, currentUser.ToVeryMinimal());
         await _interLeagueService.CreateMasterGame(masterGame);
         var currentDate = _clock.GetToday();
         var vm = new MasterGameViewModel(masterGame, currentDate);

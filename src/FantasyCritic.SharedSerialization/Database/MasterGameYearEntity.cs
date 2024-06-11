@@ -92,7 +92,7 @@ public class MasterGameYearEntity
     public DateTime AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
-    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, MinimalFantasyCriticUser addedByUser)
+    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, VeryMinimalFantasyCriticUser addedByUser)
     {
         LocalDate? releaseDate = null;
         if (ReleaseDate.HasValue)

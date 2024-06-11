@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Identity;
 using NodaTime;
 
 namespace FantasyCritic.SharedSerialization.API;
@@ -109,9 +111,11 @@ public class MasterGameViewModel
                 tags.Add(masterGameTag);
             }
         }
-        
+
+        var addedByUser = new VeryMinimalFantasyCriticUser(AddedByUser.UserID, AddedByUser.DisplayName);
+
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,  AddedTimestamp, DoNotRefreshDate,
-            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, AddedByUser.ToDomain(), new List<MasterSubGame>(), tags);
+            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, new List<MasterSubGame>(), tags);
     }
 }

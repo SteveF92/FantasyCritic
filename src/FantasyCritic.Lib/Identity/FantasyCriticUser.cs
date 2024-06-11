@@ -66,6 +66,7 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
     }
 
     public MinimalFantasyCriticUser ToMinimal() => new MinimalFantasyCriticUser(Id, UserName, Email);
+    public VeryMinimalFantasyCriticUser ToVeryMinimal() => new VeryMinimalFantasyCriticUser(Id, UserName);
 
     public bool Equals(FantasyCriticUser? other)
     {

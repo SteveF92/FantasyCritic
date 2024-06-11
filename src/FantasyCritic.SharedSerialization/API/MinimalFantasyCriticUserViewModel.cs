@@ -9,19 +9,17 @@ public class MinimalFantasyCriticUserViewModel
 
     }
     
-    public MinimalFantasyCriticUserViewModel(MinimalFantasyCriticUser user)
+    public MinimalFantasyCriticUserViewModel(VeryMinimalFantasyCriticUser user)
     {
         UserID = user.UserID;
         DisplayName = user.DisplayName;
-        EmailAddress = user.EmailAddress;
     }
 
     public Guid UserID { get; init; }
     public string DisplayName { get; init; } = null!;
-    public string EmailAddress { get; init; } = null!;
 
-    public MinimalFantasyCriticUser ToDomain()
+    public VeryMinimalFantasyCriticUser ToDomain()
     {
-        return new MinimalFantasyCriticUser(UserID, DisplayName, EmailAddress);
+        return new VeryMinimalFantasyCriticUser(UserID, DisplayName);
     }
 }
