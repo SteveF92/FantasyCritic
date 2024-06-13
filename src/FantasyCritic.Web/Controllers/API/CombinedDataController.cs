@@ -65,37 +65,74 @@ public class CombinedDataController : FantasyCriticController
         var currentUser = await GetCurrentUserOrThrow();
         var currentDate = _clock.GetToday();
 
+        //*********************Get data from services/database**************************
+
         //My Leagues
         var myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
+
+        //My Invites
+        var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
+
+        //My Conferences
+        var conferences = await _conferenceService.GetConferencesForUser(currentUser);
+
+        //Top Bids and Drops
+        var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
+        LocalDate? topBidsAndDropsDateToUse = null;
+        IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops = new List<TopBidsAndDropsGame>();
+        if (processingDatesWithData.Any())
+        {
+            topBidsAndDropsDateToUse = processingDatesWithData.Max();
+            topBidsAndDrops = await _interLeagueService.GetTopBidsAndDrops(topBidsAndDropsDateToUse.Value);
+        }
+
+        //My Game News
+        var myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
+
+        //Public Leagues
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var selectedYear = supportedYears.Where(x => x.OpenForPlay).Select(x => x.Year).Min();
+        var publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(selectedYear);
+
+        //Active Royale Quarter
+        var activeQuarter = await _royaleService.GetActiveYearQuarter();
+
+        //User Royale Publisher
+        RoyalePublisher? publisher = await _royaleService.GetPublisher(activeQuarter, currentUser);
+        IReadOnlyList<MasterGameTag> masterGameTags = new List<MasterGameTag>();
+        IReadOnlyList<RoyaleYearQuarter> quartersWon = new List<RoyaleYearQuarter>();
+        if (publisher is not null)
+        {
+            quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
+            masterGameTags = await _interLeagueService.GetMasterGameTags();
+        }
+
+        //*********************Build View Models**************************
+
+        //My Leagues
         var myLeagueViewModels = myLeagues
             .Select(league => new LeagueWithStatusViewModel(league, currentUser))
             .OrderBy(l => l.LeagueName)
             .ToList();
 
         //My Invites
-        var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
         var myInviteViewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
 
         //My Conferences
-        var conferences = await _conferenceService.GetConferencesForUser(currentUser);
         var myConferenceViewModels = conferences
             .Select(conference => new MinimalConferenceViewModel(conference, conference.ConferenceManager.UserID == currentUser.UserID))
             .OrderBy(x => x.ConferenceName)
             .ToList();
 
         //Top Bids and Drops
-        var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
         TopBidsAndDropsSetViewModel? completeTopBidsAndDropsViewModel = null;
-        if (processingDatesWithData.Any())
+        if (topBidsAndDropsDateToUse.HasValue)
         {
-            var dateToUse = processingDatesWithData.Max();
-            var topBidsAndDrops = await _interLeagueService.GetTopBidsAndDrops(dateToUse);
             var topBidsAndDropsViewModels = topBidsAndDrops.Select(x => new TopBidsAndDropsGameViewModel(x, currentDate)).ToList();
-            completeTopBidsAndDropsViewModel = new TopBidsAndDropsSetViewModel(topBidsAndDropsViewModels, dateToUse);
+            completeTopBidsAndDropsViewModel = new TopBidsAndDropsSetViewModel(topBidsAndDropsViewModels, topBidsAndDropsDateToUse.Value);
         }
 
         //My Game News
-        var myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
         var gameNewsUpcoming = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, false);
         var gameNewsRecent = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, true);
 
@@ -107,22 +144,15 @@ public class CombinedDataController : FantasyCriticController
         var myGameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
 
         //Public Leagues
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var selectedYear = supportedYears.Where(x => x.OpenForPlay).Select(x => x.Year).Min();
-        var publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(selectedYear);
         var publicLeagueViewModels = publicLeagueYears.Select(leagueYear => new PublicLeagueYearViewModel(leagueYear)).Take(10).ToList();
 
         //Active Royale Quarter
-        var activeQuarter = await _royaleService.GetActiveYearQuarter();
         var activeRoyaleQuarterViewModel = new RoyaleYearQuarterViewModel(activeQuarter);
 
         //User Royale Publisher
         RoyalePublisherViewModel? royalePublisherViewModel = null;
-        RoyalePublisher? publisher = await _royaleService.GetPublisher(activeQuarter, currentUser);
         if (publisher is not null)
         {
-            IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
-            var masterGameTags = await _interLeagueService.GetMasterGameTags();
             royalePublisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, true);
         }
 
