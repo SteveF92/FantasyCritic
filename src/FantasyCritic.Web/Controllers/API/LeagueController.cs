@@ -820,8 +820,8 @@ public class LeagueController : BaseLeagueController
         var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
         var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
 
-        var upcomingGames = BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
-        var recentGames = BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
+        var upcomingGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
+        var recentGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
         return new GameNewsViewModel(upcomingGames, recentGames);
     }
 
@@ -1404,11 +1404,6 @@ public class LeagueController : BaseLeagueController
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
         var publisherLists = GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews);
         return publisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, false, currentDate)).ToList();
-    }
-
-    private static IReadOnlyList<SingleGameNewsViewModel> BuildUserGameNewsViewModel(LocalDate currentDate, IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
-    {
-        return leagueYearPublisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, true, currentDate)).ToList();
     }
 }
 
