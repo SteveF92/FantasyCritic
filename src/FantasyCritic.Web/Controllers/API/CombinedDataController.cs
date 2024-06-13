@@ -1,4 +1,6 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
@@ -63,18 +65,17 @@ public class CombinedDataController : FantasyCriticController
     public async Task<IActionResult> HomePageData()
     {
         var currentUser = await GetCurrentUserOrThrow();
-        var currentDate = _clock.GetToday();
 
         //*********************Get data from services/database**************************
 
         //My Leagues
-        var myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
+        IReadOnlyList<LeagueWithMostRecentYearStatus> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
 
         //My Invites
-        var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
+        IReadOnlyList<LeagueInvite> invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
 
         //My Conferences
-        var conferences = await _conferenceService.GetConferencesForUser(currentUser);
+        IReadOnlyList<Conference> myConferences = await _conferenceService.GetConferencesForUser(currentUser);
 
         //Top Bids and Drops
         var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
@@ -87,15 +88,15 @@ public class CombinedDataController : FantasyCriticController
         }
 
         //My Game News
-        var myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
+        IReadOnlyList<LeagueYearPublisherPair> myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
 
         //Public Leagues
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var selectedYear = supportedYears.Where(x => x.OpenForPlay).Select(x => x.Year).Min();
-        var publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(selectedYear);
+        IReadOnlyList<LeagueYear> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(selectedYear);
 
         //Active Royale Quarter
-        var activeQuarter = await _royaleService.GetActiveYearQuarter();
+        RoyaleYearQuarter activeQuarter = await _royaleService.GetActiveYearQuarter();
 
         //User Royale Publisher
         RoyalePublisher? publisher = await _royaleService.GetPublisher(activeQuarter, currentUser);
@@ -107,7 +108,11 @@ public class CombinedDataController : FantasyCriticController
             masterGameTags = await _interLeagueService.GetMasterGameTags();
         }
 
+        //var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
+
         //*********************Build View Models**************************
+
+        var currentDate = _clock.GetToday();
 
         //My Leagues
         var myLeagueViewModels = myLeagues
@@ -119,7 +124,7 @@ public class CombinedDataController : FantasyCriticController
         var myInviteViewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
 
         //My Conferences
-        var myConferenceViewModels = conferences
+        var myConferenceViewModels = myConferences
             .Select(conference => new MinimalConferenceViewModel(conference, conference.ConferenceManager.UserID == currentUser.UserID))
             .OrderBy(x => x.ConferenceName)
             .ToList();

@@ -50,6 +50,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return new BasicData(systemWideSettings, tags, supportedYears);
     }
 
+    public Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<League?> GetLeague(Guid id)
     {
         await using var connection = new MySqlConnection(_connectionString);

@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Extensions;
@@ -26,6 +27,11 @@ public class FantasyCriticService
         _leagueMemberService = leagueMemberService;
         _interLeagueService = interLeagueService;
         _discordPushService = discordPushService;
+    }
+
+    public Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)
+    {
+        return _fantasyCriticRepo.GetHomePageData(currentUser);
     }
 
     public Task<League?> GetLeagueByID(Guid id)
