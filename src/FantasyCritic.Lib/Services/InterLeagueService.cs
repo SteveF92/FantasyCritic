@@ -12,13 +12,15 @@ namespace FantasyCritic.Lib.Services;
 public class InterLeagueService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly ICombinedDataRepo _combinedDataRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IClock _clock;
     private readonly DiscordPushService _discordPushService;
 
-    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IClock clock, DiscordPushService discordPushService)
+    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, IMasterGameRepo masterGameRepo, IClock clock, DiscordPushService discordPushService)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _combinedDataRepo = combinedDataRepo;
         _masterGameRepo = masterGameRepo;
         _clock = clock;
         _discordPushService = discordPushService;
@@ -26,7 +28,7 @@ public class InterLeagueService
 
     public Task<BasicData> GetBasicData()
     {
-        return _fantasyCriticRepo.GetBasicData();
+        return _combinedDataRepo.GetBasicData();
     }
 
     public async Task<SystemWideSettings> GetSystemWideSettings()

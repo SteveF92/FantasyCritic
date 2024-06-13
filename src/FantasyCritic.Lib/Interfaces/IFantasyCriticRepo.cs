@@ -9,9 +9,6 @@ namespace FantasyCritic.Lib.Interfaces;
 
 public interface IFantasyCriticRepo
 {
-    Task<BasicData> GetBasicData();
-    Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser);
-
     Task<League?> GetLeague(Guid id);
     Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);

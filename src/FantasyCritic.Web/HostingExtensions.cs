@@ -92,6 +92,7 @@ public static class HostingExtensions
 
         services.AddScoped<IMasterGameRepo, MySQLMasterGameRepo>();
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
+        services.AddScoped<ICombinedDataRepo, MySQLCombinedDataRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
         services.AddScoped<IConferenceRepo, MySQLConferenceRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();

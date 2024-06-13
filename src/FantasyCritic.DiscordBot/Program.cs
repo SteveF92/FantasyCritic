@@ -62,6 +62,7 @@ public class Program
             .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
             .AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>()
             .AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>()
+            .AddScoped<ICombinedDataRepo, MySQLCombinedDataRepo>()
             .AddScoped<IConferenceRepo, MySQLConferenceRepo>()
             .AddScoped<ConferenceService>()
             .AddScoped<InterLeagueService>()

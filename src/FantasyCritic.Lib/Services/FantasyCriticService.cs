@@ -12,6 +12,7 @@ namespace FantasyCritic.Lib.Services;
 public class FantasyCriticService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly ICombinedDataRepo _combinedDataRepo;
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly LeagueMemberService _leagueMemberService;
@@ -19,9 +20,10 @@ public class FantasyCriticService
     private readonly DiscordPushService _discordPushService;
 
     public FantasyCriticService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService, DiscordPushService discordPushService,
-        IFantasyCriticRepo fantasyCriticRepo, IDiscordRepo discordRepo, IClock clock)
+        IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, IDiscordRepo discordRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _combinedDataRepo = combinedDataRepo;
         _discordRepo = discordRepo;
         _clock = clock;
         _leagueMemberService = leagueMemberService;
@@ -31,7 +33,7 @@ public class FantasyCriticService
 
     public Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)
     {
-        return _fantasyCriticRepo.GetHomePageData(currentUser);
+        return _combinedDataRepo.GetHomePageData(currentUser);
     }
 
     public Task<League?> GetLeagueByID(Guid id)
