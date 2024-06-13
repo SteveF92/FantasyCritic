@@ -67,6 +67,8 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false);
     Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYears(IEnumerable<Guid> leagueIDs);
 
+    Task<IReadOnlyList<PublicLeagueYearStats>> GetPublicLeagueYears(int year, int? count);
+
     Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
     Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers, bool recalculate);
 

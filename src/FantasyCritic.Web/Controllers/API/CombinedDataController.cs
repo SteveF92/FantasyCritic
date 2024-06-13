@@ -93,7 +93,7 @@ public class CombinedDataController : FantasyCriticController
         //Public Leagues
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var selectedYear = supportedYears.Where(x => x.OpenForPlay).Select(x => x.Year).Min();
-        IReadOnlyList<LeagueYear> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(selectedYear);
+        IReadOnlyList<PublicLeagueYearStats> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(selectedYear, 10);
 
         //Active Royale Quarter
         RoyaleYearQuarter activeQuarter = await _royaleService.GetActiveYearQuarter();
@@ -149,7 +149,7 @@ public class CombinedDataController : FantasyCriticController
         var myGameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
 
         //Public Leagues
-        var publicLeagueViewModels = publicLeagueYears.Select(leagueYear => new PublicLeagueYearViewModel(leagueYear)).Take(10).ToList();
+        var publicLeagueViewModels = publicLeagueYears.Select(leagueYear => new PublicLeagueYearViewModel(leagueYear)).ToList();
 
         //Active Royale Quarter
         var activeRoyaleQuarterViewModel = new RoyaleYearQuarterViewModel(activeQuarter);

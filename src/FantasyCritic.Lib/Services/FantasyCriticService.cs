@@ -455,10 +455,9 @@ public class FantasyCriticService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<LeagueYear>> GetPublicLeagueYears(int year)
+    public Task<IReadOnlyList<PublicLeagueYearStats>> GetPublicLeagueYears(int year, int? count)
     {
-        var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
-        return leagueYears.Where(x => x.League.PublicLeague).OrderByDescending(x => x.League.NumberOfFollowers).ToList();
+        return _fantasyCriticRepo.GetPublicLeagueYears(year, count);
     }
 
     public async Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool? eligible)

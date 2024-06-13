@@ -87,7 +87,7 @@ public class LeagueController : BaseLeagueController
     [HttpGet("{year}")]
     public async Task<IActionResult> PublicLeagues(int year, int? count)
     {
-        IReadOnlyList<LeagueYear> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(year);
+        IReadOnlyList<PublicLeagueYearStats> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(year, count);
         List<PublicLeagueYearViewModel> viewModels = new List<PublicLeagueYearViewModel>();
         foreach (var leagueYear in publicLeagueYears)
         {

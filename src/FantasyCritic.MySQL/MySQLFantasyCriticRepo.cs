@@ -249,6 +249,32 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return requestedLeagueYears;
     }
 
+    public async Task<IReadOnlyList<PublicLeagueYearStats>> GetPublicLeagueYears(int year, int? count)
+    {
+        string sql = """
+                     SELECT vw_league.LeagueID, vw_league.LeagueName, vw_league.NumberOfFollowers, tbl_league_year.PlayStatus
+                     FROM vw_league
+                     JOIN tbl_league_year ON vw_league.LeagueID = tbl_league_year.LeagueID
+                     WHERE vw_league.PublicLeague = 1
+                     AND tbl_league_year.`Year` = @year
+                     ORDER BY NumberOfFollowers DESC
+                     """;
+        if (count.HasValue)
+        {
+            sql += " LIMIT @count";
+        }
+
+        var queryObject = new
+        {
+            year,
+            count
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var stats = await connection.QueryAsync<PublicLeagueYearStatsEntity>(sql, queryObject);
+        return stats.Select(x => x.ToDomain()).ToList();
+    }
+
     private async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForPublishers(IReadOnlySet<Guid> publisherIDs)
     {
         const string sql = "select distinct Year from tbl_league_publisher where PublisherID in @publisherIDs";
@@ -258,7 +284,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-
         var yearsForPublishers = await connection.QueryAsync<int>(sql, queryObject);
 
         List<LeagueYear> requestedLeagueYears = new List<LeagueYear>();
