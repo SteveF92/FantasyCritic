@@ -20,7 +20,7 @@ export default {
       context.commit('setBusy', true);
 
       try {
-        const response = await axios.get('/api/General/BasicData');
+        const response = await axios.get('/api/CombinedData/BasicData');
         context.commit('setTags', response.data.masterGameTags);
         context.commit('setPossibleLeagueOptions', response.data.leagueOptions);
         context.commit('setBidTimes', response.data.bidTimes);

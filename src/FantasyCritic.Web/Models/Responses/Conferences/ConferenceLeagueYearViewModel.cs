@@ -14,7 +14,7 @@ public class ConferenceLeagueYearViewModel
 
         if (currentUser is not null)
         {
-            UserIsInLeague = conferencePlayersInLeagueYear.Any(x => x.User.Id == currentUser.Id);
+            UserIsInLeague = conferencePlayersInLeagueYear.Any(x => x.User.UserID == currentUser.Id);
         }
 
         IsPrimaryLeague = isPrimaryLeague;

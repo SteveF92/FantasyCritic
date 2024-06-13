@@ -1231,7 +1231,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     }
 
     private IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
-        IEnumerable<LeagueYearStatusEntity> playStatuses, List<FantasyCriticUser> usersInLeague)
+        IEnumerable<LeagueYearStatusEntity> playStatuses, IReadOnlyList<FantasyCriticUser> usersInLeague)
     {
         var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
         foreach (var userYear in userYears)
@@ -1252,7 +1252,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
         foreach (var user in usersInLeague)
         {
-            bool userRemovable = !league.LeagueManager.Equals(user);
+            bool userRemovable = league.LeagueManager.UserID != user.UserID;
             foreach (var year in startedYears)
             {
                 if (!userYearsDictionary.ContainsKey(year))

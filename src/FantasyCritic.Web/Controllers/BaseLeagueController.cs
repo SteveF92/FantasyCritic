@@ -264,7 +264,7 @@ public abstract class BaseLeagueController : FantasyCriticController
                 return GetFailedResult<ConferenceRecord>(Forbid());
             }
 
-            isInConference = isConferenceManager || playersInConference.Any(x => x.User.Id == currentUserRecord.Value.Id);
+            isInConference = isConferenceManager || playersInConference.Any(x => x.User.UserID == currentUserRecord.Value.Id);
         }
 
         if (!isInConference && requiredRelationship.MustBeInConference)
@@ -304,7 +304,7 @@ public abstract class BaseLeagueController : FantasyCriticController
                 return GetFailedResult<ConferenceYearRecord>(Forbid());
             }
 
-            isInConference = isConferenceManager || playersInConference.Any(x => x.User.Id == currentUserRecord.Value.Id);
+            isInConference = isConferenceManager || playersInConference.Any(x => x.User.UserID == currentUserRecord.Value.Id);
         }
 
         if (!isInConference && requiredRelationship.MustBeInConference)

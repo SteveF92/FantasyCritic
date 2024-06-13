@@ -66,20 +66,12 @@ public class LeagueController : BaseLeagueController
         var currentUser = await GetCurrentUserOrThrow();
 
         var myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
-        var viewModels = new List<LeagueWithStatusViewModel>();
-        foreach (var league in myLeagues)
-        {
-            if (year.HasValue && !league.League.Years.Contains(year.Value))
-            {
-                continue;
-            }
+        var viewModels = myLeagues.Where(league => !year.HasValue || league.League.Years.Contains(year.Value))
+            .Select(league => new LeagueWithStatusViewModel(league, currentUser))
+            .OrderBy(l => l.LeagueName)
+            .ToList();
 
-            bool isManager = (league.League.LeagueManager.UserID == currentUser.Id);
-            viewModels.Add(new LeagueWithStatusViewModel(league.League, isManager, league.UserIsInLeague, league.UserIsFollowingLeague, league.MostRecentYearOneShot));
-        }
-
-        var sortedViewModels = viewModels.OrderBy(l => l.LeagueName).ToList();
-        return Ok(sortedViewModels);
+        return Ok(viewModels);
     }
 
     public async Task<IActionResult> MyInvites()

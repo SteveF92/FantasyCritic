@@ -232,7 +232,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             var leaguesManaged = leagueManagerLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
             var leaguesIn = leagueUserLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
             var leagueYearsActiveIn = leagueActivePlayerLookup[user.Id].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
-            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, leagueYearsActiveIn);
+            var player = new ConferencePlayer(user.ToMinimal(), leaguesIn, leaguesManaged, leagueYearsActiveIn);
             conferencePlayers.Add(player);
         }
         

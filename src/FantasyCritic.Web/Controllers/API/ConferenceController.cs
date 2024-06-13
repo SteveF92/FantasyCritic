@@ -35,7 +35,7 @@ public class ConferenceController : BaseLeagueController
         var conferences = await _conferenceService.GetConferencesForUser(currentUser);
 
         var viewModels = conferences
-            .Select(conference => new MinimalConferenceViewModel(conference, conference.ConferenceManager.Equals(currentUser)))
+            .Select(conference => new MinimalConferenceViewModel(conference, conference.ConferenceManager.UserID == currentUser.UserID))
             .OrderBy(x => x.ConferenceName)
             .ToList();
 

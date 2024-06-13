@@ -210,7 +210,7 @@ public class ConferenceService
 
     public async Task<Result> RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser)
     {
-        if (conference.ConferenceManager.Equals(removeUser))
+        if (conference.ConferenceManager.UserID == removeUser.UserID)
         {
             return Result.Failure("You cannot remove the conference manager from the conference.");
         }
