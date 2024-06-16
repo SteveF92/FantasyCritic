@@ -1580,7 +1580,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return entity?.ToDomain();
     }
 
-    public async Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser)
+    public async Task<IReadOnlyList<CompleteLeagueInvite>> GetCompleteLeagueInvites(FantasyCriticUser currentUser)
     {
         var query = new
         {

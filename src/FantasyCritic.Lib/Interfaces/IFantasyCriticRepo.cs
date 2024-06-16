@@ -33,7 +33,7 @@ public interface IFantasyCriticRepo
     Task UnfollowLeague(League league, FantasyCriticUser user);
 
     Task<LeagueInvite?> GetInvite(Guid inviteID);
-    Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser);
+    Task<IReadOnlyList<CompleteLeagueInvite>> GetCompleteLeagueInvites(FantasyCriticUser currentUser);
     Task SetAutoDraft(Publisher publisher, AutoDraftMode mode);
     Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league);
     Task SaveInvite(LeagueInvite leagueInvite);

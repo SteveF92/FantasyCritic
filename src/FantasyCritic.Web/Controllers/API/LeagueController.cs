@@ -78,8 +78,8 @@ public class LeagueController : BaseLeagueController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
-        var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
-        var viewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
+        var invitedLeagues = await _leagueMemberService.GetCompleteLeagueInvites(currentUser);
+        var viewModels = invitedLeagues.Select(x => new CompleteLeagueInviteViewModel(x));
         return Ok(viewModels);
     }
 

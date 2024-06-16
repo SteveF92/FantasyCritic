@@ -11,7 +11,7 @@ public class LeagueWithStatusViewModel
 
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager, false);
         ConferenceID = league.ConferenceID;
         ConferenceName = league.ConferenceName;
         IsManager = league.LeagueManager.UserID == currentUser.UserID;

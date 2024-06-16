@@ -72,7 +72,7 @@ public class CombinedDataController : FantasyCriticController
         IReadOnlyList<LeagueWithMostRecentYearStatus> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
 
         //My Invites
-        IReadOnlyList<LeagueInvite> invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
+        IReadOnlyList<CompleteLeagueInvite> invitedLeagues = await _leagueMemberService.GetCompleteLeagueInvites(currentUser);
 
         //My Conferences
         IReadOnlyList<Conference> myConferences = await _conferenceService.GetConferencesForUser(currentUser);
@@ -122,7 +122,7 @@ public class CombinedDataController : FantasyCriticController
             .ToList();
 
         //My Invites
-        var myInviteViewModels = homePageData.InvitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
+        var myInviteViewModels = homePageData.InvitedLeagues.Select(x => new CompleteLeagueInviteViewModel(x));
 
         //My Conferences
         var myConferenceViewModels = homePageData.MyConferences

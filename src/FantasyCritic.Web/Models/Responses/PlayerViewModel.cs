@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PlayerViewModel
 {
-    public PlayerViewModel(Guid leagueID, string leagueName, VeryMinimalFantasyCriticUser user, bool removable)
+    public PlayerViewModel(Guid leagueID, string leagueName, IVeryMinimalFantasyCriticUser user, bool removable)
     {
         LeagueID = leagueID;
         LeagueName = leagueName;

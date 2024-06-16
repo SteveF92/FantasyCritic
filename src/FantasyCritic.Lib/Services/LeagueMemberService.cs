@@ -161,9 +161,9 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetLeaguesForUser(user);
     }
 
-    public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser user)
+    public Task<IReadOnlyList<CompleteLeagueInvite>> GetCompleteLeagueInvites(FantasyCriticUser user)
     {
-        return _fantasyCriticRepo.GetLeagueInvites(user);
+        return _fantasyCriticRepo.GetCompleteLeagueInvites(user);
     }
 
     public Task<LeagueInvite?> GetInvite(Guid inviteID)
