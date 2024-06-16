@@ -2,7 +2,19 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueInviteViewModel
 {
-    public LeagueInviteViewModel(CompleteLeagueInvite invite)
+    public LeagueInviteViewModel(LeagueInvite invite)
+    {
+        InviteID = invite.InviteID;
+        LeagueID = invite.LeagueID;
+    }
+
+    public Guid InviteID { get; }
+    public Guid LeagueID { get; }
+}
+
+public class CompleteLeagueInviteViewModel
+{
+    public CompleteLeagueInviteViewModel(CompleteLeagueInvite invite)
     {
         InviteID = invite.InviteID;
         LeagueID = invite.LeagueID;
