@@ -101,6 +101,14 @@ public class CombinedDataController : FantasyCriticController
         //User Royale Publisher
         RoyalePublisher? userRoyalePublisher = await _royaleService.GetPublisher(activeQuarter, currentUser);
 
+        TopBidsAndDropsData? topBidsAndDropsData = null;
+        if (topBidsAndDropsDateToUse.HasValue)
+        {
+            topBidsAndDropsData = new TopBidsAndDropsData(topBidsAndDropsDateToUse.Value, topBidsAndDrops);
+        }
+
+        var homePageData = new HomePageData(myLeagues, invitedLeagues, myConferences, topBidsAndDropsData,
+            myPublishers, publicLeagueYears, activeQuarter, userRoyalePublisher?.PublisherID);
         //var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
 
         //*********************Build View Models**************************
@@ -108,44 +116,44 @@ public class CombinedDataController : FantasyCriticController
         var currentDate = _clock.GetToday();
 
         //My Leagues
-        var myLeagueViewModels = myLeagues
+        var myLeagueViewModels = homePageData.MyLeagues
             .Select(league => new LeagueWithStatusViewModel(league, currentUser))
             .OrderBy(l => l.LeagueName)
             .ToList();
 
         //My Invites
-        var myInviteViewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
+        var myInviteViewModels = homePageData.InvitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
 
         //My Conferences
-        var myConferenceViewModels = myConferences
+        var myConferenceViewModels = homePageData.MyConferences
             .Select(conference => new MinimalConferenceViewModel(conference, conference.ConferenceManager.UserID == currentUser.UserID))
             .OrderBy(x => x.ConferenceName)
             .ToList();
 
         //Top Bids and Drops
         TopBidsAndDropsSetViewModel? completeTopBidsAndDropsViewModel = null;
-        if (topBidsAndDropsDateToUse.HasValue)
+        if (homePageData.TopBidsAndDropsData is not null)
         {
-            var topBidsAndDropsViewModels = topBidsAndDrops.Select(x => new TopBidsAndDropsGameViewModel(x, currentDate)).ToList();
-            completeTopBidsAndDropsViewModel = new TopBidsAndDropsSetViewModel(topBidsAndDropsViewModels, topBidsAndDropsDateToUse.Value);
+            var topBidsAndDropsViewModels = homePageData.TopBidsAndDropsData.TopBidsAndDrops.Select(x => new TopBidsAndDropsGameViewModel(x, currentDate)).ToList();
+            completeTopBidsAndDropsViewModel = new TopBidsAndDropsSetViewModel(topBidsAndDropsViewModels, homePageData.TopBidsAndDropsData.ProcessDate);
         }
 
         //My Game News
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
-        var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);
+        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(homePageData.MyPublishers, currentDate, false);
+        var gameNewsRecent = GameNewsFunctions.GetGameNews(homePageData.MyPublishers, currentDate, true);
 
-        var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
-        var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
+        var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(homePageData.MyPublishers, gameNewsUpcoming);
+        var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(homePageData.MyPublishers, gameNewsRecent);
 
         var upcomingGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
         var recentGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
         var myGameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
 
         //Public Leagues
-        var publicLeagueViewModels = publicLeagueYears.Select(leagueYear => new PublicLeagueYearViewModel(leagueYear)).ToList();
+        var publicLeagueViewModels = homePageData.PublicLeagueYears.Select(leagueYear => new PublicLeagueYearViewModel(leagueYear)).ToList();
 
         //Active Royale Quarter
-        var activeRoyaleQuarterViewModel = new RoyaleYearQuarterViewModel(activeQuarter);
+        var activeRoyaleQuarterViewModel = new RoyaleYearQuarterViewModel(homePageData.ActiveRoyaleYearQuarter);
 
         var vm = new
         {
@@ -156,7 +164,7 @@ public class CombinedDataController : FantasyCriticController
             MyGameNews = myGameNewsViewModel,
             PublicLeagues = publicLeagueViewModels,
             ActiveRoyaleQuarter = activeRoyaleQuarterViewModel,
-            UserRoyalePublisherID = userRoyalePublisher?.PublisherID
+            UserRoyalePublisherID = homePageData.ActiveYearQuarterRoyalePublisherID
         };
 
         return Ok(vm);
