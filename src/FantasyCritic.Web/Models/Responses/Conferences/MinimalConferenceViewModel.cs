@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses.Conferences;
 
 public class MinimalConferenceViewModel
 {
-    public MinimalConferenceViewModel(Conference domain, bool isManager)
+    public MinimalConferenceViewModel(MinimalConference domain, bool isManager)
     {
         ConferenceID = domain.ConferenceID;
         ConferenceName = domain.ConferenceName;

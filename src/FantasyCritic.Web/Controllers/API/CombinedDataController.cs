@@ -75,7 +75,7 @@ public class CombinedDataController : FantasyCriticController
         IReadOnlyList<CompleteLeagueInvite> invitedLeagues = await _leagueMemberService.GetCompleteLeagueInvites(currentUser);
 
         //My Conferences
-        IReadOnlyList<Conference> myConferences = await _conferenceService.GetConferencesForUser(currentUser);
+        IReadOnlyList<MinimalConference> myConferences = await _conferenceService.GetConferencesForUser(currentUser);
 
         //Top Bids and Drops
         var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();

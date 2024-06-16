@@ -24,7 +24,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         _userStore = userStore;
     }
 
-    public async Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser user)
+    public async Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser user)
     {
         const string conferenceSQL =
             """
@@ -60,7 +60,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         var conferenceYearLookup = conferenceYears.ToLookup(x => x.ConferenceID);
         var leagueLookup = leagues.ToLookup(x => x.ConferenceID);
 
-        List<Conference> conferences = new List<Conference>();
+        List<MinimalConference> conferences = new List<MinimalConference>();
         foreach (var conferenceEntity in conferenceEntities)
         {
             FantasyCriticUser conferenceManager = managerDictionary[conferenceEntity.ConferenceManager];

@@ -61,7 +61,10 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         //MyInvites
         var myInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
 
+        //MyConferences
+
+
         throw new NotImplementedException();
-        //return new HomePageData(leaguesWithStatus, myInvites, );
+        return new HomePageData(leaguesWithStatus, myInvites,);
     }
 }

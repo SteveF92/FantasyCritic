@@ -22,7 +22,7 @@ public class ConferenceService
         _discordPushService = discordPushService;
     }
 
-    public Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser currentUser)
+    public Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser currentUser)
     {
         return _conferenceRepo.GetConferencesForUser(currentUser);
     }
