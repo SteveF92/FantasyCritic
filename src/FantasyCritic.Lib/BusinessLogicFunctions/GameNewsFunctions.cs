@@ -3,7 +3,7 @@ using FantasyCritic.Lib.Domain.Combinations;
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
 public static class GameNewsFunctions
 {
-    public static IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> GetGameNews(IEnumerable<LeagueYearPublisherPair> publishers, bool recentReleases, LocalDate currentDate)
+    public static IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> GetGameNews(IEnumerable<LeagueYearPublisherPair> publishers, LocalDate currentDate, bool recentReleases)
     {
         var publisherGames = publishers.SelectMany(x => x.Publisher.PublisherGames).Where(x => x.MasterGame is not null);
         var yesterday = currentDate.PlusDays(-1);
@@ -31,12 +31,6 @@ public static class GameNewsFunctions
         }
 
         return orderedByReleaseDate.ToList();
-    }
-
-    public static IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> GetGameNewsForPublishers(IReadOnlyList<LeagueYearPublisherPair> leagueYearPublisherPairs, LocalDate currentDate, bool recentReleases)
-    {
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, recentReleases, currentDate);
-        return gameNewsUpcoming;
     }
 
     public static IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> GetLeagueYearPublisherLists(IReadOnlyList<LeagueYearPublisherPair> publishers, IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews)

@@ -200,8 +200,8 @@ public class LeagueController : BaseLeagueController
 
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
-        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
-        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, true, currentDate)).ToList();
+        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false)).ToList();
+        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
         var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
 
@@ -814,8 +814,8 @@ public class LeagueController : BaseLeagueController
 
         var myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
 
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, false);
-        var gameNewsRecent = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, true);
+        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
+        var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);
 
         var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
         var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);

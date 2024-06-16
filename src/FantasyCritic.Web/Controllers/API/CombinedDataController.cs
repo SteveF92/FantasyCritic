@@ -99,14 +99,7 @@ public class CombinedDataController : FantasyCriticController
         RoyaleYearQuarter activeQuarter = await _royaleService.GetActiveYearQuarter();
 
         //User Royale Publisher
-        RoyalePublisher? publisher = await _royaleService.GetPublisher(activeQuarter, currentUser);
-        IReadOnlyList<MasterGameTag> masterGameTags = new List<MasterGameTag>();
-        IReadOnlyList<RoyaleYearQuarter> quartersWon = new List<RoyaleYearQuarter>();
-        if (publisher is not null)
-        {
-            quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
-            masterGameTags = await _interLeagueService.GetMasterGameTags();
-        }
+        RoyalePublisher? userRoyalePublisher = await _royaleService.GetPublisher(activeQuarter, currentUser);
 
         //var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
 
@@ -138,8 +131,8 @@ public class CombinedDataController : FantasyCriticController
         }
 
         //My Game News
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, false);
-        var gameNewsRecent = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, true);
+        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
+        var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);
 
         var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
         var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
@@ -154,13 +147,6 @@ public class CombinedDataController : FantasyCriticController
         //Active Royale Quarter
         var activeRoyaleQuarterViewModel = new RoyaleYearQuarterViewModel(activeQuarter);
 
-        //User Royale Publisher
-        RoyalePublisherViewModel? royalePublisherViewModel = null;
-        if (publisher is not null)
-        {
-            royalePublisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, true);
-        }
-
         var vm = new
         {
             MyLeagues = myLeagueViewModels,
@@ -170,7 +156,7 @@ public class CombinedDataController : FantasyCriticController
             MyGameNews = myGameNewsViewModel,
             PublicLeagues = publicLeagueViewModels,
             ActiveRoyaleQuarter = activeRoyaleQuarterViewModel,
-            UserRoyalePublisher = royalePublisherViewModel
+            UserRoyalePublisherID = userRoyalePublisher?.PublisherID
         };
 
         return Ok(vm);
