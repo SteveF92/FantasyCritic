@@ -23,7 +23,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
     public async Task<BasicData> GetBasicData()
     {
         await using var connection = new MySqlConnection(_connectionString);
-
         await using var resultSets = await connection.QueryMultipleAsync("sp_getbasicdata", commandType: CommandType.StoredProcedure);
         var systemWideSettingsEntity = await resultSets.ReadSingleAsync<SystemWideSettingsEntity>();
         var tagEntities = await resultSets.ReadAsync<MasterGameTagEntity>();
@@ -36,8 +35,32 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return new BasicData(systemWideSettings, tags, supportedYears);
     }
 
-    public Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)
+    public async Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)
     {
+        var queryObject = new
+        {
+            P_UserID = currentUser.Id,
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_gethomepagedata", queryObject, commandType: CommandType.StoredProcedure);
+        var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
+        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
+        var inviteEntities = await resultSets.ReadAsync<LeagueInviteEntity>();
+
+        //MyLeagues
+        var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
+        var leaguesWithStatus = new List<LeagueWithMostRecentYearStatus>();
+        foreach (var leagueEntity in leagueEntities)
+        {
+            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
+            League league = leagueEntity.ToDomain(years);
+            leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
+        }
+
+        //MyInvites
+
         throw new NotImplementedException();
+        //return new HomePageData(leaguesWithStatus, );
     }
 }
