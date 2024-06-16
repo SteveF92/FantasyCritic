@@ -1,23 +1,13 @@
-using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Web.Models.Responses;
 
 public class PlayerViewModel
 {
-    public PlayerViewModel(League league, MinimalFantasyCriticUser user, bool removable)
+    public PlayerViewModel(Guid leagueID, string leagueName, VeryMinimalFantasyCriticUser user, bool removable)
     {
-        LeagueID = league.LeagueID;
-        LeagueName = league.LeagueName;
-        UserID = user.UserID;
-        DisplayName = user.DisplayName;
-        Removable = removable;
-    }
-
-    public PlayerViewModel(ConferenceLeague league, MinimalFantasyCriticUser user, bool removable)
-    {
-        LeagueID = league.LeagueID;
-        LeagueName = league.LeagueName;
+        LeagueID = leagueID;
+        LeagueName = leagueName;
         UserID = user.UserID;
         DisplayName = user.DisplayName;
         Removable = removable;

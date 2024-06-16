@@ -1341,7 +1341,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
 
         var usersWithRemoveStatus = ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
-        var leagueInvites = await ConvertLeagueInviteEntitiesForSingleLeague(leagueYear.League, inviteEntities);
+        var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
 
         return new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
     }
@@ -1566,16 +1566,18 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             inviteID
         };
 
-        await using var connection = new MySqlConnection(_connectionString);
-        var entity = await connection.QuerySingleOrDefaultAsync<LeagueInviteEntity>(
-            "select * from tbl_league_invite where tbl_league_invite.InviteID = @inviteID",
-            query);
-        if (entity is null)
-        {
-            return null;
-        }
+        const string sql = """
+                           select tbl_league_invite.*, 
+                           tbl_user.DisplayName AS UserName, 
+                           tbl_user.EmailAddress AS UserEmailAddress 
+                           from tbl_league_invite
+                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.UserID
+                           where tbl_league_invite.InviteID = @inviteID;
+                           """;
 
-        return await ConvertLeagueInviteEntity(entity);
+        await using var connection = new MySqlConnection(_connectionString);
+        var entity = await connection.QuerySingleOrDefaultAsync<LeagueInviteEntity>(sql, query);
+        return entity?.ToDomain();
     }
 
     public async Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser)
@@ -1586,15 +1588,18 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             userID = currentUser.Id
         };
 
-        IEnumerable<LeagueInviteEntity> inviteEntities;
-        await using (var connection = new MySqlConnection(_connectionString))
-        {
-            inviteEntities = await connection.QueryAsync<LeagueInviteEntity>(
-                "select * from tbl_league_invite where tbl_league_invite.EmailAddress = @email OR tbl_league_invite.UserID = @userID;",
-                query);
-        }
+        const string sql = """
+                           select tbl_league_invite.*,
+                           tbl_user.DisplayName AS UserName,
+                           tbl_user.EmailAddress AS UserEmailAddress
+                           from tbl_league_invite
+                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.
+                           where tbl_league_invite.EmailAddress = @email OR tbl_league_invite.UserID = @userID;
+                           """;
 
-        var leagueInvites = await ConvertLeagueInviteEntities(inviteEntities);
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<LeagueInviteEntity> inviteEntities = await connection.QueryAsync<LeagueInviteEntity>(sql, query);
+        var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
         return leagueInvites;
     }
 
@@ -1604,7 +1609,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@inviteID, @leagueID, @emailAddress, @userID);",
+            "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@InviteID, @LeagueID, @EmailAddress, @serID);",
             entity);
     }
 
@@ -1615,21 +1620,25 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueID = league.LeagueID
         };
 
-        IEnumerable<LeagueInviteEntity> invites;
-        await using (var connection = new MySqlConnection(_connectionString))
-        {
-            invites = await connection.QueryAsync<LeagueInviteEntity>(
-                "select * from tbl_league_invite where tbl_league_invite.LeagueID = @leagueID;",
-                query);
-        }
+        const string sql = """
+                           select tbl_league_invite.*, 
+                           tbl_user.DisplayName AS UserName, 
+                           tbl_user.EmailAddress AS UserEmailAddress 
+                           from tbl_league_invite
+                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.
+                           where tbl_league_invite.LeagueID = @leagueID;
+                           """;
 
-        var leagueInvites = await ConvertLeagueInviteEntitiesForSingleLeague(league, invites);
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<LeagueInviteEntity> invites = await connection.QueryAsync<LeagueInviteEntity>(sql, query);
+        var leagueInvites = invites.Select(x => x.ToDomain()).ToList();
         return leagueInvites;
     }
 
     public async Task AcceptInvite(LeagueInvite leagueInvite, FantasyCriticUser user)
     {
-        await AddPlayerToLeague(leagueInvite.League, user);
+        var league = await this.GetLeagueOrThrow(leagueInvite.LeagueID);
+        await AddPlayerToLeague(league, user);
         await DeleteInvite(leagueInvite);
     }
 
@@ -3309,62 +3318,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
             await connection.ExecuteAsync("insert ignore into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceUserAddObject, transaction);
         }
-    }
-
-    private async Task<IReadOnlyList<LeagueInvite>> ConvertLeagueInviteEntities(IEnumerable<LeagueInviteEntity> entities)
-    {
-        List<LeagueInvite> leagueInvites = new List<LeagueInvite>();
-        foreach (var entity in entities)
-        {
-            var league = await this.GetLeagueOrThrow(entity.LeagueID);
-            if (entity.UserID.HasValue)
-            {
-                FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
-                leagueInvites.Add(entity.ToDomain(league, user));
-            }
-            else
-            {
-                leagueInvites.Add(entity.ToDomain(league));
-            }
-        }
-
-        return leagueInvites;
-    }
-
-    private async Task<IReadOnlyList<LeagueInvite>> ConvertLeagueInviteEntitiesForSingleLeague(League league, IEnumerable<LeagueInviteEntity> entities)
-    {
-        List<LeagueInvite> leagueInvites = new List<LeagueInvite>();
-        foreach (var entity in entities)
-        {
-            if (entity.UserID.HasValue)
-            {
-                FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
-                leagueInvites.Add(entity.ToDomain(league, user));
-            }
-            else
-            {
-                leagueInvites.Add(entity.ToDomain(league));
-            }
-        }
-
-        return leagueInvites;
-    }
-
-    private async Task<LeagueInvite> ConvertLeagueInviteEntity(LeagueInviteEntity entity)
-    {
-        var league = await this.GetLeagueOrThrow(entity.LeagueID);
-        if (league is null)
-        {
-            throw new Exception($"Cannot find league for league (should never happen) LeagueID: {entity.LeagueID}");
-        }
-
-        if (entity.UserID.HasValue)
-        {
-            FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
-            return entity.ToDomain(league, user);
-        }
-
-        return entity.ToDomain(league);
     }
 
     private async Task<IReadOnlyList<LeagueYearTagEntity>> GetLeagueYearTagEntities(int year)

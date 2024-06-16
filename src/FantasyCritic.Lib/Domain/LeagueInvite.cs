@@ -2,26 +2,19 @@ using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain;
 
-public class LeagueInvite
+public record LeagueInvite(Guid InviteID, Guid LeagueID, string EmailAddress, MinimalFantasyCriticUser? InviteUser) : ILeagueInvite;
+
+public record CompleteLeagueInvite(Guid InviteID, Guid LeagueID, string LeagueName, string EmailAddress,
+    MinimalFantasyCriticUser? InviteUser, int ActiveYear, VeryMinimalFantasyCriticUser LeagueManager) : ILeagueInvite
 {
-    public LeagueInvite(Guid inviteID, League league, string emailAddress)
-    {
-        InviteID = inviteID;
-        League = league;
-        EmailAddress = emailAddress;
-        User = null;
-    }
+    public string InviteName => InviteUser?.DisplayName ?? EmailAddress;
+    public LeagueInvite ToMinimal() => new LeagueInvite(InviteID, LeagueID, EmailAddress, InviteUser);
+}
 
-    public LeagueInvite(Guid inviteID, League league, FantasyCriticUser user)
-    {
-        InviteID = inviteID;
-        League = league;
-        EmailAddress = user.Email;
-        User = user;
-    }
-
-    public Guid InviteID { get; }
-    public League League { get; }
-    public string EmailAddress { get; }
-    public FantasyCriticUser? User { get; }
+public interface ILeagueInvite
+{
+    Guid InviteID { get; }
+    Guid LeagueID { get; }
+    string EmailAddress { get; }
+    MinimalFantasyCriticUser? InviteUser { get; }
 }

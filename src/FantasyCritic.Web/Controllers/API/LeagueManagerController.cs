@@ -347,7 +347,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
-        if (invite.League.LeagueID != validResult.League.LeagueID)
+        if (invite.LeagueID != validResult.League.LeagueID)
         {
             return StatusCode(403);
         }

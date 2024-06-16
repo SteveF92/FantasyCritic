@@ -78,9 +78,9 @@ public class LeagueYearViewModel
             {
                 allPublishersMade = false;
 
-                if (invitedPlayer.User is not null)
+                if (invitedPlayer.InviteUser is not null)
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.UserName));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.InviteUser.DisplayName));
                 }
                 else
                 {
