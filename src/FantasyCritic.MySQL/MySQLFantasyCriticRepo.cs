@@ -1589,16 +1589,26 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         const string sql = """
-                           select tbl_league_invite.*,
-                           tbl_user.DisplayName AS UserName,
-                           tbl_user.EmailAddress AS UserEmailAddress
-                           from tbl_league_invite
-                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.
+                           SELECT tbl_league_invite.*, 
+                                  tbl_league.LeagueName,
+                                  inviteUser.DisplayName AS InviteUserName, 
+                                  inviteUser.EmailAddress AS InviteUserEmailAddress,
+                                  leagueManager.DisplayName AS ManagerUserName,
+                                  leagueYear.ActiveYear
+                           FROM tbl_league_invite
+                           JOIN tbl_league ON tbl_league.LeagueID = tbl_league_invite.LeagueID
+                           JOIN tbl_user leagueManager ON tbl_league.LeagueManager = leagueManager.UserID
+                           LEFT JOIN tbl_user inviteUser ON tbl_league_invite.UserID = inviteUser.UserID
+                           LEFT JOIN (
+                               SELECT LeagueID, MAX(Year) AS ActiveYear
+                               FROM tbl_league_year
+                               GROUP BY LeagueID
+                           ) leagueYear ON tbl_league.LeagueID = leagueYear.LeagueID
                            where tbl_league_invite.EmailAddress = @email OR tbl_league_invite.UserID = @userID;
                            """;
 
         await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<LeagueInviteEntity> inviteEntities = await connection.QueryAsync<LeagueInviteEntity>(sql, query);
+        IEnumerable<CompleteLeagueInviteEntity> inviteEntities = await connection.QueryAsync<CompleteLeagueInviteEntity>(sql, query);
         var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
         return leagueInvites;
     }
@@ -1609,7 +1619,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@InviteID, @LeagueID, @EmailAddress, @serID);",
+            "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@InviteID, @LeagueID, @EmailAddress, @UserID);",
             entity);
     }
 
@@ -1625,7 +1635,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                            tbl_user.DisplayName AS UserName, 
                            tbl_user.EmailAddress AS UserEmailAddress 
                            from tbl_league_invite
-                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.
+                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.UserID
                            where tbl_league_invite.LeagueID = @leagueID;
                            """;
 

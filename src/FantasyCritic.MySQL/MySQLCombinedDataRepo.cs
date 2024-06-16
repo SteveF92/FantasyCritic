@@ -46,7 +46,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await using var resultSets = await connection.QueryMultipleAsync("sp_gethomepagedata", queryObject, commandType: CommandType.StoredProcedure);
         var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
         var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
-        var inviteEntities = await resultSets.ReadAsync<LeagueInviteEntity>();
+        var inviteEntities = await resultSets.ReadAsync<CompleteLeagueInviteEntity>();
 
         //MyLeagues
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
@@ -59,8 +59,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         }
 
         //MyInvites
+        var myInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
 
         throw new NotImplementedException();
-        //return new HomePageData(leaguesWithStatus, );
+        //return new HomePageData(leaguesWithStatus, myInvites, );
     }
 }
