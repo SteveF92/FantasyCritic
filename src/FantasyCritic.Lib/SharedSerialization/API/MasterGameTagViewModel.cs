@@ -1,6 +1,4 @@
-using FantasyCritic.Lib.Domain;
-
-namespace FantasyCritic.SharedSerialization.API;
+namespace FantasyCritic.Lib.SharedSerialization.API;
 
 public class MasterGameTagViewModel
 {

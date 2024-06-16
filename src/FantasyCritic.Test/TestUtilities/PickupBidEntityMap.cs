@@ -1,6 +1,6 @@
 using System.Globalization;
 using CsvHelper.Configuration;
-using FantasyCritic.SharedSerialization.Database;
+using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.Test.TestUtilities;
 public sealed class PreAllowIneligibleSlotPickupBidEntityMap : ClassMap<PickupBidEntity>

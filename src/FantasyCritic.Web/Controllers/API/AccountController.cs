@@ -1,5 +1,5 @@
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.SharedSerialization.API;
+using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

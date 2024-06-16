@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.SharedSerialization.API;
+namespace FantasyCritic.Lib.SharedSerialization.API;
 
 public class MinimalFantasyCriticUserViewModel
 {

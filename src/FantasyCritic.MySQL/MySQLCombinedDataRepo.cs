@@ -3,9 +3,9 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities;
-using FantasyCritic.SharedSerialization.Database;
 using Serilog;
 using System.Data;
+using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.MySQL;
 public class MySQLCombinedDataRepo : ICombinedDataRepo

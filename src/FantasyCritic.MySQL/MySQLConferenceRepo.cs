@@ -3,9 +3,9 @@ using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Conferences;
-using FantasyCritic.MySQL.Entities.Identity;
 using Serilog;
 
 namespace FantasyCritic.MySQL;

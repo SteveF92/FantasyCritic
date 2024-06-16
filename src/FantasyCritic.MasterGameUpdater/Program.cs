@@ -15,10 +15,10 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using FantasyCritic.Lib.Domain;
 using Newtonsoft.Json;
-using FantasyCritic.SharedSerialization.API;
 using NodaTime.Serialization.JsonNet;
 using FantasyCritic.MySQL.SyncingRepos;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.SharedSerialization.API;
 
 namespace FantasyCritic.MasterGameUpdater;
 

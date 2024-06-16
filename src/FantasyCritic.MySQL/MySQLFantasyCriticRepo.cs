@@ -12,8 +12,9 @@ using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
-using FantasyCritic.SharedSerialization.Database;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.SharedSerialization.Database;
+
 namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo

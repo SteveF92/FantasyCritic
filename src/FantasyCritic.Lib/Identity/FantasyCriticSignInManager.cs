@@ -1,9 +1,12 @@
 using System.Security.Claims;
+using FantasyCritic.Lib.SharedSerialization.Database;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using NodaTime.Serialization.JsonNet;
 
 namespace FantasyCritic.Lib.Identity;
 public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
@@ -18,6 +21,8 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
 
     public override Task SignInWithClaimsAsync(FantasyCriticUser user, bool isPersistent, IEnumerable<Claim> additionalClaims)
     {
+        CacheUserToSession(user);
+
         additionalClaims = AddScopes(additionalClaims);
         return base.SignInWithClaimsAsync(user, isPersistent, additionalClaims);
     }
@@ -25,8 +30,16 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
     public override Task SignInWithClaimsAsync(FantasyCriticUser user, AuthenticationProperties? authenticationProperties,
         IEnumerable<Claim> additionalClaims)
     {
+        CacheUserToSession(user);
         additionalClaims = AddScopes(additionalClaims);
         return base.SignInWithClaimsAsync(user, authenticationProperties, additionalClaims);
+    }
+
+    private void CacheUserToSession(FantasyCriticUser user)
+    {
+        var serializable = new FantasyCriticUserEntity(user);
+        var jsonString = JsonConvert.SerializeObject(serializable, new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+        Context.Session.SetString("current-user", jsonString);
     }
 
     private static IReadOnlyList<Claim> AddScopes(IEnumerable<Claim> additionalClaims)

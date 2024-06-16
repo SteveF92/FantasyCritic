@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.MySQL;
 

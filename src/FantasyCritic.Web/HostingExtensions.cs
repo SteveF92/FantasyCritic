@@ -329,6 +329,7 @@ public static class HostingExtensions
         }
 
         services.AddRazorTemplating();
+        services.AddSession();
 
         return builder.Build();
     }
@@ -374,6 +375,8 @@ public static class HostingExtensions
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseSession();
 
         app.MapControllers();
         app.MapRazorPages();

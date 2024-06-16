@@ -1,7 +1,4 @@
-using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Enums;
-
-namespace FantasyCritic.SharedSerialization.Database;
+namespace FantasyCritic.Lib.SharedSerialization.Database;
 
 public class LeagueYearTagEntity
 {

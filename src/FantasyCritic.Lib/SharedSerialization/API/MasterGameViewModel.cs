@@ -1,9 +1,6 @@
-using System.Runtime.InteropServices;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
-using NodaTime;
 
-namespace FantasyCritic.SharedSerialization.API;
+namespace FantasyCritic.Lib.SharedSerialization.API;
 
 public class MasterGameViewModel
 {
@@ -40,7 +37,7 @@ public class MasterGameViewModel
         OpenCriticSlug = masterGame.OpenCriticSlug;
         GGToken = masterGame.GGToken;
         GGSlug = masterGame.GGSlug;
-        SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
+        SubGames = masterGame.SubGames.Select(x => new MasterSubGameViewModel(x, currentDate)).ToList();
         Tags = masterGame.Tags.Select(x => x.Name).ToList();
         BoxartFileName = masterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.GGCoverArtFileName;
@@ -49,24 +46,6 @@ public class MasterGameViewModel
 
         Error = error;
         NumberOutstandingCorrections = numberOutstandingCorrections;
-    }
-
-    public MasterGameViewModel(MasterSubGame masterSubGame, LocalDate currentDate)
-    {
-        MasterGameID = masterSubGame.MasterGameID;
-        GameName = masterSubGame.GameName;
-        EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
-        MinimumReleaseDate = masterSubGame.MinimumReleaseDate;
-        MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
-        ReleaseDate = masterSubGame.ReleaseDate;
-        IsReleased = masterSubGame.IsReleased(currentDate);
-        ReleasingToday = masterSubGame.ReleaseDate == currentDate;
-        CriticScore = masterSubGame.CriticScore;
-        AveragedScore = false;
-        OpenCriticID = masterSubGame.OpenCriticID;
-        SubGames = null;
-        AddedByUser = null;
-        Tags = new List<string>();
     }
 
     public Guid MasterGameID { get; init; }
@@ -91,13 +70,13 @@ public class MasterGameViewModel
     public string? OpenCriticSlug { get; init; }
     public string? GGToken { get; init; }
     public string? GGSlug { get; init; }
-    public IReadOnlyList<MasterGameViewModel>? SubGames { get; init; }
+    public IReadOnlyList<MasterSubGameViewModel>? SubGames { get; init; }
     public IReadOnlyList<string> Tags { get; init; } = null!;
     public string? Notes { get; init; }
     public string? BoxartFileName { get; init; }
     public string? GGCoverArtFileName { get; init; }
     public Instant AddedTimestamp { get; init; }
-    public MinimalFantasyCriticUserViewModel AddedByUser { get; init; }
+    public MinimalFantasyCriticUserViewModel AddedByUser { get; init; } = null!;
     public bool Error { get; init; }
     public int NumberOutstandingCorrections { get; init; }
 

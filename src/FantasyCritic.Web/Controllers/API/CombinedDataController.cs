@@ -5,7 +5,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
-using FantasyCritic.SharedSerialization.API;
+using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Conferences;
 using FantasyCritic.Web.Models.Responses.Royale;

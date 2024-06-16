@@ -1,7 +1,7 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
-using FantasyCritic.SharedSerialization.API;
+using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Requests.MasterGame;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
