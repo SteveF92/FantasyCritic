@@ -6,6 +6,7 @@ using FantasyCritic.MySQL.Entities;
 using Serilog;
 using System.Data;
 using FantasyCritic.Lib.SharedSerialization.Database;
+using FantasyCritic.MySQL.Entities.Conferences;
 
 namespace FantasyCritic.MySQL;
 public class MySQLCombinedDataRepo : ICombinedDataRepo
@@ -47,6 +48,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
         var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
         var inviteEntities = await resultSets.ReadAsync<CompleteLeagueInviteEntity>();
+        var conferenceEntities = await resultSets.ReadAsync<MyConferenceEntity>();
+        var yearEntities = await resultSets.ReadAsync<ConferenceIDYearEntity>();
 
         //MyLeagues
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
@@ -64,7 +67,23 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         //MyConferences
 
 
+        var conferenceDictionary = new Dictionary<Guid, List<int>>();
+
+        foreach (var yearEntity in yearEntities)
+        {
+            if (!conferenceDictionary.TryGetValue(yearEntity.ConferenceID, out var years))
+            {
+                years = new List<int>();
+                conferenceDictionary[yearEntity.ConferenceID] = years;
+            }
+            years.Add(yearEntity.Year);
+        }
+
+        var myConferences = conferenceEntities
+            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, new List<int>())))
+            .ToList();
+
         throw new NotImplementedException();
-        return new HomePageData(leaguesWithStatus, myInvites,);
+        //return new HomePageData(leaguesWithStatus, myInvites, myConferences);
     }
 }

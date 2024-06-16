@@ -27,11 +27,32 @@ public class MySQLConferenceRepo : IConferenceRepo
     public async Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser user)
     {
         const string conferenceSQL =
-            """
-            select tbl_conference.* 
-            from tbl_conference join tbl_conference_hasuser on tbl_conference.ConferenceID = tbl_conference_hasuser.ConferenceID
-            where UserID = @userID and IsDeleted = 0;
-            """;
+        """
+            SELECT 
+            c.ConferenceID, 
+            c.ConferenceName, 
+            c.CustomRulesConference, 
+            u.UserID as ConferenceManagerID, 
+            u.DisplayName as ConferenceManagerDisplayName
+            FROM 
+                tbl_conference c
+            JOIN 
+                tbl_conference_hasuser chu ON c.ConferenceID = chu.ConferenceID
+            JOIN 
+                tbl_user u ON c.ConferenceManager = u.UserID
+            WHERE 
+                chu.UserID = @userID AND c.IsDeleted = 0;
+        
+            SELECT 
+            cy.ConferenceID, 
+            cy.Year
+            FROM 
+            tbl_conference_year cy
+            JOIN 
+            tbl_conference_hasuser chu ON cy.ConferenceID = chu.ConferenceID
+            WHERE 
+            chu.UserID = @userID;
+        """;
 
         var queryObject = new
         {
@@ -40,38 +61,26 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         await using var connection = new MySqlConnection(_connectionString);
 
-        var conferenceEntities = (await connection.QueryAsync<ConferenceEntity>(conferenceSQL, queryObject)).ToList();
+        var resultSets = await connection.QueryMultipleAsync(conferenceSQL, queryObject);
+        var conferenceEntities = await resultSets.ReadAsync<MyConferenceEntity>();
+        var yearEntities = await resultSets.ReadAsync<ConferenceIDYearEntity>();
 
-        var managerUserIDs = conferenceEntities.Select(x => x.ConferenceManager).ToList();
-        var managers = await _userStore.GetUsers(managerUserIDs);
-        var managerDictionary = managers.ToDictionary(x => x.Id);
+        var conferenceDictionary = new Dictionary<Guid, List<int>>();
 
-        var conferenceQueryObject = new
+        foreach (var yearEntity in yearEntities)
         {
-            conferenceIDs = conferenceEntities.Select(x => x.ConferenceID).ToList(),
-        };
-
-        const string conferenceYearSQL = "select ConferenceID, Year from tbl_conference_year where ConferenceID in @conferenceIDs;";
-        const string leaguesInConferenceSQL = "select ConferenceID, LeagueID from tbl_league where ConferenceID in @conferenceIDs;";
-
-        IEnumerable<(Guid ConferenceID, int Year)> conferenceYears = await connection.QueryAsync<(Guid ConferenceID, int Year)>(conferenceYearSQL, conferenceQueryObject);
-        IEnumerable<(Guid ConferenceID, Guid LeagueID)> leagues = await connection.QueryAsync<(Guid ConferenceID, Guid LeagueID)>(leaguesInConferenceSQL, conferenceQueryObject);
-
-        var conferenceYearLookup = conferenceYears.ToLookup(x => x.ConferenceID);
-        var leagueLookup = leagues.ToLookup(x => x.ConferenceID);
-
-        List<MinimalConference> conferences = new List<MinimalConference>();
-        foreach (var conferenceEntity in conferenceEntities)
-        {
-            FantasyCriticUser conferenceManager = managerDictionary[conferenceEntity.ConferenceManager];
-            var yearsForConference = conferenceYearLookup[conferenceEntity.ConferenceID].Select(x => x.Year);
-            var leaguesForConference = leagueLookup[conferenceEntity.ConferenceID].Select(x => x.LeagueID);
-
-            Conference conference = conferenceEntity.ToDomain(conferenceManager.ToMinimal(), yearsForConference, leaguesForConference);
-            conferences.Add(conference);
+            if (!conferenceDictionary.TryGetValue(yearEntity.ConferenceID, out var years))
+            {
+                years = new List<int>();
+                conferenceDictionary[yearEntity.ConferenceID] = years;
+            }
+            years.Add(yearEntity.Year);
         }
 
-        return conferences;
+        var domainObjects = conferenceEntities
+            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, new List<int>())))
+            .ToList();
+        return domainObjects;
     }
 
     public async Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options)
