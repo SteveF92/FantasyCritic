@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Royale;
 namespace FantasyCritic.Lib.Domain.Combinations;
 
 public record HomePageData(IReadOnlyList<LeagueWithMostRecentYearStatus> MyLeagues, IReadOnlyList<CompleteLeagueInvite> InvitedLeagues, IReadOnlyList<MinimalConference> MyConferences,
-    TopBidsAndDropsData? TopBidsAndDropsData, IReadOnlyList<LeagueYearPublisherPair> MyPublishers, IReadOnlyList<PublicLeagueYearStats> PublicLeagueYears,
+    TopBidsAndDropsData? TopBidsAndDropsData, IReadOnlyList<PublicLeagueYearStats> PublicLeagueYears,
     RoyaleYearQuarter ActiveRoyaleYearQuarter, Guid? ActiveYearQuarterRoyalePublisherID);
 
 public record TopBidsAndDropsData(LocalDate ProcessDate, IReadOnlyList<TopBidsAndDropsGame> TopBidsAndDrops);

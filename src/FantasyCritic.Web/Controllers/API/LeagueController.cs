@@ -812,7 +812,7 @@ public class LeagueController : BaseLeagueController
         var currentUser = await GetCurrentUserOrThrow();
         var currentDate = _clock.GetToday();
 
-        var myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
+        var myPublishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(currentUser);
 
         var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
         var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);

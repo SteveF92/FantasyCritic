@@ -26,7 +26,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
     Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league);
     Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user);
-    Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year);
+    Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYearsForUser(FantasyCriticUser user);
     Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher();
 
     Task FollowLeague(League league, FantasyCriticUser user);

@@ -55,7 +55,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var tagResults = await resultSets.ReadAsync<MasterGameTagEntity>();
         var masterSubGameResults = await resultSets.ReadAsync<MasterSubGameEntity>();
         var masterGameTagResults = await resultSets.ReadAsync<MasterGameHasTagEntity>();
-        //TODO My Publishers
         var publicLeagueEntities = await resultSets.ReadAsync<PublicLeagueYearStatsEntity>();
         var activeRoyaleYearQuarterEntity = await resultSets.ReadSingleAsync<RoyaleYearQuarterEntity>();
         var currentSupportedYearEntity = await resultSets.ReadSingleAsync<SupportedYearEntity>();
@@ -113,8 +112,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             topBidsAndDropsData = new TopBidsAndDropsData(topBidsAndDrops.First().ProcessDate, topBidsAndDrops);
         }
 
-        //TODO My Publishers
-
         //Public League Years
         var publicLeagueYears = publicLeagueEntities.Select(x => x.ToDomain()).ToList();
 
@@ -122,6 +119,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var supportedYear = currentSupportedYearEntity.ToDomain();
         var activeRoyaleQuarter = activeRoyaleYearQuarterEntity.ToDomain(supportedYear);
 
-        return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, new List<LeagueYearPublisherPair>(), publicLeagueYears, activeRoyaleQuarter, activeUserRoyalePublisherID);
+        return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }
 }

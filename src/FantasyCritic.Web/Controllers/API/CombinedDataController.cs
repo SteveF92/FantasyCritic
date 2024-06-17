@@ -1,9 +1,6 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
-using FantasyCritic.Lib.Domain.Combinations;
-using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Responses;
@@ -22,22 +19,15 @@ public class CombinedDataController : FantasyCriticController
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
     private readonly PublisherService _publisherService;
-    private readonly LeagueMemberService _leagueMemberService;
-    private readonly ConferenceService _conferenceService;
-    private readonly RoyaleService _royaleService;
     private readonly IClock _clock;
 
     public CombinedDataController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService,
-        InterLeagueService interLeagueService, PublisherService publisherService, LeagueMemberService leagueMemberService,
-        ConferenceService conferenceService, RoyaleService royaleService, IClock clock)
+        InterLeagueService interLeagueService, PublisherService publisherService, IClock clock)
         : base(userManager)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
         _publisherService = publisherService;
-        _leagueMemberService = leagueMemberService;
-        _conferenceService = conferenceService;
-        _royaleService = royaleService;
         _clock = clock;
     }
 
@@ -66,6 +56,8 @@ public class CombinedDataController : FantasyCriticController
     {
         var currentUser = await GetCurrentUserOrThrow();
         var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
+        var myPublishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(currentUser);
+
         var currentDate = _clock.GetToday();
 
         //My Leagues
@@ -92,11 +84,11 @@ public class CombinedDataController : FantasyCriticController
         }
 
         //My Game News
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(homePageData.MyPublishers, currentDate, false);
-        var gameNewsRecent = GameNewsFunctions.GetGameNews(homePageData.MyPublishers, currentDate, true);
+        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
+        var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);
 
-        var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(homePageData.MyPublishers, gameNewsUpcoming);
-        var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(homePageData.MyPublishers, gameNewsRecent);
+        var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
+        var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
 
         var upcomingGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
         var recentGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();

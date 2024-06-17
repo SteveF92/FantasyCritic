@@ -66,7 +66,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 return;
             }
 
-            var publishers = await _publisherService.GetPublishersWithLeagueYears(user);
+            var publishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(user);
             var gameNews = GameNewsFunctions.GetGameNews(publishers, dateToCheck, isRecentReleases);
             var leagueYearPublisherLists = GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews);
 
