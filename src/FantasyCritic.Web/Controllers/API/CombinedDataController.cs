@@ -65,54 +65,7 @@ public class CombinedDataController : FantasyCriticController
     public async Task<IActionResult> HomePageData()
     {
         var currentUser = await GetCurrentUserOrThrow();
-
-        //*********************Get data from services/database**************************
-
-        //My Leagues
-        IReadOnlyList<LeagueWithMostRecentYearStatus> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
-
-        //My Invites
-        IReadOnlyList<CompleteLeagueInvite> invitedLeagues = await _leagueMemberService.GetCompleteLeagueInvites(currentUser);
-
-        //My Conferences
-        IReadOnlyList<MinimalConference> myConferences = await _conferenceService.GetConferencesForUser(currentUser);
-
-        //Top Bids and Drops
-        var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
-        LocalDate? topBidsAndDropsDateToUse = null;
-        IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops = new List<TopBidsAndDropsGame>();
-        if (processingDatesWithData.Any())
-        {
-            topBidsAndDropsDateToUse = processingDatesWithData.Max();
-            topBidsAndDrops = await _interLeagueService.GetTopBidsAndDrops(topBidsAndDropsDateToUse.Value);
-        }
-
-        //My Game News
-        IReadOnlyList<LeagueYearPublisherPair> myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
-
-        //Public Leagues
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var selectedYear = supportedYears.Where(x => x.OpenForPlay).Select(x => x.Year).Min();
-        IReadOnlyList<PublicLeagueYearStats> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(selectedYear, 10);
-
-        //Active Royale Quarter
-        RoyaleYearQuarter activeQuarter = await _royaleService.GetActiveYearQuarter();
-
-        //User Royale Publisher
-        RoyalePublisher? userRoyalePublisher = await _royaleService.GetPublisher(activeQuarter, currentUser);
-
-        TopBidsAndDropsData? topBidsAndDropsData = null;
-        if (topBidsAndDropsDateToUse.HasValue)
-        {
-            topBidsAndDropsData = new TopBidsAndDropsData(topBidsAndDropsDateToUse.Value, topBidsAndDrops);
-        }
-
-        var homePageData = new HomePageData(myLeagues, invitedLeagues, myConferences, topBidsAndDropsData,
-            myPublishers, publicLeagueYears, activeQuarter, userRoyalePublisher?.PublisherID);
-        //var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
-
-        //*********************Build View Models**************************
-
+        var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
         var currentDate = _clock.GetToday();
 
         //My Leagues

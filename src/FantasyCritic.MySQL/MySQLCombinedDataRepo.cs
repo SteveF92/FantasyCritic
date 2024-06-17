@@ -50,6 +50,16 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var inviteEntities = await resultSets.ReadAsync<CompleteLeagueInviteEntity>();
         var conferenceEntities = await resultSets.ReadAsync<MyConferenceEntity>();
         var yearEntities = await resultSets.ReadAsync<ConferenceIDYearEntity>();
+        var topBidsAndDropsEntities = await resultSets.ReadAsync<TopBidsAndDropsEntity>();
+        var masterGameResults = await resultSets.ReadAsync<MasterGameYearEntity>();
+        var tagResults = await resultSets.ReadAsync<MasterGameTagEntity>();
+        var masterSubGameResults = await resultSets.ReadAsync<MasterSubGameEntity>();
+        var masterGameTagResults = await resultSets.ReadAsync<MasterGameHasTagEntity>();
+        //TODO My Publishers
+        var publicLeagueEntities = await resultSets.ReadAsync<PublicLeagueYearStatsEntity>();
+        var activeRoyaleYearQuarterEntity = await resultSets.ReadSingleAsync<RoyaleYearQuarterEntity>();
+        var currentSupportedYearEntity = await resultSets.ReadSingleAsync<SupportedYearEntity>();
+        var activeUserRoyalePublisherID = await resultSets.ReadSingleOrDefaultAsync<Guid>();
 
         //MyLeagues
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
@@ -65,10 +75,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var myInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
 
         //MyConferences
-
-
         var conferenceDictionary = new Dictionary<Guid, List<int>>();
-
         foreach (var yearEntity in yearEntities)
         {
             if (!conferenceDictionary.TryGetValue(yearEntity.ConferenceID, out var years))
@@ -83,7 +90,38 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, new List<int>())))
             .ToList();
 
-        throw new NotImplementedException();
-        //return new HomePageData(leaguesWithStatus, myInvites, myConferences);
+        //Top Bids and Drops
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
+        var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
+
+        var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+        var masterGameYears = new Dictionary<Guid, MasterGameYear>();
+        foreach (var entity in masterGameResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameYears.Add(entity.MasterGameID, domain);
+        }
+
+        TopBidsAndDropsData? topBidsAndDropsData = null;
+        if (topBidsAndDropsEntities.Any())
+        {
+            var topBidsAndDrops = topBidsAndDropsEntities
+                .Select(x => x.ToDomain(masterGameYears[x.MasterGameID]))
+                .ToList();
+            topBidsAndDropsData = new TopBidsAndDropsData(topBidsAndDrops.First().ProcessDate, topBidsAndDrops);
+        }
+
+        //TODO My Publishers
+
+        //Public League Years
+        var publicLeagueYears = publicLeagueEntities.Select(x => x.ToDomain()).ToList();
+
+        //Active Royale Quarter
+        var supportedYear = currentSupportedYearEntity.ToDomain();
+        var activeRoyaleQuarter = activeRoyaleYearQuarterEntity.ToDomain(supportedYear);
+
+        return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, new List<LeagueYearPublisherPair>(), publicLeagueYears, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }
 }
