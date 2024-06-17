@@ -119,8 +119,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var supportedYear = await GetSupportedYear(year);
-        var winningUser = await _userStore.GetUserThatMightExist(leagueYearEntity.WinningUserID);
-        var manager = await _userStore.FindByIdOrThrowAsync(leagueEntity.LeagueManager, CancellationToken.None);
+        var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
+
+        var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
+        var manager = userDictionary[leagueEntity.LeagueManager];
         leagueEntity.ManagerDisplayName = manager.UserName;
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
@@ -131,8 +133,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
         var domainEligibilityOverrides = await ConvertEligibilityOverrideEntities(eligibilityOverrideEntities);
         var domainTagOverrides = await ConvertTagOverrideEntities(tagOverrideEntities, tagDictionary);
-        var publishers = await ConvertPublisherEntities(usersInLeagueEntities, publisherEntities, publisherGameEntities,
-            formerPublisherGameEntities, year);
+        var publishers = await ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, year);
 
         LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
             winningUser, publishers);
@@ -1453,6 +1454,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var supportedYear = await GetSupportedYear(DateTime.Now.Year);  // Assuming we need the current year as supported year
+        var userDictionary = usersInLeagues.ToDictionary(x => x.UserID, y => y.ToDomain());
 
         var leaguesDict = leagues.ToDictionary(l => l.LeagueID);
         var leagueYearEntities = leagueYears.ToList();
@@ -1468,10 +1470,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var leagueID = leagueEntity.LeagueID;
             var year = leagueYearEntity.Year;
 
-            var league = leagueEntity.ToDomain(leagueYears.Where(y => y.LeagueID == leagueID).Select(y => y.Year).ToList());
+            var league = leagueEntity.ToDomain(leagueYearEntities.Where(y => y.LeagueID == leagueID).Select(y => y.Year).ToList());
             var leagueYearKey = new LeagueYearKey(leagueID, year);
-            var winningUser = await _userStore.GetUserThatMightExist(leagueYearEntity.WinningUserID);
-            var manager = await _userStore.FindByIdOrThrowAsync(leagueEntity.LeagueManager, CancellationToken.None);
+
+            var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
+            var manager = userDictionary[leagueEntity.LeagueManager];
+
             leagueEntity.ManagerDisplayName = manager.UserName;
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
@@ -1485,7 +1489,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var publisherIDsInLeagueYear = publisherEntitiesInLeagueYear.Select(x => x.PublisherID).ToHashSet();
             var publisherGamesForLeagueYear = publisherGames.Where(x => publisherIDsInLeagueYear.Contains(x.PublisherID)).ToList();
             var formerPublisherGamesForLeagueYear = formerPublisherGames.Where(x => publisherIDsInLeagueYear.Contains(x.PublisherID)).ToList();
-            var publishersForLeagueYear = await ConvertPublisherEntities(usersInLeagues, publisherEntitiesInLeagueYear, publisherGamesForLeagueYear, formerPublisherGamesForLeagueYear, year);
+            var publishersForLeagueYear = await ConvertPublisherEntities(userDictionary, publisherEntitiesInLeagueYear, publisherGamesForLeagueYear, formerPublisherGamesForLeagueYear, year);
 
             var leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides,
                 domainLeagueTags, specialGameSlotsForLeagueYear, winningUser, publishersForLeagueYear);
@@ -1823,10 +1827,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    private async Task<IReadOnlyList<Publisher>> ConvertPublisherEntities(IEnumerable<FantasyCriticUserEntity> userInLeagueEntities, IEnumerable<PublisherEntity> publisherEntities,
+    private async Task<IReadOnlyList<Publisher>> ConvertPublisherEntities(IReadOnlyDictionary<Guid, FantasyCriticUser> usersInLeague, IEnumerable<PublisherEntity> publisherEntities,
         IEnumerable<PublisherGameEntity> publisherGameEntities, IEnumerable<FormerPublisherGameEntity> formerPublisherGameEntities, int year)
     {
-        var usersInLeague = userInLeagueEntities.Select(x => x.ToDomain()).ToDictionary(x => x.Id);
         IReadOnlyList<PublisherGame> domainGames = await ConvertPublisherGameEntities(publisherGameEntities, year);
         IReadOnlyList<FormerPublisherGame> domainFormerGames = await ConvertFormerPublisherGameEntities(formerPublisherGameEntities, year);
 
