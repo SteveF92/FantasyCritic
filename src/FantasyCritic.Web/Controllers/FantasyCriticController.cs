@@ -54,6 +54,10 @@ public abstract class FantasyCriticController : ControllerBase
             return Result.Failure<FantasyCriticUser>("User does not exist.");
         }
 
+        var serializable = new FantasyCriticUserEntity(currentUser);
+        var jsonString = JsonConvert.SerializeObject(serializable, new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+        HttpContext.Session.SetString("current-user", jsonString);
+
         _currentUser = currentUser;
         return Result.Success(currentUser);
     }

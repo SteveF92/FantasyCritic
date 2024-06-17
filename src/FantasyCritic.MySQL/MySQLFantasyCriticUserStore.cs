@@ -179,7 +179,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         await connection.OpenAsync(cancellationToken);
 
         var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-            @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmailAddress",
+            "select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmailAddress",
             new { normalizedEmailAddress });
         var entity = userResult.SingleOrDefault();
         return entity?.ToDomain();

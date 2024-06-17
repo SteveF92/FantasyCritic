@@ -1,7 +1,9 @@
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -24,8 +26,20 @@ public class AccountController : FantasyCriticController
         }
         var currentUser = currentUserResult.Value;
 
-        var roles = await _userManager.GetRolesAsync(currentUser);
-        FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, roles);
+        IList<string> userRoles;
+        var sessionUserRoles = HttpContext.Session.GetString("current-user-roles");
+        if (!string.IsNullOrWhiteSpace(sessionUserRoles))
+        {
+            userRoles = JsonConvert.DeserializeObject<string[]>(sessionUserRoles)!;
+        }
+        else
+        {
+            userRoles = await _userManager.GetRolesAsync(currentUser);
+            var jsonString = JsonConvert.SerializeObject(userRoles);
+            HttpContext.Session.SetString("current-user-roles", jsonString);
+        }
+
+        FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, userRoles);
         return Ok(vm);
     }
 }
