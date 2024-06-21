@@ -45,7 +45,7 @@ public class PickupBidEntity
         ProjectedPointsAtTimeOfBid = domain.ProjectedPointsAtTimeOfBid;
     }
 
-    public PickupBidEntity(PickupBid domain, PublisherGame? conditionalDropPublisherGame, uint bidAmount) : this(domain)
+    public PickupBidEntity(PickupBid domain, PublisherGame? conditionalDropPublisherGame, uint bidAmount, bool allowIneligibleSlot) : this(domain)
     {
         BidID = domain.BidID;
         PublisherID = domain.Publisher.PublisherID;
@@ -55,7 +55,7 @@ public class PickupBidEntity
         Timestamp = domain.Timestamp;
         Priority = domain.Priority;
         BidAmount = bidAmount;
-        AllowIneligibleSlot = domain.AllowIneligibleSlot;
+        AllowIneligibleSlot = allowIneligibleSlot;
         Successful = domain.Successful;
         ProcessSetID = domain.ProcessSetID;
         Outcome = domain.Outcome;

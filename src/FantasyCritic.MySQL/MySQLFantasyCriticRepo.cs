@@ -387,7 +387,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             WHERE BidID = @BidID;
             """;
 
-        var entity = new PickupBidEntity(bid, conditionalDropPublisherGame, bidAmount);
+        var entity = new PickupBidEntity(bid, conditionalDropPublisherGame, bidAmount, allowIneligibleSlot);
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
