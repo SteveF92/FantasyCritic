@@ -112,6 +112,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             topBidsAndDropsData = new TopBidsAndDropsData(topBidsAndDrops.First().ProcessDate, topBidsAndDrops);
         }
 
+        //My Game News
+        var myGameNews = new MyGameNewsSet(new List<SingleGameNews>(), new List<SingleGameNews>());
+
         //Public League Years
         var publicLeagueYears = publicLeagueEntities.Select(x => x.ToDomain()).ToList();
 
@@ -119,6 +122,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var supportedYear = currentSupportedYearEntity.ToDomain();
         var activeRoyaleQuarter = activeRoyaleYearQuarterEntity.ToDomain(supportedYear);
 
-        return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, activeRoyaleQuarter, activeUserRoyalePublisherID);
+        return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }
 }

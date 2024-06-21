@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
@@ -56,7 +55,6 @@ public class CombinedDataController : FantasyCriticController
     {
         var currentUser = await GetCurrentUserOrThrow();
         var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
-        var myPublishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(currentUser);
 
         var currentDate = _clock.GetToday();
 
@@ -84,15 +82,7 @@ public class CombinedDataController : FantasyCriticController
         }
 
         //My Game News
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
-        var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);
-
-        var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
-        var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
-
-        var upcomingGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
-        var recentGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
-        var myGameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
+        var myGameNewsViewModel = new GameNewsViewModel(homePageData.MyGameNews, currentDate);
 
         //Public Leagues
         var publicLeagueViewModels = homePageData.PublicLeagueYears.Select(leagueYear => new PublicLeagueYearViewModel(leagueYear)).ToList();

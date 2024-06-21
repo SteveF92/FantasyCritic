@@ -14,6 +14,15 @@ public class SingleGameNewsPublisherViewModel
         PublisherName = publisherPair.Publisher.PublisherName;
     }
 
+    public SingleGameNewsPublisherViewModel(PublisherInfo publisherInfo)
+    {
+        LeagueID = publisherInfo.LeagueID;
+        Year = publisherInfo.Year;
+        LeagueName = publisherInfo.LeagueName;
+        PublisherID = publisherInfo.PublisherID;
+        PublisherName = publisherInfo.PublisherName;
+    }
+
     //For League Mode
     public SingleGameNewsPublisherViewModel(MasterGame masterGame, IReadOnlyList<LeagueYearPublisherPair> publisherPairs)
     {

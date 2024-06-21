@@ -14,7 +14,6 @@ using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.SharedSerialization.Database;
-using System.Linq;
 
 namespace FantasyCritic.MySQL;
 

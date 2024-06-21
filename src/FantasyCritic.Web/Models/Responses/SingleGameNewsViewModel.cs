@@ -26,6 +26,17 @@ public class SingleGameNewsViewModel
         }
     }
 
+    public SingleGameNewsViewModel(SingleGameNews gameNews, LocalDate currentDate)
+    {
+        MasterGame = new MasterGameYearViewModel(gameNews.MasterGameYear, currentDate);
+        MasterGameID = gameNews.MasterGameYear.MasterGame.MasterGameID;
+        GameName = gameNews.MasterGameYear.MasterGame.GameName;
+        EstimatedReleaseDate = gameNews.MasterGameYear.MasterGame.EstimatedReleaseDate;
+        MaximumReleaseDate = gameNews.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate();
+        ReleaseDate = gameNews.MasterGameYear.MasterGame.ReleaseDate;
+        LeaguePublisherSets = gameNews.PublisherInfo.Select(x => new SingleGameNewsPublisherViewModel(x)).ToList();
+    }
+
     public MasterGameYearViewModel MasterGame { get; }
     public Guid MasterGameID { get; }
     public string GameName { get; }
