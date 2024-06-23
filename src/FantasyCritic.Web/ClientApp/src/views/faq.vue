@@ -314,8 +314,8 @@
             </li>
           </ul>
           <p>
-            Both of these examples should be considered "bad faith bidding", or, bidding on a game that you don't actually intend to win. I have not figure out a way to have the site stop players from
-            doing these things, but league managers should be aware of them and discourage them. They violate the spirit of the system.
+            Both of these examples should be considered "bad faith bidding", or, bidding on a game that you don't actually intend to win. I have not figured out a way to have the site stop players
+            from doing these things, but league managers should be aware of them and discourage them. They violate the spirit of the system.
           </p>
         </template>
       </collapseCard>
