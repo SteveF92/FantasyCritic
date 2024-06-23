@@ -6,7 +6,8 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 public class PickupBid : IEquatable<PickupBid>
 {
     public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame,
-        bool counterPick, uint bidAmount, bool allowIneligibleSlot, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome, decimal? projectedPointsAtTimeOfBid)
+        bool counterPick, uint bidAmount, bool allowIneligibleSlot, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome,
+        decimal? projectedPointsAtTimeOfBid, DropResult? conditionalDropResult = null)
     {
         BidID = bidID;
         Publisher = publisher;
@@ -22,13 +23,6 @@ public class PickupBid : IEquatable<PickupBid>
         ProcessSetID = processSetID;
         Outcome = outcome;
         ProjectedPointsAtTimeOfBid = projectedPointsAtTimeOfBid;
-        ConditionalDropResult = null;
-    }
-
-    public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame,
-        bool counterPick, uint bidAmount, bool allowIneligibleSlot, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome, decimal? projectedPointsAtTimeOfBid, DropResult conditionalDropResult)
-    : this(bidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, counterPick, bidAmount, allowIneligibleSlot, priority, timestamp, successful, processSetID, outcome, projectedPointsAtTimeOfBid)
-    {
         ConditionalDropResult = conditionalDropResult;
     }
 
@@ -54,6 +48,18 @@ public class PickupBid : IEquatable<PickupBid>
         return new PickupBid(BidID, Publisher, LeagueYear, MasterGame, ConditionalDropPublisherGame, CounterPick,
             BidAmount, AllowIneligibleSlot, Priority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid,
             conditionalDropResult);
+    }
+
+
+    public PickupBid WithNewPriority(int newPriority)
+    {
+        if (newPriority != Priority)
+        {
+
+        }
+        return new PickupBid(BidID, Publisher, LeagueYear, MasterGame, ConditionalDropPublisherGame, CounterPick,
+            BidAmount, AllowIneligibleSlot, newPriority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid,
+            ConditionalDropResult);
     }
 
     public LeagueYearPublisherPair GetLeagueYearPublisherPair() => new LeagueYearPublisherPair(LeagueYear, Publisher);

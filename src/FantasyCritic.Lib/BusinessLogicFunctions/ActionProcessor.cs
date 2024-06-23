@@ -26,8 +26,10 @@ public class ActionProcessor
     public FinalizedActionProcessingResults ProcessActions(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
         IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allActiveDrops, IEnumerable<Publisher> publishers)
     {
+        var bidsWithFixedPriorities = FixBidPriorities(allActiveBids);
+
         var publisherStateSet = new PublisherStateSet(publishers);
-        var flatBids = allActiveBids.SelectMany(x => x.Value);
+        var flatBids = bidsWithFixedPriorities.SelectMany(x => x.Value);
         var invalidBids = flatBids.Where(x => x.CounterPick && x.ConditionalDropPublisherGame is not null);
         if (invalidBids.Any())
         {
@@ -36,23 +38,44 @@ public class ActionProcessor
 
         string processName = $"Drop/Bid Processing ({_processingTime.ToEasternDate()})";
         Guid processSetID = Guid.NewGuid();
-        if (!allActiveBids.Any() && !allActiveDrops.Any())
+        if (!bidsWithFixedPriorities.Any() && !allActiveDrops.Any())
         {
             var emptyResults = ActionProcessingResults.GetEmptyResultsSet(publisherStateSet);
             return new FinalizedActionProcessingResults(processSetID, _processingTime, processName, emptyResults, new List<SpecialAuction>());
         }
 
         ActionProcessingResults dropResults = ProcessDrops(allActiveDrops, publisherStateSet);
-        if (!allActiveBids.Any())
+        if (!bidsWithFixedPriorities.Any())
         {
             return new FinalizedActionProcessingResults(processSetID, _processingTime, processName, dropResults, new List<SpecialAuction>());
         }
 
         var dropResultsCopy = dropResults.MakeCopy();
-        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed = GetConditionalDropsThatWillSucceed(allActiveBids, dropResultsCopy);
+        ILookup<LeagueYearKey, PublisherGame> conditionalDropsThatWillSucceed = GetConditionalDropsThatWillSucceed(bidsWithFixedPriorities, dropResultsCopy);
 
-        ActionProcessingResults bidResults = ProcessPickups(allActiveBids, dropResults, conditionalDropsThatWillSucceed);
+        ActionProcessingResults bidResults = ProcessPickups(bidsWithFixedPriorities, dropResults, conditionalDropsThatWillSucceed);
         return new FinalizedActionProcessingResults(processSetID, _processingTime, processName, bidResults, new List<SpecialAuction>());
+    }
+
+    private static IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> FixBidPriorities(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids)
+    {
+        //This was added after I discovered a bug that allowed for a publisher to have multiple bids with the same priority.
+
+        var newDictionary = new Dictionary<LeagueYear, List<PickupBid>>();
+        foreach (var leagueGroup in allActiveBids)
+        {
+            newDictionary[leagueGroup.Key] = new List<PickupBid>();
+            var groupedByPublisher = leagueGroup.Value.GroupBy(x => x.Publisher);
+            foreach (var publisherGroup in groupedByPublisher)
+            {
+                var bidsOrder = publisherGroup.OrderBy(x => x.Priority).ThenByDescending(x => x.BidAmount)
+                    .ThenBy(x => x.Timestamp).Select((bid, index) => (bid, newPriority: index + 1)).ToList();
+                var fixedPriorities = bidsOrder.Select(x => x.bid.WithNewPriority(x.newPriority)).ToList();
+                newDictionary[leagueGroup.Key].AddRange(fixedPriorities);
+            }
+        }
+
+        return newDictionary.SealDictionary();
     }
 
     public FinalizedActionProcessingResults ProcessSpecialAuctions(IReadOnlyList<LeagueYearSpecialAuctionSet> leagueYearSpecialAuctions)
