@@ -198,7 +198,7 @@ public class ActionProcessor
             duplicateBids.AddRange(otherBids);
         }
 
-        var nonDuplicateBids = activeBidsForLeague.Except(duplicateBids);
+        var nonDuplicateBids = activeBidsForLeague.Except(duplicateBids).ToList();
 
         List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
         List<PickupBid> noEligibleSpaceLeftBids = new List<PickupBid>();
@@ -274,12 +274,13 @@ public class ActionProcessor
             .Except(belowMinimumBids)
             .Except(invalidGameBids.Select(x => x.Key))
             .Where(x => takenGames.Contains(x.MasterGame))
-            .Select(x => new FailedPickupBid(x, GetLostBidMessage(x, winningBids), _systemWideValues, processDate));
+            .Select(x => new FailedPickupBid(x, GetLostBidMessage(x, winningBids), _systemWideValues, processDate))
+            .ToList();
 
-        var duplicateBidFailures = duplicateBids.Select(x => new FailedPickupBid(x, "You cannot have multiple bids for the same game. This bid has been ignored.", _systemWideValues, processDate));
-        var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, _systemWideValues, processDate));
-        var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget.", _systemWideValues, processDate));
-        var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount.", _systemWideValues, processDate));
+        var duplicateBidFailures = duplicateBids.Select(x => new FailedPickupBid(x, "You cannot have multiple bids for the same game. This bid has been ignored.", _systemWideValues, processDate)).ToList();
+        var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, _systemWideValues, processDate)).ToList();
+        var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget.", _systemWideValues, processDate)).ToList();
+        var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount.", _systemWideValues, processDate)).ToList();
         List<FailedPickupBid> noSpaceLeftBidFailures = new List<FailedPickupBid>();
         foreach (var noSpaceLeftBid in noSpaceLeftBids)
         {
