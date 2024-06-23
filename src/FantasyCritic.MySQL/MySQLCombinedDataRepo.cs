@@ -25,9 +25,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
     {
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getbasicdata", commandType: CommandType.StoredProcedure);
-        var systemWideSettingsEntity = await resultSets.ReadSingleAsync<SystemWideSettingsEntity>();
-        var tagEntities = await resultSets.ReadAsync<MasterGameTagEntity>();
-        var supportedYearEntities = await resultSets.ReadAsync<SupportedYearEntity>();
+        var systemWideSettingsEntity = resultSets.ReadSingle<SystemWideSettingsEntity>();
+        var tagEntities = resultSets.Read<MasterGameTagEntity>();
+        var supportedYearEntities = resultSets.Read<SupportedYearEntity>();
 
         var systemWideSettings = new SystemWideSettings(systemWideSettingsEntity.ActionProcessingMode, systemWideSettingsEntity.RefreshOpenCritic);
         var tags = tagEntities.Select(x => x.ToDomain()).ToList();
@@ -45,20 +45,21 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_gethomepagedata", queryObject, commandType: CommandType.StoredProcedure);
-        var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
-        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
-        var inviteEntities = await resultSets.ReadAsync<CompleteLeagueInviteEntity>();
-        var conferenceEntities = await resultSets.ReadAsync<MyConferenceEntity>();
-        var yearEntities = await resultSets.ReadAsync<ConferenceIDYearEntity>();
-        var topBidsAndDropsEntities = await resultSets.ReadAsync<TopBidsAndDropsEntity>();
-        var masterGameResults = await resultSets.ReadAsync<MasterGameYearEntity>();
-        var tagResults = await resultSets.ReadAsync<MasterGameTagEntity>();
-        var masterSubGameResults = await resultSets.ReadAsync<MasterSubGameEntity>();
-        var masterGameTagResults = await resultSets.ReadAsync<MasterGameHasTagEntity>();
-        var publicLeagueEntities = await resultSets.ReadAsync<PublicLeagueYearStatsEntity>();
-        var activeRoyaleYearQuarterEntity = await resultSets.ReadSingleAsync<RoyaleYearQuarterEntity>();
-        var currentSupportedYearEntity = await resultSets.ReadSingleAsync<SupportedYearEntity>();
-        var activeUserRoyalePublisherID = await resultSets.ReadSingleOrDefaultAsync<Guid>();
+        var leagueEntities = resultSets.Read<LeagueEntity>();
+        var leagueYearEntities = resultSets.Read<LeagueYearKeyEntity>();
+        var inviteEntities = resultSets.Read<CompleteLeagueInviteEntity>();
+        var conferenceEntities = resultSets.Read<MyConferenceEntity>();
+        var yearEntities = resultSets.Read<ConferenceIDYearEntity>();
+        var topBidsAndDropsEntities = resultSets.Read<TopBidsAndDropsEntity>();
+        var masterGameResults = resultSets.Read<MasterGameYearEntity>();
+        var tagResults = resultSets.Read<MasterGameTagEntity>();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
+        var myGameNewsEntities = resultSets.Read<MyGameNewsEntity>();
+        var publicLeagueEntities = resultSets.Read<PublicLeagueYearStatsEntity>();
+        var activeRoyaleYearQuarterEntity = resultSets.ReadSingle<RoyaleYearQuarterEntity>();
+        var currentSupportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
+        var activeUserRoyalePublisherID = resultSets.ReadSingleOrDefault<Guid>();
 
         //MyLeagues
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
@@ -94,26 +95,26 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
 
         var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
-        var masterGameYears = new Dictionary<Guid, MasterGameYear>();
+        var masterGameYears = new Dictionary<MasterGameYearKey, MasterGameYear>();
         foreach (var entity in masterGameResults)
         {
             var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
             var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
             MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
-            masterGameYears.Add(entity.MasterGameID, domain);
+            masterGameYears.Add(domain.Key, domain);
         }
 
         TopBidsAndDropsData? topBidsAndDropsData = null;
         if (topBidsAndDropsEntities.Any())
         {
             var topBidsAndDrops = topBidsAndDropsEntities
-                .Select(x => x.ToDomain(masterGameYears[x.MasterGameID]))
+                .Select(x => x.ToDomain(masterGameYears[new MasterGameYearKey(x.MasterGameID, x.Year)]))
                 .ToList();
             topBidsAndDropsData = new TopBidsAndDropsData(topBidsAndDrops.First().ProcessDate, topBidsAndDrops);
         }
 
         //My Game News
-        var myGameNews = new MyGameNewsSet(new List<SingleGameNews>(), new List<SingleGameNews>());
+        var myGameNews = BuildMyGameNewsFromEntities(myGameNewsEntities, masterGameYears);
 
         //Public League Years
         var publicLeagueYears = publicLeagueEntities.Select(x => x.ToDomain()).ToList();
@@ -123,5 +124,22 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var activeRoyaleQuarter = activeRoyaleYearQuarterEntity.ToDomain(supportedYear);
 
         return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
+    }
+
+    private static IReadOnlyList<SingleGameNews> BuildMyGameNewsFromEntities(IEnumerable<MyGameNewsEntity> myGameNewsEntities, IReadOnlyDictionary<MasterGameYearKey, MasterGameYear> masterGameYears)
+    {
+        List<SingleGameNews> domains = new List<SingleGameNews>();
+
+        var groupedByMasterGame = myGameNewsEntities.GroupBy(x => x.MasterGameID);
+
+        foreach (var masterGameGroup in groupedByMasterGame)
+        {
+            var highestYear = masterGameGroup.Select(x => x.Year).Max();
+            var masterGameYear = masterGameYears[new MasterGameYearKey(masterGameGroup.Key, highestYear)];
+            var publisherInfos = masterGameGroup.Select(x => new PublisherInfo(x.LeagueID, x.LeagueName, x.Year, x.PublisherID, x.PublisherName)).ToList();
+            domains.Add(new SingleGameNews(masterGameYear, publisherInfos));
+        }
+
+        return domains;
     }
 }

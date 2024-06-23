@@ -17,16 +17,14 @@ public class CombinedDataController : FantasyCriticController
 {
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly PublisherService _publisherService;
     private readonly IClock _clock;
 
     public CombinedDataController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService,
-        InterLeagueService interLeagueService, PublisherService publisherService, IClock clock)
+        InterLeagueService interLeagueService, IClock clock)
         : base(userManager)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
-        _publisherService = publisherService;
         _clock = clock;
     }
 
@@ -82,7 +80,8 @@ public class CombinedDataController : FantasyCriticController
         }
 
         //My Game News
-        var myGameNewsViewModel = new GameNewsViewModel(homePageData.MyGameNews, currentDate);
+        var myGameNews = BuildMyGameNews(homePageData.MyGameDetails, currentDate);
+        var myGameNewsViewModel = new GameNewsViewModel(myGameNews, currentDate);
 
         //Public Leagues
         var publicLeagueViewModels = homePageData.PublicLeagueYears.Select(leagueYear => new PublicLeagueYearViewModel(leagueYear)).ToList();
@@ -103,5 +102,22 @@ public class CombinedDataController : FantasyCriticController
         };
 
         return Ok(vm);
+    }
+
+    private static MyGameNewsSet BuildMyGameNews(IReadOnlyList<SingleGameNews> myGameDetails, LocalDate currentDate)
+    {
+        var upcomingReleases = myGameDetails
+            .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() > currentDate)
+            .Take(10)
+            .OrderBy(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
+            .ToList();
+
+        var recentReleases = myGameDetails
+            .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() <= currentDate)
+            .Take(10)
+            .OrderByDescending(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
+            .ToList();
+
+        return new MyGameNewsSet(upcomingReleases, recentReleases);
     }
 }
