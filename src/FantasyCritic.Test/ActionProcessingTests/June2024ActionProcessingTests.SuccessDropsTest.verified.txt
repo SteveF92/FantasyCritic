@@ -1,0 +1,3194 @@
+﻿[
+  {
+    DropRequestID: 001fcb53-4506-422e-b65a-854a87f850b3,
+    PublisherID: 8d338847-bc9a-45ae-9814-56f361f9b7ec,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 006dc8af-c157-48c8-b290-3c16378205b2,
+    PublisherID: 40654a9a-5376-458e-9dd9-dea53f2d32fc,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 00755b7e-6d3d-42e5-99a3-39780661cc3c,
+    PublisherID: d586a7e3-b3d7-4d4e-bf3b-d55931564a8d,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 00cf5164-4e30-4e45-b9ae-ce1afdd6d687,
+    PublisherID: 4bdaec2a-c3ee-4e29-8f90-a2d9499c04b8,
+    MasterGameID: 2b8d168d-60a3-463d-ab04-b2bb5e43b072,
+    GameName: Metroid Prime 2 Remastered (Unannounced)
+  },
+  {
+    DropRequestID: 00d18f80-de07-4ac9-9788-d4fb36fde697,
+    PublisherID: 8cbd9ea3-3f27-4e1f-b43a-be935a9be0e8,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: 0196b92d-cfdb-432d-8c5f-f13d378e9470,
+    PublisherID: 9390d8d9-4d26-4294-91fc-8f9c4726b201,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 0221fbab-3f7e-4116-a63e-dc5840b57a92,
+    PublisherID: 29d3fdde-206e-4002-9074-b740a61be7af,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 030f2bc2-3686-4a53-bd79-b22d6144c7ea,
+    PublisherID: 8e389c43-59fd-4220-891a-1ef9098e532c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 04a959a0-7bc7-421b-ae41-36da21b26e45,
+    PublisherID: c31a6487-decb-4313-8abf-dd7f75603650,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 04e0e4b9-b91c-4060-82e9-a3824dc1639c,
+    PublisherID: 0a31c7f9-4571-4436-8664-8c1ab0a7a4d7,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 056279e1-bd90-4165-9df3-3ff40d5d5983,
+    PublisherID: c317a6be-9671-4108-b7df-cc3ed70956b4,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 05a28148-6420-47cd-8b6f-68f3f04ce40b,
+    PublisherID: 2888689e-a018-4963-a75c-0ad8356ed91c,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: 061c18e8-6b20-46e0-86ba-1e2c2029491b,
+    PublisherID: b14e5ee3-c580-430e-a85b-1876558dcfb8,
+    MasterGameID: a91decae-a25b-41da-939a-9b67b1f9d058,
+    GameName: No Rest for the Wicked
+  },
+  {
+    DropRequestID: 06587027-d64d-4295-97bb-3f50d7860c84,
+    PublisherID: 93c4bcf4-e71e-4092-89f1-8c59b97b623d,
+    MasterGameID: e75e912b-0200-4d4a-8c9d-273088df6374,
+    GameName: Mecha BREAK
+  },
+  {
+    DropRequestID: 06db5b07-f750-4730-81d0-d0ab1e510cdb,
+    PublisherID: 07bfa8e1-af1f-44a6-a36b-decfd6918c75,
+    MasterGameID: adce2dd8-d0b2-4373-80d3-d875160e5954,
+    GameName: Baby Steps
+  },
+  {
+    DropRequestID: 076f77d0-3f36-4c29-93f7-ff5eefbb0879,
+    PublisherID: 2b0ea9fc-61fc-4059-9b38-4432c5a87099,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 077f2864-2323-4198-8b04-5e76a9702677,
+    PublisherID: 604be3c4-a069-41fc-852f-50aea86f25e3,
+    MasterGameID: 460dda8b-c5e8-455c-a75f-70153794e08f,
+    GameName: 2XKO
+  },
+  {
+    DropRequestID: 08429cef-119d-4058-aa37-dfcc6a587acc,
+    PublisherID: 3d93af84-8d77-40c6-b82e-48e5f7be50dd,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: 086ceb22-d85b-4c3a-8923-3289ac3fef31,
+    PublisherID: 9e09123c-b5f2-4f30-afd0-db2e6028f0bc,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 08984536-2000-4043-abb9-36671b9d59c4,
+    PublisherID: e0589c8c-701f-4ea3-92e7-583906b56c1a,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 08bf77b1-b378-475a-aad9-53e8da0ecfe1,
+    PublisherID: 8d3cba45-1d3f-4ace-a8ec-671f092e8b62,
+    MasterGameID: 793a84f1-a19d-4e34-adeb-19533334c63d,
+    GameName: Beastieball
+  },
+  {
+    DropRequestID: 092128d4-f200-4539-857a-b66f66f020aa,
+    PublisherID: 7bd705bb-8cf9-4dfd-a5e2-fe75e33d8883,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 0989ffee-8a75-4ed3-8b18-18feefea98f5,
+    PublisherID: cadbb135-7aad-4b0a-b988-77887b51b9e8,
+    MasterGameID: c3bd8888-63e4-43f8-afa3-6683c0cd53d8,
+    GameName: Indiana Jones and the Great Circle
+  },
+  {
+    DropRequestID: 0a063354-b3fb-4525-8437-4349a1e17518,
+    PublisherID: bfcb941d-5d44-495a-b701-3efd7619e8b7,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 0a096c00-6643-4e01-af0b-fb8e39aad063,
+    PublisherID: c4ba8c73-201d-471b-ae82-a27ef74addf9,
+    MasterGameID: a91decae-a25b-41da-939a-9b67b1f9d058,
+    GameName: No Rest for the Wicked
+  },
+  {
+    DropRequestID: 0abe2d98-50e1-47d9-9867-949cca498653,
+    PublisherID: e9b0d84a-9d08-41d9-9a99-c1f0121e2a68,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 0b6cc893-4ba5-45aa-8cb3-d62fb78d7a26,
+    PublisherID: 757a13a4-7453-4a23-8c7a-bdcdcb5ea17e,
+    MasterGameID: 421c6afa-7d0b-44b4-9945-2e9e102fb7e6,
+    GameName: Rift of the NecroDancer
+  },
+  {
+    DropRequestID: 0c1e639d-4d6e-45c0-b0f2-b566291acd20,
+    PublisherID: 0dd0a483-7e0a-4c6c-ba4e-5c2b0948f01e,
+    MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
+    GameName: The Rise of the Golden Idol
+  },
+  {
+    DropRequestID: 0c23f3f4-f82d-4dc9-aab9-30a50cd7cebd,
+    PublisherID: 6b393292-c705-434b-9a60-f0b7534b87f4,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 0c507b55-2a9a-40e5-b147-efd5690c5028,
+    PublisherID: 1902ad4d-cec3-4bff-97c0-abb6c0a0a54e,
+    MasterGameID: 5834f318-4641-4f60-a352-bafeef38cdaa,
+    GameName: Stormgate
+  },
+  {
+    DropRequestID: 0d559c23-b781-4c96-9d49-87f7f7bedeb7,
+    PublisherID: 0bd1c0d1-cc6a-4075-a765-26029a3ce3fb,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 0dd7619a-619c-4317-b5a0-e41452fec4ff,
+    PublisherID: 9a066923-a62f-425b-86fc-54c0a8c3bb47,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 0e16fc1c-d3e4-49d4-85ef-081e44fe2103,
+    PublisherID: ad390cb9-bbb6-4915-94a3-785ec281cf32,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 0e68c56f-45a6-4abf-961f-af0ef091b60b,
+    PublisherID: 72ed474e-46af-489b-871a-410663b4f3f3,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 0ef24130-68a0-4f41-a874-c5a9b78a6e86,
+    PublisherID: a099d391-5efa-4872-a318-7ec34bf8ef57,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 0f7ea8a3-c8bd-4c58-84f1-f91845a0c16f,
+    PublisherID: bc24b893-ca66-4685-b69c-5d6126aaea56,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: 117250a4-2a09-489a-9895-92b37dcb6796,
+    PublisherID: 4b922897-8c48-4a35-ad48-c2c8496aacdb,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 118b4409-1c74-45cb-8fe2-b138ad5d9a24,
+    PublisherID: b07c709d-29a1-4434-82c5-466a90f3b80e,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 120fd5c0-092f-47ac-8b05-32f092fd8df5,
+    PublisherID: 1ec3d40a-bee6-4956-a7d8-dd18e176edcd,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 123fd085-a84a-4188-adeb-872b5f801d83,
+    PublisherID: 8bff5eff-21d1-4f8c-90ac-405605edbd19,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 128f029a-6647-40bc-9b1f-028abf5ce5e2,
+    PublisherID: 7e6328a6-d4f0-4873-ba75-4534145c0c6c,
+    MasterGameID: a6f2ad33-763f-4338-bfbe-0e483ccc5940,
+    GameName: Never Grave: The Witch and The Curse
+  },
+  {
+    DropRequestID: 1310f683-b326-493a-8c28-ddb803f58efa,
+    PublisherID: 9c2b8c2b-5c07-4f9c-9088-c99e9e035343,
+    MasterGameID: 5194c04d-a3e4-493e-8d91-168a260ef47c,
+    GameName: Ender Magnolia: Bloom in the Mist
+  },
+  {
+    DropRequestID: 136a3f5d-992e-448c-80ff-57cf7f640342,
+    PublisherID: 480b5500-a563-4fdc-94b3-4d0449bf9a77,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 13e0c39d-1584-4da0-9839-67c28944db84,
+    PublisherID: ef9481f2-ea6a-4109-9ea0-e50452381259,
+    MasterGameID: e2a6e3a4-a430-49c7-8d10-58092c141080,
+    GameName: Unannounced Final Fantasy IX Remake
+  },
+  {
+    DropRequestID: 14827a99-d238-48fb-b77b-eb23034a5dd8,
+    PublisherID: ed7cc161-a7d1-454e-a910-7b7993b36860,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 15430d1f-e1d4-4990-a10e-05dbbd55c177,
+    PublisherID: 1f9a476a-1aa3-47a2-a514-a88ce41c09fc,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 1556bebe-e477-4ee3-9bc6-9a35a612a22c,
+    PublisherID: 4acf5025-cd45-45be-b694-989f9f411431,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 155b07b5-b463-40d2-98f0-ec62af909965,
+    PublisherID: 0f45df4b-06cd-4dd7-bc85-4a4aec18e38a,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 157f6536-4178-412e-8cb9-e8efb3e06111,
+    PublisherID: ff61b554-cbb6-4963-99e7-08c8ed2c0e06,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 163470fd-6ee6-4516-88b5-562db9a82620,
+    PublisherID: 6dc26046-43e1-436d-9f78-c956810e4864,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 16362e09-dbe1-4e75-91e6-23ebe04796d0,
+    PublisherID: 285bc8a6-3c06-4a08-9100-0684d5f7c442,
+    MasterGameID: e466da26-aaa3-4319-876f-dceccb70e794,
+    GameName: Metal Gear Solid Δ: Snake Eater
+  },
+  {
+    DropRequestID: 1745a3ed-e773-46e2-a080-daabb2c5cd36,
+    PublisherID: 23144bf0-2913-4a5a-85e0-e94aba82558f,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 180ff35d-69a5-475e-8541-af33da87412b,
+    PublisherID: 49f86cd4-9fdf-45ee-ae04-c04228782baa,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 18aba5c1-7759-4635-8b69-70ff6e3c85e7,
+    PublisherID: cce22830-27f9-4179-8dbc-0f3af61e3ee9,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 18fe1611-ae8c-4601-a626-4eb252a3e704,
+    PublisherID: 23c3e53e-23f5-4ab4-8323-a8335e185712,
+    MasterGameID: c598de59-e6e1-4646-a658-aa0f1fdbbdcf,
+    GameName: Zenless Zone Zero
+  },
+  {
+    DropRequestID: 1983e333-aa2d-4539-8ead-f8fe76e8708e,
+    PublisherID: 17598d54-11ed-470b-9134-218bc39f31f7,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 19a6ecc8-abd0-414a-8791-6b3fc49e3782,
+    PublisherID: f54cb34b-44bd-46b4-8b8a-9f490b33e924,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 1a5dc3c9-7340-4b20-9eff-dd7d1708ec5d,
+    PublisherID: fc081139-6e36-4f26-a8f3-fc9f5156f662,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 1b678ae0-3aac-4ba9-879f-5d7fd42c5244,
+    PublisherID: 4aac95a1-ab84-4b3a-b469-870b34ced626,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: 1c5cdb21-d1a9-4287-b1a6-f25089fa303a,
+    PublisherID: 0fc2bf1a-2255-4e56-9e67-e8a18a25c01a,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 1cf71d30-5f16-464f-b33f-67c459a5e070,
+    PublisherID: a341710e-10b8-4c3f-818d-37c5d4237d6c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 1dc0b826-cb69-41d5-bc35-506ad1ad134f,
+    PublisherID: e3031c0f-f143-4f42-b07e-c94094b20820,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 1e7ab90e-8715-4e0b-8e36-f392d377bf89,
+    PublisherID: c095e551-979d-42e8-b351-3b7fb4d3f062,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 1e81a50a-75a3-4a38-b08f-377efb2f6908,
+    PublisherID: 12ad3a95-b1f2-4853-a150-3280a934cdaa,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 1e88f3f0-eb22-4da1-a4a6-367b0647b6c4,
+    PublisherID: 6a7e4dd7-fab2-429a-9e4a-bb09a42c97af,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 1e9ce950-1cf5-48b2-b563-152746bf012e,
+    PublisherID: c875e859-397b-4622-8f5f-c8ca95b88fba,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 1f3504dc-d30e-401d-a764-edecc0ba52d9,
+    PublisherID: c317a6be-9671-4108-b7df-cc3ed70956b4,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 1f86375e-0cce-4191-81b8-aef653633017,
+    PublisherID: e8f44b31-8f8d-43c7-bfcd-d9365f5edaff,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 1fa2ad65-04f8-456c-9ca8-21a706911a67,
+    PublisherID: 88662658-9195-4a74-afab-80df2d0a0425,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 20f116cf-8b86-4153-9547-45500e0b50c1,
+    PublisherID: cf5ecf61-31a1-41b4-9a34-c774aaaf493e,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: 21237198-65f9-48e4-8d0e-59c140f8a951,
+    PublisherID: c10dee91-d871-4a5a-b7f5-02d09a7b9533,
+    MasterGameID: e466da26-aaa3-4319-876f-dceccb70e794,
+    GameName: Metal Gear Solid Δ: Snake Eater
+  },
+  {
+    DropRequestID: 21b655e9-3ec6-4e11-aca6-f595f2a54281,
+    PublisherID: 2f01de0b-bd57-463c-9c9a-38be2d703113,
+    MasterGameID: 4b06f4e2-d219-4ceb-a8db-acc43a6ecd43,
+    GameName: Pathologic 2: The Bachelor's Route
+  },
+  {
+    DropRequestID: 220b5217-190b-4cb1-bcf7-8c6dba3c491f,
+    PublisherID: 6a9aaea3-75c1-4fbb-8c94-9c08a67a6a0d,
+    MasterGameID: f844fd5e-4938-4a2f-b477-50630a939e64,
+    GameName: Unannounced New Forza Horizon Game
+  },
+  {
+    DropRequestID: 221a3429-9431-4cd1-a45c-afa0a2508703,
+    PublisherID: 77157053-f9dd-489b-801b-bcd77f947c1b,
+    MasterGameID: e6afd6ab-f1f3-4677-b24e-e2448d560058,
+    GameName: Été
+  },
+  {
+    DropRequestID: 22242a81-2d65-4468-8c87-7dad8520019b,
+    PublisherID: 32c6dcef-8fee-442b-8462-78dad1e50c6a,
+    MasterGameID: cb7136bb-89b9-41bb-90a7-441569a410b3,
+    GameName: Until Then
+  },
+  {
+    DropRequestID: 2239f531-2dce-4b62-a6e5-2ba30db1ea43,
+    PublisherID: 9be3d21d-9240-4020-9fca-467e729b3b7a,
+    MasterGameID: f844fd5e-4938-4a2f-b477-50630a939e64,
+    GameName: Unannounced New Forza Horizon Game
+  },
+  {
+    DropRequestID: 2289c3dc-72b7-4884-8e11-b435f4c48965,
+    PublisherID: 055895ee-3a66-441d-909a-1d2202744067,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 229d8214-801b-4330-bb3a-47a6b4e80011,
+    PublisherID: 7106d88c-de92-4c2b-93d8-01ef860c469e,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 232f7a52-a1e1-4a5b-9877-3ad8b0296237,
+    PublisherID: e586098a-d2c5-461d-a493-b6604657536f,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 237e7027-cf42-4021-8ff8-41f8f0a1c9cf,
+    PublisherID: 87a15ffe-cf1e-4786-857c-d92cabf7fec0,
+    MasterGameID: 5834f318-4641-4f60-a352-bafeef38cdaa,
+    GameName: Stormgate
+  },
+  {
+    DropRequestID: 2392d467-8f68-4311-ab89-8caf3e5ee60b,
+    PublisherID: 70ee98c8-a4eb-4e7e-b44b-6c3938b7505e,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: 239b8125-7a07-42ca-9e7f-fee341d0ae32,
+    PublisherID: 6b393292-c705-434b-9a60-f0b7534b87f4,
+    MasterGameID: 683c44a5-a7a2-45fa-91c4-38562470aaea,
+    GameName: Dungeons of Hinterberg
+  },
+  {
+    DropRequestID: 23f2c6ab-e07e-4d38-9013-d65f5187e970,
+    PublisherID: df4728f2-6a06-4f32-9537-03edf6b01a84,
+    MasterGameID: fa783af5-1838-4cb2-a34d-3e6cb03a385c,
+    GameName: Unannounced Bloodborne Sequel
+  },
+  {
+    DropRequestID: 2451d73c-99a7-45a2-835a-d4621c1507ca,
+    PublisherID: eb0f3ecd-0286-451d-976c-bfac7df0e2e1,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 25fbe34d-719d-497a-b561-1e430e44532a,
+    PublisherID: 45127835-a5ef-41ee-8e7c-8d17b8a99a3b,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 26303ae9-e1e5-4527-a843-44eb7d8d00e4,
+    PublisherID: f7f3b9aa-4d10-454b-8578-fbb13180d587,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 264976cd-e360-4541-aa8f-3c0c329168db,
+    PublisherID: 01d8447c-5a99-40f9-85d7-5ae459f55d69,
+    MasterGameID: bd8ccafb-3c6a-49a4-b5b6-854773dedb29,
+    GameName: Concord
+  },
+  {
+    DropRequestID: 2785e7d1-32f0-4d73-a63d-1a8bca66254b,
+    PublisherID: 7b03dc73-f841-42fb-8533-fbc43ef18718,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 27d45921-3d11-48f4-ad68-566ee802adc4,
+    PublisherID: fb6685ef-34e2-4407-a966-fff0f1d64a67,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 286c1be8-0421-405f-b31a-0e4c90b2d23a,
+    PublisherID: 7f76c49a-94cf-480d-810e-5292a0f96e09,
+    MasterGameID: 6668dec0-ddbd-485a-998f-e1e1102ba25a,
+    GameName: Deadlock (Unannounced)
+  },
+  {
+    DropRequestID: 28718f98-1a68-449e-b105-7abc41be5eaf,
+    PublisherID: 2fc623ee-4d2e-420e-a8ce-c8220a3594b4,
+    MasterGameID: ea6e6bd0-5444-446c-a51f-e2b77379c06f,
+    GameName: Fire Emblem: Geneaology of the Holy War Remake (Unannounced)
+  },
+  {
+    DropRequestID: 296fc00f-a3ce-4129-b571-a8996282e864,
+    PublisherID: f1e48e01-bac5-4fa4-9185-fc20a2054ad9,
+    MasterGameID: 88e541f9-f6d1-4c2d-b7a2-d251b5bc2e3a,
+    GameName: Lost Soul Aside
+  },
+  {
+    DropRequestID: 2a68b167-bcbb-4106-92a4-3677b4b122f5,
+    PublisherID: 10112ae0-7957-4a47-ac4c-d4ba15fabe74,
+    MasterGameID: 3e023e22-ced4-436f-b03b-7ed067a3c5a0,
+    GameName: Palworld
+  },
+  {
+    DropRequestID: 2b14b825-0837-432c-9056-3e88e3bb10e5,
+    PublisherID: fcd1d5f4-a725-4b33-8703-f04075415411,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 2b852c0b-c6da-4e79-a634-3ca81ade4539,
+    PublisherID: c08d5ba7-7463-4f72-bd76-d6e41f5fa12c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 2bbbd893-b800-4c0c-aa7a-8e10c2c55004,
+    PublisherID: 2bd15f67-32fd-4619-913f-89f528f8e3d6,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 2c6a03f3-3c15-486c-8011-e67152b1c198,
+    PublisherID: b0b657da-3290-4a02-9c82-2252fbd527db,
+    MasterGameID: 05359292-9a97-4941-9b48-2e9f0475854b,
+    GameName: Star Wars Outlaws
+  },
+  {
+    DropRequestID: 2c9b3f16-bca1-4018-9027-ed6e7b3d342e,
+    PublisherID: 1c309da4-7753-486c-a381-364f91bcca8a,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 2d12aec8-2893-4253-afe0-d6ed90259443,
+    PublisherID: c42508f6-1c73-412b-adea-8baaf25e17d2,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 2d14c316-4ae8-44c2-8996-cf9f5a9b9d75,
+    PublisherID: 021ed0e5-7773-48ce-94ff-e5ddc68b646d,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 2d8974ae-2e99-475b-9c6a-f43d176fa4e4,
+    PublisherID: 030c7adf-39da-4412-847d-064611e983a1,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 2e318036-7ecb-4c2c-91d7-ef6ea2e002ab,
+    PublisherID: acf41ea8-6acf-4efa-bf14-caf27e5d19a9,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 2fac7053-cd42-4e91-af81-edae2ac93206,
+    PublisherID: 52f0446e-7f97-4c66-a5e9-4fe0feef1f7a,
+    MasterGameID: 163fe1f8-f758-4d7d-86ed-eddb03c68902,
+    GameName: Pokemon Black & White Remake (Unannounced)
+  },
+  {
+    DropRequestID: 2fbd7c6c-ccfa-4f6e-856f-2a3696dbcd84,
+    PublisherID: 96611a24-db10-4d44-9926-71a4a28e9ca9,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: 30628dfe-c7a0-4888-ae19-5c4b5db787f8,
+    PublisherID: d0c815b0-de4f-4557-a895-44a387399d32,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 3199edb4-f41a-43e2-80b8-228336629a07,
+    PublisherID: fd01b994-d9bf-4d4b-9f62-a398be5fbf80,
+    MasterGameID: 9cd92e93-5fde-4384-bad8-39102595704a,
+    GameName: Warhammer 40,000: Space Marine 2
+  },
+  {
+    DropRequestID: 319c0ab5-301d-4c5b-a737-98768ced5e27,
+    PublisherID: 31471f19-1402-44dc-9c68-99d23053ba20,
+    MasterGameID: 18af13a5-0ebf-432e-899c-295985a4c988,
+    GameName: Tales of the Shire: A Lord of the Rings Game
+  },
+  {
+    DropRequestID: 31f1eab0-c860-4aaf-80c6-6ce28fd99c64,
+    PublisherID: 072186c0-fa4c-4c69-9e9b-8f7a45148279,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 322106cf-9dc0-40b0-b36a-e536937b3809,
+    PublisherID: f580ab53-4c63-44ef-82a8-a51867879898,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 325ca891-f595-47cf-aaee-c8a1830a317f,
+    PublisherID: 7a314077-50a1-4f88-ba85-f987d8fc5a0b,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: 32f9e49d-b106-4521-9b52-f0420af6499d,
+    PublisherID: 634eb0f6-f360-4a7d-9434-11b86fcde13a,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: 32fd0149-4b6f-439c-b63c-fe84d9ef0011,
+    PublisherID: a95451bf-99b4-49e9-b921-5b0802e338b2,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 33922dac-a7ad-4593-a872-d996feb2aeb4,
+    PublisherID: e57ee765-76f8-4f00-94b2-2446179a718d,
+    MasterGameID: ebb7cf5d-6c4f-4927-a691-1ca39b5d6d9b,
+    GameName: South of Midnight
+  },
+  {
+    DropRequestID: 33b54799-d53e-4535-bf89-cf36b42446f1,
+    PublisherID: e1fcce94-044d-44f5-ab10-90c037cf0fee,
+    MasterGameID: 310296b1-8dad-41ed-9017-2e7edabfab2f,
+    GameName: Europa
+  },
+  {
+    DropRequestID: 33ee2d76-7160-42e0-aea2-9a0371f6a851,
+    PublisherID: 14b77840-9349-446e-bc32-08b267046bcd,
+    MasterGameID: e217a736-f1aa-4e25-9891-141be5704d12,
+    GameName: Windblown
+  },
+  {
+    DropRequestID: 3502722c-1a93-4a06-a065-88f223543ce0,
+    PublisherID: 11d20aa3-6a48-437d-ba4a-7b7b8bf88163,
+    MasterGameID: e217a736-f1aa-4e25-9891-141be5704d12,
+    GameName: Windblown
+  },
+  {
+    DropRequestID: 3524d3b8-bf2f-4da9-b2fc-af7802dd595e,
+    PublisherID: 972c997e-27f8-4f86-b612-49485d8bed4e,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 35e8bbc1-8325-479d-adff-3681519348cd,
+    PublisherID: 4afb0102-a6d6-4c41-aa38-a86c7a7f3451,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 3633fadb-c380-4fa3-b30c-dd4747f3dfad,
+    PublisherID: 2cb2716f-68c3-4ceb-85f3-11743e9cac57,
+    MasterGameID: 1a07ed6c-b0a3-4742-b7be-ebfe60003ce6,
+    GameName: Unannounced The Legend of Zelda: Ocarina of Time Remake
+  },
+  {
+    DropRequestID: 3662da31-3bf1-44d6-9f76-1d49d05c36c1,
+    PublisherID: f8399ef2-be39-4991-934a-6fc0bbaf4de2,
+    MasterGameID: 9368725a-9755-4b5e-82f9-1a2c5e837425,
+    GameName: Luigi's Mansion 2 HD
+  },
+  {
+    DropRequestID: 36d0d797-4ee9-4e0c-832b-4b15195183b6,
+    PublisherID: 15ce90d9-e01b-4760-8e17-0736f52b87dc,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 37607dc6-7a08-4ba1-9f06-b4cd2411cf4e,
+    PublisherID: 972c997e-27f8-4f86-b612-49485d8bed4e,
+    MasterGameID: f9a4016b-2bba-4291-9beb-16987f9beca2,
+    GameName: Sid Meier's Civilization VII
+  },
+  {
+    DropRequestID: 377765f3-eea5-4c35-b71c-3e675258152d,
+    PublisherID: 9f1baed3-a869-4d69-a3f2-d5c5932e6be2,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 379c7793-7084-4312-82a0-73271b753347,
+    PublisherID: 815ba21e-7341-4b28-932b-ab98bf835126,
+    MasterGameID: 421c6afa-7d0b-44b4-9945-2e9e102fb7e6,
+    GameName: Rift of the NecroDancer
+  },
+  {
+    DropRequestID: 3ad993fb-5a34-424b-833b-9910aca253bd,
+    PublisherID: 07004b8c-1a7e-477e-9b2c-c401d6b008ed,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 3af3ffb8-cc4f-405b-8fc9-db4249ec7985,
+    PublisherID: 6fca35a9-5c86-4bfb-a57b-022fe4365e38,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 3bbeb48d-21fd-4031-b79b-d386b3f81823,
+    PublisherID: eb0f3ecd-0286-451d-976c-bfac7df0e2e1,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 3ce7c9bf-3448-4b8a-8295-e889327f9dde,
+    PublisherID: 11d20aa3-6a48-437d-ba4a-7b7b8bf88163,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 3d02f863-3ae5-43b7-8b4c-b12df7c19f56,
+    PublisherID: 1866fff9-a718-4b5d-92d9-605e94369039,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 3da2d264-6abe-4d15-b0d1-1425a2e4daee,
+    PublisherID: cfb0d899-e177-458c-ac4f-5ae1b76ed07a,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: 3e2fdff2-4932-4998-a039-e754c68a8a35,
+    PublisherID: 7ea46406-a1c9-485a-8cac-8b53c9a9a60c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 3e90117c-da2a-419b-ab09-228642f95fda,
+    PublisherID: 9318f465-3c2d-4ea0-8b64-c754eb81e2fe,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 3f5cb652-f363-4a13-97f6-bf322c748c48,
+    PublisherID: dbb9793b-812c-4b59-8e3b-51aeaac70303,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: 3f96dfd6-abc9-4851-8ca0-b64886e1622f,
+    PublisherID: ff61b554-cbb6-4963-99e7-08c8ed2c0e06,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 40acc7af-eea9-465d-af2f-1a3d560cd0a4,
+    PublisherID: 9e004c57-dfb9-4870-85a0-fba70849a5b7,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 40e0f3d1-5fd9-49fb-a4ae-89c72a8947d4,
+    PublisherID: cd7b4145-b866-4dee-86a1-d0a0688ba8fa,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 412ab2f9-540d-461f-9a50-278cb268912f,
+    PublisherID: 19d1ad33-0cf6-41b1-9dac-03f8b73c0942,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 420e95d4-57bd-4af9-bb3d-f1ae901c3d47,
+    PublisherID: 275429ba-37f1-498d-9b18-a6169d219f0b,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 431b58a6-2f54-4ddd-bdaf-e1ab4b313a64,
+    PublisherID: e31e4286-862b-43d9-8c9e-b355ea120a37,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: 445b3341-6e1f-4033-a06e-7aa3ff03370e,
+    PublisherID: 1086cd2a-02bd-4338-86b9-d2a23c263445,
+    MasterGameID: a864840e-3e55-4c03-8b2f-fed3278f971e,
+    GameName: Fallen Aces
+  },
+  {
+    DropRequestID: 44e076ad-8e49-4354-a371-cb49c4b41ce0,
+    PublisherID: 51affc39-9e38-4d6d-8917-7095ae681706,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 45294f17-1a70-42d7-8a76-2b9d8b3e4501,
+    PublisherID: d7be8c27-7c1e-4440-9162-9670652428eb,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 4531c364-5846-461b-8ea3-4d4af17b17a5,
+    PublisherID: b80cf7a2-1a82-4098-b1a8-1ae091a118aa,
+    MasterGameID: bf4f5da9-085b-4047-8673-91082f05fcca,
+    GameName: Hyper Light Breaker
+  },
+  {
+    DropRequestID: 465ddca0-2609-49be-8c0c-0f4293cf1afb,
+    PublisherID: aba6f37a-3517-4682-8267-ddd6b10da0fc,
+    MasterGameID: 1a29ac46-1e24-4977-b432-c8e6ba08ac20,
+    GameName: Super Monkey Ball Banana Rumble
+  },
+  {
+    DropRequestID: 4669e70b-27c6-48c1-bc7a-d87d918349b7,
+    PublisherID: adb0d9fa-2b44-4cbf-ae8b-96b3eca45796,
+    MasterGameID: 3b721de8-d015-46c8-a088-55fc31e95204,
+    GameName: Streets of Rogue 2
+  },
+  {
+    DropRequestID: 47fe7147-372b-411a-877c-002f6143194b,
+    PublisherID: fe6ccf50-c586-4474-9ace-4598e745ef52,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 485c2598-50e8-465e-869d-1a0c9a194584,
+    PublisherID: 472b4cef-16da-4a51-86e7-18f738a64b26,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 489769c2-4d5e-4fdf-b0b3-012d965f2b44,
+    PublisherID: 05726d9c-392b-444f-8731-69b09fe3933c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 489c5ed0-ad56-41a4-9b6e-4b0f824900bf,
+    PublisherID: 98bf3227-f137-40e6-8dda-b62aebeab833,
+    MasterGameID: 9368725a-9755-4b5e-82f9-1a2c5e837425,
+    GameName: Luigi's Mansion 2 HD
+  },
+  {
+    DropRequestID: 49820cbb-fcf0-4353-a000-b260001aeb0b,
+    PublisherID: 1c309da4-7753-486c-a381-364f91bcca8a,
+    MasterGameID: a91decae-a25b-41da-939a-9b67b1f9d058,
+    GameName: No Rest for the Wicked
+  },
+  {
+    DropRequestID: 49ab1794-7aa9-4e19-b231-c99dc3f529c9,
+    PublisherID: cb9cf0d2-3105-4ecc-80f2-f85df2b6a740,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 49b488be-7481-4768-ac46-8653f194ae20,
+    PublisherID: 93547bd0-bf96-4f6b-97e0-6279f7089de8,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 49e8f81d-e0ac-4e73-9501-ae798c0041c6,
+    PublisherID: 2d8c478d-c12a-4a5d-bc8c-27f2f2e84676,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 4a86b08c-67e9-4dcf-aefe-ae3423c89508,
+    PublisherID: 426e383e-0230-4238-80cc-791248022526,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 4c6eca00-727a-402b-9e83-444f74473882,
+    PublisherID: a10a4efe-388f-4cc7-abbd-4b6dcaaaecc6,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 4ca561bc-3ecf-4835-9fbc-c5e72dd316af,
+    PublisherID: 8895244c-d9bb-4113-90a2-d8b42fa5b62c,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: 4d2a1fc0-05fd-47ee-aa3b-e9e60bbba77f,
+    PublisherID: 71b7a1f1-5079-4a93-801d-f0096c867b97,
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn
+  },
+  {
+    DropRequestID: 4d5632db-b837-4412-b979-0fd38756a75c,
+    PublisherID: eb3989eb-57d3-4a93-955f-cd29011f54a7,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 4dbc60d0-0373-4a95-a513-59f100eadd0d,
+    PublisherID: 6a829fe7-86e1-4985-8f74-50b4af69c3fd,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 4e94910f-f2f2-4d14-9d80-7658c8d1e69d,
+    PublisherID: 17b22d63-1313-45d9-9526-cac1aaf5daf4,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 4ecf8936-0842-4626-984d-80247ae93bec,
+    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 4ee747d2-d53d-4edd-939d-c085ce4ae06e,
+    PublisherID: 77a16185-03c2-4d4a-932e-db44ff7c71e4,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 4f67a962-665e-40aa-bc40-f7ce90addd82,
+    PublisherID: 005bc9f9-656d-4faf-a23f-6ff1a48273b6,
+    MasterGameID: 5834f318-4641-4f60-a352-bafeef38cdaa,
+    GameName: Stormgate
+  },
+  {
+    DropRequestID: 4f753a09-c156-427f-8556-7a231ed13d20,
+    PublisherID: 5d44e838-9027-4745-b9ce-dba87c1d199e,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: 4fa4db1d-74c1-44b0-9880-ac67eb592df2,
+    PublisherID: 03ed1da5-fad7-4887-8496-e12a85d4e7dd,
+    MasterGameID: 7f89f923-96f2-48be-bfcc-278bb8591325,
+    GameName: Laysara: Summit Kingdom
+  },
+  {
+    DropRequestID: 502f6a13-5c1d-4a2f-b1e4-46ba7eb4335c,
+    PublisherID: 387de23c-af3e-463e-ab4d-3dd0f7920268,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 5078655c-007d-4d54-9f4d-fffe362c8713,
+    PublisherID: 6ffcc985-874a-4b48-8274-854d5e4f4790,
+    MasterGameID: 2c6390e5-c14a-4dba-9b63-41a2735108a5,
+    GameName: Nintendo World Championships: NES Edition
+  },
+  {
+    DropRequestID: 50aa197c-10a6-408d-ba91-457ab0f1bae1,
+    PublisherID: 698bc04a-42c9-4e2c-b782-bb91bb3855d1,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 522e3ac9-be4b-456c-947f-a518e02576ba,
+    PublisherID: b82b82a9-4e82-4ec8-81c6-0b2241559bbf,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 52e50c23-a27a-427c-b229-afba4297d7b9,
+    PublisherID: 7a314077-50a1-4f88-ba85-f987d8fc5a0b,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 539307e7-1b7c-4b83-a626-d1288ad9bd2c,
+    PublisherID: 4633643a-9dbe-4654-9bd7-d4f75c589e18,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 53a9a300-72fd-4ca2-8689-fe9c28b78431,
+    PublisherID: 4a301a19-e7bc-4bd3-9319-4652a58304e5,
+    MasterGameID: e50954b5-e845-45cb-96e2-8d26de85e589,
+    GameName: Cat Quest III
+  },
+  {
+    DropRequestID: 54927f1a-0146-49ab-9464-72b085df538e,
+    PublisherID: 41f58442-b21e-4c40-942f-b609ebd3e8fe,
+    MasterGameID: 842252c8-e318-4ccb-9837-25908540f81b,
+    GameName: Fable
+  },
+  {
+    DropRequestID: 55394860-cfe0-4ff0-bd1a-092f9537fcbb,
+    PublisherID: 3b94f550-8499-49a1-b39f-7e6527ae17c1,
+    MasterGameID: ea6e6bd0-5444-446c-a51f-e2b77379c06f,
+    GameName: Fire Emblem: Geneaology of the Holy War Remake (Unannounced)
+  },
+  {
+    DropRequestID: 556d00f4-91ac-435b-9850-ab21eec44d78,
+    PublisherID: c42508f6-1c73-412b-adea-8baaf25e17d2,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: 5587a726-b708-4117-b536-1605ef637eaf,
+    PublisherID: 6ddb977a-5d7f-4230-8a48-091c2732ee6a,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 566f6c5a-a53b-44b6-b24e-a0c4e99c9efc,
+    PublisherID: af5bc534-b321-493d-a390-f619b52d8792,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 56aaca4e-3744-426c-97e2-100374ee0778,
+    PublisherID: 3e2bb9c0-3b98-49c2-804b-fd8cd5861862,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 5713ee56-68c6-4f42-b0f6-7d8e23a48c19,
+    PublisherID: dfd6f2fb-c945-4efe-94a6-50b0a7ea31c6,
+    MasterGameID: 94c1f5d8-9461-456e-a844-f7ee739133fe,
+    GameName: Crypt Custodian
+  },
+  {
+    DropRequestID: 5738f86f-16fb-409a-9fe5-6ab9689cd70f,
+    PublisherID: 9964587b-d12f-4d0c-9618-ed2a13817e64,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 588667cf-c832-46c9-8fba-4e3027acb93f,
+    PublisherID: 2fd98ce4-985d-472e-8c52-ac330cb7d7ed,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 589b08eb-d2a8-4950-92ba-49bf5e9653bf,
+    PublisherID: 78366c7c-8a5d-4cbc-b0f5-6eadf5d702b7,
+    MasterGameID: bf4f5da9-085b-4047-8673-91082f05fcca,
+    GameName: Hyper Light Breaker
+  },
+  {
+    DropRequestID: 58d3a9af-1e7c-4a69-a1c5-a5877f617228,
+    PublisherID: 030c7adf-39da-4412-847d-064611e983a1,
+    MasterGameID: 5e07daf8-14bd-42fe-8e57-1f90165ae48d,
+    GameName: Shantae Advance: Risky Revolution
+  },
+  {
+    DropRequestID: 58eace66-2f2e-4a7d-a23d-dd04a7e934ac,
+    PublisherID: 8e389c43-59fd-4220-891a-1ef9098e532c,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 5916c79a-a694-42d1-9928-15b65efd0d74,
+    PublisherID: 46de6b91-b8f3-47d5-8771-1ec28929dfde,
+    MasterGameID: 460dda8b-c5e8-455c-a75f-70153794e08f,
+    GameName: 2XKO
+  },
+  {
+    DropRequestID: 5a08f0d8-34be-49f4-ae41-ac0f2c2276b7,
+    PublisherID: d13702c9-7833-4f5a-b98d-79d79b9f7854,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 5a1d67b7-9474-4d66-9950-6dd5d2c79e06,
+    PublisherID: 27ae6a34-6eed-4198-be58-0202a0199f41,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 5a3d7db4-4335-45cd-91d8-0a2193b37f6a,
+    PublisherID: d4fac17f-a806-4e7f-8b74-7c0a59713c90,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 5a748870-888e-44de-a050-5cb4eec40c25,
+    PublisherID: 4bd95c4f-9c0b-49b3-a7f5-56ec05bd2ef1,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 5ab45f7a-5a90-4dd9-a0d3-fe97642d278e,
+    PublisherID: 2317fed0-c221-43c6-9925-f32eb01f4275,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 5ab4d15e-8ed4-4f83-ac5a-dffb06b11aa7,
+    PublisherID: a244247d-21b8-4eb7-93cf-26ce1f388c3b,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 5ad9145a-f098-4c35-ad10-01c160fdbdca,
+    PublisherID: 0b1cdd70-4b0d-4f9a-97d1-beb4eba36130,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 5b47dae6-6642-409b-a572-0dfd2b8e396f,
+    PublisherID: a4c4f766-4ad0-4a39-9287-8d9b052e30ef,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 5bb70879-5c90-40c0-93cb-ba32c0752476,
+    PublisherID: a70100a8-dd63-4870-9c13-865c38bfd4e5,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 5c41dcb8-5a6c-4d74-ba7a-7689e4ab9bf9,
+    PublisherID: 7acac2c9-7374-45e6-ad4c-14fe1d177a4d,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 5c4656b6-0fcf-40d3-bcaf-341a50881490,
+    PublisherID: d4994f56-3af6-4bd2-90e0-321b9b24efdf,
+    MasterGameID: f9a4016b-2bba-4291-9beb-16987f9beca2,
+    GameName: Sid Meier's Civilization VII
+  },
+  {
+    DropRequestID: 5cf6ed4c-0584-4795-bf41-3ef9283ffdeb,
+    PublisherID: da9d3bfd-56e2-45db-909a-51a3d5c2ecbb,
+    MasterGameID: 74b900ea-24bf-436a-a5a4-aa81ac5d07c8,
+    GameName: Decapolice
+  },
+  {
+    DropRequestID: 5cfb6b8e-26cc-42c5-88a7-1bfeb02c5be6,
+    PublisherID: dafb8fa7-a158-44cc-b29e-fd2e15a02695,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 5dd8b522-4b95-4ea2-97a9-a24811f6ca1f,
+    PublisherID: 0597c448-00d7-4b5b-a172-78ee487c6f6f,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 5f0a785c-8acd-4dc2-bd34-404f5d8e1147,
+    PublisherID: 211662ac-4093-4032-8592-30840e7657fb,
+    MasterGameID: d3fa223b-113c-4743-a919-f524d4d712d6,
+    GameName: Killing Floor 3
+  },
+  {
+    DropRequestID: 5f1fcfff-9f67-465c-b157-6663410884a4,
+    PublisherID: b6932fe9-34ee-4255-b73f-25b897fbad03,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 5fe905a6-4f86-4df8-8cb5-8fc85a837a2c,
+    PublisherID: da187f26-31a5-43a6-b68e-45a1b3f41b06,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 60537e15-46cb-424d-93c0-a3a88e8e0ced,
+    PublisherID: 0d620bc4-8652-4154-9e4d-ac3c2d8c4948,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 60c7c40d-f874-47a3-b186-8c144f7ea38c,
+    PublisherID: e2f8a6f7-94ad-4f6f-a0cc-cd23161a11a8,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 616a5c49-1a53-46e8-9583-eb33858f4fc1,
+    PublisherID: b125693b-7333-4b3c-a200-085c6e161539,
+    MasterGameID: f2e5920e-1ad8-4021-b948-4e8f895a7a00,
+    GameName: Unannounced First Major Baldur's Gate 3 DLC (Not in Development)
+  },
+  {
+    DropRequestID: 619a246e-7786-4fb5-8021-d0fd3ac2391e,
+    PublisherID: 7792ee81-ab8e-4f92-ba3a-e726b9d1286b,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 61d49572-df8c-40d8-a646-de9f4ff87f52,
+    PublisherID: fec0fb96-7f36-4016-a7d8-a466801e81b0,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 6231dceb-9fb9-400a-a1ba-f0343a9793f8,
+    PublisherID: 643ad022-5c9f-4b28-8424-597504068f05,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: 6306a1af-8999-40dc-83b2-0db6a1deeee6,
+    PublisherID: 2f758676-e8de-4d41-8d12-cb0a6a45a65d,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: 6333cb2c-3865-4ca3-b75d-6cbe27b97bb6,
+    PublisherID: d676ecf7-6ef5-44df-9423-8383c0d02bed,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 64138350-5695-40f5-a220-5b011c355977,
+    PublisherID: 549e3744-b4e1-4799-b070-cd4e7b70d8b7,
+    MasterGameID: a91decae-a25b-41da-939a-9b67b1f9d058,
+    GameName: No Rest for the Wicked
+  },
+  {
+    DropRequestID: 641c63ea-930b-4a11-813d-00ee35cef456,
+    PublisherID: 5ebfa1ca-450c-4074-a91d-b78e8c496ad6,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: 64b145f5-e813-402d-b6f4-9e298845f402,
+    PublisherID: c526b61c-3541-4dea-b533-c8b5258c0b1e,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 651c15c1-f8c6-406f-94aa-bb1570ed1439,
+    PublisherID: 80a50a40-2df8-48fd-9785-01111027593e,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 659c819a-5e66-4eb1-98d0-e04b40c75f8b,
+    PublisherID: 404c6765-0a49-4f04-9a58-1442317f3234,
+    MasterGameID: 74b900ea-24bf-436a-a5a4-aa81ac5d07c8,
+    GameName: Decapolice
+  },
+  {
+    DropRequestID: 668fb04a-f82e-4f4a-ad23-79e929dd7507,
+    PublisherID: 3de9aa3d-4709-4e0b-8115-4cf2b7651734,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 676dcb5a-7d8d-4cf4-8c8a-2cecb8ecb0e6,
+    PublisherID: 757a2997-1a16-4842-be50-22a42620a58b,
+    MasterGameID: e466da26-aaa3-4319-876f-dceccb70e794,
+    GameName: Metal Gear Solid Δ: Snake Eater
+  },
+  {
+    DropRequestID: 678ec97e-4c49-492a-82f2-5b720b794abd,
+    PublisherID: ce182145-b896-4c1b-a114-0ab6e549bdf4,
+    MasterGameID: 8d4a070b-9872-4a34-9734-a944ca5428be,
+    GameName: Fantasy Life i: The Girl Who Steals Time
+  },
+  {
+    DropRequestID: 67a03bce-f09e-4838-92b7-4805a7e8244a,
+    PublisherID: 4212e54e-0c82-4cc6-8e86-7f09a65be287,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 685e55c3-b14d-4016-a355-21f177bf14be,
+    PublisherID: 21e339cb-0b0b-496f-a74c-c8a2abfa9819,
+    MasterGameID: 421c6afa-7d0b-44b4-9945-2e9e102fb7e6,
+    GameName: Rift of the NecroDancer
+  },
+  {
+    DropRequestID: 698a6782-e2ea-4b27-9308-36cfe7257676,
+    PublisherID: a1a6944d-324c-4336-be04-85244cdbcac4,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: 69f01f0b-b088-4a1a-95c8-63c1e5b547cf,
+    PublisherID: 92d299ba-ecdf-4592-bf3b-782408f594d7,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: 69ff5651-3db2-4fca-84b6-51b295205b95,
+    PublisherID: 60a29643-e6d2-4c70-bd2a-dee720c12a68,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 6ae515a0-3e1f-4f93-8b9d-603092c78717,
+    PublisherID: a77a2d34-d01b-4312-8e15-4f9fa81c0a30,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: 6b10b114-0e53-4447-aad9-d87c33afcfe8,
+    PublisherID: 8e1a2dd0-13ac-4e0f-8548-0f5f15c69ddc,
+    MasterGameID: e217a736-f1aa-4e25-9891-141be5704d12,
+    GameName: Windblown
+  },
+  {
+    DropRequestID: 6b4b47b5-ca51-4925-9801-7883a33a4ffe,
+    PublisherID: 5712f3b0-724a-4bf4-acc7-3e1bf6572ecc,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 6cb8f047-bfc0-4fb9-bd3a-ed51c6aff65b,
+    PublisherID: 2bd15f67-32fd-4619-913f-89f528f8e3d6,
+    MasterGameID: 5834f318-4641-4f60-a352-bafeef38cdaa,
+    GameName: Stormgate
+  },
+  {
+    DropRequestID: 6d05b569-0b0a-4ac0-b3e4-0d3b4d90ba83,
+    PublisherID: aedfe61e-dc9c-46a2-8c4b-6123febb5cd0,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 6d431bc8-d0de-4c4a-9a3e-12494a2f1ab2,
+    PublisherID: 3b08fb7b-dce9-4a5f-8f0e-10d7cc93e2ae,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 6dbb1b7f-5f70-4436-aeba-ebd18285710f,
+    PublisherID: 1f33a263-f885-4370-86f3-853f6cf3e70c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 6dedba1a-0ccc-4356-b073-0fb86fef2c0e,
+    PublisherID: 7b81e61c-0477-419f-a46c-2047bd031384,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 6e7e837e-296c-4550-99b0-5abfec057758,
+    PublisherID: 7677823e-cd4c-4054-a5e7-4509d9d46eef,
+    MasterGameID: 86a32442-e035-406d-9e2e-85f2c5932709,
+    GameName: Jump Ship
+  },
+  {
+    DropRequestID: 6f0e4799-ffc8-4255-8017-e5f4531d8430,
+    PublisherID: 52a25585-a0c1-4c07-a87f-c6fcaeb83378,
+    MasterGameID: 05359292-9a97-4941-9b48-2e9f0475854b,
+    GameName: Star Wars Outlaws
+  },
+  {
+    DropRequestID: 6f1f9210-23c3-49f0-b0af-eaf136a07897,
+    PublisherID: 5bccc852-a514-4a23-8944-7ddc8e5324d0,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7073154b-d733-4d5d-8299-d7da387f7272,
+    PublisherID: 2263fcea-7ed1-48da-9874-347a547d2c61,
+    MasterGameID: 3f74675f-2bee-4ec7-8ec7-d44eb5654835,
+    GameName: Skate Story
+  },
+  {
+    DropRequestID: 712f4470-3c33-4901-9ce8-c15e6ba35527,
+    PublisherID: d4efc953-223b-4430-ad83-9e77f1e82c54,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 713c13a8-4ea6-409a-8d7e-1fa6f4bea675,
+    PublisherID: 9611d9b9-ad4f-44f5-8328-9aa604720fed,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: 7143a1ca-b9b9-4dbd-b901-7cc881ca8999,
+    PublisherID: df68e420-b7ff-44d6-94be-e5c071672636,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced
+  },
+  {
+    DropRequestID: 715c7494-bb2a-4182-bf5b-3d53110d30c2,
+    PublisherID: 039a20ac-514d-4cbf-8548-247b57211aa0,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 71b08c09-0c68-4def-a1d4-bf9d7ee5812c,
+    PublisherID: a4c4f766-4ad0-4a39-9287-8d9b052e30ef,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 72a67f91-7dd3-4ee3-ba38-233b2d8bc576,
+    PublisherID: e9b0d84a-9d08-41d9-9a99-c1f0121e2a68,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 73905d9a-d031-4c07-afab-e9f06cca7226,
+    PublisherID: 9d8c14c8-fbe0-44a5-ba8b-ca1bf8d1efac,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: 73a79f4f-bb5f-42c2-8819-ff1177581a6c,
+    PublisherID: 574bdf8e-35be-4377-924f-d8661ccf4b90,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 73bd19e0-5d22-4e66-869d-1a01af214211,
+    PublisherID: c299fbbd-cd42-436e-81b6-ffaa81a3c5cb,
+    MasterGameID: 2c0ad5ae-42c0-416b-987b-6324ecc2980c,
+    GameName: Marvel's Wolverine
+  },
+  {
+    DropRequestID: 73d0aa3b-90a8-4275-b6e6-7b30d5419286,
+    PublisherID: ad0ad097-68ab-41f4-986f-f4d3c4a677a7,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 73e84eaf-1344-45f3-9364-77e98cfbfed1,
+    PublisherID: 312df966-7c6a-4d7b-9c01-3b9cbfd38871,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 747a4130-1778-4231-b16c-cec07426a827,
+    PublisherID: bcd77c37-a8a0-4e15-8cae-afe81961ca56,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 759eea78-2fca-4adb-a3ca-4c7791020eb6,
+    PublisherID: bdd098fa-0632-4bc7-9465-04d768ed9622,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 75cd88d5-82a5-4d6c-990d-61a89e655b74,
+    PublisherID: 0597c448-00d7-4b5b-a172-78ee487c6f6f,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: 762defd4-5173-48d5-950a-8cc30bcf9c18,
+    PublisherID: 63216f2c-f6b9-423f-b331-b092fcafa8a8,
+    MasterGameID: 5ca3da4d-f391-4b8b-8361-74c04ed6987b,
+    GameName: NAIAD
+  },
+  {
+    DropRequestID: 776ace89-eb58-4110-a48a-66759d773777,
+    PublisherID: ce03d55a-3292-469a-a479-6a1a1491af7e,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 7781dca8-7899-4049-bf87-6945b7aac310,
+    PublisherID: a77eb1bf-019c-448c-9bbc-fda243b9e3e9,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 790bfdc2-ec41-4c06-abbe-6e11c582e3a6,
+    PublisherID: 5950d042-c15b-456a-bca0-290aa6781037,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7957d3de-3ff5-47ea-af95-b6a2a79670fe,
+    PublisherID: 70e1772b-65c0-445d-bb45-57243c71a310,
+    MasterGameID: 64edef0d-a182-41f4-9e32-eeb381c1583a,
+    GameName: Keylocker: Turn Based Cyberpunk Action
+  },
+  {
+    DropRequestID: 7980198d-8e4f-4e9c-b8b6-c8c6d95e599b,
+    PublisherID: d8d38a3a-b2d8-4729-a8c1-86149491d606,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7a428630-1630-4bf2-9076-73cacc96c2b2,
+    PublisherID: 03554a01-295d-46cd-a465-6fe85d65c011,
+    MasterGameID: e217a736-f1aa-4e25-9891-141be5704d12,
+    GameName: Windblown
+  },
+  {
+    DropRequestID: 7a6c9685-17f2-48f2-bcac-8c6b79ac47f5,
+    PublisherID: b20677da-33f0-469a-aa61-49ddab35789b,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7ba3495c-40a8-4185-8863-b0fbb54d371f,
+    PublisherID: e7716d66-8b0a-482b-be17-1c8fed93e8e2,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7c0a2964-289f-4200-8deb-9e3cc380f6d8,
+    PublisherID: d1df68f4-15a5-469e-a154-2d5142f1aaee,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7c7707f4-73d5-49d0-a348-e9aa1c996c89,
+    PublisherID: 360e5c57-836b-4780-9153-3a4ad42d31ff,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7d61b1fe-57c8-4de0-9cbe-d69cc87f8f87,
+    PublisherID: f17162dc-b35a-4c21-bf07-651fb638d7b1,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 7e1a4658-ded6-4a67-a6fa-5cd61b89b91b,
+    PublisherID: 32dc7cbd-1c88-4ecd-9b31-1849ae351cb4,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 7ef62cee-13e9-457a-a3c8-3849dc7d4ec3,
+    PublisherID: 9eceea50-7290-40fb-8688-dbbb9bb456f4,
+    MasterGameID: bf4f5da9-085b-4047-8673-91082f05fcca,
+    GameName: Hyper Light Breaker
+  },
+  {
+    DropRequestID: 7f6dc019-7567-4b81-8293-89c5a03cf5f1,
+    PublisherID: e9b0d84a-9d08-41d9-9a99-c1f0121e2a68,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 80666bab-381e-483d-89f3-45066574a3b5,
+    PublisherID: 72bbd756-74cf-4e5c-afd3-2ae275e5deff,
+    MasterGameID: 35d4a7fd-a34c-4dcb-981e-80fd6068c912,
+    GameName: Silent Hill 2 Remake
+  },
+  {
+    DropRequestID: 8077b774-9ca5-4047-a544-464abd5fa0b6,
+    PublisherID: 8cb11312-64a9-430d-824c-beb40a1d5e13,
+    MasterGameID: 5834f318-4641-4f60-a352-bafeef38cdaa,
+    GameName: Stormgate
+  },
+  {
+    DropRequestID: 807b7516-3dd4-40a7-9b01-0cb1a446ea59,
+    PublisherID: 20b22690-d720-4f06-9587-880bf96140ae,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 81017453-dca9-4424-a067-3f24fdf132d8,
+    PublisherID: 3b75a9f2-23e6-4f70-98bf-1f27e748b5e3,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 814629cc-ab47-4869-a9d0-2bba7d7d585c,
+    PublisherID: 2c6d3751-a6e6-4e47-b6bb-f41aa13dd31e,
+    MasterGameID: f6a1123f-7f72-4fc2-9a4c-fd8cc336ce2a,
+    GameName: Metal Slug Tactics
+  },
+  {
+    DropRequestID: 81e5620e-8705-4317-9012-a7b3dd0e491d,
+    PublisherID: 329f89d8-6fc2-4fb4-8722-1dcf2000afb8,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 8277800a-1a1b-44d5-86dd-b61d9e1b00d5,
+    PublisherID: be532c37-7880-4ada-9454-e43e53f6ee90,
+    MasterGameID: 7113cc92-1868-488c-ac82-005e820ac40e,
+    GameName: Pragmata
+  },
+  {
+    DropRequestID: 82928a15-d80c-4bcc-ad2d-115060d5b87a,
+    PublisherID: 916346a5-5223-4a1d-9c03-e60f39337374,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: 82e9c174-04b4-498c-9a38-666546d46b64,
+    PublisherID: f020e582-cc23-4232-9a18-af07a771b85c,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 832a7db3-6d59-4bad-bbcf-2ee2c0a2f76d,
+    PublisherID: 67e988e8-91c4-4c7c-8bc7-4c21f3a0b7d9,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: 833ec73e-fb0b-47c9-baf6-6d26a1388279,
+    PublisherID: 990e77cc-7762-411c-be78-a22289ba3e2d,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 8352df0f-dd2a-42a6-a418-af093b8e961f,
+    PublisherID: 1ba7a355-3885-4995-87f5-0898a081296c,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 8363a97e-134c-4c57-a51b-ec77f54e99ad,
+    PublisherID: 1f8670bf-1d07-499d-b8ea-cb0b4c1888c9,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 84690057-1990-42e4-b828-6aca4324a391,
+    PublisherID: 5ace4844-494e-4325-a545-7f88ccae955c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 84768784-ffd2-460f-ac48-930005893d2f,
+    PublisherID: d5624c4c-a5ea-43fb-a901-f898d4004805,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: 85079871-32a9-48aa-a4fd-15b3bb9b9055,
+    PublisherID: 894a4c34-ff9b-41a6-bc21-b62b72d06973,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 855912ed-250b-4c94-b527-7f29bacb4207,
+    PublisherID: 092ebf33-072f-438e-872a-30a5cf0a2360,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 859f8e5e-bb07-4d1d-a052-be856b98d9b1,
+    PublisherID: 70ee98c8-a4eb-4e7e-b44b-6c3938b7505e,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 883dfb75-cdf4-4c1c-b20c-fa8801dac778,
+    PublisherID: 4afb0102-a6d6-4c41-aa38-a86c7a7f3451,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: 8855243e-40c3-4981-b705-df5bc7e106ba,
+    PublisherID: 7eccb8d1-f521-4746-a7f6-5314e33d73f6,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: 88642dc1-313b-4b6b-bece-886f7e2637ae,
+    PublisherID: 6ad121a3-cc94-48d0-989d-5c04c74d663c,
+    MasterGameID: ea6e6bd0-5444-446c-a51f-e2b77379c06f,
+    GameName: Fire Emblem: Geneaology of the Holy War Remake (Unannounced)
+  },
+  {
+    DropRequestID: 88b27318-d5f3-410a-8f8b-76ec108a4330,
+    PublisherID: 920d0e12-3972-4153-b725-84fdff086cc2,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 8aae3aa9-81bb-473d-8153-2a52b7944e36,
+    PublisherID: 2888689e-a018-4963-a75c-0ad8356ed91c,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 8ae879e0-4882-4d76-83ad-9d8df872f0c2,
+    PublisherID: 53fe36ef-749e-4497-88b4-cd8ad56d63c0,
+    MasterGameID: 7e43a24d-d245-489a-ad5b-249636b7ba06,
+    GameName: Nivalis
+  },
+  {
+    DropRequestID: 8b7de233-18a8-4308-9482-edc6afe59260,
+    PublisherID: 7a3b52bc-8dd7-4105-b58e-0c937f2377f7,
+    MasterGameID: 35d4a7fd-a34c-4dcb-981e-80fd6068c912,
+    GameName: Silent Hill 2 Remake
+  },
+  {
+    DropRequestID: 8c484a4a-d22d-40fc-9459-c1354ecfdbaa,
+    PublisherID: 0cdb20ec-2d2e-46d3-a4d9-b69e38c18df1,
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
+  },
+  {
+    DropRequestID: 8cd231c5-1cc6-4242-83ed-90d1ca1d85ac,
+    PublisherID: 012d2d12-fa5b-43db-855f-12ab9c4ac981,
+    MasterGameID: f6a1123f-7f72-4fc2-9a4c-fd8cc336ce2a,
+    GameName: Metal Slug Tactics
+  },
+  {
+    DropRequestID: 8d5ff5d3-4098-4091-b377-077ecdab3289,
+    PublisherID: 41bf5d07-b978-4bc0-a773-6e6729e95b1f,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 902e2ef6-95eb-4ca6-bb3e-6c1b619c6c3f,
+    PublisherID: a1c478a3-b208-4671-8380-44195329d282,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: 9039cbdc-ec99-4b05-bda6-a5ef0dc7c9af,
+    PublisherID: 4df72e87-7613-48cf-8442-90d8e94ca6fa,
+    MasterGameID: 97903204-0137-41ef-a923-b84e3df5afda,
+    GameName: World of Goo 2
+  },
+  {
+    DropRequestID: 90753441-7205-4231-9052-1e46042cc284,
+    PublisherID: e647b25c-b31f-4a79-9ac5-7a70fff910b7,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 90b7fb40-1c4e-477f-85d0-f90c502e4593,
+    PublisherID: 400e609b-456c-4df7-9c99-7821218313f0,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 90d00fa4-cd6d-4699-a7d7-d75cbe9d5017,
+    PublisherID: c10dee91-d871-4a5a-b7f5-02d09a7b9533,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 912c042e-8b2f-41d5-89c3-f7135e44d313,
+    PublisherID: 4e8f922b-9319-4384-9ea9-96d26dcc6782,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 913d2b3e-32a7-404a-8e0b-303b0f197624,
+    PublisherID: 6f6a508a-313f-4944-ac0b-5a84f39e93f7,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 9216f9f3-4392-46f5-8a7e-e9cd7e31f8e2,
+    PublisherID: 9e09123c-b5f2-4f30-afd0-db2e6028f0bc,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: 921a3b79-1be7-4825-93d3-e1019dbf405a,
+    PublisherID: b440940c-a2f6-436f-8b4f-7936bdcbeddd,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced
+  },
+  {
+    DropRequestID: 926429cc-fc57-4535-98ad-d3d49d03d539,
+    PublisherID: d5624c4c-a5ea-43fb-a901-f898d4004805,
+    MasterGameID: 3eff10fa-6fc7-44ea-9a30-3d52cb331d9f,
+    GameName: The Wolf Among Us 2
+  },
+  {
+    DropRequestID: 93af20a1-65aa-43c9-ac94-d70503a1b3a5,
+    PublisherID: 0e985254-4472-438d-bf56-044c112da0ee,
+    MasterGameID: 61790fc5-eb52-4e43-b813-ba661fe1aa3d,
+    GameName: Bō: Path of the Teal Lotus
+  },
+  {
+    DropRequestID: 94060d17-0667-4a0e-b2d7-d3213ef4530d,
+    PublisherID: 0212a07d-26f1-4169-b007-6994ebcdfef0,
+    MasterGameID: cfdea47a-a32c-4a16-a9d7-5b9a439f2da1,
+    GameName: Judas
+  },
+  {
+    DropRequestID: 9447a539-926e-4d0b-9b52-6519d8285f48,
+    PublisherID: a63dda6f-bf4b-4d4f-8bb0-61ac95f647c9,
+    MasterGameID: bf4f5da9-085b-4047-8673-91082f05fcca,
+    GameName: Hyper Light Breaker
+  },
+  {
+    DropRequestID: 94baca84-f533-41f2-b961-b5cbc95cdeaa,
+    PublisherID: 10faaa98-1e82-4a75-a6f0-463446126fe9,
+    MasterGameID: 163fe1f8-f758-4d7d-86ed-eddb03c68902,
+    GameName: Pokemon Black & White Remake (Unannounced)
+  },
+  {
+    DropRequestID: 951f8e91-096d-4e0e-a214-d54be04449f8,
+    PublisherID: e4b48f90-2294-48b7-803e-a231ddb13357,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 95418203-bacf-4931-84d8-7eb6140350e5,
+    PublisherID: a95451bf-99b4-49e9-b921-5b0802e338b2,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 95497498-139d-4986-9536-998a8ed025f4,
+    PublisherID: 9a05d174-54cf-4d7b-b6ab-f77a7b7ae1ca,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 955412ff-b082-4fc5-84ac-c725fa6931bd,
+    PublisherID: 63e25c29-96b8-44ac-b3bd-94f339e02fbf,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 95ea8c50-e717-4e45-8e01-97058ef7c130,
+    PublisherID: b1fe04fa-3cc2-48c6-ac80-bbde72e6947c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 962540eb-bd2e-468e-a03d-b6996fdc5d76,
+    PublisherID: 4cb49c53-d45a-4e32-abf9-5168a46d47e6,
+    MasterGameID: 77d8d57a-a06a-4a48-82fe-bb9bbfa87c55,
+    GameName: Funko Fusion
+  },
+  {
+    DropRequestID: 9680ac9b-fd98-4f24-87a1-d5c466618c5a,
+    PublisherID: 8ee53b7a-ce25-4760-8045-b689e930027e,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: 971bbdf7-0956-4aa7-a2bf-d50be2a48e5d,
+    PublisherID: d32cb491-3aaf-4a40-b424-282d98463fe1,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 974ac4d5-00fc-41d4-8529-d9e488fbfae4,
+    PublisherID: d285636c-2284-4219-a8db-c6e4150d4e93,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 976927dd-dfbb-44a8-b1d0-a3113f5006cb,
+    PublisherID: 47a394f0-1feb-4606-9d28-5070c03ba692,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: 984c7e01-6c30-4ab6-a016-6cdc06feb73d,
+    PublisherID: 1f900f68-af87-4e6a-bb1f-25486e6d4b8b,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: 985dcdde-663c-4733-84d0-a262f2f4da91,
+    PublisherID: aad243d1-1437-4624-be7a-0ac61c657bb4,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 9903d436-3337-476a-b969-0e67c1451225,
+    PublisherID: 2888689e-a018-4963-a75c-0ad8356ed91c,
+    MasterGameID: 2b8d168d-60a3-463d-ab04-b2bb5e43b072,
+    GameName: Metroid Prime 2 Remastered (Unannounced)
+  },
+  {
+    DropRequestID: 996c0b84-dffc-46ec-8a21-42e5db349813,
+    PublisherID: 3e70d540-4b59-47d5-b68e-861b0af56275,
+    MasterGameID: 684850e8-f4a4-46b9-aa93-7d70e47344a0,
+    GameName: Jackbox Party Pack 11
+  },
+  {
+    DropRequestID: 9a9c900f-49ab-40e3-8d41-2b56e9f2e85d,
+    PublisherID: b123de9c-efec-4a6d-a3ec-788bdcdf1428,
+    MasterGameID: d3fa223b-113c-4743-a919-f524d4d712d6,
+    GameName: Killing Floor 3
+  },
+  {
+    DropRequestID: 9ab11e99-641a-4ecc-a188-bc515ff1ef7c,
+    PublisherID: 0f9bbeca-1d19-4471-a8ae-2753851b3438,
+    MasterGameID: ea6e6bd0-5444-446c-a51f-e2b77379c06f,
+    GameName: Fire Emblem: Geneaology of the Holy War Remake (Unannounced)
+  },
+  {
+    DropRequestID: 9c523bf2-92dd-4997-a159-8bf5a8fc7dd2,
+    PublisherID: f54cb34b-44bd-46b4-8b8a-9f490b33e924,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 9cf66dc3-e3d0-4481-9c8a-205c52e8a608,
+    PublisherID: 44752ce6-e677-4084-9ad9-53350101afaf,
+    MasterGameID: 30cee19c-f46c-4eaa-b17f-80a3b976df64,
+    GameName: Kunitsu-Gami: Path of the Goddess
+  },
+  {
+    DropRequestID: 9d17d327-0168-4cf1-ba3e-28b78a7c6d66,
+    PublisherID: 9529680e-78f6-42c2-87f9-cf277477e4fe,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 9dc2c843-cd86-4cf7-8c11-b0834ff981db,
+    PublisherID: be532c37-7880-4ada-9454-e43e53f6ee90,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 9e339f2c-3b8f-4c21-8a5b-b0dbdd064e11,
+    PublisherID: 80fde822-106f-4c2b-b643-7cb5a6bb1633,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: 9ef2aa8e-e3f3-40dd-b55c-923b1bd69208,
+    PublisherID: 683294a6-1247-47f1-95cd-699b1709b480,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 9f0c1665-2498-4b64-9085-f9a22ff18ea5,
+    PublisherID: 0212a07d-26f1-4169-b007-6994ebcdfef0,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 9f78026c-eebf-4e9a-bd85-624b44f7f778,
+    PublisherID: 28661cd8-ea94-4eff-ab28-674ab6b8c87d,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 9ffbd67a-f80c-4b05-b4b4-bf042f4cccbd,
+    PublisherID: 1ec8eadf-04e2-41e4-a013-a79bc39c4f73,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a0324240-0551-4346-bab6-136bbb363c75,
+    PublisherID: 3eb77ae9-cf5c-48e5-899a-7ef68391348e,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: a13ec824-13bb-4c27-b6a5-d855bea5b89c,
+    PublisherID: 227ebc36-9dc4-4e7a-8a81-1f8e17ae88ad,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: a214fdd2-a5ee-4c24-95d5-972fced1972a,
+    PublisherID: 67e988e8-91c4-4c7c-8bc7-4c21f3a0b7d9,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: a3b03cfb-2a9e-4051-ba56-f422b5e0b29c,
+    PublisherID: ab116a44-8071-4c0c-bfdc-1f9dd47e695c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a3e8b2b3-08f4-490f-86b0-bbb252826be3,
+    PublisherID: 6d6205e0-8290-45f6-a4a8-397a493e14cc,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: a3f49860-da1f-44f7-b7a7-2acd0cdb9823,
+    PublisherID: 808fdd31-4218-46fe-93f6-fd37f2cf0c30,
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl
+  },
+  {
+    DropRequestID: a4155ed0-c0e0-4ff2-9e3d-6ef1a45793ef,
+    PublisherID: e966e464-fbbd-46b3-aa10-662905bf63ce,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a42b6940-d194-4327-a6da-44c996fce201,
+    PublisherID: 74fbb970-98bf-40b8-a516-5ee3244d697b,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: a46a75e7-d2ab-488c-a1f3-559dc0f36fb3,
+    PublisherID: 585792ae-82ef-48da-8160-9acb6e31c6ae,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: a4dbadd3-071e-4295-bba3-80ea0a4ebaac,
+    PublisherID: d0ef8895-e3a6-458d-b891-399a46dd91ae,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a566ef2a-2118-4b5a-b9e7-dccdd1494458,
+    PublisherID: 1716e8f2-9a2c-47b0-856f-b40bb9b47cc1,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: a587ab7c-e523-43fc-a7fd-c54c9c15a3b9,
+    PublisherID: 57fe99a0-db08-487f-8e85-2b7e046e58cc,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a66f93da-0fb7-4d37-8f11-db6a2406da44,
+    PublisherID: bbebcaea-d0bf-404a-be6a-9521b712a2c6,
+    MasterGameID: 38517c98-6ad9-4813-a208-856afde5024f,
+    GameName: Demonschool
+  },
+  {
+    DropRequestID: a6df67c9-3954-4859-84e8-b9fd294d63a1,
+    PublisherID: f9f09712-3d8c-4772-94ba-21b4a98244a7,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a6f92701-f5b0-4409-95bb-da0f68189310,
+    PublisherID: 8ed5b513-110a-4fbf-a986-801bdb30c028,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a7408069-4460-4f35-acdb-40d24ef39c08,
+    PublisherID: 0850d655-3c86-4abf-b182-c90c9950210d,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a79322c8-ca7e-4dfc-b659-2ae7430dd6dd,
+    PublisherID: 8edfe36b-700a-4bc4-b509-3bd8929c73e8,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a80c1287-d2de-4de0-8de7-00acab3f0e4b,
+    PublisherID: ed975488-d885-4e07-9af5-81d60f027841,
+    MasterGameID: 1a29ac46-1e24-4977-b432-c8e6ba08ac20,
+    GameName: Super Monkey Ball Banana Rumble
+  },
+  {
+    DropRequestID: a8a16eb7-8668-4384-a6d4-597df39831fb,
+    PublisherID: 9718fbbe-ca9a-4291-bd8c-528d239bfc94,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: a9225d2a-60c6-4a97-8bb6-15ca248cbeee,
+    PublisherID: 5d667357-a4a9-4317-9d26-349c4b0d1af6,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: aa8b2315-8e0e-4915-8dd9-965a2111daf1,
+    PublisherID: fa57964c-002c-436a-8f70-e20bf406b577,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: aab16882-4013-4261-b6df-fe5ebf170ea4,
+    PublisherID: db997612-b32d-4289-96cc-30ea779bb0d4,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: ab3a0b92-dbe3-444c-a5cf-59fde97a13c0,
+    PublisherID: e4fe8759-13ca-4dad-93e1-8c2aa6dc6431,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: ab4df700-bebc-4d52-a9e3-7832d5ff9a7a,
+    PublisherID: 9da2a0f2-807c-4012-b2d9-8e993d11b89c,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: ab9e13c6-4df7-4fdf-a1c2-f4f8e6852bd5,
+    PublisherID: de424cfe-65d6-42ed-aa89-8202c0d74c29,
+    MasterGameID: 421c6afa-7d0b-44b4-9945-2e9e102fb7e6,
+    GameName: Rift of the NecroDancer
+  },
+  {
+    DropRequestID: ac3b33a0-6223-42ad-909a-51d22e9d12cb,
+    PublisherID: 9c2b8c2b-5c07-4f9c-9088-c99e9e035343,
+    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23,
+    GameName: Frostpunk 2
+  },
+  {
+    DropRequestID: ac7cbbe6-02a2-456d-8467-cca970a91088,
+    PublisherID: 4d2a7a59-c46e-499d-9d52-e9b5522181f3,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: ad31b3f4-9223-4a6e-a58c-03f81c20df5f,
+    PublisherID: 20d7a356-19b0-40e4-af74-79cedbc2b069,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: afc4aed5-13bc-4c76-b20f-5320eac1e35a,
+    PublisherID: daa70a16-d91a-49b4-8b35-cb00358d7f9b,
+    MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
+    GameName: The Rise of the Golden Idol
+  },
+  {
+    DropRequestID: afee2874-683a-4b4c-894f-cb29a05e58d8,
+    PublisherID: bcd77c37-a8a0-4e15-8cae-afe81961ca56,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b00ec63e-3134-45c0-8d90-30d106d13d8d,
+    PublisherID: 6903d64a-5a19-463d-885b-fbe623a30e00,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b113ef52-4429-4507-80f0-e04b9b0a77ac,
+    PublisherID: d7288d67-e421-4795-8e45-664d5560e6d1,
+    MasterGameID: bf4f5da9-085b-4047-8673-91082f05fcca,
+    GameName: Hyper Light Breaker
+  },
+  {
+    DropRequestID: b1c31030-a4a6-451a-85f9-3f157fdc29a7,
+    PublisherID: 3b0817a5-c4c2-4bd4-8972-2476159c696b,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b1d2ca9e-5669-4654-9c74-56ee8ef2fcb4,
+    PublisherID: 17317d9c-6ab9-42fb-80ff-a997cb5333d0,
+    MasterGameID: 421c6afa-7d0b-44b4-9945-2e9e102fb7e6,
+    GameName: Rift of the NecroDancer
+  },
+  {
+    DropRequestID: b2058e42-c9b1-4d32-9dae-5706de63c9bc,
+    PublisherID: 00182bb3-daab-4ff1-bb2c-e45a519f8e0c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b21bb5d3-a51c-4ce6-9020-6be8ced0d05c,
+    PublisherID: ce6be9d4-3c9e-4354-843c-931ccc2199d4,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b21d9ad8-a4c5-41b2-82ca-7060e3ac15e2,
+    PublisherID: 349f8482-1459-40c5-9d65-41755cf1af6b,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b2ea4588-5294-4331-abb4-f9c9bb727e6c,
+    PublisherID: 7c3e24f5-11d8-455a-ad74-c6834586132a,
+    MasterGameID: 79c8d790-7ac2-4773-b2c4-e6f16b359fdd,
+    GameName: Manor Lords
+  },
+  {
+    DropRequestID: b370c75e-4a82-47a7-b3be-7e8158706c83,
+    PublisherID: e304f7b2-7f1b-4082-9114-33cf235e3ba8,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: b3c7398c-8845-4954-9188-b780df4a652a,
+    PublisherID: 8b8753e5-e72b-40e8-a195-2a04a0d30238,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: b55b78a6-6ce0-4a2b-93d6-068a7a3d9805,
+    PublisherID: b6932fe9-34ee-4255-b73f-25b897fbad03,
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn
+  },
+  {
+    DropRequestID: b5c48c59-d754-4bf4-807e-91efde948711,
+    PublisherID: 6d927e19-2d91-48a7-bbc9-59eaefa2ce0c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b6975de3-246f-4bce-93a8-ed4776b59e0d,
+    PublisherID: 0212a07d-26f1-4169-b007-6994ebcdfef0,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: b6bc5c98-eda3-4221-bcad-0de0b8016068,
+    PublisherID: cf038fd8-efd2-4a08-a912-c41a4f5661c2,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b85ec915-6558-401b-a387-3bcaa4c40e81,
+    PublisherID: 33e353eb-ae04-46be-91cd-c3706194bd3f,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b867cc98-a924-4d4d-880e-f5614f24f09b,
+    PublisherID: 4f9c412a-4a26-4486-b370-989a4cc056b4,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: b8b9a36f-cbf8-4447-a468-f9468e23f70c,
+    PublisherID: 6661dc18-cfc2-4686-b799-9fcc50d53d21,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: b9798077-d193-451f-ae9e-fed172d67a7a,
+    PublisherID: 7a314077-50a1-4f88-ba85-f987d8fc5a0b,
+    MasterGameID: bf4f5da9-085b-4047-8673-91082f05fcca,
+    GameName: Hyper Light Breaker
+  },
+  {
+    DropRequestID: b9861411-9a26-4e03-a587-a77deeae712b,
+    PublisherID: d49b0f31-c6b2-4464-aca3-c8d55d13e887,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: b9ef4b5e-e6ce-45db-a31a-04cca1df6135,
+    PublisherID: 1f4cce45-fe70-467b-9193-36be05b84fcd,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: ba1a7eeb-5b2d-4ae5-81dd-ded5356c1727,
+    PublisherID: fb522b16-6130-45c6-8381-281836b7a4bb,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: ba3d87e6-48fb-4689-a2be-694ef000b119,
+    PublisherID: 0825d085-1c21-4fdb-8283-5889e37a1299,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ba933cbb-7710-415c-92c4-d51ff6bc0365,
+    PublisherID: 2f74cd14-a439-4d20-aaee-6ffee2fde750,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: bab10678-4f07-422a-987c-be9b40c2cad7,
+    PublisherID: 17317d9c-6ab9-42fb-80ff-a997cb5333d0,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: bb171985-7fa1-4b65-877e-cd2e955b1794,
+    PublisherID: 5ace4844-494e-4325-a545-7f88ccae955c,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: bb182947-109c-43ad-8198-4b606685ae43,
+    PublisherID: bb50e2a8-dd2e-4ac6-89be-521278b150c5,
+    MasterGameID: ea6e6bd0-5444-446c-a51f-e2b77379c06f,
+    GameName: Fire Emblem: Geneaology of the Holy War Remake (Unannounced)
+  },
+  {
+    DropRequestID: bc0653d1-cf44-4951-808a-f3098808228a,
+    PublisherID: 2212af96-d931-4734-98f4-2e67ce6a69a7,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: bc4d0c4d-4e23-40dc-932b-aa635d82d48c,
+    PublisherID: baadc1bb-d37e-4e70-bff3-9fd379968932,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: bc52f9f7-1579-414f-be21-16d4124170c1,
+    PublisherID: 0424f33e-09cf-40e1-86a6-255c7d6b4eaa,
+    MasterGameID: 6d8c5563-780c-4dc0-80cd-d416a1abad93,
+    GameName: The Alters
+  },
+  {
+    DropRequestID: bca47d8d-43c6-4090-8c64-8d90f0d6992b,
+    PublisherID: 46de6b91-b8f3-47d5-8771-1ec28929dfde,
+    MasterGameID: 4a0abbc6-c413-49dc-8f6f-3c9b43fa14a3,
+    GameName: Prince of Persia: The Sands of Time Remake
+  },
+  {
+    DropRequestID: bcf02283-f876-45c4-b94b-b3f0d7d08d64,
+    PublisherID: acf41ea8-6acf-4efa-bf14-caf27e5d19a9,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: bd20ca07-d4a3-4fb5-9aac-ea5400756b82,
+    PublisherID: 4669fa80-9ef9-40cb-93f3-50c7edd92175,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: bdb79721-5046-4786-ae0d-98ae66a19d52,
+    PublisherID: e774b5ad-fc56-417f-b054-a7003ed09e59,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: bde2331b-3629-4011-bd6d-257c86327010,
+    PublisherID: e9c2d731-9072-4b19-a812-cbe2e7aaf99b,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: bf02a8de-2b3f-488f-bf16-1ce18184eabb,
+    PublisherID: ee22bef8-fbab-458e-8925-436e820733df,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: c02832a9-9325-4ac8-9b34-d04499e3c039,
+    PublisherID: c51abc90-0283-4af8-a1ad-56dc1867c3b8,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: c0b1d66e-92f4-4e6e-aa6b-6341405c6852,
+    PublisherID: 9f4d6162-bc6e-4b25-bcf7-c2f75765fb5f,
+    MasterGameID: 421c6afa-7d0b-44b4-9945-2e9e102fb7e6,
+    GameName: Rift of the NecroDancer
+  },
+  {
+    DropRequestID: c1b55386-dd17-4d70-a179-8fab6165f064,
+    PublisherID: a8987064-2dec-471c-b5a8-5465c8b1d29b,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: c216676e-68b3-43b0-8f75-e8c1d925c48b,
+    PublisherID: d8795f8f-2c8d-4076-a122-86096f9924e7,
+    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
+    GameName: 33 Immortals
+  },
+  {
+    DropRequestID: c2bd4d67-6833-416e-9b93-0b79b417ff49,
+    PublisherID: 16eb7392-1eb7-49c1-b380-d9f92a6aecf5,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: c30cdbe7-a5ba-4fb0-b7a5-021b75566c10,
+    PublisherID: 0cb570a0-2cd0-4aed-ba50-9d8630ae73e9,
+    MasterGameID: c598de59-e6e1-4646-a658-aa0f1fdbbdcf,
+    GameName: Zenless Zone Zero
+  },
+  {
+    DropRequestID: c33dfcdf-7ed3-48f7-b4a8-aef9ee5d568c,
+    PublisherID: b8afced0-3779-4524-8dda-1a79f307e8e9,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: c34569b6-3722-45ef-ba4e-278a7d9cdada,
+    PublisherID: ce6be9d4-3c9e-4354-843c-931ccc2199d4,
+    MasterGameID: 9386c6eb-5aaf-47a4-a8a7-f4496a6a5a20,
+    GameName: Unannounced Bloodborne Remaster
+  },
+  {
+    DropRequestID: c42af358-bc2d-4678-969a-7c28551c7ccc,
+    PublisherID: 1675c329-e493-4303-8a9d-f291274a51ef,
+    MasterGameID: 7e43a24d-d245-489a-ad5b-249636b7ba06,
+    GameName: Nivalis
+  },
+  {
+    DropRequestID: c43bed0b-9d12-4306-b72a-8ad6e0c361bc,
+    PublisherID: fc8a794e-fc26-4290-bd07-ac3756b4481e,
+    MasterGameID: 2b8d168d-60a3-463d-ab04-b2bb5e43b072,
+    GameName: Metroid Prime 2 Remastered (Unannounced)
+  },
+  {
+    DropRequestID: c4581b86-3490-4193-ba8c-e216e812aee6,
+    PublisherID: c53f074d-e7fe-4b35-9e13-971f0f700abc,
+    MasterGameID: cb7136bb-89b9-41bb-90a7-441569a410b3,
+    GameName: Until Then
+  },
+  {
+    DropRequestID: c53446be-0375-4432-884a-f9a972dba01f,
+    PublisherID: 9743aa95-4e6e-435e-b870-96e1bbff5fff,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: c60f0d24-09a1-402c-a736-ffafe8f189e3,
+    PublisherID: 589b21e0-3527-4324-b65c-4a3ad4c69563,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: c6340023-db2a-4669-b0d5-c2e901cd6ebe,
+    PublisherID: a0938934-1d99-4116-b69f-b34f3f5ffa5f,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: c6d59880-c8f1-4e55-a736-cd0b5504c4c6,
+    PublisherID: 8403c7c8-315a-4c0c-b0e3-e0128425544a,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: c6e74dee-6f66-4810-9ade-307f9decb950,
+    PublisherID: d7deaa7d-51c4-4773-86b9-447a5e942adb,
+    MasterGameID: bf4f5da9-085b-4047-8673-91082f05fcca,
+    GameName: Hyper Light Breaker
+  },
+  {
+    DropRequestID: c74c6200-03af-4f38-b9d8-5b0e1fb8eac4,
+    PublisherID: 3a8e2b34-60a6-4eaa-adfc-1e667d4521de,
+    MasterGameID: f9a4016b-2bba-4291-9beb-16987f9beca2,
+    GameName: Sid Meier's Civilization VII
+  },
+  {
+    DropRequestID: c7552e41-f2ee-46bb-a722-5b7331528df2,
+    PublisherID: c4c1c4c7-3790-4015-a565-67b25f11db62,
+    MasterGameID: e50954b5-e845-45cb-96e2-8d26de85e589,
+    GameName: Cat Quest III
+  },
+  {
+    DropRequestID: c80b149f-19ce-4a23-9237-aae3c5269152,
+    PublisherID: d71b9d32-ad3c-4559-a68a-fbd91daca5ef,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: c819cbc3-045b-45ed-8b8a-64fb54209656,
+    PublisherID: 7e74d955-aa90-41e5-95a7-535c15ef57b9,
+    MasterGameID: 09d0a11d-a77a-4c91-9e20-442cb51a9721,
+    GameName: Metro Awakening (VR)
+  },
+  {
+    DropRequestID: c871268c-79ab-4d1c-a6c7-5be8c244991b,
+    PublisherID: db51ec9d-93c4-4ded-bcde-6183283d4a99,
+    MasterGameID: 9630f87d-e315-4909-a87b-cbdb0c2b0472,
+    GameName: Unannounced Legend of Zelda Oracle of Seasons/Ages Remake
+  },
+  {
+    DropRequestID: c96134a1-03f7-4da9-b90d-b46f231c0830,
+    PublisherID: c1fb6d38-aaa2-4f3b-8c73-731d11b99df1,
+    MasterGameID: e4906619-f51f-4539-8c4f-ef87febd7be8,
+    GameName: Nightingale
+  },
+  {
+    DropRequestID: c9d1e37b-5d27-4123-9f0a-9cf2d5e7ddfb,
+    PublisherID: f6b990da-0d27-4c2b-8d15-af0444cba445,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ca45cb57-4d1b-4296-a993-73b7d81cd7f8,
+    PublisherID: 2fc623ee-4d2e-420e-a8ce-c8220a3594b4,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ca60f95b-a4e0-4ca1-9809-177750e98634,
+    PublisherID: 2572a130-99ab-42f8-89a1-4b9de60a5405,
+    MasterGameID: 74b900ea-24bf-436a-a5a4-aa81ac5d07c8,
+    GameName: Decapolice
+  },
+  {
+    DropRequestID: cbac6e59-1999-41bb-9b1a-9d8946e1feb6,
+    PublisherID: 6fca35a9-5c86-4bfb-a57b-022fe4365e38,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: cbe96829-7b92-404e-bab6-fb0d422039ea,
+    PublisherID: 8e7535ba-6f29-4463-afbf-d57f4ba0c051,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: cc373668-32cf-435a-868d-daae5449a666,
+    PublisherID: eb533cb8-721d-440d-8cb8-f6eab434eb8d,
+    MasterGameID: 2c6390e5-c14a-4dba-9b63-41a2735108a5,
+    GameName: Nintendo World Championships: NES Edition
+  },
+  {
+    DropRequestID: cc8acb67-b1c4-43bf-ade1-41656d157b81,
+    PublisherID: 9aa1e3ad-96a8-4aed-8ac3-47937321ecfc,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: cd4a57d6-f4bd-43da-bc63-54c4eef53e01,
+    PublisherID: 3f892c48-a48a-416d-84b9-fe0569e704f6,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: cdb7f343-1178-4a7b-a65e-5567abd732bf,
+    PublisherID: d73ec06f-eef1-4850-8b55-2a16056007ed,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: ce45f9ec-dc16-4e7b-847d-e2e4ddfd0aa5,
+    PublisherID: 7b03dc73-f841-42fb-8533-fbc43ef18718,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: cecd3330-cd08-4246-96ca-0f1f4f5ee52b,
+    PublisherID: 87755448-157e-49b9-af8b-fc3cc131f295,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: cf460e90-12a3-4a0e-8c18-70768a09778a,
+    PublisherID: 56a64758-5e6c-41e9-a70a-7c84504b9386,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: d01f32e0-9e44-4b72-ae84-2fa1d517de6e,
+    PublisherID: f580ab53-4c63-44ef-82a8-a51867879898,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: d0405f3c-21fe-49ca-b1fa-51220166237b,
+    PublisherID: d4ddc686-bea6-4dfb-b5c1-98a82357d6c5,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: d09c548a-8a82-462d-9d87-b37f4c6b9ff2,
+    PublisherID: e2fe7a8e-1db1-48e2-87f6-5c4162482541,
+    MasterGameID: 421c6afa-7d0b-44b4-9945-2e9e102fb7e6,
+    GameName: Rift of the NecroDancer
+  },
+  {
+    DropRequestID: d1519ab3-9003-435c-b142-05c35bee71fa,
+    PublisherID: 3df17781-efd2-46a1-9924-ab4484eddb7c,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced
+  },
+  {
+    DropRequestID: d15272a2-eb16-417b-9aaa-0d534d0da099,
+    PublisherID: d52a3197-028d-4402-bafa-f19bf38adea8,
+    MasterGameID: ebb47bcd-cff9-493b-ae27-b25618713860,
+    GameName: Pony Island 2: Panda Circus
+  },
+  {
+    DropRequestID: d19227e2-50fc-4168-9731-258a0c741b89,
+    PublisherID: e751f99c-a59e-4aee-8085-a05dc0f1bfba,
+    MasterGameID: f844fd5e-4938-4a2f-b477-50630a939e64,
+    GameName: Unannounced New Forza Horizon Game
+  },
+  {
+    DropRequestID: d2890624-ab35-4e9a-a5f8-0da546107646,
+    PublisherID: c5651fd6-8e0d-462a-862a-6097be1eb156,
+    MasterGameID: b8df7da4-4cc7-457e-8eaf-e9ac600ac0a1,
+    GameName: Tribes III: Rivals
+  },
+  {
+    DropRequestID: d305030d-7134-4291-a59f-5df056c25b43,
+    PublisherID: 549e3744-b4e1-4799-b070-cd4e7b70d8b7,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: d34eae00-2f9f-42d4-b9c7-b731ec98915a,
+    PublisherID: 07a7d201-4ea7-4589-b21d-091cfe2c182e,
+    MasterGameID: cc46bd71-29aa-429b-a96d-dc8221d736da,
+    GameName: Towerborne
+  },
+  {
+    DropRequestID: d384fdee-5f53-45bf-83e1-88e208411b8f,
+    PublisherID: 0b8e578f-1bb2-474d-ae1d-6c8bb77eaa32,
+    MasterGameID: adc97a66-fe18-4d43-bc60-760dd0ca915d,
+    GameName: Unannounced Donkey Kong Platforming Game
+  },
+  {
+    DropRequestID: d3a16799-8c03-44e5-8f8a-9ede57ea1a29,
+    PublisherID: 299117c6-4ec5-4ecf-a599-698eb97e7409,
+    MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
+    GameName: The Rise of the Golden Idol
+  },
+  {
+    DropRequestID: d4f07690-d152-48ae-8051-42323a1148fe,
+    PublisherID: 842b5b02-65e5-4be2-9273-9d3842991afa,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: d537c4ab-3bdd-4af1-9f59-3159d22a41c0,
+    PublisherID: 34fddae3-b5dc-4730-8040-cbe45bef2430,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: d59b44f2-17d7-4eab-82e3-109b1a14d993,
+    PublisherID: 2e446743-a61a-4b2c-aafe-f1c0584ecfca,
+    MasterGameID: 7e43a24d-d245-489a-ad5b-249636b7ba06,
+    GameName: Nivalis
+  },
+  {
+    DropRequestID: d5b9eaad-b40b-4a6b-9b96-e79c67bf8ec4,
+    PublisherID: 054d9d65-7a26-4264-b8b7-f7ff3ca013fe,
+    MasterGameID: ebb7cf5d-6c4f-4927-a691-1ca39b5d6d9b,
+    GameName: South of Midnight
+  },
+  {
+    DropRequestID: d65ea91a-3a96-4829-9652-9e53e88e17dc,
+    PublisherID: 6e7e9515-eb18-4475-85fa-e5c39a2c6bf6,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: d6ef919d-fd60-4109-bb15-3828d66535a6,
+    PublisherID: 47d0fef2-5115-4471-865a-a24e3b8f036c,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: d7073fc4-3fa0-41fa-a27d-b544dd3cfc26,
+    PublisherID: 1a6fc1ea-49b9-463b-86dc-3eedea8df762,
+    MasterGameID: 5d5e448a-558d-47b5-9f1f-455816085b40,
+    GameName: skate.
+  },
+  {
+    DropRequestID: d73cc899-4452-494a-9c27-f0e1bd327b8e,
+    PublisherID: 649d692c-ee63-4809-a680-8fca7a5aa0fe,
+    MasterGameID: 1842e0ce-fc92-4441-a5cf-7aa4c3d96a29,
+    GameName: Assassin's Creed Shadows
+  },
+  {
+    DropRequestID: d7a2c325-a128-4701-95bb-df2e2c746824,
+    PublisherID: 8da30894-b36f-4d30-8988-4fbf4dce6442,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: d7e841da-9bbc-458e-8965-19d38034b977,
+    PublisherID: 9ccaca4c-a169-466c-bd0a-84cee0f4154e,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced
+  },
+  {
+    DropRequestID: d874f202-89d6-4e4b-aae0-e435b2f93dea,
+    PublisherID: 8b3a1102-669c-4a53-a99d-262440b15e5c,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: d87946bb-5ca8-427d-a43c-97ad9baf54b1,
+    PublisherID: cfb0d899-e177-458c-ac4f-5ae1b76ed07a,
+    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23,
+    GameName: Frostpunk 2
+  },
+  {
+    DropRequestID: d8b1c650-650f-4e7f-a694-c71ec898401b,
+    PublisherID: eb6da718-dd2e-4f9e-8310-ecca995b94f7,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: da0c2764-3ce9-4daa-a744-504d4db29acd,
+    PublisherID: e88a3dfd-6809-4c69-a05b-f7daa18ea666,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: da449472-b772-4c09-9330-f384484f9350,
+    PublisherID: 01748b0a-e09f-4c81-91bb-40780106eac0,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: da4f0f39-aea9-4b0d-9871-03c5fd642c93,
+    PublisherID: 57d1f4bc-8b26-48ec-8e56-be9a00700c9f,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: dad0e51e-5d49-4ec5-a1e3-3f6967f1ba07,
+    PublisherID: 5d667357-a4a9-4317-9d26-349c4b0d1af6,
+    MasterGameID: 9c848fd6-4e1a-4f94-b213-5adbeadf5391,
+    GameName: Shadow of The Ninja Reborn
+  },
+  {
+    DropRequestID: db47c6b3-9d5e-4a0f-aaba-f63046f9d3e3,
+    PublisherID: e042b347-26c0-42cb-924b-08689035a004,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: dbb88a8f-dd72-4d4d-9aa8-b5218c095fa0,
+    PublisherID: a9773256-e3bb-4258-9e00-7a9f8032d293,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: dbd3f613-0b7f-4a04-9100-5bd2a9aa567e,
+    PublisherID: 89c905fc-4d65-4eae-8cdb-a914ee15e00c,
+    MasterGameID: c3bd8888-63e4-43f8-afa3-6683c0cd53d8,
+    GameName: Indiana Jones and the Great Circle
+  },
+  {
+    DropRequestID: dc0d0f56-d23f-49f8-ab2d-6757bcc4e4b4,
+    PublisherID: 87c0f608-62d2-4128-9915-46aaac51ee79,
+    MasterGameID: c3bd8888-63e4-43f8-afa3-6683c0cd53d8,
+    GameName: Indiana Jones and the Great Circle
+  },
+  {
+    DropRequestID: dc491e75-bc9d-4269-a03e-79b0fafa4ace,
+    PublisherID: 20bab025-1b4d-417b-a54b-5c29d55c7032,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: dcb89080-51e4-49e2-adeb-4fc3dd243c23,
+    PublisherID: 7dd78636-349f-4ba4-b3e9-f8cb887c2e62,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: dd4552e0-edab-42e3-8f89-f3cdde4b7571,
+    PublisherID: 6624d97e-1ea7-4f25-b712-e32f034d9b13,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: de808809-98c6-49ff-a921-1aedaf1f07ef,
+    PublisherID: f5b1d4bc-47ab-43d4-b5ac-9ddc42134450,
+    MasterGameID: 46c7d302-0b74-4baa-a913-e9d1034019d7,
+    GameName: Gestalt: Steam & Cinder
+  },
+  {
+    DropRequestID: decedf97-d518-4421-b0a7-086374e3ea4c,
+    PublisherID: c34c68d6-7b6e-40a8-bdc1-c4b0eda775b7,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: df33898b-3eb3-4834-90f0-6bf90be69876,
+    PublisherID: 1e9cf5ef-583f-4dea-8658-f04abd690ff5,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: dfa851a9-9edb-4ce6-b9b5-eb2cbfe0ddb2,
+    PublisherID: 7a314077-50a1-4f88-ba85-f987d8fc5a0b,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: e0c63919-dcd2-4ec2-9a5c-3c5af345719e,
+    PublisherID: 71e0ebf0-4e87-48dd-9ce3-70991a00879d,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: e0d01875-fc0c-4e7b-8a4e-851656e142d4,
+    PublisherID: 3e05de6e-81a4-4ca0-ace7-1edc96c78d60,
+    MasterGameID: ea6e6bd0-5444-446c-a51f-e2b77379c06f,
+    GameName: Fire Emblem: Geneaology of the Holy War Remake (Unannounced)
+  },
+  {
+    DropRequestID: e0e38e25-ed59-4e7f-94a5-1d482486c554,
+    PublisherID: 23875766-d1d3-4d53-b981-a28ffc2eb3fa,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong
+  },
+  {
+    DropRequestID: e17355b7-9fb9-452a-911d-e0ac2977efda,
+    PublisherID: efaa8321-7a45-4e1f-8d5e-cffa92580357,
+    MasterGameID: f9a4016b-2bba-4291-9beb-16987f9beca2,
+    GameName: Sid Meier's Civilization VII
+  },
+  {
+    DropRequestID: e193a27e-12c6-4807-81a3-2da7d1341a29,
+    PublisherID: 5a5e7493-1163-4030-b140-00cc485990fd,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: e2382017-04cc-4ca3-a707-0f055c0c8188,
+    PublisherID: e9eadad5-3ad7-4612-a3da-18d4889cd101,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: e2440d1b-8ce6-4ca2-a685-de05a8880261,
+    PublisherID: 458774b1-f5b2-49dc-8a59-2a968f16d03e,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: e295c48f-1ce9-4fed-adf1-d75f12162861,
+    PublisherID: c299fbbd-cd42-436e-81b6-ffaa81a3c5cb,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: e2ccb49c-0d9a-4669-88db-0365a526d27c,
+    PublisherID: b0a8e8f8-2b99-4160-b715-343b2a0daf52,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: e4324c55-6c43-437d-ae49-aa164d4314c7,
+    PublisherID: 717a61b9-0db7-4565-9f9f-034c5eea7f2b,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: e479435a-745f-45fa-b3d6-2f66c0bc57c9,
+    PublisherID: fee7e147-6092-4d95-bce0-e427a1df68c5,
+    MasterGameID: 0db86734-effd-4f4c-9921-36715721fd75,
+    GameName: The Plucky Squire
+  },
+  {
+    DropRequestID: e51a0f32-d6f0-460d-889f-5316f4f136a8,
+    PublisherID: c20ee0d2-d6df-4d02-8a99-b169d168ddc9,
+    MasterGameID: 5834f318-4641-4f60-a352-bafeef38cdaa,
+    GameName: Stormgate
+  },
+  {
+    DropRequestID: e5806849-a9a0-4fe7-97e9-cd57feb77c34,
+    PublisherID: 9b5f627e-6a58-4f5f-b26d-2cbb59c511d4,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: e6b37181-ded8-4db6-ba2c-725aca4e5592,
+    PublisherID: fc1d0e06-7316-47d4-b017-77b69a5c10b6,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: e76bc94e-11e1-4268-9ce8-1b98ad299c00,
+    PublisherID: ae0b0c09-e13a-49f5-9e69-54a1abfbe92a,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: e82190fd-00a0-4cf5-9180-43f74e46dcf8,
+    PublisherID: 30d8ca51-6083-4c77-b8ec-ace273338142,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: e877613f-cbd3-4709-ac1b-ca3cb02f5466,
+    PublisherID: dafb8fa7-a158-44cc-b29e-fd2e15a02695,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: e87fd2b3-a23c-4d9d-b9da-80e03037a402,
+    PublisherID: e9c2d731-9072-4b19-a812-cbe2e7aaf99b,
+    MasterGameID: f9a4016b-2bba-4291-9beb-16987f9beca2,
+    GameName: Sid Meier's Civilization VII
+  },
+  {
+    DropRequestID: e9c81860-9b46-450f-8d0a-c20dcc3d1e28,
+    PublisherID: 2212af96-d931-4734-98f4-2e67ce6a69a7,
+    MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
+    GameName: Hades II
+  },
+  {
+    DropRequestID: ea1c6283-9a60-4bf5-8538-3c21c9de60f1,
+    PublisherID: 5dd32b36-0d1d-4607-80c1-c9f026d8f437,
+    MasterGameID: f2e5920e-1ad8-4021-b948-4e8f895a7a00,
+    GameName: Unannounced First Major Baldur's Gate 3 DLC (Not in Development)
+  },
+  {
+    DropRequestID: ea4cf91e-f954-4ada-897a-0fb5eb6718bf,
+    PublisherID: 89a2337a-0316-4f76-ba67-898c78ea8f9c,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: eb9ee72b-1476-48fd-9d34-35a4a4018ef2,
+    PublisherID: 82b39837-d4d7-4283-8aea-7d4b0e05f2f5,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ebb53937-7a2e-41bc-bfd6-809c9c63326e,
+    PublisherID: afc7d072-3585-4aee-90b0-64f841c897ae,
+    MasterGameID: 9e007d30-cacf-4d19-8ecc-a26d02018d10,
+    GameName: Smite 2
+  },
+  {
+    DropRequestID: ec24508a-8a58-4025-9abf-9473ddc872bb,
+    PublisherID: f0a27017-3922-4857-9dec-e7e2f5b6e115,
+    MasterGameID: 5194c04d-a3e4-493e-8d91-168a260ef47c,
+    GameName: Ender Magnolia: Bloom in the Mist
+  },
+  {
+    DropRequestID: ecf388af-032d-4368-822b-0e4cac956963,
+    PublisherID: fb344e1a-6cca-48f4-b95a-b35a58247aaf,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ed501416-a1c3-4b12-838e-c5bd2e2bb7ec,
+    PublisherID: c5382973-f1b3-483c-bd00-c1059958546e,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ed663e66-dfe6-43a6-99c4-7c51452c8bf4,
+    PublisherID: c4ba8c73-201d-471b-ae82-a27ef74addf9,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ed698045-87e7-4d66-97c5-154df31ee976,
+    PublisherID: 54f5659b-a7ff-4429-8c30-65a0c7c1571b,
+    MasterGameID: a91decae-a25b-41da-939a-9b67b1f9d058,
+    GameName: No Rest for the Wicked
+  },
+  {
+    DropRequestID: ee2104a9-922b-4cb3-803c-72e8b4a10052,
+    PublisherID: d847a208-a716-4d46-acd4-028b5e2d8be3,
+    MasterGameID: f844fd5e-4938-4a2f-b477-50630a939e64,
+    GameName: Unannounced New Forza Horizon Game
+  },
+  {
+    DropRequestID: ee5103e4-23c0-4f55-8088-1654ed8ef112,
+    PublisherID: bdaf16a4-d081-499f-b383-4ee60635f3d0,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: ef124c19-f67d-4388-a8b2-c0ccf1361379,
+    PublisherID: c3431dd5-0d2a-4152-afa4-566f4c4057ec,
+    MasterGameID: 06edf003-c809-4acb-92d9-89909cc18fcf,
+    GameName: Unannounced Mainline 3D Mario Platformer
+  },
+  {
+    DropRequestID: efd999ca-ba1e-4133-891a-174869080e84,
+    PublisherID: 3c867fb1-ebc3-4be7-88c2-f718fa79cc4b,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: f01d6cbf-6ee1-4ea8-8a5f-4a3064e6cb9a,
+    PublisherID: a0938934-1d99-4116-b69f-b34f3f5ffa5f,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f0ded9d2-c991-43bc-87cc-6402ef5e881d,
+    PublisherID: 7fcf2689-1939-4b53-bc75-576f382b287e,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f10af99e-e725-4724-ab7f-cd7dbd1b49cc,
+    PublisherID: 6543c6cc-968d-47ea-b703-06cadc39a15a,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: f204e386-e753-4c40-bf0d-95439630598e,
+    PublisherID: fc5960ec-8dcd-4412-8a20-1e4dbf5dba8b,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: f26d385a-1219-4169-8bad-4bccc69b1514,
+    PublisherID: 3b400880-229f-41bc-a237-12bf60fe629c,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced
+  },
+  {
+    DropRequestID: f2b10c76-6a4c-45ff-b566-077c1f9a6bfc,
+    PublisherID: 0e9c8245-05d8-4583-9d24-e77a47b669e0,
+    MasterGameID: 4f359243-1a0b-4e69-bf46-dd8f1726d2f8,
+    GameName: Death Stranding 2: On the Beach
+  },
+  {
+    DropRequestID: f3085248-b218-4c3a-b564-cde9a7219c76,
+    PublisherID: b253dd30-1406-4a38-9fd1-60066ca73366,
+    MasterGameID: 335551c3-45be-4e9b-91bd-64db02a300b8,
+    GameName: Doom: The Dark Ages
+  },
+  {
+    DropRequestID: f42a7ba6-5d95-4fd2-8e1b-3b2097d8154e,
+    PublisherID: 581cbacb-3ada-4afc-90b5-8b28ad2922f8,
+    MasterGameID: 18af13a5-0ebf-432e-899c-295985a4c988,
+    GameName: Tales of the Shire: A Lord of the Rings Game
+  },
+  {
+    DropRequestID: f42da33b-405a-4a60-ad08-086b89117bb2,
+    PublisherID: 9aa1e3ad-96a8-4aed-8ac3-47937321ecfc,
+    MasterGameID: adce2dd8-d0b2-4373-80d3-d875160e5954,
+    GameName: Baby Steps
+  },
+  {
+    DropRequestID: f46c78ec-3a75-4fd7-afd3-9334a08e3380,
+    PublisherID: ff89d24b-e0b5-4d4e-8576-87c9e09ac005,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f55431d9-ff5f-4d63-bc76-6f28e20d23df,
+    PublisherID: 8f21653e-cf19-4fe4-ba09-61aa38d0066c,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: f5767703-a243-4066-833a-f31d2d0040d2,
+    PublisherID: 0c2e8a6f-fbcd-4cc8-a3c3-5063d0954c28,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f62fc903-aaf2-4bf4-9eff-735487b8fb04,
+    PublisherID: 86304230-3f2e-4f5c-9e06-07c846c0e768,
+    MasterGameID: 9e8e7529-657e-434b-94cc-44193b780535,
+    GameName: Lost Records: Bloom & Rage
+  },
+  {
+    DropRequestID: f72d830f-dfc2-4acc-b7f1-3540531b777b,
+    PublisherID: 842ba883-e6f5-4652-9ee1-655a6890534f,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f777cea9-61a6-4396-9c12-a11b3c2c0132,
+    PublisherID: df68e420-b7ff-44d6-94be-e5c071672636,
+    MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
+    GameName: The Rise of the Golden Idol
+  },
+  {
+    DropRequestID: f78793be-5747-42db-a83a-5dfde90b455c,
+    PublisherID: 55dd168f-4340-422b-966e-f9f324e6020d,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f7c96631-32f3-4c69-9bde-e5e6afc1d887,
+    PublisherID: 18611c14-d236-40e2-baa2-7a9f00e9dcad,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f7ecbb9b-dcee-4301-ae8a-4aef449b40d2,
+    PublisherID: 3603f266-e95c-4533-ae2e-1e7eff6e0f6b,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: f8b8c01f-f62a-41cb-89b3-8a2dfc5ca2c4,
+    PublisherID: 71e0ebf0-4e87-48dd-9ce3-70991a00879d,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f95379a7-a45b-4208-8c06-8ec6fd992603,
+    PublisherID: ac9d47d6-9f0d-4991-b05f-b7da51cdda9d,
+    MasterGameID: 533946bb-1487-4cf2-8612-3ce2a1c29e0f,
+    GameName: Little Nightmares III
+  },
+  {
+    DropRequestID: f9845fb6-d269-4cf2-b7d7-bfa6cdb328f1,
+    PublisherID: 666c9ccd-afed-46cb-a679-e5f94a4b4735,
+    MasterGameID: cd0b76b1-3e5a-4b34-9be3-a69daad12c06,
+    GameName: Earthblade
+  },
+  {
+    DropRequestID: fafb2faa-cf98-494e-b0ca-0166d7707c53,
+    PublisherID: 387a53b8-8e38-4cd8-8ad6-0cba3a872bc6,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: fba8a5a7-2bbd-4c5f-a5fb-cd8471b6f6bd,
+    PublisherID: 8d66e868-e86f-4b7d-9409-6f3aee0096aa,
+    MasterGameID: 460c1130-8c11-4ce0-b91c-898e83c80b36,
+    GameName: Squirrel with a Gun
+  },
+  {
+    DropRequestID: fc869ad0-8e44-42e0-8488-d5d37e6682a1,
+    PublisherID: deb2af47-92d9-495e-9c6f-d716925de944,
+    MasterGameID: 5834f318-4641-4f60-a352-bafeef38cdaa,
+    GameName: Stormgate
+  },
+  {
+    DropRequestID: fcd85cc9-c6c0-4fa3-a18b-f6839cbfe255,
+    PublisherID: 3b0817a5-c4c2-4bd4-8972-2476159c696b,
+    MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
+    GameName: Path of Exile 2
+  },
+  {
+    DropRequestID: fd5ebd3f-ab35-4faf-90d4-834822bb6436,
+    PublisherID: b9e1a53b-c603-4a9e-ab46-5ca097392cf7,
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn
+  },
+  {
+    DropRequestID: fe179387-e748-4bf8-9a06-3b2fbc05d321,
+    PublisherID: e445fa2a-2442-4c68-96cd-c36af637b537,
+    MasterGameID: 2138c594-b484-42e4-8b46-bd6d903d9b1d,
+    GameName: Mario Kart (Unannounced Next Mainline Console Game)
+  },
+  {
+    DropRequestID: ff8277d3-3ef7-438d-a9c0-2715efba974b,
+    PublisherID: 730419cc-10b6-4dd4-bcad-85106252b632,
+    MasterGameID: 983d59c5-d399-478a-8f36-c8c7be26f51b,
+    GameName: Zoochosis
+  },
+  {
+    DropRequestID: ff8c6b73-5646-4bc1-8003-94e716f70fd8,
+    PublisherID: fbb1b098-789c-4a43-a26f-53e391ee5da2,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ffaef343-2e19-4842-9bb8-3deebba58a35,
+    PublisherID: c875e859-397b-4622-8f5f-c8ca95b88fba,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: ffea7464-994e-4d8f-a708-224035b5666c,
+    PublisherID: 9e09123c-b5f2-4f30-afd0-db2e6028f0bc,
+    MasterGameID: cfdea47a-a32c-4a16-a9d7-5b9a439f2da1,
+    GameName: Judas
+  }
+]

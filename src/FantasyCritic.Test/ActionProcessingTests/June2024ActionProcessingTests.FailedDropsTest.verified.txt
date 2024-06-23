@@ -1,0 +1,86 @@
+﻿[
+  {
+    DropRequestID: 07113d0b-86cc-4d16-b42f-f2bbd2ba5815,
+    PublisherID: 36db8274-1c7d-4e3f-a701-4cfdd4e6de28,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 1552e45b-1e29-45ac-92ba-7f3cb6ead30a,
+    PublisherID: bc24b893-ca66-4685-b69c-5d6126aaea56,
+    MasterGameID: 37dcadd7-0786-4617-ba33-fd10a70b1c23,
+    GameName: Frostpunk 2
+  },
+  {
+    DropRequestID: 28cd45e7-6603-45d2-9ffe-be106e39c556,
+    PublisherID: 01d8447c-5a99-40f9-85d7-5ae459f55d69,
+    MasterGameID: adce2dd8-d0b2-4373-80d3-d875160e5954,
+    GameName: Baby Steps
+  },
+  {
+    DropRequestID: 5f8c3b39-cbab-4af8-b3c9-df4f13966025,
+    PublisherID: 01d8447c-5a99-40f9-85d7-5ae459f55d69,
+    MasterGameID: a91decae-a25b-41da-939a-9b67b1f9d058,
+    GameName: No Rest for the Wicked
+  },
+  {
+    DropRequestID: 899ea415-2742-444f-81d3-9e842a3d6696,
+    PublisherID: 9a066923-a62f-425b-86fc-54c0a8c3bb47,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: 8ca2d7a8-eb86-451e-b753-2b6fb8042113,
+    PublisherID: 92d299ba-ecdf-4592-bf3b-782408f594d7,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced
+  },
+  {
+    DropRequestID: 96fd0b02-87ce-43b5-9b07-214227338f69,
+    PublisherID: 9a05d174-54cf-4d7b-b6ab-f77a7b7ae1ca,
+    MasterGameID: a91decae-a25b-41da-939a-9b67b1f9d058,
+    GameName: No Rest for the Wicked
+  },
+  {
+    DropRequestID: c2a57079-cd7c-4732-a70e-db7651e61e94,
+    PublisherID: 92d299ba-ecdf-4592-bf3b-782408f594d7,
+    MasterGameID: 05359292-9a97-4941-9b48-2e9f0475854b,
+    GameName: Star Wars Outlaws
+  },
+  {
+    DropRequestID: c5f83476-9cee-40db-b600-fe882108b1cd,
+    PublisherID: 7106d88c-de92-4c2b-93d8-01ef860c469e,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: c7bcb7f6-0f34-435b-8cf9-d6dab514968e,
+    PublisherID: be532c37-7880-4ada-9454-e43e53f6ee90,
+    MasterGameID: 8d4a070b-9872-4a34-9734-a944ca5428be,
+    GameName: Fantasy Life i: The Girl Who Steals Time
+  },
+  {
+    DropRequestID: d2d639a6-e624-456d-8e34-812fd21d24f4,
+    PublisherID: 2cb2716f-68c3-4ceb-85f3-11743e9cac57,
+    MasterGameID: 2c6390e5-c14a-4dba-9b63-41a2735108a5,
+    GameName: Nintendo World Championships: NES Edition
+  },
+  {
+    DropRequestID: dc532712-1f6f-4514-8999-4241374ae059,
+    PublisherID: ef9481f2-ea6a-4109-9ea0-e50452381259,
+    MasterGameID: 1684a366-917d-468e-8bba-ba4cc8fe31bf,
+    GameName: Mina the Hollower
+  },
+  {
+    DropRequestID: eb0f034e-3b44-4018-84d8-782c528792e6,
+    PublisherID: 72c1633d-da81-49a8-90ff-7f4b16e8798d,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  },
+  {
+    DropRequestID: f382f754-6010-42b2-ab9e-0e16df137932,
+    PublisherID: e9b0d84a-9d08-41d9-9a99-c1f0121e2a68,
+    MasterGameID: 1a07ed6c-b0a3-4742-b7be-ebfe60003ce6,
+    GameName: Unannounced The Legend of Zelda: Ocarina of Time Remake
+  }
+]

@@ -156,7 +156,10 @@ public class TestDataService
 
             var publishersInLeague = publisherLookup[leagueYearKey].ToList();
             var eligibilityOverrides = eligibilityOverrideLookup[leagueYearKey].Select(x => x.ToDomain(masterGameYears[x.MasterGameID].MasterGame));
-            var tagOverrides = tagOverrideEntityLookup[leagueYearKey].GroupBy(x => x.MasterGameID).Select(x => new TagOverride(masterGameYears[x.Key].MasterGame, tags.Where(t => x.Select(e => e.TagName).Contains(t.Name))));
+            var tagOverrides = tagOverrideEntityLookup[leagueYearKey]
+                .Where(x => masterGameYears.ContainsKey(x.MasterGameID))
+                .GroupBy(x => x.MasterGameID)
+                .Select(x => new TagOverride(masterGameYears[x.Key].MasterGame, tags.Where(t => x.Select(e => e.TagName).Contains(t.Name))));
             var leagueTags = leagueTagEntityLookup[leagueYearKey].Select(x => x.ToDomain(tagDictionary[x.Tag]));
             var specialGameSlots = specialGameSlotsDictionary[leagueYearKey];
             domains.Add(leagueYear.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, specialGameSlots, null, publishersInLeague));
