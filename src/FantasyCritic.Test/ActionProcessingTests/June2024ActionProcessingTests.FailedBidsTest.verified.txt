@@ -535,7 +535,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 70,
-    ProjectedPointsAtTimeOfBid: 51.356153632201885714285714287,
+    ProjectedPointsAtTimeOfBid: 51.291853020418634482758620691,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -545,7 +545,7 @@
     MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02,
     GameName: Dragon Quest III HD-2D Remake,
     BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 117.7379463529040,
+    ProjectedPointsAtTimeOfBid: 117.66191290207066666666666667,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -3115,7 +3115,7 @@
     MasterGameID: a308ba28-42b2-43ef-a0f9-a22891ecf079,
     GameName: Phoenix Springs,
     BidAmount: 4,
-    ProjectedPointsAtTimeOfBid: 131.81080259297133333333333336,
+    ProjectedPointsAtTimeOfBid: 131.75937091055228571428571432,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -3425,7 +3425,7 @@
     MasterGameID: cda341b4-ca23-419c-92de-24d4197496d9,
     GameName: Dragon Age: The Veilguard,
     BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 131.81080259297133333333333336,
+    ProjectedPointsAtTimeOfBid: 131.75937091055228571428571432,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -4795,7 +4795,7 @@
     MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02,
     GameName: Dragon Quest III HD-2D Remake,
     BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 131.81080259297133333333333336,
+    ProjectedPointsAtTimeOfBid: 131.75937091055228571428571432,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -5145,7 +5145,7 @@
     MasterGameID: 460c1130-8c11-4ce0-b91c-898e83c80b36,
     GameName: Squirrel with a Gun,
     BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 211.8501370136781,
+    ProjectedPointsAtTimeOfBid: 212.08846985128898709677419356,
     FailureReason: Game is no longer eligible: Cannot counter pick a game that no other player is publishing.,
     Outcome: Game is no longer eligible: Cannot counter pick a game that no other player is publishing.
   },
@@ -9855,7 +9855,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 18,
-    ProjectedPointsAtTimeOfBid: 102.29816334262446666666666668,
+    ProjectedPointsAtTimeOfBid: 102.25316062050780000000000002,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -12495,7 +12495,7 @@
     MasterGameID: 4596ec80-ce6e-4464-bfd1-ffd8d0c37be2,
     GameName: Wanderstop,
     BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 131.81080259297133333333333336,
+    ProjectedPointsAtTimeOfBid: 131.75937091055228571428571432,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -15915,7 +15915,7 @@
     MasterGameID: a01716a9-1ed7-478a-ab8f-03f2a7c36a05,
     GameName: Life is Strange: Double Exposure,
     BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 131.81080259297133333333333336,
+    ProjectedPointsAtTimeOfBid: 131.75937091055228571428571432,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -17208,6 +17208,16 @@
     ProjectedPointsAtTimeOfBid: 88.9449483233582,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 94c1f8df-4728-4925-ab56-f764fe4be054,
+    PublisherID: af7d3f7f-ceb7-4411-852f-47c4728d740c,
+    MasterGameID: 2c6390e5-c14a-4dba-9b63-41a2735108a5,
+    GameName: Nintendo World Championships: NES Edition,
+    BidAmount: 10,
+    ProjectedPointsAtTimeOfBid: 29.92070921420,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 950b4433-5da4-4618-851f-070626812af5,
@@ -18905,7 +18915,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 19,
-    ProjectedPointsAtTimeOfBid: 131.81080259297133333333333336,
+    ProjectedPointsAtTimeOfBid: 131.75937091055228571428571432,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -19565,7 +19575,7 @@
     MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
     GameName: Super Mario Party Jamboree,
     BidAmount: 8,
-    ProjectedPointsAtTimeOfBid: 131.81080259297133333333333336,
+    ProjectedPointsAtTimeOfBid: 131.75937091055228571428571432,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -19925,7 +19935,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 9,
-    ProjectedPointsAtTimeOfBid: 102.29816334262446666666666668,
+    ProjectedPointsAtTimeOfBid: 102.25316062050780000000000002,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -21015,7 +21025,7 @@
     MasterGameID: cda341b4-ca23-419c-92de-24d4197496d9,
     GameName: Dragon Age: The Veilguard,
     BidAmount: 18,
-    ProjectedPointsAtTimeOfBid: 102.29816334262446666666666668,
+    ProjectedPointsAtTimeOfBid: 102.25316062050780000000000002,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -23380,16 +23390,6 @@
     Outcome: Not enough budget.
   },
   {
-    BidID: cc768903-2931-4dd6-a29a-c60e55d1a4fe,
-    PublisherID: af7d3f7f-ceb7-4411-852f-47c4728d740c,
-    MasterGameID: 30cee19c-f46c-4eaa-b17f-80a3b976df64,
-    GameName: Kunitsu-Gami: Path of the Goddess,
-    BidAmount: 10,
-    ProjectedPointsAtTimeOfBid: 29.92070921420,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
-  },
-  {
     BidID: cc911baa-8c14-4b23-8729-09139830c76c,
     PublisherID: 085e3452-79ef-4108-95f7-47147e24c9be,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -24645,7 +24645,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 70,
-    ProjectedPointsAtTimeOfBid: 51.356153632201885714285714287,
+    ProjectedPointsAtTimeOfBid: 51.291853020418634482758620691,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -25235,7 +25235,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 20,
-    ProjectedPointsAtTimeOfBid: 73.65034194156609577464788732,
+    ProjectedPointsAtTimeOfBid: 73.61239510982235555555555556,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -27915,7 +27915,7 @@
     MasterGameID: cda341b4-ca23-419c-92de-24d4197496d9,
     GameName: Dragon Age: The Veilguard,
     BidAmount: 10,
-    ProjectedPointsAtTimeOfBid: 134.57627137074305454545454545,
+    ProjectedPointsAtTimeOfBid: 134.62281169803093333333333333,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },

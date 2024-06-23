@@ -21372,7 +21372,7 @@
     MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
     GameName: Cities: Skylines II,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 13,
     BidAmount: 31
   },
   {
@@ -21380,7 +21380,7 @@
     MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
     GameName: Sonic Superstars,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 12,
     BidAmount: 51
   },
   {

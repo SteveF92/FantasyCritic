@@ -9477,7 +9477,7 @@
     LeagueID: 2fc8224b-4e8f-4937-aca5-48abebdd9092,
     PublisherID: af7d3f7f-ceb7-4411-852f-47c4728d740c,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Kunitsu-Gami: Path of the Goddess' with a bid of $10. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'Nintendo World Championships: NES Edition' with a bid of $10. Failure reason: No roster spots available.
   },
   {
     LeagueID: 2fc8224b-4e8f-4937-aca5-48abebdd9092,
@@ -9489,13 +9489,13 @@
     LeagueID: 2fc8224b-4e8f-4937-aca5-48abebdd9092,
     PublisherID: af7d3f7f-ceb7-4411-852f-47c4728d740c,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Loco Motive' with a bid of $10
+    Description: Acquired game 'Kunitsu-Gami: Path of the Goddess' with a bid of $10
   },
   {
     LeagueID: 2fc8224b-4e8f-4937-aca5-48abebdd9092,
     PublisherID: af7d3f7f-ceb7-4411-852f-47c4728d740c,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Nintendo World Championships: NES Edition' with a bid of $10
+    Description: Acquired game 'Loco Motive' with a bid of $10
   },
   {
     LeagueID: 2fc8224b-4e8f-4937-aca5-48abebdd9092,

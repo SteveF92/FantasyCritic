@@ -13956,7 +13956,7 @@
     MasterGameID: 296d91de-dfd6-41b4-bb2d-58180c36c7e8,
     GameName: Warhammer 40,000: Darktide,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 11,
     BidAmount: 25
   },
   {
@@ -13972,7 +13972,7 @@
     MasterGameID: 897529cc-65de-4259-8468-6e333fcd2ea4,
     GameName: Metal: Hellsinger,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 12,
     BidAmount: 25
   },
   {
@@ -15756,7 +15756,7 @@
     MasterGameID: 4281d474-efa1-4e40-bbe4-91856657b8a8,
     GameName: Forza Horizon 5: Hot Wheels,
     CounterPick: false,
-    SlotNumber: 27,
+    SlotNumber: 26,
     BidAmount: 5
   },
   {
@@ -15772,7 +15772,7 @@
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     GameName: Pentiment,
     CounterPick: false,
-    SlotNumber: 26,
+    SlotNumber: 27,
     BidAmount: 4
   },
   {

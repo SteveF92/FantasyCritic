@@ -24364,15 +24364,15 @@
     MasterGameID: 178a9c28-eb0a-48da-8e17-0baf91d88197,
     GameName: Vampire: The Masquerade - Bloodlines 2,
     CounterPick: false,
-    SlotNumber: 5,
+    SlotNumber: 4,
     BidAmount: 15
   },
   {
     PublisherID: af7d3f7f-ceb7-4411-852f-47c4728d740c,
-    MasterGameID: 2c6390e5-c14a-4dba-9b63-41a2735108a5,
-    GameName: Nintendo World Championships: NES Edition,
+    MasterGameID: 30cee19c-f46c-4eaa-b17f-80a3b976df64,
+    GameName: Kunitsu-Gami: Path of the Goddess,
     CounterPick: false,
-    SlotNumber: 4,
+    SlotNumber: 6,
     BidAmount: 10
   },
   {
@@ -24404,7 +24404,7 @@
     MasterGameID: cc46bd71-29aa-429b-a96d-dc8221d736da,
     GameName: Towerborne,
     CounterPick: false,
-    SlotNumber: 6,
+    SlotNumber: 5,
     BidAmount: 15
   },
   {

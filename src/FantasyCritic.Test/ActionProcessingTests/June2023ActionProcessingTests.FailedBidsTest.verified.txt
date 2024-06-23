@@ -2675,7 +2675,7 @@
     MasterGameID: ca7146fe-af6b-48c4-9837-66267b8c3d60,
     GameName: The Talos Principle 2,
     BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 61.698512446242667441860465114,
+    ProjectedPointsAtTimeOfBid: 61.6480017406729,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -3025,7 +3025,7 @@
     MasterGameID: 93ead3cb-af83-408f-a01c-3557273c9b73,
     GameName: Exoprimal,
     BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 148.77941194185345555555555556,
+    ProjectedPointsAtTimeOfBid: 148.7750544191729,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -4625,7 +4625,7 @@
     MasterGameID: 187e1c3d-55d6-418b-8bcd-f19e408ea219,
     GameName: ARC Raiders,
     BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 59.8558492560864,
+    ProjectedPointsAtTimeOfBid: 59.862920235281694117647058822,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -4795,7 +4795,7 @@
     MasterGameID: 26a3259c-4ef0-4b4f-b56a-fd447ef9ce08,
     GameName: Path of Exile II,
     BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 61.698512446242667441860465114,
+    ProjectedPointsAtTimeOfBid: 61.6480017406729,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -6685,7 +6685,7 @@
     MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
     GameName: Persona 5 Tactica,
     BidAmount: 15,
-    ProjectedPointsAtTimeOfBid: 61.698512446242667441860465114,
+    ProjectedPointsAtTimeOfBid: 61.6480017406729,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },

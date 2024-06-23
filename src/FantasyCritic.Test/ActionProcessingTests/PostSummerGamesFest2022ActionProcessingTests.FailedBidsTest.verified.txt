@@ -725,7 +725,7 @@
     MasterGameID: 1200424e-3363-4732-9e61-b3ddcc9924e6,
     GameName: Saints Row,
     BidAmount: 10,
-    ProjectedPointsAtTimeOfBid: 111.6951707530115,
+    ProjectedPointsAtTimeOfBid: 111.42601678022303846153846155,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -1915,7 +1915,7 @@
     MasterGameID: f9fd27f0-8c2c-4d98-8981-be62ad5aa7cd,
     GameName: Midnight Fight Express,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 54.157473893977980487804878049,
+    ProjectedPointsAtTimeOfBid: 54.176652751714914285714285715,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -2475,7 +2475,7 @@
     MasterGameID: 381f21e4-ce11-4681-8bdf-6c11f6e37322,
     GameName: The Callisto Protocol,
     BidAmount: 15,
-    ProjectedPointsAtTimeOfBid: 116.13067279034051428571428572,
+    ProjectedPointsAtTimeOfBid: 115.91229548433867096774193548,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -2975,7 +2975,7 @@
     MasterGameID: 3da2bf7e-2cfb-4d46-a4c0-89da8ac8f2b4,
     GameName: Monster Hunter Rise: Sunbreak,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 111.6951707530115,
+    ProjectedPointsAtTimeOfBid: 111.42601678022303846153846155,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -4255,7 +4255,7 @@
     MasterGameID: d7ea6126-4acd-46fc-8e9c-fa4e1665dbf3,
     GameName: Scorn,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 87.83015730415063333333333333,
+    ProjectedPointsAtTimeOfBid: 87.85281514650480,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -5915,7 +5915,7 @@
     MasterGameID: 728533af-c282-4437-87dc-f3615ecd4c3f,
     GameName: Pentiment,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 54.157473893977980487804878049,
+    ProjectedPointsAtTimeOfBid: 54.176652751714914285714285715,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
