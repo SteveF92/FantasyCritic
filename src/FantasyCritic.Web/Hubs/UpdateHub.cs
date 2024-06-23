@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
 
@@ -29,6 +30,7 @@ public class UpdateHub : Hub
         await base.OnDisconnectedAsync(ex);
     }
 
+    [UsedImplicitly]
     public async Task Subscribe(string leagueID, int year)
     {
         try

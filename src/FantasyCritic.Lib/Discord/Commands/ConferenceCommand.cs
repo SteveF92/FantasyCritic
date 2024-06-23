@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
@@ -33,6 +34,7 @@ public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("conference", "Get conference information.")]
     public async Task GetConference(
         [Summary("year", "The year for the conference (if not entered, defaults to the current year).")] int? year = null
@@ -93,6 +95,7 @@ public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
         return conferencePublishersRanked;
     }
 
+    [UsedImplicitly]
     [ComponentInteraction("currentIndexNext:*_*")]
     public async Task NextButton(int currentIndex, int? year = null)
     {
@@ -143,6 +146,7 @@ public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
         });
     }
 
+    [UsedImplicitly]
     [ComponentInteraction("currentIndexPrev:*_*")]
     public async Task PreviousButton(int currentIndex, int? year = null)
     {

@@ -49,15 +49,4 @@ public class CreateConferenceRequest
     }
 }
 
-public record EditConferenceRequest(Guid ConferenceID, string ConferenceName, bool CustomRulesConference)
-{
-    public Result IsValid()
-    {
-        if (string.IsNullOrWhiteSpace(ConferenceName))
-        {
-            return Result.Failure("You cannot have a blank conference name.");
-        }
-
-        return Result.Success();
-    }
-}
+public record EditConferenceRequest(Guid ConferenceID, string ConferenceName, bool CustomRulesConference);

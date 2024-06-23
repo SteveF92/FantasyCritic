@@ -2,6 +2,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.EventHandlers;
 public class IncludeLeagueGamesSelectMenuHandler : InteractionModuleBase<SocketInteractionContext>
@@ -15,6 +16,7 @@ public class IncludeLeagueGamesSelectMenuHandler : InteractionModuleBase<SocketI
         _interLeagueService = interLeagueService;
     }
 
+    [UsedImplicitly]
     [ComponentInteraction("include-league-games")]
     public async Task IncludeLeagueGamesSelectMenu(string[] selectedOptions)
     {

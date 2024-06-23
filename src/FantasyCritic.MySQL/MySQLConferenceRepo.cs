@@ -125,7 +125,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         await transaction.CommitAsync();
     }
 
-    private async Task AddPlayerToConferenceInternal(Conference conference, IMinimalFantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
+    private static async Task AddPlayerToConferenceInternal(Conference conference, IMinimalFantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new
         {

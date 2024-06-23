@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -41,6 +42,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("game-news",
         "Get upcoming or recent releases for publishers in the league (or for yourself in a DM).")]
     public async Task GetGameNews(

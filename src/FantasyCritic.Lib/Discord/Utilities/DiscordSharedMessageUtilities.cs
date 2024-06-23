@@ -23,22 +23,6 @@ public static class DiscordSharedMessageUtilities
             : null;
     }
 
-    public static string BuildGameWithPublishersMessage(List<LeagueYearPublisherPair> publishers, MasterGameYear masterGameYear, string baseAddress)
-    {
-        var gameUrl = new GameUrlBuilder(baseAddress, masterGameYear.MasterGame.MasterGameID).BuildUrl(masterGameYear.MasterGame.GameName);
-
-        var joinedPublisherLeagueNames = string.Join("\n> ",
-            publishers.Select(p =>
-            {
-                var isCounterPick = p.LeagueYear.GetPublisherByID(p.Publisher.PublisherID)?.PublisherGames
-                    .FirstOrDefault(g => g.MasterGame?.MasterGame.MasterGameID == masterGameYear.MasterGame.MasterGameID)
-                    ?.CounterPick;
-                var leagueUrl = new LeagueUrlBuilder(baseAddress, p.LeagueYear.League.LeagueID, p.LeagueYear.Year).BuildUrl(p.LeagueYear.League.LeagueName);
-                return $"{leagueUrl} {(isCounterPick.HasValue && isCounterPick.Value ? "(Counter Pick)" : "")}";
-            }));
-        return $"**{masterGameYear.MasterGame.EstimatedReleaseDate}** - {gameUrl}\n> {joinedPublisherLeagueNames}";
-    }
-
     public static string BuildGameWithPublishersMessage(SingleGameNews gameNews, string baseAddress)
     {
         var masterGameYear = gameNews.MasterGameYear;

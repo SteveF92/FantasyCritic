@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
@@ -38,6 +39,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("publisher", "Get publisher information. You can search with just a portion of the name.")]
     public async Task GetPublisherSlashCommand(
         [Summary("publisher_or_player_name",
@@ -133,6 +135,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
             embedFieldBuilders));
     }
 
+    [UsedImplicitly]
     [MessageCommand("FC Publisher")]
     public async Task GetPublisherMessageCommand(SocketMessage message)
     {
@@ -171,6 +174,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
             embedFieldBuilders));
     }
 
+    [UsedImplicitly]
     [UserCommand("FC Publisher")]
     public async Task GetPublisherUserCommand(SocketUser user)
     {

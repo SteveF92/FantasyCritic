@@ -2,6 +2,7 @@ using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Interfaces;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class SetBidAlertRoleCommand : InteractionModuleBase<SocketInteractionContext>
@@ -16,6 +17,7 @@ public class SetBidAlertRoleCommand : InteractionModuleBase<SocketInteractionCon
         _discordFormatter = discordFormatter;
     }
 
+    [UsedImplicitly]
     [SlashCommand("set-bid-alert-role", "Set a role to mention when bid information is posted.")]
     public async Task SetBidAlertRole(
         [Summary("role", "The role to mention when bid information is posted")] IRole? role = null

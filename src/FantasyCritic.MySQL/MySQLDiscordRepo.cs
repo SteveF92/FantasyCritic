@@ -279,13 +279,6 @@ public class MySQLDiscordRepo : IDiscordRepo
             : conferenceChannelEntity.ToDomain(conferenceYear);
     }
 
-
-    private async Task<LeagueChannel?> GetLeagueChannel(ulong guildID, ulong channelID, LeagueYear leagueYear)
-    {
-        var leagueChannelEntity = await GetLeagueChannelEntity(guildID, channelID);
-        return leagueChannelEntity?.ToDomain(leagueYear);
-    }
-
     public async Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID)
     {
         var possibleTags = await _masterGameRepo.GetMasterGameTags();
@@ -355,13 +348,5 @@ public class MySQLDiscordRepo : IDiscordRepo
         };
         var sql = "DELETE FROM tbl_discord_leaguechannel WHERE LeagueID=@leagueID";
         await connection.ExecuteAsync(sql, queryObject);
-    }
-
-    private async Task<IReadOnlyList<int>> GetActiveYears()
-    {
-        string sql = "SELECT Year FROM tbl_meta_supportedyear WHERE Finished = 0;";
-        await using var connection = new MySqlConnection(_connectionString);
-        var activeYearsForLeague = await connection.QueryAsync<int>(sql);
-        return activeYearsForLeague.ToList();
     }
 }

@@ -7,6 +7,7 @@ using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class GameCommand : InteractionModuleBase<SocketInteractionContext>
@@ -34,6 +35,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("game", "Get game information. You can search with just a portion of the name.")]
     public async Task GetGame(
         [Summary("game_name", "The game name that you're searching for. You only need to enter a portion of the name.")] string gameName,

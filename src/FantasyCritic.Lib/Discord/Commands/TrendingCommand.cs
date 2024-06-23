@@ -3,6 +3,7 @@ using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class TrendingCommand : InteractionModuleBase<SocketInteractionContext>
@@ -24,6 +25,7 @@ public class TrendingCommand : InteractionModuleBase<SocketInteractionContext>
         _baseUri = new Uri(fantasyCriticSettings.BaseAddress);
     }
 
+    [UsedImplicitly]
     [SlashCommand("trending",
         "Get trending bids/counter picks/drops for the previous week.")]
     public async Task GetTrending(

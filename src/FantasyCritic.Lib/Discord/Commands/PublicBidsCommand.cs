@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -33,6 +34,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("public-bids", "View the current public bids for this week.")]
     public async Task GetPublicBids(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)

@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class LinkToConferenceCommand : InteractionModuleBase<SocketInteractionContext>
@@ -24,6 +25,7 @@ public class LinkToConferenceCommand : InteractionModuleBase<SocketInteractionCo
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("link-to-conference", "Get a link to the conference.")]
     public async Task GetConferenceLink(
         [Summary("year", "The year for the conference (if not entered, defaults to the current year).")] int? year = null

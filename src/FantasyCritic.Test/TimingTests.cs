@@ -9,7 +9,7 @@ namespace FantasyCritic.Test;
 [TestFixture]
 public class TimingTests
 {
-    private Instant GetInstantFromEasternString(string dateTimeString)
+    private static Instant GetInstantFromEasternString(string dateTimeString)
     {
         var localDateTime = LocalDateTimePattern.GeneralIso.Parse(dateTimeString).GetValueOrThrow();
         var instant = localDateTime.InZoneStrictly(TimeExtensions.EasternTimeZone).ToInstant();

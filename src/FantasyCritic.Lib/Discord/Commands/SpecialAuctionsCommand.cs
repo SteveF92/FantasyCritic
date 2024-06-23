@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -35,6 +36,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("special-auctions", "View the special auctions that are currently active.")]
     public async Task GetSpecialAuctions(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)

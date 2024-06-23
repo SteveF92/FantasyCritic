@@ -1,6 +1,7 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Interfaces;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class RemoveConferenceCommand : InteractionModuleBase<SocketInteractionContext>
@@ -15,6 +16,7 @@ public class RemoveConferenceCommand : InteractionModuleBase<SocketInteractionCo
         _discordFormatter = discordFormatter;
     }
 
+    [UsedImplicitly]
     [SlashCommand("remove-conference", "Removes the configuration for the conference associated with the current channel.")]
     public async Task RemoveConference()
     {

@@ -457,7 +457,7 @@ public class AdminService
         await _fantasyCriticRepo.InsertTopBidsAndDrops(topBidsAndDrops);
     }
 
-    private IReadOnlyList<TopBidsAndDropsGame> CalculateTopBidsAndDrops(LocalDate processDate, BidsAndDropsSet bidsAndDrops, IEnumerable<int> relevantYears, IReadOnlyList<MasterGameYear> masterGameYears)
+    private static IReadOnlyList<TopBidsAndDropsGame> CalculateTopBidsAndDrops(LocalDate processDate, BidsAndDropsSet bidsAndDrops, IEnumerable<int> relevantYears, IReadOnlyList<MasterGameYear> masterGameYears)
     {
         List<TopBidsAndDropsGame> results = new List<TopBidsAndDropsGame>();
         foreach (var year in relevantYears)

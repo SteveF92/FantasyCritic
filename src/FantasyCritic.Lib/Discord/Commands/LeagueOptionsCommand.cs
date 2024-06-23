@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -26,6 +27,7 @@ public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionConte
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("league-options", "Get league options.")]
     public async Task GetLeagueOptions(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null

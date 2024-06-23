@@ -1,6 +1,7 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Interfaces;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContext>
@@ -15,6 +16,7 @@ public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContex
         _discordFormatter = discordFormatter;
     }
 
+    [UsedImplicitly]
     [SlashCommand("remove-league", "Removes the configuration for the league associated with the current channel.")]
     public async Task RemoveLeague()
     {

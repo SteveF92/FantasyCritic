@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class LinkToLeagueCommand : InteractionModuleBase<SocketInteractionContext>
@@ -24,6 +25,7 @@ public class LinkToLeagueCommand : InteractionModuleBase<SocketInteractionContex
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("link-to-league", "Get a link to the league.")]
     public async Task GetLeagueLink(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null

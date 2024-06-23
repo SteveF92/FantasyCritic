@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -26,6 +27,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+    [UsedImplicitly]
     [SlashCommand("view-settings", "View current bot settings.")]
     public async Task ViewSettings()
     {

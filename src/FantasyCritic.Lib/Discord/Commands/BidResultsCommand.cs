@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -31,6 +32,8 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
         _baseAddress = fantasyCriticSettings.BaseAddress;
     }
 
+
+    [UsedImplicitly]
     [SlashCommand("bid-results", "View the most recent bid results.")]
     public async Task GetBidResults(
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)

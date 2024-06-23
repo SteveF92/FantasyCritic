@@ -1240,7 +1240,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domains;
     }
 
-    private IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
+    private static IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
         IEnumerable<LeagueYearStatusEntity> playStatuses, IReadOnlyList<FantasyCriticUser> usersInLeague)
     {
         var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
@@ -3215,7 +3215,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    private async Task AddPlayerToLeagueInternal(League league, Guid userIDToAdd, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
+    private static async Task AddPlayerToLeagueInternal(League league, Guid userIDToAdd, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new
         {
@@ -3257,30 +3257,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return entities.ToList();
     }
 
-    private async Task<IReadOnlyList<LeagueYearTagEntity>> GetLeagueYearTagEntities(Guid leagueID, int year)
-    {
-        const string sql = "select * from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
-
-        await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<LeagueYearTagEntity> entities = await connection.QueryAsync<LeagueYearTagEntity>(sql, new { leagueID, year });
-        return entities.ToList();
-    }
-
     private async Task<IReadOnlyList<SpecialGameSlotEntity>> GetSpecialGameSlotEntities(int year)
     {
         const string sql = "select * from tbl_league_specialgameslot where Year = @year;";
 
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<SpecialGameSlotEntity> entities = await connection.QueryAsync<SpecialGameSlotEntity>(sql, new { year });
-        return entities.ToList();
-    }
-
-    private async Task<IReadOnlyList<SpecialGameSlotEntity>> GetSpecialGameSlotEntities(Guid leagueID, int year)
-    {
-        const string sql = "select * from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
-
-        await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<SpecialGameSlotEntity> entities = await connection.QueryAsync<SpecialGameSlotEntity>(sql, new { leagueID, year });
         return entities.ToList();
     }
 

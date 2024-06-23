@@ -2,6 +2,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.EventHandlers;
 public class NotableMissesSelectMenuHandler : InteractionModuleBase<SocketInteractionContext>
@@ -15,6 +16,7 @@ public class NotableMissesSelectMenuHandler : InteractionModuleBase<SocketIntera
         _interLeagueService = interLeagueService;
     }
 
+    [UsedImplicitly]
     [ComponentInteraction("notable-misses")]
     public async Task NotableMissesSelectMenu(string[] selectedOptions)
     {

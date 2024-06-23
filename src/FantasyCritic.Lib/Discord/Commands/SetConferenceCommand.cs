@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using JetBrains.Annotations;
 using Serilog;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -30,6 +31,7 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
         _fantasyCriticSettings = fantasyCriticSettings;
     }
 
+    [UsedImplicitly]
     [SlashCommand("set-conference", "Sets the conference to be associated with the current channel.")]
     public async Task SetConference(
         [Summary("conference_ID", $"The ID for your conference from the URL.")] string conferenceIdParam

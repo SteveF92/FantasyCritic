@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
+using JetBrains.Annotations;
 using Serilog;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -34,6 +35,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         _fantasyCriticSettings = fantasyCriticSettings;
     }
 
+    [UsedImplicitly]
     [SlashCommand("set-league", "Sets the league to be associated with the current channel.")]
     public async Task SetLeague(
         [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam

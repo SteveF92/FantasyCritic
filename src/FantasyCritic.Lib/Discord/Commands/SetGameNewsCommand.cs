@@ -4,6 +4,7 @@ using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Interfaces;
+using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext>
@@ -23,6 +24,7 @@ public class SetGameNewsCommand : InteractionModuleBase<SocketInteractionContext
         _masterGameRepo = masterGameRepo;
     }
 
+    [UsedImplicitly]
     [SlashCommand("set-game-news", "Sets what games this channel will get news announcements for.")]
     public async Task SetGameNews(
         [Summary("setting", "The game news setting for games other than games in your league.")]
