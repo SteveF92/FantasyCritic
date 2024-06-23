@@ -522,15 +522,6 @@
     RemovedNote: Conditionally dropped while picking up: Fuga: Melodies of Steel 2
   },
   {
-    PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
-    MasterGameID: e466da26-aaa3-4319-876f-dceccb70e794,
-    GameName: Metal Gear Solid Snake Eater Remake (Unannounced),
-    CounterPick: false,
-    SlotNumber: 15,
-    BidAmount: 15,
-    RemovedNote: Conditionally dropped while picking up: Persona 3 Remake
-  },
-  {
     PublisherID: 3aaedfc7-a63b-4f32-84bc-c1c7f21aabef,
     MasterGameID: 424b1874-071d-418c-ac2c-c1a2005b6694,
     GameName: Amnesia: The Bunker,

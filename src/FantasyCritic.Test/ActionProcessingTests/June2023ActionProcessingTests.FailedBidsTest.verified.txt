@@ -140,6 +140,16 @@
     Outcome: Bid lost on tiebreakers.
   },
   {
+    BidID: 045fc85c-377d-4d2a-8e27-36bd6d7bee0e,
+    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
+    MasterGameID: 9e48737c-8968-4767-8a5c-b79c89ec87cf,
+    GameName: Teenage Mutant Ninja Turtles: Shredder's Revenge - Dimension Shellshock,
+    BidAmount: 16,
+    ProjectedPointsAtTimeOfBid: 118.17295643358647142857142857,
+    FailureReason: No roster spots available. Attempted to conditionally drop game: Splatoon 3: Side Order but failed because: Publisher cannot drop any more 'Will Release' games,
+    Outcome: No roster spots available. Attempted to conditionally drop game: Splatoon 3: Side Order but failed because: Publisher cannot drop any more 'Will Release' games
+  },
+  {
     BidID: 04600acb-5d6b-4058-92f4-4d4cde5969ef,
     PublisherID: f1c226f3-ec10-4e39-ab81-dd5c1d6379e3,
     MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
@@ -390,6 +400,16 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: 07d4e486-8475-4ea9-b28d-0a3c70fec822,
+    PublisherID: 50152448-e9ff-45d0-a136-cb2fd93f849b,
+    MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
+    GameName: Sonic Superstars,
+    BidAmount: 6,
+    ProjectedPointsAtTimeOfBid: 113.50039471864741818181818185,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
+  },
+  {
     BidID: 08cd2bd6-2bfb-4418-a99f-53c94cb12559,
     PublisherID: 2f277423-6f9f-4016-974c-5d26b5e41c64,
     MasterGameID: 83d70244-13de-43b5-a821-55ee0c535e9b,
@@ -498,16 +518,6 @@
     ProjectedPointsAtTimeOfBid: 121.35409190982342222222222222,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
-  },
-  {
-    BidID: 0bc03fd7-7378-4f54-9311-c1e130c14572,
-    PublisherID: 9ba9edb8-0a47-4488-a5fe-8c7d82ab5327,
-    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
-    GameName: Like a Dragon Gaiden: The Man Who Erased His Name,
-    BidAmount: 13,
-    ProjectedPointsAtTimeOfBid: 117.8010438813734,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 0c278d33-886d-4fd7-82b4-5da9d09e8519,
@@ -2050,16 +2060,6 @@
     Outcome: No roster spots available.
   },
   {
-    BidID: 311a0c28-8ec0-471e-a976-14507acbfc86,
-    PublisherID: 49e60e41-5300-45a5-9b61-72dee9b251da,
-    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
-    GameName: Cities: Skylines II,
-    BidAmount: 11,
-    ProjectedPointsAtTimeOfBid: 206.4529487799261,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
-  },
-  {
     BidID: 31319242-2818-4b29-aeb6-6c23e7572dad,
     PublisherID: 8b72891c-ad31-4c40-aba3-ada205a4490e,
     MasterGameID: cf48291f-1bc5-46e9-9508-be52dcab4d8c,
@@ -3240,16 +3240,6 @@
     Outcome: No roster spots available.
   },
   {
-    BidID: 537e03d4-23b7-41cd-ab3a-0b89f996b976,
-    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
-    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
-    GameName: Persona 5 Tactica,
-    BidAmount: 11,
-    ProjectedPointsAtTimeOfBid: 118.17295643358647142857142857,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
-  },
-  {
     BidID: 53aa8866-c78e-4ed1-ac0f-7052b7addb69,
     PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
     MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
@@ -3598,6 +3588,16 @@
     ProjectedPointsAtTimeOfBid: 98.61396251917014615384615385,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 5c05f704-ba54-4c77-aefd-a4c0d506e735,
+    PublisherID: f2c1982b-5425-47be-8b1a-d13712a61f73,
+    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
+    GameName: Persona 5 Tactica,
+    BidAmount: 11,
+    ProjectedPointsAtTimeOfBid: 98.94184426903498571428571428,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 5c26650a-a544-4a03-9594-9179f63a5c0b,
@@ -7080,16 +7080,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: bdc16a94-aa36-4f44-a772-55b6f69a4d16,
-    PublisherID: 836b9a51-1a4f-4cd0-aac8-f1c0d91e7918,
-    MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
-    GameName: Sonic Superstars,
-    BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 124.96654579910531818181818185,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
-  },
-  {
     BidID: bdd572c0-1377-434b-a779-e4f2f4a99bba,
     PublisherID: 808606f4-b1b4-46a8-bab4-e7fdb1c6d53d,
     MasterGameID: cdf2795e-6402-46c5-8f0c-e911ac5f8d82,
@@ -7368,6 +7358,26 @@
     ProjectedPointsAtTimeOfBid: 118.06031737241286923076923076,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
+  },
+  {
+    BidID: c45e8e91-c8f5-4f49-9aa5-139d1d3ba5b8,
+    PublisherID: 13a23471-72fb-403e-9720-3502ee661767,
+    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
+    GameName: Like a Dragon Gaiden: The Man Who Erased His Name,
+    BidAmount: 13,
+    ProjectedPointsAtTimeOfBid: 92.6923061346014,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
+  },
+  {
+    BidID: c4cfbec0-db90-45e0-aff6-6ecc4c105412,
+    PublisherID: ee43f7f2-65b5-4f78-b421-d4190277ce5f,
+    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
+    GameName: Cities: Skylines II,
+    BidAmount: 11,
+    ProjectedPointsAtTimeOfBid: 178.7446389687753,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: c50a6c71-3699-40d4-895e-ea8891e2b773,

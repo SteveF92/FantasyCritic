@@ -12776,8 +12776,8 @@
   {
     LeagueID: 442bf3ab-4c13-499d-a4bb-7188433eb0bc,
     PublisherID: 0350b3f5-7d27-4f69-83d1-10033cfb8e33,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $30. Failure reason: Bid lost on tiebreakers.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $30. Dropped game 'Disney Epic Mickey: Rebrushed' conditionally.
   },
   {
     LeagueID: 442bf3ab-4c13-499d-a4bb-7188433eb0bc,
@@ -12872,8 +12872,8 @@
   {
     LeagueID: 442bf3ab-4c13-499d-a4bb-7188433eb0bc,
     PublisherID: b83060c2-c32b-4c24-ab8d-1d89744dee13,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $30. Dropped game 'F1 Manager 2024' conditionally.
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $30. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 442bf3ab-4c13-499d-a4bb-7188433eb0bc,
@@ -15447,12 +15447,6 @@
     LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
     PublisherID: 1a6faa06-1255-4d97-b3d3-043a313cb354,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'ANTONBLAST' with a bid of $3. Failure reason: Bid lost on tiebreakers.
-  },
-  {
-    LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
-    PublisherID: 1a6faa06-1255-4d97-b3d3-043a313cb354,
-    ActionType: Pickup Failed,
     Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $16. Failure reason: Publisher was outbid.
   },
   {
@@ -15466,6 +15460,12 @@
     PublisherID: 1a6faa06-1255-4d97-b3d3-043a313cb354,
     ActionType: Pickup Successful,
     Description: Acquired game 'Anger Foot' with a bid of $6
+  },
+  {
+    LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
+    PublisherID: 1a6faa06-1255-4d97-b3d3-043a313cb354,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'ANTONBLAST' with a bid of $3
   },
   {
     LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
@@ -15573,6 +15573,12 @@
     LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
     PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
     ActionType: Pickup Failed,
+    Description: Tried to acquire game 'ANTONBLAST' with a bid of $3. Failure reason: Bid lost on tiebreakers.
+  },
+  {
+    LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
+    PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
+    ActionType: Pickup Failed,
     Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $5. Failure reason: Publisher was outbid.
   },
   {
@@ -15603,19 +15609,7 @@
     LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
     PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Wanderstop' with a bid of $1. Failure reason: No roster spots available.
-  },
-  {
-    LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
-    PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
-    ActionType: Pickup Failed,
     Description: Tried to acquire game 'World of Warcraft: The War Within' with a bid of $7. Failure reason: Publisher was outbid.
-  },
-  {
-    LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
-    PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'ANTONBLAST' with a bid of $3
   },
   {
     LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
@@ -15628,6 +15622,12 @@
     PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
     ActionType: Pickup Successful,
     Description: Acquired game 'Super Monkey Ball Banana Rumble' with a bid of $1
+  },
+  {
+    LeagueID: 52550c0a-c515-47b9-b542-5d21bbe20436,
+    PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Wanderstop' with a bid of $1
   },
   {
     LeagueID: 5260ebe8-b8ba-4f82-b4b7-1a949950d6b5,
@@ -16496,8 +16496,8 @@
   {
     LeagueID: 576ca295-5096-41f9-8847-c5dd7cd64f7f,
     PublisherID: 474ea4bc-6b75-436a-9532-0f5ce31efdb9,
-    ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Replaced' with a bid of $3. Failure reason: Bid lost on tiebreakers.
+    ActionType: Counter Pick Pickup Successful,
+    Description: Acquired counter pick 'Replaced' with a bid of $3
   },
   {
     LeagueID: 576ca295-5096-41f9-8847-c5dd7cd64f7f,
@@ -16508,8 +16508,8 @@
   {
     LeagueID: 576ca295-5096-41f9-8847-c5dd7cd64f7f,
     PublisherID: dbb9793b-812c-4b59-8e3b-51aeaac70303,
-    ActionType: Counter Pick Pickup Successful,
-    Description: Acquired counter pick 'Replaced' with a bid of $3
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Replaced' with a bid of $3. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 576ca295-5096-41f9-8847-c5dd7cd64f7f,
@@ -24267,7 +24267,7 @@
     LeagueID: 7df5966f-8aeb-4a5d-a8ba-f9c15dc62191,
     PublisherID: 4166a882-7bfb-42ed-a16a-882b762a87d5,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Dragon Quest III HD-2D Remake' with a bid of $15. Failure reason: Bid lost on tiebreakers.
+    Description: Tried to acquire game 'Dragon Quest III HD-2D Remake' with a bid of $15. Failure reason: No roster spots available.
   },
   {
     LeagueID: 7df5966f-8aeb-4a5d-a8ba-f9c15dc62191,
@@ -24375,6 +24375,12 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
     ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Mariachi Legends' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Counter Pick Pickup Failed,
     Description: Tried to acquire counter pick 'Neva' with a bid of $1. Failure reason: No roster spots available.
   },
   {
@@ -24386,14 +24392,8 @@
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
-    ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Until Then' with a bid of $1. Failure reason: No roster spots available.
-  },
-  {
-    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
-    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
     ActionType: Counter Pick Pickup Successful,
-    Description: Acquired counter pick 'Mariachi Legends' with a bid of $1
+    Description: Acquired counter pick 'Until Then' with a bid of $1
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -24573,7 +24573,7 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Mariachi Legends' with a bid of $1. Failure reason: Bid lost on tiebreakers.
+    Description: Tried to acquire counter pick 'Neva' with a bid of $1. Failure reason: No roster spots available.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -24585,7 +24585,7 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
     ActionType: Counter Pick Pickup Successful,
-    Description: Acquired counter pick 'Neva' with a bid of $1
+    Description: Acquired counter pick 'Mariachi Legends' with a bid of $1
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -47025,6 +47025,12 @@
     LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
     PublisherID: 2d09730f-99ca-4c6c-b8cc-e3cf8a3d8ec0,
     ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Super Mario Party Jamboree' with a bid of $5. Failure reason: Bid lost on tiebreakers.
+  },
+  {
+    LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
+    PublisherID: 2d09730f-99ca-4c6c-b8cc-e3cf8a3d8ec0,
+    ActionType: Pickup Failed,
     Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $23. Failure reason: Publisher was outbid.
   },
   {
@@ -47032,12 +47038,6 @@
     PublisherID: 2d09730f-99ca-4c6c-b8cc-e3cf8a3d8ec0,
     ActionType: Pickup Successful,
     Description: Acquired game 'Dragon Quest III HD-2D Remake' with a bid of $10
-  },
-  {
-    LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
-    PublisherID: 2d09730f-99ca-4c6c-b8cc-e3cf8a3d8ec0,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Super Mario Party Jamboree' with a bid of $5
   },
   {
     LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
@@ -47056,6 +47056,12 @@
     PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
     ActionType: Pickup Failed,
     Description: Tried to acquire game 'Ara: History Untold' with a bid of $5. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
+    PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Call of Duty: Black Ops 6' with a bid of $5. Failure reason: No roster spots available.
   },
   {
     LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
@@ -47085,12 +47091,6 @@
     LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
     PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Super Mario Party Jamboree' with a bid of $5. Failure reason: Bid lost on tiebreakers.
-  },
-  {
-    LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
-    PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
-    ActionType: Pickup Failed,
     Description: Tried to acquire game 'UFO 50' with a bid of $5. Failure reason: No roster spots available.
   },
   {
@@ -47103,7 +47103,7 @@
     LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,
     PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Call of Duty: Black Ops 6' with a bid of $5
+    Description: Acquired game 'Super Mario Party Jamboree' with a bid of $5
   },
   {
     LeagueID: fc65e61a-edd8-4df6-bac4-0a61f16a7fd7,

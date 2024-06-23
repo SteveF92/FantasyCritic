@@ -756,20 +756,6 @@
     ConditionalDropResult: null
   },
   {
-    BidID: 045fc85c-377d-4d2a-8e27-36bd6d7bee0e,
-    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
-    MasterGameID: 9e48737c-8968-4767-8a5c-b79c89ec87cf,
-    GameName: Teenage Mutant Ninja Turtles: Shredder's Revenge - Dimension Shellshock,
-    CounterPick: false,
-    Priority: 3,
-    BidAmount: 16,
-    ProjectedPointsAtTimeOfBid: 118.17295643358647142857142857,
-    SlotNumber: 13,
-    Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: 508ac2da-e3e5-4592-86fc-ef7a7c246185,
-    ConditionalDropResult: Success
-  },
-  {
     BidID: 04629935-4604-411a-a6ad-00b8058ef6fa,
     PublisherID: a2cb5561-cf98-42ea-b32f-82851624395d,
     MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
@@ -1232,20 +1218,6 @@
     ConditionalDropResult: null
   },
   {
-    BidID: 07d4e486-8475-4ea9-b28d-0a3c70fec822,
-    PublisherID: 50152448-e9ff-45d0-a136-cb2fd93f849b,
-    MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
-    GameName: Sonic Superstars,
-    CounterPick: false,
-    Priority: 3,
-    BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 113.50039471864741818181818185,
-    SlotNumber: 13,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
     BidID: 07e1c91c-74cc-4896-a824-cc87f7c4f93d,
     PublisherID: a5ca2755-8ff4-465b-af9c-a1d8ca8e1fa2,
     MasterGameID: 1e53a17a-7ec0-4e5b-885c-d4cb273afacf,
@@ -1339,7 +1311,7 @@
     BidAmount: 11,
     ProjectedPointsAtTimeOfBid: 121.75295539764528888888888892,
     SlotNumber: 15,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
+    Outcome: This bid was placed earliest.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -1970,6 +1942,20 @@
     ProjectedPointsAtTimeOfBid: 100.2411001801528,
     SlotNumber: 8,
     Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
+    BidID: 0bc03fd7-7378-4f54-9311-c1e130c14572,
+    PublisherID: 9ba9edb8-0a47-4488-a5fe-8c7d82ab5327,
+    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
+    GameName: Like a Dragon Gaiden: The Man Who Erased His Name,
+    CounterPick: false,
+    Priority: 1,
+    BidAmount: 13,
+    ProjectedPointsAtTimeOfBid: 117.8010438813734,
+    SlotNumber: 10,
+    Outcome: This bid was placed earliest.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -8526,6 +8512,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 311a0c28-8ec0-471e-a976-14507acbfc86,
+    PublisherID: 49e60e41-5300-45a5-9b61-72dee9b251da,
+    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
+    GameName: Cities: Skylines II,
+    CounterPick: false,
+    Priority: 3,
+    BidAmount: 11,
+    ProjectedPointsAtTimeOfBid: 206.4529487799261,
+    SlotNumber: 17,
+    Outcome: This bid was placed earliest.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
     BidID: 31550193-580c-4c85-b0ea-d1d5f3a36065,
     PublisherID: e61d1b42-1677-4b80-bf62-7075619f9aa1,
     MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
@@ -14168,6 +14168,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 537e03d4-23b7-41cd-ab3a-0b89f996b976,
+    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
+    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
+    GameName: Persona 5 Tactica,
+    CounterPick: false,
+    Priority: 2,
+    BidAmount: 11,
+    ProjectedPointsAtTimeOfBid: 118.17295643358647142857142857,
+    SlotNumber: 16,
+    Outcome: This bid was placed earliest.,
+    ConditionalDropMasterGameID: 18517fc3-4704-44c1-85ea-e0457dbe6fe5,
+    ConditionalDropResult: Success
+  },
+  {
     BidID: 5383b8f6-b14d-45cf-87e7-509660e95af4,
     PublisherID: 60cdaed6-e758-48b9-b8ca-089f9f0e3b7e,
     MasterGameID: 1af8336b-97c1-49e6-91c3-bd84ef21b837,
@@ -15522,20 +15536,6 @@
     ProjectedPointsAtTimeOfBid: 71.90734665445901538461538462,
     SlotNumber: 8,
     Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
-    BidID: 5c05f704-ba54-4c77-aefd-a4c0d506e735,
-    PublisherID: f2c1982b-5425-47be-8b1a-d13712a61f73,
-    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
-    GameName: Persona 5 Tactica,
-    CounterPick: false,
-    Priority: 1,
-    BidAmount: 11,
-    ProjectedPointsAtTimeOfBid: 98.94184426903498571428571428,
-    SlotNumber: 14,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -21974,7 +21974,7 @@
     Priority: 4,
     BidAmount: 3,
     ProjectedPointsAtTimeOfBid: 113.50039471864741818181818185,
-    SlotNumber: 14,
+    SlotNumber: 13,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -24719,7 +24719,7 @@
     BidAmount: 6,
     ProjectedPointsAtTimeOfBid: 95.58752407161296666666666666,
     SlotNumber: 13,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
+    Outcome: This bid was placed earliest.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -31010,6 +31010,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: bdc16a94-aa36-4f44-a772-55b6f69a4d16,
+    PublisherID: 836b9a51-1a4f-4cd0-aac8-f1c0d91e7918,
+    MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
+    GameName: Sonic Superstars,
+    CounterPick: false,
+    Priority: 3,
+    BidAmount: 6,
+    ProjectedPointsAtTimeOfBid: 124.96654579910531818181818185,
+    SlotNumber: 12,
+    Outcome: This bid was placed earliest.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
     BidID: bde2f9f5-5cc2-4dff-8f3b-13c0f2dd3014,
     PublisherID: 2a18cbc7-50c0-4d9b-b0bb-3853d4945fbd,
     MasterGameID: 841f6626-b5e9-48d0-8d2a-f72a686f4e30,
@@ -32018,20 +32032,6 @@
     ConditionalDropResult: null
   },
   {
-    BidID: c45e8e91-c8f5-4f49-9aa5-139d1d3ba5b8,
-    PublisherID: 13a23471-72fb-403e-9720-3502ee661767,
-    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
-    GameName: Like a Dragon Gaiden: The Man Who Erased His Name,
-    CounterPick: false,
-    Priority: 2,
-    BidAmount: 13,
-    ProjectedPointsAtTimeOfBid: 92.6923061346014,
-    SlotNumber: 11,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
     BidID: c45e900c-6e50-4490-a864-c5fec97203ec,
     PublisherID: e5e1b2a1-b2ab-4404-89b0-306c258e5dcd,
     MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
@@ -32168,20 +32168,6 @@
     ProjectedPointsAtTimeOfBid: 81.55784262685067272727272727,
     SlotNumber: 3,
     Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
-    BidID: c4cfbec0-db90-45e0-aff6-6ecc4c105412,
-    PublisherID: ee43f7f2-65b5-4f78-b421-d4190277ce5f,
-    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
-    GameName: Cities: Skylines II,
-    CounterPick: false,
-    Priority: 1,
-    BidAmount: 11,
-    ProjectedPointsAtTimeOfBid: 178.7446389687753,
-    SlotNumber: 14,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -34168,7 +34154,7 @@
     Priority: 4,
     BidAmount: 21,
     ProjectedPointsAtTimeOfBid: 206.4529487799261,
-    SlotNumber: 17,
+    SlotNumber: 18,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null

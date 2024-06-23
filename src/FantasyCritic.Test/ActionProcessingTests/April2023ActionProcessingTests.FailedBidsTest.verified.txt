@@ -160,12 +160,12 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: 21a34197-1ce4-4414-adf7-7e8db8393757,
-    PublisherID: ff139741-00f4-4a69-90da-7be986ea1c1b,
-    MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
-    GameName: Persona 3 Remake,
-    BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 125.51555464536400909090909092,
+    BidID: 20e9b60b-6f7c-432d-90ad-84fe30d0efea,
+    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
+    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
+    GameName: The Last Case of Benedict Fox,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 73.4581452788642,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -600,6 +600,16 @@
     Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Cannot counter pick a game that no other player is publishing.
   },
   {
+    BidID: 634c41d2-797e-4f07-8116-8b22b720a83a,
+    PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
+    MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
+    GameName: Persona 3 Remake,
+    BidAmount: 0,
+    ProjectedPointsAtTimeOfBid: 123.8645991379949,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
+  },
+  {
     BidID: 64cf45fd-25b2-4efe-8488-3df82fa79509,
     PublisherID: abf3c365-f19f-4c27-81b6-0d677f86ff3d,
     MasterGameID: eeaa1f6a-7874-4c76-bf84-bf66b0ebc305,
@@ -628,16 +638,6 @@
     ProjectedPointsAtTimeOfBid: 84.95640565520231566265060240,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
-  },
-  {
-    BidID: 6aa4315c-2867-4232-be36-7c3d6ffe8604,
-    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
-    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
-    GameName: The Last Case of Benedict Fox,
-    BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 102.24648346039142857142857142,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 6deb4203-9524-4133-94f1-753068b9641a,
@@ -930,16 +930,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: 99c15b81-8399-436f-ad12-f7c40067dfe5,
-    PublisherID: 6c996f7f-7bb8-4e84-a8f4-1d6dafe8d564,
-    MasterGameID: 66ff761f-8da3-4418-b290-d9f5468da0a8,
-    GameName: Star Trek: Resurgence,
-    BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 137.7700179324665,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
-  },
-  {
     BidID: 9c863ef6-5f9b-46db-851b-ae5c248644d9,
     PublisherID: 4f55e803-f3a0-47ea-af67-0ece5bb9f09b,
     MasterGameID: 9c68988d-aef3-4f1e-808b-1ad70a03b1b9,
@@ -958,6 +948,16 @@
     ProjectedPointsAtTimeOfBid: 48.3409431632195,
     FailureReason: Game is no longer eligible: That game already has a score.,
     Outcome: Game is no longer eligible: That game already has a score.
+  },
+  {
+    BidID: a09d5f36-730f-4cfa-8050-c9c7ae8f80e0,
+    PublisherID: b957f380-12da-45e3-8b56-a7951ec61b98,
+    MasterGameID: 66ff761f-8da3-4418-b290-d9f5468da0a8,
+    GameName: Star Trek: Resurgence,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 127.9588070298650,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: a0fbb5e3-5350-4fc2-a7dd-09018ba0dbeb,
@@ -1308,6 +1308,16 @@
     ProjectedPointsAtTimeOfBid: 104.3740912545230,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
+  },
+  {
+    BidID: e58e05fc-ce2a-458a-a872-ff409cc5cba9,
+    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
+    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
+    GameName: Granblue Fantasy: Relink,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 102.2148906204200,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: e5999473-b87a-4b64-b2e9-d03ae211899c,

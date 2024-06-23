@@ -5205,7 +5205,7 @@
     MasterGameID: a7371690-ae7e-400d-9289-ab55040cce47,
     GameName: High on Life,
     BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 113.53944530509133333333333334,
+    ProjectedPointsAtTimeOfBid: 113.49261626718191304347826086,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -5895,7 +5895,7 @@
     MasterGameID: 897529cc-65de-4259-8468-6e333fcd2ea4,
     GameName: Metal: Hellsinger,
     BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 113.53944530509133333333333334,
+    ProjectedPointsAtTimeOfBid: 113.49261626718191304347826086,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },

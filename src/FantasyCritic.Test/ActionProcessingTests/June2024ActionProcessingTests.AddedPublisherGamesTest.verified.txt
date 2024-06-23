@@ -456,6 +456,14 @@
     BidAmount: 1
   },
   {
+    PublisherID: 0350b3f5-7d27-4f69-83d1-10033cfb8e33,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 30
+  },
+  {
     PublisherID: 03554a01-295d-46cd-a465-6fe85d65c011,
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
@@ -3664,6 +3672,14 @@
     BidAmount: 6
   },
   {
+    PublisherID: 1a6faa06-1255-4d97-b3d3-043a313cb354,
+    MasterGameID: 57a6fc8f-6418-4d4e-9e42-3b629ba96598,
+    GameName: ANTONBLAST,
+    CounterPick: false,
+    SlotNumber: 14,
+    BidAmount: 3
+  },
+  {
     PublisherID: 1a6fc1ea-49b9-463b-86dc-3eedea8df762,
     MasterGameID: 5a964f81-bc58-4ce4-b928-30341255663f,
     GameName: Thank Goodness You're Here!,
@@ -6446,14 +6462,6 @@
     CounterPick: false,
     SlotNumber: 8,
     BidAmount: 10
-  },
-  {
-    PublisherID: 2d09730f-99ca-4c6c-b8cc-e3cf8a3d8ec0,
-    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
-    GameName: Super Mario Party Jamboree,
-    CounterPick: false,
-    SlotNumber: 9,
-    BidAmount: 5
   },
   {
     PublisherID: 2d0a3a01-b42a-4bce-9682-61919691e70c,
@@ -10065,6 +10073,14 @@
   },
   {
     PublisherID: 474ea4bc-6b75-436a-9532-0f5ce31efdb9,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced,
+    CounterPick: true,
+    SlotNumber: 2,
+    BidAmount: 3
+  },
+  {
+    PublisherID: 474ea4bc-6b75-436a-9532-0f5ce31efdb9,
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     CounterPick: false,
@@ -11881,8 +11897,8 @@
   },
   {
     PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
-    MasterGameID: b236863b-fec4-4feb-ba76-a01e74397890,
-    GameName: Mariachi Legends,
+    MasterGameID: cb7136bb-89b9-41bb-90a7-441569a410b3,
+    GameName: Until Then,
     CounterPick: true,
     SlotNumber: 1,
     BidAmount: 1
@@ -13273,8 +13289,8 @@
   },
   {
     PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
-    MasterGameID: 9db02b27-85c1-4b4f-b99e-ed9243899bd1,
-    GameName: Neva,
+    MasterGameID: b236863b-fec4-4feb-ba76-a01e74397890,
+    GameName: Mariachi Legends,
     CounterPick: true,
     SlotNumber: 2,
     BidAmount: 1
@@ -25672,14 +25688,6 @@
     BidAmount: 25
   },
   {
-    PublisherID: b83060c2-c32b-4c24-ab8d-1d89744dee13,
-    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
-    GameName: The Legend of Zelda: Echoes of Wisdom,
-    CounterPick: false,
-    SlotNumber: 9,
-    BidAmount: 30
-  },
-  {
     PublisherID: b839a934-e814-4aa1-8999-0bb0ec278647,
     MasterGameID: 2c174f92-7a8d-4377-9ed7-6453d7d61852,
     GameName: SteamWorld Heist II,
@@ -29137,19 +29145,19 @@
   },
   {
     PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
-    MasterGameID: 66fafab2-ae2a-46d7-84cb-bb0da6447655,
-    GameName: Call of Duty: Black Ops 6,
-    CounterPick: false,
-    SlotNumber: 12,
-    BidAmount: 5
-  },
-  {
-    PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     CounterPick: false,
     SlotNumber: 11,
     BidAmount: 33
+  },
+  {
+    PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
+    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
+    GameName: Super Mario Party Jamboree,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 5
   },
   {
     PublisherID: d16aceca-5a6d-4259-813a-6bbf552aab09,
@@ -30529,14 +30537,6 @@
   },
   {
     PublisherID: dbb9793b-812c-4b59-8e3b-51aeaac70303,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
-    GameName: Replaced,
-    CounterPick: true,
-    SlotNumber: 2,
-    BidAmount: 3
-  },
-  {
-    PublisherID: dbb9793b-812c-4b59-8e3b-51aeaac70303,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     CounterPick: false,
@@ -31636,23 +31636,23 @@
     MasterGameID: 1a29ac46-1e24-4977-b432-c8e6ba08ac20,
     GameName: Super Monkey Ball Banana Rumble,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 11,
     BidAmount: 1
   },
   {
     PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
-    MasterGameID: 57a6fc8f-6418-4d4e-9e42-3b629ba96598,
-    GameName: ANTONBLAST,
+    MasterGameID: 4596ec80-ce6e-4464-bfd1-ffd8d0c37be2,
+    GameName: Wanderstop,
     CounterPick: false,
-    SlotNumber: 10,
-    BidAmount: 3
+    SlotNumber: 12,
+    BidAmount: 1
   },
   {
     PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
     MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
     GameName: Super Mario Party Jamboree,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 10,
     BidAmount: 3
   },
   {

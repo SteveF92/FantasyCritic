@@ -1513,12 +1513,12 @@
   },
   {
     PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
-    MasterGameID: 508ac2da-e3e5-4592-86fc-ef7a7c246185,
-    GameName: Splatoon 3: Side Order,
+    MasterGameID: 18517fc3-4704-44c1-85ea-e0457dbe6fe5,
+    GameName: Scarlet Deer Inn,
     CounterPick: false,
-    SlotNumber: 13,
-    BidAmount: 8,
-    RemovedNote: Conditionally dropped while picking up: Teenage Mutant Ninja Turtles: Shredder's Revenge - Dimension Shellshock
+    SlotNumber: 16,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Persona 5 Tactica
   },
   {
     PublisherID: 3304998b-b272-4f27-86e9-bb030ba98926,

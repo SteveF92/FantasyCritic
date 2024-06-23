@@ -720,16 +720,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: 06615598-b082-49b2-8013-0af1322c4da7,
-    PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
-    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
-    GameName: Super Mario Party Jamboree,
-    BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 122.3041149247337,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
-  },
-  {
     BidID: 067c67f0-08f0-4dda-bc27-4361c140ef7c,
     PublisherID: 52efedec-1543-472c-9227-17647f2a98c3,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -1105,7 +1095,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 7,
-    ProjectedPointsAtTimeOfBid: 258.57978307979259999999999997,
+    ProjectedPointsAtTimeOfBid: 258.48663135640798461538461539,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -3505,7 +3495,7 @@
     MasterGameID: 38517c98-6ad9-4813-a208-856afde5024f,
     GameName: Demonschool,
     BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 222.05040459489408571428571426,
+    ProjectedPointsAtTimeOfBid: 221.97056026056441538461538462,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -3665,7 +3655,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 20,
-    ProjectedPointsAtTimeOfBid: 88.53993313115763846153846152,
+    ProjectedPointsAtTimeOfBid: 88.4923225636961,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -4520,6 +4510,16 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: 2849c03d-8062-426a-a46e-428864791bc6,
+    PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
+    MasterGameID: 57a6fc8f-6418-4d4e-9e42-3b629ba96598,
+    GameName: ANTONBLAST,
+    BidAmount: 3,
+    ProjectedPointsAtTimeOfBid: 93.4276763919953,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
+  },
+  {
     BidID: 284ca6f1-a410-4fc1-a8ee-0c991e13b837,
     PublisherID: 3a16b129-e6ea-4ef3-b258-d65a4e1ca8d7,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -4868,6 +4868,16 @@
     ProjectedPointsAtTimeOfBid: 67.1466334766326,
     FailureReason: No roster spots available. Attempted to conditionally drop game: Metroid Prime 4: Beyond but failed because: Cannot drop a game that you do not have,
     Outcome: No roster spots available. Attempted to conditionally drop game: Metroid Prime 4: Beyond but failed because: Cannot drop a game that you do not have
+  },
+  {
+    BidID: 2b511bae-d285-4e11-8cd2-34c89f41f8ee,
+    PublisherID: 803aea33-df29-4660-b598-55ef60c6877a,
+    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
+    GameName: Hollow Knight: Silksong,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 76.05287475706617692307692308,
+    FailureReason: You cannot have multiple bids for the same game. This bid has been ignored.,
+    Outcome: You cannot have multiple bids for the same game. This bid has been ignored.
   },
   {
     BidID: 2b6c5d8c-ff83-41db-98e3-d97b080c84e4,
@@ -5425,7 +5435,7 @@
     MasterGameID: 66fafab2-ae2a-46d7-84cb-bb0da6447655,
     GameName: Call of Duty: Black Ops 6,
     BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 81.21006222679723333333333334,
+    ProjectedPointsAtTimeOfBid: 81.17147522880872758620689655,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -6040,16 +6050,6 @@
     Outcome: No roster spots available. Attempted to conditionally drop game: Kingdom Come: Deliverance II but failed because: Cannot drop a game that you do not have
   },
   {
-    BidID: 36ca02d6-68a8-4f7a-989a-181335af40a1,
-    PublisherID: e4c35231-90e1-4dd8-a863-5fc8c5fff30b,
-    MasterGameID: 4596ec80-ce6e-4464-bfd1-ffd8d0c37be2,
-    GameName: Wanderstop,
-    BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 93.4276763919953,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
-  },
-  {
     BidID: 36fdcacd-aa12-4879-8969-fd2a05f6f6fa,
     PublisherID: 28541edd-060c-47c9-b7f7-0fca90a3156a,
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
@@ -6115,7 +6115,7 @@
     MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02,
     GameName: Dragon Quest III HD-2D Remake,
     BidAmount: 6,
-    ProjectedPointsAtTimeOfBid: 258.57978307979259999999999997,
+    ProjectedPointsAtTimeOfBid: 258.48663135640798461538461539,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -8235,7 +8235,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 20,
-    ProjectedPointsAtTimeOfBid: 140.42542552843846666666666667,
+    ProjectedPointsAtTimeOfBid: 140.4159825507718,
     FailureReason: Bid lost on tiebreakers.,
     Outcome: Bid lost on tiebreakers.
   },
@@ -11925,7 +11925,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 21,
-    ProjectedPointsAtTimeOfBid: 71.1582776837952,
+    ProjectedPointsAtTimeOfBid: 71.0204758714452,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -11998,16 +11998,6 @@
     ProjectedPointsAtTimeOfBid: 96.7158819420578,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
-  },
-  {
-    BidID: 682b5dfe-a51e-4447-b36b-73d9ebad09ff,
-    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
-    MasterGameID: b236863b-fec4-4feb-ba76-a01e74397890,
-    GameName: Mariachi Legends,
-    BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 682e4dfd-582d-45ce-8fc7-06baad989343,
@@ -13300,6 +13290,16 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: 73f72936-9512-4a25-9780-190617fc94df,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    MasterGameID: 9db02b27-85c1-4b4f-b99e-ed9243899bd1,
+    GameName: Neva,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
     BidID: 73f8bbcc-75c0-4167-abe1-967cffa9073c,
     PublisherID: eb80bf2d-3e05-47ce-88dd-b4d738d5f479,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -14485,7 +14485,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 8,
-    ProjectedPointsAtTimeOfBid: 258.57978307979259999999999997,
+    ProjectedPointsAtTimeOfBid: 258.48663135640798461538461539,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -16245,7 +16245,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 30,
-    ProjectedPointsAtTimeOfBid: 81.21006222679723333333333334,
+    ProjectedPointsAtTimeOfBid: 81.17147522880872758620689655,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -16708,6 +16708,16 @@
     ProjectedPointsAtTimeOfBid: 67.064860499132609090909090908,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 90251b08-6052-498a-a3bc-c516d58b361a,
+    PublisherID: 2d09730f-99ca-4c6c-b8cc-e3cf8a3d8ec0,
+    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
+    GameName: Super Mario Party Jamboree,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 88.1265890725221,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: 90293c0c-a05d-4eb4-be84-615ae07599f3,
@@ -19505,7 +19515,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 7,
-    ProjectedPointsAtTimeOfBid: 140.42542552843846666666666667,
+    ProjectedPointsAtTimeOfBid: 140.4159825507718,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -19820,6 +19830,16 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: acfa7bc9-1cd0-4aa0-a602-5ce41fdcaa06,
+    PublisherID: d1425c32-9247-440a-be32-31f7849c974c,
+    MasterGameID: 66fafab2-ae2a-46d7-84cb-bb0da6447655,
+    GameName: Call of Duty: Black Ops 6,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 122.3041149247337,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
     BidID: ad0e12b6-2f1a-4ca8-9e2e-faac59f098cf,
     PublisherID: f945e4eb-ca67-493a-b462-b9b913a1536e,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -19838,16 +19858,6 @@
     ProjectedPointsAtTimeOfBid: 53.9179694141218,
     FailureReason: Not enough budget.,
     Outcome: Not enough budget.
-  },
-  {
-    BidID: ad624f44-08d3-4e64-8967-5d89b5de7354,
-    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
-    MasterGameID: cb7136bb-89b9-41bb-90a7-441569a410b3,
-    GameName: Until Then,
-    BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
   },
   {
     BidID: ad9687e3-2aa9-4d4b-bfac-691007872e75,
@@ -21920,6 +21930,16 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: c0816271-baf7-4f6b-8b8e-29c8d29d5241,
+    PublisherID: dbb9793b-812c-4b59-8e3b-51aeaac70303,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced,
+    BidAmount: 3,
+    ProjectedPointsAtTimeOfBid: 125.1427978256881,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
+  },
+  {
     BidID: c084a5bb-7bc3-44d5-848b-4d72cd4e179d,
     PublisherID: 2e323856-cbd7-4f96-b5b0-9c53bbcf5ba2,
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
@@ -23338,16 +23358,6 @@
     ProjectedPointsAtTimeOfBid: 109.50115760786674444444444444,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
-  },
-  {
-    BidID: cc684005-ed5d-401f-973c-f93121565641,
-    PublisherID: 474ea4bc-6b75-436a-9532-0f5ce31efdb9,
-    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
-    GameName: Replaced,
-    BidAmount: 3,
-    ProjectedPointsAtTimeOfBid: 186.6573678510158,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: cc73f186-f503-466f-ac48-1856e107bff0,
@@ -25046,8 +25056,8 @@
     GameName: Dragon Quest III HD-2D Remake,
     BidAmount: 15,
     ProjectedPointsAtTimeOfBid: 107.7541206720787,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: d956d899-1c4c-401e-9ce7-10c953372885,
@@ -26020,6 +26030,16 @@
     Outcome: Publisher was outbid.
   },
   {
+    BidID: e0e922b8-6812-4066-968d-b89ede6de389,
+    PublisherID: b83060c2-c32b-4c24-ab8d-1d89744dee13,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    BidAmount: 30,
+    ProjectedPointsAtTimeOfBid: 55.4393572789719,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
+  },
+  {
     BidID: e0f45292-a357-411e-9e2a-14cbf9ec0197,
     PublisherID: bbfaeeab-5f93-4d17-9134-1303fba43354,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -26390,16 +26410,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: e45c2fd1-d3a9-45fd-b745-6787c8fec864,
-    PublisherID: 803aea33-df29-4660-b598-55ef60c6877a,
-    MasterGameID: 009e75bf-a578-4f82-887a-79eea96d9e97,
-    GameName: Hollow Knight: Silksong,
-    BidAmount: 1,
-    ProjectedPointsAtTimeOfBid: 76.05287475706617692307692308,
-    FailureReason: You cannot have multiple bids for the same game. This bid has been ignored.,
-    Outcome: You cannot have multiple bids for the same game. This bid has been ignored.
-  },
-  {
     BidID: e468401e-4b09-4fd3-bca7-549d3bc57e22,
     PublisherID: 1130bc13-6c22-4df0-bfda-061d7954d266,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -26548,6 +26558,16 @@
     ProjectedPointsAtTimeOfBid: 146.34061317590020000000000001,
     FailureReason: Not enough budget.,
     Outcome: Not enough budget.
+  },
+  {
+    BidID: e609f44a-cdc5-47b2-bedb-37125984d145,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: b236863b-fec4-4feb-ba76-a01e74397890,
+    GameName: Mariachi Legends,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: e624de6a-40d9-4949-9d23-997ea72a4cdf,
@@ -27295,7 +27315,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     BidAmount: 13,
-    ProjectedPointsAtTimeOfBid: 88.53993313115763846153846152,
+    ProjectedPointsAtTimeOfBid: 88.4923225636961,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
   },
@@ -27638,16 +27658,6 @@
     ProjectedPointsAtTimeOfBid: 107.65886433010827924528301887,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
-  },
-  {
-    BidID: f01cd25c-c978-4637-971a-ffaaf1719116,
-    PublisherID: 1a6faa06-1255-4d97-b3d3-043a313cb354,
-    MasterGameID: 57a6fc8f-6418-4d4e-9e42-3b629ba96598,
-    GameName: ANTONBLAST,
-    BidAmount: 3,
-    ProjectedPointsAtTimeOfBid: 140.8308125218464,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: f04363ce-59d9-4b32-893b-236081c843e9,
@@ -29578,15 +29588,5 @@
     ProjectedPointsAtTimeOfBid: 81.7667213210087,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
-  },
-  {
-    BidID: ffb73334-9dae-4570-a572-7d990edd86e6,
-    PublisherID: 0350b3f5-7d27-4f69-83d1-10033cfb8e33,
-    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
-    GameName: The Legend of Zelda: Echoes of Wisdom,
-    BidAmount: 30,
-    ProjectedPointsAtTimeOfBid: 97.2909748791000,
-    FailureReason: Bid lost on tiebreakers.,
-    Outcome: Bid lost on tiebreakers.
   }
 ]

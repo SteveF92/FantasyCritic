@@ -1817,14 +1817,6 @@
   },
   {
     PublisherID: 13a23471-72fb-403e-9720-3502ee661767,
-    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
-    GameName: Like a Dragon Gaiden: The Man Who Erased His Name,
-    CounterPick: false,
-    SlotNumber: 11,
-    BidAmount: 13
-  },
-  {
-    PublisherID: 13a23471-72fb-403e-9720-3502ee661767,
     MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
     GameName: Cities: Skylines II,
     CounterPick: false,
@@ -4401,18 +4393,18 @@
   },
   {
     PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
+    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
+    GameName: Persona 5 Tactica,
+    CounterPick: false,
+    SlotNumber: 16,
+    BidAmount: 11
+  },
+  {
+    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
     MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
     GameName: Sonic Superstars,
     CounterPick: false,
     SlotNumber: 17,
-    BidAmount: 16
-  },
-  {
-    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
-    MasterGameID: 9e48737c-8968-4767-8a5c-b79c89ec87cf,
-    GameName: Teenage Mutant Ninja Turtles: Shredder's Revenge - Dimension Shellshock,
-    CounterPick: false,
-    SlotNumber: 13,
     BidAmount: 16
   },
   {
@@ -6932,8 +6924,16 @@
     MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
     GameName: Persona 5 Tactica,
     CounterPick: false,
-    SlotNumber: 17,
+    SlotNumber: 18,
     BidAmount: 21
+  },
+  {
+    PublisherID: 49e60e41-5300-45a5-9b61-72dee9b251da,
+    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
+    GameName: Cities: Skylines II,
+    CounterPick: false,
+    SlotNumber: 17,
+    BidAmount: 11
   },
   {
     PublisherID: 49e60e41-5300-45a5-9b61-72dee9b251da,
@@ -7396,7 +7396,7 @@
     MasterGameID: 2b1f18a1-bfff-4546-81ad-86b7000e23a8,
     GameName: The Lord of the Rings: Return to Moria,
     CounterPick: false,
-    SlotNumber: 14,
+    SlotNumber: 13,
     BidAmount: 3
   },
   {
@@ -7406,14 +7406,6 @@
     CounterPick: false,
     SlotNumber: 11,
     BidAmount: 5
-  },
-  {
-    PublisherID: 50152448-e9ff-45d0-a136-cb2fd93f849b,
-    MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
-    GameName: Sonic Superstars,
-    CounterPick: false,
-    SlotNumber: 13,
-    BidAmount: 6
   },
   {
     PublisherID: 501faee8-9125-47ff-aa34-448d7145fa35,
@@ -12512,6 +12504,14 @@
     BidAmount: 8
   },
   {
+    PublisherID: 836b9a51-1a4f-4cd0-aac8-f1c0d91e7918,
+    MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
+    GameName: Sonic Superstars,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 6
+  },
+  {
     PublisherID: 83863edf-2f18-4fa8-8725-59db1142204d,
     MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
     GameName: Like a Dragon Gaiden: The Man Who Erased His Name,
@@ -14710,6 +14710,14 @@
     CounterPick: false,
     SlotNumber: 12,
     BidAmount: 2
+  },
+  {
+    PublisherID: 9ba9edb8-0a47-4488-a5fe-8c7d82ab5327,
+    MasterGameID: 13a9918e-fc9e-42e3-a5d3-5624f84bac84,
+    GameName: Like a Dragon Gaiden: The Man Who Erased His Name,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: 13
   },
   {
     PublisherID: 9bbf0e1a-ad1f-4af2-9bc9-1810dbbacdfe,
@@ -22240,14 +22248,6 @@
     BidAmount: 5
   },
   {
-    PublisherID: ee43f7f2-65b5-4f78-b421-d4190277ce5f,
-    MasterGameID: 4f210936-4f9b-4926-8bdd-1c2a15f84a45,
-    GameName: Cities: Skylines II,
-    CounterPick: false,
-    SlotNumber: 14,
-    BidAmount: 11
-  },
-  {
     PublisherID: ee61f8a5-c1c4-4966-923b-b3344e1d4a13,
     MasterGameID: 17bc3e26-0e35-4275-8690-c45cf3396fa5,
     GameName: Avatar: Frontiers of Pandora,
@@ -22686,14 +22686,6 @@
     CounterPick: false,
     SlotNumber: 4,
     BidAmount: 2
-  },
-  {
-    PublisherID: f2c1982b-5425-47be-8b1a-d13712a61f73,
-    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
-    GameName: Persona 5 Tactica,
-    CounterPick: false,
-    SlotNumber: 14,
-    BidAmount: 11
   },
   {
     PublisherID: f3403fe5-c06b-4968-ba66-67fd83262826,

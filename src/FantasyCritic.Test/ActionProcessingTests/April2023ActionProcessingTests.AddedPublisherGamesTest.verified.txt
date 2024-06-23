@@ -1584,14 +1584,6 @@
     BidAmount: 3
   },
   {
-    PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
-    MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
-    GameName: Persona 3 Remake,
-    CounterPick: false,
-    SlotNumber: 15,
-    BidAmount: 0
-  },
-  {
     PublisherID: 3aaedfc7-a63b-4f32-84bc-c1c7f21aabef,
     MasterGameID: 7be7b968-d63e-4536-ba32-cbc1b79859a5,
     GameName: Advance Wars 1+2: Re-Boot Camp,
@@ -2596,6 +2588,14 @@
     MasterGameID: 3e75f7c1-5588-46e1-9cbd-9dd7f869f24c,
     GameName: Aliens: Dark Descent,
     CounterPick: false,
+    SlotNumber: 17,
+    BidAmount: 5
+  },
+  {
+    PublisherID: 6c996f7f-7bb8-4e84-a8f4-1d6dafe8d564,
+    MasterGameID: 66ff761f-8da3-4418-b290-d9f5468da0a8,
+    GameName: Star Trek: Resurgence,
+    CounterPick: false,
     SlotNumber: 16,
     BidAmount: 5
   },
@@ -3171,14 +3171,6 @@
     PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
     MasterGameID: 3a6c9f9d-9566-4b05-87c3-54e2ab31007b,
     GameName: Stray Gods: The Roleplaying Musical,
-    CounterPick: false,
-    SlotNumber: 10,
-    BidAmount: 5
-  },
-  {
-    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
-    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
-    GameName: The Last Case of Benedict Fox,
     CounterPick: false,
     SlotNumber: 3,
     BidAmount: 5
@@ -4273,14 +4265,6 @@
   },
   {
     PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
-    GameName: Granblue Fantasy: Relink,
-    CounterPick: false,
-    SlotNumber: 11,
-    BidAmount: 5
-  },
-  {
-    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
     MasterGameID: 81641cb4-291d-4b27-80e3-767fed0e47b7,
     GameName: Immortals of Aveum,
     CounterPick: false,
@@ -4291,6 +4275,14 @@
     PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
     MasterGameID: 8eba7f3c-3891-42d6-82fb-30e5f87d8082,
     GameName: Planet of Lana,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 5
+  },
+  {
+    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
+    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
+    GameName: The Last Case of Benedict Fox,
     CounterPick: false,
     SlotNumber: 10,
     BidAmount: 5
@@ -4342,14 +4334,6 @@
     CounterPick: false,
     SlotNumber: 14,
     BidAmount: 10
-  },
-  {
-    PublisherID: b957f380-12da-45e3-8b56-a7951ec61b98,
-    MasterGameID: 66ff761f-8da3-4418-b290-d9f5468da0a8,
-    GameName: Star Trek: Resurgence,
-    CounterPick: false,
-    SlotNumber: 15,
-    BidAmount: 5
   },
   {
     PublisherID: b964bf98-b217-4919-8b8e-9442a32e5818,
@@ -5894,6 +5878,14 @@
     CounterPick: false,
     SlotNumber: 11,
     BidAmount: 2
+  },
+  {
+    PublisherID: ff139741-00f4-4a69-90da-7be986ea1c1b,
+    MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
+    GameName: Persona 3 Remake,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 0
   },
   {
     PublisherID: ff39b64c-018d-4cfd-9ef2-8653baa3c17f,

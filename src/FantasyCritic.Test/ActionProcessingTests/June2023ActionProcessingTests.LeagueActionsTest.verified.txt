@@ -620,6 +620,12 @@
   {
     LeagueID: 0798236c-8c9c-4cb7-bdfc-0920e9eabf1c,
     PublisherID: 50152448-e9ff-45d0-a136-cb2fd93f849b,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Sonic Superstars' with a bid of $6. Failure reason: Bid lost on tiebreakers.
+  },
+  {
+    LeagueID: 0798236c-8c9c-4cb7-bdfc-0920e9eabf1c,
+    PublisherID: 50152448-e9ff-45d0-a136-cb2fd93f849b,
     ActionType: Pickup Successful,
     Description: Acquired game 'Path of Exile II' with a bid of $3
   },
@@ -628,12 +634,6 @@
     PublisherID: 50152448-e9ff-45d0-a136-cb2fd93f849b,
     ActionType: Pickup Successful,
     Description: Acquired game 'Sand Land' with a bid of $5
-  },
-  {
-    LeagueID: 0798236c-8c9c-4cb7-bdfc-0920e9eabf1c,
-    PublisherID: 50152448-e9ff-45d0-a136-cb2fd93f849b,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Sonic Superstars' with a bid of $6
   },
   {
     LeagueID: 0798236c-8c9c-4cb7-bdfc-0920e9eabf1c,
@@ -656,8 +656,8 @@
   {
     LeagueID: 0798236c-8c9c-4cb7-bdfc-0920e9eabf1c,
     PublisherID: 836b9a51-1a4f-4cd0-aac8-f1c0d91e7918,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Sonic Superstars' with a bid of $6. Failure reason: Bid lost on tiebreakers.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Sonic Superstars' with a bid of $6
   },
   {
     LeagueID: 0798236c-8c9c-4cb7-bdfc-0920e9eabf1c,
@@ -687,7 +687,13 @@
     LeagueID: 07ecc663-755c-4cba-b22c-4efdb887bcca,
     PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Persona 5 Tactica' with a bid of $11. Failure reason: Bid lost on tiebreakers.
+    Description: Tried to acquire game 'Teenage Mutant Ninja Turtles: Shredder's Revenge - Dimension Shellshock' with a bid of $16. Failure reason: No roster spots available. Attempted to conditionally drop game: Splatoon 3: Side Order but failed because: Publisher cannot drop any more 'Will Release' games
+  },
+  {
+    LeagueID: 07ecc663-755c-4cba-b22c-4efdb887bcca,
+    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Persona 5 Tactica' with a bid of $11. Dropped game 'Scarlet Deer Inn' conditionally.
   },
   {
     LeagueID: 07ecc663-755c-4cba-b22c-4efdb887bcca,
@@ -697,15 +703,9 @@
   },
   {
     LeagueID: 07ecc663-755c-4cba-b22c-4efdb887bcca,
-    PublisherID: 32cad259-ff4e-495f-9627-d4f942887a10,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Teenage Mutant Ninja Turtles: Shredder's Revenge - Dimension Shellshock' with a bid of $16. Dropped game 'Splatoon 3: Side Order' conditionally.
-  },
-  {
-    LeagueID: 07ecc663-755c-4cba-b22c-4efdb887bcca,
     PublisherID: f2c1982b-5425-47be-8b1a-d13712a61f73,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Persona 5 Tactica' with a bid of $11
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Persona 5 Tactica' with a bid of $11. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 083c6436-899e-4955-8f05-1d475b573fa6,
@@ -3566,14 +3566,14 @@
   {
     LeagueID: 1e772112-b084-48a0-be9a-953487ae9e87,
     PublisherID: 49e60e41-5300-45a5-9b61-72dee9b251da,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Cities: Skylines II' with a bid of $11. Failure reason: Bid lost on tiebreakers.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Assassin's Creed Mirage' with a bid of $13
   },
   {
     LeagueID: 1e772112-b084-48a0-be9a-953487ae9e87,
     PublisherID: 49e60e41-5300-45a5-9b61-72dee9b251da,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Assassin's Creed Mirage' with a bid of $13
+    Description: Acquired game 'Cities: Skylines II' with a bid of $11
   },
   {
     LeagueID: 1e772112-b084-48a0-be9a-953487ae9e87,
@@ -3602,8 +3602,8 @@
   {
     LeagueID: 1e772112-b084-48a0-be9a-953487ae9e87,
     PublisherID: ee43f7f2-65b5-4f78-b421-d4190277ce5f,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Cities: Skylines II' with a bid of $11
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Cities: Skylines II' with a bid of $11. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 1f12d65c-64a5-40d3-9258-ed042872c4ee,
@@ -4196,20 +4196,20 @@
   {
     LeagueID: 26aeace2-b2d5-4908-80b4-31ba9c288230,
     PublisherID: 13a23471-72fb-403e-9720-3502ee661767,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Cities: Skylines II' with a bid of $8
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Like a Dragon Gaiden: The Man Who Erased His Name' with a bid of $13. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 26aeace2-b2d5-4908-80b4-31ba9c288230,
     PublisherID: 13a23471-72fb-403e-9720-3502ee661767,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Like a Dragon Gaiden: The Man Who Erased His Name' with a bid of $13
+    Description: Acquired game 'Cities: Skylines II' with a bid of $8
   },
   {
     LeagueID: 26aeace2-b2d5-4908-80b4-31ba9c288230,
     PublisherID: 9ba9edb8-0a47-4488-a5fe-8c7d82ab5327,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Like a Dragon Gaiden: The Man Who Erased His Name' with a bid of $13. Failure reason: Bid lost on tiebreakers.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Like a Dragon Gaiden: The Man Who Erased His Name' with a bid of $13
   },
   {
     LeagueID: 26e04e4c-4c56-482a-bad5-4262c0801af5,

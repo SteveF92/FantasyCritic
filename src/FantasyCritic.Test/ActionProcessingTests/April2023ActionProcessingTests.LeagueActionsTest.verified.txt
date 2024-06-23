@@ -788,26 +788,20 @@
   {
     LeagueID: 21fb88b5-46e9-42fb-8b0b-6ba9e8a16dca,
     PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Stray Gods: The Roleplaying Musical' with a bid of $5
-  },
-  {
-    LeagueID: 21fb88b5-46e9-42fb-8b0b-6ba9e8a16dca,
-    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'The Last Case of Benedict Fox' with a bid of $5
-  },
-  {
-    LeagueID: 21fb88b5-46e9-42fb-8b0b-6ba9e8a16dca,
-    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
     ActionType: Pickup Failed,
     Description: Tried to acquire game 'The Last Case of Benedict Fox' with a bid of $5. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 21fb88b5-46e9-42fb-8b0b-6ba9e8a16dca,
-    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
+    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Granblue Fantasy: Relink' with a bid of $5
+    Description: Acquired game 'Stray Gods: The Roleplaying Musical' with a bid of $5
+  },
+  {
+    LeagueID: 21fb88b5-46e9-42fb-8b0b-6ba9e8a16dca,
+    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Granblue Fantasy: Relink' with a bid of $5. Failure reason: No roster spots available.
   },
   {
     LeagueID: 21fb88b5-46e9-42fb-8b0b-6ba9e8a16dca,
@@ -820,6 +814,12 @@
     PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
     ActionType: Pickup Successful,
     Description: Acquired game 'Planet of Lana' with a bid of $5
+  },
+  {
+    LeagueID: 21fb88b5-46e9-42fb-8b0b-6ba9e8a16dca,
+    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'The Last Case of Benedict Fox' with a bid of $5
   },
   {
     LeagueID: 2229cca1-4f08-4e5a-a394-2d5f9b4c7810,
@@ -3992,26 +3992,26 @@
   {
     LeagueID: a039b0e1-8c62-45b0-9c68-0f1717cfe154,
     PublisherID: 6c996f7f-7bb8-4e84-a8f4-1d6dafe8d564,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Star Trek: Resurgence' with a bid of $5. Failure reason: Bid lost on tiebreakers.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Aliens: Dark Descent' with a bid of $5
   },
   {
     LeagueID: a039b0e1-8c62-45b0-9c68-0f1717cfe154,
     PublisherID: 6c996f7f-7bb8-4e84-a8f4-1d6dafe8d564,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Aliens: Dark Descent' with a bid of $5
+    Description: Acquired game 'Star Trek: Resurgence' with a bid of $5
+  },
+  {
+    LeagueID: a039b0e1-8c62-45b0-9c68-0f1717cfe154,
+    PublisherID: b957f380-12da-45e3-8b56-a7951ec61b98,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Star Trek: Resurgence' with a bid of $5. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: a039b0e1-8c62-45b0-9c68-0f1717cfe154,
     PublisherID: b957f380-12da-45e3-8b56-a7951ec61b98,
     ActionType: Pickup Successful,
     Description: Acquired game 'LEGO 2K Drive' with a bid of $10
-  },
-  {
-    LeagueID: a039b0e1-8c62-45b0-9c68-0f1717cfe154,
-    PublisherID: b957f380-12da-45e3-8b56-a7951ec61b98,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Star Trek: Resurgence' with a bid of $5
   },
   {
     LeagueID: a065e307-37cb-4575-ac57-435a03d4e84c,
@@ -5600,14 +5600,14 @@
   {
     LeagueID: d6c1721e-85c9-4f62-81be-23e43bc721d8,
     PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
-    ActionType: Pickup Successful,
-    Description: Acquired game 'Fuga: Melodies of Steel 2' with a bid of $3. Dropped game 'Superfuse' conditionally.
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Persona 3 Remake' with a bid of $0. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: d6c1721e-85c9-4f62-81be-23e43bc721d8,
     PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
     ActionType: Pickup Successful,
-    Description: Acquired game 'Persona 3 Remake' with a bid of $0. Dropped game 'Metal Gear Solid Snake Eater Remake (Unannounced)' conditionally.
+    Description: Acquired game 'Fuga: Melodies of Steel 2' with a bid of $3. Dropped game 'Superfuse' conditionally.
   },
   {
     LeagueID: d6c1721e-85c9-4f62-81be-23e43bc721d8,
@@ -5618,8 +5618,8 @@
   {
     LeagueID: d6c1721e-85c9-4f62-81be-23e43bc721d8,
     PublisherID: ff139741-00f4-4a69-90da-7be986ea1c1b,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Persona 3 Remake' with a bid of $0. Failure reason: Bid lost on tiebreakers.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Persona 3 Remake' with a bid of $0
   },
   {
     LeagueID: d72c79d8-0deb-4423-b991-c2acd4f1a637,

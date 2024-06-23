@@ -153,6 +153,15 @@
     RemovedNote: Dropped by player
   },
   {
+    PublisherID: 0350b3f5-7d27-4f69-83d1-10033cfb8e33,
+    MasterGameID: f03be4b7-d13d-4b6e-bb53-4744c58b244d,
+    GameName: Disney Epic Mickey: Rebrushed,
+    CounterPick: false,
+    SlotNumber: 9,
+    BidAmount: 4,
+    RemovedNote: Conditionally dropped while picking up: The Legend of Zelda: Echoes of Wisdom
+  },
+  {
     PublisherID: 03554a01-295d-46cd-a465-6fe85d65c011,
     MasterGameID: e217a736-f1aa-4e25-9891-141be5704d12,
     GameName: Windblown,
@@ -6954,15 +6963,6 @@
     CounterPick: false,
     SlotNumber: 4,
     BidAmount: null,
-    RemovedNote: Conditionally dropped while picking up: The Legend of Zelda: Echoes of Wisdom
-  },
-  {
-    PublisherID: b83060c2-c32b-4c24-ab8d-1d89744dee13,
-    MasterGameID: 4ccba74e-116a-4207-9dc7-078a5d295b19,
-    GameName: F1 Manager 2024,
-    CounterPick: false,
-    SlotNumber: 9,
-    BidAmount: 1,
     RemovedNote: Conditionally dropped while picking up: The Legend of Zelda: Echoes of Wisdom
   },
   {

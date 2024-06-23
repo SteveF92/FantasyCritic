@@ -218,7 +218,7 @@
     Priority: 2,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 137.7700179324665,
-    SlotNumber: 16,
+    SlotNumber: 17,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -1162,20 +1162,6 @@
     ConditionalDropResult: null
   },
   {
-    BidID: 20e9b60b-6f7c-432d-90ad-84fe30d0efea,
-    PublisherID: 8759dd8c-e1e2-4f35-8606-14dddc4bb896,
-    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
-    GameName: The Last Case of Benedict Fox,
-    CounterPick: false,
-    Priority: 1,
-    BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 73.46867622552134285714285714,
-    SlotNumber: 3,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
     BidID: 20f6906c-0465-4488-8b2c-cd23f579e4be,
     PublisherID: 4a41db9d-440e-4e6e-ae28-a9d89855055a,
     MasterGameID: c176eeda-b0fe-4f25-8535-d7900916bc4c,
@@ -1230,6 +1216,20 @@
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 3ec03960-25ed-4e94-905f-411bf3cf2c2b,
     ConditionalDropResult: Success
+  },
+  {
+    BidID: 21a34197-1ce4-4414-adf7-7e8db8393757,
+    PublisherID: ff139741-00f4-4a69-90da-7be986ea1c1b,
+    MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
+    GameName: Persona 3 Remake,
+    CounterPick: false,
+    Priority: 1,
+    BidAmount: 0,
+    ProjectedPointsAtTimeOfBid: 125.4830476886481,
+    SlotNumber: 13,
+    Outcome: This bid was placed earliest.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
   },
   {
     BidID: 2261ccc0-8361-4fcd-bf61-d9e09b4cac63,
@@ -3773,8 +3773,8 @@
     CounterPick: false,
     Priority: 3,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 102.24648346039142857142857142,
-    SlotNumber: 10,
+    ProjectedPointsAtTimeOfBid: 102.2148906204200,
+    SlotNumber: 11,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -3820,20 +3820,6 @@
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
-  },
-  {
-    BidID: 634c41d2-797e-4f07-8116-8b22b720a83a,
-    PublisherID: 3a97b1bd-3045-4f2d-a6d8-fa0ee0cf8c0a,
-    MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
-    GameName: Persona 3 Remake,
-    CounterPick: false,
-    Priority: 2,
-    BidAmount: 0,
-    ProjectedPointsAtTimeOfBid: 123.8645991379949,
-    SlotNumber: 15,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
-    ConditionalDropMasterGameID: e466da26-aaa3-4319-876f-dceccb70e794,
-    ConditionalDropResult: Success
   },
   {
     BidID: 63ac5b1d-4ef5-4bfa-9605-7fbe7e9f8817,
@@ -4112,6 +4098,20 @@
     ProjectedPointsAtTimeOfBid: 65.169246520945868421052631580,
     SlotNumber: 5,
     Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
+    BidID: 6aa4315c-2867-4232-be36-7c3d6ffe8604,
+    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
+    MasterGameID: c0cf42db-ed5c-40b8-9188-bb48efdb31d9,
+    GameName: The Last Case of Benedict Fox,
+    CounterPick: false,
+    Priority: 2,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 102.2148906204200,
+    SlotNumber: 10,
+    Outcome: This bid was placed earliest.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -4599,8 +4599,8 @@
     CounterPick: false,
     Priority: 2,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 73.46867622552134285714285714,
-    SlotNumber: 10,
+    ProjectedPointsAtTimeOfBid: 73.4581452788642,
+    SlotNumber: 3,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -6034,6 +6034,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 99c15b81-8399-436f-ad12-f7c40067dfe5,
+    PublisherID: 6c996f7f-7bb8-4e84-a8f4-1d6dafe8d564,
+    MasterGameID: 66ff761f-8da3-4418-b290-d9f5468da0a8,
+    GameName: Star Trek: Resurgence,
+    CounterPick: false,
+    Priority: 1,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 137.7700179324665,
+    SlotNumber: 16,
+    Outcome: This bid was placed earliest.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
     BidID: 99d78e7a-3a35-496f-82ff-21ad74624be0,
     PublisherID: d19c48e3-85a9-451c-9faf-9cc7462dfa2c,
     MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
@@ -6352,20 +6366,6 @@
     ProjectedPointsAtTimeOfBid: 72.941076232268873913043478260,
     SlotNumber: 6,
     Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
-    BidID: a09d5f36-730f-4cfa-8050-c9c7ae8f80e0,
-    PublisherID: b957f380-12da-45e3-8b56-a7951ec61b98,
-    MasterGameID: 66ff761f-8da3-4418-b290-d9f5468da0a8,
-    GameName: Star Trek: Resurgence,
-    CounterPick: false,
-    Priority: 2,
-    BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 127.9588070298650,
-    SlotNumber: 15,
-    Outcome: This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied),
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -9198,20 +9198,6 @@
     ConditionalDropResult: null
   },
   {
-    BidID: e58e05fc-ce2a-458a-a872-ff409cc5cba9,
-    PublisherID: b4eba7dd-7cef-4e04-8be5-fd0707f0ef17,
-    MasterGameID: 334559bf-cab0-4478-a658-b8934b6066a5,
-    GameName: Granblue Fantasy: Relink,
-    CounterPick: false,
-    Priority: 4,
-    BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 102.24648346039142857142857142,
-    SlotNumber: 11,
-    Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
     BidID: e59916e2-2303-4822-828b-2d66140de50c,
     PublisherID: 06e225e4-2d6c-4340-a45a-a7505bc5b6e7,
     MasterGameID: 12323b7f-5018-4c28-9140-def4d4a8d61a,
@@ -10185,7 +10171,7 @@
     CounterPick: false,
     Priority: 1,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 102.24648346039142857142857142,
+    ProjectedPointsAtTimeOfBid: 102.2148906204200,
     SlotNumber: 9,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
