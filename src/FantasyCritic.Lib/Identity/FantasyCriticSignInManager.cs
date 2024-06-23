@@ -35,6 +35,12 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
         return base.SignInWithClaimsAsync(user, authenticationProperties, additionalClaims);
     }
 
+    public override Task SignOutAsync()
+    {
+        Context.Session.Clear();
+        return base.SignOutAsync();
+    }
+
     private void CacheUserToSession(FantasyCriticUser user)
     {
         var serializable = new FantasyCriticUserEntity(user);
