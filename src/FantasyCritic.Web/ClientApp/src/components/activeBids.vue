@@ -2,7 +2,7 @@
   <div>
     <div v-if="games && games.length > 0">
       <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="games" :fields="gamesFields" bordered striped responsive small>
-        <template #cell(gameName)="data">
+        <template #cell(masterGame.gameName)="data">
           <span class="game-name-column">
             <span v-if="data.item.counterPick" v-b-popover.hover.focus="counterPickText" class="badge tag-badge counter-pick-badge">CPK</span>
             <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -14,7 +14,7 @@
               icon="exclamation-triangle" />
           </span>
         </template>
-        <template #cell(maximumReleaseDate)="data">
+        <template #cell(masterGame.maximumReleaseDate)="data">
           {{ getReleaseDate(data.item.masterGame) }}
         </template>
       </b-table>
@@ -39,8 +39,8 @@ export default {
       sortBy: 'maximumReleaseDate',
       sortDesc: false,
       gamesFields: [
-        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }
+        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }
       ]
     };
   },
