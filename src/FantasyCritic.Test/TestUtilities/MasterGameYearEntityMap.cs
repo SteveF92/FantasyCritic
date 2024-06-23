@@ -11,5 +11,6 @@ public sealed class MasterGameYearEntityMap : ClassMap<MasterGameYearEntity>
         Map(m => m.OpenCriticSlug).Constant(null);
         Map(m => m.GGSlug).Constant(null);
         Map(m => m.ShowNote).Constant(false);
+        Map(m => m.AddedByUserDisplayName).Constant("elitefusion");
     }
 }
