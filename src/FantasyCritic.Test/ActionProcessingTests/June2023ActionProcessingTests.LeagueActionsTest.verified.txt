@@ -20745,7 +20745,7 @@
     LeagueID: c0637808-752c-4d84-ab97-f39f5cfaeeb9,
     PublisherID: 52871972-be5b-4aaa-b5dc-e92cc17f1a40,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Little Devil Inside' with a bid of $1. Failure reason: No roster spots available.
+    Description: Tried to acquire counter pick 'Little Devil Inside' with a bid of $1. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: c0637808-752c-4d84-ab97-f39f5cfaeeb9,

@@ -1839,13 +1839,13 @@
     LeagueID: 098f4c14-594c-4c78-a5f8-b78fe1f58201,
     PublisherID: ef83063b-51b6-4693-b9f7-cc45610c6e19,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $20. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $20. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 098f4c14-594c-4c78-a5f8-b78fe1f58201,
     PublisherID: ef83063b-51b6-4693-b9f7-cc45610c6e19,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'UFO 50' with a bid of $25. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'UFO 50' with a bid of $25. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 098f4c14-594c-4c78-a5f8-b78fe1f58201,
@@ -7917,7 +7917,7 @@
     LeagueID: 27fbe932-c660-48a9-b9ce-093dbcb33f08,
     PublisherID: eb3989eb-57d3-4a93-955f-cd29011f54a7,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Super Mario Party Jamboree' with a bid of $10. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Super Mario Party Jamboree' with a bid of $10. Failure reason: Not enough budget.
   },
   {
     LeagueID: 27fbe932-c660-48a9-b9ce-093dbcb33f08,
@@ -11661,7 +11661,7 @@
     LeagueID: 3cb76e32-8ca0-4c36-8aa8-ea89a1e56d54,
     PublisherID: f6141dc8-af93-4956-a990-1d6cb4926716,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Zenless Zone Zero' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Zenless Zone Zero' with a bid of $1. Failure reason: No roster spots available. Attempted to conditionally drop game: Metroid Prime 4: Beyond but failed because: Cannot drop a game that you do not have
   },
   {
     LeagueID: 3cb76e32-8ca0-4c36-8aa8-ea89a1e56d54,
@@ -13491,7 +13491,7 @@
     LeagueID: 49344336-8cb9-48d0-9665-69fe82addb65,
     PublisherID: 2a8843a5-6cab-4b6c-a4ac-6613587f0e39,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $12. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $12. Failure reason: No roster spots available.
   },
   {
     LeagueID: 49344336-8cb9-48d0-9665-69fe82addb65,
@@ -20847,7 +20847,7 @@
     LeagueID: 6d56ea44-6352-4d55-91ad-32842198d3b6,
     PublisherID: 7abc303e-9955-478e-babb-d3f7c694112f,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $24. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $24. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 6d56ea44-6352-4d55-91ad-32842198d3b6,
@@ -24375,7 +24375,7 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Mariachi Legends' with a bid of $1. Failure reason: No roster spots available.
+    Description: Tried to acquire counter pick 'Mariachi Legends' with a bid of $1. Failure reason: Bid lost on tiebreakers.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -24525,7 +24525,7 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Rise of the Golden Idol' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'The Rise of the Golden Idol' with a bid of $1. Failure reason: No roster spots available.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -24537,7 +24537,7 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Warhammer 40,000: Space Marine 2' with a bid of $1. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'Warhammer 40,000: Space Marine 2' with a bid of $1. Failure reason: No roster spots available.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -24603,13 +24603,13 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $17. Failure reason: No roster spots available. Attempted to conditionally drop game: Slitterhead but failed because: Cannot drop a game that you do not have
+    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $17. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $17. Failure reason: No roster spots available. Attempted to conditionally drop game: Slitterhead but failed because: Cannot drop a game that you do not have
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $17. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -26745,7 +26745,7 @@
     LeagueID: 8c5b17c2-ee81-4a6b-b932-6b0aeecd53e3,
     PublisherID: 8f086eab-ebf5-4d45-a783-fe81e820082c,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $10. Failure reason: Not enough budget.
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $10. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: 8c5b17c2-ee81-4a6b-b932-6b0aeecd53e3,
@@ -36519,7 +36519,7 @@
     LeagueID: c72efe13-a8cd-47cb-85f5-0f77abcb4da0,
     PublisherID: ccd47fb0-9427-4d03-af70-e92f4d66983a,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Arco' with a bid of $1. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'Arco' with a bid of $1. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: c72efe13-a8cd-47cb-85f5-0f77abcb4da0,
@@ -40023,7 +40023,7 @@
     LeagueID: d70247cd-cab5-4483-af24-e9b14f4f37d4,
     PublisherID: 68e9ca89-e4b1-4fee-af7d-ba2f1fe7c8c3,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Mina the Hollower' with a bid of $1. Failure reason: No roster spots available.
+    Description: Tried to acquire counter pick 'Mina the Hollower' with a bid of $1. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: d70247cd-cab5-4483-af24-e9b14f4f37d4,
@@ -40125,7 +40125,7 @@
     LeagueID: d7758ea2-6012-414b-af11-812cfad9a689,
     PublisherID: 32d3fdf2-c9c0-4941-8ab4-cb044af34ba7,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $20. Failure reason: Publisher was outbid.
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $20. Failure reason: No roster spots available.
   },
   {
     LeagueID: d7758ea2-6012-414b-af11-812cfad9a689,
@@ -41055,7 +41055,7 @@
     LeagueID: dd836707-845c-47ae-bc8a-d9572d20cbda,
     PublisherID: 9cce1f87-3767-4f8d-93da-0f4b01a96891,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Enotria: The Last Song' with a bid of $7. Failure reason: No roster spots available.
+    Description: Tried to acquire game 'Enotria: The Last Song' with a bid of $7. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: dd836707-845c-47ae-bc8a-d9572d20cbda,
@@ -46893,7 +46893,7 @@
     LeagueID: fbdced93-24a0-42c1-812a-119f0862a2f4,
     PublisherID: 88113dde-c180-40fc-9442-cecec5a53f64,
     ActionType: Pickup Failed,
-    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $31. Failure reason: No roster spots available. Attempted to conditionally drop game: Sword of the Sea but failed because: Cannot drop a game that you do not have
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $31. Failure reason: Publisher was outbid.
   },
   {
     LeagueID: fbdced93-24a0-42c1-812a-119f0862a2f4,

@@ -206,8 +206,8 @@
     GameName: UFO 50,
     BidAmount: 25,
     ProjectedPointsAtTimeOfBid: 104.2027589518593,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 01a0546f-283e-4099-94d7-7b982fa1a28e,
@@ -1596,8 +1596,8 @@
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 204.3229386936593,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 0e19da5c-0d29-4a12-9af8-261b3157efdb,
@@ -3366,8 +3366,8 @@
     GameName: Arco,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 121.91090092919905714285714287,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 1c71fae9-0b05-4c4e-b296-cec1856b1258,
@@ -6426,8 +6426,8 @@
     GameName: Mina the Hollower,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 61.206455233050385714285714286,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 39852e84-bbf1-49d2-9962-b549275625a0,
@@ -6786,8 +6786,8 @@
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 17,
     ProjectedPointsAtTimeOfBid: 105.2106659163156,
-    FailureReason: No roster spots available. Attempted to conditionally drop game: Slitterhead but failed because: Cannot drop a game that you do not have,
-    Outcome: No roster spots available. Attempted to conditionally drop game: Slitterhead but failed because: Cannot drop a game that you do not have
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 3cc3ee99-f933-46b4-968b-21ab928e5ad5,
@@ -6866,8 +6866,8 @@
     GameName: Mario & Luigi: Brothership,
     BidAmount: 12,
     ProjectedPointsAtTimeOfBid: 100.33903037001503157894736842,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 3d3143a5-90f0-4def-8ecf-b4cf164470e3,
@@ -7236,8 +7236,8 @@
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 31,
     ProjectedPointsAtTimeOfBid: 106.7395133890126,
-    FailureReason: No roster spots available. Attempted to conditionally drop game: Sword of the Sea but failed because: Cannot drop a game that you do not have,
-    Outcome: No roster spots available. Attempted to conditionally drop game: Sword of the Sea but failed because: Cannot drop a game that you do not have
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 4043ae72-defc-4add-9a00-732e5aeb405d,
@@ -9296,8 +9296,8 @@
     GameName: Zenless Zone Zero,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 67.1466334766326,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available. Attempted to conditionally drop game: Metroid Prime 4: Beyond but failed because: Cannot drop a game that you do not have,
+    Outcome: No roster spots available. Attempted to conditionally drop game: Metroid Prime 4: Beyond but failed because: Cannot drop a game that you do not have
   },
   {
     BidID: 5169132a-cdad-4b6c-8c05-7608b7b827c0,
@@ -10396,8 +10396,8 @@
     GameName: Mario & Luigi: Brothership,
     BidAmount: 24,
     ProjectedPointsAtTimeOfBid: 146.08585271757933636363636364,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 59f8016e-7417-4fca-9cd0-1f3ef3586469,
@@ -12976,8 +12976,8 @@
     GameName: Enotria: The Last Song,
     BidAmount: 7,
     ProjectedPointsAtTimeOfBid: 1.5409686233939545454545454545,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 703dbac7-4fdc-45d7-bed6-01a6c67eb6fb,
@@ -13086,8 +13086,8 @@
     GameName: Warhammer 40,000: Space Marine 2,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 71c6cb08-1b72-474e-8ae0-bd5665120b9a,
@@ -23016,8 +23016,8 @@
     GameName: Mario & Luigi: Brothership,
     BidAmount: 17,
     ProjectedPointsAtTimeOfBid: 105.2106659163156,
-    FailureReason: No roster spots available. Attempted to conditionally drop game: Slitterhead but failed because: Cannot drop a game that you do not have,
-    Outcome: No roster spots available. Attempted to conditionally drop game: Slitterhead but failed because: Cannot drop a game that you do not have
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: c97ef8f1-dac1-4705-8f79-fb65296f4431,
@@ -23906,8 +23906,8 @@
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 104.2027589518593,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: d127133a-bae5-4e49-a50b-b67d3ba8a9dd,
@@ -25166,8 +25166,8 @@
     GameName: Super Mario Party Jamboree,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 108.1716078958075,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: Not enough budget.,
+    Outcome: Not enough budget.
   },
   {
     BidID: da810f97-a31e-48d7-b3df-53e95b316b72,
@@ -26086,8 +26086,8 @@
     GameName: The Legend of Zelda: Echoes of Wisdom,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 123.58439633920384285714285714,
-    FailureReason: Not enough budget.,
-    Outcome: Not enough budget.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: e18139c6-3ed3-4388-b71d-fe309ea4fe67,
@@ -26566,8 +26566,8 @@
     GameName: Mariachi Legends,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
   },
   {
     BidID: e624de6a-40d9-4949-9d23-997ea72a4cdf,
@@ -27446,8 +27446,8 @@
     GameName: The Rise of the Golden Idol,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
-    FailureReason: Publisher was outbid.,
-    Outcome: Publisher was outbid.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: ee6e3700-29eb-48f8-85f6-b4cc4a0a7426,

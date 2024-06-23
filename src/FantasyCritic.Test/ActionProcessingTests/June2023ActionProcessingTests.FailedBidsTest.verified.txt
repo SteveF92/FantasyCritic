@@ -256,8 +256,8 @@
     GameName: Little Devil Inside,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 126.62230821345646842105263158,
-    FailureReason: No roster spots available.,
-    Outcome: No roster spots available.
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
   },
   {
     BidID: 05f15507-72b9-4ddd-8ba9-6f486bbff220,

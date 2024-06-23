@@ -4138,7 +4138,7 @@
     Priority: 1,
     BidAmount: 30,
     ProjectedPointsAtTimeOfBid: 138.2271600549867,
-    SlotNumber: 3,
+    SlotNumber: 2,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -11250,7 +11250,7 @@
     Priority: 1,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 94.75157219503720508474576272,
-    SlotNumber: 11,
+    SlotNumber: 12,
     Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -12370,7 +12370,7 @@
     Priority: 3,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 94.75157219503720508474576272,
-    SlotNumber: 12,
+    SlotNumber: 11,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -19161,7 +19161,7 @@
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 66.4342474204545,
     SlotNumber: 7,
-    Outcome: This bid was the highest bid.,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -19272,8 +19272,8 @@
     Priority: 2,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 160.69399138577834285714285716,
-    SlotNumber: 12,
-    Outcome: No competing bids for this game.,
+    SlotNumber: 10,
+    Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -20085,7 +20085,7 @@
     BidAmount: 2,
     ProjectedPointsAtTimeOfBid: 105.2106659163156,
     SlotNumber: 13,
-    Outcome: This bid was the highest bid.,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: 12906e62-794e-4f70-be10-8ff501a83cca,
     ConditionalDropResult: Success
   },
@@ -22142,8 +22142,8 @@
     Priority: 4,
     BidAmount: 3,
     ProjectedPointsAtTimeOfBid: 160.69399138577834285714285716,
-    SlotNumber: 11,
-    Outcome: This bid was the highest bid.,
+    SlotNumber: 12,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -24915,7 +24915,7 @@
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
     SlotNumber: 2,
-    Outcome: No competing bids for this game.,
+    Outcome: This bid was placed earliest.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -26538,7 +26538,7 @@
     Priority: 1,
     BidAmount: 17,
     ProjectedPointsAtTimeOfBid: 116.08914364442310000000000001,
-    SlotNumber: 16,
+    SlotNumber: 15,
     Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -29703,7 +29703,7 @@
     BidAmount: 3,
     ProjectedPointsAtTimeOfBid: 95.28471660980044285714285716,
     SlotNumber: 13,
-    Outcome: No competing bids for this game.,
+    Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -37290,7 +37290,7 @@
     Priority: 2,
     BidAmount: 5,
     ProjectedPointsAtTimeOfBid: 101.5505774437594,
-    SlotNumber: 5,
+    SlotNumber: 7,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -37724,7 +37724,7 @@
     Priority: 2,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 138.2271600549867,
-    SlotNumber: 2,
+    SlotNumber: 3,
     Outcome: This publisher has the lowest projected points. (Not including this game),
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -38481,7 +38481,7 @@
     BidAmount: 21,
     ProjectedPointsAtTimeOfBid: 211.6178683392223,
     SlotNumber: 22,
-    Outcome: This bid was the highest bid.,
+    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
@@ -40034,7 +40034,7 @@
     Priority: 1,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 101.5505774437594,
-    SlotNumber: 7,
+    SlotNumber: 5,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -47202,7 +47202,7 @@
     Priority: 2,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 116.08914364442310000000000001,
-    SlotNumber: 15,
+    SlotNumber: 16,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -53950,7 +53950,7 @@
     Priority: 3,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 160.69399138577834285714285716,
-    SlotNumber: 10,
+    SlotNumber: 11,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null

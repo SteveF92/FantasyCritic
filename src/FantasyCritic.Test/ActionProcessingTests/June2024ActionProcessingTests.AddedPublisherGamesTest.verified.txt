@@ -6396,7 +6396,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     CounterPick: false,
-    SlotNumber: 16,
+    SlotNumber: 15,
     BidAmount: 17
   },
   {
@@ -6404,7 +6404,7 @@
     MasterGameID: a01716a9-1ed7-478a-ab8f-03f2a7c36a05,
     GameName: Life is Strange: Double Exposure,
     CounterPick: false,
-    SlotNumber: 15,
+    SlotNumber: 16,
     BidAmount: 10
   },
   {
@@ -12772,7 +12772,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     CounterPick: false,
-    SlotNumber: 2,
+    SlotNumber: 3,
     BidAmount: 10
   },
   {
@@ -12780,7 +12780,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     CounterPick: false,
-    SlotNumber: 3,
+    SlotNumber: 2,
     BidAmount: 30
   },
   {
@@ -15316,7 +15316,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 12,
     BidAmount: 20
   },
   {
@@ -15324,7 +15324,7 @@
     MasterGameID: d55e0038-9286-474e-9d46-40faa84747ce,
     GameName: UFO 50,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 11,
     BidAmount: 5
   },
   {
@@ -20100,7 +20100,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 10,
     BidAmount: 20
   },
   {
@@ -20108,7 +20108,7 @@
     MasterGameID: 56ab9a7c-fb14-400f-bff0-55f26407fa7a,
     GameName: Arranger: A Role-Puzzling Adventure,
     CounterPick: false,
-    SlotNumber: 10,
+    SlotNumber: 11,
     BidAmount: 1
   },
   {
@@ -20116,7 +20116,7 @@
     MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
     GameName: The Rise of the Golden Idol,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 12,
     BidAmount: 3
   },
   {
@@ -24020,7 +24020,7 @@
     MasterGameID: 9b9d8dba-60e1-4349-99f1-3810ed180b35,
     GameName: Until Dawn (Remake),
     CounterPick: false,
-    SlotNumber: 5,
+    SlotNumber: 7,
     BidAmount: 5
   },
   {
@@ -24028,7 +24028,7 @@
     MasterGameID: e5333d87-5a9f-4b47-93d2-92383e3148ad,
     GameName: Dragon Ball Z: Sparking! ZERO,
     CounterPick: false,
-    SlotNumber: 7,
+    SlotNumber: 5,
     BidAmount: 10
   },
   {

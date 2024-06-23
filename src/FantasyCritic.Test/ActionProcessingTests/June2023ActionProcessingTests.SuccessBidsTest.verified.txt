@@ -26679,7 +26679,7 @@
     BidAmount: 2,
     ProjectedPointsAtTimeOfBid: 95.31965243198563684210526316,
     SlotNumber: 7,
-    Outcome: No competing bids for this game.,
+    Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },
