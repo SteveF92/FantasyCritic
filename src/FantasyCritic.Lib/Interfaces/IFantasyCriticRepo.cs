@@ -26,7 +26,6 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
     Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league);
     Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user);
-    Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYearsForUser(FantasyCriticUser user);
     Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher();
 
     Task FollowLeague(League league, FantasyCriticUser user);
@@ -160,4 +159,5 @@ public interface IFantasyCriticRepo
     Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears);
     Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year);
     Task UpdateDailyPublisherStatistics(int year, LocalDate currentDate, SystemWideValues systemWideValues);
+    Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user);
 }

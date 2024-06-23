@@ -812,17 +812,10 @@ public class LeagueController : BaseLeagueController
         var currentUser = await GetCurrentUserOrThrow();
         var currentDate = _clock.GetToday();
 
-        var myPublishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(currentUser);
-
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
-        var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);
-
-        var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
-        var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
-
-        var upcomingGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
-        var recentGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
-        return new GameNewsViewModel(upcomingGames, recentGames);
+        var myGameNews = await _publisherService.GetMyGameNews(currentUser);
+        var myGameNewsSet = MyGameNewsSet.BuildMyGameNews(myGameNews, currentDate);
+        var myGameNewsViewModel = new GameNewsViewModel(myGameNewsSet, currentDate);
+        return myGameNewsViewModel;
     }
 
     public async Task<IActionResult> PossibleMasterGames(string gameName, int year, Guid leagueID)

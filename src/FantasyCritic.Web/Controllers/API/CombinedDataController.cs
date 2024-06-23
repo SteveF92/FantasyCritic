@@ -80,7 +80,7 @@ public class CombinedDataController : FantasyCriticController
         }
 
         //My Game News
-        var myGameNews = BuildMyGameNews(homePageData.MyGameDetails, currentDate);
+        var myGameNews = MyGameNewsSet.BuildMyGameNews(homePageData.MyGameDetails, currentDate);
         var myGameNewsViewModel = new GameNewsViewModel(myGameNews, currentDate);
 
         //Public Leagues
@@ -104,20 +104,5 @@ public class CombinedDataController : FantasyCriticController
         return Ok(vm);
     }
 
-    private static MyGameNewsSet BuildMyGameNews(IReadOnlyList<SingleGameNews> myGameDetails, LocalDate currentDate)
-    {
-        var upcomingReleases = myGameDetails
-            .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() > currentDate)
-            .Take(10)
-            .OrderBy(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
-            .ToList();
 
-        var recentReleases = myGameDetails
-            .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() <= currentDate)
-            .Take(10)
-            .OrderByDescending(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
-            .ToList();
-
-        return new MyGameNewsSet(upcomingReleases, recentReleases);
-    }
 }

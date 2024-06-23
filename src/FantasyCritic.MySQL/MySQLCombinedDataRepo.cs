@@ -114,7 +114,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         }
 
         //My Game News
-        var myGameNews = BuildMyGameNewsFromEntities(myGameNewsEntities, masterGameYears);
+        var myGameNews = MyGameNewsEntity.BuildMyGameNewsFromEntities(myGameNewsEntities, masterGameYears);
 
         //Public League Years
         var publicLeagueYears = publicLeagueEntities.Select(x => x.ToDomain()).ToList();
@@ -124,22 +124,5 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var activeRoyaleQuarter = activeRoyaleYearQuarterEntity.ToDomain(supportedYear);
 
         return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
-    }
-
-    private static IReadOnlyList<SingleGameNews> BuildMyGameNewsFromEntities(IEnumerable<MyGameNewsEntity> myGameNewsEntities, IReadOnlyDictionary<MasterGameYearKey, MasterGameYear> masterGameYears)
-    {
-        List<SingleGameNews> domains = new List<SingleGameNews>();
-
-        var groupedByMasterGame = myGameNewsEntities.GroupBy(x => x.MasterGameID);
-
-        foreach (var masterGameGroup in groupedByMasterGame)
-        {
-            var highestYear = masterGameGroup.Select(x => x.Year).Max();
-            var masterGameYear = masterGameYears[new MasterGameYearKey(masterGameGroup.Key, highestYear)];
-            var publisherInfos = masterGameGroup.Select(x => new PublisherInfo(x.LeagueID, x.LeagueName, x.Year, x.PublisherID, x.PublisherName)).ToList();
-            domains.Add(new SingleGameNews(masterGameYear, publisherInfos));
-        }
-
-        return domains;
     }
 }

@@ -202,30 +202,6 @@ public class PublisherService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<LeagueYearPublisherPair>> GetPublishersWithLeagueYearsInActiveYears(FantasyCriticUser user)
-    {
-        var leagueYearPublishers = new List<LeagueYearPublisherPair>();
-        var activeLeagueYears = await _fantasyCriticRepo.GetActiveLeagueYearsForUser(user);
-
-        foreach (var leagueYear in activeLeagueYears)
-        {
-            if (leagueYear.League.TestLeague)
-            {
-                continue;
-            }
-
-            var userPublisher = leagueYear.GetUserPublisher(user);
-            if (userPublisher is null)
-            {
-                continue;
-            }
-
-            leagueYearPublishers.Add(new LeagueYearPublisherPair(leagueYear, userPublisher));
-        }
-
-        return leagueYearPublishers;
-    }
-
     public async Task<Result> ReassignPublisher(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUser> allUsersInLeague, Guid publisherID, Guid newUserID)
     {
         var userAlreadyHasPublisher = leagueYear.Publishers.Any(x => x.User.Id == newUserID);
@@ -248,5 +224,10 @@ public class PublisherService
 
         await _fantasyCriticRepo.ReassignPublisher(leagueYear, publisherToReassign, newUser);
         return Result.Success();
+    }
+
+    public Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user)
+    {
+        return _fantasyCriticRepo.GetMyGameNews(user);
     }
 }

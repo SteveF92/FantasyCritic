@@ -1429,75 +1429,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return leaguesWithStatus;
     }
 
-    public async Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYearsForUser(FantasyCriticUser user)
-    {
-        var param = new
-        {
-            P_UserID = user.UserID
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getactiveleagueyearsforuser", param, commandType: CommandType.StoredProcedure);
-
-        var leagues = await resultSets.ReadAsync<LeagueEntity>();
-        var leagueYears = await resultSets.ReadAsync<LeagueYearEntity>();
-
-        var leagueYearTags = await resultSets.ReadAsync<LeagueYearTagEntity>();
-        var specialGameSlots = await resultSets.ReadAsync<SpecialGameSlotEntity>();
-        var eligibilityOverrides = await resultSets.ReadAsync<EligibilityOverrideEntity>();
-        var tagOverrides = await resultSets.ReadAsync<TagOverrideEntity>();
-        var usersInLeagues = await resultSets.ReadAsync<FantasyCriticUserEntity>();
-        var publishers = await resultSets.ReadAsync<PublisherEntity>();
-        var publisherGames = await resultSets.ReadAsync<PublisherGameEntity>();
-        var formerPublisherGames = await resultSets.ReadAsync<FormerPublisherGameEntity>();
-
-        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-        var supportedYear = await GetSupportedYear(DateTime.Now.Year);  // Assuming we need the current year as supported year
-        var userDictionary = usersInLeagues.ToDictionary(x => x.UserID, y => y.ToDomain());
-
-        var leaguesDict = leagues.ToDictionary(l => l.LeagueID);
-        var leagueYearEntities = leagueYears.ToList();
-        var leagueYearsList = new List<LeagueYear>();
-
-        foreach (var leagueYearEntity in leagueYearEntities)
-        {
-            if (!leaguesDict.TryGetValue(leagueYearEntity.LeagueID, out var leagueEntity))
-            {
-                continue;  // If for some reason the league entity isn't found, we skip this league year.
-            }
-
-            var leagueID = leagueEntity.LeagueID;
-            var year = leagueYearEntity.Year;
-
-            var league = leagueEntity.ToDomain(leagueYearEntities.Where(y => y.LeagueID == leagueID).Select(y => y.Year).ToList());
-            var leagueYearKey = new LeagueYearKey(leagueID, year);
-
-            var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
-            var manager = userDictionary[leagueEntity.LeagueManager];
-
-            leagueEntity.ManagerDisplayName = manager.UserName;
-            leagueEntity.ManagerEmailAddress = manager.UserName;
-
-            var domainLeagueTags = ConvertLeagueTagEntities(leagueYearTags.Where(t => t.LeagueID == leagueID && t.Year == year), tagDictionary);
-            var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlots.Where(s => s.LeagueID == leagueID && s.Year == year), tagDictionary);
-            var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
-            var domainEligibilityOverrides = await ConvertEligibilityOverrideEntities(eligibilityOverrides.Where(e => e.LeagueID == leagueID && e.Year == year));
-            var domainTagOverrides = await ConvertTagOverrideEntities(tagOverrides.Where(t => t.LeagueID == leagueID && t.Year == year), tagDictionary);
-
-            var publisherEntitiesInLeagueYear = publishers.Where(p => p.LeagueID == leagueID && p.Year == year).ToList();
-            var publisherIDsInLeagueYear = publisherEntitiesInLeagueYear.Select(x => x.PublisherID).ToHashSet();
-            var publisherGamesForLeagueYear = publisherGames.Where(x => publisherIDsInLeagueYear.Contains(x.PublisherID)).ToList();
-            var formerPublisherGamesForLeagueYear = formerPublisherGames.Where(x => publisherIDsInLeagueYear.Contains(x.PublisherID)).ToList();
-            var publishersForLeagueYear = await ConvertPublisherEntities(userDictionary, publisherEntitiesInLeagueYear, publisherGamesForLeagueYear, formerPublisherGamesForLeagueYear, year);
-
-            var leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides,
-                domainLeagueTags, specialGameSlotsForLeagueYear, winningUser, publishersForLeagueYear);
-            leagueYearsList.Add(leagueYear);
-        }
-
-        return leagueYearsList;
-    }
-
     public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()
     {
         const string sql = "SELECT UserID, LeagueID, YEAR FROM tbl_league_publisher;";
@@ -3551,5 +3482,37 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await connection.BulkInsertAsync(statisticsEntities, "tbl_league_publisherstatistics", 500, transaction, insertIgnore: true);
         await transaction.CommitAsync();
+    }
+
+    public async Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user)
+    {
+        const string sql =
+            """
+            SELECT tbl_league_publishergame.MasterGameId, tbl_league_publishergame.CounterPick, tbl_league.LeagueID, 
+            tbl_league.LeagueName, tbl_league_publisher.Year, tbl_league_publisher.PublisherID, tbl_league_publisher.PublisherName
+            FROM tbl_league_publishergame
+            JOIN tbl_league_publisher ON tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID
+            JOIN tbl_league ON tbl_league.LeagueID = tbl_league_publisher.LeagueID
+            WHERE tbl_league_publisher.UserID = P_UserID AND tbl_league_publisher.Year IN (SELECT YEAR FROM tbl_meta_supportedyear WHERE OpenForPlay = 1 AND Finished = 0);
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<MyGameNewsEntity>(sql);
+
+        var supportedYears = await GetSupportedYears();
+        var activeAndNotFinishedYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished).ToList();
+
+        var masterGameYears = new Dictionary<MasterGameYearKey, MasterGameYear>();
+        foreach (var year in activeAndNotFinishedYears)
+        {
+            var masterGameYearsForSingleYear = await _masterGameRepo.GetMasterGameYears(year.Year);
+            foreach (var masterGameYear in masterGameYearsForSingleYear)
+            {
+                masterGameYears.Add(masterGameYear.Key, masterGameYear);
+            }
+        }
+
+        var domains = MyGameNewsEntity.BuildMyGameNewsFromEntities(entities, masterGameYears);
+        return domains;
     }
 }

@@ -66,13 +66,11 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 return;
             }
 
-            var publishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(user);
-            var gameNews = GameNewsFunctions.GetGameNews(publishers, dateToCheck, isRecentReleases);
-            var leagueYearPublisherLists = GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews);
-
-            var gameMessages = leagueYearPublisherLists
-                .Select(leagueYearPublisherList
-                    => DiscordSharedMessageUtilities.BuildGameWithPublishersMessage(leagueYearPublisherList.Value, leagueYearPublisherList.Key, _baseAddress))
+            var myGameNews = await _publisherService.GetMyGameNews(user);
+            var myGameNewsSet = MyGameNewsSet.BuildMyGameNews(myGameNews, dateToCheck);
+            var gameNewsToUse = isRecentReleases ? myGameNewsSet.RecentGames : myGameNewsSet.UpcomingGames;
+            var gameMessages = gameNewsToUse
+                .Select(x => DiscordSharedMessageUtilities.BuildGameWithPublishersMessage(x, _baseAddress))
                 .ToList();
 
             var messagesToSend = new MessageListBuilder(gameMessages, MaxMessageLength)
@@ -87,8 +85,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
         }
         else
         {
-            var leagueChannel =
-                await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
+            var leagueChannel = await _discordRepo.GetLeagueChannel(Context.Guild.Id, Context.Channel.Id, supportedYears);
             if (leagueChannel == null)
             {
                 await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
