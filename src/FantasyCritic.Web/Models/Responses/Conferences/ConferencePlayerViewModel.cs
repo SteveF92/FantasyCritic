@@ -6,9 +6,9 @@ public class ConferencePlayerViewModel
 {
     public ConferencePlayerViewModel(Conference conference, ConferencePlayer conferencePlayer)
     {
-        UserID = conferencePlayer.User.Id;
-        DisplayName = conferencePlayer.User.UserName;
-        IsConferenceManager = conference.ConferenceManager.Equals(conferencePlayer.User);
+        UserID = conferencePlayer.User.UserID;
+        DisplayName = conferencePlayer.User.DisplayName;
+        IsConferenceManager = conference.ConferenceManager.UserID == conferencePlayer.User.UserID;
         LeaguesIn = conferencePlayer.LeaguesIn;
         LeaguesManaging = conferencePlayer.LeaguesManaging;
 

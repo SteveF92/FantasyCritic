@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="interLeagueDataLoaded">
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div class="row league-header">
         <h1 class="header">Public Leagues</h1>
@@ -50,7 +50,6 @@ export default {
       filter: null,
       filterOn: ['leagueName'],
       selectedYear: null,
-      supportedYears: [],
       publicLeagues: [],
       leagueFields: [
         { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
@@ -66,8 +65,9 @@ export default {
       return this.publicLeagues.length;
     }
   },
-  mounted() {
-    this.fetchSupportedYears();
+  async mounted() {
+    this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
+    await this.fetchPublicLeaguesForYear(this.selectedYear);
   },
   methods: {
     onFiltered(filteredItems) {
@@ -75,28 +75,9 @@ export default {
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
-    fetchSupportedYears() {
-      axios
-        .get('/api/game/SupportedYears')
-        .then((response) => {
-          let supportedYears = response.data;
-          let openYears = _.filter(supportedYears, { openForPlay: true });
-          let finishedYears = _.filter(supportedYears, { finished: true });
-          this.supportedYears = openYears.concat(finishedYears).map(function (v) {
-            return v.year;
-          });
-          this.selectedYear = this.supportedYears[0];
-          this.fetchPublicLeaguesForYear(this.selectedYear);
-        })
-        .catch(() => {});
-    },
-    fetchPublicLeaguesForYear(year) {
-      axios
-        .get('/api/league/PublicLeagues/' + year)
-        .then((response) => {
-          this.publicLeagues = response.data;
-        })
-        .catch(() => {});
+    async fetchPublicLeaguesForYear(year) {
+      const response = await axios.get('/api/league/PublicLeagues/' + year);
+      this.publicLeagues = response.data;
     }
   }
 };

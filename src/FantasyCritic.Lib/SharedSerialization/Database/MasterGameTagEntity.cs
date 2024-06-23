@@ -1,7 +1,6 @@
-using FantasyCritic.Lib.Domain;
 using Newtonsoft.Json;
 
-namespace FantasyCritic.SharedSerialization.Database;
+namespace FantasyCritic.Lib.SharedSerialization.Database;
 
 public class MasterGameTagEntity
 {

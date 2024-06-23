@@ -22,20 +22,18 @@ public interface IFantasyCriticRepo
     Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear);
 
     Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
-    Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange);
+    Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange);
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
     Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league);
-    Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user);
-    Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot();
-    Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year);
+    Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user);
+    Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYearsForUser(FantasyCriticUser user);
     Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher();
 
-    Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser user);
     Task FollowLeague(League league, FantasyCriticUser user);
     Task UnfollowLeague(League league, FantasyCriticUser user);
 
     Task<LeagueInvite?> GetInvite(Guid inviteID);
-    Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser);
+    Task<IReadOnlyList<CompleteLeagueInvite>> GetCompleteLeagueInvites(FantasyCriticUser currentUser);
     Task SetAutoDraft(Publisher publisher, AutoDraftMode mode);
     Task<IReadOnlyList<LeagueInvite>> GetOutstandingInvitees(League league);
     Task SaveInvite(LeagueInvite leagueInvite);
@@ -57,7 +55,7 @@ public interface IFantasyCriticRepo
     Task AddPublisherGame(PublisherGame publisherGame);
     Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
     Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
-    Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates);
+    Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<int, Guid?> slotStates);
 
 
     Task<IReadOnlyList<SupportedYear>> GetSupportedYears();
@@ -65,6 +63,8 @@ public interface IFantasyCriticRepo
 
     Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false);
     Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYears(IEnumerable<Guid> leagueIDs);
+
+    Task<IReadOnlyList<PublicLeagueYearStats>> GetPublicLeagueYears(int year, int? count);
 
     Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats);
     Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers, bool recalculate);

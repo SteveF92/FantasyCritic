@@ -66,8 +66,8 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 return;
             }
 
-            var publishers = await _publisherService.GetPublishersWithLeagueYears(user);
-            var gameNews = GameNewsFunctions.GetGameNewsForPublishers(publishers, dateToCheck, isRecentReleases);
+            var publishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(user);
+            var gameNews = GameNewsFunctions.GetGameNews(publishers, dateToCheck, isRecentReleases);
             var leagueYearPublisherLists = GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews);
 
             var gameMessages = leagueYearPublisherLists
@@ -111,7 +111,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 return;
             }
 
-            var gameNewsData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, isRecentReleases, dateToCheck);
+            var gameNewsData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, dateToCheck, isRecentReleases);
             if (gameNewsData.Count == 0)
             {
                 await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(

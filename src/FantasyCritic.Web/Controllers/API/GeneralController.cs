@@ -1,42 +1,40 @@
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
-public class GeneralController : ControllerBase
+public class GeneralController : FantasyCriticController
 {
     private readonly InterLeagueService _interLeagueService;
-    private readonly FantasyCriticUserManager _userManager;
     private readonly IClock _clock;
 
-    public GeneralController(InterLeagueService interLeagueService, FantasyCriticUserManager userManager, IClock clock)
+
+    public GeneralController(InterLeagueService interLeagueService, FantasyCriticUserManager userManager, IClock clock) : base(userManager)
     {
         _interLeagueService = interLeagueService;
-        _userManager = userManager;
         _clock = clock;
     }
 
-    public async Task<IActionResult> SiteCounts()
+    public async Task<ActionResult<SiteCountsViewModel>> SiteCounts()
     {
         var counts = await _interLeagueService.GetSiteCounts();
         return Ok(new SiteCountsViewModel(counts));
     }
 
-    public async Task<IActionResult> Donors()
+    public async Task<ActionResult<List<string>>> Donors()
     {
         var donors = await _userManager.GetDonors();
         return Ok(donors);
     }
 
-    public async Task<IActionResult> BidTimes()
+    public async Task<ActionResult<BidTimesViewModel>> BidTimes()
     {
-        var nextPublicRevealTime = _clock.GetNextPublicRevealTime();
-        var nextBidTime = _clock.GetNextBidTime();
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        return Ok(new BidTimesViewModel(nextPublicRevealTime, nextBidTime, systemWideSettings.ActionProcessingMode));
+        var vm = DomainControllerUtilities.BuildBidTimesViewModel(_clock, systemWideSettings);
+        return Ok(vm);
     }
 }

@@ -1,8 +1,8 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
-using FantasyCritic.SharedSerialization.API;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -47,7 +47,7 @@ public class FactCheckerController : FantasyCriticController
         }
 
         var currentUser = await GetCurrentUserOrThrow();
-        MasterGame masterGame = viewModel.ToDomain(_clock, tags, currentUser);
+        MasterGame masterGame = viewModel.ToDomain(_clock, tags, currentUser.ToVeryMinimal());
         await _interLeagueService.CreateMasterGame(masterGame);
         var currentDate = _clock.GetToday();
         var vm = new MasterGameViewModel(masterGame, currentDate);

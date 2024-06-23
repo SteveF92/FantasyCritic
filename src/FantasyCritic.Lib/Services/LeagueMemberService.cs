@@ -91,7 +91,7 @@ public class LeagueMemberService
             }
         }
 
-        LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league, inviteEmail);
+        LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league.LeagueID, inviteEmail, null);
 
         await _fantasyCriticRepo.SaveInvite(invite);
 
@@ -112,7 +112,7 @@ public class LeagueMemberService
             return Result.Failure("User is already in league.");
         }
 
-        LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league, inviteUser);
+        LeagueInvite invite = new LeagueInvite(Guid.NewGuid(), league.LeagueID, inviteUser.EmailAddress, inviteUser.ToMinimal());
 
         await _fantasyCriticRepo.SaveInvite(invite);
 
@@ -156,19 +156,14 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetOutstandingInvitees(league);
     }
 
-    public Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user)
+    public Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user)
     {
         return _fantasyCriticRepo.GetLeaguesForUser(user);
     }
 
-    public Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
+    public Task<IReadOnlyList<CompleteLeagueInvite>> GetCompleteLeagueInvites(FantasyCriticUser user)
     {
-        return _fantasyCriticRepo.GetLeaguesWithMostRecentYearOneShot();
-    }
-
-    public Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser user)
-    {
-        return _fantasyCriticRepo.GetLeagueInvites(user);
+        return _fantasyCriticRepo.GetCompleteLeagueInvites(user);
     }
 
     public Task<LeagueInvite?> GetInvite(Guid inviteID)

@@ -24,9 +24,6 @@ export default {
   components: {
     TopNavbar,
     FooterModule
-  },
-  mounted() {
-    this.$store.dispatch('getUserInfo');
   }
 };
 </script>

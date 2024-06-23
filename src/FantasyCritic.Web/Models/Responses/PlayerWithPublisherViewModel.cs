@@ -10,16 +10,16 @@ public class PlayerWithPublisherViewModel
         InviteName = inviteName;
     }
 
-    public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, bool removable)
+    public PlayerWithPublisherViewModel(LeagueYear leagueYear, MinimalFantasyCriticUser user, bool removable)
     {
-        User = new PlayerViewModel(leagueYear.League, user, removable);
+        User = new PlayerViewModel(leagueYear.League.LeagueID, leagueYear.League.LeagueName, user, removable);
     }
 
-    public PlayerWithPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, LocalDate currentDate,
+    public PlayerWithPublisherViewModel(LeagueYear leagueYear, MinimalFantasyCriticUser user, Publisher publisher, LocalDate currentDate,
         SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
         bool removable, bool previousYearWinner, int ranking, int projectedRanking)
     {
-        User = new PlayerViewModel(leagueYear.League, user, removable);
+        User = new PlayerViewModel(leagueYear.League.LeagueID, leagueYear.League.LeagueName, user, removable);
         Publisher = new MinimalPublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues);
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
         ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate);

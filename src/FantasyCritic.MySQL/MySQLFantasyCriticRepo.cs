@@ -12,8 +12,9 @@ using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
-using FantasyCritic.SharedSerialization.Database;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.SharedSerialization.Database;
+
 namespace FantasyCritic.MySQL;
 
 public class MySQLFantasyCriticRepo : IFantasyCriticRepo
@@ -41,18 +42,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueID = id
         };
 
-        const string leagueSQL = "select * from vw_league where LeagueID = @leagueID and IsDeleted = 0;";
-        LeagueEntity? leagueEntity = await connection.QuerySingleOrDefaultAsync<LeagueEntity?>(leagueSQL, queryObject);
+        var resultSets = await connection.QueryMultipleAsync("sp_getleague", queryObject, commandType: CommandType.StoredProcedure);
+        var leagueEntity = await resultSets.ReadSingleOrDefaultAsync<LeagueEntity?>();
         if (leagueEntity is null)
         {
             return null;
         }
 
-        FantasyCriticUser manager = await _userStore.FindByIdOrThrowAsync(leagueEntity.LeagueManager, CancellationToken.None);
-
-        const string leagueYearSQL = "select Year from tbl_league_year where LeagueID = @leagueID;";
-        IEnumerable<int> years = await connection.QueryAsync<int>(leagueYearSQL, queryObject);
-        League league = leagueEntity.ToDomain(manager, years);
+        var years = await resultSets.ReadAsync<int>();
+        League league = leagueEntity.ToDomain(years);
         return league;
     }
 
@@ -72,12 +70,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<League> leagues = new List<League>();
         var allUsers = await _userStore.GetAllUsers();
         var userDictionary = allUsers.ToDictionary(x => x.Id);
-        var oneShotLeagues = await GetLeaguesWithMostRecentYearOneShot();
         foreach (var leagueEntity in leagueEntities)
         {
             FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
+            leagueEntity.ManagerDisplayName = manager.UserName;
+            leagueEntity.ManagerEmailAddress = manager.UserName;
+
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(manager, years);
+            League league = leagueEntity.ToDomain(years);
             leagues.Add(league);
         }
 
@@ -118,19 +118,22 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var supportedYear = await GetSupportedYear(year);
-        var winningUser = await _userStore.GetUserThatMightExist(leagueYearEntity.WinningUserID);
-        var manager = await _userStore.FindByIdOrThrowAsync(leagueEntity.LeagueManager, CancellationToken.None);
+        var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
 
-        var league = leagueEntity.ToDomain(manager, years);
+        var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
+        var manager = userDictionary[leagueEntity.LeagueManager];
+        leagueEntity.ManagerDisplayName = manager.UserName;
+        leagueEntity.ManagerEmailAddress = manager.UserName;
+
+        var league = leagueEntity.ToDomain( years);
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = ConvertLeagueTagEntities(leagueTagEntities, tagDictionary);
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
         var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
         var domainEligibilityOverrides = await ConvertEligibilityOverrideEntities(eligibilityOverrideEntities);
         var domainTagOverrides = await ConvertTagOverrideEntities(tagOverrideEntities, tagDictionary);
-        var publishers = await ConvertPublisherEntities(usersInLeagueEntities, publisherEntities, publisherGameEntities,
-            formerPublisherGameEntities, year);
-        
+        var publishers = await ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, year);
+
         LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
             winningUser, publishers);
         return leagueYear;
@@ -226,6 +229,32 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return requestedLeagueYears;
     }
 
+    public async Task<IReadOnlyList<PublicLeagueYearStats>> GetPublicLeagueYears(int year, int? count)
+    {
+        string sql = """
+                     SELECT vw_league.LeagueID, vw_league.LeagueName, vw_league.NumberOfFollowers, tbl_league_year.PlayStatus
+                     FROM vw_league
+                     JOIN tbl_league_year ON vw_league.LeagueID = tbl_league_year.LeagueID
+                     WHERE vw_league.PublicLeague = 1
+                     AND tbl_league_year.`Year` = @year
+                     ORDER BY NumberOfFollowers DESC
+                     """;
+        if (count.HasValue)
+        {
+            sql += " LIMIT @count";
+        }
+
+        var queryObject = new
+        {
+            year,
+            count
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var stats = await connection.QueryAsync<PublicLeagueYearStatsEntity>(sql, queryObject);
+        return stats.Select(x => x.ToDomain()).ToList();
+    }
+
     private async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForPublishers(IReadOnlySet<Guid> publisherIDs)
     {
         const string sql = "select distinct Year from tbl_league_publisher where PublisherID in @publisherIDs";
@@ -235,7 +264,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-
         var yearsForPublishers = await connection.QueryAsync<int>(sql, queryObject);
 
         List<LeagueYear> requestedLeagueYears = new List<LeagueYear>();
@@ -921,7 +949,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 leagueActions.Add(entity.ToDomain(publisher));
             }
         }
-        
+
         return leagueActions;
     }
 
@@ -1107,7 +1135,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(createLeagueYearSQL, leagueYearEntity, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
-        await AddPlayerToLeagueInternal(league, league.LeagueManager, initialYear, true, connection, transaction);
+        await AddPlayerToLeagueInternal(league, league.LeagueManager.UserID, initialYear, true, connection, transaction);
     }
 
     public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction)
@@ -1213,7 +1241,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     }
 
     private IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
-        IEnumerable<LeagueYearStatusEntity> playStatuses, List<FantasyCriticUser> usersInLeague)
+        IEnumerable<LeagueYearStatusEntity> playStatuses, IReadOnlyList<FantasyCriticUser> usersInLeague)
     {
         var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
         foreach (var userYear in userYears)
@@ -1234,7 +1262,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
         foreach (var user in usersInLeague)
         {
-            bool userRemovable = !league.LeagueManager.Equals(user);
+            bool userRemovable = league.LeagueManager.UserID != user.UserID;
             foreach (var year in startedYears)
             {
                 if (!userYearsDictionary.ContainsKey(year))
@@ -1292,7 +1320,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
 
         var usersWithRemoveStatus = ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
-        var leagueInvites = await ConvertLeagueInviteEntitiesForSingleLeague(leagueYear.League, inviteEntities);
+        var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
 
         return new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
     }
@@ -1312,7 +1340,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(insertSQL, insertObjects);
     }
 
-    public async Task SetPlayerActiveStatus(LeagueYear leagueYear, Dictionary<FantasyCriticUser, bool> usersToChange)
+    public async Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange)
     {
         const string deleteActiveUserSQL = "delete from tbl_league_activeplayer where LeagueID = @leagueID and Year = @year and UserID = @userID;";
         const string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
@@ -1377,92 +1405,97 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return result > 0;
     }
 
-    public async Task<IReadOnlyList<League>> GetLeaguesForUser(FantasyCriticUser user)
+    public async Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user)
     {
-        IEnumerable<LeagueEntity> leagueEntities;
-        await using (var connection = new MySqlConnection(_connectionString))
-        {
-            var queryObject = new
-            {
-                userID = user.Id,
-            };
-
-            const string sql = "select vw_league.*, tbl_league_hasuser.Archived from vw_league join tbl_league_hasuser on (vw_league.LeagueID = tbl_league_hasuser.LeagueID) where tbl_league_hasuser.UserID = @userID and IsDeleted = 0;";
-            leagueEntities = await connection.QueryAsync<LeagueEntity>(sql, queryObject);
-        }
-
-        IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities.ToList());
-        return leagues;
-    }
-
-    public async Task<IReadOnlySet<Guid>> GetLeaguesWithMostRecentYearOneShot()
-    {
-        const string sql = "SELECT distinct LeagueID " +
-                           "FROM (SELECT LeagueID, YEAR, OneShotMode, ROW_NUMBER() OVER (PARTITION BY LeagueID ORDER BY Year DESC) ranked_order FROM tbl_caching_leagueyear) subQuery " +
-                           "WHERE subQuery.ranked_order = 1 AND subQuery.OneShotMode = 1;";
-        await using var connection = new MySqlConnection(_connectionString);
-        var leagueIDs = await connection.QueryAsync<Guid>(sql);
-        return leagueIDs.ToHashSet();
-    }
-
-    public async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForUser(FantasyCriticUser user, int year)
-    {
-        var allLeagueTags = await GetLeagueYearTagEntities(year);
-        var allSpecialGameSlots = await GetSpecialGameSlotEntities(year);
-        var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
-        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-        var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(allSpecialGameSlots, tagDictionary);
-        var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
-        var allTagOverrides = await GetAllTagOverrides(year);
-        var supportedYear = await GetSupportedYear(year);
-        var allPublishersForYear = await GetAllPublishersForYear(year);
-        var publisherLookup = allPublishersForYear.ToLookup(x => x.LeagueYearKey);
-
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
         {
-            year,
-            userID = user.Id
+            P_UserID = user.Id,
         };
 
-        const string sql = "select tbl_league_year.* from tbl_league_year " +
-                     "join tbl_league_hasuser on (tbl_league_hasuser.LeagueID = tbl_league_year.LeagueID) " +
-                     "where tbl_league_year.Year = @year and tbl_league_hasuser.UserID = @userID";
-        IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
-        List<LeagueYear> leagueYears = new List<LeagueYear>();
-        IReadOnlyList<League> leagues = await GetLeaguesForUser(user);
-        Dictionary<Guid, League> leaguesDictionary = leagues.ToDictionary(x => x.LeagueID, y => y);
+        var resultSets = await connection.QueryMultipleAsync("sp_getleaguesforuser", queryObject, commandType: CommandType.StoredProcedure);
+        var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
+        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
+        var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
 
-        foreach (var entity in yearEntities)
+        var leaguesWithStatus = new List<LeagueWithMostRecentYearStatus>();
+        foreach (var leagueEntity in leagueEntities)
         {
-            if (!leaguesDictionary.TryGetValue(entity.LeagueID, out var league))
-            {
-                _logger.Debug($"Cannot find league (probably deleted) LeagueID: {entity.LeagueID}");
-                continue;
-            }
-
-            if (!allEligibilityOverrides.TryGetValue(entity.LeagueID, out var eligibilityOverrides))
-            {
-                eligibilityOverrides = new List<EligibilityOverride>();
-            }
-
-            if (!allTagOverrides.TryGetValue(entity.LeagueID, out var tagOverrides))
-            {
-                tagOverrides = new List<TagOverride>();
-            }
-
-            var leagueYearKey = new LeagueYearKey(entity.LeagueID, entity.Year);
-            var domainLeagueTags = ConvertLeagueTagEntities(leagueTagsByLeague[entity.LeagueID], tagDictionary);
-            var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
-
-            var winningUser = await _userStore.GetUserThatMightExist(entity.WinningUserID);
-            var publishers = publisherLookup[leagueYearKey];
-            LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
-                winningUser, publishers);
-            leagueYears.Add(leagueYear);
+            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
+            League league = leagueEntity.ToDomain(years);
+            leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
         }
 
-        return leagueYears;
+        return leaguesWithStatus;
+    }
+
+    public async Task<IReadOnlyList<LeagueYear>> GetActiveLeagueYearsForUser(FantasyCriticUser user)
+    {
+        var param = new
+        {
+            P_UserID = user.UserID
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getactiveleagueyearsforuser", param, commandType: CommandType.StoredProcedure);
+
+        var leagues = await resultSets.ReadAsync<LeagueEntity>();
+        var leagueYears = await resultSets.ReadAsync<LeagueYearEntity>();
+
+        var leagueYearTags = await resultSets.ReadAsync<LeagueYearTagEntity>();
+        var specialGameSlots = await resultSets.ReadAsync<SpecialGameSlotEntity>();
+        var eligibilityOverrides = await resultSets.ReadAsync<EligibilityOverrideEntity>();
+        var tagOverrides = await resultSets.ReadAsync<TagOverrideEntity>();
+        var usersInLeagues = await resultSets.ReadAsync<FantasyCriticUserEntity>();
+        var publishers = await resultSets.ReadAsync<PublisherEntity>();
+        var publisherGames = await resultSets.ReadAsync<PublisherGameEntity>();
+        var formerPublisherGames = await resultSets.ReadAsync<FormerPublisherGameEntity>();
+
+        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+        var supportedYear = await GetSupportedYear(DateTime.Now.Year);  // Assuming we need the current year as supported year
+        var userDictionary = usersInLeagues.ToDictionary(x => x.UserID, y => y.ToDomain());
+
+        var leaguesDict = leagues.ToDictionary(l => l.LeagueID);
+        var leagueYearEntities = leagueYears.ToList();
+        var leagueYearsList = new List<LeagueYear>();
+
+        foreach (var leagueYearEntity in leagueYearEntities)
+        {
+            if (!leaguesDict.TryGetValue(leagueYearEntity.LeagueID, out var leagueEntity))
+            {
+                continue;  // If for some reason the league entity isn't found, we skip this league year.
+            }
+
+            var leagueID = leagueEntity.LeagueID;
+            var year = leagueYearEntity.Year;
+
+            var league = leagueEntity.ToDomain(leagueYearEntities.Where(y => y.LeagueID == leagueID).Select(y => y.Year).ToList());
+            var leagueYearKey = new LeagueYearKey(leagueID, year);
+
+            var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
+            var manager = userDictionary[leagueEntity.LeagueManager];
+
+            leagueEntity.ManagerDisplayName = manager.UserName;
+            leagueEntity.ManagerEmailAddress = manager.UserName;
+
+            var domainLeagueTags = ConvertLeagueTagEntities(leagueYearTags.Where(t => t.LeagueID == leagueID && t.Year == year), tagDictionary);
+            var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlots.Where(s => s.LeagueID == leagueID && s.Year == year), tagDictionary);
+            var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
+            var domainEligibilityOverrides = await ConvertEligibilityOverrideEntities(eligibilityOverrides.Where(e => e.LeagueID == leagueID && e.Year == year));
+            var domainTagOverrides = await ConvertTagOverrideEntities(tagOverrides.Where(t => t.LeagueID == leagueID && t.Year == year), tagDictionary);
+
+            var publisherEntitiesInLeagueYear = publishers.Where(p => p.LeagueID == leagueID && p.Year == year).ToList();
+            var publisherIDsInLeagueYear = publisherEntitiesInLeagueYear.Select(x => x.PublisherID).ToHashSet();
+            var publisherGamesForLeagueYear = publisherGames.Where(x => publisherIDsInLeagueYear.Contains(x.PublisherID)).ToList();
+            var formerPublisherGamesForLeagueYear = formerPublisherGames.Where(x => publisherIDsInLeagueYear.Contains(x.PublisherID)).ToList();
+            var publishersForLeagueYear = await ConvertPublisherEntities(userDictionary, publisherEntitiesInLeagueYear, publisherGamesForLeagueYear, formerPublisherGamesForLeagueYear, year);
+
+            var leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides,
+                domainLeagueTags, specialGameSlotsForLeagueYear, winningUser, publishersForLeagueYear);
+            leagueYearsList.Add(leagueYear);
+        }
+
+        return leagueYearsList;
     }
 
     public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()
@@ -1485,28 +1518,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         return userDictionary.SealDictionary();
-    }
-
-
-    public async Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
-    {
-        var query = new
-        {
-            userID = currentUser.Id
-        };
-
-        IEnumerable<LeagueEntity> leagueEntities;
-        await using (var connection = new MySqlConnection(_connectionString))
-        {
-            const string sql = "select vw_league.* from vw_league join tbl_user_followingleague on (vw_league.LeagueID = tbl_user_followingleague.LeagueID) " +
-                      "where tbl_user_followingleague.UserID = @userID and IsDeleted = 0;";
-            leagueEntities = await connection.QueryAsync<LeagueEntity>(
-                sql,
-                query);
-        }
-
-        IReadOnlyList<League> leagues = await ConvertLeagueEntitiesToDomain(leagueEntities.ToList());
-        return leagues;
     }
 
     public async Task FollowLeague(League league, FantasyCriticUser user)
@@ -1543,19 +1554,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             inviteID
         };
 
-        await using var connection = new MySqlConnection(_connectionString);
-        var entity = await connection.QuerySingleOrDefaultAsync<LeagueInviteEntity>(
-            "select * from tbl_league_invite where tbl_league_invite.InviteID = @inviteID",
-            query);
-        if (entity is null)
-        {
-            return null;
-        }
+        const string sql = """
+                           select tbl_league_invite.*, 
+                           tbl_user.DisplayName AS UserName, 
+                           tbl_user.EmailAddress AS UserEmailAddress 
+                           from tbl_league_invite
+                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.UserID
+                           where tbl_league_invite.InviteID = @inviteID;
+                           """;
 
-        return await ConvertLeagueInviteEntity(entity);
+        await using var connection = new MySqlConnection(_connectionString);
+        var entity = await connection.QuerySingleOrDefaultAsync<LeagueInviteEntity>(sql, query);
+        return entity?.ToDomain();
     }
 
-    public async Task<IReadOnlyList<LeagueInvite>> GetLeagueInvites(FantasyCriticUser currentUser)
+    public async Task<IReadOnlyList<CompleteLeagueInvite>> GetCompleteLeagueInvites(FantasyCriticUser currentUser)
     {
         var query = new
         {
@@ -1563,15 +1576,28 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             userID = currentUser.Id
         };
 
-        IEnumerable<LeagueInviteEntity> inviteEntities;
-        await using (var connection = new MySqlConnection(_connectionString))
-        {
-            inviteEntities = await connection.QueryAsync<LeagueInviteEntity>(
-                "select * from tbl_league_invite where tbl_league_invite.EmailAddress = @email OR tbl_league_invite.UserID = @userID;",
-                query);
-        }
+        const string sql = """
+                           SELECT tbl_league_invite.*, 
+                                  tbl_league.LeagueName,
+                                  inviteUser.DisplayName AS InviteUserName, 
+                                  inviteUser.EmailAddress AS InviteUserEmailAddress,
+                                  leagueManager.DisplayName AS ManagerUserName,
+                                  leagueYear.ActiveYear
+                           FROM tbl_league_invite
+                           JOIN tbl_league ON tbl_league.LeagueID = tbl_league_invite.LeagueID
+                           JOIN tbl_user leagueManager ON tbl_league.LeagueManager = leagueManager.UserID
+                           LEFT JOIN tbl_user inviteUser ON tbl_league_invite.UserID = inviteUser.UserID
+                           LEFT JOIN (
+                               SELECT LeagueID, MAX(Year) AS ActiveYear
+                               FROM tbl_league_year
+                               GROUP BY LeagueID
+                           ) leagueYear ON tbl_league.LeagueID = leagueYear.LeagueID
+                           where tbl_league_invite.EmailAddress = @email OR tbl_league_invite.UserID = @userID;
+                           """;
 
-        var leagueInvites = await ConvertLeagueInviteEntities(inviteEntities);
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<CompleteLeagueInviteEntity> inviteEntities = await connection.QueryAsync<CompleteLeagueInviteEntity>(sql, query);
+        var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
         return leagueInvites;
     }
 
@@ -1581,7 +1607,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@inviteID, @leagueID, @emailAddress, @userID);",
+            "insert into tbl_league_invite(InviteID,LeagueID,EmailAddress,UserID) VALUES (@InviteID, @LeagueID, @EmailAddress, @UserID);",
             entity);
     }
 
@@ -1592,21 +1618,25 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueID = league.LeagueID
         };
 
-        IEnumerable<LeagueInviteEntity> invites;
-        await using (var connection = new MySqlConnection(_connectionString))
-        {
-            invites = await connection.QueryAsync<LeagueInviteEntity>(
-                "select * from tbl_league_invite where tbl_league_invite.LeagueID = @leagueID;",
-                query);
-        }
+        const string sql = """
+                           select tbl_league_invite.*, 
+                           tbl_user.DisplayName AS UserName, 
+                           tbl_user.EmailAddress AS UserEmailAddress 
+                           from tbl_league_invite
+                           LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.UserID
+                           where tbl_league_invite.LeagueID = @leagueID;
+                           """;
 
-        var leagueInvites = await ConvertLeagueInviteEntitiesForSingleLeague(league, invites);
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<LeagueInviteEntity> invites = await connection.QueryAsync<LeagueInviteEntity>(sql, query);
+        var leagueInvites = invites.Select(x => x.ToDomain()).ToList();
         return leagueInvites;
     }
 
     public async Task AcceptInvite(LeagueInvite leagueInvite, FantasyCriticUser user)
     {
-        await AddPlayerToLeague(leagueInvite.League, user);
+        var league = await this.GetLeagueOrThrow(leagueInvite.LeagueID);
+        await AddPlayerToLeague(league, user);
         await DeleteInvite(leagueInvite);
     }
 
@@ -1796,10 +1826,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    private async Task<IReadOnlyList<Publisher>> ConvertPublisherEntities(IEnumerable<FantasyCriticUserEntity> userInLeagueEntities, IEnumerable<PublisherEntity> publisherEntities,
+    private async Task<IReadOnlyList<Publisher>> ConvertPublisherEntities(IReadOnlyDictionary<Guid, FantasyCriticUser> usersInLeague, IEnumerable<PublisherEntity> publisherEntities,
         IEnumerable<PublisherGameEntity> publisherGameEntities, IEnumerable<FormerPublisherGameEntity> formerPublisherGameEntities, int year)
     {
-        var usersInLeague = userInLeagueEntities.Select(x => x.ToDomain()).ToDictionary(x => x.Id);
         IReadOnlyList<PublisherGame> domainGames = await ConvertPublisherGameEntities(publisherGameEntities, year);
         IReadOnlyList<FormerPublisherGame> domainFormerGames = await ConvertFormerPublisherGameEntities(formerPublisherGameEntities, year);
 
@@ -2004,7 +2033,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
 
         var minimalPublisherEntities = await connection.QueryAsync<MinimalPublisherEntity>(minimalPublisherSQL, queryObject);
-        
+
         return minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
     }
 
@@ -2526,7 +2555,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(sql, finalUpdates, transaction);
     }
 
-    public async Task ReorderPublisherGames(Publisher publisher, Dictionary<int, Guid?> slotStates)
+    public async Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<int, Guid?> slotStates)
     {
         var realOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
         var tempOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
@@ -2634,33 +2663,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var supportedYears = await GetSupportedYears();
         var supportedYear = supportedYears.Single(x => x.Year == year);
         return supportedYear;
-    }
-
-    private async Task<IReadOnlyList<League>> ConvertLeagueEntitiesToDomain(IReadOnlyList<LeagueEntity> leagueEntities)
-    {
-        var relevantUserIDs = leagueEntities.Select(x => x.LeagueManager).Distinct().ToList();
-        var relevantUsers = await _userStore.GetUsers(relevantUserIDs);
-        var userDictionary = relevantUsers.ToDictionary(x => x.Id);
-
-        const string sql = "select * from tbl_league_year where LeagueID in @leagueIDs";
-        var queryObject = new
-        {
-            leagueIDs = leagueEntities.Select(x => x.LeagueID)
-        };
-        await using var connection = new MySqlConnection(_connectionString);
-        List<League> leagues = new List<League>();
-        IEnumerable<LeagueYearEntity> allLeagueYears = await connection.QueryAsync<LeagueYearEntity>(sql, queryObject);
-        var leagueYearLookup = allLeagueYears.ToLookup(x => x.LeagueID);
-
-        foreach (var leagueEntity in leagueEntities)
-        {
-            FantasyCriticUser manager = userDictionary[leagueEntity.LeagueManager];
-            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(manager, years);
-            leagues.Add(league);
-        }
-
-        return leagues;
     }
 
     public async Task<IReadOnlyList<PublisherGame>> GetPublisherGames(Guid publisherID, int leagueYear)
@@ -3278,16 +3280,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        await AddPlayerToLeagueInternal(league, user, mostRecentYear.Year, mostRecentYearNotStarted, connection, transaction);
+        await AddPlayerToLeagueInternal(league, user.Id, mostRecentYear.Year, mostRecentYearNotStarted, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    private async Task AddPlayerToLeagueInternal(League league, FantasyCriticUser user, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
+    private async Task AddPlayerToLeagueInternal(League league, Guid userIDToAdd, int leagueYear, bool addToActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new
         {
             leagueID = league.LeagueID,
-            userID = user.Id,
+            userID = userIDToAdd,
         };
 
         await connection.ExecuteAsync("insert into tbl_league_hasuser(LeagueID,UserID) VALUES (@leagueID,@userID);", userAddObject, transaction);
@@ -3298,7 +3300,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var userActiveObject = new
         {
             leagueID = league.LeagueID,
-            userID = user.Id,
+            userID = userIDToAdd,
             activeYear = leagueYear
         };
         await connection.ExecuteAsync("insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@activeYear,@userID);", userActiveObject, transaction);
@@ -3308,67 +3310,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var conferenceUserAddObject = new
             {
                 conferenceID = league.ConferenceID.Value,
-                userID = user.Id,
+                userID = userIDToAdd,
             };
 
             await connection.ExecuteAsync("insert ignore into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceUserAddObject, transaction);
         }
-    }
-
-    private async Task<IReadOnlyList<LeagueInvite>> ConvertLeagueInviteEntities(IEnumerable<LeagueInviteEntity> entities)
-    {
-        List<LeagueInvite> leagueInvites = new List<LeagueInvite>();
-        foreach (var entity in entities)
-        {
-            var league = await this.GetLeagueOrThrow(entity.LeagueID);
-            if (entity.UserID.HasValue)
-            {
-                FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
-                leagueInvites.Add(entity.ToDomain(league, user));
-            }
-            else
-            {
-                leagueInvites.Add(entity.ToDomain(league));
-            }
-        }
-
-        return leagueInvites;
-    }
-
-    private async Task<IReadOnlyList<LeagueInvite>> ConvertLeagueInviteEntitiesForSingleLeague(League league, IEnumerable<LeagueInviteEntity> entities)
-    {
-        List<LeagueInvite> leagueInvites = new List<LeagueInvite>();
-        foreach (var entity in entities)
-        {
-            if (entity.UserID.HasValue)
-            {
-                FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
-                leagueInvites.Add(entity.ToDomain(league, user));
-            }
-            else
-            {
-                leagueInvites.Add(entity.ToDomain(league));
-            }
-        }
-
-        return leagueInvites;
-    }
-
-    private async Task<LeagueInvite> ConvertLeagueInviteEntity(LeagueInviteEntity entity)
-    {
-        var league = await this.GetLeagueOrThrow(entity.LeagueID);
-        if (league is null)
-        {
-            throw new Exception($"Cannot find league for league (should never happen) LeagueID: {entity.LeagueID}");
-        }
-
-        if (entity.UserID.HasValue)
-        {
-            FantasyCriticUser user = await _userStore.FindByIdOrThrowAsync(entity.UserID.Value, CancellationToken.None);
-            return entity.ToDomain(league, user);
-        }
-
-        return entity.ToDomain(league);
     }
 
     private async Task<IReadOnlyList<LeagueYearTagEntity>> GetLeagueYearTagEntities(int year)

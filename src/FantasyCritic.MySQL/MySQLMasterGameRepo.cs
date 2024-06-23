@@ -1,11 +1,12 @@
+using System.Data;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
-using FantasyCritic.SharedSerialization.Database;
 using Serilog;
 
 namespace FantasyCritic.MySQL;
@@ -45,26 +46,23 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             return _masterGamesCache.Values.ToList();
         }
 
-        var possibleTags = await GetMasterGameTags();
-        var users = await _userStore.GetAllUsers();
-        var userDictionary = users.ToDictionary(x => x.Id);
-
         await using var connection = new MySqlConnection(_connectionString);
-        var masterGameResults = await connection.QueryAsync<MasterGameEntity>("select * from tbl_mastergame;");
-        var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
-        var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
+        var resultsSet = await connection.QueryMultipleAsync("sp_getmastergames", commandType: CommandType.StoredProcedure);
+        var masterGameResults = await resultsSet.ReadAsync<MasterGameEntity>();
+        var tagResults = await resultsSet.ReadAsync<MasterGameTagEntity>();
+        var masterSubGameResults = await resultsSet.ReadAsync<MasterSubGameEntity>();
+        var masterGameTagResults = await resultsSet.ReadAsync<MasterGameHasTagEntity>();
+
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
 
         var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
-        List<MasterGame> masterGames = new List<MasterGame>();
+        var masterGames = new List<MasterGame>();
         foreach (var entity in masterGameResults)
         {
-            var tagAssociations = masterGameTagLookup[entity.MasterGameID].Select(x => x.TagName);
-            IReadOnlyList<MasterGameTag> tags = possibleTags
-                .Where(x => tagAssociations.Contains(x.Name))
-                .ToList();
-
-            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
             masterGames.Add(domain);
         }
 
@@ -79,26 +77,23 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             return _masterGameYearsCache[year].Values.ToList();
         }
 
-        var possibleTags = await GetMasterGameTags();
-        var users = await _userStore.GetAllUsers();
-        var userDictionary = users.ToDictionary(x => x.Id);
-
         await using var connection = new MySqlConnection(_connectionString);
-        var masterGameResults = await connection.QueryAsync<MasterGameYearEntity>("select * from tbl_caching_mastergameyear where Year = @year;", new { year });
-        var masterSubGameResults = await connection.QueryAsync<MasterSubGameEntity>("select * from tbl_mastergame_subgame;");
-        var masterGameTagResults = await connection.QueryAsync<MasterGameHasTagEntity>("select * from tbl_mastergame_hastag;");
+        var resultsSet = await connection.QueryMultipleAsync("sp_getmastergameyears", new { P_Year = year }, commandType: CommandType.StoredProcedure);
+        var masterGameResults = await resultsSet.ReadAsync<MasterGameYearEntity>();
+        var tagResults = await resultsSet.ReadAsync<MasterGameTagEntity>();
+        var masterSubGameResults = await resultsSet.ReadAsync<MasterSubGameEntity>();
+        var masterGameTagResults = await resultsSet.ReadAsync<MasterGameHasTagEntity>();
+
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
 
         var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
         List<MasterGameYear> masterGames = new List<MasterGameYear>();
         foreach (var entity in masterGameResults)
         {
-            var tagAssociations = masterGameTagLookup[entity.MasterGameID].Select(x => x.TagName);
-            IReadOnlyList<MasterGameTag> tags = possibleTags
-                .Where(x => tagAssociations.Contains(x.Name))
-                .ToList();
-
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, userDictionary[entity.AddedByUserID]);
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
             masterGames.Add(domain);
         }
 

@@ -2,11 +2,11 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PublicLeagueYearViewModel
 {
-    public PublicLeagueYearViewModel(LeagueYear leagueYear)
+    public PublicLeagueYearViewModel(PublicLeagueYearStats leagueYear)
     {
-        LeagueID = leagueYear.League.LeagueID;
-        LeagueName = leagueYear.League.LeagueName;
-        NumberOfFollowers = leagueYear.League.NumberOfFollowers;
+        LeagueID = leagueYear.LeagueID;
+        LeagueName = leagueYear.LeagueName;
+        NumberOfFollowers = leagueYear.NumberOfFollowers;
         PlayStatus = leagueYear.PlayStatus.Value;
     }
 

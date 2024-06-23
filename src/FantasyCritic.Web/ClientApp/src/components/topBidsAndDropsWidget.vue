@@ -11,7 +11,8 @@
     <div v-if="!this.topBidsAndDrops" class="spinner">
       <font-awesome-icon icon="circle-notch" size="3x" spin :style="{ color: '#D6993A' }" />
     </div>
-    <b-tabs v-else pills class="top-bids-and-drops-tabs">
+    <div v-if="this.topBidsAndDrops && this.topBidsAndDrops.length === 0">No Bids and Drops Found.</div>
+    <b-tabs v-if="this.topBidsAndDrops && this.topBidsAndDrops.length > 0" pills class="top-bids-and-drops-tabs">
       <b-tab title="Top Bids" title-item-class="tab-header">
         <b-table :items="topBids" :fields="standardBidFields" :sort-by.sync="standardSortBy" :sort-desc.sync="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
@@ -44,7 +45,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import _ from 'lodash';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
@@ -52,11 +52,12 @@ export default {
   components: {
     MasterGamePopover
   },
+  props: {
+    topBidsAndDrops: { type: Array, required: false },
+    processDate: { type: String, required: false }
+  },
   data() {
     return {
-      processDate: null,
-      topBidsAndDrops: null,
-      errorInfo: null,
       standardSortBy: 'totalStandardBidCount',
       counterPickSortBy: 'totalCounterPickBidCount',
       dropSortBy: 'totalDropCount',
@@ -89,17 +90,6 @@ export default {
     topDrops() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
       return _.orderBy(relevant, ['successfulDrops'], ['desc']).slice(0, 25);
-    }
-  },
-  async created() {
-    try {
-      const response = await axios.get('/api/game/GetTopBidsAndDrops');
-      this.processDate = response.data.processDate;
-      const allData = response.data.data;
-      const yearWithMostData = response.data.yearWithMostData;
-      this.topBidsAndDrops = allData[yearWithMostData];
-    } catch (error) {
-      this.errorInfo = error.response.data;
     }
   }
 };

@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses;
 public class LeagueYearViewModel
 {
     public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear,
-        Instant currentInstant, IEnumerable<FantasyCriticUser> activeUsers,
+        Instant currentInstant, IReadOnlyList<MinimalFantasyCriticUser> activeUsers,
         CompletePlayStatus completePlayStatus, SystemWideValues systemWideValues,
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
@@ -26,7 +26,7 @@ public class LeagueYearViewModel
 
         if (accessingUser is not null)
         {
-            UserIsActive = activeUsers.Any(x => x.Id == accessingUser.Id);
+            UserIsActive = activeUsers.Any(x => x.UserID == accessingUser.Id);
         }
 
         Publishers = leagueYear.Publishers
@@ -66,7 +66,7 @@ public class LeagueYearViewModel
             {
                 int ranking = publisherRankings[publisher.PublisherID];
                 int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
-                bool isPreviousYearWinner = previousYearWinner is not null && previousYearWinner.Id == user.Id;
+                bool isPreviousYearWinner = previousYearWinner is not null && previousYearWinner.Id == user.UserID;
                 playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
                     userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner, ranking, projectedRanking));
             }
@@ -78,9 +78,9 @@ public class LeagueYearViewModel
             {
                 allPublishersMade = false;
 
-                if (invitedPlayer.User is not null)
+                if (invitedPlayer.InviteUser is not null)
                 {
-                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.User.UserName));
+                    playerVMs.Add(new PlayerWithPublisherViewModel(invitedPlayer.InviteID, invitedPlayer.InviteUser.DisplayName));
                 }
                 else
                 {

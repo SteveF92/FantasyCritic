@@ -36,7 +36,7 @@ public class MasterGameEntity
         UseSimpleEligibility = masterGame.UseSimpleEligibility;
         ShowNote = masterGame.ShowNote;
         AddedTimestamp = masterGame.AddedTimestamp;
-        AddedByUserID = masterGame.AddedByUser.Id;
+        AddedByUserID = masterGame.AddedByUser.UserID;
     }
 
     public MasterGameEntity(MasterGame masterGame, Guid addedByUserIDOverride)
@@ -71,8 +71,9 @@ public class MasterGameEntity
     public bool ShowNote { get; set; }
     public Instant AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
+    public string AddedByUserDisplayName { get; set; } = null!;
 
-    public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
+    public MasterGame ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, VeryMinimalFantasyCriticUser addedByUser)
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,

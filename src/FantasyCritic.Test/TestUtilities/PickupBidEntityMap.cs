@@ -1,6 +1,6 @@
 using System.Globalization;
 using CsvHelper.Configuration;
-using FantasyCritic.SharedSerialization.Database;
+using FantasyCritic.Lib.SharedSerialization.Database;
 using NodaTime.Text;
 
 namespace FantasyCritic.Test.TestUtilities;

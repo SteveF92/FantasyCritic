@@ -10,11 +10,11 @@ public class ConferenceLeagueYearViewModel
         LeagueID = domain.League.LeagueID;
         LeagueName = domain.League.LeagueName;
         Year = domain.Year;
-        LeagueManager = new PlayerViewModel(domain.League, domain.League.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(domain.League.LeagueID, domain.League.LeagueName, domain.League.LeagueManager, false);
 
         if (currentUser is not null)
         {
-            UserIsInLeague = conferencePlayersInLeagueYear.Any(x => x.User.Id == currentUser.Id);
+            UserIsInLeague = conferencePlayersInLeagueYear.Any(x => x.User.UserID == currentUser.Id);
         }
 
         IsPrimaryLeague = isPrimaryLeague;

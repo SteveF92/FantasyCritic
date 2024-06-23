@@ -1,24 +1,29 @@
+using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Identity;
+
 namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueWithStatusViewModel
 {
-    public LeagueWithStatusViewModel(League league, bool isManager, bool userIsInLeague, bool userIsFollowingLeague, bool mostRecentYearOneShotMode)
+    public LeagueWithStatusViewModel(LeagueWithMostRecentYearStatus leagueStatus, FantasyCriticUser currentUser)
     {
+        var league = leagueStatus.League;
+
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager, false);
         ConferenceID = league.ConferenceID;
         ConferenceName = league.ConferenceName;
-        IsManager = isManager;
+        IsManager = league.LeagueManager.UserID == currentUser.UserID;
         Archived = league.Archived;
         Years = league.Years;
         ActiveYear = Years.Max();
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         CustomRulesLeague = league.CustomRulesLeague;
-        UserIsInLeague = userIsInLeague;
-        UserIsFollowingLeague = userIsFollowingLeague;
-        OneShotMode = mostRecentYearOneShotMode;
+        UserIsInLeague = leagueStatus.UserIsInLeague;
+        UserIsFollowingLeague = leagueStatus.UserIsFollowingLeague;
+        OneShotMode = leagueStatus.MostRecentYearOneShot;
     }
 
     public Guid LeagueID { get; }

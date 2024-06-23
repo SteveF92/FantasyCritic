@@ -1,7 +1,4 @@
-using FantasyCritic.Lib.Domain;
-using NodaTime;
-
-namespace FantasyCritic.SharedSerialization.Database;
+namespace FantasyCritic.Lib.SharedSerialization.Database;
 
 public class MasterGameHasTagEntity
 {

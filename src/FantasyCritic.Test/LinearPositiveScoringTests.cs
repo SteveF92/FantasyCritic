@@ -18,7 +18,7 @@ public class LinearPositiveScoringTests
     private static readonly ReleaseSystem _releaseSystem = ReleaseSystem.MustBeReleased;
     private static readonly ScoringSystem _scoringSystem = ScoringSystem.GetScoringSystem("LinearPositive");
 
-    private static readonly FantasyCriticUser EmptyUser = new FantasyCriticUser() { Id = Guid.Empty };
+    private static readonly VeryMinimalFantasyCriticUser EmptyUser = new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal();
 
     [Test]
     public void BasicScoreTest()

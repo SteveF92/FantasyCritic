@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Extensions;
@@ -11,6 +12,7 @@ namespace FantasyCritic.Lib.Services;
 public class FantasyCriticService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly ICombinedDataRepo _combinedDataRepo;
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly LeagueMemberService _leagueMemberService;
@@ -18,14 +20,20 @@ public class FantasyCriticService
     private readonly DiscordPushService _discordPushService;
 
     public FantasyCriticService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService, DiscordPushService discordPushService,
-        IFantasyCriticRepo fantasyCriticRepo, IDiscordRepo discordRepo, IClock clock)
+        IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, IDiscordRepo discordRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _combinedDataRepo = combinedDataRepo;
         _discordRepo = discordRepo;
         _clock = clock;
         _leagueMemberService = leagueMemberService;
         _interLeagueService = interLeagueService;
         _discordPushService = discordPushService;
+    }
+
+    public Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)
+    {
+        return _combinedDataRepo.GetHomePageData(currentUser);
     }
 
     public Task<League?> GetLeagueByID(Guid id)
@@ -64,7 +72,7 @@ public class FantasyCriticService
         }
 
         IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
-        League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager, null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
+        League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager.ToMinimal(), null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
         await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newLeague);
     }
@@ -402,11 +410,6 @@ public class FantasyCriticService
         await _fantasyCriticRepo.DeleteLeague(league);
     }
 
-    public Task<IReadOnlyList<League>> GetFollowedLeagues(FantasyCriticUser currentUser)
-    {
-        return _fantasyCriticRepo.GetFollowedLeagues(currentUser);
-    }
-
     public Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league)
     {
         return _fantasyCriticRepo.GetLeagueFollowers(league);
@@ -430,8 +433,8 @@ public class FantasyCriticService
             return Result.Failure("Can't follow a league you are in.");
         }
 
-        var followedLeagues = await GetFollowedLeagues(user);
-        bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
+        var leaguesForUser = await _fantasyCriticRepo.GetLeaguesForUser(user);
+        bool userIsFollowingLeague = leaguesForUser.Any(x => x.UserIsFollowingLeague && x.League.LeagueID == league.LeagueID);
         if (userIsFollowingLeague)
         {
             return Result.Failure("User is already following that league.");
@@ -443,8 +446,8 @@ public class FantasyCriticService
 
     public async Task<Result> UnfollowLeague(League league, FantasyCriticUser user)
     {
-        var followedLeagues = await GetFollowedLeagues(user);
-        bool userIsFollowingLeague = followedLeagues.Any(x => x.LeagueID == league.LeagueID);
+        var leaguesForUser = await _fantasyCriticRepo.GetLeaguesForUser(user);
+        bool userIsFollowingLeague = leaguesForUser.Any(x => x.UserIsFollowingLeague && x.League.LeagueID == league.LeagueID);
         if (!userIsFollowingLeague)
         {
             return Result.Failure("User is not following that league.");
@@ -454,10 +457,9 @@ public class FantasyCriticService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<LeagueYear>> GetPublicLeagueYears(int year)
+    public Task<IReadOnlyList<PublicLeagueYearStats>> GetPublicLeagueYears(int year, int? count)
     {
-        var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
-        return leagueYears.Where(x => x.League.PublicLeague).OrderByDescending(x => x.League.NumberOfFollowers).ToList();
+        return _fantasyCriticRepo.GetPublicLeagueYears(year, count);
     }
 
     public async Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool? eligible)

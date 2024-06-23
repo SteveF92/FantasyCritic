@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses.Conferences;
 
 public class MinimalConferenceViewModel
 {
-    public MinimalConferenceViewModel(Conference domain, bool isManager)
+    public MinimalConferenceViewModel(MinimalConference domain, bool isManager)
     {
         ConferenceID = domain.ConferenceID;
         ConferenceName = domain.ConferenceName;
@@ -12,7 +12,7 @@ public class MinimalConferenceViewModel
         Years = domain.Years;
         ActiveYear = domain.Years.Max();
         CustomRulesConference = domain.CustomRulesConference;
-        ConferenceManagerDisplayName = domain.ConferenceManager.UserName;
+        ConferenceManagerDisplayName = domain.ConferenceManager.DisplayName;
     }
 
     public Guid ConferenceID { get; }

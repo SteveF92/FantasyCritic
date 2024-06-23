@@ -202,31 +202,25 @@ public class PublisherService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<LeagueYearPublisherPair>> GetPublishersWithLeagueYears(FantasyCriticUser user)
+    public async Task<IReadOnlyList<LeagueYearPublisherPair>> GetPublishersWithLeagueYearsInActiveYears(FantasyCriticUser user)
     {
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
-
         var leagueYearPublishers = new List<LeagueYearPublisherPair>();
-        foreach (var year in activeYears)
+        var activeLeagueYears = await _fantasyCriticRepo.GetActiveLeagueYearsForUser(user);
+
+        foreach (var leagueYear in activeLeagueYears)
         {
-            var activeLeagueYears = await _fantasyCriticRepo.GetLeagueYearsForUser(user, year.Year);
-
-            foreach (var leagueYear in activeLeagueYears)
+            if (leagueYear.League.TestLeague)
             {
-                if (leagueYear.League.TestLeague)
-                {
-                    continue;
-                }
-
-                var userPublisher = leagueYear.GetUserPublisher(user);
-                if (userPublisher is null)
-                {
-                    continue;
-                }
-
-                leagueYearPublishers.Add(new LeagueYearPublisherPair(leagueYear, userPublisher));
+                continue;
             }
+
+            var userPublisher = leagueYear.GetUserPublisher(user);
+            if (userPublisher is null)
+            {
+                continue;
+            }
+
+            leagueYearPublishers.Add(new LeagueYearPublisherPair(leagueYear, userPublisher));
         }
 
         return leagueYearPublishers;

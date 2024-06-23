@@ -49,6 +49,8 @@ public class MasterGameYear : IEquatable<MasterGameYear>
     public double PeakHypeFactor { get; }
     public double LinearRegressionHypeFactor { get; }
 
+    public MasterGameYearKey Key => new MasterGameYearKey(MasterGame.MasterGameID, Year);
+
     public override string ToString() => $"{MasterGame}-{Year}";
 
     public WillReleaseStatus GetWillReleaseStatus() => MasterGame.GetWillReleaseStatus(Year);

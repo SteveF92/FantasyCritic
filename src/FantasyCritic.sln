@@ -28,8 +28,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.DBUtility", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.DiscordBot", "FantasyCritic.DiscordBot\FantasyCritic.DiscordBot.csproj", "{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.SharedSerialization", "FantasyCritic.SharedSerialization\FantasyCritic.SharedSerialization.csproj", "{447983E5-6E2A-4D7E-A24D-FAB8C5062B08}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.TestDataScrubber", "FantasyCritic.TestDataScrubber\FantasyCritic.TestDataScrubber.csproj", "{27144025-E73E-4010-BE53-FFBCC7AEDCAE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{7BB80223-E4F3-4553-A18E-E066660AC525}"
@@ -90,10 +88,6 @@ Global
 		{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEEB0D8E-2618-4061-BB82-A668D2E7A6A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{447983E5-6E2A-4D7E-A24D-FAB8C5062B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{447983E5-6E2A-4D7E-A24D-FAB8C5062B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{447983E5-6E2A-4D7E-A24D-FAB8C5062B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{447983E5-6E2A-4D7E-A24D-FAB8C5062B08}.Release|Any CPU.Build.0 = Release|Any CPU
 		{27144025-E73E-4010-BE53-FFBCC7AEDCAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{27144025-E73E-4010-BE53-FFBCC7AEDCAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27144025-E73E-4010-BE53-FFBCC7AEDCAE}.Release|Any CPU.ActiveCfg = Release|Any CPU

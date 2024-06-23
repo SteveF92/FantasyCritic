@@ -6,6 +6,7 @@ export default {
     isBusy: false,
     possibleLeagueOptions: null,
     bidTimes: null,
+    supportedYears: null,
     dataLoaded: false
   },
   getters: {
@@ -15,39 +16,20 @@ export default {
     bidTimes: (state) => state.bidTimes
   },
   actions: {
-    async fetchInterLeagueData(context) {
+    async fetchBasicData(context) {
       context.commit('setBusy', true);
 
       try {
-        const tasks = [context.dispatch('getAllTags'), context.dispatch('getPossibleLeagueOptions'), context.dispatch('getBidTimes')];
-        await Promise.all(tasks);
+        const response = await axios.get('/api/CombinedData/BasicData');
+        context.commit('setTags', response.data.masterGameTags);
+        context.commit('setPossibleLeagueOptions', response.data.leagueOptions);
+        context.commit('setBidTimes', response.data.bidTimes);
+        context.commit('setSupportedYears', response.data.supportedYears);
         context.commit('setDataLoaded', true);
+      } catch (error) {
+        console.log(error);
       } finally {
         context.commit('setBusy', false);
-      }
-    },
-    async getAllTags(context) {
-      try {
-        const response = await axios.get('/api/Game/GetMasterGameTags');
-        context.commit('setTags', response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getPossibleLeagueOptions(context) {
-      try {
-        const response = await axios.get('/api/League/LeagueOptions');
-        context.commit('setPossibleLeagueOptions', response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getBidTimes(context) {
-      try {
-        const response = await axios.get('/api/General/BidTimes');
-        context.commit('setBidTimes', response.data);
-      } catch (error) {
-        console.log(error);
       }
     }
   },
@@ -61,8 +43,8 @@ export default {
     setTags(state, tags) {
       state.tags = tags;
     },
-    clearTags(state) {
-      state.tags = null;
+    setSupportedYears(state, supportedYears) {
+      state.supportedYears = supportedYears;
     },
     setPossibleLeagueOptions(state, possibleLeagueOptions) {
       state.possibleLeagueOptions = possibleLeagueOptions;

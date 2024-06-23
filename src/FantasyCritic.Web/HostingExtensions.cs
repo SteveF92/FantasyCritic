@@ -92,6 +92,7 @@ public static class HostingExtensions
 
         services.AddScoped<IMasterGameRepo, MySQLMasterGameRepo>();
         services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
+        services.AddScoped<ICombinedDataRepo, MySQLCombinedDataRepo>();
         services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
         services.AddScoped<IConferenceRepo, MySQLConferenceRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
@@ -306,7 +307,8 @@ public static class HostingExtensions
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            });
+            })
+            .AddControllersAsServices();
 
         services.AddRazorPages();
         services.AddSignalR();
@@ -327,6 +329,7 @@ public static class HostingExtensions
         }
 
         services.AddRazorTemplating();
+        services.AddSession();
 
         return builder.Build();
     }
@@ -372,6 +375,8 @@ public static class HostingExtensions
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseSession();
 
         app.MapControllers();
         app.MapRazorPages();

@@ -937,9 +937,14 @@ public class DiscordPushService
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
-    private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(FantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
+    private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(MinimalFantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
     {
-        var externalLogins = await userStore.GetLoginsAsync(fantasyCriticUser, CancellationToken.None);
+        var fakedFullUser = new FantasyCriticUser()
+        {
+            Id = fantasyCriticUser.UserID
+        };
+
+        var externalLogins = await userStore.GetLoginsAsync(fakedFullUser, CancellationToken.None);
         var discordProviderKey = externalLogins.SingleOrDefault(x => x.LoginProvider == "discord")?.ProviderKey;
         if (discordProviderKey is not null)
         {

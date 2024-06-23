@@ -5,7 +5,6 @@ using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -55,28 +54,10 @@ public class LeagueController : BaseLeagueController
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> LeagueOptions()
+    public async Task<ActionResult<LeagueOptionsViewModel>> LeagueOptions()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished);
-
-        var currentUserResult = await GetCurrentUser();
-        if (currentUserResult.IsSuccess)
-        {
-            var userIsBetaUser = await _userManager.IsInRoleAsync(currentUserResult.Value, "BetaTester");
-            if (userIsBetaUser)
-            {
-                var betaYears = supportedYears.Where(x => x.OpenForBetaUsers);
-                openYears = openYears.Concat(betaYears).Distinct();
-            }
-        }
-
-        var openYearInts = openYears.Select(x => x.Year);
-        LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYearInts, DraftSystem.GetAllPossibleValues(),
-            PickupSystem.GetAllPossibleValues(), TiebreakSystem.GetAllPossibleValues(),
-            ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues(),
-            ReleaseSystem.GetAllPossibleValues());
-
+        var viewModel = BuildLeagueOptionsViewModel(supportedYears);
         return Ok(viewModel);
     }
 
@@ -84,36 +65,11 @@ public class LeagueController : BaseLeagueController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
-        IReadOnlyList<League> myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
-        var oneShotLeagues = await _leagueMemberService.GetLeaguesWithMostRecentYearOneShot();
-
-        List<LeagueWithStatusViewModel> viewModels = new List<LeagueWithStatusViewModel>();
-        foreach (var league in myLeagues)
-        {
-            if (year.HasValue && !league.Years.Contains(year.Value))
-            {
-                continue;
-            }
-
-            bool isManager = (league.LeagueManager.Id == currentUser.Id);
-            viewModels.Add(new LeagueWithStatusViewModel(league, isManager, true, true, oneShotLeagues.Contains(league.LeagueID)));
-        }
-
-        var sortedViewModels = viewModels.OrderBy(l => l.LeagueName).ToList();
-        return Ok(sortedViewModels);
-    }
-
-    public async Task<IActionResult> FollowedLeagues()
-    {
-        var currentUser = await GetCurrentUserOrThrow();
-
-        IReadOnlyList<League> leaguesFollowing = await _fantasyCriticService.GetFollowedLeagues(currentUser);
-
-        List<LeagueViewModel> viewModels = new List<LeagueViewModel>();
-        foreach (var league in leaguesFollowing)
-        {
-            viewModels.Add(new LeagueViewModel(league, false, false, true));
-        }
+        var myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
+        var viewModels = myLeagues.Where(league => !year.HasValue || league.League.Years.Contains(year.Value))
+            .Select(league => new LeagueWithStatusViewModel(league, currentUser))
+            .OrderBy(l => l.LeagueName)
+            .ToList();
 
         return Ok(viewModels);
     }
@@ -122,8 +78,8 @@ public class LeagueController : BaseLeagueController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
-        var invitedLeagues = await _leagueMemberService.GetLeagueInvites(currentUser);
-        var viewModels = invitedLeagues.Select(x => LeagueInviteViewModel.CreateWithDisplayName(x, currentUser));
+        var invitedLeagues = await _leagueMemberService.GetCompleteLeagueInvites(currentUser);
+        var viewModels = invitedLeagues.Select(x => new CompleteLeagueInviteViewModel(x));
         return Ok(viewModels);
     }
 
@@ -131,7 +87,7 @@ public class LeagueController : BaseLeagueController
     [HttpGet("{year}")]
     public async Task<IActionResult> PublicLeagues(int year, int? count)
     {
-        IReadOnlyList<LeagueYear> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(year);
+        IReadOnlyList<PublicLeagueYearStats> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(year, count);
         List<PublicLeagueYearViewModel> viewModels = new List<PublicLeagueYearViewModel>();
         foreach (var leagueYear in publicLeagueYears)
         {
@@ -244,8 +200,8 @@ public class LeagueController : BaseLeagueController
 
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
-        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, false, currentDate)).ToList();
-        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, true, currentDate)).ToList();
+        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false)).ToList();
+        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
         var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
 
@@ -253,7 +209,7 @@ public class LeagueController : BaseLeagueController
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
-            validResult.ActiveUsers, completePlayStatus, systemWideValues,
+            validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList(), completePlayStatus, systemWideValues,
             validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedByDictionary,
             activeTrades, activeSpecialAuctions, privatePublisherData, gameNewsViewModel);
@@ -856,16 +812,16 @@ public class LeagueController : BaseLeagueController
         var currentUser = await GetCurrentUserOrThrow();
         var currentDate = _clock.GetToday();
 
-        var myPublishers = await _publisherService.GetPublishersWithLeagueYears(currentUser);
+        var myPublishers = await _publisherService.GetPublishersWithLeagueYearsInActiveYears(currentUser);
 
-        var gameNewsUpcoming = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, false);
-        var gameNewsRecent = GameNewsFunctions.GetGameNewsForPublishers(myPublishers, currentDate, true);
+        var gameNewsUpcoming = GameNewsFunctions.GetGameNews(myPublishers, currentDate, false);
+        var gameNewsRecent = GameNewsFunctions.GetGameNews(myPublishers, currentDate, true);
 
         var leagueYearPublisherListsUpcoming = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsUpcoming);
         var leagueYearPublisherListsRecent = GameNewsFunctions.GetLeagueYearPublisherLists(myPublishers, gameNewsRecent);
 
-        var upcomingGames = BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
-        var recentGames = BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
+        var upcomingGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsUpcoming).ToList();
+        var recentGames = DomainControllerUtilities.BuildUserGameNewsViewModel(currentDate, leagueYearPublisherListsRecent).ToList();
         return new GameNewsViewModel(upcomingGames, recentGames);
     }
 
@@ -1448,11 +1404,6 @@ public class LeagueController : BaseLeagueController
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
         var publisherLists = GameNewsFunctions.GetLeagueYearPublisherLists(publishers, gameNews);
         return publisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, false, currentDate)).ToList();
-    }
-
-    private static IReadOnlyList<SingleGameNewsViewModel> BuildUserGameNewsViewModel(LocalDate currentDate, IReadOnlyDictionary<MasterGameYear, List<LeagueYearPublisherPair>> leagueYearPublisherLists)
-    {
-        return leagueYearPublisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, true, currentDate)).ToList();
     }
 }
 

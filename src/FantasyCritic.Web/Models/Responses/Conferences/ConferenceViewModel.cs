@@ -8,7 +8,7 @@ public class ConferenceViewModel
     {
         ConferenceID = domain.ConferenceID;
         ConferenceName = domain.ConferenceName;
-        ConferenceManager = new ConferencePlayerViewModel(domain, players.Single(x => x.User.Id == domain.ConferenceManager.Id));
+        ConferenceManager = new ConferencePlayerViewModel(domain, players.Single(x => x.User.UserID == domain.ConferenceManager.UserID));
         IsManager = isManager;
         Years = domain.Years;
         ActiveYear = domain.Years.Max();

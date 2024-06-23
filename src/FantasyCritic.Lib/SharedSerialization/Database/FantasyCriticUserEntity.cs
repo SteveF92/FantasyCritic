@@ -1,8 +1,8 @@
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.MySQL.Entities.Identity;
+namespace FantasyCritic.Lib.SharedSerialization.Database;
 
-internal class FantasyCriticUserEntity
+public class FantasyCriticUserEntity
 {
     public FantasyCriticUserEntity()
     {
@@ -12,11 +12,11 @@ internal class FantasyCriticUserEntity
     public FantasyCriticUserEntity(FantasyCriticUser user)
     {
         UserID = user.Id;
-        DisplayName = user.UserName!;
+        DisplayName = user.UserName;
         PatreonDonorNameOverride = user.PatreonDonorNameOverride;
         DisplayNumber = user.DisplayNumber;
-        EmailAddress = user.Email!;
-        NormalizedEmailAddress = user.NormalizedEmail!;
+        EmailAddress = user.Email;
+        NormalizedEmailAddress = user.NormalizedEmail;
         EmailConfirmed = user.EmailConfirmed;
         SecurityStamp = user.SecurityStamp;
         PasswordHash = user.PasswordHash;

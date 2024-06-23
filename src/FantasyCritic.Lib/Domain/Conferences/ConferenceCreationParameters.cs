@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Identity;
 namespace FantasyCritic.Lib.Domain.Conferences;
 public class ConferenceCreationParameters
 {
-    public ConferenceCreationParameters(FantasyCriticUser manager, string conferenceName, string primaryLeagueName, bool customRulesConference, LeagueYearParameters leagueYearParameters)
+    public ConferenceCreationParameters(MinimalFantasyCriticUser manager, string conferenceName, string primaryLeagueName, bool customRulesConference, LeagueYearParameters leagueYearParameters)
     {
         Manager = manager;
         ConferenceName = conferenceName;
@@ -13,7 +13,7 @@ public class ConferenceCreationParameters
         LeagueYearParameters = leagueYearParameters;
     }
 
-    public FantasyCriticUser Manager { get; }
+    public MinimalFantasyCriticUser Manager { get; }
     public string ConferenceName { get; }
     public string PrimaryLeagueName { get; }
     public bool CustomRulesConference { get; }

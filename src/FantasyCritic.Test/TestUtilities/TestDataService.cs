@@ -7,8 +7,8 @@ using CsvHelper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.Lib.Utilities;
-using FantasyCritic.SharedSerialization.Database;
 using NodaTime;
 
 namespace FantasyCritic.Test.TestUtilities;
@@ -122,7 +122,7 @@ public class TestDataService
             var tagAssociationsForGame = tagLookup[entity.MasterGameID];
             var tagNames = tagAssociationsForGame.Select(x => x.TagName).ToHashSet();
             var tagsForGame = domainTags.Where(x => tagNames.Contains(x.Name));
-            domains.Add(entity.ToDomain(new List<MasterSubGame>(), tagsForGame, FantasyCriticUser.GetFakeUser()));
+            domains.Add(entity.ToDomain(new List<MasterSubGame>(), tagsForGame, FantasyCriticUser.GetFakeUser().ToVeryMinimal()));
         }
 
         return domains.ToDictionary(x => x.MasterGame.MasterGameID);
@@ -151,7 +151,7 @@ public class TestDataService
         foreach (var leagueYear in leagueYearEntities)
         {
             var leagueYearKey = new LeagueYearKey(leagueYear.LeagueID, leagueYear.Year);
-            var league = new League(leagueYear.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser(), null, null, new List<int>() {leagueYear.Year}, false, false, false, false, 0);
+            var league = new League(leagueYear.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser().ToMinimal(), null, null, new List<int>() {leagueYear.Year}, false, false, false, false, 0);
             var supportedYear = new SupportedYear(leagueYear.Year, true, true, true, new LocalDate(leagueYear.Year, 1, 1), false);
 
             var publishersInLeague = publisherLookup[leagueYearKey].ToList();

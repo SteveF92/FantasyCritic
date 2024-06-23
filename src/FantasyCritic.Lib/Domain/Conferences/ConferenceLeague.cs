@@ -3,7 +3,7 @@ using FantasyCritic.Lib.Identity;
 namespace FantasyCritic.Lib.Domain.Conferences;
 public class ConferenceLeague : IEquatable<ConferenceLeague>
 {
-    public ConferenceLeague(Guid leagueID, string leagueName, FantasyCriticUser leagueManager)
+    public ConferenceLeague(Guid leagueID, string leagueName, MinimalFantasyCriticUser leagueManager)
     {
         LeagueID = leagueID;
         LeagueName = leagueName;
@@ -12,7 +12,7 @@ public class ConferenceLeague : IEquatable<ConferenceLeague>
 
     public Guid LeagueID { get; }
     public string LeagueName { get; }
-    public FantasyCriticUser LeagueManager { get; }
+    public MinimalFantasyCriticUser LeagueManager { get; }
 
     public override string ToString() => LeagueName;
 

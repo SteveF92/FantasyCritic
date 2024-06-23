@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.MySQL;
 
@@ -119,10 +120,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
 
-        var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-            @"select * from tbl_user WHERE UserID = @userID",
-            new { userID = parsedUserID });
-        var entity = userResult.SingleOrDefault();
+        var entity = await connection.QuerySingleOrDefaultAsync<FantasyCriticUserEntity>("select * from tbl_user WHERE UserID = @userID", new { userID = parsedUserID });
         return entity?.ToDomain();
     }
 
@@ -133,7 +131,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         await connection.OpenAsync();
 
         var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-            @"select * from tbl_user WHERE UPPER(DisplayName) = @normalizedDisplayName and DisplayNumber = @displayNumber;",
+            "select * from tbl_user WHERE UPPER(DisplayName) = @normalizedDisplayName and DisplayNumber = @displayNumber;",
             new { normalizedDisplayName, displayNumber });
         var entity = userResult.SingleOrDefault();
         return entity?.ToDomain();
@@ -181,7 +179,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         await connection.OpenAsync(cancellationToken);
 
         var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-            @"select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmailAddress",
+            "select * from tbl_user WHERE NormalizedEmailAddress = @normalizedEmailAddress",
             new { normalizedEmailAddress });
         var entity = userResult.SingleOrDefault();
         return entity?.ToDomain();
@@ -281,7 +279,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
-        var roleResults = await connection.QueryAsync<string>(@"select tbl_user_role.Name from tbl_user join tbl_user_hasrole on (tbl_user.UserID = tbl_user_hasrole.UserID) " +
+        var roleResults = await connection.QueryAsync<string>("select tbl_user_role.Name from tbl_user join tbl_user_hasrole on (tbl_user.UserID = tbl_user_hasrole.UserID) " +
                                                               "join tbl_user_role on (tbl_user_hasrole.RoleID = tbl_user_role.RoleID) WHERE tbl_user.UserID = @userID", new { userID = user.Id });
         var roleStrings = roleResults.ToList();
         return roleStrings;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="interLeagueDataLoaded">
     <div v-if="userInfo && !userInfo.emailConfirmed" class="alert alert-warning">
       <div>Your email address has not been confirmed. You cannot accept league invites via email until you do so.</div>
       <div>Check your email account for an email from us.</div>
@@ -75,7 +75,7 @@
 
         <div class="col-lg-4 col-md-12">
           <hr class="d-md-block d-lg-none" />
-          <TopBidsAndDrops></TopBidsAndDrops>
+          <TopBidsAndDrops :top-bids-and-drops="topBidsAndDrops" :process-date="topBidsAndDropsProcessDate"></TopBidsAndDrops>
         </div>
       </div>
 
@@ -131,7 +131,6 @@ export default {
       myFollowedLeagues: [],
       myConferences: [],
       selectedYear: null,
-      supportedYears: [],
       activeRoyaleYearQuarter: null,
       publicLeagues: [],
       userRoyalePublisher: null,
@@ -141,7 +140,9 @@ export default {
       ],
       sortBy: 'numberOfFollowers',
       sortDesc: true,
-      gameNews: null
+      gameNews: null,
+      topBidsAndDropsProcessDate: null,
+      topBidsAndDrops: null
     };
   },
   computed: {
@@ -157,97 +158,47 @@ export default {
       return _.filter(this.myLeagues, ['testLeague', true]);
     }
   },
-  async mounted() {
-    const tasks = [
-      this.fetchMyLeagues(),
-      this.fetchFollowedLeagues(),
-      this.fetchInvitedLeagues(),
-      this.fetchMyConferences(),
-      this.fetchSupportedYears(),
-      this.fetchGameNews(),
-      this.fetchActiveRoyaleYearQuarter()
-    ];
-    await Promise.all(tasks);
+  async created() {
+    this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
+    await this.fetchHomePageData();
   },
   methods: {
-    async fetchMyLeagues() {
+    async fetchHomePageData() {
       try {
-        const response = await axios.get('/api/League/MyLeagues');
-        this.myLeagues = response.data;
+        const response = await axios.get('/api/CombinedData/HomePageData');
+
+        //My Leagues
+        this.myLeagues = response.data.myLeagues.filter((x) => x.userIsInLeague);
+        this.myFollowedLeagues = response.data.myLeagues.filter((x) => x.userIsFollowingLeague);
         this.fetchingLeagues = false;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchInvitedLeagues() {
-      try {
-        const response = await axios.get('/api/League/MyInvites');
-        this.invitedLeagues = response.data;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchFollowedLeagues() {
-      try {
-        const response = await axios.get('/api/League/FollowedLeagues');
-        this.myFollowedLeagues = response.data;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchMyConferences() {
-      try {
-        const response = await axios.get('/api/Conference/MyConferences');
-        this.myConferences = response.data;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchSupportedYears() {
-      try {
-        const response = await axios.get('/api/game/SupportedYears');
-        let supportedYears = response.data;
-        let openYears = _.filter(supportedYears, { openForPlay: true });
-        let finishedYears = _.filter(supportedYears, { finished: true });
-        this.supportedYears = openYears.concat(finishedYears).map(function (v) {
-          return v.year;
-        });
-        this.selectedYear = this.supportedYears[0];
-        this.fetchPublicLeaguesForYear(this.selectedYear);
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchActiveRoyaleYearQuarter() {
-      try {
-        const response = await axios.get('/api/royale/ActiveRoyaleQuarter');
-        this.activeRoyaleYearQuarter = response.data;
-        this.fetchUserRoyalePublisher();
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchPublicLeaguesForYear(year) {
-      try {
-        const response = await axios.get('/api/league/PublicLeagues/' + year + '?count=10');
-        this.publicLeagues = response.data;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchGameNews() {
-      try {
-        const response = await axios.get('/api/league/MyGameNews/');
-        this.gameNews = response.data;
-      } catch (error) {
-        this.errorInfo = error.response.data;
-      }
-    },
-    async fetchUserRoyalePublisher() {
-      this.userRoyalePublisher = null;
-      try {
-        const response = await axios.get('/api/royale/GetUserRoyalePublisher/' + this.activeRoyaleYearQuarter.year + '/' + this.activeRoyaleYearQuarter.quarter);
-        this.userRoyalePublisher = response.data;
+
+        //Invited Leagues
+        this.invitedLeagues = response.data.myInvites;
+
+        //My Conferences
+        this.myConferences = response.data.myConferences;
+
+        //Game News
+        this.gameNews = response.data.myGameNews;
+
+        //Top Bids and Drops
+        if (response.data.topBidsAndDrops) {
+          this.topBidsAndDropsProcessDate = response.data.topBidsAndDrops.processDate;
+          const allData = response.data.topBidsAndDrops.data;
+          const yearWithMostData = response.data.topBidsAndDrops.yearWithMostData;
+          this.topBidsAndDrops = allData[yearWithMostData];
+        } else {
+          this.topBidsAndDrops = [];
+        }
+
+        //Public Leagues
+        this.publicLeagues = response.data.publicLeagues;
+
+        //Active Royale Quarter
+        this.activeRoyaleYearQuarter = response.data.activeRoyaleQuarter;
+
+        //User Royale Publisher
+        this.userRoyalePublisher = response.data.userRoyalePublisher;
       } catch (error) {
         this.errorInfo = error.response.data;
       }

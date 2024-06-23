@@ -8,7 +8,7 @@ public class ConferenceLeagueViewModel
     {
         LeagueID = domain.LeagueID;
         LeagueName = domain.LeagueName;
-        LeagueManager = new PlayerViewModel(domain, domain.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(domain.LeagueID, domain.LeagueName, domain.LeagueManager, false);
     }
 
     public Guid LeagueID { get; }

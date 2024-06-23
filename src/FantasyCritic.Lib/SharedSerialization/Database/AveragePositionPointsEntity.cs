@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using FantasyCritic.Lib.Domain;
 
-namespace FantasyCritic.SharedSerialization.Database;
+namespace FantasyCritic.Lib.SharedSerialization.Database;
 
 public class AveragePositionPointsEntity
 {

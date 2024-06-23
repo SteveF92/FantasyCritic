@@ -41,7 +41,7 @@ public class CreateConferenceRequest
         return Result.Success();
     }
 
-    public ConferenceCreationParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    public ConferenceCreationParameters ToDomain(MinimalFantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
         LeagueYearParameters leagueYearParameters = LeagueYearSettings.ToDomain(tagDictionary);
         ConferenceCreationParameters parameters = new ConferenceCreationParameters(manager, ConferenceName, PrimaryLeagueName, CustomRulesConference, leagueYearParameters);

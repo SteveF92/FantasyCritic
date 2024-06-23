@@ -22,7 +22,7 @@ public class ConferenceService
         _discordPushService = discordPushService;
     }
 
-    public Task<IReadOnlyList<Conference>> GetConferencesForUser(FantasyCriticUser currentUser)
+    public Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser currentUser)
     {
         return _conferenceRepo.GetConferencesForUser(currentUser);
     }
@@ -71,7 +71,7 @@ public class ConferenceService
         }
 
         IEnumerable<int> years = new List<int>() { year };
-        League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager, conference.ConferenceID, conference.ConferenceName, years, true, false, conference.CustomRulesConference, false, 0);
+        League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager.ToMinimal(), conference.ConferenceID, conference.ConferenceName, years, true, false, conference.CustomRulesConference, false, 0);
         await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague);
         return Result.Success();
     }
@@ -210,7 +210,7 @@ public class ConferenceService
 
     public async Task<Result> RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser)
     {
-        if (conference.ConferenceManager.Equals(removeUser))
+        if (conference.ConferenceManager.UserID == removeUser.UserID)
         {
             return Result.Failure("You cannot remove the conference manager from the conference.");
         }

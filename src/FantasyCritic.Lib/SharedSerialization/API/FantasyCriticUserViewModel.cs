@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.Identity;
-using NodaTime;
 
-namespace FantasyCritic.SharedSerialization.API;
+namespace FantasyCritic.Lib.SharedSerialization.API;
 
 public class FantasyCriticUserViewModel
 {

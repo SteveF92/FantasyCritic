@@ -1,5 +1,5 @@
+using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
-using FantasyCritic.SharedSerialization.Database;
 using Serilog;
 
 namespace FantasyCritic.MySQL.SyncingRepos;

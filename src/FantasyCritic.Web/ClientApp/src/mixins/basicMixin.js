@@ -3,9 +3,10 @@ import GlobalFunctions from '@/globalFunctions';
 
 let basicMixin = {
   computed: {
-    ...mapGetters(['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'authIsBusy']),
+    ...mapGetters(['interLeagueDataLoaded', 'isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'authIsBusy']),
     ...mapState({
-      possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions
+      possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions,
+      supportedYears: (state) => state.interLeague.supportedYears
     }),
     displayName() {
       if (!this.$store.getters.userInfo) {

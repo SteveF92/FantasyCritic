@@ -8,7 +8,7 @@ public class LeagueViewModel
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager, false);
         ConferenceID = league.ConferenceID;
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
@@ -27,7 +27,7 @@ public class LeagueViewModel
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        LeagueManager = new PlayerViewModel(league, league.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager, false);
         ConferenceID = league.ConferenceID;
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
@@ -37,10 +37,10 @@ public class LeagueViewModel
 
         if (outstandingInvite is not null && currentUser is not null)
         {
-            OutstandingInvite = LeagueInviteViewModel.CreateWithDisplayName(outstandingInvite, currentUser);
+            OutstandingInvite = new LeagueInviteViewModel(outstandingInvite);
         }
 
-        Players = players.Select(x => new PlayerViewModel(league, x.User, x.Removable)).ToList();
+        Players = players.Select(x => new PlayerViewModel(league.LeagueID, league.LeagueName, x.User, x.Removable)).ToList();
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         CustomRulesLeague = league.CustomRulesLeague;

@@ -1,7 +1,6 @@
-using FantasyCritic.Lib.Domain;
-using NodaTime;
+using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.SharedSerialization.API;
+namespace FantasyCritic.Lib.SharedSerialization.API;
 
 public class MasterGameViewModel
 {
@@ -38,33 +37,15 @@ public class MasterGameViewModel
         OpenCriticSlug = masterGame.OpenCriticSlug;
         GGToken = masterGame.GGToken;
         GGSlug = masterGame.GGSlug;
-        SubGames = masterGame.SubGames.Select(x => new MasterGameViewModel(x, currentDate)).ToList();
+        SubGames = masterGame.SubGames.Select(x => new MasterSubGameViewModel(x, currentDate)).ToList();
         Tags = masterGame.Tags.Select(x => x.Name).ToList();
         BoxartFileName = masterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.GGCoverArtFileName;
         AddedTimestamp = masterGame.AddedTimestamp;
-        AddedByUser = new FantasyCriticUserViewModel(masterGame.AddedByUser);
+        AddedByUser = new MinimalFantasyCriticUserViewModel(masterGame.AddedByUser);
 
         Error = error;
         NumberOutstandingCorrections = numberOutstandingCorrections;
-    }
-
-    public MasterGameViewModel(MasterSubGame masterSubGame, LocalDate currentDate)
-    {
-        MasterGameID = masterSubGame.MasterGameID;
-        GameName = masterSubGame.GameName;
-        EstimatedReleaseDate = masterSubGame.EstimatedReleaseDate;
-        MinimumReleaseDate = masterSubGame.MinimumReleaseDate;
-        MaximumReleaseDate = masterSubGame.GetDefiniteMaximumReleaseDate();
-        ReleaseDate = masterSubGame.ReleaseDate;
-        IsReleased = masterSubGame.IsReleased(currentDate);
-        ReleasingToday = masterSubGame.ReleaseDate == currentDate;
-        CriticScore = masterSubGame.CriticScore;
-        AveragedScore = false;
-        OpenCriticID = masterSubGame.OpenCriticID;
-        SubGames = null;
-        AddedByUser = null;
-        Tags = new List<string>();
     }
 
     public Guid MasterGameID { get; init; }
@@ -89,13 +70,13 @@ public class MasterGameViewModel
     public string? OpenCriticSlug { get; init; }
     public string? GGToken { get; init; }
     public string? GGSlug { get; init; }
-    public IReadOnlyList<MasterGameViewModel>? SubGames { get; init; }
+    public IReadOnlyList<MasterSubGameViewModel>? SubGames { get; init; }
     public IReadOnlyList<string> Tags { get; init; } = null!;
     public string? Notes { get; init; }
     public string? BoxartFileName { get; init; }
     public string? GGCoverArtFileName { get; init; }
     public Instant AddedTimestamp { get; init; }
-    public FantasyCriticUserViewModel? AddedByUser { get; init; }
+    public MinimalFantasyCriticUserViewModel AddedByUser { get; init; } = null!;
     public bool Error { get; init; }
     public int NumberOutstandingCorrections { get; init; }
 
@@ -109,9 +90,11 @@ public class MasterGameViewModel
                 tags.Add(masterGameTag);
             }
         }
-        
+
+        var addedByUser = new VeryMinimalFantasyCriticUser(AddedByUser.UserID, AddedByUser.DisplayName);
+
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,  AddedTimestamp, DoNotRefreshDate,
-            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, AddedByUser!.ToDomain(), new List<MasterSubGame>(), tags);
+            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, new List<MasterSubGame>(), tags);
     }
 }

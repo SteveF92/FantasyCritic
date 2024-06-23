@@ -1,8 +1,6 @@
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
-using NodaTime;
 
-namespace FantasyCritic.SharedSerialization.Database;
+namespace FantasyCritic.Lib.SharedSerialization.Database;
 
 public class MasterGameYearEntity
 {
@@ -50,7 +48,7 @@ public class MasterGameYearEntity
         PeakHypeFactor = masterGameStats.PeakHypeFactor;
         LinearRegressionHypeFactor = masterGameStats.LinearRegressionHypeFactor;
         AddedTimestamp = masterGameStats.MasterGame.AddedTimestamp.ToDateTimeUtc();
-        AddedByUserID = masterGameStats.MasterGame.AddedByUser.Id;
+        AddedByUserID = masterGameStats.MasterGame.AddedByUser.UserID;
     }
 
     public Guid MasterGameID { get; set; }
@@ -92,7 +90,10 @@ public class MasterGameYearEntity
     public DateTime AddedTimestamp { get; set; }
     public Guid AddedByUserID { get; set; }
 
-    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, FantasyCriticUser addedByUser)
+    public string AddedByUserDisplayName { get; set; } = null!;
+
+
+    public MasterGameYear ToDomain(IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags, VeryMinimalFantasyCriticUser addedByUser)
     {
         LocalDate? releaseDate = null;
         if (ReleaseDate.HasValue)
