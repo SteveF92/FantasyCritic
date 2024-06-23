@@ -214,11 +214,15 @@ WHERE (tbl_league_hasuser.UserID IS NOT NULL
   AND vw_league.IsDeleted = 0;
 
 -- Second result set
-SELECT tbl_league_year.LeagueID,
-       tbl_league_year.Year
+SELECT tbl_league_year.LeagueID, tbl_league_year.Year
 FROM tbl_league_year
 JOIN tbl_league_hasuser ON tbl_league_year.LeagueID = tbl_league_hasuser.LeagueID
-WHERE tbl_league_hasuser.UserID = P_UserID;
+WHERE tbl_league_hasuser.UserID = P_UserID
+UNION
+SELECT tbl_league_year.LeagueID, tbl_league_year.Year
+FROM tbl_league_year
+JOIN tbl_user_followingleague ON tbl_league_year.LeagueID = tbl_user_followingleague.LeagueID
+WHERE tbl_user_followingleague.UserID = P_UserID;
 
 END//
 DELIMITER ;
