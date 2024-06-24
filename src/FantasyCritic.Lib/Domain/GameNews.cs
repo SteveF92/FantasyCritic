@@ -6,14 +6,14 @@ public record MyGameNewsSet(IReadOnlyList<SingleGameNews> UpcomingGames, IReadOn
     {
         var upcomingReleases = myGameDetails
             .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() > currentDate)
-            .Take(10)
             .OrderBy(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
+            .Take(10)
             .ToList();
 
         var recentReleases = myGameDetails
             .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() <= currentDate)
-            .Take(10)
             .OrderByDescending(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
+            .Take(10)
             .ToList();
 
         return new MyGameNewsSet(upcomingReleases, recentReleases);
