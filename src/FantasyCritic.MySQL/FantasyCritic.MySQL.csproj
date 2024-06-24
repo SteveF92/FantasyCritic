@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Dapper-NodaTime" Version="0.1.0" />
-    <PackageReference Include="Faithlife.Utility.Dapper" Version="1.1.0" />
+    <PackageReference Include="Faithlife.Utility.Dapper" Version="2.0.0" />
     <PackageReference Include="MySqlConnector" Version="2.3.7" />
   </ItemGroup>
 
