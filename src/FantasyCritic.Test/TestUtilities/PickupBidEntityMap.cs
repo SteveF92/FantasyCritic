@@ -11,7 +11,7 @@ public sealed class PreAllowIneligibleSlotPickupBidEntityMap : ClassMap<PickupBi
     {
         AutoMap(CultureInfo.InvariantCulture);
         Map(m => m.AllowIneligibleSlot).Constant(true);
-        Map(m => m.Timestamp).Convert(args => pattern.Parse(args.Row.GetField("Timestamp")).GetValueOrThrow());
+        Map(m => m.Timestamp).Convert(args => pattern.Parse(args.Row.GetField("Timestamp")!).GetValueOrThrow());
     }
 }
 
@@ -21,6 +21,6 @@ public sealed class PickupBidEntityMap : ClassMap<PickupBidEntity>
     public PickupBidEntityMap()
     {
         AutoMap(CultureInfo.InvariantCulture);
-        Map(m => m.Timestamp).Convert(args => pattern.Parse(args.Row.GetField("Timestamp")).GetValueOrThrow());
+        Map(m => m.Timestamp).Convert(args => pattern.Parse(args.Row.GetField("Timestamp")!).GetValueOrThrow());
     }
 }

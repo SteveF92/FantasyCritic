@@ -577,7 +577,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         List<MasterGameYearEntity> masterGameYearEntities = calculatedStats.Select(x => new MasterGameYearEntity(x)).ToList();
 
-        var excludeFields = new List<string>() { "DoNotRefreshDate", "DoNotRefreshAnything" };
+        var excludeFields = new List<string>() { "DoNotRefreshDate", "DoNotRefreshAnything", "AddedByUserDisplayName" };
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
