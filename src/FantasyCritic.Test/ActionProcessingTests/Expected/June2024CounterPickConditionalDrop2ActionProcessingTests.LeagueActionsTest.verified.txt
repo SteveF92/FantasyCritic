@@ -1,0 +1,278 @@
+﻿[
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Mariachi Legends' with a bid of $1. Failure reason: Bid lost on tiebreakers.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Neva' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Slitterhead' with a bid of $1. Failure reason: Game is no longer eligible: Game has been dropped by the other player.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Counter Pick Pickup Successful,
+    Description: Acquired counter pick 'Until Then' with a bid of $1
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game '33 Immortals' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Alan Wake II: The Lakehouse' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'ANTONBLAST' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Ara: History Untold' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Dragon Ball Z: Sparking! ZERO' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Flintlock: The Siege of Dawn' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'I Am Your Beast' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Kingdom Come: Deliverance II' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Kunitsu-Gami: Path of the Goddess' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Life is Strange: Double Exposure' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $21. Failure reason: Not enough budget.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Metal Slug Tactics' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Phantom Blade Zero' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Phoenix Springs' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Replaced' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Risk of Rain 2: Seekers of the Storm' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'SCHiM' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Skate Story' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Super Monkey Ball Banana Rumble' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Tails of Iron 2: Whiskers Of Winter' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Thank Goodness You're Here!' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Rise of the Golden Idol' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Thrasher' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Warhammer 40,000: Space Marine 2' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'World of Warcraft: The War Within' with a bid of $1. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Zenless Zone Zero' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Pipistrello and the Cursed Yoyo' with a bid of $1
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $38
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Dungeons of Hinterberg' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Neva' with a bid of $1. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'Slitterhead' with a bid of $1. Failure reason: Game is no longer eligible: Game has been dropped by the other player.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    ActionType: Counter Pick Pickup Successful,
+    Description: Acquired counter pick 'Mariachi Legends' with a bid of $1
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Rise of the Golden Idol' with a bid of $6. Failure reason: No roster spots available.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'World of Warcraft: The War Within' with a bid of $6
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Mario & Luigi: Brothership' with a bid of $17. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $17. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Warhammer 40,000: Space Marine 2' with a bid of $2. Dropped game 'Slitterhead' conditionally.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $31. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'World of Warcraft: The War Within' with a bid of $1. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Arranger: A Role-Puzzling Adventure' with a bid of $1
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Mario & Luigi: Brothership' with a bid of $20
+  },
+  {
+    LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'The Rise of the Golden Idol' with a bid of $3
+  }
+]

@@ -1,0 +1,372 @@
+﻿[
+  {
+    BidID: 09196c94-29ef-4898-baa1-e6256b728e7b,
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    MasterGameID: fcadfdc3-3bf0-4ed6-9641-7615fab21817,
+    GameName: World of Warcraft: The War Within,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 160.69399138577834285714285716,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 09897940-18e1-4f2a-924d-6b850dc180a0,
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    BidAmount: 31,
+    ProjectedPointsAtTimeOfBid: 160.69399138577834285714285716,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 0e34bf43-959b-4051-a303-5c4eff619057,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: e5333d87-5a9f-4b47-93d2-92383e3148ad,
+    GameName: Dragon Ball Z: Sparking! ZERO,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 129ef4bd-2099-484c-9704-3fd742259dd0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 36031d25-6580-4132-be4c-e53b03983db3,
+    GameName: Risk of Rain 2: Seekers of the Storm,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 15922233-4acc-45e2-ae62-acc90d36bf65,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 9db02b27-85c1-4b4f-b99e-ed9243899bd1,
+    GameName: Neva,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 179f6aa9-9294-4b0b-b5a0-64b16954bd0f,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 367b4d07-d1d1-49ed-9bc7-add741f763fd,
+    GameName: Replaced,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 249412c6-6db7-4c11-ad32-49541be0e91b,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
+    GameName: Mario & Luigi: Brothership,
+    BidAmount: 21,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: Not enough budget.,
+    Outcome: Not enough budget.
+  },
+  {
+    BidID: 2a2c2ed3-43c0-44d5-9f67-23297d096fdb,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 7b787608-2440-4f22-9344-57160aab7a88,
+    GameName: Phantom Blade Zero,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 345d097a-eac0-4988-b70c-d832b516f22a,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
+    GameName: The Rise of the Golden Idol,
+    BidAmount: 6,
+    ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 3c6c300e-a1ea-4b1b-88e3-f18db2adef0e,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: a01716a9-1ed7-478a-ab8f-03f2a7c36a05,
+    GameName: Life is Strange: Double Exposure,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 3cae7dd9-bee0-4651-93da-eeb3b8807c7e,
+    PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    BidAmount: 17,
+    ProjectedPointsAtTimeOfBid: 105.2106659163156,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 3da50ecb-3840-411c-b735-0f3afa7d6ac1,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 30cee19c-f46c-4eaa-b17f-80a3b976df64,
+    GameName: Kunitsu-Gami: Path of the Goddess,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 51a52ed0-24e4-4d95-801b-c7e0f42b74aa,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 3093111c-6b74-405a-9372-23e1e368f242,
+    GameName: Kingdom Come: Deliverance II,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 57c7a824-72ff-48be-94ef-dd0bad059c56,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: a308ba28-42b2-43ef-a0f9-a22891ecf079,
+    GameName: Phoenix Springs,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 62301deb-fa98-47c3-ac41-a085c8feeb7b,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 5a964f81-bc58-4ce4-b928-30341255663f,
+    GameName: Thank Goodness You're Here!,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 687712ce-370f-4af1-80c9-d2f86c4dcb74,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
+    GameName: 33 Immortals,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 71b49dd0-13c2-401b-8abf-4598b3a42c54,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 9cd92e93-5fde-4384-bad8-39102595704a,
+    GameName: Warhammer 40,000: Space Marine 2,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 73f72936-9512-4a25-9780-190617fc94df,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    MasterGameID: 9db02b27-85c1-4b4f-b99e-ed9243899bd1,
+    GameName: Neva,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 79db1ecd-bf19-424c-9a05-f464846cbb4f,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 1a29ac46-1e24-4977-b432-c8e6ba08ac20,
+    GameName: Super Monkey Ball Banana Rumble,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 7ea59f85-7805-4ab3-9f89-fbd3e94eb1ad,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 12906e62-794e-4f70-be10-8ff501a83cca,
+    GameName: Slitterhead,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: Game is no longer eligible: Game has been dropped by the other player.,
+    Outcome: Game is no longer eligible: Game has been dropped by the other player.
+  },
+  {
+    BidID: 83feda16-5c16-4b6d-8760-a5a94d0ac25e,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 77313c31-fa94-49cd-85d4-ea84e2243bc2,
+    GameName: Thrasher,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 85ac4175-6db8-4e1e-908a-03eb871d8367,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    MasterGameID: 683c44a5-a7a2-45fa-91c4-38562470aaea,
+    GameName: Dungeons of Hinterberg,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 87ce2d12-0784-441e-89ef-38a47fac2e3d,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: f6a1123f-7f72-4fc2-9a4c-fd8cc336ce2a,
+    GameName: Metal Slug Tactics,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: 91f75ebe-11a8-45a4-b116-099c6087ee24,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 3fb00ba9-c351-46b6-ae42-a925e269ccc8,
+    GameName: Alan Wake II: The Lakehouse,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: b3a4caeb-81bd-4e2c-a281-1408d87dcc6a,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 3f74675f-2bee-4ec7-8ec7-d44eb5654835,
+    GameName: Skate Story,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: b57d9f69-66b4-4786-9a4b-6d5b853a9b1b,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 57a6fc8f-6418-4d4e-9e42-3b629ba96598,
+    GameName: ANTONBLAST,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: b6c3a91a-ff3b-4f3d-8886-fd8c60278ce9,
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    MasterGameID: 12906e62-794e-4f70-be10-8ff501a83cca,
+    GameName: Slitterhead,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
+    FailureReason: Game is no longer eligible: Game has been dropped by the other player.,
+    Outcome: Game is no longer eligible: Game has been dropped by the other player.
+  },
+  {
+    BidID: c95ad10e-2581-4932-b394-49e040f9e47c,
+    PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
+    MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
+    GameName: Mario & Luigi: Brothership,
+    BidAmount: 17,
+    ProjectedPointsAtTimeOfBid: 105.2106659163156,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
+    BidID: d2a21b33-b826-4105-9ab1-a446640b9041,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 7b30316d-3979-49a8-9c40-4ccde726fd96,
+    GameName: Tails of Iron 2: Whiskers Of Winter,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: d43b6192-96e2-4431-9223-8ee929c5ddd0,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 6b095601-e6c0-4478-bfb9-8afe3cc93552,
+    GameName: Flintlock: The Siege of Dawn,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: e1f190d4-864c-4997-bf1a-dd2ad8c7d6c5,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: c598de59-e6e1-4646-a658-aa0f1fdbbdcf,
+    GameName: Zenless Zone Zero,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: e609f44a-cdc5-47b2-bedb-37125984d145,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: b236863b-fec4-4feb-ba76-a01e74397890,
+    GameName: Mariachi Legends,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: Bid lost on tiebreakers.,
+    Outcome: Bid lost on tiebreakers.
+  },
+  {
+    BidID: e6626494-dcc6-4983-9d77-3c0d4286f33c,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: fd4d2de3-ca2d-4677-959d-22eef48e2395,
+    GameName: I Am Your Beast,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: ee429419-7bac-48c4-a4d5-cea8aa3a2067,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 80c8c4ee-5814-449f-bfa0-9eb489ce9d12,
+    GameName: Ara: History Untold,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: ee4d3465-e185-46d7-bb5f-a52fb387c799,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
+    GameName: The Rise of the Golden Idol,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: f9831c35-2e59-4d99-ab6e-eaabb34fc654,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 6ebe4035-69db-4138-880c-8857eef85eec,
+    GameName: SCHiM,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
+  },
+  {
+    BidID: fda03a22-92d0-471d-931e-c8e7f604c74d,
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: fcadfdc3-3bf0-4ed6-9641-7615fab21817,
+    GameName: World of Warcraft: The War Within,
+    BidAmount: 1,
+    ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  }
+]

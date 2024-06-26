@@ -1,0 +1,11 @@
+﻿[
+  {
+    PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
+    MasterGameID: 12906e62-794e-4f70-be10-8ff501a83cca,
+    GameName: Slitterhead,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 1,
+    RemovedNote: Conditionally dropped while picking up: Warhammer 40,000: Space Marine 2
+  }
+]

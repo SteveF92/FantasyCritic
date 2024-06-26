@@ -1,0 +1,74 @@
+﻿[
+  {
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 27949079-1ef3-4b3a-90b2-7add25256c50,
+    GameName: Pipistrello and the Cursed Yoyo,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 1
+  },
+  {
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 38
+  },
+  {
+    PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
+    MasterGameID: cb7136bb-89b9-41bb-90a7-441569a410b3,
+    GameName: Until Then,
+    CounterPick: true,
+    SlotNumber: 1,
+    BidAmount: 1
+  },
+  {
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    MasterGameID: b236863b-fec4-4feb-ba76-a01e74397890,
+    GameName: Mariachi Legends,
+    CounterPick: true,
+    SlotNumber: 2,
+    BidAmount: 1
+  },
+  {
+    PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
+    MasterGameID: fcadfdc3-3bf0-4ed6-9641-7615fab21817,
+    GameName: World of Warcraft: The War Within,
+    CounterPick: false,
+    SlotNumber: 2,
+    BidAmount: 6
+  },
+  {
+    PublisherID: 7e760749-b2e6-47d3-9620-f67c17d7794c,
+    MasterGameID: 9cd92e93-5fde-4384-bad8-39102595704a,
+    GameName: Warhammer 40,000: Space Marine 2,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 2
+  },
+  {
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
+    GameName: Mario & Luigi: Brothership,
+    CounterPick: false,
+    SlotNumber: 10,
+    BidAmount: 20
+  },
+  {
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    MasterGameID: 56ab9a7c-fb14-400f-bff0-55f26407fa7a,
+    GameName: Arranger: A Role-Puzzling Adventure,
+    CounterPick: false,
+    SlotNumber: 11,
+    BidAmount: 1
+  },
+  {
+    PublisherID: 910af83c-b4ce-41b8-9830-54c8594856c3,
+    MasterGameID: c278a522-b7a5-4164-ae7c-f17c50d35d6c,
+    GameName: The Rise of the Golden Idol,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 3
+  }
+]
