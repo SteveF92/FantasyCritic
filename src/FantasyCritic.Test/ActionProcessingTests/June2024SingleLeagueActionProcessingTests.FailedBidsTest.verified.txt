@@ -1,0 +1,42 @@
+﻿[
+  {
+    BidID: 1574950b-5716-4095-a9a6-468ec38e12d1,
+    PublisherID: ce6bce01-a0f6-4a39-8c04-6fabed972d8c,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    BidAmount: 18,
+    ProjectedPointsAtTimeOfBid: 108.7816904198362,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 17dcffd3-7222-47d4-b011-12e22f3b2b51,
+    PublisherID: 12fce504-6fe0-4e34-8483-4bb967220bbe,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    BidAmount: 26,
+    ProjectedPointsAtTimeOfBid: 166.16429555791126666666666667,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 598609d6-b0fc-4504-817f-1f90a3e59bdd,
+    PublisherID: 63954675-e0f2-46ab-b14d-41f05e3be20d,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    BidAmount: 26,
+    ProjectedPointsAtTimeOfBid: 101.71756720829473333333333334,
+    FailureReason: Publisher was outbid.,
+    Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 78911295-2e08-4b47-95a6-f85841fc44f9,
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
+    GameName: Super Mario Party Jamboree,
+    BidAmount: 4,
+    ProjectedPointsAtTimeOfBid: 85.51716044588413333333333334,
+    FailureReason: No eligible roster spots available. Attempted to conditionally drop game: 33 Immortals but failed because: You cannot drop that game because it was counter picked.,
+    Outcome: No eligible roster spots available. Attempted to conditionally drop game: 33 Immortals but failed because: You cannot drop that game because it was counter picked.
+  }
+]

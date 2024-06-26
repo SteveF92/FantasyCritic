@@ -1,0 +1,11 @@
+﻿[
+  {
+    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Dropped by player
+  }
+]

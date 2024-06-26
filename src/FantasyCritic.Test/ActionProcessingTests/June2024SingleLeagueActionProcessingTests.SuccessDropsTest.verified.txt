@@ -1,0 +1,8 @@
+﻿[
+  {
+    DropRequestID: 4ecf8936-0842-4626-984d-80247ae93bec,
+    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
+    MasterGameID: 914fc4e8-1013-46a4-b7e1-c1ca0d60ab96,
+    GameName: Metroid Prime 4: Beyond
+  }
+]

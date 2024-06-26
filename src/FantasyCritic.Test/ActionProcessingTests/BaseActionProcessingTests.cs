@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ public abstract class BaseActionProcessingTests
     protected abstract Instant ProcessingTime { get; }
     protected abstract string ActionProcessingSetName { get; }
     protected abstract bool DefaultAllowIneligible { get; }
+    protected virtual Guid? OnlyRunLeagueID => null;
 
     [OneTimeSetUp]
     public void Process()
@@ -32,6 +34,17 @@ public abstract class BaseActionProcessingTests
         var leagueYears = testDataService.GetLeagueYears(publishers, masterGameYearDictionary, masterGameTags);
         var allActiveBids = testDataService.GetActiveBids(leagueYears, masterGameYearDictionary);
         var allActiveDrops = testDataService.GetActiveDrops(leagueYears, masterGameYearDictionary);
+
+        if (OnlyRunLeagueID.HasValue)
+        {
+            allActiveBids = allActiveBids
+                .Where(x => x.Key.League.LeagueID == OnlyRunLeagueID.Value)
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            allActiveDrops = allActiveDrops
+                .Where(x => x.Key.League.LeagueID == OnlyRunLeagueID.Value)
+                .ToDictionary(x => x.Key, x => x.Value);
+        }
 
         var actionProcessor = new ActionProcessor(systemWideValues, ProcessingTime, currentDate, masterGameYearDictionary);
         _results[ActionProcessingSetName] = actionProcessor.ProcessActions(allActiveBids, allActiveDrops, publishers);

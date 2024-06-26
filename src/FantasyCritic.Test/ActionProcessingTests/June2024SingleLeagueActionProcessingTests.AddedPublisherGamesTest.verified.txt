@@ -1,0 +1,26 @@
+﻿[
+  {
+    PublisherID: 63954675-e0f2-46ab-b14d-41f05e3be20d,
+    MasterGameID: 3f74675f-2bee-4ec7-8ec7-d44eb5654835,
+    GameName: Skate Story,
+    CounterPick: false,
+    SlotNumber: 12,
+    BidAmount: 4
+  },
+  {
+    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
+    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
+    GameName: 33 Immortals,
+    CounterPick: true,
+    SlotNumber: 1,
+    BidAmount: 4
+  },
+  {
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
+    GameName: The Legend of Zelda: Echoes of Wisdom,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 36
+  }
+]

@@ -1,0 +1,50 @@
+﻿[
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: 12fce504-6fe0-4e34-8483-4bb967220bbe,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $26. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: 63954675-e0f2-46ab-b14d-41f05e3be20d,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $26. Failure reason: Publisher was outbid.
+  },
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: 63954675-e0f2-46ab-b14d-41f05e3be20d,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Skate Story' with a bid of $4
+  },
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
+    ActionType: Counter Pick Pickup Successful,
+    Description: Acquired counter pick '33 Immortals' with a bid of $4
+  },
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
+    ActionType: Drop Successful,
+    Description: Dropped game 'Metroid Prime 4: Beyond'
+  },
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'Super Mario Party Jamboree' with a bid of $4. Failure reason: No eligible roster spots available. Attempted to conditionally drop game: 33 Immortals but failed because: You cannot drop that game because it was counter picked.
+  },
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    ActionType: Pickup Successful,
+    Description: Acquired game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $36
+  },
+  {
+    LeagueID: bfab6f3f-7bf8-48ae-afaf-a80d98ecf10c,
+    PublisherID: ce6bce01-a0f6-4a39-8c04-6fabed972d8c,
+    ActionType: Pickup Failed,
+    Description: Tried to acquire game 'The Legend of Zelda: Echoes of Wisdom' with a bid of $18. Failure reason: Publisher was outbid.
+  }
+]
