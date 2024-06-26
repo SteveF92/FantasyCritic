@@ -48,6 +48,8 @@ public abstract class BaseActionProcessingTests
 
         var actionProcessor = new ActionProcessor(systemWideValues, ProcessingTime, currentDate, masterGameYearDictionary);
         _results[ActionProcessingSetName] = actionProcessor.ProcessActions(allActiveBids, allActiveDrops, publishers);
+
+        Verifier.UseProjectRelativeDirectory("./ActionProcessingTests/Expected");
     }
 
     [Test]
