@@ -32,6 +32,7 @@ public static class GameEligibilityFunctions
         if (counterPickWillBeConditionallyDropped)
         {
             claimErrors.Add(new ClaimError("Game has been dropped by the other player.", false));
+            return new ClaimResult(claimErrors, null);
         }
 
         LeaguePublisherGameSet gameSet = new LeaguePublisherGameSet(request.Publisher.PublisherID, leagueYear.Publishers);
