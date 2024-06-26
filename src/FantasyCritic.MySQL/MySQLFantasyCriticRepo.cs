@@ -39,7 +39,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var queryObject = new
         {
-            leagueID = id
+            P_LeagueID = id
         };
 
         var resultSets = await connection.QueryMultipleAsync("sp_getleague", queryObject, commandType: CommandType.StoredProcedure);
