@@ -14636,8 +14636,8 @@
     GameName: Slitterhead,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 154.23412703910767142857142858,
-    FailureReason: Game is no longer eligible: Game has been dropped by the other player.,
-    Outcome: Game is no longer eligible: Game has been dropped by the other player.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: 7ea688dc-3788-48f4-a525-675d24b9cbe1,
@@ -20846,8 +20846,8 @@
     GameName: Slitterhead,
     BidAmount: 1,
     ProjectedPointsAtTimeOfBid: 161.92941389335438571428571429,
-    FailureReason: Game is no longer eligible: Game has been dropped by the other player.,
-    Outcome: Game is no longer eligible: Game has been dropped by the other player.
+    FailureReason: No roster spots available.,
+    Outcome: No roster spots available.
   },
   {
     BidID: b6fc70e2-ca08-4d3e-bfc3-44c65ce1aee8,

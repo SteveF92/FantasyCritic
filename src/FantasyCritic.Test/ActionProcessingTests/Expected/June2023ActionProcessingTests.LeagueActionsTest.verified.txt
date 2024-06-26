@@ -15279,7 +15279,7 @@
     LeagueID: 8dba3e1a-2334-40ba-9994-604313b030d9,
     PublisherID: 6c254cb3-b757-4a38-a70c-3fa52c33aa67,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Senua's Saga: Hellblade II' with a bid of $20. Failure reason: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.
+    Description: Tried to acquire counter pick 'Senua's Saga: Hellblade II' with a bid of $20. Failure reason: Game is no longer eligible: That game is not scheduled to be released in 2023.
   },
   {
     LeagueID: 8dba3e1a-2334-40ba-9994-604313b030d9,
@@ -15297,7 +15297,7 @@
     LeagueID: 8dba3e1a-2334-40ba-9994-604313b030d9,
     PublisherID: a06ff614-194d-443d-9f85-9325f235624d,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Senua's Saga: Hellblade II' with a bid of $30. Failure reason: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.
+    Description: Tried to acquire counter pick 'Senua's Saga: Hellblade II' with a bid of $30. Failure reason: Game is no longer eligible: That game is not scheduled to be released in 2023.
   },
   {
     LeagueID: 8dba3e1a-2334-40ba-9994-604313b030d9,
@@ -19689,7 +19689,7 @@
     LeagueID: b3ed9df1-dc9c-4089-81d0-d2f2d08c17a2,
     PublisherID: 6865d16a-8300-4e12-9c3d-25c852912ac4,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Senua's Saga: Hellblade II' with a bid of $0. Failure reason: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.
+    Description: Tried to acquire counter pick 'Senua's Saga: Hellblade II' with a bid of $0. Failure reason: Game is no longer eligible: That game is not scheduled to be released in 2023.
   },
   {
     LeagueID: b3ed9df1-dc9c-4089-81d0-d2f2d08c17a2,

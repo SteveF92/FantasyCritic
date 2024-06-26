@@ -24387,7 +24387,7 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 540bb5bd-d93c-4d1e-9e1b-329b17690125,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Slitterhead' with a bid of $1. Failure reason: Game is no longer eligible: Game has been dropped by the other player.
+    Description: Tried to acquire counter pick 'Slitterhead' with a bid of $1. Failure reason: No roster spots available.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
@@ -24579,7 +24579,7 @@
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,
     PublisherID: 5e930d85-ac5e-48e3-a8ab-552fc96f741a,
     ActionType: Counter Pick Pickup Failed,
-    Description: Tried to acquire counter pick 'Slitterhead' with a bid of $1. Failure reason: Game is no longer eligible: Game has been dropped by the other player.
+    Description: Tried to acquire counter pick 'Slitterhead' with a bid of $1. Failure reason: No roster spots available.
   },
   {
     LeagueID: 7eb72337-f85c-4da2-8a0b-b3bfee13e7f0,

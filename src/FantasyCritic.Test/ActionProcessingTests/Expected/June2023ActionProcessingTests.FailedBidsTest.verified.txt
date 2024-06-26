@@ -66,8 +66,8 @@
     GameName: Senua's Saga: Hellblade II,
     BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 149.67180710823304545454545456,
-    FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.,
-    Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.
+    FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2023.,
+    Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023.
   },
   {
     BidID: 01d01c8e-b305-435f-9b35-e2bc2f999c49,
@@ -5146,8 +5146,8 @@
     GameName: Senua's Saga: Hellblade II,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 98.61396251917014615384615385,
-    FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.,
-    Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.
+    FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2023.,
+    Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023.
   },
   {
     BidID: 8577e758-8f71-429a-bd44-53535572b0c8,
@@ -6276,8 +6276,8 @@
     GameName: Senua's Saga: Hellblade II,
     BidAmount: 30,
     ProjectedPointsAtTimeOfBid: 160.43752445000850769230769231,
-    FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.,
-    Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023. AND Game has been dropped by the other player.
+    FailureReason: Game is no longer eligible: That game is not scheduled to be released in 2023.,
+    Outcome: Game is no longer eligible: That game is not scheduled to be released in 2023.
   },
   {
     BidID: a7cb966a-d00f-4e99-ba03-a78e18a65484,
