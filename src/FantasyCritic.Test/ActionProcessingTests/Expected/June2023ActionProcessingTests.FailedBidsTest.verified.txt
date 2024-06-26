@@ -3240,16 +3240,6 @@
     Outcome: No roster spots available.
   },
   {
-    BidID: 53aa8866-c78e-4ed1-ac0f-7052b7addb69,
-    PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
-    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
-    GameName: Persona 5 Tactica,
-    BidAmount: 10,
-    ProjectedPointsAtTimeOfBid: 88.2061499329013,
-    FailureReason: No roster spots available. Attempted to conditionally drop game: STALKER 2: Heart of Chornobyl but failed because: You cannot drop that game because it was counter picked.,
-    Outcome: No roster spots available. Attempted to conditionally drop game: STALKER 2: Heart of Chornobyl but failed because: You cannot drop that game because it was counter picked.
-  },
-  {
     BidID: 54236ab3-c1fe-4547-b53a-dd29f3d5b06b,
     PublisherID: bed59229-9d6f-4ce5-b3e3-ce8eda1d3b42,
     MasterGameID: 17bc3e26-0e35-4275-8690-c45cf3396fa5,
@@ -3788,6 +3778,16 @@
     ProjectedPointsAtTimeOfBid: 71.34738492863376923076923077,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
+  },
+  {
+    BidID: 62b3b602-4376-4d43-b8a0-13937d4a5519,
+    PublisherID: 9c55dd7f-4406-4687-856e-c960c42ae0aa,
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl,
+    BidAmount: 5,
+    ProjectedPointsAtTimeOfBid: 134.3539244101781,
+    FailureReason: Game is no longer eligible: Game has been dropped by the other player.,
+    Outcome: Game is no longer eligible: Game has been dropped by the other player.
   },
   {
     BidID: 63a5df9f-8cea-4db9-a2c2-f740d516afb5,

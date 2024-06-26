@@ -7,5 +7,14 @@
     SlotNumber: 5,
     BidAmount: null,
     RemovedNote: Dropped by player
+  },
+  {
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
+    GameName: 33 Immortals,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Super Mario Party Jamboree
   }
 ]

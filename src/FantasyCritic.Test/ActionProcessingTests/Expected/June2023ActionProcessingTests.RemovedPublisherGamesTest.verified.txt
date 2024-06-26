@@ -2629,6 +2629,15 @@
   },
   {
     PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
+    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    GameName: STALKER 2: Heart of Chornobyl,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Persona 5 Tactica
+  },
+  {
+    PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
     MasterGameID: aa71dd92-5c2f-45f0-b160-62ce887a1545,
     GameName: Kerbal Space Program 2,
     CounterPick: false,

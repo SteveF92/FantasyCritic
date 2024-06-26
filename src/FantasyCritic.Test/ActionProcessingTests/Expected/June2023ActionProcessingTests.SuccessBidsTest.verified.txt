@@ -14210,6 +14210,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 53aa8866-c78e-4ed1-ac0f-7052b7addb69,
+    PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
+    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
+    GameName: Persona 5 Tactica,
+    CounterPick: false,
+    Priority: 2,
+    BidAmount: 10,
+    ProjectedPointsAtTimeOfBid: 88.2061499329013,
+    SlotNumber: 5,
+    Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
+    ConditionalDropResult: Success
+  },
+  {
     BidID: 53b7e1b1-f708-4c8c-9e10-9d394790ee14,
     PublisherID: 60b75633-2978-4fd2-abf3-207d24a5215c,
     MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
@@ -16627,20 +16641,6 @@
     BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 178.84796694793731176470588236,
     SlotNumber: 2,
-    Outcome: No competing bids for this game.,
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
-    BidID: 62b3b602-4376-4d43-b8a0-13937d4a5519,
-    PublisherID: 9c55dd7f-4406-4687-856e-c960c42ae0aa,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
-    GameName: STALKER 2: Heart of Chornobyl,
-    CounterPick: true,
-    Priority: 1,
-    BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 134.3539244101781,
-    SlotNumber: 0,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null

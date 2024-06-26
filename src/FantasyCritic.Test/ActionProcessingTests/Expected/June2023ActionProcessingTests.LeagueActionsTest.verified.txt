@@ -10034,8 +10034,8 @@
   {
     LeagueID: 5de5c45d-d2cb-433b-a0f7-e3a8b21d054a,
     PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Persona 5 Tactica' with a bid of $10. Failure reason: No roster spots available. Attempted to conditionally drop game: STALKER 2: Heart of Chornobyl but failed because: You cannot drop that game because it was counter picked.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Persona 5 Tactica' with a bid of $10. Dropped game 'STALKER 2: Heart of Chornobyl' conditionally.
   },
   {
     LeagueID: 5de5c45d-d2cb-433b-a0f7-e3a8b21d054a,
@@ -10046,8 +10046,8 @@
   {
     LeagueID: 5de5c45d-d2cb-433b-a0f7-e3a8b21d054a,
     PublisherID: 9c55dd7f-4406-4687-856e-c960c42ae0aa,
-    ActionType: Counter Pick Pickup Successful,
-    Description: Acquired counter pick 'STALKER 2: Heart of Chornobyl' with a bid of $5
+    ActionType: Counter Pick Pickup Failed,
+    Description: Tried to acquire counter pick 'STALKER 2: Heart of Chornobyl' with a bid of $5. Failure reason: Game is no longer eligible: Game has been dropped by the other player.
   },
   {
     LeagueID: 5de5c45d-d2cb-433b-a0f7-e3a8b21d054a,

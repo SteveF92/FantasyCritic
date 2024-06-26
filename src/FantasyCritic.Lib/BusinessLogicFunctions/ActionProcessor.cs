@@ -396,7 +396,20 @@ public class ActionProcessor
             return new List<SucceededPickupBid>();
         }
 
-        List<SucceededPickupBid> winningBids = winnableBids.Where(x => x.PickupBid.Priority == highestPriorityPerPublisher[x.PickupBid.Publisher]).ToList();
+        var winnableCounterPickBids = winnableBids.Where(x => x.PickupBid.CounterPick).ToList();
+        var winnableBidsWithConditionalDrop = winnableBids.Where(x => x.PickupBid.ConditionalDropPublisherGame is not null && x.PickupBid.ConditionalDropPublisherGame.MasterGame is not null).ToList();
+        var gamesThatCouldGetCounterPicked = winnableCounterPickBids.Select(x => x.PickupBid.MasterGame).Distinct().ToList();
+        var gamesThatCouldGetDropped = winnableBidsWithConditionalDrop.Select(x => x.PickupBid.ConditionalDropPublisherGame!.MasterGame!.MasterGame).Distinct().ToList();
+        var conflictedGames = gamesThatCouldGetCounterPicked.Intersect(gamesThatCouldGetDropped).ToHashSet();
+
+        var winningBids = winnableBids.Where(x => x.PickupBid.Priority == highestPriorityPerPublisher[x.PickupBid.Publisher]).ToList();
+
+        var unconflictedWinningBids = winningBids.Where(x => !x.PickupBid.CounterPick || !conflictedGames.Contains(x.PickupBid.MasterGame)).ToList();
+        if (unconflictedWinningBids.Any())
+        {
+            return unconflictedWinningBids;
+        }
+
         if (winningBids.Any())
         {
             return winningBids;

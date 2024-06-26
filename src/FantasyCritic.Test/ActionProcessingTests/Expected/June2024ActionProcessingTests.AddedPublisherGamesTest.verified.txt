@@ -14840,14 +14840,6 @@
     BidAmount: 5
   },
   {
-    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
-    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
-    GameName: 33 Immortals,
-    CounterPick: true,
-    SlotNumber: 1,
-    BidAmount: 4
-  },
-  {
     PublisherID: 6c1a746d-bfcb-40e5-8158-60506f4626c0,
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
@@ -16662,6 +16654,14 @@
     CounterPick: false,
     SlotNumber: 13,
     BidAmount: 36
+  },
+  {
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
+    GameName: Super Mario Party Jamboree,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: 4
   },
   {
     PublisherID: 789318ac-c25e-473e-8857-936d474fcb45,

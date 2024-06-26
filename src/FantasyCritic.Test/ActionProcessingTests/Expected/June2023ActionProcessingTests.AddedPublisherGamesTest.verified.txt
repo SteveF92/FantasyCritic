@@ -7921,6 +7921,14 @@
   },
   {
     PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
+    MasterGameID: 4bf696e8-9ac8-4d16-88f9-a4412ecf4071,
+    GameName: Persona 5 Tactica,
+    CounterPick: false,
+    SlotNumber: 5,
+    BidAmount: 10
+  },
+  {
+    PublisherID: 54b987f7-f9ee-4d7c-9bb6-e8c2793c8fc2,
     MasterGameID: 8df7c27b-7c0f-4942-b426-a730a7152c02,
     GameName: Sonic Superstars,
     CounterPick: false,
@@ -14750,14 +14758,6 @@
     CounterPick: false,
     SlotNumber: 3,
     BidAmount: 12
-  },
-  {
-    PublisherID: 9c55dd7f-4406-4687-856e-c960c42ae0aa,
-    MasterGameID: 5150b825-24f4-41a5-a283-8ddac8aa974c,
-    GameName: STALKER 2: Heart of Chornobyl,
-    CounterPick: true,
-    SlotNumber: 0,
-    BidAmount: 5
   },
   {
     PublisherID: 9c5eed00-189a-4f7e-bcdb-56717ede788e,

@@ -13750,16 +13750,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: 78911295-2e08-4b47-95a6-f85841fc44f9,
-    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
-    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
-    GameName: Super Mario Party Jamboree,
-    BidAmount: 4,
-    ProjectedPointsAtTimeOfBid: 85.51716044588413333333333334,
-    FailureReason: No eligible roster spots available. Attempted to conditionally drop game: 33 Immortals but failed because: You cannot drop that game because it was counter picked.,
-    Outcome: No eligible roster spots available. Attempted to conditionally drop game: 33 Immortals but failed because: You cannot drop that game because it was counter picked.
-  },
-  {
     BidID: 7893dcd0-04ca-40d1-bcb4-42dc98033331,
     PublisherID: 454fd3f5-f597-41c0-9c66-42c850b8aae9,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -24268,6 +24258,16 @@
     ProjectedPointsAtTimeOfBid: 74.34208412472255238095238095,
     FailureReason: Publisher was outbid.,
     Outcome: Publisher was outbid.
+  },
+  {
+    BidID: d398822c-6be6-4b7c-a3f9-2f2783f1ea73,
+    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
+    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
+    GameName: 33 Immortals,
+    BidAmount: 4,
+    ProjectedPointsAtTimeOfBid: 133.12318258085536666666666667,
+    FailureReason: Game is no longer eligible: Game has been dropped by the other player.,
+    Outcome: Game is no longer eligible: Game has been dropped by the other player.
   },
   {
     BidID: d3a058a7-eb7b-4f50-8721-5738206ebdc0,

@@ -29064,6 +29064,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: 78911295-2e08-4b47-95a6-f85841fc44f9,
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
+    GameName: Super Mario Party Jamboree,
+    CounterPick: false,
+    Priority: 2,
+    BidAmount: 4,
+    ProjectedPointsAtTimeOfBid: 85.51716044588413333333333334,
+    SlotNumber: 6,
+    Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
+    ConditionalDropResult: Success
+  },
+  {
     BidID: 78b15d7a-faed-455c-a966-64d4af1421b9,
     PublisherID: b6b80549-d4ae-4199-8de0-f1a1c51772cf,
     MasterGameID: 35d4a7fd-a34c-4dcb-981e-80fd6068c912,
@@ -51530,20 +51544,6 @@
     ProjectedPointsAtTimeOfBid: 75.565155321751873913043478261,
     SlotNumber: 4,
     Outcome: This bid was the highest bid.,
-    ConditionalDropMasterGameID: null,
-    ConditionalDropResult: null
-  },
-  {
-    BidID: d398822c-6be6-4b7c-a3f9-2f2783f1ea73,
-    PublisherID: 6bffef4c-9529-4f75-9a93-c383ffcd236a,
-    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
-    GameName: 33 Immortals,
-    CounterPick: true,
-    Priority: 1,
-    BidAmount: 4,
-    ProjectedPointsAtTimeOfBid: 133.12318258085536666666666667,
-    SlotNumber: 1,
-    Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
   },

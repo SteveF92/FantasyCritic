@@ -4644,6 +4644,15 @@
     RemovedNote: Dropped by player
   },
   {
+    PublisherID: 788b4411-d078-4b03-9bab-efe034797738,
+    MasterGameID: 470fe7f9-e48b-4694-9afe-f89794a86172,
+    GameName: 33 Immortals,
+    CounterPick: false,
+    SlotNumber: 6,
+    BidAmount: null,
+    RemovedNote: Conditionally dropped while picking up: Super Mario Party Jamboree
+  },
+  {
     PublisherID: 79476729-8015-469c-b936-0d81917721c7,
     MasterGameID: 37483c6b-e426-478c-88d0-26be99773cec,
     GameName: Hades II,
