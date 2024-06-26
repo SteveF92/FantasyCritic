@@ -4,7 +4,7 @@ using NodaTime.Text;
 
 namespace FantasyCritic.Test.ActionProcessingTests;
 
-public class June2024SingleLeagueActionProcessingTests : BaseActionProcessingTests
+public class June2024CounterPickConditionalDrop1ActionProcessingTests : BaseActionProcessingTests
 {
     protected override Instant ProcessingTime => InstantPattern.ExtendedIso.Parse("2024-06-23T00:13:50.000000Z").GetValueOrThrow();
     protected override string ActionProcessingSetName => "June2024";
