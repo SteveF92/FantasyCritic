@@ -3475,7 +3475,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             FROM tbl_league_publishergame
             JOIN tbl_league_publisher ON tbl_league_publisher.PublisherID = tbl_league_publishergame.PublisherID
             JOIN tbl_league ON tbl_league.LeagueID = tbl_league_publisher.LeagueID
-            WHERE tbl_league_publisher.UserID = P_UserID AND tbl_league_publisher.Year IN (SELECT YEAR FROM tbl_meta_supportedyear WHERE OpenForPlay = 1 AND Finished = 0);
+            WHERE tbl_league_publishergame.MasterGameID is not null AND tbl_league_publishergametbl_league_publisher.UserID = P_UserID AND tbl_league_publisher.Year IN (SELECT YEAR FROM tbl_meta_supportedyear WHERE OpenForPlay = 1 AND Finished = 0);
             """;
 
         await using var connection = new MySqlConnection(_connectionString);
