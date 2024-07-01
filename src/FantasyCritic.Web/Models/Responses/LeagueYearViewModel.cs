@@ -63,7 +63,7 @@ public class LeagueYearViewModel
             {
                 int ranking = publisherRankings[publisher.PublisherID];
                 int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
-                bool isPreviousYearWinner = supplementalData.PreviousYearWinner?.Id == user.UserID;
+                bool isPreviousYearWinner = supplementalData.PreviousYearWinnerUserID == user.UserID;
                 playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, supplementalData.SystemWideValues,
                     userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner, ranking, projectedRanking));
             }

@@ -9,6 +9,10 @@ using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities.Conferences;
 
 namespace FantasyCritic.MySQL;
+
+//This class is part of an effort to optimize API calls that are called very frequently
+//Before this class, all of this data was retrieved by separate functions, with separate, wasteful SQL calls.
+
 public class MySQLCombinedDataRepo : ICombinedDataRepo
 {
     private static readonly ILogger _logger = Log.ForContext<MySQLFantasyCriticRepo>();
@@ -27,6 +31,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var systemWideSettingsEntity = resultSets.ReadSingle<SystemWideSettingsEntity>();
         var tagEntities = resultSets.Read<MasterGameTagEntity>();
         var supportedYearEntities = resultSets.Read<SupportedYearEntity>();
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
 
         var systemWideSettings = new SystemWideSettings(systemWideSettingsEntity.ActionProcessingMode, systemWideSettingsEntity.RefreshOpenCritic);
         var tags = tagEntities.Select(x => x.ToDomain()).ToList();
@@ -59,6 +65,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var activeRoyaleYearQuarterEntity = resultSets.ReadSingle<RoyaleYearQuarterEntity>();
         var currentSupportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
         var activeUserRoyalePublisherID = resultSets.ReadSingleOrDefault<Guid>();
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
 
         //MyLeagues
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
@@ -137,6 +145,38 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
 
-        return new LeagueYearSupplementalData();
+        //SystemWideValues
+        var positionPoints = await connection.QueryAsync<AveragePositionPointsEntity>("select * from tbl_caching_averagepositionpoints;");
+        var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from tbl_caching_systemwidevalues;");
+        var systemWideValues = result.ToDomain(positionPoints.Select(x => x.ToDomain()));
+
+        //ManagersMessages
+        const string messageSQL = "select * from tbl_league_managermessage where LeagueID = @P_LeagueID AND Year = @P_Year AND Deleted = 0;";
+        const string dismissSQL = "select * from tbl_league_managermessagedismissal where MessageID in @messageIDs;";
+
+        IEnumerable<ManagerMessageEntity> messageEntities = await connection.QueryAsync<ManagerMessageEntity>(messageSQL, queryObject);
+        var messageIDs = messageEntities.Select(x => x.MessageID);
+        var dismissQueryObject = new
+        {
+            messageIDs
+        };
+        IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = await connection.QueryAsync<ManagerMessageDismissalEntity>(dismissSQL, dismissQueryObject);
+
+        List<ManagerMessage> managersMessages = new List<ManagerMessage>();
+        var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
+        foreach (var messageEntity in messageEntities)
+        {
+            var dismissedUserIDs = dismissalLookup[messageEntity.MessageID].Select(x => x.UserID);
+            managersMessages.Add(messageEntity.ToDomain(dismissedUserIDs));
+        }
+
+        //PreviousYearWinnerUserID
+        const string previousYearWinnerSQL = "select WinnerUserID from tbl_league_year where LeagueID = @P_LeagueID and Year = @P_Year - 1";
+        Guid? previousYearWinningUserID = await connection.QuerySingleOrDefaultAsync<Guid?>(previousYearWinnerSQL, queryObject);
+
+        //ActiveTrades
+
+
+        return new LeagueYearSupplementalData(systemWideValues, managersMessages, previousYearWinningUserID);
     }
 }

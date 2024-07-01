@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Combinations;
 
-public record LeagueYearSupplementalData(SystemWideValues SystemWideValues, IReadOnlyList<ManagerMessage> ManagerMessages, FantasyCriticUser? PreviousYearWinner,
+public record LeagueYearSupplementalData(SystemWideValues SystemWideValues, IReadOnlyList<ManagerMessage> ManagerMessages, Guid? PreviousYearWinnerUserID,
     IReadOnlyList<Trade> ActiveTrades, IReadOnlyList<SpecialAuction> ActiveSpecialAuctions, PublicBiddingSet? PublicBiddingGames, bool UserIsFollowingLeague,
     IReadOnlyList<MinimalPublisher> AllPublishersForUser, PrivatePublisherData? PrivatePublisherData);
 
