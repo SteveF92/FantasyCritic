@@ -415,8 +415,13 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueFollowers(league);
     }
 
-    public Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league)
+    public Task<bool> UserIsFollowingLeague(FantasyCriticUser? currentUser, League league)
     {
+        if (currentUser is null)
+        {
+            return Task.FromResult(false);
+        }
+
         return _fantasyCriticRepo.UserIsFollowingLeague(currentUser, league);
     }
 

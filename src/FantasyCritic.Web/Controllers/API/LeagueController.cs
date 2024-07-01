@@ -167,26 +167,19 @@ public class LeagueController : BaseLeagueController
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
+        var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
+        var currentInstant = _clock.GetCurrentInstant();
+        var currentDate = currentInstant.ToEasternDate();
+
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
-
         FantasyCriticUser? previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear);
-        var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
-
         IReadOnlyList<Trade> activeTrades = await _tradeService.GetActiveTradesForLeague(leagueYear);
         IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
         var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
+        bool userIsFollowingLeague = await _fantasyCriticService.UserIsFollowingLeague(currentUser, league);
+        Publisher? userPublisher = leagueYear.GetUserPublisher(currentUser);
 
-        bool userIsFollowingLeague = false;
-        Publisher? userPublisher = null;
-        if (currentUser is not null)
-        {
-            userIsFollowingLeague = await _fantasyCriticService.UserIsFollowingLeague(currentUser, league);
-            userPublisher = leagueYear.GetUserPublisher(currentUser);
-        }
-
-        var currentInstant = _clock.GetCurrentInstant();
-        var currentDate = currentInstant.ToEasternDate();
         PrivatePublisherDataViewModel? privatePublisherData = null;
         if (userPublisher is not null)
         {
@@ -220,11 +213,8 @@ public class LeagueController : BaseLeagueController
     public async Task<IActionResult> GetMyPublishers(int year)
     {
         var currentUser = await GetCurrentUserOrThrow();
-
         var publishers = await _publisherService.GetMinimalPublishersForUser(currentUser.Id, year);
-
-        var viewModels = publishers.Select(p =>
-            new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year));
+        var viewModels = publishers.Select(p => new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year));
         return Ok(viewModels);
     }
 

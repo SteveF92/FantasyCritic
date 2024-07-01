@@ -110,8 +110,13 @@ public class LeagueYear : IEquatable<LeagueYear>
         return tagOverride.Tags;
     }
 
-    public Publisher? GetUserPublisher(IMinimalFantasyCriticUser user)
+    public Publisher? GetUserPublisher(IMinimalFantasyCriticUser? user)
     {
+        if (user is null)
+        {
+            return null;
+        }
+
         return Publishers.SingleOrDefault(x => x.User.Id == user.UserID);
     }
 
