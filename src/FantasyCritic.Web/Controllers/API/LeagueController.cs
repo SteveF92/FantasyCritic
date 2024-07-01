@@ -171,6 +171,8 @@ public class LeagueController : BaseLeagueController
         var currentInstant = _clock.GetCurrentInstant();
         var currentDate = currentInstant.ToEasternDate();
 
+        var supplementalData = await _fantasyCriticService.GetLeagueYearSupplementalData(leagueYear, currentUser);
+
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
         FantasyCriticUser? previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear);

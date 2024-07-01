@@ -7,4 +7,5 @@ public interface ICombinedDataRepo
 {
     Task<BasicData> GetBasicData();
     Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser);
+    Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser);
 }
