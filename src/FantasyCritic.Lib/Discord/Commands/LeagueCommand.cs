@@ -64,9 +64,7 @@ public class LeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         var leagueYear = leagueChannel.LeagueYear;
 
-        var previousYearWinner = await _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID,
-            leagueYear.Year - 1);
-
+        var previousYearWinner = await _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, leagueYear.Year - 1);
         var publisherLines = DiscordSharedMessageUtilities.RankLeaguePublishers(leagueYear, previousYearWinner, systemWideValues, dateToCheck);
 
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
