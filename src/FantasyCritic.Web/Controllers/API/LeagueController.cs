@@ -149,6 +149,7 @@ public class LeagueController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
+
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var league = leagueYear.League;
@@ -166,60 +167,26 @@ public class LeagueController : BaseLeagueController
         {
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
+        
+        var supplementalData = await _fantasyCriticService.GetLeagueYearSupplementalData(leagueYear, currentUser);
 
         var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
         var currentInstant = _clock.GetCurrentInstant();
         var currentDate = currentInstant.ToEasternDate();
-
-        var supplementalData = await _fantasyCriticService.GetLeagueYearSupplementalData(leagueYear, currentUser);
-
-        var systemWideValues = supplementalData.SystemWideValues;
-        var managerMessages = supplementalData.ManagerMessages;
-        var previousYearWinner = supplementalData.PreviousYearWinner;
-        var activeTrades = supplementalData.ActiveTrades;
-        var activeSpecialAuctions = supplementalData.ActiveSpecialAuctions;
-        var publicBiddingGames = supplementalData.PublicBiddingGames;
-        var userIsFollowingLeague = supplementalData.UserIsFollowingLeague;
-        var allPublishersForUser = supplementalData.AllPublishersForUser;
-
-        //SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-        //IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticService.GetManagerMessages(leagueYear);
-        //FantasyCriticUser? previousYearWinner = await _fantasyCriticService.GetPreviousYearWinner(leagueYear);
-        //IReadOnlyList<Trade> activeTrades = await _tradeService.GetActiveTradesForLeague(leagueYear);
-        //IReadOnlyList<SpecialAuction> activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
-        //PublicBiddingSet? publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
-        //bool userIsFollowingLeague = await _fantasyCriticService.UserIsFollowingLeague(currentUser, league);
-        //IReadOnlyList<MinimalPublisher> allPublishersForUser = await _publisherService.GetMinimalPublishersForUser(currentUser?.Id, year);
-
-        Publisher? userPublisher = leagueYear.GetUserPublisher(currentUser);
-
-        PrivatePublisherDataViewModel? privatePublisherData = null;
-        if (userPublisher is not null)
-        {
-            var bids = await _gameAcquisitionService.GetActiveAcquisitionBids(leagueYear, userPublisher);
-            var dropRequests = await _gameAcquisitionService.GetActiveDropRequests(leagueYear, userPublisher);
-            var queuedGames = await _publisherService.GetQueuedGames(userPublisher);
-            var masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
-            var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
-            privatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, bids, dropRequests, queuedGames, currentDate, masterGameYearDictionary);
-        }
-
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
         var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false)).ToList();
         var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
         var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
-        var allPublishersForUserViewModels = allPublishersForUser.Select(p => new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year)).ToList();
+        var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
-            relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
+            relationship.LeagueInvite, currentUser, relationship.InLeague, supplementalData.UserIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
-            validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList(), completePlayStatus, systemWideValues,
-            validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
-            currentUser, managerMessages, previousYearWinner, publicBiddingGames, counterPickedByDictionary,
-            activeTrades, activeSpecialAuctions, privatePublisherData, gameNewsViewModel, allPublishersForUserViewModels);
+            activeUsers, completePlayStatus, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
+            currentUser, supplementalData, counterPickedByDictionary, gameNewsViewModel);
         return Ok(leagueYearViewModel);
     }
 

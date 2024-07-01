@@ -15,7 +15,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     private readonly string _connectionString;
 
-
     public MySQLCombinedDataRepo(RepositoryConfiguration configuration)
     {
         _connectionString = configuration.ConnectionString;

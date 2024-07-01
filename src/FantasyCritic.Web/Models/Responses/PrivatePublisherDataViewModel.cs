@@ -1,14 +1,13 @@
-using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Web.Models.Responses;
 public class PrivatePublisherDataViewModel
 {
-    public PrivatePublisherDataViewModel(LeagueYear leagueYear, Publisher userPublisher,
-        IEnumerable<PickupBid> myActiveBids, IEnumerable<DropRequest> myActiveDrops, IEnumerable<QueuedGame> queuedGames,
-        LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+    public PrivatePublisherDataViewModel(LeagueYear leagueYear, Publisher userPublisher, PrivatePublisherData domainData, LocalDate currentDate)
     {
-        MyActiveBids = myActiveBids.Select(x => new PickupBidViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Priority).ToList();
-        MyActiveDrops = myActiveDrops.Select(x => new DropGameRequestViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Timestamp).ToList();
+        var masterGameYearDictionary = domainData.MasterGameYearDictionary;
+        MyActiveBids = domainData.Bids.Select(x => new PickupBidViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Priority).ToList();
+        MyActiveDrops = domainData.DropRequests.Select(x => new DropGameRequestViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Timestamp).ToList();
 
         HashSet<MasterGame> publisherMasterGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
@@ -20,7 +19,7 @@ public class PrivatePublisherDataViewModel
 
         List<QueuedGameViewModel> queuedGameVMs = new List<QueuedGameViewModel>();
 
-        foreach (var queuedGame in queuedGames)
+        foreach (var queuedGame in domainData.QueuedGames)
         {
             bool taken = publisherMasterGames.Contains(queuedGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(queuedGame.MasterGame);

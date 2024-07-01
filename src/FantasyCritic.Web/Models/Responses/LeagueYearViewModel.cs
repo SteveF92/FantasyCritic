@@ -1,5 +1,5 @@
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
-using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Models.RoundTrip;
@@ -8,14 +8,10 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueYearViewModel
 {
-    public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear,
-        Instant currentInstant, IReadOnlyList<MinimalFantasyCriticUser> activeUsers,
-        CompletePlayStatus completePlayStatus, SystemWideValues systemWideValues,
-        IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
-        FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
-        PublicBiddingSet? publicBiddingSet, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary,
-        IEnumerable<Trade> activeTrades, IEnumerable<SpecialAuction> activeSpecialAuctions, PrivatePublisherDataViewModel? privatePublisherData,
-        GameNewsViewModel gameNews, IEnumerable<LeaguePublisherViewModel> allPublishersForUserViewModels)
+    public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear, Instant currentInstant, IReadOnlyList<MinimalFantasyCriticUser> activeUsers,
+        CompletePlayStatus completePlayStatus, IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
+        FantasyCriticUser? accessingUser, LeagueYearSupplementalData supplementalData, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary,
+        GameNewsViewModel gameNews)
     {
         var currentDate = currentInstant.ToEasternDate();
         League = leagueViewModel;
@@ -32,7 +28,7 @@ public class LeagueYearViewModel
 
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.DraftPosition)
-            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, systemWideValues, counterPickedByDictionary))
+            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, supplementalData.SystemWideValues, counterPickedByDictionary))
             .ToList();
 
         var publisherRankings = leagueYear.Publishers
@@ -48,7 +44,7 @@ public class LeagueYearViewModel
             .Select(x => new
                 {
                     x.PublisherID,
-                    Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate) > x.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate)) + 1
+                    Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues, currentDate) > x.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues, currentDate)) + 1
                 }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
@@ -67,8 +63,8 @@ public class LeagueYearViewModel
             {
                 int ranking = publisherRankings[publisher.PublisherID];
                 int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
-                bool isPreviousYearWinner = previousYearWinner is not null && previousYearWinner.Id == user.UserID;
-                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
+                bool isPreviousYearWinner = supplementalData.PreviousYearWinner?.Id == user.UserID;
+                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, supplementalData.SystemWideValues,
                     userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner, ranking, projectedRanking));
             }
         }
@@ -110,22 +106,32 @@ public class LeagueYearViewModel
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
         SlotInfo = new PublisherSlotRequirementsViewModel(leagueYear.Options);
 
-        ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x, x.IsDismissed(accessingUser))).OrderBy(x => x.Timestamp).ToList();
+        ManagerMessages = supplementalData.ManagerMessages.Select(x => new ManagerMessageViewModel(x, x.IsDismissed(accessingUser))).OrderBy(x => x.Timestamp).ToList();
         if (!userIsInLeague)
         {
             ManagerMessages = ManagerMessages.Where(x => x.IsPublic).ToList();
         }
 
-        if (publicBiddingSet is not null)
+        if (supplementalData.PublicBiddingGames is not null)
         {
-            PublicBiddingGames = new PublicBiddingSetViewModel(publicBiddingSet, currentDate);
+            PublicBiddingGames = new PublicBiddingSetViewModel(supplementalData.PublicBiddingGames, currentDate);
         }
 
-        ActiveTrades = activeTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
-        ActiveSpecialAuctions = activeSpecialAuctions.Select(x => new SpecialAuctionViewModel(x, currentInstant)).ToList();
-        PrivatePublisherData = privatePublisherData;
+        ActiveTrades = supplementalData.ActiveTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
+        ActiveSpecialAuctions = supplementalData.ActiveSpecialAuctions.Select(x => new SpecialAuctionViewModel(x, currentInstant)).ToList();
         GameNews = gameNews;
-        AllPublishersForUserViewModels = allPublishersForUserViewModels.ToList();
+        AllPublishersForUserViewModels = supplementalData.AllPublishersForUser.Select(p => new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year)).ToList();
+
+        if (supplementalData.PrivatePublisherData is not null)
+        {
+            Publisher? userPublisher = leagueYear.GetUserPublisher(accessingUser);
+            if (userPublisher is null)
+            {
+                throw new Exception($"User publisher for LeagueID: {leagueYear.League.LeagueID}, UserID: {accessingUser?.UserID} cannot be null");
+            }
+
+            PrivatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, supplementalData.PrivatePublisherData, currentDate);
+        }
     }
 
     public LeagueViewModel League { get; }
@@ -145,7 +151,7 @@ public class LeagueYearViewModel
     public PublicBiddingSetViewModel? PublicBiddingGames { get; }
     public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
     public IReadOnlyList<SpecialAuctionViewModel> ActiveSpecialAuctions { get; }
-    public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
     public GameNewsViewModel GameNews { get; }
     public IReadOnlyList<LeaguePublisherViewModel> AllPublishersForUserViewModels { get; }
+    public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
 }
