@@ -125,8 +125,18 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }
 
-    public Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
+    public async Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
-        throw new NotImplementedException();
+        var queryObject = new
+        {
+            P_LeagueID = leagueYear.League.LeagueID,
+            P_Year = leagueYear.Year,
+            P_UserID = currentUser?.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
+
+        return new LeagueYearSupplementalData();
     }
 }
