@@ -46,6 +46,11 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueYear(id, year);
     }
 
+    public Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
+    {
+        return _combinedDataRepo.GetLeagueYearSupplementalData(leagueYear, currentUser);
+    }
+
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
     {
         return _fantasyCriticRepo.GetLeagueYears(year);

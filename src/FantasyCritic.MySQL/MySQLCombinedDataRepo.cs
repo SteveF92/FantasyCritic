@@ -125,4 +125,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }
+
+    public Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
+    {
+        throw new NotImplementedException();
+    }
 }
