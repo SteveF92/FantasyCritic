@@ -14,7 +14,8 @@ public class LeagueYearViewModel
         IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, IEnumerable<ManagerMessage> managerMessages, FantasyCriticUser? previousYearWinner,
         PublicBiddingSet? publicBiddingSet, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary,
-        IEnumerable<Trade> activeTrades, IEnumerable<SpecialAuction> activeSpecialAuctions, PrivatePublisherDataViewModel? privatePublisherData, GameNewsViewModel gameNews)
+        IEnumerable<Trade> activeTrades, IEnumerable<SpecialAuction> activeSpecialAuctions, PrivatePublisherDataViewModel? privatePublisherData,
+        GameNewsViewModel gameNews, IEnumerable<LeaguePublisherViewModel> allPublishersForUserViewModels)
     {
         var currentDate = currentInstant.ToEasternDate();
         League = leagueViewModel;
@@ -124,6 +125,7 @@ public class LeagueYearViewModel
         ActiveSpecialAuctions = activeSpecialAuctions.Select(x => new SpecialAuctionViewModel(x, currentInstant)).ToList();
         PrivatePublisherData = privatePublisherData;
         GameNews = gameNews;
+        AllPublishersForUserViewModels = allPublishersForUserViewModels.ToList();
     }
 
     public LeagueViewModel League { get; }
@@ -145,4 +147,5 @@ public class LeagueYearViewModel
     public IReadOnlyList<SpecialAuctionViewModel> ActiveSpecialAuctions { get; }
     public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
     public GameNewsViewModel GameNews { get; }
+    public IReadOnlyList<LeaguePublisherViewModel> AllPublishersForUserViewModels { get; }
 }

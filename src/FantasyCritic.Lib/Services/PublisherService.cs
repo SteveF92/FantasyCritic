@@ -162,9 +162,14 @@ public class PublisherService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year)
+    public async Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid? userID, int year)
     {
-        return await _fantasyCriticRepo.GetMinimalPublishersForUser(userID, year);
+        if (!userID.HasValue)
+        {
+            return new List<MinimalPublisher>();
+        }
+
+        return await _fantasyCriticRepo.GetMinimalPublishersForUser(userID.Value, year);
     }
 
     public async Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher)
