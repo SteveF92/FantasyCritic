@@ -18,9 +18,10 @@ public class FantasyCriticService
     private readonly LeagueMemberService _leagueMemberService;
     private readonly InterLeagueService _interLeagueService;
     private readonly DiscordPushService _discordPushService;
+    private readonly GameAcquisitionService _gameAcquisitionService;
 
     public FantasyCriticService(LeagueMemberService leagueMemberService, InterLeagueService interLeagueService, DiscordPushService discordPushService,
-        IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, IDiscordRepo discordRepo, IClock clock)
+        GameAcquisitionService gameAcquisitionService, IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, IDiscordRepo discordRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _combinedDataRepo = combinedDataRepo;
@@ -29,6 +30,7 @@ public class FantasyCriticService
         _leagueMemberService = leagueMemberService;
         _interLeagueService = interLeagueService;
         _discordPushService = discordPushService;
+        _gameAcquisitionService = gameAcquisitionService;
     }
 
     public Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)
@@ -46,9 +48,15 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueYear(id, year);
     }
 
-    public Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
+    public async Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
-        return _combinedDataRepo.GetLeagueYearSupplementalData(leagueYear, currentUser);
+        var supplementalDataFromRepo = await _combinedDataRepo.GetLeagueYearSupplementalData(leagueYear, currentUser);
+        var publicBiddingSet = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, supplementalDataFromRepo.ActivePickupBids, supplementalDataFromRepo.ActiveSpecialAuctions);
+
+        return new LeagueYearSupplementalData(supplementalDataFromRepo.SystemWideValues,
+            supplementalDataFromRepo.ManagerMessages, supplementalDataFromRepo.PreviousYearWinnerUserID,
+            supplementalDataFromRepo.ActiveTrades, supplementalDataFromRepo.ActiveSpecialAuctions, publicBiddingSet,
+            supplementalDataFromRepo.UserIsFollowingLeague, supplementalDataFromRepo.AllPublishersForUser, supplementalDataFromRepo.PrivatePublisherData);
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)

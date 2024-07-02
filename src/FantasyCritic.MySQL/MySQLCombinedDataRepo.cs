@@ -7,6 +7,12 @@ using Serilog;
 using System.Data;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities.Conferences;
+using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.MySQL.Entities.Trades;
+using FantasyCritic.Lib.BusinessLogicFunctions;
+using NodaTime;
+using FantasyCritic.Lib.Domain.LeagueActions;
 
 namespace FantasyCritic.MySQL;
 
@@ -15,12 +21,14 @@ namespace FantasyCritic.MySQL;
 
 public class MySQLCombinedDataRepo : ICombinedDataRepo
 {
+    private readonly IMasterGameRepo _masterGameRepo;
     private static readonly ILogger _logger = Log.ForContext<MySQLFantasyCriticRepo>();
 
     private readonly string _connectionString;
 
-    public MySQLCombinedDataRepo(RepositoryConfiguration configuration)
+    public MySQLCombinedDataRepo(RepositoryConfiguration configuration, IMasterGameRepo masterGameRepo)
     {
+        _masterGameRepo = masterGameRepo;
         _connectionString = configuration.ConnectionString;
     }
 
@@ -175,8 +183,138 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         Guid? previousYearWinningUserID = await connection.QuerySingleOrDefaultAsync<Guid?>(previousYearWinnerSQL, queryObject);
 
         //ActiveTrades
+        const string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @P_LeagueID AND Year = @P_Year;";
+        const string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
+                                         "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
+                                         "WHERE LeagueID = @P_LeagueID AND Year = @P_Year;";
+        const string voteTableSQL = "select tbl_league_tradevote.* from tbl_league_tradevote " +
+                                    "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
+                                    "WHERE LeagueID = @P_LeagueID AND Year = @P_Year;";
+
+        var tradeEntities = await connection.QueryAsync<TradeEntity>(baseTableSQL, queryObject);
+        var componentEntities = await connection.QueryAsync<TradeComponentEntity>(componentTableSQL, queryObject);
+        var voteEntities = await connection.QueryAsync<TradeVoteEntity>(voteTableSQL, queryObject);
+
+        var componentLookup = componentEntities.ToLookup(x => x.TradeID);
+        var voteLookup = voteEntities.ToLookup(x => x.TradeID);
+
+        List<Trade> domainTrades = new List<Trade>();
+        foreach (var tradeEntity in tradeEntities)
+        {
+            Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
+            Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
+
+            var components = componentLookup[tradeEntity.TradeID];
+            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+            foreach (var component in components)
+            {
+                var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Year);
+                if (masterGameYear is null)
+                {
+                    throw new Exception($"Invalid master game when getting trade: {tradeEntity.TradeID}");
+                }
+
+                var domainComponent = new MasterGameYearWithCounterPick(masterGameYear, component.CounterPick);
+                if (component.CurrentParty == TradingParty.Proposer.Value)
+                {
+                    proposerMasterGameYearWithCounterPicks.Add(domainComponent);
+                }
+                else if (component.CurrentParty == TradingParty.CounterParty.Value)
+                {
+                    counterPartyMasterGameYearWithCounterPicks.Add(domainComponent);
+                }
+                else
+                {
+                    throw new Exception($"Invalid party when getting trade: {tradeEntity.TradeID}");
+                }
+            }
+
+            var votes = voteLookup[tradeEntity.TradeID];
+            List<TradeVote> tradeVotes = new List<TradeVote>();
+            foreach (var vote in votes)
+            {
+                var user = leagueYear.Publishers.Single(x => x.User.Id == vote.UserID).User;
+                var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
+                tradeVotes.Add(domainVote);
+            }
+
+            domainTrades.Add(tradeEntity.ToDomain(leagueYear, proposer, counterParty, proposerMasterGameYearWithCounterPicks, counterPartyMasterGameYearWithCounterPicks, tradeVotes));
+        }
+
+        var activeTrades = domainTrades.Where(x => x.Status.IsActive).OrderByDescending(x => x.ProposedTimestamp).ToList();
+
+        //Active Special Auctions
+        const string activeSpecialAuctionsSQL = "select * from tbl_league_specialauction where LeagueID = @P_LeagueID AND Year = @P_Year;";
+        var key = new LeagueYearKeyEntity(leagueYear.Key);
+
+        var specialAuctionEntities = await connection.QueryAsync<SpecialAuctionEntity>(activeSpecialAuctionsSQL, key);
+
+        List<SpecialAuction> specialAuctions = new List<SpecialAuction>();
+        foreach (var entity in specialAuctionEntities)
+        {
+            var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(entity.MasterGameID, leagueYear.Year);
+            specialAuctions.Add(entity.ToDomain(masterGame));
+        }
+        var activeSpecialAuctions = specialAuctions.Where(x => !x.Processed).ToList();
+
+        //Public bidding set
+        var publisherDictionary = leagueYear.Publishers.ToDictionary(x => x.PublisherID);
+
+        var publisherGameDictionary = leagueYear.Publishers
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
+
+        var formerPublisherGameDictionary = leagueYear.Publishers
+            .SelectMany(x => x.FormerPublisherGames)
+            .Where(x => x.PublisherGame.MasterGame is not null)
+            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+
+        const string publicBiddingSQL = "select * from vw_league_pickupbid where LeagueID = @P_LeagueID and Year = @P_Year and Successful is NULL";
+        var bidEntities = await connection.QueryAsync<PickupBidEntity>(publicBiddingSQL, queryObject);
+        List<PickupBid> activePickupBids = new List<PickupBid>();
+        foreach (var bidEntity in bidEntities)
+        {
+            var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
+            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            var publisher = publisherDictionary[bidEntity.PublisherID];
+            PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
+            activePickupBids.Add(domain);
+        }
+
+        //User is following league
 
 
-        return new LeagueYearSupplementalData(systemWideValues, managersMessages, previousYearWinningUserID);
+        return new LeagueYearSupplementalData(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids);
+    }
+
+    private async Task<PublisherGame?> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,
+        ILookup<(Guid PublisherID, Guid MasterGameID), PublisherGame> publisherGameLookup,
+        ILookup<(Guid PublisherID, Guid MasterGameID), FormerPublisherGame> formerPublisherGameLookup)
+    {
+        if (!bidEntity.ConditionalDropMasterGameID.HasValue)
+        {
+            return null;
+        }
+
+        var currentPublisherGames = publisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
+        if (currentPublisherGames.Any())
+        {
+            return currentPublisherGames.WhereMax(x => x.Timestamp).First();
+        }
+
+        var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
+        if (formerPublisherGames.Any())
+        {
+            return formerPublisherGames.WhereMax(x => x.PublisherGame.Timestamp).First().PublisherGame;
+        }
+
+        var conditionalDropGame = await _masterGameRepo.GetMasterGameYearOrThrow(bidEntity.ConditionalDropMasterGameID.Value, year);
+        var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
+            conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
+            false, null, false, null, conditionalDropGame, 0, null, null, null, null);
+
+        return fakePublisherGame;
     }
 }

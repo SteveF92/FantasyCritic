@@ -370,10 +370,21 @@ public class GameAcquisitionService
             return null;
         }
 
+        var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
+        return await GetPublicBiddingGames(leagueYear, activeBidsForLeague, activeSpecialAuctions);
+    }
+
+    public async Task<PublicBiddingSet?> GetPublicBiddingGames(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague, IReadOnlyList<SpecialAuction> activeSpecialAuctions)
+    {
+        var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
+        if (!isInPublicWindow)
+        {
+            return null;
+        }
+
         var currentDate = _clock.GetToday();
         var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
-        var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
         var bidsToCount = activeBidsForLeague;
         if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
         {
