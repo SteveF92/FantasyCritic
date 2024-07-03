@@ -11,7 +11,6 @@ using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.MySQL.Entities.Trades;
 using FantasyCritic.Lib.Domain.LeagueActions;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace FantasyCritic.MySQL;
 
@@ -213,11 +212,21 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var queuedEntities = await connection.QueryAsync<QueuedGameEntity>(queueSQL, queryObject);
 
         //Getting domain objects
-
-        //SystemWideValues
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
+        var managersMessages = GetManagersMessages(dismissalEntities, messageEntities);
+        var activeTrades = GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary);
+        var activeSpecialAuctions = GetActiveSpecialAuctions(specialAuctionEntities, masterGameYearDictionary);
+        var activePickupBids = GetActivePickupBids(leagueYear, bidEntities, masterGameDictionary, masterGameYearDictionary);
+        bool userIsFollowingLeague = followingLeagueCount > 0;
+        var allPublishersForUser = minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
+        var privatePublisherData = GetPrivatePublisherData(leagueYear, userPublisher, activePickupBids, dropEntities, masterGameDictionary, queuedEntities);
 
-        //ManagersMessages
+        return new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
+            userIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
+    }
+
+    private static List<ManagerMessage> GetManagersMessages(IEnumerable<ManagerMessageDismissalEntity> dismissalEntities, IEnumerable<ManagerMessageEntity> messageEntities)
+    {
         List<ManagerMessage> managersMessages = new List<ManagerMessage>();
         var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
         foreach (var messageEntity in messageEntities)
@@ -226,7 +235,12 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             managersMessages.Add(messageEntity.ToDomain(dismissedUserIDs));
         }
 
-        //ActiveTrades
+        return managersMessages;
+    }
+
+    private static List<Trade> GetActiveTrades(LeagueYear leagueYear, IEnumerable<TradeComponentEntity> componentEntities, IEnumerable<TradeVoteEntity> voteEntities,
+    IEnumerable<TradeEntity> tradeEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
+    {
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
 
@@ -275,8 +289,11 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         }
 
         var activeTrades = domainTrades.Where(x => x.Status.IsActive).OrderByDescending(x => x.ProposedTimestamp).ToList();
+        return activeTrades;
+    }
 
-        //Active Special Auctions
+    private static List<SpecialAuction> GetActiveSpecialAuctions(IEnumerable<SpecialAuctionEntity> specialAuctionEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
+    {
         List<SpecialAuction> specialAuctions = new List<SpecialAuction>();
         foreach (var entity in specialAuctionEntities)
         {
@@ -284,8 +301,12 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             specialAuctions.Add(entity.ToDomain(masterGame));
         }
         var activeSpecialAuctions = specialAuctions.Where(x => !x.Processed).ToList();
+        return activeSpecialAuctions;
+    }
 
-        //Public bidding set
+    private static List<PickupBid> GetActivePickupBids(LeagueYear leagueYear, IEnumerable<PickupBidEntity> bidEntities, Dictionary<Guid, MasterGame> masterGameDictionary,
+        Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
+    {
         var publisherDictionary = leagueYear.Publishers.ToDictionary(x => x.PublisherID);
 
         var publisherGameDictionary = leagueYear.Publishers
@@ -302,52 +323,46 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = masterGameDictionary[bidEntity.MasterGameID];
-            PublisherGame? conditionalDropPublisherGame = GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary, masterGameYearDictionary);
+            PublisherGame? conditionalDropPublisherGame = GetConditionalDropPublisherGame(bidEntity, publisherGameDictionary, formerPublisherGameDictionary, masterGameYearDictionary);
             var publisher = publisherDictionary[bidEntity.PublisherID];
             PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             activePickupBids.Add(domain);
         }
 
-        //User is following league
-        bool userIsFollowingLeague = followingLeagueCount > 0;
+        return activePickupBids;
+    }
 
-        //All Publishers for User
-        var allPublishersForUser = new List<MinimalPublisher>();
-        if (userPublisher is not null)
+    private static PrivatePublisherData? GetPrivatePublisherData(LeagueYear leagueYear, Publisher? userPublisher,
+        List<PickupBid> activePickupBids, IEnumerable<DropRequestEntity> dropEntities,
+        Dictionary<Guid, MasterGame> masterGameDictionary, IEnumerable<QueuedGameEntity> queuedEntities)
+    {
+        if (userPublisher is null)
         {
-            allPublishersForUser = minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
+            return null;
         }
 
-        //PublisherData
-        PrivatePublisherData? privatePublisherData = null;
-        if (userPublisher is not null)
+        //Active Bids
+        var bidsForUser = activePickupBids.Where(x => x.Publisher.PublisherID == userPublisher.PublisherID).ToList();
+
+        //Active Drops
+        List<DropRequest> domainDrops = new List<DropRequest>();
+        foreach (var dropEntity in dropEntities)
         {
-            //Active Bids
-            var bidsForUser = activePickupBids.Where(x => x.Publisher.PublisherID == userPublisher.PublisherID).ToList();
-
-            //Active Drops
-            List<DropRequest> domainDrops = new List<DropRequest>();
-            foreach (var dropEntity in dropEntities)
-            {
-                var masterGame = masterGameDictionary[dropEntity.MasterGameID];
-                DropRequest domain = dropEntity.ToDomain(userPublisher, masterGame, leagueYear);
-                domainDrops.Add(domain);
-            }
-
-            //Queued Games
-            List<QueuedGame> domainQueue = new List<QueuedGame>();
-            foreach (var queuedEntity in queuedEntities)
-            {
-                var masterGame = masterGameDictionary[queuedEntity.MasterGameID];
-                QueuedGame domain = queuedEntity.ToDomain(userPublisher, masterGame);
-                domainQueue.Add(domain);
-            }
-
-            privatePublisherData = new PrivatePublisherData(bidsForUser, domainDrops, domainQueue);
+            var masterGame = masterGameDictionary[dropEntity.MasterGameID];
+            DropRequest domain = dropEntity.ToDomain(userPublisher, masterGame, leagueYear);
+            domainDrops.Add(domain);
         }
 
-        return new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
-            userIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
+        //Queued Games
+        List<QueuedGame> domainQueue = new List<QueuedGame>();
+        foreach (var queuedEntity in queuedEntities)
+        {
+            var masterGame = masterGameDictionary[queuedEntity.MasterGameID];
+            QueuedGame domain = queuedEntity.ToDomain(userPublisher, masterGame);
+            domainQueue.Add(domain);
+        }
+
+        return new PrivatePublisherData(bidsForUser, domainDrops, domainQueue);
     }
 
     private static PublisherGame? GetConditionalDropPublisherGame(PickupBidEntity bidEntity,
