@@ -155,7 +155,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
         await using var connection = new MySqlConnection(_connectionString);
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
+        //await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
 
         //SystemWideValues
         var positionPoints = await connection.QueryAsync<AveragePositionPointsEntity>("select * from tbl_caching_averagepositionpoints;");
@@ -281,7 +281,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
-            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            PublisherGame? conditionalDropPublisherGame = GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary, masterGameYearDictionary);
             var publisher = publisherDictionary[bidEntity.PublisherID];
             PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             activePickupBids.Add(domain);
@@ -346,9 +346,10 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             userIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
     }
 
-    private async Task<PublisherGame?> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,
+    private static PublisherGame? GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,
         ILookup<(Guid PublisherID, Guid MasterGameID), PublisherGame> publisherGameLookup,
-        ILookup<(Guid PublisherID, Guid MasterGameID), FormerPublisherGame> formerPublisherGameLookup)
+        ILookup<(Guid PublisherID, Guid MasterGameID), FormerPublisherGame> formerPublisherGameLookup,
+        IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         if (!bidEntity.ConditionalDropMasterGameID.HasValue)
         {
@@ -367,7 +368,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return formerPublisherGames.WhereMax(x => x.PublisherGame.Timestamp).First().PublisherGame;
         }
 
-        var conditionalDropGame = await _masterGameRepo.GetMasterGameYearOrThrow(bidEntity.ConditionalDropMasterGameID.Value, year);
+        var conditionalDropGame = masterGameYearDictionary[bidEntity.ConditionalDropMasterGameID.Value];
         var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
             conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
             false, null, false, null, conditionalDropGame, 0, null, null, null, null);
