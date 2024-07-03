@@ -371,10 +371,14 @@ public class GameAcquisitionService
         }
 
         var activeBidsForLeague = await _fantasyCriticRepo.GetActivePickupBids(leagueYear);
-        return await GetPublicBiddingGames(leagueYear, activeBidsForLeague, activeSpecialAuctions);
+        var masterGameYears = await _masterGameRepo.GetMasterGameYears(leagueYear.Year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        return GetPublicBiddingGames(leagueYear, activeBidsForLeague, activeSpecialAuctions, masterGameYearDictionary);
     }
 
-    public async Task<PublicBiddingSet?> GetPublicBiddingGames(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague, IReadOnlyList<SpecialAuction> activeSpecialAuctions)
+    public PublicBiddingSet? GetPublicBiddingGames(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague, IReadOnlyList<SpecialAuction> activeSpecialAuctions,
+        IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         var isInPublicWindow = IsInPublicBiddingWindow(leagueYear);
         if (!isInPublicWindow)
@@ -401,7 +405,7 @@ public class GameAcquisitionService
                 continue;
             }
 
-            var masterGameYear = await _masterGameRepo.GetMasterGameYearOrThrow(bid.MasterGame.MasterGameID, leagueYear.Year);
+            var masterGameYear = masterGameYearDictionary[bid.MasterGame.MasterGameID];
             var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition,
                 bid.CounterPick, false, false, false);
             masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));

@@ -51,7 +51,8 @@ public class FantasyCriticService
     public async Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
         var supplementalDataFromRepo = await _combinedDataRepo.GetLeagueYearSupplementalData(leagueYear, currentUser);
-        var publicBiddingSet = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, supplementalDataFromRepo.ActivePickupBids, supplementalDataFromRepo.ActiveSpecialAuctions);
+        var publicBiddingSet = _gameAcquisitionService.GetPublicBiddingGames(leagueYear, supplementalDataFromRepo.ActivePickupBids,
+            supplementalDataFromRepo.ActiveSpecialAuctions, supplementalDataFromRepo.MasterGameYearDictionary);
 
         return new LeagueYearSupplementalData(supplementalDataFromRepo.SystemWideValues,
             supplementalDataFromRepo.ManagerMessages, supplementalDataFromRepo.PreviousYearWinnerUserID,
