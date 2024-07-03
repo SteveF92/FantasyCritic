@@ -10,8 +10,6 @@ using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.MySQL.Entities.Trades;
-using FantasyCritic.Lib.BusinessLogicFunctions;
-using NodaTime;
 using FantasyCritic.Lib.Domain.LeagueActions;
 
 namespace FantasyCritic.MySQL;
@@ -141,14 +139,20 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }
 
-    public async Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
+    public async Task<LeagueYearSupplementalDataFromRepo> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
+        var userPublisher = leagueYear.GetUserPublisher(currentUser);
+
         var queryObject = new
         {
             P_LeagueID = leagueYear.League.LeagueID,
             P_Year = leagueYear.Year,
-            P_UserID = currentUser?.Id
+            P_UserID = currentUser?.Id,
+            P_PublisherID = userPublisher?.PublisherID
         };
+
+        var masterGameYears = await _masterGameRepo.GetMasterGameYears(leagueYear.Year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
@@ -284,9 +288,62 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         }
 
         //User is following league
+        const string userIsFollowingLeagueSQL =
+            """
+            SELECT EXISTS(
+                select 1 from tbl_user
+                join tbl_user_followingleague on (tbl_user.UserID = tbl_user_followingleague.UserID)
+                where tbl_user_followingleague.LeagueID = @P_LeagueID AND tbl_user.UserID = @P_UserID;
+            );
+            """;
 
+        var followingLeagueCount = await connection.QuerySingleAsync<int>(userIsFollowingLeagueSQL, queryObject);
+        bool userIsFollowingLeague = followingLeagueCount > 0;
 
-        return new LeagueYearSupplementalData(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids);
+        //AllPublishersForUser
+        const string minimalPublisherSQL = """
+                                           SELECT PublisherID, PublisherName, l.LeagueID, LeagueName, `Year` 
+                                           FROM tbl_league_publisher p 
+                                           JOIN tbl_league l ON p.LeagueID = l.LeagueID 
+                                           WHERE UserID = @P_UserID AND `Year` = @P_Year";
+                                           """;
+
+        PrivatePublisherData? privatePublisherData = null;
+        var allPublishersForUser = new List<MinimalPublisher>();
+        if (userPublisher is not null)
+        {
+            var minimalPublisherEntities = await connection.QueryAsync<MinimalPublisherEntity>(minimalPublisherSQL, queryObject);
+            allPublishersForUser = minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
+
+            //Active Bids
+            var bidsForUser = activePickupBids.Where(x => x.Publisher.PublisherID == userPublisher.PublisherID).ToList();
+
+            //Active Drops
+            var dropEntities = await connection.QueryAsync<DropRequestEntity>("select * from tbl_league_droprequest where PublisherID = @P_PublisherID and Successful is NULL", queryObject);
+            List<DropRequest> domainDrops = new List<DropRequest>();
+            foreach (var dropEntity in dropEntities)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropEntity.MasterGameID);
+                DropRequest domain = dropEntity.ToDomain(userPublisher, masterGame, leagueYear);
+                domainDrops.Add(domain);
+            }
+
+            //Queued Games
+            var queuedEntities = await connection.QueryAsync<QueuedGameEntity>("select * from tbl_league_publisherqueue where PublisherID = @P_PublisherID", queryObject);
+
+            List<QueuedGame> domainQueue = new List<QueuedGame>();
+            foreach (var queuedEntity in queuedEntities)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGameOrThrow(queuedEntity.MasterGameID);
+                QueuedGame domain = queuedEntity.ToDomain(userPublisher, masterGame);
+                domainQueue.Add(domain);
+            }
+
+            privatePublisherData = new PrivatePublisherData(bidsForUser, domainDrops, domainQueue);
+        }
+
+        return new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
+            userIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
     }
 
     private async Task<PublisherGame?> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,

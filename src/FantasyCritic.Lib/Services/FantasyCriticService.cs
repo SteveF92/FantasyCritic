@@ -56,7 +56,8 @@ public class FantasyCriticService
         return new LeagueYearSupplementalData(supplementalDataFromRepo.SystemWideValues,
             supplementalDataFromRepo.ManagerMessages, supplementalDataFromRepo.PreviousYearWinnerUserID,
             supplementalDataFromRepo.ActiveTrades, supplementalDataFromRepo.ActiveSpecialAuctions, publicBiddingSet,
-            supplementalDataFromRepo.UserIsFollowingLeague, supplementalDataFromRepo.AllPublishersForUser, supplementalDataFromRepo.PrivatePublisherData);
+            supplementalDataFromRepo.UserIsFollowingLeague, supplementalDataFromRepo.AllPublishersForUser,
+            supplementalDataFromRepo.PrivatePublisherData, supplementalDataFromRepo.MasterGameYearDictionary);
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)

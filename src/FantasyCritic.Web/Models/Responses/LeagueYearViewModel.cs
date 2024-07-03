@@ -130,7 +130,7 @@ public class LeagueYearViewModel
                 throw new Exception($"User publisher for LeagueID: {leagueYear.League.LeagueID}, UserID: {accessingUser?.UserID} cannot be null");
             }
 
-            PrivatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, supplementalData.PrivatePublisherData, currentDate);
+            PrivatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, supplementalData.PrivatePublisherData, supplementalData.MasterGameYearDictionary, currentDate);
         }
     }
 

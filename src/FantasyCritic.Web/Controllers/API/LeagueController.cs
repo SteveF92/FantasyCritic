@@ -5,7 +5,6 @@ using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
-using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;

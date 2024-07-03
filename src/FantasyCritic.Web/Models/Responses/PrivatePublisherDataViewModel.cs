@@ -3,9 +3,9 @@ using FantasyCritic.Lib.Domain.Combinations;
 namespace FantasyCritic.Web.Models.Responses;
 public class PrivatePublisherDataViewModel
 {
-    public PrivatePublisherDataViewModel(LeagueYear leagueYear, Publisher userPublisher, PrivatePublisherData domainData, LocalDate currentDate)
+    public PrivatePublisherDataViewModel(LeagueYear leagueYear, Publisher userPublisher, PrivatePublisherData domainData,
+        IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary, LocalDate currentDate)
     {
-        var masterGameYearDictionary = domainData.MasterGameYearDictionary;
         MyActiveBids = domainData.Bids.Select(x => new PickupBidViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Priority).ToList();
         MyActiveDrops = domainData.DropRequests.Select(x => new DropGameRequestViewModel(x, currentDate, masterGameYearDictionary)).OrderBy(x => x.Timestamp).ToList();
 

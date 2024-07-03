@@ -95,14 +95,15 @@ public static class Program
         IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo);
-        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(localRepoConfig);
+        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(localRepoConfig, masterGameRepo);
         IConferenceRepo conferenceRepo = new MySQLConferenceRepo(localRepoConfig, localUserStore, masterGameRepo);
         IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo, masterGameRepo, conferenceRepo, _clock);
         IRoyaleRepo royaleRepo = new MySQLRoyaleRepo(localRepoConfig, localUserStore, masterGameRepo, fantasyCriticRepo);
         DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true, null), _clock, new ServiceContainer(), new DiscordFormatter());
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, combinedDataRepo, masterGameRepo, _clock, discordPushService);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo);
-        FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, discordPushService, fantasyCriticRepo, combinedDataRepo, discordRepo, _clock);
+        GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
+        FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, discordPushService, gameAcquisitionService, fantasyCriticRepo, combinedDataRepo, discordRepo, _clock);
         IOpenCriticService openCriticService = null!;
         IGGService ggService = null!;
         PatreonService patreonService = null!;
