@@ -160,7 +160,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
                                       JOIN tbl_league_managermessagedismissal ON tbl_league_managermessage.MessageID = tbl_league_managermessagedismissal.MessageID
                                       WHERE LeagueID = @P_LeagueID AND Year = @P_Year;
                                   """;
-        const string previousYearWinnerSQL = "select WinnerUserID from tbl_league_year where LeagueID = @P_LeagueID and Year = @P_Year - 1";
+        const string previousYearWinnerSQL = "select WinningUserID from tbl_league_year where LeagueID = @P_LeagueID and Year = @P_Year - 1";
         const string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @P_LeagueID AND Year = @P_Year;";
         const string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
                                          "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
@@ -175,14 +175,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             SELECT EXISTS(
                 select 1 from tbl_user
                 join tbl_user_followingleague on (tbl_user.UserID = tbl_user_followingleague.UserID)
-                where tbl_user_followingleague.LeagueID = @P_LeagueID AND tbl_user.UserID = @P_UserID;
+                where tbl_user_followingleague.LeagueID = @P_LeagueID AND tbl_user.UserID = @P_UserID
             );
             """;
         const string minimalPublisherSQL = """
                                            SELECT PublisherID, PublisherName, l.LeagueID, LeagueName, `Year`
                                            FROM tbl_league_publisher p
                                            JOIN tbl_league l ON p.LeagueID = l.LeagueID
-                                           WHERE UserID = @P_UserID AND `Year` = @P_Year";
+                                           WHERE UserID = @P_UserID AND `Year` = @P_Year;
                                            """;
         const string dropSQL = "select * from tbl_league_droprequest where PublisherID = @P_PublisherID and Successful is NULL";
         const string queueSQL = "select * from tbl_league_publisherqueue where PublisherID = @P_PublisherID";
