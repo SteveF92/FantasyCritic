@@ -147,6 +147,12 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             P_Year = year
         };
 
+        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+        var masterGames = await _masterGameRepo.GetMasterGames();
+        var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
+        var masterGameYears = await _masterGameRepo.GetMasterGameYears(year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyear", param, commandType: CommandType.StoredProcedure);
 
@@ -173,8 +179,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var publisherEntities = resultSets.Read<PublisherEntity>();
         var publisherGameEntities = resultSets.Read<PublisherGameEntity>();
         var formerPublisherGameEntities = resultSets.Read<FormerPublisherGameEntity>();
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
 
-        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var supportedYear = supportedYearEntity.ToDomain();
         var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
 
@@ -188,21 +195,22 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(tagDictionary[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
         var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
-        var domainEligibilityOverrides = await ConvertEligibilityOverrideEntities(eligibilityOverrideEntities);
-        var domainTagOverrides = await ConvertTagOverrideEntities(tagOverrideEntities, tagDictionary);
-        var publishers = await ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, year);
+        var domainEligibilityOverrides = ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
+        var domainTagOverrides = ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, tagDictionary);
+        var publishers = ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary);
 
         LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
             winningUser, publishers);
         return leagueYear;
     }
 
-    private async Task<IReadOnlyList<EligibilityOverride>> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities)
+    private IReadOnlyList<EligibilityOverride> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities,
+        Dictionary<Guid, MasterGame> masterGameDictionary)
     {
         List<EligibilityOverride> domainEligibilityOverrides = new List<EligibilityOverride>();
         foreach (var entity in eligibilityOverrideEntities)
         {
-            var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
+            var masterGame = masterGameDictionary[entity.MasterGameID];
             EligibilityOverride domain = entity.ToDomain(masterGame);
             domainEligibilityOverrides.Add(domain);
         }
@@ -210,10 +218,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return domainEligibilityOverrides;
     }
 
-    private async Task<IReadOnlyList<TagOverride>> ConvertTagOverrideEntities(IEnumerable<TagOverrideEntity> tagOverrideEntities, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    private IReadOnlyList<TagOverride> ConvertTagOverrideEntities(IEnumerable<TagOverrideEntity> tagOverrideEntities,
+        IReadOnlyDictionary<Guid, MasterGame> masterGameDictionary, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        var allMasterGames = await _masterGameRepo.GetMasterGames();
-        var masterGameDictionary = allMasterGames.ToDictionary(x => x.MasterGameID);
         List<TagOverride> domainTagOverrides = new List<TagOverride>();
         var entitiesByMasterGameID = tagOverrideEntities.GroupBy(x => x.MasterGameID);
         foreach (var entitySet in entitiesByMasterGameID)
@@ -232,11 +239,11 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return domainTagOverrides;
     }
 
-    private async Task<IReadOnlyList<Publisher>> ConvertPublisherEntities(IReadOnlyDictionary<Guid, FantasyCriticUser> usersInLeague, IEnumerable<PublisherEntity> publisherEntities,
-        IEnumerable<PublisherGameEntity> publisherGameEntities, IEnumerable<FormerPublisherGameEntity> formerPublisherGameEntities, int year)
+    private IReadOnlyList<Publisher> ConvertPublisherEntities(IReadOnlyDictionary<Guid, FantasyCriticUser> usersInLeague, IEnumerable<PublisherEntity> publisherEntities,
+        IEnumerable<PublisherGameEntity> publisherGameEntities, IEnumerable<FormerPublisherGameEntity> formerPublisherGameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
-        IReadOnlyList<PublisherGame> domainGames = await ConvertPublisherGameEntities(publisherGameEntities, year);
-        IReadOnlyList<FormerPublisherGame> domainFormerGames = await ConvertFormerPublisherGameEntities(formerPublisherGameEntities, year);
+        IReadOnlyList<PublisherGame> domainGames = ConvertPublisherGameEntities(publisherGameEntities, masterGameYearDictionary);
+        IReadOnlyList<FormerPublisherGame> domainFormerGames = ConvertFormerPublisherGameEntities(formerPublisherGameEntities, masterGameYearDictionary);
 
         List<Publisher> domainPublishers = new List<Publisher>();
         foreach (var entity in publisherEntities)
@@ -251,7 +258,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return domainPublishers;
     }
 
-    private async Task<IReadOnlyList<PublisherGame>> ConvertPublisherGameEntities(IEnumerable<PublisherGameEntity> gameEntities, int year)
+    private IReadOnlyList<PublisherGame> ConvertPublisherGameEntities(IEnumerable<PublisherGameEntity> gameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         List<PublisherGame> domainGames = new List<PublisherGame>();
         foreach (var entity in gameEntities)
@@ -259,7 +266,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             MasterGameYear? masterGame = null;
             if (entity.MasterGameID.HasValue)
             {
-                masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
+                masterGame = masterGameYearDictionary[entity.MasterGameID.Value];
             }
 
             domainGames.Add(entity.ToDomain(masterGame));
@@ -268,7 +275,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return domainGames;
     }
 
-    private async Task<IReadOnlyList<FormerPublisherGame>> ConvertFormerPublisherGameEntities(IEnumerable<FormerPublisherGameEntity> gameEntities, int year)
+    private IReadOnlyList<FormerPublisherGame> ConvertFormerPublisherGameEntities(IEnumerable<FormerPublisherGameEntity> gameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
         List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
         foreach (var entity in gameEntities)
@@ -276,7 +283,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             MasterGameYear? masterGame = null;
             if (entity.MasterGameID.HasValue)
             {
-                masterGame = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID.Value, year);
+                masterGame = masterGameYearDictionary[entity.MasterGameID.Value];
             }
 
             domainGames.Add(entity.ToDomain(masterGame));
