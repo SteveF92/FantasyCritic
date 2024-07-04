@@ -3,7 +3,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities;
-using Serilog;
 using System.Data;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities.Conferences;
@@ -20,7 +19,6 @@ namespace FantasyCritic.MySQL;
 public class MySQLCombinedDataRepo : ICombinedDataRepo
 {
     private readonly IMasterGameRepo _masterGameRepo;
-    private static readonly ILogger _logger = Log.ForContext<MySQLFantasyCriticRepo>();
 
     private readonly string _connectionString;
 
@@ -204,6 +202,18 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return leagueYear;
     }
 
+    public async Task<LeagueYearWithSupplementalDataFromRepo?> GetLeagueYearWithSupplementalData(Guid leagueID, int year, FantasyCriticUser? currentUser)
+    {
+        var leagueYear = await GetLeagueYear(leagueID, year);
+        if (leagueYear is null)
+        {
+            return null;
+        }
+
+        var supplementalData = await GetLeagueYearSupplementalData(leagueYear, currentUser);
+        return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData);
+    }
+
     private IReadOnlyList<EligibilityOverride> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities,
         Dictionary<Guid, MasterGame> masterGameDictionary)
     {
@@ -297,8 +307,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         public required bool UserIsFollowingLeague { get; init; }
     }
 
-
-    public async Task<LeagueYearSupplementalDataFromRepo> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
+    private async Task<LeagueYearSupplementalDataFromRepo> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
         
         var userPublisher = leagueYear.GetUserPublisher(currentUser);

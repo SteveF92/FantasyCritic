@@ -12,3 +12,7 @@ public record LeagueYearSupplementalDataFromRepo(SystemWideValues SystemWideValu
     IReadOnlyList<MinimalPublisher> AllPublishersForUser, PrivatePublisherData? PrivatePublisherData, IReadOnlyDictionary<Guid, MasterGameYear> MasterGameYearDictionary);
 
 public record PrivatePublisherData(IReadOnlyList<PickupBid> Bids, IReadOnlyList<DropRequest> DropRequests, IReadOnlyList<QueuedGame> QueuedGames);
+
+public record LeagueYearWithSupplementalData(LeagueYear LeagueYear, LeagueYearSupplementalData SupplementalData);
+
+public record LeagueYearWithSupplementalDataFromRepo(LeagueYear LeagueYear, LeagueYearSupplementalDataFromRepo SupplementalData);

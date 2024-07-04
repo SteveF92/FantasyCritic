@@ -48,17 +48,27 @@ public class FantasyCriticService
         return _combinedDataRepo.GetLeagueYear(id, year);
     }
 
-    public async Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
+    public async Task<LeagueYearWithSupplementalData?> GetLeagueYearWithSupplementalData(Guid leagueID, int year, FantasyCriticUser? currentUser)
     {
-        var supplementalDataFromRepo = await _combinedDataRepo.GetLeagueYearSupplementalData(leagueYear, currentUser);
+        var leagueYearWithSupplementalData = await _combinedDataRepo.GetLeagueYearWithSupplementalData(leagueID, year, currentUser);
+        if (leagueYearWithSupplementalData is null)
+        {
+            return null;
+        }
+
+        var leagueYear = leagueYearWithSupplementalData.LeagueYear;
+        var supplementalDataFromRepo = leagueYearWithSupplementalData.SupplementalData;
+
         var publicBiddingSet = _gameAcquisitionService.GetPublicBiddingGames(leagueYear, supplementalDataFromRepo.ActivePickupBids,
             supplementalDataFromRepo.ActiveSpecialAuctions, supplementalDataFromRepo.MasterGameYearDictionary);
 
-        return new LeagueYearSupplementalData(supplementalDataFromRepo.SystemWideValues,
+        var supplementalData = new LeagueYearSupplementalData(supplementalDataFromRepo.SystemWideValues,
             supplementalDataFromRepo.ManagerMessages, supplementalDataFromRepo.PreviousYearWinnerUserID,
             supplementalDataFromRepo.ActiveTrades, supplementalDataFromRepo.ActiveSpecialAuctions, publicBiddingSet,
             supplementalDataFromRepo.UserIsFollowingLeague, supplementalDataFromRepo.AllPublishersForUser,
             supplementalDataFromRepo.PrivatePublisherData, supplementalDataFromRepo.MasterGameYearDictionary);
+
+        return new LeagueYearWithSupplementalData(leagueYear, supplementalData);
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)

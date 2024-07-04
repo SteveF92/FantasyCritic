@@ -143,7 +143,7 @@ public class LeagueController : BaseLeagueController
     [AllowAnonymous]
     public async Task<IActionResult> GetLeagueYear(Guid leagueID, int year, Guid? inviteCode)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
+        var leagueYearRecord = await GetExistingLeagueYearWithSupplementalData(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -154,6 +154,7 @@ public class LeagueController : BaseLeagueController
         var league = leagueYear.League;
         var currentUser = validResult.CurrentUser;
         var relationship = validResult.Relationship;
+        var supplementalData = validResult.SupplementalData;
 
         bool inviteCodeIsValid = false;
         if (inviteCode.HasValue)
@@ -167,8 +168,6 @@ public class LeagueController : BaseLeagueController
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
         
-        var supplementalData = await _fantasyCriticService.GetLeagueYearSupplementalData(leagueYear, currentUser);
-
         var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
         var currentInstant = _clock.GetCurrentInstant();
         var currentDate = currentInstant.ToEasternDate();

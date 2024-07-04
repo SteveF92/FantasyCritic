@@ -150,6 +150,85 @@ public abstract class BaseLeagueController : FantasyCriticController
             combinedLeagueUserStatus.UsersWithRemoveStatus, combinedLeagueUserStatus.ActivePlayersForLeagueYear, combinedLeagueUserStatus.OutstandingInvites, relationship), null);
     }
 
+    protected async Task<GenericResultRecord<LeagueYearWithSupplementalDataRecord>> GetExistingLeagueYearWithSupplementalData(Guid leagueID, int year,
+        ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
+    {
+        if (actionProcessingModeBehavior == ActionProcessingModeBehavior.Ban)
+        {
+            var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+            if (systemWideSettings.ActionProcessingMode)
+            {
+                return GetFailedResult<LeagueYearWithSupplementalDataRecord>(BadRequest("Site is in read-only mode while actions process."));
+            }
+        }
+
+        var currentUserRecord = await GetCurrentUser();
+        if ((requiredRelationship.MustBeLoggedIn || requiredRelationship.MustBeInOrInvitedToLeague || requiredRelationship.MustBeActiveInYear || requiredRelationship.MustBeLeagueManager) && currentUserRecord.IsFailure)
+        {
+            return GetFailedResult<LeagueYearWithSupplementalDataRecord>(Unauthorized());
+        }
+
+        var leagueYearWithSupplementalData = await _fantasyCriticService.GetLeagueYearWithSupplementalData(leagueID, year, currentUserRecord.ToNullable());
+        if (leagueYearWithSupplementalData is null)
+        {
+            return GetFailedResult<LeagueYearWithSupplementalDataRecord>(BadRequest("League year does not exist."));
+        }
+
+        var leagueYear = leagueYearWithSupplementalData.LeagueYear;
+
+        var yearStatusValid = requiredYearStatus.StateIsValid(leagueYear);
+        if (yearStatusValid.IsFailure)
+        {
+            return GetFailedResult<LeagueYearWithSupplementalDataRecord>(BadRequest(yearStatusValid.Error));
+        }
+
+        CombinedLeagueYearUserStatus combinedLeagueUserStatus = await _leagueMemberService.GetCombinedLeagueYearUserStatus(leagueYear);
+
+        bool isInLeague = false;
+        LeagueInvite? leagueInvite = null;
+        bool isActiveInYear = false;
+        bool isLeagueManager = false;
+        bool userIsAdmin = false;
+        if (currentUserRecord.IsSuccess)
+        {
+            userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
+            isLeagueManager = leagueYear.League.LeagueManager.UserID == currentUserRecord.Value.Id;
+            if (requiredRelationship.MustBeLeagueManager && !isLeagueManager)
+            {
+                return GetFailedResult<LeagueYearWithSupplementalDataRecord>(Forbid());
+            }
+
+            if (isLeagueManager)
+            {
+                isInLeague = true;
+                isActiveInYear = true;
+            }
+            else
+            {
+                isInLeague = combinedLeagueUserStatus.UsersWithRemoveStatus.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                if (!isInLeague)
+                {
+                    leagueInvite = combinedLeagueUserStatus.OutstandingInvites.GetMatchingInvite(currentUserRecord.Value.Email);
+                }
+                isActiveInYear = combinedLeagueUserStatus.ActivePlayersForLeagueYear.Any(x => x.Id == currentUserRecord.Value.Id);
+            }
+        }
+
+        if (!isInLeague && leagueInvite is null && requiredRelationship.MustBeInOrInvitedToLeague)
+        {
+            return UnauthorizedOrForbid<LeagueYearWithSupplementalDataRecord>(currentUserRecord.IsSuccess);
+        }
+
+        if (!isActiveInYear && requiredRelationship.MustBeActiveInYear)
+        {
+            return UnauthorizedOrForbid<LeagueYearWithSupplementalDataRecord>(currentUserRecord.IsSuccess);
+        }
+
+        LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(leagueInvite, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
+        return new GenericResultRecord<LeagueYearWithSupplementalDataRecord>(new LeagueYearWithSupplementalDataRecord(currentUserRecord.ToNullable(), leagueYear, leagueYearWithSupplementalData.SupplementalData,
+            combinedLeagueUserStatus.UsersWithRemoveStatus, combinedLeagueUserStatus.ActivePlayersForLeagueYear, combinedLeagueUserStatus.OutstandingInvites, relationship), null);
+    }
+
     protected async Task<GenericResultRecord<LeagueYearPublisherRecord>> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID,
         ActionProcessingModeBehavior actionProcessingModeBehavior, RequiredRelationship requiredRelationship, RequiredYearStatus requiredYearStatus)
     {
