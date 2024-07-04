@@ -218,8 +218,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     private async Task<LeagueYearSupplementalDataFromRepo> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
-        var userPublisher = leagueYear.GetUserPublisher(currentUser);
-
         var masterGames = await _masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
         var masterGameYears = await _masterGameRepo.GetMasterGameYears(leagueYear.Year);
@@ -229,8 +227,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         {
             P_LeagueID = leagueYear.League.LeagueID,
             P_Year = leagueYear.Year,
-            P_UserID = currentUser?.Id,
-            P_PublisherID = userPublisher?.PublisherID
+            P_UserID = currentUser?.Id
         };
 
         await using var connection = new MySqlConnection(_connectionString);
@@ -252,6 +249,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var queuedEntities = resultSets.Read<QueuedGameEntity>();
 
         //Getting domain objects
+        var userPublisher = leagueYear.GetUserPublisher(currentUser);
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
         var managersMessages = DomainConversionUtilities.GetManagersMessages(dismissalEntities, messageEntities);
         var activeTrades = DomainConversionUtilities.GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary);
