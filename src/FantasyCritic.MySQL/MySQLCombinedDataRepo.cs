@@ -6,10 +6,7 @@ using FantasyCritic.MySQL.Entities;
 using System.Data;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities.Conferences;
-using FantasyCritic.Lib.Domain.Trades;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.MySQL.Entities.Trades;
-using FantasyCritic.Lib.Domain.LeagueActions;
 
 namespace FantasyCritic.MySQL;
 
@@ -193,9 +190,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(tagDictionary[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
         var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
-        var domainEligibilityOverrides = ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
-        var domainTagOverrides = ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, tagDictionary);
-        var publishers = ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary);
+        var domainEligibilityOverrides = DomainConversionUtilities.ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
+        var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, tagDictionary);
+        var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary);
 
         LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
             winningUser, publishers);
@@ -214,94 +211,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData);
     }
 
-    private IReadOnlyList<EligibilityOverride> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities,
-        Dictionary<Guid, MasterGame> masterGameDictionary)
-    {
-        List<EligibilityOverride> domainEligibilityOverrides = new List<EligibilityOverride>();
-        foreach (var entity in eligibilityOverrideEntities)
-        {
-            var masterGame = masterGameDictionary[entity.MasterGameID];
-            EligibilityOverride domain = entity.ToDomain(masterGame);
-            domainEligibilityOverrides.Add(domain);
-        }
-
-        return domainEligibilityOverrides;
-    }
-
-    private IReadOnlyList<TagOverride> ConvertTagOverrideEntities(IEnumerable<TagOverrideEntity> tagOverrideEntities,
-        IReadOnlyDictionary<Guid, MasterGame> masterGameDictionary, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
-    {
-        List<TagOverride> domainTagOverrides = new List<TagOverride>();
-        var entitiesByMasterGameID = tagOverrideEntities.GroupBy(x => x.MasterGameID);
-        foreach (var entitySet in entitiesByMasterGameID)
-        {
-            var masterGame = masterGameDictionary[entitySet.Key];
-            List<MasterGameTag> tagsForMasterGame = new List<MasterGameTag>();
-            foreach (var entity in entitySet)
-            {
-                var fullTag = tagDictionary[entity.TagName];
-                tagsForMasterGame.Add(fullTag);
-            }
-
-            domainTagOverrides.Add(new TagOverride(masterGame, tagsForMasterGame));
-        }
-
-        return domainTagOverrides;
-    }
-
-    private IReadOnlyList<Publisher> ConvertPublisherEntities(IReadOnlyDictionary<Guid, FantasyCriticUser> usersInLeague, IEnumerable<PublisherEntity> publisherEntities,
-        IEnumerable<PublisherGameEntity> publisherGameEntities, IEnumerable<FormerPublisherGameEntity> formerPublisherGameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
-    {
-        IReadOnlyList<PublisherGame> domainGames = ConvertPublisherGameEntities(publisherGameEntities, masterGameYearDictionary);
-        IReadOnlyList<FormerPublisherGame> domainFormerGames = ConvertFormerPublisherGameEntities(formerPublisherGameEntities, masterGameYearDictionary);
-
-        List<Publisher> domainPublishers = new List<Publisher>();
-        foreach (var entity in publisherEntities)
-        {
-            var gamesForPublisher = domainGames.Where(x => x.PublisherID == entity.PublisherID);
-            var formerGamesForPublisher = domainFormerGames.Where(x => x.PublisherGame.PublisherID == entity.PublisherID);
-            var user = usersInLeague[entity.UserID];
-            var domainPublisher = entity.ToDomain(user, gamesForPublisher, formerGamesForPublisher);
-            domainPublishers.Add(domainPublisher);
-        }
-
-        return domainPublishers;
-    }
-
-    private IReadOnlyList<PublisherGame> ConvertPublisherGameEntities(IEnumerable<PublisherGameEntity> gameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
-    {
-        List<PublisherGame> domainGames = new List<PublisherGame>();
-        foreach (var entity in gameEntities)
-        {
-            MasterGameYear? masterGame = null;
-            if (entity.MasterGameID.HasValue)
-            {
-                masterGame = masterGameYearDictionary[entity.MasterGameID.Value];
-            }
-
-            domainGames.Add(entity.ToDomain(masterGame));
-        }
-
-        return domainGames;
-    }
-
-    private IReadOnlyList<FormerPublisherGame> ConvertFormerPublisherGameEntities(IEnumerable<FormerPublisherGameEntity> gameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
-    {
-        List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
-        foreach (var entity in gameEntities)
-        {
-            MasterGameYear? masterGame = null;
-            if (entity.MasterGameID.HasValue)
-            {
-                masterGame = masterGameYearDictionary[entity.MasterGameID.Value];
-            }
-
-            domainGames.Add(entity.ToDomain(masterGame));
-        }
-
-        return domainGames;
-    }
-
     private record UserIsFollowingLeagueEntity()
     {
         public required bool UserIsFollowingLeague { get; init; }
@@ -309,7 +218,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     private async Task<LeagueYearSupplementalDataFromRepo> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
-        
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
 
         var masterGames = await _masterGameRepo.GetMasterGames();
@@ -345,184 +253,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         //Getting domain objects
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
-        var managersMessages = GetManagersMessages(dismissalEntities, messageEntities);
-        var activeTrades = GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary);
-        var activeSpecialAuctions = GetActiveSpecialAuctions(specialAuctionEntities, masterGameYearDictionary);
-        var activePickupBids = GetActivePickupBids(leagueYear, bidEntities, masterGameDictionary, masterGameYearDictionary);
+        var managersMessages = DomainConversionUtilities.GetManagersMessages(dismissalEntities, messageEntities);
+        var activeTrades = DomainConversionUtilities.GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary);
+        var activeSpecialAuctions = DomainConversionUtilities.GetActiveSpecialAuctions(specialAuctionEntities, masterGameYearDictionary);
+        var activePickupBids = DomainConversionUtilities.GetActivePickupBids(leagueYear, bidEntities, masterGameDictionary, masterGameYearDictionary);
         var allPublishersForUser = minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
-        var privatePublisherData = GetPrivatePublisherData(leagueYear, userPublisher, activePickupBids, dropEntities, masterGameDictionary, queuedEntities);
+        var privatePublisherData = DomainConversionUtilities.GetPrivatePublisherData(leagueYear, userPublisher, activePickupBids, dropEntities, masterGameDictionary, queuedEntities);
 
         return new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
             userIsFollowingLeague.UserIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
-    }
-
-    private static List<ManagerMessage> GetManagersMessages(IEnumerable<ManagerMessageDismissalEntity> dismissalEntities, IEnumerable<ManagerMessageEntity> messageEntities)
-    {
-        List<ManagerMessage> managersMessages = new List<ManagerMessage>();
-        var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
-        foreach (var messageEntity in messageEntities)
-        {
-            var dismissedUserIDs = dismissalLookup[messageEntity.MessageID].Select(x => x.UserID);
-            managersMessages.Add(messageEntity.ToDomain(dismissedUserIDs));
-        }
-
-        return managersMessages;
-    }
-
-    private static List<Trade> GetActiveTrades(LeagueYear leagueYear, IEnumerable<TradeComponentEntity> componentEntities, IEnumerable<TradeVoteEntity> voteEntities,
-    IEnumerable<TradeEntity> tradeEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
-    {
-        var componentLookup = componentEntities.ToLookup(x => x.TradeID);
-        var voteLookup = voteEntities.ToLookup(x => x.TradeID);
-
-        List<Trade> domainTrades = new List<Trade>();
-        foreach (var tradeEntity in tradeEntities)
-        {
-            Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
-            Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
-
-            var components = componentLookup[tradeEntity.TradeID];
-            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
-            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
-            foreach (var component in components)
-            {
-                var masterGameYear = masterGameYearDictionary.GetValueOrDefault(component.MasterGameID);
-                if (masterGameYear is null)
-                {
-                    throw new Exception($"Invalid master game when getting trade: {tradeEntity.TradeID}");
-                }
-
-                var domainComponent = new MasterGameYearWithCounterPick(masterGameYear, component.CounterPick);
-                if (component.CurrentParty == TradingParty.Proposer.Value)
-                {
-                    proposerMasterGameYearWithCounterPicks.Add(domainComponent);
-                }
-                else if (component.CurrentParty == TradingParty.CounterParty.Value)
-                {
-                    counterPartyMasterGameYearWithCounterPicks.Add(domainComponent);
-                }
-                else
-                {
-                    throw new Exception($"Invalid party when getting trade: {tradeEntity.TradeID}");
-                }
-            }
-
-            var votes = voteLookup[tradeEntity.TradeID];
-            List<TradeVote> tradeVotes = new List<TradeVote>();
-            foreach (var vote in votes)
-            {
-                var user = leagueYear.Publishers.Single(x => x.User.Id == vote.UserID).User;
-                var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
-                tradeVotes.Add(domainVote);
-            }
-
-            domainTrades.Add(tradeEntity.ToDomain(leagueYear, proposer, counterParty, proposerMasterGameYearWithCounterPicks, counterPartyMasterGameYearWithCounterPicks, tradeVotes));
-        }
-
-        var activeTrades = domainTrades.Where(x => x.Status.IsActive).OrderByDescending(x => x.ProposedTimestamp).ToList();
-        return activeTrades;
-    }
-
-    private static List<SpecialAuction> GetActiveSpecialAuctions(IEnumerable<SpecialAuctionEntity> specialAuctionEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
-    {
-        List<SpecialAuction> specialAuctions = new List<SpecialAuction>();
-        foreach (var entity in specialAuctionEntities)
-        {
-            var masterGame = masterGameYearDictionary[entity.MasterGameID];
-            specialAuctions.Add(entity.ToDomain(masterGame));
-        }
-        var activeSpecialAuctions = specialAuctions.Where(x => !x.Processed).ToList();
-        return activeSpecialAuctions;
-    }
-
-    private static List<PickupBid> GetActivePickupBids(LeagueYear leagueYear, IEnumerable<PickupBidEntity> bidEntities, Dictionary<Guid, MasterGame> masterGameDictionary,
-        Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
-    {
-        var publisherDictionary = leagueYear.Publishers.ToDictionary(x => x.PublisherID);
-
-        var publisherGameDictionary = leagueYear.Publishers
-            .SelectMany(x => x.PublisherGames)
-            .Where(x => x.MasterGame is not null)
-            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
-
-        var formerPublisherGameDictionary = leagueYear.Publishers
-            .SelectMany(x => x.FormerPublisherGames)
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
-
-        List<PickupBid> activePickupBids = new List<PickupBid>();
-        foreach (var bidEntity in bidEntities)
-        {
-            var masterGame = masterGameDictionary[bidEntity.MasterGameID];
-            PublisherGame? conditionalDropPublisherGame = GetConditionalDropPublisherGame(bidEntity, publisherGameDictionary, formerPublisherGameDictionary, masterGameYearDictionary);
-            var publisher = publisherDictionary[bidEntity.PublisherID];
-            PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
-            activePickupBids.Add(domain);
-        }
-
-        return activePickupBids;
-    }
-
-    private static PrivatePublisherData? GetPrivatePublisherData(LeagueYear leagueYear, Publisher? userPublisher,
-        List<PickupBid> activePickupBids, IEnumerable<DropRequestEntity> dropEntities,
-        Dictionary<Guid, MasterGame> masterGameDictionary, IEnumerable<QueuedGameEntity> queuedEntities)
-    {
-        if (userPublisher is null)
-        {
-            return null;
-        }
-
-        //Active Bids
-        var bidsForUser = activePickupBids.Where(x => x.Publisher.PublisherID == userPublisher.PublisherID).ToList();
-
-        //Active Drops
-        List<DropRequest> domainDrops = new List<DropRequest>();
-        foreach (var dropEntity in dropEntities)
-        {
-            var masterGame = masterGameDictionary[dropEntity.MasterGameID];
-            DropRequest domain = dropEntity.ToDomain(userPublisher, masterGame, leagueYear);
-            domainDrops.Add(domain);
-        }
-
-        //Queued Games
-        List<QueuedGame> domainQueue = new List<QueuedGame>();
-        foreach (var queuedEntity in queuedEntities)
-        {
-            var masterGame = masterGameDictionary[queuedEntity.MasterGameID];
-            QueuedGame domain = queuedEntity.ToDomain(userPublisher, masterGame);
-            domainQueue.Add(domain);
-        }
-
-        return new PrivatePublisherData(bidsForUser, domainDrops, domainQueue);
-    }
-
-    private static PublisherGame? GetConditionalDropPublisherGame(PickupBidEntity bidEntity,
-        ILookup<(Guid PublisherID, Guid MasterGameID), PublisherGame> publisherGameLookup,
-        ILookup<(Guid PublisherID, Guid MasterGameID), FormerPublisherGame> formerPublisherGameLookup,
-        IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
-    {
-        if (!bidEntity.ConditionalDropMasterGameID.HasValue)
-        {
-            return null;
-        }
-
-        var currentPublisherGames = publisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
-        if (currentPublisherGames.Any())
-        {
-            return currentPublisherGames.WhereMax(x => x.Timestamp).First();
-        }
-
-        var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
-        if (formerPublisherGames.Any())
-        {
-            return formerPublisherGames.WhereMax(x => x.PublisherGame.Timestamp).First().PublisherGame;
-        }
-
-        var conditionalDropGame = masterGameYearDictionary[bidEntity.ConditionalDropMasterGameID.Value];
-        var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
-            conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
-            false, null, false, null, conditionalDropGame, 0, null, null, null, null);
-
-        return fakePublisherGame;
     }
 }
