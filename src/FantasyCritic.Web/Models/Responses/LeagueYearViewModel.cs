@@ -120,7 +120,7 @@ public class LeagueYearViewModel
         ActiveTrades = supplementalData.ActiveTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
         ActiveSpecialAuctions = supplementalData.ActiveSpecialAuctions.Select(x => new SpecialAuctionViewModel(x, currentInstant)).ToList();
         GameNews = gameNews;
-        AllPublishersForUserViewModels = supplementalData.AllPublishersForUser.Select(p => new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year)).ToList();
+        AllPublishersForUser = supplementalData.AllPublishersForUser.Select(p => new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year)).ToList();
 
         if (supplementalData.PrivatePublisherData is not null)
         {
@@ -152,6 +152,6 @@ public class LeagueYearViewModel
     public IReadOnlyList<TradeViewModel> ActiveTrades { get; }
     public IReadOnlyList<SpecialAuctionViewModel> ActiveSpecialAuctions { get; }
     public GameNewsViewModel GameNews { get; }
-    public IReadOnlyList<LeaguePublisherViewModel> AllPublishersForUserViewModels { get; }
+    public IReadOnlyList<LeaguePublisherViewModel> AllPublishersForUser { get; }
     public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
 }

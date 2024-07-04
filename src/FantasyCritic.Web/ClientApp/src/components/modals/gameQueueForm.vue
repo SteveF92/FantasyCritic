@@ -137,19 +137,18 @@ export default {
       showingOtherLeagueWatchlist: false,
       isBusy: false,
       selectedSlotIndex: 0,
-      otherPublishers: [],
       selectedOtherPublisher: null
     };
   },
+  computed: {
+    otherPublishers() {
+      return this.leagueYear.allPublishersForUser.filter((p) => p.publisherID !== this.userPublisher.publisherID);
+    }
+  },
   async created() {
     this.initializeDesiredRankings();
-    await this.getMyPublishers();
   },
   methods: {
-    async getMyPublishers() {
-      const myPublishers = await axios.get(`/api/league/GetMyPublishers/${this.leagueYear.year}`);
-      this.otherPublishers = myPublishers.data.filter((p) => p.publisherID !== this.userPublisher.publisherID);
-    },
     initializeDesiredRankings() {
       this.desiredQueueRanks = this.queuedGames;
     },
