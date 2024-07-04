@@ -94,7 +94,7 @@ public static class Program
         RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(_localConnectionString, _clock);
         IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
-        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(localRepoConfig, masterGameRepo);
+        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(localRepoConfig);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo, combinedDataRepo);
         IConferenceRepo conferenceRepo = new MySQLConferenceRepo(localRepoConfig, localUserStore, masterGameRepo, combinedDataRepo);
         IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo, masterGameRepo, conferenceRepo, combinedDataRepo, _clock);

@@ -16,13 +16,10 @@ namespace FantasyCritic.MySQL;
 
 public class MySQLCombinedDataRepo : ICombinedDataRepo
 {
-    private readonly IMasterGameRepo _masterGameRepo;
-
     private readonly string _connectionString;
 
-    public MySQLCombinedDataRepo(RepositoryConfiguration configuration, IMasterGameRepo masterGameRepo)
+    public MySQLCombinedDataRepo(RepositoryConfiguration configuration)
     {
-        _masterGameRepo = masterGameRepo;
         _connectionString = configuration.ConnectionString;
     }
 
