@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 
 namespace FantasyCritic.MySQL;
@@ -266,5 +267,47 @@ internal static class DomainConversionUtilities
             false, null, false, null, conditionalDropGame, 0, null, null, null, null);
 
         return fakePublisherGame;
+    }
+
+    public static IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
+        IEnumerable<LeagueYearStatusEntity> playStatuses, IReadOnlyList<FantasyCriticUser> usersInLeague)
+    {
+        var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
+        foreach (var userYear in userYears)
+        {
+            if (!userYearsDictionary.ContainsKey(userYear.Year))
+            {
+                userYearsDictionary[userYear.Year] = new HashSet<Guid>();
+            }
+
+            userYearsDictionary[userYear.Year].Add(userYear.UserID);
+        }
+
+        var startedYears = playStatuses
+            .Where(x => x.PlayStatus != PlayStatus.NotStartedDraft.Value)
+            .Select(x => x.Year)
+            .ToList();
+
+        List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
+        foreach (var user in usersInLeague)
+        {
+            bool userRemovable = league.LeagueManager.UserID != user.UserID;
+            foreach (var year in startedYears)
+            {
+                if (!userYearsDictionary.ContainsKey(year))
+                {
+                    continue;
+                }
+                var userPlayedInYear = userYearsDictionary[year].Contains(user.Id);
+                if (userPlayedInYear)
+                {
+                    userRemovable = false;
+                }
+            }
+
+            usersWithStatus.Add(new FantasyCriticUserRemovable(user, userRemovable));
+        }
+
+        return usersWithStatus;
     }
 }

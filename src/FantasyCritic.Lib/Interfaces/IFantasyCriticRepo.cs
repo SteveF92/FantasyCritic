@@ -18,7 +18,6 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league);
     Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year);
-    Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear);
 
     Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
     Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange);

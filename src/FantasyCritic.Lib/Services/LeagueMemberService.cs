@@ -228,11 +228,6 @@ public class LeagueMemberService
         return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, year);
     }
 
-    public Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear)
-    {
-        return _fantasyCriticRepo.GetCombinedLeagueYearUserStatus(leagueYear);
-    }
-
     private async Task<LeagueInvite?> GetMatchingInvite(League league, string emailAddress)
     {
         IReadOnlyList<LeagueInvite> playersInvited = await GetOutstandingInvitees(league);

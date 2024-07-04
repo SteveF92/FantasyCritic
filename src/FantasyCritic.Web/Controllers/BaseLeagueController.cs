@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
@@ -91,19 +90,20 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueYearRecord>(Unauthorized());
         }
 
-        var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueID, year);
-        if (leagueYear is null)
+        var leagueYearWithUserStatus = await _fantasyCriticService.GetLeagueYearWithUserStatus(leagueID, year);
+        if (leagueYearWithUserStatus is null)
         {
             return GetFailedResult<LeagueYearRecord>(BadRequest("League year does not exist."));
         }
+
+        var leagueYear = leagueYearWithUserStatus.LeagueYear;
+        var combinedLeagueUserStatus = leagueYearWithUserStatus.UserStatus;
 
         var yearStatusValid = requiredYearStatus.StateIsValid(leagueYear);
         if (yearStatusValid.IsFailure)
         {
             return GetFailedResult<LeagueYearRecord>(BadRequest(yearStatusValid.Error));
         }
-
-        CombinedLeagueYearUserStatus combinedLeagueUserStatus = await _leagueMemberService.GetCombinedLeagueYearUserStatus(leagueYear);
 
         bool isInLeague = false;
         LeagueInvite? leagueInvite = null;
@@ -175,14 +175,13 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         var leagueYear = leagueYearWithSupplementalData.LeagueYear;
+        var combinedLeagueUserStatus = leagueYearWithSupplementalData.UserStatus;
 
         var yearStatusValid = requiredYearStatus.StateIsValid(leagueYear);
         if (yearStatusValid.IsFailure)
         {
             return GetFailedResult<LeagueYearWithSupplementalDataRecord>(BadRequest(yearStatusValid.Error));
         }
-
-        CombinedLeagueYearUserStatus combinedLeagueUserStatus = await _leagueMemberService.GetCombinedLeagueYearUserStatus(leagueYear);
 
         bool isInLeague = false;
         LeagueInvite? leagueInvite = null;

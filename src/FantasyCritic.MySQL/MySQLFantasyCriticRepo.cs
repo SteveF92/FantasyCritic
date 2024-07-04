@@ -1183,50 +1183,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
 
-        var domains = ConvertUserRemovableEntities(league, userYears, playStatuses, usersInLeague);
+        var domains = DomainConversionUtilities.ConvertUserRemovableEntities(league, userYears, playStatuses, usersInLeague);
         return domains;
-    }
-
-    private static IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
-        IEnumerable<LeagueYearStatusEntity> playStatuses, IReadOnlyList<FantasyCriticUser> usersInLeague)
-    {
-        var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
-        foreach (var userYear in userYears)
-        {
-            if (!userYearsDictionary.ContainsKey(userYear.Year))
-            {
-                userYearsDictionary[userYear.Year] = new HashSet<Guid>();
-            }
-
-            userYearsDictionary[userYear.Year].Add(userYear.UserID);
-        }
-
-        var startedYears = playStatuses
-            .Where(x => x.PlayStatus != PlayStatus.NotStartedDraft.Value)
-            .Select(x => x.Year)
-            .ToList();
-
-        List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
-        foreach (var user in usersInLeague)
-        {
-            bool userRemovable = league.LeagueManager.UserID != user.UserID;
-            foreach (var year in startedYears)
-            {
-                if (!userYearsDictionary.ContainsKey(year))
-                {
-                    continue;
-                }
-                var userPlayedInYear = userYearsDictionary[year].Contains(user.Id);
-                if (userPlayedInYear)
-                {
-                    userRemovable = false;
-                }
-            }
-
-            usersWithStatus.Add(new FantasyCriticUserRemovable(user, userRemovable));
-        }
-
-        return usersWithStatus;
     }
 
     public async Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year)
@@ -1245,31 +1203,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var users = results.Select(x => x.ToDomain()).ToList();
         return users;
-    }
-
-    public async Task<CombinedLeagueYearUserStatus> GetCombinedLeagueYearUserStatus(LeagueYear leagueYear)
-    {
-        var param = new
-        {
-            P_LeagueID = leagueYear.League.LeagueID,
-            P_Year = leagueYear.Year
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getcombinedleagueyearuserstatus", param, commandType: CommandType.StoredProcedure);
-        var userEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
-        var playStatuses = await resultSets.ReadAsync<LeagueYearStatusEntity>();
-        var userYears = await resultSets.ReadAsync<LeagueYearUserEntity>();
-        var activeUserEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
-        var inviteEntities = await resultSets.ReadAsync<LeagueInviteEntity>();
-
-        var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
-        var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
-
-        var usersWithRemoveStatus = ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
-        var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
-
-        return new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
     }
 
     public async Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)

@@ -38,14 +38,19 @@ public class FantasyCriticService
         return _combinedDataRepo.GetHomePageData(currentUser);
     }
 
-    public Task<League?> GetLeagueByID(Guid id)
+    public Task<League?> GetLeagueByID(Guid leagueID)
     {
-        return _fantasyCriticRepo.GetLeague(id);
+        return _fantasyCriticRepo.GetLeague(leagueID);
     }
 
-    public Task<LeagueYear?> GetLeagueYear(Guid id, int year)
+    public Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year)
     {
-        return _combinedDataRepo.GetLeagueYear(id, year);
+        return _combinedDataRepo.GetLeagueYear(leagueID, year);
+    }
+
+    public Task<LeagueYearWithUserStatus?> GetLeagueYearWithUserStatus(Guid leagueID, int year)
+    {
+        return _combinedDataRepo.GetLeagueYearWithUserStatus(leagueID, year);
     }
 
     public async Task<LeagueYearWithSupplementalData?> GetLeagueYearWithSupplementalData(Guid leagueID, int year, FantasyCriticUser? currentUser)
@@ -68,7 +73,7 @@ public class FantasyCriticService
             supplementalDataFromRepo.UserIsFollowingLeague, supplementalDataFromRepo.AllPublishersForUser,
             supplementalDataFromRepo.PrivatePublisherData, supplementalDataFromRepo.MasterGameYearDictionary);
 
-        return new LeagueYearWithSupplementalData(leagueYear, supplementalData);
+        return new LeagueYearWithSupplementalData(leagueYear, supplementalData, leagueYearWithSupplementalData.UserStatus);
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)

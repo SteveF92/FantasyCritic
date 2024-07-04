@@ -7,6 +7,7 @@ using System.Data;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.MySQL.Entities.Trades;
+using FantasyCritic.MySQL.Entities.Identity;
 
 namespace FantasyCritic.MySQL;
 
@@ -136,12 +137,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     public async Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year)
     {
-        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-        var masterGames = await _masterGameRepo.GetMasterGames();
-        var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
-        var masterGameYears = await _masterGameRepo.GetMasterGameYears(year);
-        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
-
         var param = new
         {
             P_LeagueID = leagueID,
@@ -174,8 +169,38 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var publisherEntities = resultSets.Read<PublisherEntity>();
         var publisherGameEntities = resultSets.Read<PublisherGameEntity>();
         var formerPublisherGameEntities = resultSets.Read<FormerPublisherGameEntity>();
+
+        //MasterGame Results
+        var masterGameResults = resultSets.Read<MasterGameEntity>();
+        var tagResults = resultSets.Read<MasterGameTagEntity>();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
+        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
+
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
+
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
+        var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
+
+        var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+        var masterGameDictionary = new Dictionary<Guid, MasterGame>();
+        foreach (var entity in masterGameResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameDictionary.Add(domain.MasterGameID, domain);
+        }
+
+        var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
+        foreach (var entity in masterGameYearResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
+        }
 
         var supportedYear = supportedYearEntity.ToDomain();
         var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
@@ -187,16 +212,121 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         var league = leagueEntity.ToDomain(years);
         var leagueYearKey = new LeagueYearKey(leagueID, year);
-        var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(tagDictionary[x.Tag])).ToList();
-        var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
+        var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
+        var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
         var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
         var domainEligibilityOverrides = DomainConversionUtilities.ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
-        var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, tagDictionary);
+        var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, possibleTags);
         var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary);
 
         LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
             winningUser, publishers);
         return leagueYear;
+    }
+
+    public async Task<LeagueYearWithUserStatus?> GetLeagueYearWithUserStatus(Guid leagueID, int year)
+    {
+        var param = new
+        {
+            P_LeagueID = leagueID,
+            P_Year = year
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearwithuserstatus", param, commandType: CommandType.StoredProcedure);
+
+        var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
+
+        var leagueEntity = resultSets.ReadSingleOrDefault<LeagueEntity>();
+        if (leagueEntity is null)
+        {
+            return null;
+        }
+
+        var years = resultSets.Read<int>();
+        var leagueYearEntity = resultSets.ReadSingleOrDefault<LeagueYearEntity>();
+        if (leagueYearEntity is null)
+        {
+            return null;
+        }
+
+        //League Year Results
+        var leagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
+        var specialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
+        var eligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
+        var tagOverrideEntities = resultSets.Read<TagOverrideEntity>();
+        var usersInLeagueEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var publisherEntities = resultSets.Read<PublisherEntity>();
+        var publisherGameEntities = resultSets.Read<PublisherGameEntity>();
+        var formerPublisherGameEntities = resultSets.Read<FormerPublisherGameEntity>();
+
+        //MasterGame Results
+        var masterGameResults = resultSets.Read<MasterGameEntity>();
+        var tagResults = resultSets.Read<MasterGameTagEntity>();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
+        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
+
+        //User Status
+        var userEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var playStatuses = resultSets.Read<LeagueYearStatusEntity>();
+        var userYears = resultSets.Read<LeagueYearUserEntity>();
+        var activeUserEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var inviteEntities = resultSets.Read<LeagueInviteEntity>();
+
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
+
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
+        var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
+
+        var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+        var masterGameDictionary = new Dictionary<Guid, MasterGame>();
+        foreach (var entity in masterGameResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameDictionary.Add(domain.MasterGameID, domain);
+        }
+
+        var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
+        foreach (var entity in masterGameYearResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
+        }
+
+        var supportedYear = supportedYearEntity.ToDomain();
+        var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
+
+        var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
+        var manager = userDictionary[leagueEntity.LeagueManager];
+        leagueEntity.ManagerDisplayName = manager.UserName;
+        leagueEntity.ManagerEmailAddress = manager.UserName;
+
+        var league = leagueEntity.ToDomain(years);
+        var leagueYearKey = new LeagueYearKey(leagueID, year);
+        var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
+        var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
+        var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
+        var domainEligibilityOverrides = DomainConversionUtilities.ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
+        var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, possibleTags);
+        var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary);
+
+        LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
+            winningUser, publishers);
+
+        var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
+        var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
+        var usersWithRemoveStatus = DomainConversionUtilities.ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
+        var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
+
+        var userStatus = new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
+
+        return new LeagueYearWithUserStatus(leagueYear, userStatus);
     }
 
     public async Task<LeagueYearWithSupplementalDataFromRepo?> GetLeagueYearWithSupplementalData(Guid leagueID, int year, FantasyCriticUser? currentUser)
@@ -259,6 +389,13 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
         var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
 
+        //User Status
+        var userEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var playStatuses = resultSets.Read<LeagueYearStatusEntity>();
+        var userYears = resultSets.Read<LeagueYearUserEntity>();
+        var activeUserEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var inviteEntities = resultSets.Read<LeagueInviteEntity>();
+
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
 
@@ -316,7 +453,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var supplementalData = new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
             userIsFollowingLeague.UserIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
 
-        return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData);
+        var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
+        var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
+        var usersWithRemoveStatus = DomainConversionUtilities.ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
+        var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
+
+        var userStatus = new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
+
+        return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData, userStatus);
     }
 
     private record UserIsFollowingLeagueEntity()
