@@ -150,29 +150,29 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyear", param, commandType: CommandType.StoredProcedure);
 
-        var supportedYearEntity = await resultSets.ReadSingleAsync<SupportedYearEntity>();
+        var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
 
-        var leagueEntity = await resultSets.ReadSingleOrDefaultAsync<LeagueEntity>();
+        var leagueEntity = resultSets.ReadSingleOrDefault<LeagueEntity>();
         if (leagueEntity is null)
         {
             return null;
         }
 
-        var years = await resultSets.ReadAsync<int>();
-        var leagueYearEntity = await resultSets.ReadSingleOrDefaultAsync<LeagueYearEntity>();
+        var years = resultSets.Read<int>();
+        var leagueYearEntity = resultSets.ReadSingleOrDefault<LeagueYearEntity>();
         if (leagueYearEntity is null)
         {
             return null;
         }
 
-        var leagueTagEntities = await resultSets.ReadAsync<LeagueYearTagEntity>();
-        var specialGameSlotEntities = await resultSets.ReadAsync<SpecialGameSlotEntity>();
-        var eligibilityOverrideEntities = await resultSets.ReadAsync<EligibilityOverrideEntity>();
-        var tagOverrideEntities = await resultSets.ReadAsync<TagOverrideEntity>();
-        var usersInLeagueEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
-        var publisherEntities = await resultSets.ReadAsync<PublisherEntity>();
-        var publisherGameEntities = await resultSets.ReadAsync<PublisherGameEntity>();
-        var formerPublisherGameEntities = await resultSets.ReadAsync<FormerPublisherGameEntity>();
+        var leagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
+        var specialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
+        var eligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
+        var tagOverrideEntities = resultSets.Read<TagOverrideEntity>();
+        var usersInLeagueEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var publisherEntities = resultSets.Read<PublisherEntity>();
+        var publisherGameEntities = resultSets.Read<PublisherGameEntity>();
+        var formerPublisherGameEntities = resultSets.Read<FormerPublisherGameEntity>();
 
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var supportedYear = supportedYearEntity.ToDomain();
@@ -312,20 +312,20 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
 
-        var positionPoints = await resultSets.ReadAsync<AveragePositionPointsEntity>();
-        var systemWideValuesEntity = await resultSets.ReadSingleAsync<SystemWideValuesEntity>();
-        var messageEntities = await resultSets.ReadAsync<ManagerMessageEntity>();
-        var dismissalEntities = await resultSets.ReadAsync<ManagerMessageDismissalEntity>();
-        var previousYearWinningUserID = await resultSets.ReadSingleOrDefaultAsync<Guid?>();
-        var tradeEntities = await resultSets.ReadAsync<TradeEntity>();
-        var componentEntities = await resultSets.ReadAsync<TradeComponentEntity>();
-        var voteEntities = await resultSets.ReadAsync<TradeVoteEntity>();
-        var specialAuctionEntities = await resultSets.ReadAsync<SpecialAuctionEntity>();
-        var bidEntities = await resultSets.ReadAsync<PickupBidEntity>();
-        var userIsFollowingLeague = await resultSets.ReadSingleAsync<UserIsFollowingLeagueEntity>();
-        var minimalPublisherEntities = await resultSets.ReadAsync<MinimalPublisherEntity>();
-        var dropEntities = await resultSets.ReadAsync<DropRequestEntity>();
-        var queuedEntities = await resultSets.ReadAsync<QueuedGameEntity>();
+        var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
+        var systemWideValuesEntity = resultSets.ReadSingle<SystemWideValuesEntity>();
+        var messageEntities = resultSets.Read<ManagerMessageEntity>();
+        var dismissalEntities = resultSets.Read<ManagerMessageDismissalEntity>();
+        var previousYearWinningUserID = resultSets.ReadSingleOrDefault<Guid?>();
+        var tradeEntities = resultSets.Read<TradeEntity>();
+        var componentEntities = resultSets.Read<TradeComponentEntity>();
+        var voteEntities = resultSets.Read<TradeVoteEntity>();
+        var specialAuctionEntities = resultSets.Read<SpecialAuctionEntity>();
+        var bidEntities = resultSets.Read<PickupBidEntity>();
+        var userIsFollowingLeague = resultSets.ReadSingle<UserIsFollowingLeagueEntity>();
+        var minimalPublisherEntities = resultSets.Read<MinimalPublisherEntity>();
+        var dropEntities = resultSets.Read<DropRequestEntity>();
+        var queuedEntities = resultSets.Read<QueuedGameEntity>();
 
         //Getting domain objects
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
