@@ -139,8 +139,15 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }
 
+    private record UserIsFollowingLeagueEntity()
+    {
+        public required bool UserIsFollowingLeague { get; init; }
+    }
+
+
     public async Task<LeagueYearSupplementalDataFromRepo> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
     {
+        
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
 
         var masterGames = await _masterGameRepo.GetMasterGames();
@@ -148,46 +155,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var masterGameYears = await _masterGameRepo.GetMasterGameYears(leagueYear.Year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        await using var connection = new MySqlConnection(_connectionString);
-        //await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
-
-        //SQL statements
-        const string averagePositionPointsSQL = "select * from tbl_caching_averagepositionpoints;";
-        const string systemWideValuesSQL = "select * from tbl_caching_systemwidevalues;";
-        const string messageSQL = "select * from tbl_league_managermessage where LeagueID = @P_LeagueID AND Year = @P_Year AND Deleted = 0;";
-        const string dismissSQL = """
-                                      SELECT * FROM tbl_league_managermessage
-                                      JOIN tbl_league_managermessagedismissal ON tbl_league_managermessage.MessageID = tbl_league_managermessagedismissal.MessageID
-                                      WHERE LeagueID = @P_LeagueID AND Year = @P_Year;
-                                  """;
-        const string previousYearWinnerSQL = "select WinningUserID from tbl_league_year where LeagueID = @P_LeagueID and Year = @P_Year - 1";
-        const string baseTableSQL = "select * from tbl_league_trade WHERE LeagueID = @P_LeagueID AND Year = @P_Year;";
-        const string componentTableSQL = "select tbl_league_tradecomponent.* from tbl_league_tradecomponent " +
-                                         "join tbl_league_trade ON tbl_league_tradecomponent.TradeID = tbl_league_trade.TradeID " +
-                                         "WHERE LeagueID = @P_LeagueID AND Year = @P_Year;";
-        const string voteTableSQL = "select tbl_league_tradevote.* from tbl_league_tradevote " +
-                                    "join tbl_league_trade ON tbl_league_tradevote.TradeID = tbl_league_trade.TradeID " +
-                                    "WHERE LeagueID = @P_LeagueID AND Year = @P_Year;";
-        const string activeSpecialAuctionsSQL = "select * from tbl_league_specialauction where LeagueID = @P_LeagueID AND Year = @P_Year;";
-        const string publicBiddingSQL = "select * from vw_league_pickupbid where LeagueID = @P_LeagueID and Year = @P_Year and Successful is NULL";
-        const string userIsFollowingLeagueSQL =
-            """
-            SELECT EXISTS(
-                select 1 from tbl_user
-                join tbl_user_followingleague on (tbl_user.UserID = tbl_user_followingleague.UserID)
-                where tbl_user_followingleague.LeagueID = @P_LeagueID AND tbl_user.UserID = @P_UserID
-            );
-            """;
-        const string minimalPublisherSQL = """
-                                           SELECT PublisherID, PublisherName, l.LeagueID, LeagueName, `Year`
-                                           FROM tbl_league_publisher p
-                                           JOIN tbl_league l ON p.LeagueID = l.LeagueID
-                                           WHERE UserID = @P_UserID AND `Year` = @P_Year;
-                                           """;
-        const string dropSQL = "select * from tbl_league_droprequest where PublisherID = @P_PublisherID and Successful is NULL";
-        const string queueSQL = "select * from tbl_league_publisherqueue where PublisherID = @P_PublisherID";
-
-        //SQL Calls
         var queryObject = new
         {
             P_LeagueID = leagueYear.League.LeagueID,
@@ -196,20 +163,23 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             P_PublisherID = userPublisher?.PublisherID
         };
 
-        var positionPoints = await connection.QueryAsync<AveragePositionPointsEntity>(averagePositionPointsSQL);
-        var systemWideValuesEntity = await connection.QuerySingleAsync<SystemWideValuesEntity>(systemWideValuesSQL);
-        IEnumerable<ManagerMessageEntity> messageEntities = await connection.QueryAsync<ManagerMessageEntity>(messageSQL, queryObject);
-        IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = await connection.QueryAsync<ManagerMessageDismissalEntity>(dismissSQL, queryObject);
-        Guid? previousYearWinningUserID = await connection.QuerySingleOrDefaultAsync<Guid?>(previousYearWinnerSQL, queryObject);
-        var tradeEntities = await connection.QueryAsync<TradeEntity>(baseTableSQL, queryObject);
-        var componentEntities = await connection.QueryAsync<TradeComponentEntity>(componentTableSQL, queryObject);
-        var voteEntities = await connection.QueryAsync<TradeVoteEntity>(voteTableSQL, queryObject);
-        var specialAuctionEntities = await connection.QueryAsync<SpecialAuctionEntity>(activeSpecialAuctionsSQL, queryObject);
-        var bidEntities = await connection.QueryAsync<PickupBidEntity>(publicBiddingSQL, queryObject);
-        var followingLeagueCount = await connection.QuerySingleAsync<int>(userIsFollowingLeagueSQL, queryObject);
-        var minimalPublisherEntities = await connection.QueryAsync<MinimalPublisherEntity>(minimalPublisherSQL, queryObject);
-        var dropEntities = await connection.QueryAsync<DropRequestEntity>(dropSQL, queryObject);
-        var queuedEntities = await connection.QueryAsync<QueuedGameEntity>(queueSQL, queryObject);
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
+
+        var positionPoints = await resultSets.ReadAsync<AveragePositionPointsEntity>();
+        var systemWideValuesEntity = await resultSets.ReadSingleAsync<SystemWideValuesEntity>();
+        var messageEntities = await resultSets.ReadAsync<ManagerMessageEntity>();
+        var dismissalEntities = await resultSets.ReadAsync<ManagerMessageDismissalEntity>();
+        var previousYearWinningUserID = await resultSets.ReadSingleOrDefaultAsync<Guid?>();
+        var tradeEntities = await resultSets.ReadAsync<TradeEntity>();
+        var componentEntities = await resultSets.ReadAsync<TradeComponentEntity>();
+        var voteEntities = await resultSets.ReadAsync<TradeVoteEntity>();
+        var specialAuctionEntities = await resultSets.ReadAsync<SpecialAuctionEntity>();
+        var bidEntities = await resultSets.ReadAsync<PickupBidEntity>();
+        var userIsFollowingLeague = await resultSets.ReadSingleAsync<UserIsFollowingLeagueEntity>();
+        var minimalPublisherEntities = await resultSets.ReadAsync<MinimalPublisherEntity>();
+        var dropEntities = await resultSets.ReadAsync<DropRequestEntity>();
+        var queuedEntities = await resultSets.ReadAsync<QueuedGameEntity>();
 
         //Getting domain objects
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
@@ -217,12 +187,11 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var activeTrades = GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary);
         var activeSpecialAuctions = GetActiveSpecialAuctions(specialAuctionEntities, masterGameYearDictionary);
         var activePickupBids = GetActivePickupBids(leagueYear, bidEntities, masterGameDictionary, masterGameYearDictionary);
-        bool userIsFollowingLeague = followingLeagueCount > 0;
         var allPublishersForUser = minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
         var privatePublisherData = GetPrivatePublisherData(leagueYear, userPublisher, activePickupBids, dropEntities, masterGameDictionary, queuedEntities);
 
         return new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
-            userIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
+            userIsFollowingLeague.UserIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
     }
 
     private static List<ManagerMessage> GetManagersMessages(IEnumerable<ManagerMessageDismissalEntity> dismissalEntities, IEnumerable<ManagerMessageEntity> messageEntities)
