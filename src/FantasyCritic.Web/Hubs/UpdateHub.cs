@@ -36,18 +36,14 @@ public class UpdateHub : Hub
         try
         {
             Guid leagueGUID = Guid.Parse(leagueID);
-            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueGUID, year);
-            if (leagueYear is null)
+            var draftIsActiveOrPaused = await _fantasyCriticService.DraftIsActiveOrPaused(leagueGUID, year);
+            if (!draftIsActiveOrPaused)
             {
                 return;
             }
 
-            if (!leagueYear.PlayStatus.DraftIsActiveOrPaused)
-            {
-                return;
-            }
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, leagueYear.GetGroupName);
+            string groupName = $"{leagueGUID}|{year}";
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
         catch (Exception e)
         {

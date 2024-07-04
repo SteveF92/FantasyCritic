@@ -3497,4 +3497,18 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var domains = MyGameNewsEntity.BuildMyGameNewsFromEntities(entities, masterGameYears);
         return domains;
     }
+
+    public async Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year)
+    {
+        const string sql = "select PlayStatus from tbl_league_year where LeagueID = @leagueID AND Year = @year;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var playStatus = await connection.QuerySingleOrDefaultAsync<string?>(sql, new { leagueID, year });
+        if (playStatus is null)
+        {
+            return false;
+        }
+
+        return playStatus == "Drafting" || playStatus == "DraftPaused";
+    }
 }

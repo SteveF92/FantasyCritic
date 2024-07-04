@@ -556,4 +556,9 @@ public class FantasyCriticService
         int previousYear = leagueYear.Year - 1;
         return _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, previousYear);
     }
+
+    public Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year)
+    {
+        return _fantasyCriticRepo.DraftIsActiveOrPaused(leagueID, year);
+    }
 }
