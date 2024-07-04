@@ -373,10 +373,11 @@ public static class HostingExtensions
         });
 
         app.UseRouting();
-        app.UseAuthentication();
-        app.UseAuthorization();
 
         app.UseSession();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllers();
         app.MapRazorPages();
