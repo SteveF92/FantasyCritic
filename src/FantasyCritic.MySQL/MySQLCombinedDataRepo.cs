@@ -136,17 +136,17 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     public async Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year)
     {
-        var param = new
-        {
-            P_LeagueID = leagueID,
-            P_Year = year
-        };
-
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var masterGames = await _masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
         var masterGameYears = await _masterGameRepo.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        var param = new
+        {
+            P_LeagueID = leagueID,
+            P_Year = year
+        };
 
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyear", param, commandType: CommandType.StoredProcedure);
@@ -201,38 +201,48 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     public async Task<LeagueYearWithSupplementalDataFromRepo?> GetLeagueYearWithSupplementalData(Guid leagueID, int year, FantasyCriticUser? currentUser)
     {
-        var leagueYear = await GetLeagueYear(leagueID, year);
-        if (leagueYear is null)
-        {
-            return null;
-        }
-
-        var supplementalData = await GetLeagueYearSupplementalData(leagueYear, currentUser);
-        return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData);
-    }
-
-    private record UserIsFollowingLeagueEntity()
-    {
-        public required bool UserIsFollowingLeague { get; init; }
-    }
-
-    private async Task<LeagueYearSupplementalDataFromRepo> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
-    {
+        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var masterGames = await _masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
-        var masterGameYears = await _masterGameRepo.GetMasterGameYears(leagueYear.Year);
+        var masterGameYears = await _masterGameRepo.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        var queryObject = new
+        var param = new
         {
-            P_LeagueID = leagueYear.League.LeagueID,
-            P_Year = leagueYear.Year,
+            P_LeagueID = leagueID,
+            P_Year = year,
             P_UserID = currentUser?.Id
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsupplementaldata", queryObject, commandType: CommandType.StoredProcedure);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearwithsupplementaldata", param, commandType: CommandType.StoredProcedure);
 
+        var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
+
+        var leagueEntity = resultSets.ReadSingleOrDefault<LeagueEntity>();
+        if (leagueEntity is null)
+        {
+            return null;
+        }
+
+        var years = resultSets.Read<int>();
+        var leagueYearEntity = resultSets.ReadSingleOrDefault<LeagueYearEntity>();
+        if (leagueYearEntity is null)
+        {
+            return null;
+        }
+
+        //League Year Results
+        var leagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
+        var specialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
+        var eligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
+        var tagOverrideEntities = resultSets.Read<TagOverrideEntity>();
+        var usersInLeagueEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var publisherEntities = resultSets.Read<PublisherEntity>();
+        var publisherGameEntities = resultSets.Read<PublisherGameEntity>();
+        var formerPublisherGameEntities = resultSets.Read<FormerPublisherGameEntity>();
+
+        //SupplementalData Results
         var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
         var systemWideValuesEntity = resultSets.ReadSingle<SystemWideValuesEntity>();
         var messageEntities = resultSets.Read<ManagerMessageEntity>();
@@ -248,7 +258,29 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var dropEntities = resultSets.Read<DropRequestEntity>();
         var queuedEntities = resultSets.Read<QueuedGameEntity>();
 
-        //Getting domain objects
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
+
+        var supportedYear = supportedYearEntity.ToDomain();
+        var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
+
+        var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
+        var manager = userDictionary[leagueEntity.LeagueManager];
+        leagueEntity.ManagerDisplayName = manager.UserName;
+        leagueEntity.ManagerEmailAddress = manager.UserName;
+
+        var league = leagueEntity.ToDomain(years);
+        var leagueYearKey = new LeagueYearKey(leagueID, year);
+        var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(tagDictionary[x.Tag])).ToList();
+        var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
+        var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
+        var domainEligibilityOverrides = DomainConversionUtilities.ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
+        var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, tagDictionary);
+        var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary);
+
+        LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
+            winningUser, publishers);
+
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
         var managersMessages = DomainConversionUtilities.GetManagersMessages(dismissalEntities, messageEntities);
@@ -258,7 +290,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var allPublishersForUser = minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
         var privatePublisherData = DomainConversionUtilities.GetPrivatePublisherData(leagueYear, userPublisher, activePickupBids, dropEntities, masterGameDictionary, queuedEntities);
 
-        return new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
+        var supplementalData = new LeagueYearSupplementalDataFromRepo(systemWideValues, managersMessages, previousYearWinningUserID, activeTrades, activeSpecialAuctions, activePickupBids,
             userIsFollowingLeague.UserIsFollowingLeague, allPublishersForUser, privatePublisherData, masterGameYearDictionary);
+
+        return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData);
+    }
+
+    private record UserIsFollowingLeagueEntity()
+    {
+        public required bool UserIsFollowingLeague { get; init; }
     }
 }
