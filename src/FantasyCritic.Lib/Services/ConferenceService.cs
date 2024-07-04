@@ -9,14 +9,17 @@ public class ConferenceService
 {
     private readonly IConferenceRepo _conferenceRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly ICombinedDataRepo _combinedDataRepo;
     private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
     private readonly DiscordPushService _discordPushService;
 
-    public ConferenceService(IConferenceRepo conferenceRepo, IFantasyCriticRepo fantasyCriticRepo, InterLeagueService interLeagueService, IClock clock, DiscordPushService discordPushService)
+    public ConferenceService(IConferenceRepo conferenceRepo, IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo,
+        InterLeagueService interLeagueService, IClock clock, DiscordPushService discordPushService)
     {
         _conferenceRepo = conferenceRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
+        _combinedDataRepo = combinedDataRepo;
         _interLeagueService = interLeagueService;
         _clock = clock;
         _discordPushService = discordPushService;
@@ -64,7 +67,7 @@ public class ConferenceService
             return Result.Failure($"Conference is not active in {year}.");
         }
 
-        var primaryLeagueYear = await _fantasyCriticRepo.GetLeagueYear(conference.PrimaryLeagueID, year);
+        var primaryLeagueYear = await _combinedDataRepo.GetLeagueYear(conference.PrimaryLeagueID, year);
         if (primaryLeagueYear is null)
         {
             return Result.Failure("Primary league is not active in that year.");
@@ -198,7 +201,7 @@ public class ConferenceService
         List<LeagueYear> leagueYears = new List<LeagueYear>();
         foreach (var leagueID in conferenceYear.Conference.LeaguesInConference)
         {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueID, conferenceYear.Year);
+            var leagueYear = await _combinedDataRepo.GetLeagueYear(leagueID, conferenceYear.Year);
             if (leagueYear is not null)
             {
                 leagueYears.Add(leagueYear);

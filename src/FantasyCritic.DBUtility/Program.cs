@@ -37,7 +37,8 @@ class Program
         RepositoryConfiguration repoConfig = new RepositoryConfiguration(_connectionString, _clock);
         IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(repoConfig, userStore);
-        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo);
+        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(repoConfig, masterGameRepo);
+        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo, combinedDataRepo);
 
         Console.WriteLine("Gathering data...");
         List<PickupBid> allProcessedPickups = new List<PickupBid>();

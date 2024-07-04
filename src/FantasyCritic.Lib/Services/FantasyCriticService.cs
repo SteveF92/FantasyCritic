@@ -45,7 +45,7 @@ public class FantasyCriticService
 
     public Task<LeagueYear?> GetLeagueYear(Guid id, int year)
     {
-        return _fantasyCriticRepo.GetLeagueYear(id, year);
+        return _combinedDataRepo.GetLeagueYear(id, year);
     }
 
     public async Task<LeagueYearSupplementalData> GetLeagueYearSupplementalData(LeagueYear leagueYear, FantasyCriticUser? currentUser)
@@ -388,7 +388,7 @@ public class FantasyCriticService
 
         foreach (var year in league.Years)
         {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league.LeagueID, year);
+            var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, year);
             var publishers = leagueYear.Publishers;
             foreach (var publisher in publishers)
             {

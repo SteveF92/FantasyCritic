@@ -16,7 +16,7 @@ public static class RepositoryInterfaceExtensions
         return result;
     }
 
-    public static async Task<LeagueYear> GetLeagueYearOrThrow(this IFantasyCriticRepo repo, Guid leagueID, int year)
+    public static async Task<LeagueYear> GetLeagueYearOrThrow(this ICombinedDataRepo repo, Guid leagueID, int year)
     {
         var leagueYear = await repo.GetLeagueYear(leagueID, year);
         if (leagueYear is null)

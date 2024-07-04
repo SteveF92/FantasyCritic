@@ -15,6 +15,7 @@ public class DraftService
     private static readonly ILogger _logger = Log.ForContext<DraftService>();
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly ICombinedDataRepo _combinedDataRepo;
     private readonly IClock _clock;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly PublisherService _publisherService;
@@ -22,10 +23,11 @@ public class DraftService
     private readonly DiscordPushService _discordPushService;
 
     public DraftService(GameAcquisitionService gameAcquisitionService, PublisherService publisherService,
-        IFantasyCriticRepo fantasyCriticRepo, GameSearchingService gameSearchingService, IClock clock,
+        IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, GameSearchingService gameSearchingService, IClock clock,
         DiscordPushService discordPushService)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _combinedDataRepo = combinedDataRepo;
         _clock = clock;
         _publisherService = publisherService;
         _gameAcquisitionService = gameAcquisitionService;
@@ -36,7 +38,7 @@ public class DraftService
     public async Task<bool> StartDraft(LeagueYear leagueYear)
     {
         await _fantasyCriticRepo.StartDraft(leagueYear);
-        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
+        var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
         var draftComplete = await CompleteDraft(updatedLeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
         return draftComplete;
@@ -45,7 +47,7 @@ public class DraftService
     public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
     {
         await _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
-        var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
+        var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         if (!pause)
         {
             await AutoDraftForLeague(updatedLeagueYear, 0, 0);
@@ -146,7 +148,7 @@ public class DraftService
         {
             _logger.Debug($"Autodrafting for league: {leagueYear.League} at depth: {depth}");
             var today = _clock.GetToday();
-            var updatedLeagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
+            var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
             var draftStatus = DraftFunctions.GetDraftStatus(updatedLeagueYear);
             if (draftStatus is null)
             {

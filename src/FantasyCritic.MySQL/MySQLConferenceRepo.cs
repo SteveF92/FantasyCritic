@@ -16,12 +16,14 @@ public class MySQLConferenceRepo : IConferenceRepo
     private readonly string _connectionString;
     private readonly MySQLFantasyCriticRepo _fantasyCriticRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
+    private readonly ICombinedDataRepo _combinedDataRepo;
 
-    public MySQLConferenceRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo)
+    public MySQLConferenceRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo, ICombinedDataRepo combinedDataRepo)
     {
         _connectionString = configuration.ConnectionString;
-        _fantasyCriticRepo = new MySQLFantasyCriticRepo(configuration, userStore, masterGameRepo);
+        _fantasyCriticRepo = new MySQLFantasyCriticRepo(configuration, userStore, masterGameRepo, combinedDataRepo);
         _userStore = userStore;
+        _combinedDataRepo = combinedDataRepo;
     }
 
     public async Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser user)
@@ -482,7 +484,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                     leagueHasPlayerInPreviousYear.Add(conferenceLeagueYear.League, new HashSet<FantasyCriticUser>());
                 }
 
-                var fullLeagueYear = await _fantasyCriticRepo.GetLeagueYear(conferenceLeagueYear.League.LeagueID, conferenceLeagueYear.Year);
+                var fullLeagueYear = await _combinedDataRepo.GetLeagueYear(conferenceLeagueYear.League.LeagueID, conferenceLeagueYear.Year);
                 foreach (var publisher in fullLeagueYear!.Publishers)
                 {
                     leagueHasPlayerInPreviousYear[conferenceLeagueYear.League].Add(publisher.User);

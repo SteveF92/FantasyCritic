@@ -12,11 +12,13 @@ public class LeagueMemberService
 
     private readonly FantasyCriticUserManager _userManager;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly ICombinedDataRepo _combinedDataRepo;
 
-    public LeagueMemberService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo)
+    public LeagueMemberService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo)
     {
         _userManager = userManager;
         _fantasyCriticRepo = fantasyCriticRepo;
+        _combinedDataRepo = combinedDataRepo;
     }
 
     public async Task<bool> UserIsInLeague(League league, FantasyCriticUser user)
@@ -180,7 +182,7 @@ public class LeagueMemberService
     {
         foreach (var year in league.Years)
         {
-            var leagueYear = await _fantasyCriticRepo.GetLeagueYearOrThrow(league.LeagueID, year);
+            var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, year);
             var allPublishers = leagueYear.Publishers;
             var deletePublisher = allPublishers.SingleOrDefault(x => x.User.Id == removeUser.Id);
             if (deletePublisher != null)

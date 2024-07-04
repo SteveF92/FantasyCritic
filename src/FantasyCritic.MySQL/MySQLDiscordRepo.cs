@@ -10,14 +10,18 @@ public class MySQLDiscordRepo : IDiscordRepo
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IConferenceRepo _conferenceRepo;
+    private readonly ICombinedDataRepo _combinedDataRepo;
     private readonly IClock _clock;
     private readonly string _connectionString;
 
-    public MySQLDiscordRepo(RepositoryConfiguration configuration, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IConferenceRepo conferenceRepo, IClock clock)
+    public MySQLDiscordRepo(RepositoryConfiguration configuration,
+        IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, IConferenceRepo conferenceRepo, ICombinedDataRepo combinedDataRepo,
+        IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
         _conferenceRepo = conferenceRepo;
+        _combinedDataRepo = combinedDataRepo;
         _clock = clock;
         _connectionString = configuration.ConnectionString;
     }
@@ -216,7 +220,7 @@ public class MySQLDiscordRepo : IDiscordRepo
 
         if (year != null)
         {
-            leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueChannelEntity.LeagueID, year.Value);
+            leagueYear = await _combinedDataRepo.GetLeagueYear(leagueChannelEntity.LeagueID, year.Value);
         }
         else
         {
@@ -233,7 +237,7 @@ public class MySQLDiscordRepo : IDiscordRepo
                 return null;
             }
 
-            leagueYear = await _fantasyCriticRepo.GetLeagueYear(leagueChannelEntity.LeagueID, supportedYear.Year);
+            leagueYear = await _combinedDataRepo.GetLeagueYear(leagueChannelEntity.LeagueID, supportedYear.Year);
         }
 
         return leagueYear is null
