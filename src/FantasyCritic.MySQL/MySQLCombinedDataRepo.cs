@@ -30,6 +30,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
     {
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getbasicdata", commandType: CommandType.StoredProcedure);
+
         var systemWideSettingsEntity = resultSets.ReadSingle<SystemWideSettingsEntity>();
         var tagEntities = resultSets.Read<MasterGameTagEntity>();
         var supportedYearEntities = resultSets.Read<SupportedYearEntity>();
@@ -52,6 +53,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_gethomepagedata", queryObject, commandType: CommandType.StoredProcedure);
+
         var leagueEntities = resultSets.Read<LeagueEntity>();
         var leagueYearEntities = resultSets.Read<LeagueYearKeyEntity>();
         var inviteEntities = resultSets.Read<CompleteLeagueInviteEntity>();
@@ -366,6 +368,13 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var publisherGameEntities = resultSets.Read<PublisherGameEntity>();
         var formerPublisherGameEntities = resultSets.Read<FormerPublisherGameEntity>();
 
+        //MasterGame Results
+        var masterGameResults = resultSets.Read<MasterGameEntity>();
+        var tagResults = resultSets.Read<MasterGameTagEntity>();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
+        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
+
         //SupplementalData Results
         var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
         var systemWideValuesEntity = resultSets.ReadSingle<SystemWideValuesEntity>();
@@ -381,13 +390,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var minimalPublisherEntities = resultSets.Read<MinimalPublisherEntity>();
         var dropEntities = resultSets.Read<DropRequestEntity>();
         var queuedEntities = resultSets.Read<QueuedGameEntity>();
-
-        //MasterGame Results
-        var masterGameResults = resultSets.Read<MasterGameEntity>();
-        var tagResults = resultSets.Read<MasterGameTagEntity>();
-        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
-        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
-        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
 
         //User Status
         var userEntities = resultSets.Read<FantasyCriticUserEntity>();
