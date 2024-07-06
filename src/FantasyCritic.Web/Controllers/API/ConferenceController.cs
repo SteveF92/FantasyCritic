@@ -182,8 +182,6 @@ public class ConferenceController : BaseLeagueController
         }
 
         var validResult = conferenceYearRecord.ValidResult!;
-        //var conferenceYearStandings = await _conferenceService.GetConferenceYearStandings(validResult.ConferenceYear);
-        //IReadOnlyList<ManagerMessage> managerMessages = await _conferenceService.GetManagerMessages(validResult.ConferenceYear);
 
         var conferenceLeagues = validResult.ConferenceLeagueYears.Select(x => x.League).ToList();
         var conferenceViewModel = new ConferenceViewModel(validResult.ConferenceYear.Conference, validResult.Relationship.ConferenceManager,

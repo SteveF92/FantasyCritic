@@ -100,7 +100,11 @@ public class ConferenceService
 
         var players = await _conferenceRepo.GetPlayersInConference(conferenceYear.Conference);
         var leagueYears = await _conferenceRepo.GetLeagueYearsInConferenceYear(conferenceYear);
-        return new ConferenceYearData(conferenceYear, players, leagueYears);
+        var managerMessages = await _conferenceRepo.GetManagerMessages(conferenceYear);
+        //var conferenceYearStandings = await GetConferenceYearStandings(conferenceYear);
+        var conferenceYearStandings = new List<ConferenceYearStanding>();
+
+        return new ConferenceYearData(conferenceYear, players, leagueYears, conferenceYearStandings, managerMessages);
     }
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference)
@@ -116,11 +120,6 @@ public class ConferenceService
     public Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference)
     {
         return _conferenceRepo.GetLeaguesInConference(conference);
-    }
-
-    public Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
-    {
-        return _conferenceRepo.GetLeagueYearsInConferenceYear(conferenceYear);
     }
 
     public Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference)
@@ -270,11 +269,6 @@ public class ConferenceService
     public Task SetConferenceLeagueLockStatus(LeagueYear leagueYear, bool locked)
     {
         return _conferenceRepo.SetConferenceLeagueLockStatus(leagueYear, locked);
-    }
-
-    public Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(ConferenceYear conferenceYear)
-    {
-        return _conferenceRepo.GetManagerMessages(conferenceYear);
     }
 
     public async Task PostNewManagerMessage(ConferenceYear conferenceYear, string message, bool isPublic)
