@@ -37,7 +37,7 @@ class Program
         RepositoryConfiguration repoConfig = new RepositoryConfiguration(_connectionString, _clock);
         IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(repoConfig, userStore);
-        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(repoConfig);
+        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(repoConfig, userStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo, combinedDataRepo);
 
         Console.WriteLine("Gathering data...");
