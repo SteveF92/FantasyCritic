@@ -90,21 +90,9 @@ public class ConferenceService
         return _conferenceRepo.GetConferenceYear(conferenceID, year);
     }
 
-    public async Task<ConferenceYearData?> GetConferenceYearData(Guid conferenceID, int year)
+    public Task<ConferenceYearData?> GetConferenceYearData(Guid conferenceID, int year)
     {
-        var conferenceYear = await _conferenceRepo.GetConferenceYear(conferenceID, year);
-        if (conferenceYear is null)
-        {
-            return null;
-        }
-
-        var players = await _conferenceRepo.GetPlayersInConference(conferenceYear.Conference);
-        var leagueYears = await _conferenceRepo.GetLeagueYearsInConferenceYear(conferenceYear);
-        var managerMessages = await _conferenceRepo.GetManagerMessages(conferenceYear);
-        //var conferenceYearStandings = await GetConferenceYearStandings(conferenceYear);
-        var conferenceYearStandings = new List<ConferenceYearStanding>();
-
-        return new ConferenceYearData(conferenceYear, players, leagueYears, conferenceYearStandings, managerMessages);
+        return _combinedDataRepo.GetConferenceYearData(conferenceID, year);
     }
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference)
