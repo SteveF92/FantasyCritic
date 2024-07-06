@@ -363,26 +363,25 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<ConferenceYearRecord>(Unauthorized());
         }
 
-        var conferenceYear = await _conferenceService.GetConferenceYear(conferenceID, year);
-        if (conferenceYear is null)
+        var conferenceYearData = await _conferenceService.GetConferenceYearData(conferenceID, year);
+        if (conferenceYearData is null)
         {
             return GetFailedResult<ConferenceYearRecord>(BadRequest("Conference year does not exist."));
         }
 
-        var playersInConference = await _conferenceService.GetPlayersInConference(conferenceYear.Conference);
         bool isInConference = false;
         bool isConferenceManager = false;
         bool userIsAdmin = false;
         if (currentUserRecord.IsSuccess)
         {
             userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
-            isConferenceManager = conferenceYear.Conference.ConferenceManager.UserID == currentUserRecord.Value.Id;
+            isConferenceManager = conferenceYearData.ConferenceYear.Conference.ConferenceManager.UserID == currentUserRecord.Value.Id;
             if (requiredRelationship.MustBeConferenceManager && !isConferenceManager)
             {
                 return GetFailedResult<ConferenceYearRecord>(Forbid());
             }
 
-            isInConference = isConferenceManager || playersInConference.Any(x => x.User.UserID == currentUserRecord.Value.Id);
+            isInConference = isConferenceManager || conferenceYearData.PlayersInConference.Any(x => x.User.UserID == currentUserRecord.Value.Id);
         }
 
         if (!isInConference && requiredRelationship.MustBeInConference)
@@ -390,8 +389,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             return UnauthorizedOrForbid<ConferenceYearRecord>(currentUserRecord.IsSuccess);
         }
 
-        var conferenceLeagueYears = await _conferenceService.GetLeagueYearsInConferenceYear(conferenceYear);
         ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
-        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, playersInConference, relationship, conferenceLeagueYears), null);
+        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYearData.ConferenceYear, conferenceYearData.PlayersInConference, relationship, conferenceYearData.LeagueYears), null);
     }
 }

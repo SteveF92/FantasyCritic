@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -87,6 +88,19 @@ public class ConferenceService
     public Task<ConferenceYear?> GetConferenceYear(Guid conferenceID, int year)
     {
         return _conferenceRepo.GetConferenceYear(conferenceID, year);
+    }
+
+    public async Task<ConferenceYearData?> GetConferenceYearData(Guid conferenceID, int year)
+    {
+        var conferenceYear = await _conferenceRepo.GetConferenceYear(conferenceID, year);
+        if (conferenceYear is null)
+        {
+            return null;
+        }
+
+        var players = await _conferenceRepo.GetPlayersInConference(conferenceYear.Conference);
+        var leagueYears = await _conferenceRepo.GetLeagueYearsInConferenceYear(conferenceYear);
+        return new ConferenceYearData(conferenceYear, players, leagueYears);
     }
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference)
