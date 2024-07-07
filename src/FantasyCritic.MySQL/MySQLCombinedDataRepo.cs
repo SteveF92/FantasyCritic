@@ -9,7 +9,6 @@ using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.MySQL.Entities.Trades;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.Lib.Domain.Conferences;
-using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.MySQL;
 
@@ -471,53 +470,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     public async Task<ConferenceYearData?> GetConferenceYearData(Guid conferenceID, int year)
     {
-        const string conferenceSQL = """
-                                     select tbl_conference.*, 
-                                     tbl_user.DisplayName as ConferenceManagerDisplayName,
-                                     tbl_user.EmailAddress as ConferenceManagerEmailAddress
-                                     from tbl_conference 
-                                     join tbl_user on tbl_conference.ConferenceManager = tbl_user.UserID
-                                     where ConferenceID = @conferenceID and IsDeleted = 0;
-                                     """;
-
-        const string conferenceYearsSQL = "select Year from tbl_conference_year where ConferenceID = @conferenceID;";
-        const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
-        const string conferenceYearSQL = "select * from tbl_conference_year where ConferenceID = @conferenceID and Year = @year;";
-        const string userSQL = "select tbl_user.* from tbl_user join tbl_conference_hasuser on tbl_conference_hasuser.UserID = tbl_user.UserID where ConferenceID = @conferenceID;";
-        const string leagueManagerSQL = "select LeagueID, LeagueManager from tbl_league where ConferenceID = @conferenceID;";
-        const string leagueUserSQL = """
-                                     select tbl_league_hasuser.LeagueID, tbl_league_hasuser.UserID
-                                     from tbl_league_hasuser join tbl_league on tbl_league_hasuser.LeagueID = tbl_league.LeagueID
-                                     where tbl_league.ConferenceID = @conferenceID;
-                                     """;
-        const string activePlayerSQL = """
-                                       SELECT tbl_league_activeplayer.LeagueID, tbl_league_activeplayer.Year, tbl_league_activeplayer.UserID FROM tbl_league_activeplayer
-                                       JOIN tbl_league ON tbl_league_activeplayer.LeagueID = tbl_league.LeagueID
-                                       WHERE tbl_league.ConferenceID = @conferenceID;
-                                       """;
-
-        const string leagueYearSQL = """
-                                     select 
-                                     tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager, 
-                                     tbl_user.DisplayName as ManagerDisplayName, tbl_user.EmailAddress as ManagerEmailAddress, 
-                                     tbl_league_year.Year,
-                                     tbl_league_year.PlayStatus <> "NotStartedDraft" AS DraftStarted,
-                                     tbl_league_year.PlayStatus = "DraftFinal" AS DraftFinished,
-                                     ConferenceLocked
-                                     from tbl_league_year 
-                                     join tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID
-                                     join tbl_user on tbl_league.LeagueManager = tbl_user.UserID
-                                     where ConferenceID = @conferenceID and Year = @year;
-                                     """;
-        const string messageSQL = "select * from tbl_conference_managermessage where ConferenceID = @conferenceID AND Year = @year AND Deleted = 0;";
-        const string dismissSQL = """
-                                  SELECT *
-                                  FROM tbl_conference_managermessage
-                                  JOIN tbl_conference_managermessagedismissal ON tbl_conference_managermessage.MessageID = tbl_conference_managermessagedismissal.MessageID
-                                  WHERE ConferenceID = @conferenceID
-                                    AND YEAR = @year;
-                                  """;
-
         var param = new
         {
             conferenceID,
@@ -526,32 +478,35 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         //Querying
         await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getconferenceyeardata", param, commandType: CommandType.StoredProcedure);
 
-        ConferenceEntity? conferenceEntity = await connection.QuerySingleOrDefaultAsync<ConferenceEntity?>(conferenceSQL, param);
+        ConferenceEntity? conferenceEntity = resultSets.ReadSingleOrDefault<ConferenceEntity?>();
         if (conferenceEntity is null)
         {
             return null;
         }
 
-        IEnumerable<int> years = await connection.QueryAsync<int>(conferenceYearsSQL, param);
-        IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(leaguesInConferenceSQL, param);
-        ConferenceYearEntity? conferenceYearEntity = await connection.QuerySingleOrDefaultAsync<ConferenceYearEntity?>(conferenceYearSQL, param);
+        IEnumerable<int> years = resultSets.Read<int>();
+        IEnumerable<Guid> leagueIDs = resultSets.Read<Guid>();
+        ConferenceYearEntity? conferenceYearEntity = resultSets.ReadSingleOrDefault<ConferenceYearEntity?>();
         if (conferenceYearEntity is null)
         {
             return null;
         }
 
-        var supportedYearEntity = await connection.QuerySingleAsync<SupportedYearEntity>("select * from tbl_meta_supportedyear where Year = @year;", param);
-        var userEntities = await connection.QueryAsync<FantasyCriticUserEntity>(userSQL, param);
-        var leagueManagers = await connection.QueryAsync<LeagueManagerEntity>(leagueManagerSQL, param);
-        var leagueUsers = await connection.QueryAsync<LeagueUserEntity>(leagueUserSQL, param);
-        var leagueActivePlayers = await connection.QueryAsync<LeagueActivePlayerEntity>(activePlayerSQL, param);
-        var leagueYearEntities = (await connection.QueryAsync<ConferenceLeagueYearEntity>(leagueYearSQL, param)).ToList();
-        IEnumerable<ManagerMessageEntity> messageEntities = await connection.QueryAsync<ManagerMessageEntity>(messageSQL, param);
-        IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = (await connection.QueryAsync<ManagerMessageDismissalEntity>(dismissSQL, param)).ToList();
+        var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
+        var userEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var leagueManagers = resultSets.Read<LeagueManagerEntity>();
+        var leagueUsers = resultSets.Read<LeagueUserEntity>();
+        var leagueActivePlayers = resultSets.Read<LeagueActivePlayerEntity>();
+        var leagueYearEntities = resultSets.Read<ConferenceLeagueYearEntity>().ToList();
+        IEnumerable<ManagerMessageEntity> messageEntities = resultSets.Read<ManagerMessageEntity>();
+        IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = resultSets.Read<ManagerMessageDismissalEntity>().ToList();
 
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
 
-        //Conversion
+        //Domain Conversion
         Conference conference = conferenceEntity.ToDomain(years, leagueIDs);
         var supportedYear = supportedYearEntity.ToDomain();
         ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
@@ -571,18 +526,12 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             conferencePlayers.Add(player);
         }
 
+        var leaguesInConference = leagueYearEntities.Select(leagueYearEntity => leagueYearEntity.ToDomain()).ToList();
 
-        //League Years
-        List<ConferenceLeagueYear> leaguesInConference = leagueYearEntities.Select(leagueYearEntity => leagueYearEntity.ToDomain()).ToList();
-
-        //Manager messages
-        List<ManagerMessage> domainMessages = new List<ManagerMessage>();
         var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
-        foreach (var messageEntity in messageEntities)
-        {
-            var dismissedUserIDs = dismissalLookup[messageEntity.MessageID].Select(x => x.UserID);
-            domainMessages.Add(messageEntity.ToDomain(dismissedUserIDs));
-        }
+        var domainMessages = messageEntities
+            .Select(x => x.ToDomain(dismissalLookup[x.MessageID].Select(y => y.UserID)))
+            .ToList();
 
         return new ConferenceYearData(conferenceYear, conferencePlayers, leaguesInConference, new List<ConferenceYearStanding>(), domainMessages);
     }
