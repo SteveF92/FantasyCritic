@@ -13,9 +13,13 @@ internal class ConferenceLeagueYearEntity
     public bool DraftFinished { get; set; }
     public bool ConferenceLocked { get; set; }
 
-    public ConferenceLeagueYear ToDomain(FantasyCriticUser leagueManager)
+    public string LeagueManagerDisplayName { get; set; } = null!;
+    public string LeagueManagerEmailAddress { get; set; } = null!;
+
+    public ConferenceLeagueYear ToDomain()
     {
-        var league = new ConferenceLeague(LeagueID, LeagueName, leagueManager.ToMinimal());
+        var leagueManager = new MinimalFantasyCriticUser(LeagueManager, LeagueManagerDisplayName, LeagueManagerEmailAddress);
+        var league = new ConferenceLeague(LeagueID, LeagueName, leagueManager);
         return new ConferenceLeagueYear(league, Year, ConferenceLocked, DraftStarted, DraftFinished);
     }
 }
