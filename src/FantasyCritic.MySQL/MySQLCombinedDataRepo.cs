@@ -463,7 +463,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData, userStatus);
     }
 
-    private record UserIsFollowingLeagueEntity()
+    private record UserIsFollowingLeagueEntity
     {
         public required bool UserIsFollowingLeague { get; init; }
     }
@@ -472,8 +472,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
     {
         var param = new
         {
-            conferenceID,
-            year
+            P_ConferenceID = conferenceID,
+            P_Year = year
         };
 
         //Querying
@@ -487,7 +487,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         }
 
         IEnumerable<int> years = resultSets.Read<int>();
-        IEnumerable<Guid> leagueIDs = resultSets.Read<Guid>();
+        IEnumerable<LeagueWithManagerEntity> leagues = resultSets.Read<LeagueWithManagerEntity>();
         ConferenceYearEntity? conferenceYearEntity = resultSets.ReadSingleOrDefault<ConferenceYearEntity?>();
         if (conferenceYearEntity is null)
         {
@@ -495,9 +495,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         }
 
         var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
-        var userEntities = resultSets.Read<FantasyCriticUserEntity>();
-        var leagueManagers = resultSets.Read<LeagueManagerEntity>();
-        var leagueUsers = resultSets.Read<LeagueUserEntity>();
+        var leagueUsers = resultSets.Read<ConferenceUserEntity>();
         var leagueActivePlayers = resultSets.Read<LeagueActivePlayerEntity>();
         var leagueYearEntities = resultSets.Read<ConferenceLeagueYearEntity>().ToList();
         IEnumerable<ManagerMessageEntity> messageEntities = resultSets.Read<ManagerMessageEntity>();
@@ -507,21 +505,20 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await connection.DisposeAsync();
 
         //Domain Conversion
-        Conference conference = conferenceEntity.ToDomain(years, leagueIDs);
+        Conference conference = conferenceEntity.ToDomain(years, leagues.Select(x => x.LeagueID));
         var supportedYear = supportedYearEntity.ToDomain();
         ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
-        var usersInConference = userEntities.Select(x => x.ToDomain()).ToList();
 
-        var leagueManagerLookup = leagueManagers.ToLookup(x => x.LeagueManager);
+        var leagueManagerLookup = leagues.ToLookup(x => x.LeagueManager);
         var leagueUserLookup = leagueUsers.ToLookup(x => x.UserID);
         var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
 
         List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
-        foreach (var user in usersInConference)
+        foreach (var user in leagueUsers)
         {
-            var leaguesManaged = leagueManagerLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
-            var leaguesIn = leagueUserLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
-            var leagueYearsActiveIn = leagueActivePlayerLookup[user.Id].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
+            var leaguesManaged = leagueManagerLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
+            var leaguesIn = leagueUserLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
+            var leagueYearsActiveIn = leagueActivePlayerLookup[user.UserID].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
             var player = new ConferencePlayer(user.ToMinimal(), leaguesIn, leaguesManaged, leagueYearsActiveIn);
             conferencePlayers.Add(player);
         }
@@ -534,5 +531,24 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             .ToList();
 
         return new ConferenceYearData(conferenceYear, conferencePlayers, leaguesInConference, new List<ConferenceYearStanding>(), domainMessages);
+    }
+
+    private record LeagueWithManagerEntity
+    {
+        public required Guid LeagueID { get; init; }
+        public required Guid LeagueManager { get; init; }
+    }
+
+    private record ConferenceUserEntity
+    {
+        public required Guid LeagueID { get; init; }
+        public required Guid UserID { get; init; }
+        public required string DisplayName { get; init; }
+        public required string EmailAddress { get; init; }
+
+        public MinimalFantasyCriticUser ToMinimal()
+        {
+            return new MinimalFantasyCriticUser(UserID, DisplayName, EmailAddress);
+        }
     }
 }
