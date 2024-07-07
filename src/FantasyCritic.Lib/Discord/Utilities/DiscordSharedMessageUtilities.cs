@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.Discord.UrlBuilders;
-using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Identity;

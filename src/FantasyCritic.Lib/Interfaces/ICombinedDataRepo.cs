@@ -11,4 +11,5 @@ public interface ICombinedDataRepo
     Task<LeagueYearWithUserStatus?> GetLeagueYearWithUserStatus(Guid leagueID, int year);
     Task<LeagueYearWithSupplementalDataFromRepo?> GetLeagueYearWithSupplementalData(Guid leagueID, int year, FantasyCriticUser? currentUser);
     Task<ConferenceYearData?> GetConferenceYearData(Guid conferenceID, int year);
+    Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForConferenceYear(Guid conferenceID, int year);
 }

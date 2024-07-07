@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
@@ -205,21 +204,6 @@ public class ConferenceService
         return result;
     }
 
-    public async Task<IReadOnlyList<LeagueYear>> GetFullLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
-    {
-        List<LeagueYear> leagueYears = new List<LeagueYear>();
-        foreach (var leagueID in conferenceYear.Conference.LeaguesInConference)
-        {
-            var leagueYear = await _combinedDataRepo.GetLeagueYear(leagueID, conferenceYear.Year);
-            if (leagueYear is not null)
-            {
-                leagueYears.Add(leagueYear);
-            }
-        }
-
-        return leagueYears;
-    }
-
     public async Task<Result> RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser)
     {
         if (conference.ConferenceManager.UserID == removeUser.UserID)
@@ -242,7 +226,7 @@ public class ConferenceService
 
     public async Task<IReadOnlyList<ConferenceYearStanding>> GetConferenceYearStandings(ConferenceYear conferenceYear)
     {
-        var leagueYears = await GetFullLeagueYearsInConferenceYear(conferenceYear);
+        var leagueYears = await _combinedDataRepo.GetLeagueYearsForConferenceYear(conferenceYear.Conference.ConferenceID, conferenceYear.Year);
         var systemWideValues = await _interLeagueService.GetSystemWideValues();
         
         List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
