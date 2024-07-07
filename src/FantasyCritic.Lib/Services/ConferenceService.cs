@@ -244,7 +244,6 @@ public class ConferenceService
     {
         var leagueYears = await GetFullLeagueYearsInConferenceYear(conferenceYear);
         var systemWideValues = await _interLeagueService.GetSystemWideValues();
-        var currentDate = _clock.GetToday();
         
         List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
         foreach (var leagueYear in leagueYears)

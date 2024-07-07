@@ -600,7 +600,6 @@ public class AdminService
     {
         _logger.Information("Expiring trades.");
         var now = _clock.GetCurrentInstant();
-        var currentDate = now.ToEasternDate();
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
         IReadOnlyList<Trade> trades = await _fantasyCriticRepo.GetTradesForYear(currentYear!.Year);
