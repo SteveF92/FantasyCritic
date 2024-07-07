@@ -527,7 +527,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             .Select(x => x.ToDomain(dismissalLookup[x.MessageID].Select(y => y.UserID)))
             .ToList();
 
-        return new ConferenceYearData(conferenceYear, conferencePlayers, leaguesInConference, new List<ConferenceYearStanding>(), domainMessages);
+        return new ConferenceYearData(conferenceYear, conferencePlayers, leaguesInConference, domainMessages);
     }
 
     private record UserIsFollowingLeagueEntity
