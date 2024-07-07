@@ -44,7 +44,7 @@ public class LeagueYearViewModel
             .Select(x => new
                 {
                     x.PublisherID,
-                    Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues, currentDate) > x.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues, currentDate)) + 1
+                    Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues) > x.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues)) + 1
                 }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);

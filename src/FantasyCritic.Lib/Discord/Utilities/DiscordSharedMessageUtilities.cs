@@ -53,7 +53,7 @@ public static class DiscordSharedMessageUtilities
 
                     var projectedPoints = publisher
                         .GetProjectedFantasyPoints(leagueYear,
-                            systemWideValues, dateToCheck);
+                            systemWideValues);
 
                     return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck,
                         previousYearWinner, isFinal);

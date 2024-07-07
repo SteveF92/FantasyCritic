@@ -576,7 +576,7 @@ public class AdminService
                 continue;
             }
 
-            var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
+            var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues));
             var highestScoringPublisher = publishersWithProjectedPoints.MaxBy(x => x.Value);
             var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < highestScoringPublisher.Value * 0.65m).ToList();
             List<LeagueAction> actions = new List<LeagueAction>();

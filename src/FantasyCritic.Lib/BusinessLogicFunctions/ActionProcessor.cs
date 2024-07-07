@@ -436,7 +436,7 @@ public class ActionProcessor
         IEnumerable<ValidPickupBid> remainingGamesAfterTiebreaks;
         if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
         {
-            var bestBidsByProjectedScore = bestBids.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(leagueYear, _systemWideValues, _currentDate)).ToList();
+            var bestBidsByProjectedScore = bestBids.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(leagueYear, _systemWideValues)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
@@ -461,7 +461,7 @@ public class ActionProcessor
                 return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest.", _systemWideValues, _currentDate);
             }
 
-            var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(leagueYear, _systemWideValues, _currentDate)).ToList();
+            var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(leagueYear, _systemWideValues)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();

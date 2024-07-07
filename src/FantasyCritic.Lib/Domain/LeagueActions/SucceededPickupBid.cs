@@ -7,7 +7,7 @@ public class SucceededPickupBid : IProcessedBid
         PickupBid = pickupBid;
         SlotNumber = slotNumber;
         Outcome = outcome;
-        ProjectedPointsAtTimeOfBid = PickupBid.Publisher.GetProjectedFantasyPoints(pickupBid.LeagueYear, systemWideValues, currentDate);
+        ProjectedPointsAtTimeOfBid = PickupBid.Publisher.GetProjectedFantasyPoints(pickupBid.LeagueYear, systemWideValues);
     }
 
     public PickupBid PickupBid { get; }

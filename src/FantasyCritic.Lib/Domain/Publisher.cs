@@ -85,7 +85,7 @@ public class Publisher : IEquatable<Publisher>
         return score.Value + emptyCounterPickSlotPoints;
     }
 
-    public decimal GetProjectedFantasyPoints(LeagueYear leagueYear, SystemWideValues systemWideValues, LocalDate currentDate)
+    public decimal GetProjectedFantasyPoints(LeagueYear leagueYear, SystemWideValues systemWideValues)
     {
         if (_cachedProjectedPoints.HasValue)
         {
@@ -312,7 +312,7 @@ public class Publisher : IEquatable<Publisher>
         return new PublisherStatistics(PublisherID, date)
         {
             FantasyPoints = GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options),
-            ProjectedPoints = GetProjectedFantasyPoints(leagueYear, systemWideValues, date),
+            ProjectedPoints = GetProjectedFantasyPoints(leagueYear, systemWideValues),
             RemainingBudget = (ushort) Budget,
             NumberOfStandardGames = numberOfStandardGames,
             NumberOfStandardGamesReleased = numberOfStandardGamesReleased,
