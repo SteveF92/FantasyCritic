@@ -514,7 +514,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         foreach (var user in distinctUsers)
         {
             var leaguesManaged = leagueManagerLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
-            var leaguesIn = leagueUserLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
+            var leaguesIn = leagueUserLookup[user.UserID].Where(x => x.LeagueID.HasValue).Select(x => x.LeagueID!.Value).ToHashSet();
             var leagueYearsActiveIn = leagueActivePlayerLookup[user.UserID].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
             var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, leagueYearsActiveIn);
             conferencePlayers.Add(player);
@@ -543,7 +543,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     private record ConferenceUserEntity
     {
-        public required Guid LeagueID { get; init; }
+        public required Guid? LeagueID { get; init; }
         public required Guid UserID { get; init; }
         public required string DisplayName { get; init; }
         public required string EmailAddress { get; init; }

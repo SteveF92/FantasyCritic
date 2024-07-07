@@ -146,7 +146,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                                      tbl_user.EmailAddress as ConferenceManagerEmailAddress
                                      from tbl_conference 
                                      join tbl_user on tbl_conference.ConferenceManager = tbl_user.UserID
-                                     where ConferenceID = @conferenceID and IsDeleted = 0;
+                                     where ConferenceID = @conferenceID and tbl_conference.IsDeleted = 0;
                                      """;
         var queryObject = new
         {
