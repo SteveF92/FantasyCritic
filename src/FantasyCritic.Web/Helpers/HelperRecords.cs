@@ -14,5 +14,8 @@ public record LeagueYearPublisherGameRecord(FantasyCriticUser? CurrentUser, Leag
 
 public record ConferenceRecord(FantasyCriticUser? CurrentUser, Conference Conference, IReadOnlyList<ConferencePlayer> PlayersInConference,
     ConferenceUserRelationship Relationship, IReadOnlyList<ConferenceLeague> ConferenceLeagues);
-public record ConferenceYearRecord(FantasyCriticUser? CurrentUser, ConferenceYear ConferenceYear, IReadOnlyList<ConferencePlayer> PlayersInConference,
-    ConferenceUserRelationship Relationship, IReadOnlyList<ConferenceLeagueYear> ConferenceLeagueYears);
+public record ConferenceYearRecord(FantasyCriticUser? CurrentUser, ConferenceYear ConferenceYear, ConferenceUserRelationship Relationship);
+
+public record ConferenceYearWithSupplementalDataRecord(FantasyCriticUser? CurrentUser, ConferenceYear ConferenceYear, IReadOnlyList<ConferencePlayer> PlayersInConference,
+    ConferenceUserRelationship Relationship, IReadOnlyList<ConferenceLeagueYear> ConferenceLeagueYears, IReadOnlyList<ConferenceYearStanding> ConferenceYearStandings,
+    IReadOnlyList<ManagerMessage> ManagerMessages);

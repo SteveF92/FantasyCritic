@@ -175,7 +175,7 @@ public class ConferenceController : BaseLeagueController
     [AllowAnonymous]
     public async Task<IActionResult> GetConferenceYear(Guid conferenceID, int year)
     {
-        var conferenceYearRecord = await GetExistingConferenceYear(conferenceID, year, ConferenceRequiredRelationship.AllowAnonymous);
+        var conferenceYearRecord = await GetExistingConferenceYearWithSupplementalData(conferenceID, year, ConferenceRequiredRelationship.AllowAnonymous);
         if (conferenceYearRecord.FailedResult is not null)
         {
             return conferenceYearRecord.FailedResult;
@@ -188,7 +188,7 @@ public class ConferenceController : BaseLeagueController
             validResult.Relationship.InConference, validResult.PlayersInConference, conferenceLeagues);
 
         var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears,
-            validResult.PlayersInConference, validResult.CurrentUser, new List<ConferenceYearStanding>(), new List<ManagerMessage>());
+            validResult.PlayersInConference, validResult.CurrentUser, validResult.ConferenceYearStandings, validResult.ManagerMessages);
         return Ok(conferenceYearViewModel);
     }
 
