@@ -90,8 +90,12 @@ public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
 
     private async Task<IList<string>> GetRankedConferenceYearStandings(ConferenceChannel conferenceChannel)
     {
-        var conferenceStandings = await _conferenceService.GetConferenceYearStandings(conferenceChannel.ConferenceYear);
-        var conferencePublishersRanked = DiscordSharedMessageUtilities.RankConferencePublishers(conferenceStandings);
+        var conferenceYearData = await _conferenceService.GetConferenceYearData(conferenceChannel.ConferenceYear.Conference.ConferenceID, conferenceChannel.ConferenceYear.Year);
+        if (conferenceYearData is null)
+        {
+            return new List<string>();
+        }
+        var conferencePublishersRanked = DiscordSharedMessageUtilities.RankConferencePublishers(conferenceYearData.ConferenceYearStandings);
         return conferencePublishersRanked;
     }
 

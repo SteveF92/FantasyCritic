@@ -183,7 +183,7 @@ public class ConferenceController : BaseLeagueController
 
         var validResult = conferenceYearRecord.ValidResult!;
 
-        var conferenceLeagues = validResult.ConferenceLeagueYears.Select(x => x.League).ToList();
+        var conferenceLeagues = validResult.ConferenceLeagueYears.Select(x => new ConferenceLeague(x.League.LeagueID, x.League.LeagueName, x.League.LeagueManager)).ToList();
         var conferenceViewModel = new ConferenceViewModel(validResult.ConferenceYear.Conference, validResult.Relationship.ConferenceManager,
             validResult.Relationship.InConference, validResult.PlayersInConference, conferenceLeagues);
 

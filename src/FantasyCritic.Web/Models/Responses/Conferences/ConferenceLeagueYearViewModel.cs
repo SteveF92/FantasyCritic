@@ -5,7 +5,7 @@ namespace FantasyCritic.Web.Models.Responses.Conferences;
 
 public class ConferenceLeagueYearViewModel
 {
-    public ConferenceLeagueYearViewModel(ConferenceLeagueYear domain, IReadOnlyList<ConferencePlayer> conferencePlayersInLeagueYear, FantasyCriticUser? currentUser, bool isPrimaryLeague)
+    public ConferenceLeagueYearViewModel(LeagueYear domain, IReadOnlyList<ConferencePlayer> conferencePlayersInLeagueYear, FantasyCriticUser? currentUser, bool isPrimaryLeague)
     {
         LeagueID = domain.League.LeagueID;
         LeagueName = domain.League.LeagueName;
@@ -19,9 +19,9 @@ public class ConferenceLeagueYearViewModel
 
         IsPrimaryLeague = isPrimaryLeague;
 
-        ConferenceLocked = domain.ConferenceLocked;
-        DraftStarted = domain.DraftStarted;
-        DraftFinished = domain.DraftFinished;
+        ConferenceLocked = domain.ConferenceLocked.HasValue && domain.ConferenceLocked.Value;
+        DraftStarted = domain.PlayStatus.PlayStarted;
+        DraftFinished = domain.PlayStatus.DraftFinished;
     }
 
     public Guid LeagueID { get; }

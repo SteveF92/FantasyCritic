@@ -97,7 +97,7 @@ public class ConferenceService
             return null;
         }
 
-        var conferenceYearStandings = await GetConferenceYearStandings(conferenceYearData.ConferenceYear);
+        var conferenceYearStandings = GetConferenceYearStandings(conferenceYearData.LeagueYears, conferenceYearData.SystemWideValues);
         return new ConferenceYearDataWithStandings(conferenceYearData.ConferenceYear, conferenceYearData.PlayersInConference,
             conferenceYearData.LeagueYears, conferenceYearData.ManagerMessages, conferenceYearStandings);
     }
@@ -224,11 +224,8 @@ public class ConferenceService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<ConferenceYearStanding>> GetConferenceYearStandings(ConferenceYear conferenceYear)
+    public static IReadOnlyList<ConferenceYearStanding> GetConferenceYearStandings(IReadOnlyList<LeagueYear> leagueYears, SystemWideValues systemWideValues)
     {
-        var leagueYears = await _combinedDataRepo.GetLeagueYearsForConferenceYear(conferenceYear.Conference.ConferenceID, conferenceYear.Year);
-        var systemWideValues = await _interLeagueService.GetSystemWideValues();
-        
         List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
         foreach (var leagueYear in leagueYears)
         {

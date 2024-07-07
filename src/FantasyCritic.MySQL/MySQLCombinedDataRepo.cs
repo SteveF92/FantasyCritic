@@ -482,7 +482,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return null;
         }
 
-        IEnumerable<int> years = resultSets.Read<int>();
+        IEnumerable<int> conferenceYears = resultSets.Read<int>();
         IEnumerable<LeagueWithManagerEntity> leagues = resultSets.Read<LeagueWithManagerEntity>().ToList();
         ConferenceYearEntity? conferenceYearEntity = resultSets.ReadSingleOrDefault<ConferenceYearEntity?>();
         if (conferenceYearEntity is null)
@@ -493,69 +493,16 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
         var leagueUsers = resultSets.Read<ConferenceUserEntity>().ToList();
         var leagueActivePlayers = resultSets.Read<LeagueActivePlayerEntity>();
-        var leagueYearEntities = resultSets.Read<ConferenceLeagueYearEntity>().ToList();
         IEnumerable<ManagerMessageEntity> messageEntities = resultSets.Read<ManagerMessageEntity>();
         IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = resultSets.Read<ManagerMessageDismissalEntity>().ToList();
 
-        await resultSets.DisposeAsync();
-        await connection.DisposeAsync();
-
-        //Domain Conversion
-        Conference conference = conferenceEntity.ToDomain(years, leagues.Select(x => x.LeagueID));
-        var supportedYear = supportedYearEntity.ToDomain();
-        ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
-
-        var distinctUsers = leagueUsers.Select(x => x.ToMinimal()).Distinct().ToList();
-        var leagueManagerLookup = leagues.ToLookup(x => x.LeagueManager);
-        var leagueUserLookup = leagueUsers.ToLookup(x => x.UserID);
-        var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
-
-        List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
-        foreach (var user in distinctUsers)
-        {
-            var leaguesManaged = leagueManagerLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
-            var leaguesIn = leagueUserLookup[user.UserID].Where(x => x.LeagueID.HasValue).Select(x => x.LeagueID!.Value).ToHashSet();
-            var leagueYearsActiveIn = leagueActivePlayerLookup[user.UserID].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
-            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, leagueYearsActiveIn);
-            conferencePlayers.Add(player);
-        }
-
-        var leaguesInConference = leagueYearEntities.Select(leagueYearEntity => leagueYearEntity.ToDomain()).ToList();
-
-        var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
-        var domainMessages = messageEntities
-            .Select(x => x.ToDomain(dismissalLookup[x.MessageID].Select(y => y.UserID)))
-            .ToList();
-
-        return new ConferenceYearData(conferenceYear, conferencePlayers, leaguesInConference, domainMessages);
-    }
-
-    public async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForConferenceYear(Guid conferenceID, int year)
-    {
-        var param = new
-        {
-            P_ConferenceID = conferenceID,
-            P_Year = year
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearsforconferenceyear", param, commandType: CommandType.StoredProcedure);
-
-        var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
+        var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
+        var systemWideValuesEntity = resultSets.ReadSingle<SystemWideValuesEntity>();
+        var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
 
         var leagueEntities = resultSets.Read<LeagueEntity>();
-        if (!leagueEntities.Any())
-        {
-            return new List<LeagueYear>();
-        }
-
         var allYearsForLeagues = resultSets.Read<LeagueYearKeyEntity>();
         var leagueYearEntities = resultSets.Read<LeagueYearEntity>();
-        if (!leagueYearEntities.Any())
-        {
-            return new List<LeagueYear>();
-        }
-
         var allLeagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
         var allSpecialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
         var allEligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
@@ -574,6 +521,31 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
+
+        //Domain Conversion
+        Conference conference = conferenceEntity.ToDomain(conferenceYears, leagues.Select(x => x.LeagueID));
+        var supportedYear = supportedYearEntity.ToDomain();
+        ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
+
+        var distinctUsers = leagueUsers.Select(x => x.ToMinimal()).Distinct().ToList();
+        var leagueManagerLookup = leagues.ToLookup(x => x.LeagueManager);
+        var leagueUserLookup = leagueUsers.ToLookup(x => x.UserID);
+        var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
+
+        List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
+        foreach (var user in distinctUsers)
+        {
+            var leaguesManaged = leagueManagerLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
+            var leaguesIn = leagueUserLookup[user.UserID].Where(x => x.LeagueID.HasValue).Select(x => x.LeagueID!.Value).ToHashSet();
+            var leagueYearsActiveIn = leagueActivePlayerLookup[user.UserID].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
+            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, leagueYearsActiveIn);
+            conferencePlayers.Add(player);
+        }
+
+        var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
+        var domainMessages = messageEntities
+            .Select(x => x.ToDomain(dismissalLookup[x.MessageID].Select(y => y.UserID)))
+            .ToList();
 
         var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
@@ -597,7 +569,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
         }
 
-        var supportedYear = supportedYearEntity.ToDomain();
         var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
         var leagueDictionary = leagueEntities.ToDictionary(x => x.LeagueID);
         var yearsLookup = allYearsForLeagues.ToLookup(x => x.LeagueID);
@@ -638,7 +609,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             leagueYears.Add(leagueYear);
         }
 
-        return leagueYears;
+        return new ConferenceYearData(conferenceYear, conferencePlayers, leagueYears, systemWideValues, domainMessages);
     }
 
     private record UserIsFollowingLeagueEntity
