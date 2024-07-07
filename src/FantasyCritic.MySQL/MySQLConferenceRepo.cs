@@ -140,7 +140,14 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task<Conference?> GetConference(Guid conferenceID)
     {
-        const string conferenceSQL = "select * from tbl_conference where ConferenceID = @conferenceID and IsDeleted = 0;";
+        const string conferenceSQL = """
+                                     select tbl_conference.*, 
+                                     tbl_user.DisplayName as ConferenceManagerDisplayName,
+                                     tbl_user.EmailAddress as ConferenceManagerEmailAddress
+                                     from tbl_conference 
+                                     join tbl_user on tbl_conference.ConferenceManager = tbl_user.UserID
+                                     where ConferenceID = @conferenceID and IsDeleted = 0;
+                                     """;
         var queryObject = new
         {
             conferenceID
@@ -154,15 +161,13 @@ public class MySQLConferenceRepo : IConferenceRepo
             return null;
         }
 
-        FantasyCriticUser manager = await _userStore.FindByIdOrThrowAsync(conferenceEntity.ConferenceManager, CancellationToken.None);
-
         const string conferenceYearSQL = "select Year from tbl_conference_year where ConferenceID = @conferenceID;";
         IEnumerable<int> years = await connection.QueryAsync<int>(conferenceYearSQL, queryObject);
         
         const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
         IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(leaguesInConferenceSQL, queryObject);
 
-        Conference conference = conferenceEntity.ToDomain(manager.ToMinimal(), years, leagueIDs);
+        Conference conference = conferenceEntity.ToDomain(years, leagueIDs);
         return conference;
     }
 

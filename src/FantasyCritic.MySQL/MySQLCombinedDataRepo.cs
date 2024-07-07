@@ -18,12 +18,10 @@ namespace FantasyCritic.MySQL;
 
 public class MySQLCombinedDataRepo : ICombinedDataRepo
 {
-    private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly string _connectionString;
 
-    public MySQLCombinedDataRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore _userStore)
+    public MySQLCombinedDataRepo(RepositoryConfiguration configuration)
     {
-        this._userStore = _userStore;
         _connectionString = configuration.ConnectionString;
     }
 
@@ -473,7 +471,15 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     public async Task<ConferenceYearData?> GetConferenceYearData(Guid conferenceID, int year)
     {
-        const string conferenceSQL = "select * from tbl_conference where ConferenceID = @conferenceID and IsDeleted = 0;";
+        const string conferenceSQL = """
+                                     select tbl_conference.*, 
+                                     tbl_user.DisplayName as ConferenceManagerDisplayName,
+                                     tbl_user.EmailAddress as ConferenceManagerEmailAddress
+                                     from tbl_conference 
+                                     join tbl_user on tbl_conference.ConferenceManager = tbl_user.UserID
+                                     where ConferenceID = @conferenceID and IsDeleted = 0;
+                                     """;
+
         const string conferenceYearsSQL = "select Year from tbl_conference_year where ConferenceID = @conferenceID;";
         const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
         const string conferenceYearSQL = "select * from tbl_conference_year where ConferenceID = @conferenceID and Year = @year;";
@@ -527,7 +533,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return null;
         }
 
-        FantasyCriticUser manager = await _userStore.FindByIdOrThrowAsync(conferenceEntity.ConferenceManager, CancellationToken.None);
         IEnumerable<int> years = await connection.QueryAsync<int>(conferenceYearsSQL, param);
         IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(leaguesInConferenceSQL, param);
         ConferenceYearEntity? conferenceYearEntity = await connection.QuerySingleOrDefaultAsync<ConferenceYearEntity?>(conferenceYearSQL, param);
@@ -547,7 +552,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
 
         //Conversion
-        Conference conference = conferenceEntity.ToDomain(manager.ToMinimal(), years, leagueIDs);
+        Conference conference = conferenceEntity.ToDomain(years, leagueIDs);
         var supportedYear = supportedYearEntity.ToDomain();
         ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
         var usersInConference = userEntities.Select(x => x.ToDomain()).ToList();
