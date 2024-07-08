@@ -213,8 +213,8 @@ export default {
   },
   methods: {
     async initializePage() {
-      await this.fetchRoyaleQuarters();
       if (!this.year || !this.quarter) {
+        await this.fetchRoyaleQuarters();
         const mostRecentQuarter = this.royaleYearQuarterOptions[this.royaleYearQuarterOptions.length - 1];
         const parameters = {
           year: mostRecentQuarter.year.toString(),
@@ -225,49 +225,21 @@ export default {
       }
 
       this.selectedYear = this.year;
-      await Promise.all([this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+      await this.fetchRoyaleData();
     },
     selectYear(year) {
       this.selectedYear = year;
     },
-    fetchRoyaleQuarters() {
-      return axios
-        .get('/api/royale/RoyaleQuarters')
-        .then((response) => {
-          this.royaleYearQuarterOptions = response.data;
-        })
-        .catch(() => {});
+    async fetchRoyaleQuarters() {
+      const response = await axios.get('/api/royale/RoyaleQuarters');
+      this.royaleYearQuarterOptions = response.data;
     },
-    fetchRoyaleYearQuarter() {
-      this.royaleYearQuarter = null;
-      return axios
-        .get('/api/royale/RoyaleQuarter/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.royaleYearQuarter = response.data;
-        })
-        .catch(() => {});
-    },
-    fetchRoyaleStandings() {
-      this.royaleStandings = null;
-      return axios
-        .get('/api/royale/RoyaleStandings/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.royaleStandings = response.data;
-        })
-        .catch(() => {});
-    },
-    fetchUserRoyalePublisher() {
-      this.userPublisherBusy = true;
-      this.userRoyalePublisher = null;
-      return axios
-        .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.userRoyalePublisher = response.data;
-          this.userPublisherBusy = false;
-        })
-        .catch(() => {
-          this.userPublisherBusy = false;
-        });
+    async fetchRoyaleData() {
+      const response = await axios.get(`/api/CombinedData/RoyaleData/${this.year}/${this.quarter}`);
+      this.royaleYearQuarter = response.data.royaleYearQuarter;
+      this.royaleStandings = response.data.royaleStandings;
+      this.userRoyalePublisher = response.data.userRoyalePublisher;
+      this.userPublisherBusy = false;
     }
   }
 };

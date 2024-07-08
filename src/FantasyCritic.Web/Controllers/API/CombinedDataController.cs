@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Responses;
@@ -17,14 +18,16 @@ public class CombinedDataController : FantasyCriticController
 {
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
+    private readonly RoyaleService _royaleService;
     private readonly IClock _clock;
 
     public CombinedDataController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService,
-        InterLeagueService interLeagueService, IClock clock)
+        InterLeagueService interLeagueService, RoyaleService royaleService, IClock clock)
         : base(userManager)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
+        _royaleService = royaleService;
         _clock = clock;
     }
 
@@ -104,5 +107,70 @@ public class CombinedDataController : FantasyCriticController
         return Ok(vm);
     }
 
+    [AllowAnonymous]
+    [HttpGet("{year}/{quarter}")]
+    public async Task<IActionResult> RoyaleData(int year, int quarter)
+    {
+        //Royale Year Quarter
+        var royaleYearQuarter = await _royaleService.GetYearQuarter(year, quarter);
+        if (royaleYearQuarter is null)
+        {
+            return NotFound();
+        }
 
+        var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleYearQuarter);
+
+        var masterGameTags = await _interLeagueService.GetMasterGameTags();
+
+        //User Royale Publisher
+        RoyalePublisherViewModel? userRoyalePublisherViewModel = null;
+        var currentUser = await GetCurrentUser();
+        if (currentUser.IsSuccess)
+        {
+            RoyalePublisher? publisher = await _royaleService.GetPublisher(royaleYearQuarter, currentUser.Value);
+            if (publisher is not null)
+            {
+                IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
+                var currentDate = _clock.GetToday();
+                userRoyalePublisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, true);
+            }
+        }
+
+        //Standings
+        IReadOnlyList<RoyalePublisher> publishers = await _royaleService.GetAllPublishers(year, quarter);
+        var publishersToShow = publishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
+        int ranking = 1;
+        List<RoyalePublisherViewModel> publisherViewModels = new List<RoyalePublisherViewModel>();
+        IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
+        foreach (var publisher in publishersToShow)
+        {
+            int? thisRanking = null;
+            if (publisher.GetTotalFantasyPoints() > 0)
+            {
+                thisRanking = ranking;
+                ranking++;
+            }
+
+            var winningQuarters = previousWinners.GetValueOrDefault(publisher.User, new List<RoyaleYearQuarter>());
+            bool thisPlayerIsViewing = false;
+            if (currentUser.IsSuccess)
+            {
+                thisPlayerIsViewing = currentUser.Value.Id == publisher.User.Id;
+            }
+
+            var currentDate = _clock.GetToday();
+            var publisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, masterGameTags, thisPlayerIsViewing);
+            publisherViewModels.Add(publisherViewModel);
+        }
+
+
+        var vm = new
+        {
+            RoyaleYearQuarter = royaleYearQuarterViewModel,
+            UserRoyalePublisher = userRoyalePublisherViewModel,
+            RoyaleStandings = publisherViewModels
+        };
+
+        return Ok(vm);
+    }
 }
