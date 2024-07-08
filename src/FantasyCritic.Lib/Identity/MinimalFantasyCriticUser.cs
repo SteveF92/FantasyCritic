@@ -12,5 +12,6 @@ public interface IVeryMinimalFantasyCriticUser
 {
     Guid UserID { get; }
     string DisplayName { get; }
+    VeryMinimalFantasyCriticUser ToConcrete() => new VeryMinimalFantasyCriticUser(UserID, DisplayName);
 }
 

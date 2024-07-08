@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IRoyaleRepo
 {
     Task CreatePublisher(RoyalePublisher publisher);
-    Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user);
+    Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, IVeryMinimalFantasyCriticUser user);
     Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters();
     Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter);
     Task<RoyalePublisher?> GetPublisher(Guid publisherID);
@@ -16,8 +16,8 @@ public interface IRoyaleRepo
     Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter);
     Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores);
     Task ChangePublisherName(RoyalePublisher publisher, string publisherName);
-    Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user);
-    Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners();
+    Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(IVeryMinimalFantasyCriticUser user);
+    Task<IReadOnlyDictionary<VeryMinimalFantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners();
     Task StartNewQuarter(YearQuarter nextQuarter);
     Task FinishQuarter(RoyaleYearQuarter supportedQuarter);
     Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon);

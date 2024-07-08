@@ -64,14 +64,14 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         });
     }
 
-    public async Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user)
+    public async Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, IVeryMinimalFantasyCriticUser user)
     {
         const string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
         await using var connection = new MySqlConnection(_connectionString);
         var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(sql,
             new
             {
-                userID = user.Id,
+                userID = user.UserID,
                 year = yearQuarter.YearQuarter.Year,
                 quarter = yearQuarter.YearQuarter.Quarter
             });
@@ -81,7 +81,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         }
 
         var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
-        var domain = entity.ToDomain(yearQuarter, user, publisherGames);
+        var domain = entity.ToDomain(yearQuarter, user.ToConcrete(), publisherGames);
         return domain;
     }
 
@@ -97,6 +97,25 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var previousWinners = await GetRoyaleWinners();
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
         return new RoyaleYearQuarterData(royaleYearQuarter, publishers, previousWinners, masterGameTags);
+    }
+
+    private async Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterDataNew(int year, int quarter)
+    {
+        const string supportedYearSQL = "select * from tbl_meta_supportedyear where Year = @P_Year";
+        const string supporterQuarterSQL = "select * from tbl_royale_supportedquarter where Year = @P_Year and Quarter = @P_Quarter;";
+
+        var param = new
+        {
+            P_Year = year,
+            P_Quarter = quarter
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+
+        var supportedYearEntity = await connection.QuerySingleOrDefaultAsync(supportedYearSQL, param);
+        var supportedQuarterEntity = await connection.QuerySingleOrDefaultAsync(supporterQuarterSQL, param);
+
+        throw new NotImplementedException();
     }
 
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
@@ -116,7 +135,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
         var yearQuarter = await GetYearQuarterOrThrow(entity.Year, entity.Quarter);
         var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
-        var domain = entity.ToDomain(yearQuarter, user!, publisherGames);
+        var domain = entity.ToDomain(yearQuarter, user!.ToVeryMinimal(), publisherGames);
         return domain;
     }
 
@@ -147,7 +166,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
             var gamesForPublisher = publisherGameLookup[entity.PublisherID];
 
-            var domain = entity.ToDomain(yearQuarter, user, gamesForPublisher);
+            var domain = entity.ToDomain(yearQuarter, user.ToVeryMinimal(), gamesForPublisher);
             domainPublishers.Add(domain);
         }
 
@@ -297,18 +316,19 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await transaction.CommitAsync();
     }
 
-    public async Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user)
+    public async Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(IVeryMinimalFantasyCriticUser user)
     {
         var royaleWinners = await GetRoyaleWinners();
-        if (royaleWinners.ContainsKey(user))
+        var concreteClass = user.ToConcrete();
+        if (royaleWinners.ContainsKey(concreteClass))
         {
-            return royaleWinners[user];
+            return royaleWinners[concreteClass];
         }
 
         return new List<RoyaleYearQuarter>();
     }
 
-    public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
+    public async Task<IReadOnlyDictionary<VeryMinimalFantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
     {
         var quarters = await GetYearQuarters();
         const string sql =
@@ -316,7 +336,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             "JOIN tbl_royale_publishergame ON tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID " +
             "GROUP BY tbl_royale_publisher.PublisherID";
 
-        Dictionary<FantasyCriticUser, List<RoyaleYearQuarter>> winners = new Dictionary<FantasyCriticUser, List<RoyaleYearQuarter>>();
+        Dictionary<VeryMinimalFantasyCriticUser, List<RoyaleYearQuarter>> winners = new Dictionary<VeryMinimalFantasyCriticUser, List<RoyaleYearQuarter>>();
         await using (var connection = new MySqlConnection(_connectionString))
         {
             var results = await connection.QueryAsync<RoyaleStandingsEntity>(sql);

@@ -9,8 +9,8 @@ public class RoyalePublisherViewModel
     {
         PublisherID = domain.PublisherID;
         YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
-        PlayerName = domain.User.UserName;
-        UserID = domain.User.Id;
+        PlayerName = domain.User.DisplayName;
+        UserID = domain.User.UserID;
         PublisherName = domain.PublisherName;
         PublisherIcon = domain.PublisherIcon;
         PublisherSlogan = domain.PublisherSlogan;

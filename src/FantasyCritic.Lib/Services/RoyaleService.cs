@@ -42,7 +42,7 @@ public class RoyaleService
         return requestedQuarter;
     }
 
-    public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)
+    public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, VeryMinimalFantasyCriticUser user, string publisherName)
     {
         RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, null, null, new List<RoyalePublisherGame>(), 100m);
         await _royaleRepo.CreatePublisher(publisher);
@@ -253,12 +253,12 @@ public class RoyaleService
         await _royaleRepo.UpdateFantasyPoints(publisherGameScores);
     }
 
-    public Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user)
+    public Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(IVeryMinimalFantasyCriticUser user)
     {
         return _royaleRepo.GetQuartersWonByUser(user);
     }
 
-    public Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
+    public Task<IReadOnlyDictionary<VeryMinimalFantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
     {
         return _royaleRepo.GetRoyaleWinners();
     }

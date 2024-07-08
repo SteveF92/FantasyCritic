@@ -231,11 +231,11 @@ export default {
       this.selectedYear = year;
     },
     async fetchRoyaleQuarters() {
-      const response = await axios.get('/api/royale/RoyaleQuarters');
+      const response = await axios.get('/api/Royale/RoyaleQuarters');
       this.royaleYearQuarterOptions = response.data;
     },
     async fetchRoyaleData() {
-      const response = await axios.get(`/api/CombinedData/RoyaleData/${this.year}/${this.quarter}`);
+      const response = await axios.get(`/api/Royale/RoyaleData/${this.year}/${this.quarter}`);
       this.royaleYearQuarter = response.data.royaleYearQuarter;
       this.royaleStandings = response.data.royaleStandings;
       this.userRoyalePublisher = response.data.userRoyalePublisher;

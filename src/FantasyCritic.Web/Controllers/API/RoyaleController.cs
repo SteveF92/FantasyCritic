@@ -84,7 +84,7 @@ public class RoyaleController : FantasyCriticController
             return BadRequest();
         }
 
-        RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser, request.PublisherName);
+        RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser.ToVeryMinimal(), request.PublisherName);
         return Ok(publisher.PublisherID);
     }
 
@@ -194,11 +194,65 @@ public class RoyaleController : FantasyCriticController
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsSuccess)
         {
-            thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.Id;
+            thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
         }
 
         var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, thisPlayerIsViewing);
         return Ok(viewModel);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{year}/{quarter}")]
+    public async Task<IActionResult> RoyaleData(int year, int quarter)
+    {
+        var royaleData = await _royaleService.GetRoyaleYearQuarterData(year, quarter);
+        if (royaleData is null)
+        {
+            return NotFound();
+        }
+
+        var currentUser = await GetCurrentUser();
+
+        var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.YearQuarter);
+        RoyalePublisherViewModel? userRoyalePublisherViewModel = null;
+        var currentDate = _clock.GetToday();
+
+        var publishersToShow = royaleData.RoyalePublishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
+        int ranking = 1;
+        List<RoyalePublisherViewModel> publisherViewModels = new List<RoyalePublisherViewModel>();
+        foreach (var publisher in publishersToShow)
+        {
+            int? thisRanking = null;
+            if (publisher.GetTotalFantasyPoints() > 0)
+            {
+                thisRanking = ranking;
+                ranking++;
+            }
+
+            var winningQuarters = royaleData.PreviousWinners.GetValueOrDefault(publisher.User, new List<RoyaleYearQuarter>());
+            bool thisPlayerIsViewing = false;
+            if (currentUser.IsSuccess)
+            {
+                thisPlayerIsViewing = currentUser.Value.Id == publisher.User.UserID;
+            }
+
+            var publisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, royaleData.MasterGameTags, thisPlayerIsViewing);
+            publisherViewModels.Add(publisherViewModel);
+
+            if (thisPlayerIsViewing)
+            {
+                userRoyalePublisherViewModel = publisherViewModel;
+            }
+        }
+
+        var vm = new
+        {
+            RoyaleYearQuarter = royaleYearQuarterViewModel,
+            UserRoyalePublisher = userRoyalePublisherViewModel,
+            RoyaleStandings = publisherViewModels
+        };
+
+        return Ok(vm);
     }
 
     [AllowAnonymous]
@@ -210,7 +264,7 @@ public class RoyaleController : FantasyCriticController
         int ranking = 1;
         List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
+        IReadOnlyDictionary<VeryMinimalFantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
         var currentUserResult = await GetCurrentUser();
         foreach (var publisher in publishersToShow)
         {
@@ -225,7 +279,7 @@ public class RoyaleController : FantasyCriticController
             bool thisPlayerIsViewing = false;
             if (currentUserResult.IsSuccess)
             {
-                thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.Id;
+                thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
             }
 
             var currentDate = _clock.GetToday();
@@ -235,6 +289,7 @@ public class RoyaleController : FantasyCriticController
 
         return Ok(viewModels);
     }
+
 
     [HttpPost]
     public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
