@@ -111,37 +111,21 @@ public class CombinedDataController : FantasyCriticController
     [HttpGet("{year}/{quarter}")]
     public async Task<IActionResult> RoyaleData(int year, int quarter)
     {
-        //Royale Year Quarter
-        var royaleYearQuarter = await _royaleService.GetYearQuarter(year, quarter);
-        if (royaleYearQuarter is null)
+        var royaleData = await _royaleService.GetRoyaleYearQuarterData(year, quarter);
+        if (royaleData is null)
         {
             return NotFound();
         }
 
-        var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleYearQuarter);
-
-        var masterGameTags = await _interLeagueService.GetMasterGameTags();
-
-        //User Royale Publisher
-        RoyalePublisherViewModel? userRoyalePublisherViewModel = null;
         var currentUser = await GetCurrentUser();
-        if (currentUser.IsSuccess)
-        {
-            RoyalePublisher? publisher = await _royaleService.GetPublisher(royaleYearQuarter, currentUser.Value);
-            if (publisher is not null)
-            {
-                IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
-                var currentDate = _clock.GetToday();
-                userRoyalePublisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, true);
-            }
-        }
 
-        //Standings
-        IReadOnlyList<RoyalePublisher> publishers = await _royaleService.GetAllPublishers(year, quarter);
-        var publishersToShow = publishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
+        var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.YearQuarter);
+        RoyalePublisherViewModel? userRoyalePublisherViewModel = null;
+        var currentDate = _clock.GetToday();
+
+        var publishersToShow = royaleData.RoyalePublishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
         int ranking = 1;
         List<RoyalePublisherViewModel> publisherViewModels = new List<RoyalePublisherViewModel>();
-        IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
         foreach (var publisher in publishersToShow)
         {
             int? thisRanking = null;
@@ -151,19 +135,22 @@ public class CombinedDataController : FantasyCriticController
                 ranking++;
             }
 
-            var winningQuarters = previousWinners.GetValueOrDefault(publisher.User, new List<RoyaleYearQuarter>());
+            var winningQuarters = royaleData.PreviousWinners.GetValueOrDefault(publisher.User, new List<RoyaleYearQuarter>());
             bool thisPlayerIsViewing = false;
             if (currentUser.IsSuccess)
             {
                 thisPlayerIsViewing = currentUser.Value.Id == publisher.User.Id;
             }
 
-            var currentDate = _clock.GetToday();
-            var publisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, masterGameTags, thisPlayerIsViewing);
+            var publisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, royaleData.MasterGameTags, thisPlayerIsViewing);
             publisherViewModels.Add(publisherViewModel);
+
+            if (thisPlayerIsViewing)
+            {
+                userRoyalePublisherViewModel = publisherViewModel;
+            }
         }
-
-
+        
         var vm = new
         {
             RoyaleYearQuarter = royaleYearQuarterViewModel,

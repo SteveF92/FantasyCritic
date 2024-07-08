@@ -94,6 +94,20 @@ public class RoyaleService
         return allPublishers;
     }
 
+    public async Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter)
+    {
+        var royaleYearQuarter = await GetYearQuarter(year, quarter);
+        if (royaleYearQuarter is null)
+        {
+            return null;
+        }
+
+        var publishers = await GetAllPublishers(year, quarter);
+        var previousWinners = await GetRoyaleWinners();
+        var masterGameTags = await _masterGameRepo.GetMasterGameTags();
+        return new RoyaleYearQuarterData(royaleYearQuarter, publishers, previousWinners, masterGameTags);
+    }
+
     public async Task<IReadOnlyList<MasterGameYear>> GetMasterGamesForYearQuarter(YearQuarter yearQuarter)
     {
         IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year);
