@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               8.0.28 - MySQL Community Server - GPL
--- Server OS:                    Win64
+-- Host:                         fantasy-critic-beta-rds.cldutembgs4w.us-east-1.rds.amazonaws.com
+-- Server version:               8.0.31 - Source distribution
+-- Server OS:                    Linux
 -- HeidiSQL Version:             12.3.0.6589
 -- --------------------------------------------------------
 
@@ -433,8 +433,9 @@ BEGIN
 	       `Year`
 	FROM tbl_league_publisher p
 	JOIN tbl_league l ON p.LeagueID = l.LeagueID
-	WHERE UserID = P_UserID
-	  AND `Year` = P_Year;
+	WHERE l.LeagueID = P_LeagueID 
+		AND UserID = P_UserID
+	  	AND `Year` = P_Year;
 	
 	-- Retrieve the PublisherID from the temporary table
 	

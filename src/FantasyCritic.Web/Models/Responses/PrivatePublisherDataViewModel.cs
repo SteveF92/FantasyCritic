@@ -36,7 +36,7 @@ public class PrivatePublisherDataViewModel
             }
         }
 
-        QueuedGames = queuedGameVMs;
+        QueuedGames = queuedGameVMs.OrderBy(x => x.Rank).ToList();
     }
 
     public IReadOnlyList<PickupBidViewModel> MyActiveBids { get; }
