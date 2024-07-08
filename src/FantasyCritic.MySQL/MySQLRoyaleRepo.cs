@@ -85,6 +85,20 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return domain;
     }
 
+    public async Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter)
+    {
+        var royaleYearQuarter = await GetYearQuarter(year, quarter);
+        if (royaleYearQuarter is null)
+        {
+            return null;
+        }
+
+        var publishers = await GetAllPublishers(year, quarter);
+        var previousWinners = await GetRoyaleWinners();
+        var masterGameTags = await _masterGameRepo.GetMasterGameTags();
+        return new RoyaleYearQuarterData(royaleYearQuarter, publishers, previousWinners, masterGameTags);
+    }
+
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
     {
         const string sql = "select * from tbl_royale_publisher where PublisherID = @publisherID;";
