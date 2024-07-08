@@ -8,6 +8,7 @@ using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.MySQL.Entities.Trades;
 using FantasyCritic.MySQL.Entities.Identity;
+using FantasyCritic.Lib.Domain.Conferences;
 
 namespace FantasyCritic.MySQL;
 
@@ -462,8 +463,176 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData, userStatus);
     }
 
-    private record UserIsFollowingLeagueEntity()
+
+    public async Task<ConferenceYearData?> GetConferenceYearData(Guid conferenceID, int year)
+    {
+        var param = new
+        {
+            P_ConferenceID = conferenceID,
+            P_Year = year
+        };
+
+        //Querying
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getconferenceyeardata", param, commandType: CommandType.StoredProcedure);
+
+        ConferenceEntity? conferenceEntity = resultSets.ReadSingleOrDefault<ConferenceEntity?>();
+        if (conferenceEntity is null)
+        {
+            return null;
+        }
+
+        IEnumerable<int> conferenceYears = resultSets.Read<int>();
+        IEnumerable<LeagueWithManagerEntity> leagues = resultSets.Read<LeagueWithManagerEntity>().ToList();
+        ConferenceYearEntity? conferenceYearEntity = resultSets.ReadSingleOrDefault<ConferenceYearEntity?>();
+        if (conferenceYearEntity is null)
+        {
+            return null;
+        }
+
+        var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
+        var leagueUsers = resultSets.Read<ConferenceUserEntity>().ToList();
+        var leagueActivePlayers = resultSets.Read<LeagueActivePlayerEntity>();
+        IEnumerable<ManagerMessageEntity> messageEntities = resultSets.Read<ManagerMessageEntity>();
+        IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = resultSets.Read<ManagerMessageDismissalEntity>().ToList();
+
+        var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
+        var systemWideValuesEntity = resultSets.ReadSingle<SystemWideValuesEntity>();
+        var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
+
+        var leagueEntities = resultSets.Read<LeagueEntity>();
+        var allYearsForLeagues = resultSets.Read<LeagueYearKeyEntity>();
+        var leagueYearEntities = resultSets.Read<LeagueYearEntity>();
+        var allLeagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
+        var allSpecialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
+        var allEligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
+        var allTagOverrideEntities = resultSets.Read<TagOverrideEntity>();
+        var usersInLeagueEntities = resultSets.Read<FantasyCriticUserEntity>();
+        var allPublisherEntities = resultSets.Read<PublisherEntity>();
+        var allPublisherGameEntities = resultSets.Read<PublisherGameEntity>();
+        var allFormerPublisherGameEntities = resultSets.Read<FormerPublisherGameEntity>();
+
+        //MasterGame Results
+        var masterGameResults = resultSets.Read<MasterGameEntity>();
+        var tagResults = resultSets.Read<MasterGameTagEntity>();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
+        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
+
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
+
+        //Domain Conversion
+        Conference conference = conferenceEntity.ToDomain(conferenceYears, leagues.Select(x => x.LeagueID));
+        var supportedYear = supportedYearEntity.ToDomain();
+        ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
+
+        var distinctUsers = leagueUsers.Select(x => x.ToMinimal()).Distinct().ToList();
+        var leagueManagerLookup = leagues.ToLookup(x => x.LeagueManager);
+        var leagueUserLookup = leagueUsers.ToLookup(x => x.UserID);
+        var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
+
+        List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
+        foreach (var user in distinctUsers)
+        {
+            var leaguesManaged = leagueManagerLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
+            var leaguesIn = leagueUserLookup[user.UserID].Where(x => x.LeagueID.HasValue).Select(x => x.LeagueID!.Value).ToHashSet();
+            var leagueYearsActiveIn = leagueActivePlayerLookup[user.UserID].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
+            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, leagueYearsActiveIn);
+            conferencePlayers.Add(player);
+        }
+
+        var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
+        var domainMessages = messageEntities
+            .Select(x => x.ToDomain(dismissalLookup[x.MessageID].Select(y => y.UserID)))
+            .ToList();
+
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
+        var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
+
+        var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+        var masterGameDictionary = new Dictionary<Guid, MasterGame>();
+        foreach (var entity in masterGameResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGame domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameDictionary.Add(domain.MasterGameID, domain);
+        }
+
+        var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
+        foreach (var entity in masterGameYearResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
+        }
+
+        var userDictionary = usersInLeagueEntities.ToDictionary(x => x.UserID, y => y.ToDomain());
+        var leagueDictionary = leagueEntities.ToDictionary(x => x.LeagueID);
+        var yearsLookup = allYearsForLeagues.ToLookup(x => x.LeagueID);
+        var leagueTagLookup = allLeagueTagEntities.ToLookup(x => x.LeagueID);
+        var specialGameSlotLookup = allSpecialGameSlotEntities.ToLookup(x => x.LeagueID);
+        var eligibilityOverrideLookup = allEligibilityOverrideEntities.ToLookup(x => x.LeagueID);
+        var tagOverrideLookup = allTagOverrideEntities.ToLookup(x => x.LeagueID);
+        var publisherLookup = allPublisherEntities.ToLookup(x => x.LeagueID);
+
+        var leagueYears = new List<LeagueYear>();
+        foreach (var leagueYearEntity in leagueYearEntities)
+        {
+            var leagueEntity = leagueDictionary[leagueYearEntity.LeagueID];
+
+            var winningUser = leagueYearEntity.WinningUserID.HasValue ? userDictionary.GetValueOrDefault(leagueYearEntity.WinningUserID.Value) : null;
+            var manager = userDictionary[leagueEntity.LeagueManager];
+            leagueEntity.ManagerDisplayName = manager.UserName;
+            leagueEntity.ManagerEmailAddress = manager.UserName;
+
+            var years = yearsLookup[leagueYearEntity.LeagueID].Select(x => x.Year);
+            var leagueTagEntities = leagueTagLookup[leagueYearEntity.LeagueID];
+            var specialGameSlotEntities = specialGameSlotLookup[leagueYearEntity.LeagueID];
+            var eligibilityOverrideEntities = eligibilityOverrideLookup[leagueYearEntity.LeagueID];
+            var tagOverrideEntities = tagOverrideLookup[leagueYearEntity.LeagueID];
+            var publisherEntities = publisherLookup[leagueYearEntity.LeagueID];
+
+            var league = leagueEntity.ToDomain(years);
+            var leagueYearKey = new LeagueYearKey(league.LeagueID, year);
+            var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
+            var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
+            var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
+            var domainEligibilityOverrides = DomainConversionUtilities.ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
+            var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, possibleTags);
+            var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, allPublisherGameEntities, allFormerPublisherGameEntities, masterGameYearDictionary);
+
+            LeagueYear leagueYear = leagueYearEntity.ToDomain(league, supportedYear, domainEligibilityOverrides, domainTagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear,
+                winningUser, publishers);
+            leagueYears.Add(leagueYear);
+        }
+
+        return new ConferenceYearData(conferenceYear, conferencePlayers, leagueYears, systemWideValues, domainMessages);
+    }
+
+    private record UserIsFollowingLeagueEntity
     {
         public required bool UserIsFollowingLeague { get; init; }
+    }
+
+    private record LeagueWithManagerEntity
+    {
+        public required Guid LeagueID { get; init; }
+        public required Guid LeagueManager { get; init; }
+    }
+
+    private record ConferenceUserEntity
+    {
+        public required Guid? LeagueID { get; init; }
+        public required Guid UserID { get; init; }
+        public required string DisplayName { get; init; }
+        public required string EmailAddress { get; init; }
+
+        public MinimalFantasyCriticUser ToMinimal()
+        {
+            return new MinimalFantasyCriticUser(UserID, DisplayName, EmailAddress);
+        }
     }
 }

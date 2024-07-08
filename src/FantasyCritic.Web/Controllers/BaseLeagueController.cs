@@ -370,6 +370,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         var playersInConference = await _conferenceService.GetPlayersInConference(conferenceYear.Conference);
+
         bool isInConference = false;
         bool isConferenceManager = false;
         bool userIsAdmin = false;
@@ -390,8 +391,46 @@ public abstract class BaseLeagueController : FantasyCriticController
             return UnauthorizedOrForbid<ConferenceYearRecord>(currentUserRecord.IsSuccess);
         }
 
-        var conferenceLeagueYears = await _conferenceService.GetLeagueYearsInConferenceYear(conferenceYear);
         ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
-        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, playersInConference, relationship, conferenceLeagueYears), null);
+        return new GenericResultRecord<ConferenceYearRecord>(new ConferenceYearRecord(currentUserRecord.ToNullable(), conferenceYear, relationship), null);
+    }
+
+    protected async Task<GenericResultRecord<ConferenceYearWithSupplementalDataRecord>> GetExistingConferenceYearWithSupplementalData(Guid conferenceID, int year, ConferenceRequiredRelationship requiredRelationship)
+    {
+        var currentUserRecord = await GetCurrentUser();
+        if ((requiredRelationship.MustBeLoggedIn || requiredRelationship.MustBeInConference || requiredRelationship.MustBeConferenceManager) && currentUserRecord.IsFailure)
+        {
+            return GetFailedResult<ConferenceYearWithSupplementalDataRecord>(Unauthorized());
+        }
+
+        var conferenceYearData = await _conferenceService.GetConferenceYearData(conferenceID, year);
+        if (conferenceYearData is null)
+        {
+            return GetFailedResult<ConferenceYearWithSupplementalDataRecord>(BadRequest("Conference year does not exist."));
+        }
+
+        bool isInConference = false;
+        bool isConferenceManager = false;
+        bool userIsAdmin = false;
+        if (currentUserRecord.IsSuccess)
+        {
+            userIsAdmin = await _userManager.IsInRoleAsync(currentUserRecord.Value, "Admin");
+            isConferenceManager = conferenceYearData.ConferenceYear.Conference.ConferenceManager.UserID == currentUserRecord.Value.Id;
+            if (requiredRelationship.MustBeConferenceManager && !isConferenceManager)
+            {
+                return GetFailedResult<ConferenceYearWithSupplementalDataRecord>(Forbid());
+            }
+
+            isInConference = isConferenceManager || conferenceYearData.PlayersInConference.Any(x => x.User.UserID == currentUserRecord.Value.Id);
+        }
+
+        if (!isInConference && requiredRelationship.MustBeInConference)
+        {
+            return UnauthorizedOrForbid<ConferenceYearWithSupplementalDataRecord>(currentUserRecord.IsSuccess);
+        }
+
+        ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
+        return new GenericResultRecord<ConferenceYearWithSupplementalDataRecord>(new ConferenceYearWithSupplementalDataRecord(currentUserRecord.ToNullable(), conferenceYearData.ConferenceYear,
+            conferenceYearData.PlayersInConference, relationship, conferenceYearData.LeagueYears, conferenceYearData.ConferenceYearStandings, conferenceYearData.ManagerMessages), null);
     }
 }

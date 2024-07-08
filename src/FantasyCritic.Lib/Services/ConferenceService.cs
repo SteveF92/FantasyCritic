@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
@@ -89,6 +89,19 @@ public class ConferenceService
         return _conferenceRepo.GetConferenceYear(conferenceID, year);
     }
 
+    public async Task<ConferenceYearDataWithStandings?> GetConferenceYearData(Guid conferenceID, int year)
+    {
+        var conferenceYearData = await _combinedDataRepo.GetConferenceYearData(conferenceID, year);
+        if (conferenceYearData is null)
+        {
+            return null;
+        }
+
+        var conferenceYearStandings = GetConferenceYearStandings(conferenceYearData.LeagueYears, conferenceYearData.SystemWideValues);
+        return new ConferenceYearDataWithStandings(conferenceYearData.ConferenceYear, conferenceYearData.PlayersInConference,
+            conferenceYearData.LeagueYears, conferenceYearData.ManagerMessages, conferenceYearStandings);
+    }
+
     public Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference)
     {
         return _conferenceRepo.GetUsersInConference(conference);
@@ -102,11 +115,6 @@ public class ConferenceService
     public Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference)
     {
         return _conferenceRepo.GetLeaguesInConference(conference);
-    }
-
-    public Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
-    {
-        return _conferenceRepo.GetLeagueYearsInConferenceYear(conferenceYear);
     }
 
     public Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference)
@@ -196,21 +204,6 @@ public class ConferenceService
         return result;
     }
 
-    public async Task<IReadOnlyList<LeagueYear>> GetFullLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
-    {
-        List<LeagueYear> leagueYears = new List<LeagueYear>();
-        foreach (var leagueID in conferenceYear.Conference.LeaguesInConference)
-        {
-            var leagueYear = await _combinedDataRepo.GetLeagueYear(leagueID, conferenceYear.Year);
-            if (leagueYear is not null)
-            {
-                leagueYears.Add(leagueYear);
-            }
-        }
-
-        return leagueYears;
-    }
-
     public async Task<Result> RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser)
     {
         if (conference.ConferenceManager.UserID == removeUser.UserID)
@@ -231,12 +224,8 @@ public class ConferenceService
         return Result.Success();
     }
 
-    public async Task<IReadOnlyList<ConferenceYearStanding>> GetConferenceYearStandings(ConferenceYear conferenceYear)
+    public static IReadOnlyList<ConferenceYearStanding> GetConferenceYearStandings(IReadOnlyList<LeagueYear> leagueYears, SystemWideValues systemWideValues)
     {
-        var leagueYears = await GetFullLeagueYearsInConferenceYear(conferenceYear);
-        var systemWideValues = await _interLeagueService.GetSystemWideValues();
-        var currentDate = _clock.GetToday();
-        
         List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
         foreach (var leagueYear in leagueYears)
         {
@@ -245,7 +234,7 @@ public class ConferenceService
             foreach (var publisher in leagueYear.Publishers)
             {
                 var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.League.LeagueName, leagueYear.Year, publisher.PublisherID, publisher.User.UserName, publisher.PublisherName,
-                    publisher.GetTotalFantasyPoints(supportedYear, leagueOptions), publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
+                    publisher.GetTotalFantasyPoints(supportedYear, leagueOptions), publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues));
                 standings.Add(standing);
             }
         }
@@ -256,11 +245,6 @@ public class ConferenceService
     public Task SetConferenceLeagueLockStatus(LeagueYear leagueYear, bool locked)
     {
         return _conferenceRepo.SetConferenceLeagueLockStatus(leagueYear, locked);
-    }
-
-    public Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(ConferenceYear conferenceYear)
-    {
-        return _conferenceRepo.GetManagerMessages(conferenceYear);
     }
 
     public async Task PostNewManagerMessage(ConferenceYear conferenceYear, string message, bool isPublic)

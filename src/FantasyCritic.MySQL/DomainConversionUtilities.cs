@@ -52,11 +52,14 @@ internal static class DomainConversionUtilities
         IReadOnlyList<PublisherGame> domainGames = ConvertPublisherGameEntities(publisherGameEntities, masterGameYearDictionary);
         IReadOnlyList<FormerPublisherGame> domainFormerGames = ConvertFormerPublisherGameEntities(formerPublisherGameEntities, masterGameYearDictionary);
 
+        var domainGameLookup = domainGames.ToLookup(x => x.PublisherID);
+        var domainFormerGameLookup = domainFormerGames.ToLookup(x => x.PublisherGame.PublisherID);
+
         List<Publisher> domainPublishers = new List<Publisher>();
         foreach (var entity in publisherEntities)
         {
-            var gamesForPublisher = domainGames.Where(x => x.PublisherID == entity.PublisherID);
-            var formerGamesForPublisher = domainFormerGames.Where(x => x.PublisherGame.PublisherID == entity.PublisherID);
+            var gamesForPublisher = domainGameLookup[entity.PublisherID];
+            var formerGamesForPublisher = domainFormerGameLookup[entity.PublisherID];
             var user = usersInLeague[entity.UserID];
             var domainPublisher = entity.ToDomain(user, gamesForPublisher, formerGamesForPublisher);
             domainPublishers.Add(domainPublisher);

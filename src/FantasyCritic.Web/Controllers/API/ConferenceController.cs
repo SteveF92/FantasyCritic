@@ -175,21 +175,20 @@ public class ConferenceController : BaseLeagueController
     [AllowAnonymous]
     public async Task<IActionResult> GetConferenceYear(Guid conferenceID, int year)
     {
-        var conferenceYearRecord = await GetExistingConferenceYear(conferenceID, year, ConferenceRequiredRelationship.AllowAnonymous);
+        var conferenceYearRecord = await GetExistingConferenceYearWithSupplementalData(conferenceID, year, ConferenceRequiredRelationship.AllowAnonymous);
         if (conferenceYearRecord.FailedResult is not null)
         {
             return conferenceYearRecord.FailedResult;
         }
 
         var validResult = conferenceYearRecord.ValidResult!;
-        var conferenceYearStandings = await _conferenceService.GetConferenceYearStandings(validResult.ConferenceYear);
-        IReadOnlyList<ManagerMessage> managerMessages = await _conferenceService.GetManagerMessages(validResult.ConferenceYear);
 
-        var conferenceLeagues = validResult.ConferenceLeagueYears.Select(x => x.League).ToList();
+        var conferenceLeagues = validResult.ConferenceLeagueYears.Select(x => new ConferenceLeague(x.League.LeagueID, x.League.LeagueName, x.League.LeagueManager)).ToList();
         var conferenceViewModel = new ConferenceViewModel(validResult.ConferenceYear.Conference, validResult.Relationship.ConferenceManager,
             validResult.Relationship.InConference, validResult.PlayersInConference, conferenceLeagues);
 
-        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears, validResult.PlayersInConference, validResult.CurrentUser, conferenceYearStandings, managerMessages);
+        var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears,
+            validResult.PlayersInConference, validResult.CurrentUser, validResult.ConferenceYearStandings, validResult.ManagerMessages);
         return Ok(conferenceYearViewModel);
     }
 

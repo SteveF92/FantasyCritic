@@ -5,7 +5,7 @@ namespace FantasyCritic.Web.Models.Responses.Conferences;
 
 public class ConferenceYearViewModel
 {
-    public ConferenceYearViewModel(ConferenceViewModel conferenceViewModel, ConferenceYear domain, IEnumerable<ConferenceLeagueYear> conferenceLeagueYears,
+    public ConferenceYearViewModel(ConferenceViewModel conferenceViewModel, ConferenceYear domain, IEnumerable<LeagueYear> conferenceLeagueYears,
         IReadOnlyList<ConferencePlayer> conferencePlayers, FantasyCriticUser? accessingUser, IReadOnlyList<ConferenceYearStanding> standings, IEnumerable<ManagerMessage> managerMessages)
     {
         Conference = conferenceViewModel;
@@ -14,7 +14,7 @@ public class ConferenceYearViewModel
 
         LeagueYears = conferenceLeagueYears.Select(x =>
             new ConferenceLeagueYearViewModel(x,
-                conferencePlayers.Where(y => y.YearsActiveIn.Contains(x.LeagueYearKey)).ToList(), accessingUser,
+                conferencePlayers.Where(y => y.YearsActiveIn.Contains(x.Key)).ToList(), accessingUser,
                 x.League.LeagueID == domain.Conference.PrimaryLeagueID))
             .OrderByDescending(x => x.IsPrimaryLeague).ThenBy(x => x.LeagueName).ToList();
 

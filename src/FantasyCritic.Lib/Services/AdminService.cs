@@ -576,7 +576,7 @@ public class AdminService
                 continue;
             }
 
-            var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues, currentDate));
+            var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues));
             var highestScoringPublisher = publishersWithProjectedPoints.MaxBy(x => x.Value);
             var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < highestScoringPublisher.Value * 0.65m).ToList();
             List<LeagueAction> actions = new List<LeagueAction>();
@@ -600,7 +600,6 @@ public class AdminService
     {
         _logger.Information("Expiring trades.");
         var now = _clock.GetCurrentInstant();
-        var currentDate = now.ToEasternDate();
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
         IReadOnlyList<Trade> trades = await _fantasyCriticRepo.GetTradesForYear(currentYear!.Year);

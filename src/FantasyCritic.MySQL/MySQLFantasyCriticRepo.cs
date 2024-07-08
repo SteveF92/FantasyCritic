@@ -2683,10 +2683,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<SystemWideValues> GetSystemWideValues()
     {
+        const string sql = """
+                               select * from tbl_caching_averagepositionpoints;
+                               select * from tbl_caching_systemwidevalues;
+                           """;
+
         await using var connection = new MySqlConnection(_connectionString);
-        var positionPoints = await connection.QueryAsync<AveragePositionPointsEntity>("select * from tbl_caching_averagepositionpoints;");
-        var result = await connection.QuerySingleAsync<SystemWideValuesEntity>("select * from tbl_caching_systemwidevalues;");
-        return result.ToDomain(positionPoints.Select(x => x.ToDomain()));
+        await using var resultSets = await connection.QueryMultipleAsync(sql);
+
+        var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
+        var systemWideValues = resultSets.ReadSingle<SystemWideValuesEntity>();
+        return systemWideValues.ToDomain(positionPoints.Select(x => x.ToDomain()));
     }
 
     public async Task<SystemWideSettings> GetSystemWideSettings()

@@ -25,9 +25,13 @@ internal class ConferenceEntity
     public Guid PrimaryLeagueID { get; set; }
     public bool CustomRulesConference { get; set; }
 
-    public Conference ToDomain(MinimalFantasyCriticUser manager, IEnumerable<int> years, IEnumerable<Guid> leaguesInConference)
+    public string ConferenceManagerDisplayName { get; set; } = null!;
+    public string ConferenceManagerEmailAddress { get; set; } = null!;
+
+    public Conference ToDomain(IEnumerable<int> years, IEnumerable<Guid> leaguesInConference)
     {
-        return new Conference(ConferenceID, ConferenceName, manager, years, CustomRulesConference, PrimaryLeagueID, leaguesInConference);
+        var conferenceManager = new MinimalFantasyCriticUser(ConferenceManager, ConferenceManagerDisplayName, ConferenceManagerEmailAddress);
+        return new Conference(ConferenceID, ConferenceName, conferenceManager, years, CustomRulesConference, PrimaryLeagueID, leaguesInConference);
     }
 }
     

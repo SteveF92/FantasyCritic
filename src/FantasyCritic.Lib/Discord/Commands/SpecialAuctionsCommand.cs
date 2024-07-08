@@ -42,7 +42,6 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
         await DeferAsync();
-        var dateToCheck = _clock.GetGameEffectiveDate(year);
         
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))

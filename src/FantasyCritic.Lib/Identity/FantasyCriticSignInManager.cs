@@ -35,6 +35,19 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
         return base.SignInWithClaimsAsync(user, authenticationProperties, additionalClaims);
     }
 
+    public override Task SignInAsync(FantasyCriticUser user, bool isPersistent, string? authenticationMethod = null)
+    {
+        CacheUserToSession(user);
+        return base.SignInAsync(user, isPersistent, authenticationMethod);
+    }
+
+    public override Task SignInAsync(FantasyCriticUser user, AuthenticationProperties authenticationProperties,
+        string? authenticationMethod = null)
+    {
+        CacheUserToSession(user);
+        return base.SignInAsync(user, authenticationProperties, authenticationMethod);
+    }
+
     public override Task SignOutAsync()
     {
         Context.Session.Clear();

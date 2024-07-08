@@ -140,7 +140,14 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task<Conference?> GetConference(Guid conferenceID)
     {
-        const string conferenceSQL = "select * from tbl_conference where ConferenceID = @conferenceID and IsDeleted = 0;";
+        const string conferenceSQL = """
+                                     select tbl_conference.*, 
+                                     tbl_user.DisplayName as ConferenceManagerDisplayName,
+                                     tbl_user.EmailAddress as ConferenceManagerEmailAddress
+                                     from tbl_conference 
+                                     join tbl_user on tbl_conference.ConferenceManager = tbl_user.UserID
+                                     where ConferenceID = @conferenceID and tbl_conference.IsDeleted = 0;
+                                     """;
         var queryObject = new
         {
             conferenceID
@@ -154,15 +161,13 @@ public class MySQLConferenceRepo : IConferenceRepo
             return null;
         }
 
-        FantasyCriticUser manager = await _userStore.FindByIdOrThrowAsync(conferenceEntity.ConferenceManager, CancellationToken.None);
-
         const string conferenceYearSQL = "select Year from tbl_conference_year where ConferenceID = @conferenceID;";
         IEnumerable<int> years = await connection.QueryAsync<int>(conferenceYearSQL, queryObject);
         
         const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
         IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(leaguesInConferenceSQL, queryObject);
 
-        Conference conference = conferenceEntity.ToDomain(manager.ToMinimal(), years, leagueIDs);
+        Conference conference = conferenceEntity.ToDomain(years, leagueIDs);
         return conference;
     }
 
@@ -296,11 +301,16 @@ public class MySQLConferenceRepo : IConferenceRepo
     public async Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
     {
         const string leagueYearSQL = """
-                                     select tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager, tbl_league_year.Year,
+                                     select 
+                                     tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager, 
+                                     tbl_user.DisplayName as ManagerDisplayName, tbl_user.EmailAddress as ManagerEmailAddress, 
+                                     tbl_league_year.Year,
                                      tbl_league_year.PlayStatus <> "NotStartedDraft" AS DraftStarted,
                                      tbl_league_year.PlayStatus = "DraftFinal" AS DraftFinished,
                                      ConferenceLocked
-                                     from tbl_league_year join tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID 
+                                     from tbl_league_year 
+                                     join tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID
+                                     join tbl_user on tbl_league.LeagueManager = tbl_user.UserID
                                      where ConferenceID = @conferenceID and Year = @year;
                                      """;
         var queryObject = new
@@ -311,20 +321,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         var leagueYearEntities = (await connection.QueryAsync<ConferenceLeagueYearEntity>(leagueYearSQL, queryObject)).ToList();
-
-        var leagueManagerIDs = leagueYearEntities.Select(x => x.LeagueManager).ToList();
-        var leagueManagers = await _userStore.GetUsers(leagueManagerIDs);
-        var leagueManagerDictionary = leagueManagers.ToDictionary(x => x.Id);
-
-        List<ConferenceLeagueYear> leaguesInConference = new List<ConferenceLeagueYear>();
-        foreach (var leagueYearEntity in leagueYearEntities)
-        {
-            var leagueManager = leagueManagerDictionary[leagueYearEntity.LeagueManager];
-            ConferenceLeagueYear conferenceLeague = leagueYearEntity.ToDomain(leagueManager);
-            leaguesInConference.Add(conferenceLeague);
-        }
-
-        return leaguesInConference;
+        return leagueYearEntities.Select(leagueYearEntity => leagueYearEntity.ToDomain()).ToList();
     }
 
     public async Task EditConference(Conference conference, string newConferenceName, bool newCustomRulesConference)

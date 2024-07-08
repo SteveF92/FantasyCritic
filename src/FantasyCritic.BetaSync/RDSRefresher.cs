@@ -81,7 +81,7 @@ public class RDSRefresher
             ApplyImmediately = true
         };
 
-        ModifyDBInstanceResponse modifyResponse = await _rdsClient.ModifyDBInstanceAsync(modifyDBInstanceRequest);
+        await _rdsClient.ModifyDBInstanceAsync(modifyDBInstanceRequest);
 
         await WaitForDBToHaveName(instance.DbiResourceId, newName);
         Log.Information("Rename successful.");

@@ -19,6 +19,7 @@ using NodaTime.Serialization.JsonNet;
 using FantasyCritic.MySQL.SyncingRepos;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.SharedSerialization.API;
+using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.MasterGameUpdater;
 
