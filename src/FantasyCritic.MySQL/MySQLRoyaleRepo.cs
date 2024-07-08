@@ -112,10 +112,17 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
         await using var connection = new MySqlConnection(_connectionString);
 
-        var supportedYearEntity = await connection.QuerySingleOrDefaultAsync(supportedYearSQL, param);
-        var supportedQuarterEntity = await connection.QuerySingleOrDefaultAsync(supporterQuarterSQL, param);
+        var supportedYearEntity = await connection.QuerySingleOrDefaultAsync<SupportedYearEntity>(supportedYearSQL, param);
+        var supportedQuarterEntity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(supporterQuarterSQL, param);
 
-        throw new NotImplementedException();
+        if (supportedYearEntity is null || supportedQuarterEntity is null)
+        {
+            return null;
+        }
+
+        var supportedYear = supportedYearEntity.ToDomain();
+        var royaleQuarter = supportedQuarterEntity.ToDomain(supportedYear);
+        return new RoyaleYearQuarterData(royaleQuarter);
     }
 
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
