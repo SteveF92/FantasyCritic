@@ -276,6 +276,7 @@ export default {
 .leaderboard-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
   margin-bottom: 5px;
 }

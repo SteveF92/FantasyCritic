@@ -168,8 +168,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
         foreach (var entity in entities)
         {
-            var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(entity.MasterGameID, yearQuarter.YearQuarter.Year);
-            var domain = entity.ToDomain(yearQuarter, masterGame);
+            var masterGameYear = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
+            if (masterGameYear is null)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
+                masterGameYear = new MasterGameYear(masterGame, yearQuarter.Year.Year);
+            }
+            var domain = entity.ToDomain(yearQuarter, masterGameYear);
             domains.Add(domain);
         }
         return domains;
@@ -232,8 +237,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
         foreach (var entity in entities)
         {
-            var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(entity.MasterGameID, yearQuarter.YearQuarter.Year);
-            var domain = entity.ToDomain(yearQuarter, masterGame);
+            var masterGameYear = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
+            if (masterGameYear is null)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
+                masterGameYear = new MasterGameYear(masterGame, yearQuarter.Year.Year);
+            }
+            var domain = entity.ToDomain(yearQuarter, masterGameYear);
             domains.Add(domain);
         }
         return domains;
