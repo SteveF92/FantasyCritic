@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.MySQL;
 
@@ -66,9 +67,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, IVeryMinimalFantasyCriticUser user)
     {
-        const string sql = "select * from tbl_royale_publisher where UserID = @userID and Year = @year and Quarter = @quarter;";
+        const string publisherGameSQL = """
+                                        SELECT * FROM tbl_royale_publishergame
+                                        JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
+                                        WHERE UserID = @userID and Year = @year and Quarter = @quarter;
+                                        """;
         await using var connection = new MySqlConnection(_connectionString);
-        var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(sql,
+        var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(publisherGameSQL,
             new
             {
                 userID = user.UserID,
@@ -81,25 +86,11 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         }
 
         var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
-        var domain = entity.ToDomain(yearQuarter, user.ToConcrete(), publisherGames);
+        var domain = entity.ToDomain(yearQuarter, publisherGames);
         return domain;
     }
 
     public async Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter)
-    {
-        var royaleYearQuarter = await GetYearQuarter(year, quarter);
-        if (royaleYearQuarter is null)
-        {
-            return null;
-        }
-
-        var publishers = await GetAllPublishers(year, quarter);
-        var previousWinners = await GetRoyaleWinners();
-        var masterGameTags = await _masterGameRepo.GetMasterGameTags();
-        return new RoyaleYearQuarterData(royaleYearQuarter, publishers, previousWinners, masterGameTags);
-    }
-
-    private async Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterDataNew(int year, int quarter)
     {
         const string supportedYearSQL = "select * from tbl_meta_supportedyear where Year = @P_Year";
         const string supporterQuarterSQL = "select * from tbl_royale_supportedquarter where Year = @P_Year and Quarter = @P_Quarter;";
@@ -113,7 +104,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                                     join tbl_user on tbl_user.UserID = tbl_royale_publisher.UserID
                                     where Year = @P_Year and Quarter = @P_Quarter;
                                     """;
-
+        const string masterGameTagSQL = "select * from tbl_mastergame_tag;";
 
         var param = new
         {
@@ -127,6 +118,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var supportedQuarterEntity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(supporterQuarterSQL, param);
         var publisherEntities = await connection.QueryAsync<RoyalePublisherEntity>(publisherSQL, param);
         var publisherGameEntities = await connection.QueryAsync<RoyalePublisherGameEntity>(publisherGameSQL, param);
+        var masterGameTagEntities = await connection.QueryAsync<MasterGameTagEntity>(masterGameTagSQL);
 
         if (supportedYearEntity is null || supportedQuarterEntity is null)
         {
@@ -159,7 +151,10 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             domainPublishers.Add(domain);
         }
 
-        return new RoyaleYearQuarterData(royaleQuarter, domainPublishers, );
+        var previousWinners = await GetRoyaleWinners();
+
+        var tags = masterGameTagEntities.Select(x => x.ToDomain()).ToList();
+        return new RoyaleYearQuarterData(royaleQuarter, domainPublishers, previousWinners, tags);
     }
 
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
