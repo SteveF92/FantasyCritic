@@ -31,8 +31,11 @@ internal class RoyalePublisherEntity
     public string? PublisherSlogan { get; set; }
     public decimal Budget { get; set; }
 
-    public RoyalePublisher ToDomain(RoyaleYearQuarter royaleYearQuarter, VeryMinimalFantasyCriticUser user, IEnumerable<RoyalePublisherGame> publisherGames)
+    public string PublisherDisplayName { get; set; } = null!;
+
+    public RoyalePublisher ToDomain(RoyaleYearQuarter royaleYearQuarter, IEnumerable<RoyalePublisherGame> publisherGames)
     {
+        var user = new VeryMinimalFantasyCriticUser(UserID, PublisherDisplayName);
         return new RoyalePublisher(PublisherID, royaleYearQuarter, user, PublisherName, PublisherIcon, PublisherSlogan, publisherGames, Budget);
     }
 }

@@ -103,6 +103,17 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     {
         const string supportedYearSQL = "select * from tbl_meta_supportedyear where Year = @P_Year";
         const string supporterQuarterSQL = "select * from tbl_royale_supportedquarter where Year = @P_Year and Quarter = @P_Quarter;";
+        const string publisherGameSQL = """
+                           SELECT * FROM tbl_royale_publishergame
+                           JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
+                           WHERE tbl_royale_publisher.Year = @P_Year AND tbl_royale_publisher.Quarter = @P_Quarter;
+                           """;
+        const string publisherSQL = """
+                                    select tbl_royale_publisher.*, tbl_user.DisplayName AS PublisherDisplayName from tbl_royale_publisher 
+                                    join tbl_user on tbl_user.UserID = tbl_royale_publisher.UserID
+                                    where Year = @P_Year and Quarter = @P_Quarter;
+                                    """;
+
 
         var param = new
         {
@@ -114,6 +125,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
         var supportedYearEntity = await connection.QuerySingleOrDefaultAsync<SupportedYearEntity>(supportedYearSQL, param);
         var supportedQuarterEntity = await connection.QuerySingleOrDefaultAsync<RoyaleYearQuarterEntity>(supporterQuarterSQL, param);
+        var publisherEntities = await connection.QueryAsync<RoyalePublisherEntity>(publisherSQL, param);
+        var publisherGameEntities = await connection.QueryAsync<RoyalePublisherGameEntity>(publisherGameSQL, param);
 
         if (supportedYearEntity is null || supportedQuarterEntity is null)
         {
@@ -122,14 +135,43 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
         var supportedYear = supportedYearEntity.ToDomain();
         var royaleQuarter = supportedQuarterEntity.ToDomain(supportedYear);
-        return new RoyaleYearQuarterData(royaleQuarter);
+
+        List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
+        foreach (var entity in publisherGameEntities)
+        {
+            var masterGameYear = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, royaleQuarter.YearQuarter.Year);
+            if (masterGameYear is null)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
+                masterGameYear = new MasterGameYear(masterGame, royaleQuarter.Year.Year);
+            }
+            var domain = entity.ToDomain(royaleQuarter, masterGameYear);
+            domainPublisherGames.Add(domain);
+        }
+
+        var publisherGameLookup = domainPublisherGames.ToLookup(x => x.PublisherID);
+
+        List<RoyalePublisher> domainPublishers = new List<RoyalePublisher>();
+        foreach (var entity in publisherEntities)
+        {
+            var gamesForPublisher = publisherGameLookup[entity.PublisherID];
+            var domain = entity.ToDomain(royaleQuarter, gamesForPublisher);
+            domainPublishers.Add(domain);
+        }
+
+        return new RoyaleYearQuarterData(royaleQuarter, domainPublishers, );
     }
 
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
     {
-        const string sql = "select * from tbl_royale_publisher where PublisherID = @publisherID;";
+        const string publisherSQL = """
+                                    select tbl_royale_publisher.*, tbl_user.DisplayName AS PublisherDisplayName from tbl_royale_publisher
+                                    join tbl_user on tbl_user.UserID = tbl_royale_publisher.UserID
+                                    where PublisherID = @publisherID;
+                                    """;
+
         await using var connection = new MySqlConnection(_connectionString);
-        var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(sql,
+        var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(publisherSQL,
             new
             {
                 publisherID
@@ -139,10 +181,9 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             return null;
         }
 
-        var user = await _userStore.FindByIdAsync(entity.UserID.ToString(), CancellationToken.None);
         var yearQuarter = await GetYearQuarterOrThrow(entity.Year, entity.Quarter);
         var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
-        var domain = entity.ToDomain(yearQuarter, user!.ToVeryMinimal(), publisherGames);
+        var domain = entity.ToDomain(yearQuarter, publisherGames);
         return domain;
     }
 
@@ -158,9 +199,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var publisherGames = await GetAllPublisherGames(yearQuarter);
         var publisherGameLookup = publisherGames.ToLookup(x => x.PublisherID);
 
-        const string sql = "select * from tbl_royale_publisher where Year = @year and Quarter = @quarter";
+        const string publisherSQL = """
+                                    select tbl_royale_publisher.*, tbl_user.DisplayName AS PublisherDisplayName from tbl_royale_publisher
+                                    join tbl_user on tbl_user.UserID = tbl_royale_publisher.UserID
+                                    where Year = @year and Quarter = @quarter;
+                                    """;
         await using var connection = new MySqlConnection(_connectionString);
-        var entities = await connection.QueryAsync<RoyalePublisherEntity>(sql, new { year, quarter });
+        var entities = await connection.QueryAsync<RoyalePublisherEntity>(publisherSQL, new { year, quarter });
 
         List<RoyalePublisher> domainPublishers = new List<RoyalePublisher>();
         foreach (var entity in entities)
@@ -173,7 +218,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
             var gamesForPublisher = publisherGameLookup[entity.PublisherID];
 
-            var domain = entity.ToDomain(yearQuarter, user.ToVeryMinimal(), gamesForPublisher);
+            var domain = entity.ToDomain(yearQuarter, gamesForPublisher);
             domainPublishers.Add(domain);
         }
 
@@ -194,12 +239,14 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     private async Task<IReadOnlyList<RoyalePublisherGame>> GetAllPublisherGames(RoyaleYearQuarter yearQuarter)
     {
-        const string sql = "SELECT * FROM tbl_royale_publishergame " +
-                           "JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID " +
-                           "WHERE tbl_royale_publisher.Year = @year AND tbl_royale_publisher.Quarter = @quarter; ";
+        const string publisherGameSQL = """
+                                        SELECT * FROM tbl_royale_publishergame
+                                        JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
+                                        WHERE tbl_royale_publisher.Year = @year AND tbl_royale_publisher.Quarter = @quarter;
+                                        """;
 
         await using var connection = new MySqlConnection(_connectionString);
-        var entities = await connection.QueryAsync<RoyalePublisherGameEntity>(sql,
+        var entities = await connection.QueryAsync<RoyalePublisherGameEntity>(publisherGameSQL,
             new
             {
                 year = yearQuarter.YearQuarter.Year,
