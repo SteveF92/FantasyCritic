@@ -65,7 +65,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var myGameNewsEntities = resultSets.Read<MyGameNewsEntity>();
         var publicLeagueEntities = resultSets.Read<PublicLeagueYearStatsEntity>();
         var activeRoyaleYearQuarterEntity = resultSets.ReadSingle<RoyaleYearQuarterEntity>();
-        var currentSupportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
         var activeUserRoyalePublisherID = resultSets.ReadSingleOrDefault<Guid>();
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
@@ -129,8 +128,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var publicLeagueYears = publicLeagueEntities.Select(x => x.ToDomain()).ToList();
 
         //Active Royale Quarter
-        var supportedYear = currentSupportedYearEntity.ToDomain();
-        var activeRoyaleQuarter = activeRoyaleYearQuarterEntity.ToDomain(supportedYear);
+        var activeRoyaleQuarter = activeRoyaleYearQuarterEntity.ToDomain();
 
         return new HomePageData(leaguesWithStatus, myInvites, myConferences, topBidsAndDropsData, publicLeagueYears, myGameNews, activeRoyaleQuarter, activeUserRoyalePublisherID);
     }

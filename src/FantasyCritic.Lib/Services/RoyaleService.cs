@@ -82,7 +82,7 @@ public class RoyaleService
     public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year)
     {
         var quarters = await GetYearQuarters();
-        var quartersInYear = quarters.Where(x => x.Year.Year == year);
+        var quartersInYear = quarters.Where(x => x.YearQuarter.Year == year);
 
         List<RoyalePublisher> allPublishers = new List<RoyalePublisher>();
         foreach (var quarter in quartersInYear)
@@ -253,14 +253,10 @@ public class RoyaleService
         await _royaleRepo.UpdateFantasyPoints(publisherGameScores);
     }
 
-    public Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(IVeryMinimalFantasyCriticUser user)
+    public async Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(IVeryMinimalFantasyCriticUser user)
     {
-        return _royaleRepo.GetQuartersWonByUser(user);
-    }
-
-    public Task<IReadOnlyDictionary<VeryMinimalFantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
-    {
-        return _royaleRepo.GetRoyaleWinners();
+        var quarters = await _royaleRepo.GetYearQuarters();
+        return quarters.Where(x => x.WinningUser is not null && x.WinningUser.UserID == user.UserID).ToList();
     }
 
     public Task StartNewQuarter(YearQuarter nextQuarter)

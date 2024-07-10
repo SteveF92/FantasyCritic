@@ -104,7 +104,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -124,7 +124,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -144,7 +144,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -213,10 +213,11 @@ public class RoyaleController : FantasyCriticController
 
         var currentUser = await GetCurrentUser();
 
-        var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.YearQuarter);
+        var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.ActiveYearQuarter);
         RoyalePublisherViewModel? userRoyalePublisherViewModel = null;
         var currentDate = _clock.GetToday();
 
+        var previousWinnersByUser = royaleData.AllYearQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
         var publishersToShow = royaleData.RoyalePublishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
         int ranking = 1;
         List<RoyalePublisherViewModel> publisherViewModels = new List<RoyalePublisherViewModel>();
@@ -229,7 +230,7 @@ public class RoyaleController : FantasyCriticController
                 ranking++;
             }
 
-            var winningQuarters = royaleData.PreviousWinners.GetValueOrDefault(publisher.User, new List<RoyaleYearQuarter>());
+            var winningQuarters = previousWinnersByUser[publisher.User];
             bool thisPlayerIsViewing = false;
             if (currentUser.IsSuccess)
             {
@@ -264,7 +265,8 @@ public class RoyaleController : FantasyCriticController
         int ranking = 1;
         List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        IReadOnlyDictionary<VeryMinimalFantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
+        var previousQuarters = await _royaleService.GetYearQuarters();
+        var previousWinnersByUser = previousQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
         var currentUserResult = await GetCurrentUser();
         foreach (var publisher in publishersToShow)
         {
@@ -275,7 +277,7 @@ public class RoyaleController : FantasyCriticController
                 ranking++;
             }
 
-            var winningQuarters = previousWinners.GetValueOrDefault(publisher.User, new List<RoyaleYearQuarter>());
+            var winningQuarters = previousWinnersByUser[publisher.User];
             bool thisPlayerIsViewing = false;
             if (currentUserResult.IsSuccess)
             {
@@ -302,7 +304,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -337,7 +339,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -376,7 +378,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }

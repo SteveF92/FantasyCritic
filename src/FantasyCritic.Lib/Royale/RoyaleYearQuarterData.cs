@@ -1,6 +1,3 @@
-using FantasyCritic.Lib.Identity;
-
 namespace FantasyCritic.Lib.Royale;
 
-public record RoyaleYearQuarterData(RoyaleYearQuarter YearQuarter, IReadOnlyList<RoyalePublisher> RoyalePublishers,
-    IReadOnlyDictionary<VeryMinimalFantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> PreviousWinners, IReadOnlyList<MasterGameTag> MasterGameTags);
+public record RoyaleYearQuarterData(IReadOnlyList<RoyaleYearQuarter> AllYearQuarters, RoyaleYearQuarter ActiveYearQuarter, IReadOnlyList<RoyalePublisher> RoyalePublishers, IReadOnlyList<MasterGameTag> MasterGameTags);

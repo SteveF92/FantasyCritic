@@ -1,19 +1,21 @@
+using FantasyCritic.Lib.Identity;
+
 namespace FantasyCritic.Lib.Royale;
 
 public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<RoyaleYearQuarter>
 {
-    public RoyaleYearQuarter(SupportedYear year, YearQuarter yearQuarter, bool openForPlay, bool finished)
+    public RoyaleYearQuarter(YearQuarter yearQuarter, bool openForPlay, bool finished, VeryMinimalFantasyCriticUser? winningUser)
     {
-        Year = year;
         YearQuarter = yearQuarter;
         OpenForPlay = openForPlay;
         Finished = finished;
+        WinningUser = winningUser;
     }
 
-    public SupportedYear Year { get; }
     public YearQuarter YearQuarter { get; }
     public bool OpenForPlay { get; }
     public bool Finished { get; }
+    public VeryMinimalFantasyCriticUser? WinningUser { get; }
 
     public bool HasReleaseDateLimit
     {
