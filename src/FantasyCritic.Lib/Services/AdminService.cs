@@ -206,6 +206,17 @@ public class AdminService
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
         }
 
+        foreach (var supportedQuarter in supportedQuarters)
+        {
+            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
+            if (!readyToCalculateWinners)
+            {
+                continue;
+            }
+
+            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
+        }
+
         _logger.Information("Done updating royale fantasy points");
     }
 

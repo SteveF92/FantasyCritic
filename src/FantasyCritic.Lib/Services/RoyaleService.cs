@@ -268,4 +268,9 @@ public class RoyaleService
     {
         return _royaleRepo.FinishQuarter(supportedQuarter);
     }
+
+    public Task CalculateRoyaleWinnerForQuarter(RoyaleYearQuarter supportedQuarter)
+    {
+        return _royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
+    }
 }

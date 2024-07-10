@@ -375,9 +375,9 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await transaction.CommitAsync();
     }
 
-    public async Task<VeryMinimalFantasyCriticUser?> CalculateRoyaleWinnerForQuarter(int year, int quarter)
+    public async Task CalculateRoyaleWinnerForQuarter(int year, int quarter)
     {
-        const string sql =
+        const string calculateSQL =
             """
             SELECT tbl_royale_publisher.PublisherID, tbl_royale_publisher.UserID, tbl_user.DisplayName, SUM(FantasyPoints) AS TotalFantasyPoints FROM tbl_royale_publisher
             JOIN tbl_royale_publishergame ON tbl_royale_publisher.PublisherID = tbl_royale_publishergame.PublisherID
@@ -388,14 +388,26 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             LIMIT 1;
             """;
 
+        const string updateSQL =
+            """
+            UPDATE tbl_royale_supportedquarter SET WinningUser = @winningUserID WHERE Year = @year AND Quarter = @quarter AND WinningUser is NULL;
+            """;
+
         await using var connection = new MySqlConnection(_connectionString);
-        var result = await connection.QuerySingleOrDefaultAsync<RoyaleStandingsEntity>(sql);
+        var result = await connection.QuerySingleOrDefaultAsync<RoyaleStandingsEntity>(calculateSQL);
         if (result is null)
         {
-            return null;
+            return;
         }
 
-        return new VeryMinimalFantasyCriticUser(result.UserID, result.DisplayName);
+        var updateParam = new
+        {
+            year,
+            quarter,
+            winningUserID = result.UserID
+        };
+
+        await connection.ExecuteAsync(updateSQL, updateParam);
     }
 
     public async Task StartNewQuarter(YearQuarter nextQuarter)

@@ -16,7 +16,7 @@ public interface IRoyaleRepo
     Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter);
     Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores);
     Task ChangePublisherName(RoyalePublisher publisher, string publisherName);
-    Task<VeryMinimalFantasyCriticUser?> CalculateRoyaleWinnerForQuarter(int year, int quarter);
+    Task CalculateRoyaleWinnerForQuarter(int year, int quarter);
     Task StartNewQuarter(YearQuarter nextQuarter);
     Task FinishQuarter(RoyaleYearQuarter supportedQuarter);
     Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon);
