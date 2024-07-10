@@ -1,9 +1,6 @@
 ALTER TABLE `tbl_royale_supportedquarter`
 	ADD COLUMN `WinningUser` CHAR(36) NULL DEFAULT NULL AFTER `Finished`;
 
-ALTER TABLE `tbl_royale_publisher`
-	ADD UNIQUE INDEX `UNQ_Publisher` (`UserID`, `Year`, `Quarter`);
-
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
 -- Server version:               8.0.28 - MySQL Community Server - GPL
