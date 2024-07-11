@@ -393,8 +393,15 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             UPDATE tbl_royale_supportedquarter SET WinningUser = @winningUserID WHERE Year = @year AND Quarter = @quarter AND WinningUser is NULL;
             """;
 
+        var calculateParam = new
+        {
+            year,
+            quarter
+        };
+
+
         await using var connection = new MySqlConnection(_connectionString);
-        var result = await connection.QuerySingleOrDefaultAsync<RoyaleStandingsEntity>(calculateSQL);
+        var result = await connection.QuerySingleOrDefaultAsync<RoyaleStandingsEntity>(calculateSQL, calculateParam);
         if (result is null)
         {
             return;

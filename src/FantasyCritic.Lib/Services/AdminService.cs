@@ -206,17 +206,6 @@ public class AdminService
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
         }
 
-        foreach (var supportedQuarter in supportedQuarters)
-        {
-            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
-            if (!readyToCalculateWinners)
-            {
-                continue;
-            }
-
-            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
-        }
-
         _logger.Information("Done updating royale fantasy points");
     }
 
@@ -227,6 +216,21 @@ public class AdminService
         IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(mostRecentFinishedYear.Year);
         var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(mostRecentFinishedYear.Year, leagueYears, true);
         await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, true);
+    }
+
+    public async Task RecalculateRoyaleWinners()
+    {
+        var supportedQuarters = await _royaleService.GetYearQuarters();
+        foreach (var supportedQuarter in supportedQuarters)
+        {
+            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
+            if (!readyToCalculateWinners)
+            {
+                continue;
+            }
+
+            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
+        }
     }
 
     public async Task RefreshCaches()
@@ -315,6 +319,18 @@ public class AdminService
                 _logger.Information($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
                 await _royaleService.FinishQuarter(supportedQuarter);
             }
+        }
+
+        supportedQuarters = await _royaleService.GetYearQuarters();
+        foreach (var supportedQuarter in supportedQuarters)
+        {
+            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
+            if (!readyToCalculateWinners)
+            {
+                continue;
+            }
+
+            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
         }
 
         var latestQuarter = supportedQuarters.WhereMax(x => x.YearQuarter).Single();
