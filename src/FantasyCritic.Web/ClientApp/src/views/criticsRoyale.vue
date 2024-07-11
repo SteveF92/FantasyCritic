@@ -236,6 +236,7 @@ export default {
     },
     async fetchRoyaleData() {
       const response = await axios.get(`/api/Royale/RoyaleData/${this.year}/${this.quarter}`);
+      this.royaleYearQuarterOptions = response.data.royaleYearQuarters;
       this.royaleYearQuarter = response.data.royaleYearQuarter;
       this.royaleStandings = response.data.royaleStandings;
       this.userRoyalePublisher = response.data.userRoyalePublisher;

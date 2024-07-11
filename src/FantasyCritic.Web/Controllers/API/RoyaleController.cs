@@ -213,6 +213,7 @@ public class RoyaleController : FantasyCriticController
 
         var currentUser = await GetCurrentUser();
 
+        var allRoyaleYearQuarters = royaleData.AllYearQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
         var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.ActiveYearQuarter);
         RoyalePublisherViewModel? userRoyalePublisherViewModel = null;
         var currentDate = _clock.GetToday();
@@ -248,6 +249,7 @@ public class RoyaleController : FantasyCriticController
 
         var vm = new
         {
+            RoyaleYearQuarters = allRoyaleYearQuarters,
             RoyaleYearQuarter = royaleYearQuarterViewModel,
             UserRoyalePublisher = userRoyalePublisherViewModel,
             RoyaleStandings = publisherViewModels
