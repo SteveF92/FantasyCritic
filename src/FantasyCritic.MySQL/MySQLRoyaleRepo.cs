@@ -1,3 +1,4 @@
+using System.Data;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -13,14 +14,12 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     private readonly string _connectionString;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly IMasterGameRepo _masterGameRepo;
-    private readonly IFantasyCriticRepo _fantasyCriticRepo;
 
-    public MySQLRoyaleRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo, IFantasyCriticRepo fantasyCriticRepo)
+    public MySQLRoyaleRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo)
     {
         _connectionString = configuration.ConnectionString;
         _userStore = userStore;
         _masterGameRepo = masterGameRepo;
-        _fantasyCriticRepo = fantasyCriticRepo;
     }
 
     public async Task CreatePublisher(RoyalePublisher publisher)
@@ -92,24 +91,6 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter)
     {
-        const string supportedQuartersSQL = """
-                            select tbl_royale_supportedquarter.*, tbl_user.DisplayName as WinningUserDisplayName
-                            from tbl_royale_supportedquarter
-                            LEFT JOIN tbl_user on tbl_royale_supportedquarter.WinningUser = tbl_user.UserID
-                            ORDER BY Year, Quarter;
-                           """;
-        const string publisherGameSQL = """
-                           SELECT * FROM tbl_royale_publishergame
-                           JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
-                           WHERE tbl_royale_publisher.Year = @P_Year AND tbl_royale_publisher.Quarter = @P_Quarter;
-                           """;
-        const string publisherSQL = """
-                                    select tbl_royale_publisher.*, tbl_user.DisplayName AS PublisherDisplayName from tbl_royale_publisher 
-                                    join tbl_user on tbl_user.UserID = tbl_royale_publisher.UserID
-                                    where Year = @P_Year and Quarter = @P_Quarter;
-                                    """;
-        const string masterGameTagSQL = "select * from tbl_mastergame_tag;";
-
         var param = new
         {
             P_Year = year,
@@ -117,11 +98,19 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getroyaleyearquarterdata", param, commandType: CommandType.StoredProcedure);
+        var supportedQuarterEntities = resultSets.Read<RoyaleYearQuarterEntity>();
+        var publisherEntities = resultSets.Read<RoyalePublisherEntity>();
+        var publisherGameEntities = resultSets.Read<RoyalePublisherGameEntity>();
 
-        var supportedQuarterEntities = await connection.QueryAsync<RoyaleYearQuarterEntity>(supportedQuartersSQL);
-        var publisherEntities = await connection.QueryAsync<RoyalePublisherEntity>(publisherSQL, param);
-        var publisherGameEntities = await connection.QueryAsync<RoyalePublisherGameEntity>(publisherGameSQL, param);
-        var masterGameTagEntities = await connection.QueryAsync<MasterGameTagEntity>(masterGameTagSQL);
+        //MasterGame Results
+        var tagResults = resultSets.Read<MasterGameTagEntity>();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
+        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
+
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
 
         var supportedQuarters = supportedQuarterEntities.Select(x => x.ToDomain()).ToList();
         var activeRoyaleQuarter = supportedQuarters.SingleOrDefault(x => x.YearQuarter.Year == year && x.YearQuarter.Quarter == quarter);
@@ -130,15 +119,23 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             return null;
         }
 
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
+        var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
+        var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+
+        var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
+        foreach (var entity in masterGameYearResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
+        }
+
         List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
         foreach (var entity in publisherGameEntities)
         {
-            var masterGameYear = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, activeRoyaleQuarter.YearQuarter.Year);
-            if (masterGameYear is null)
-            {
-                var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
-                masterGameYear = new MasterGameYear(masterGame, activeRoyaleQuarter.YearQuarter.Year);
-            }
+            var masterGameYear = masterGameYearDictionary[entity.MasterGameID];
             var domain = entity.ToDomain(activeRoyaleQuarter, masterGameYear);
             domainPublisherGames.Add(domain);
         }
@@ -153,8 +150,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             domainPublishers.Add(domain);
         }
 
-        var tags = masterGameTagEntities.Select(x => x.ToDomain()).ToList();
-        return new RoyaleYearQuarterData(supportedQuarters, activeRoyaleQuarter, domainPublishers, tags);
+        return new RoyaleYearQuarterData(supportedQuarters, activeRoyaleQuarter, domainPublishers, possibleTags.Values.ToList());
     }
 
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
