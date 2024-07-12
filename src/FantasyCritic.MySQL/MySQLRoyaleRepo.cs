@@ -136,7 +136,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         foreach (var entity in publisherGameEntities)
         {
             var masterGameYear = masterGameYearDictionary[entity.MasterGameID];
-            var domain = entity.ToDomain(activeRoyaleQuarter, masterGameYear);
+            var domain = entity.ToDomain(activeRoyaleQuarter.YearQuarter, masterGameYear);
             domainPublisherGames.Add(domain);
         }
 
@@ -155,27 +155,58 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
     {
-        const string publisherSQL = """
-                                    select tbl_royale_publisher.*, tbl_user.DisplayName AS PublisherDisplayName from tbl_royale_publisher
-                                    join tbl_user on tbl_user.UserID = tbl_royale_publisher.UserID
-                                    where PublisherID = @publisherID;
-                                    """;
+        var param = new
+        {
+            P_PublisherID = publisherID
+        };
 
         await using var connection = new MySqlConnection(_connectionString);
-        var entity = await connection.QuerySingleOrDefaultAsync<RoyalePublisherEntity>(publisherSQL,
-            new
-            {
-                publisherID
-            });
-        if (entity is null)
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getroyalepublisher", param, commandType: CommandType.StoredProcedure);
+
+        var supportedQuarterEntities = resultSets.Read<RoyaleYearQuarterEntity>();
+        var publisherEntity = resultSets.ReadSingleOrDefault<RoyalePublisherEntity>();
+        if (publisherEntity is null)
         {
             return null;
         }
 
-        var yearQuarter = await GetYearQuarterOrThrow(entity.Year, entity.Quarter);
-        var publisherGames = await GetGamesForPublisher(entity.PublisherID, yearQuarter);
-        var domain = entity.ToDomain(yearQuarter, publisherGames);
-        return domain;
+        var publisherGameEntities = resultSets.Read<RoyalePublisherGameEntity>();
+
+        //MasterGame Results
+        var tagResults = resultSets.Read<MasterGameTagEntity>();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
+        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
+
+        await resultSets.DisposeAsync();
+        await connection.DisposeAsync();
+
+        var supportedQuarters = supportedQuarterEntities.Select(x => x.ToDomain()).ToList();
+        var quarterForPublisher = supportedQuarters.Single(x => x.YearQuarter.Year == publisherEntity.Year && x.YearQuarter.Quarter == publisherEntity.Quarter);
+
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
+        var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
+        var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+
+        var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
+        foreach (var entity in masterGameYearResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
+        }
+
+        List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
+        foreach (var entity in publisherGameEntities)
+        {
+            var masterGameYear = masterGameYearDictionary[entity.MasterGameID];
+            var domain = entity.ToDomain(quarterForPublisher.YearQuarter, masterGameYear);
+            domainPublisherGames.Add(domain);
+        }
+
+        var domainPublisher = publisherEntity.ToDomain(quarterForPublisher, domainPublisherGames);
+        return domainPublisher;
     }
 
     public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
@@ -252,7 +283,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
                 masterGameYear = new MasterGameYear(masterGame, yearQuarter.YearQuarter.Year);
             }
-            var domain = entity.ToDomain(yearQuarter, masterGameYear);
+            var domain = entity.ToDomain(yearQuarter.YearQuarter, masterGameYear);
             domains.Add(domain);
         }
         return domains;
@@ -331,7 +362,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
                 masterGameYear = new MasterGameYear(masterGame, yearQuarter.YearQuarter.Year);
             }
-            var domain = entity.ToDomain(yearQuarter, masterGameYear);
+            var domain = entity.ToDomain(yearQuarter.YearQuarter, masterGameYear);
             domains.Add(domain);
         }
         return domains;

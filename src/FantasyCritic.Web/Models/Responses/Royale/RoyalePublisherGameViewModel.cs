@@ -4,17 +4,16 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 
 public class RoyalePublisherGameViewModel
 {
-    public RoyalePublisherGameViewModel(RoyalePublisherGame domain, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing)
+    public RoyalePublisherGameViewModel(RoyalePublisherGame domain, RoyaleYearQuarter yearQuarter, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing)
     {
         PublisherID = domain.PublisherID;
-        YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
         Locked = domain.IsLocked(currentDate, allMasterGameTags);
         AdvertisingMoney = domain.AdvertisingMoney;
         FantasyPoints = domain.FantasyPoints;
         CurrentlyIneligible = domain.CalculateIsCurrentlyIneligible(allMasterGameTags);
         Timestamp = domain.Timestamp;
-        GameHidden = domain.IsHidden(currentDate);
-        if (!domain.IsHidden(currentDate) || thisPlayerIsViewing)
+        GameHidden = domain.IsHidden(yearQuarter, currentDate);
+        if (!domain.IsHidden(yearQuarter, currentDate) || thisPlayerIsViewing)
         {
             MasterGame = new MasterGameYearViewModel(domain.MasterGame, currentDate);
             AmountSpent = domain.AmountSpent;
@@ -27,7 +26,6 @@ public class RoyalePublisherGameViewModel
     }
 
     public Guid PublisherID { get; }
-    public RoyaleYearQuarterViewModel YearQuarter { get; }
     public bool GameHidden { get; }
     public MasterGameYearViewModel? MasterGame { get; }
     public bool Locked { get; }

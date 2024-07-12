@@ -164,7 +164,7 @@ public class RoyaleService
             return new ClaimResult("Not enough budget.");
         }
 
-        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
+        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter.YearQuarter, masterGame, now, gameCost, 0m, null);
         await _royaleRepo.PurchaseGame(game);
         var nextSlot = publisher.PublisherGames.Count;
         return new ClaimResult(nextSlot);

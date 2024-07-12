@@ -14,7 +14,7 @@ public class RoyalePublisherViewModel
         PublisherName = domain.PublisherName;
         PublisherIcon = domain.PublisherIcon;
         PublisherSlogan = domain.PublisherSlogan;
-        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, currentDate, allMasterGameTags, thisPlayerIsViewing)).ToList();
+        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, domain.YearQuarter, currentDate, allMasterGameTags, thisPlayerIsViewing)).ToList();
         Budget = domain.Budget;
         TotalFantasyPoints = domain.GetTotalFantasyPoints();
         if (TotalFantasyPoints > 0)
