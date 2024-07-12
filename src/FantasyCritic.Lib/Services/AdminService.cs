@@ -218,6 +218,21 @@ public class AdminService
         await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, true);
     }
 
+    public async Task RecalculateRoyaleWinners()
+    {
+        var supportedQuarters = await _royaleService.GetYearQuarters();
+        foreach (var supportedQuarter in supportedQuarters)
+        {
+            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
+            if (!readyToCalculateWinners)
+            {
+                continue;
+            }
+
+            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
+        }
+    }
+
     public async Task RefreshCaches()
     {
         _logger.Information("Refreshing caches");
@@ -304,6 +319,18 @@ public class AdminService
                 _logger.Information($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
                 await _royaleService.FinishQuarter(supportedQuarter);
             }
+        }
+
+        supportedQuarters = await _royaleService.GetYearQuarters();
+        foreach (var supportedQuarter in supportedQuarters)
+        {
+            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
+            if (!readyToCalculateWinners)
+            {
+                continue;
+            }
+
+            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
         }
 
         var latestQuarter = supportedQuarters.WhereMax(x => x.YearQuarter).Single();

@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Domain.Results;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
@@ -42,7 +41,7 @@ public class RoyaleService
         return requestedQuarter;
     }
 
-    public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, FantasyCriticUser user, string publisherName)
+    public async Task<RoyalePublisher> CreatePublisher(RoyaleYearQuarter yearQuarter, VeryMinimalFantasyCriticUser user, string publisherName)
     {
         RoyalePublisher publisher = new RoyalePublisher(Guid.NewGuid(), yearQuarter, user, publisherName, null, null, new List<RoyalePublisherGame>(), 100m);
         await _royaleRepo.CreatePublisher(publisher);
@@ -69,9 +68,15 @@ public class RoyaleService
         return _royaleRepo.GetPublisher(yearQuarter, user);
     }
 
-    public Task<RoyalePublisher?> GetPublisher(Guid publisherID)
+    public Task<RoyalePublisherData?> GetPublisherData(Guid publisherID)
     {
-        return _royaleRepo.GetPublisher(publisherID);
+        return _royaleRepo.GetPublisherData(publisherID);
+    }
+
+    public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
+    {
+        var publisherData = await _royaleRepo.GetPublisherData(publisherID);
+        return publisherData?.RoyalePublisher;
     }
 
     public Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)
@@ -82,7 +87,7 @@ public class RoyaleService
     public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year)
     {
         var quarters = await GetYearQuarters();
-        var quartersInYear = quarters.Where(x => x.Year.Year == year);
+        var quartersInYear = quarters.Where(x => x.YearQuarter.Year == year);
 
         List<RoyalePublisher> allPublishers = new List<RoyalePublisher>();
         foreach (var quarter in quartersInYear)
@@ -94,14 +99,9 @@ public class RoyaleService
         return allPublishers;
     }
 
-    public async Task<IReadOnlyList<MasterGameYear>> GetMasterGamesForYearQuarter(YearQuarter yearQuarter)
+    public Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter)
     {
-        IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year);
-
-        masterGameYears = masterGameYears.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate >= yearQuarter.FirstDateOfQuarter);
-        masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false));
-
-        return masterGameYears.ToList();
+        return _royaleRepo.GetRoyaleYearQuarterData(year, quarter);
     }
 
     public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
@@ -159,7 +159,7 @@ public class RoyaleService
             return new ClaimResult("Not enough budget.");
         }
 
-        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
+        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter.YearQuarter, masterGame, now, gameCost, 0m, null);
         await _royaleRepo.PurchaseGame(game);
         var nextSlot = publisher.PublisherGames.Count;
         return new ClaimResult(nextSlot);
@@ -248,14 +248,10 @@ public class RoyaleService
         await _royaleRepo.UpdateFantasyPoints(publisherGameScores);
     }
 
-    public Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(FantasyCriticUser user)
+    public async Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(IVeryMinimalFantasyCriticUser user)
     {
-        return _royaleRepo.GetQuartersWonByUser(user);
-    }
-
-    public Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>>> GetRoyaleWinners()
-    {
-        return _royaleRepo.GetRoyaleWinners();
+        var quarters = await _royaleRepo.GetYearQuarters();
+        return quarters.Where(x => x.WinningUser is not null && x.WinningUser.UserID == user.UserID).ToList();
     }
 
     public Task StartNewQuarter(YearQuarter nextQuarter)
@@ -266,5 +262,10 @@ public class RoyaleService
     public Task FinishQuarter(RoyaleYearQuarter supportedQuarter)
     {
         return _royaleRepo.FinishQuarter(supportedQuarter);
+    }
+
+    public Task CalculateRoyaleWinnerForQuarter(RoyaleYearQuarter supportedQuarter)
+    {
+        return _royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
     }
 }

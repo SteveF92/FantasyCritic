@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.MySQL.Entities;
@@ -8,9 +9,18 @@ internal class RoyaleYearQuarterEntity
     public int Quarter { get; set; }
     public bool OpenForPlay { get; set; }
     public bool Finished { get; set; }
+    public Guid? WinningUser { get; set; }
 
-    public RoyaleYearQuarter ToDomain(SupportedYear supportedYear)
+    public string? WinningUserDisplayName { get; set; }
+
+    public RoyaleYearQuarter ToDomain()
     {
-        return new RoyaleYearQuarter(supportedYear, new YearQuarter(Year, Quarter), OpenForPlay, Finished);
+        VeryMinimalFantasyCriticUser? winningUser = null;
+        if (WinningUser.HasValue)
+        {
+            winningUser = new VeryMinimalFantasyCriticUser(WinningUser.Value, WinningUserDisplayName!);
+        }
+
+        return new RoyaleYearQuarter(new YearQuarter(Year, Quarter), OpenForPlay, Finished, winningUser);
     }
 }

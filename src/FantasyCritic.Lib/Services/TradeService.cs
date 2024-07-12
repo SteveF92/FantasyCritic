@@ -118,13 +118,6 @@ public class TradeService
         return trades.OrderByDescending(x => x.ProposedTimestamp).ToList();
     }
 
-    public async Task<IReadOnlyList<Trade>> GetActiveTradesForLeague(LeagueYear leagueYear)
-    {
-        var allTrades = await GetTradesForLeague(leagueYear);
-        var activeTrades = allTrades.Where(x => x.Status.IsActive).ToList();
-        return activeTrades.OrderByDescending(x => x.ProposedTimestamp).ToList();
-    }
-
     public async Task<Result> RescindTrade(Trade trade)
     {
         if (!trade.Status.IsActive)

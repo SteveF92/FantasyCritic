@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.Lib.Identity;
 
-public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUser>, IMinimalFantasyCriticUser
+public class FantasyCriticUser : IdentityUser<Guid>, IMinimalFantasyCriticUser
 {
     public FantasyCriticUser()
     {
@@ -68,20 +68,26 @@ public class FantasyCriticUser : IdentityUser<Guid>, IEquatable<FantasyCriticUse
     public MinimalFantasyCriticUser ToMinimal() => new MinimalFantasyCriticUser(Id, UserName, Email);
     public VeryMinimalFantasyCriticUser ToVeryMinimal() => new VeryMinimalFantasyCriticUser(Id, UserName);
 
-    public bool Equals(FantasyCriticUser? other)
+    public virtual bool Equals(IVeryMinimalFantasyCriticUser? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Id.Equals(other.Id);
+        return UserID.Equals(other.UserID);
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? other)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((FantasyCriticUser)obj);
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+
+        if (other is not IVeryMinimalFantasyCriticUser otherUser)
+        {
+            return false;
+        }
+
+        return UserID.Equals(otherUser.UserID);
     }
+
 
     public override int GetHashCode()
     {

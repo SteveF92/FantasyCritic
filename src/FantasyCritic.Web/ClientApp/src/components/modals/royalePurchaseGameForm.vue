@@ -84,11 +84,11 @@ export default {
       return this.userRoyalePublisher.publisherGames.length;
     }
   },
-  mounted() {
-    this.searchGame();
+  async created() {
+    await this.searchGame();
   },
   methods: {
-    searchGame() {
+    async searchGame() {
       this.searched = false;
       this.searchedTop = false;
       this.purchaseResult = null;
@@ -100,20 +100,17 @@ export default {
       } else {
         apiString = '/api/royale/PossibleMasterGames?publisherID=' + this.userRoyalePublisher.publisherID;
       }
-      axios
-        .get(apiString)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.searched = true;
-          this.showingUnlistedField = false;
-          this.purchaseRoyaleGame = null;
-          if (!this.searchGameName) {
-            this.searchedTop = true;
-          }
-        })
-        .catch(() => {});
+
+      const response = await axios.get(apiString);
+      this.possibleMasterGames = response.data;
+      this.searched = true;
+      this.showingUnlistedField = false;
+      this.purchaseRoyaleGame = null;
+      if (!this.searchGameName) {
+        this.searchedTop = true;
+      }
     },
-    addGame() {
+    async addGame() {
       this.isBusy = true;
 
       let masterGameID = null;
@@ -126,35 +123,31 @@ export default {
         masterGameID: masterGameID
       };
 
-      axios
-        .post('/api/royale/PurchaseGame', request)
-        .then((response) => {
-          this.purchaseResult = response.data;
-          if (!this.purchaseResult.success) {
-            this.isBusy = false;
-            return;
-          }
+      const response = axios.post('/api/royale/PurchaseGame', request);
+      this.purchaseResult = response.data;
+      if (!this.purchaseResult.success) {
+        this.isBusy = false;
+        return;
+      }
 
-          let gameName = this.purchaseRoyaleGame.masterGame.gameName;
-          let purchaseCost = this.purchaseRoyaleGame.cost;
-          const purchaseInfo = {
-            gameName,
-            purchaseCost
-          };
-          this.$emit('gamePurchased', purchaseInfo);
-          this.clearData();
-          this.$refs.royalePurchaseGameFormRef.hide();
-        })
-        .catch(() => {});
+      let gameName = this.purchaseRoyaleGame.masterGame.gameName;
+      let purchaseCost = this.purchaseRoyaleGame.cost;
+      const purchaseInfo = {
+        gameName,
+        purchaseCost
+      };
+      this.$emit('gamePurchased', purchaseInfo);
+      await this.clearData();
+      this.$refs.royalePurchaseGameFormRef.hide();
     },
-    clearData() {
+    async clearData() {
       this.isBusy = false;
       this.searchGameName = null;
       this.purchaseRoyaleGame = null;
       this.purchaseResult = null;
       this.possibleMasterGames = [];
       this.searched = false;
-      this.searchGame();
+      await this.searchGame();
     },
     newGameSelected() {
       this.purchaseResult = null;

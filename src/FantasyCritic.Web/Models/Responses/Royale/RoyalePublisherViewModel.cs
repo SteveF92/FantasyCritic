@@ -9,12 +9,12 @@ public class RoyalePublisherViewModel
     {
         PublisherID = domain.PublisherID;
         YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
-        PlayerName = domain.User.UserName;
-        UserID = domain.User.Id;
+        PlayerName = domain.User.DisplayName;
+        UserID = domain.User.UserID;
         PublisherName = domain.PublisherName;
         PublisherIcon = domain.PublisherIcon;
         PublisherSlogan = domain.PublisherSlogan;
-        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, currentDate, allMasterGameTags, thisPlayerIsViewing)).ToList();
+        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, domain.YearQuarter, currentDate, allMasterGameTags, thisPlayerIsViewing)).ToList();
         Budget = domain.Budget;
         TotalFantasyPoints = domain.GetTotalFantasyPoints();
         if (TotalFantasyPoints > 0)

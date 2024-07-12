@@ -24,7 +24,7 @@
       <h1>Critics Royale</h1>
     </div>
 
-    <div v-if="!userPublisherBusy && !userRoyalePublisher && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
+    <div v-if="!userPublisherBusy && !userRoyalePublisherID && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
       <div v-if="isAuth" class="alert alert-info">
         Create your publisher to start playing!
         <b-button v-b-modal="'createRoyalePublisher'" class="login-button" variant="primary">Create Publisher</b-button>
@@ -45,7 +45,7 @@
 
     <div class="leaderboard-header">
       <h2>Leaderboards {{ year }}-Q{{ quarter }}</h2>
-      <b-button v-if="royaleStandings && userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }">View My Publisher</b-button>
+      <b-button v-if="royaleStandings && userRoyalePublisherID" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisherID } }">View My Publisher</b-button>
     </div>
 
     <div v-if="royaleStandings">
@@ -170,7 +170,7 @@ export default {
       perPage: 10,
       currentPage: 1,
       selectedYear: null,
-      userRoyalePublisher: null,
+      userRoyalePublisherID: null,
       royaleYearQuarter: null,
       royaleYearQuarterOptions: null,
       royaleStandings: null,
@@ -213,8 +213,8 @@ export default {
   },
   methods: {
     async initializePage() {
-      await this.fetchRoyaleQuarters();
       if (!this.year || !this.quarter) {
+        await this.fetchRoyaleQuarters();
         const mostRecentQuarter = this.royaleYearQuarterOptions[this.royaleYearQuarterOptions.length - 1];
         const parameters = {
           year: mostRecentQuarter.year.toString(),
@@ -225,49 +225,22 @@ export default {
       }
 
       this.selectedYear = this.year;
-      await Promise.all([this.fetchRoyaleYearQuarter(), this.fetchUserRoyalePublisher(), this.fetchRoyaleStandings()]);
+      await this.fetchRoyaleData();
     },
     selectYear(year) {
       this.selectedYear = year;
     },
-    fetchRoyaleQuarters() {
-      return axios
-        .get('/api/royale/RoyaleQuarters')
-        .then((response) => {
-          this.royaleYearQuarterOptions = response.data;
-        })
-        .catch(() => {});
+    async fetchRoyaleQuarters() {
+      const response = await axios.get('/api/Royale/RoyaleQuarters');
+      this.royaleYearQuarterOptions = response.data;
     },
-    fetchRoyaleYearQuarter() {
-      this.royaleYearQuarter = null;
-      return axios
-        .get('/api/royale/RoyaleQuarter/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.royaleYearQuarter = response.data;
-        })
-        .catch(() => {});
-    },
-    fetchRoyaleStandings() {
-      this.royaleStandings = null;
-      return axios
-        .get('/api/royale/RoyaleStandings/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.royaleStandings = response.data;
-        })
-        .catch(() => {});
-    },
-    fetchUserRoyalePublisher() {
-      this.userPublisherBusy = true;
-      this.userRoyalePublisher = null;
-      return axios
-        .get('/api/royale/GetUserRoyalePublisher/' + this.year + '/' + this.quarter)
-        .then((response) => {
-          this.userRoyalePublisher = response.data;
-          this.userPublisherBusy = false;
-        })
-        .catch(() => {
-          this.userPublisherBusy = false;
-        });
+    async fetchRoyaleData() {
+      const response = await axios.get(`/api/Royale/RoyaleData/${this.year}/${this.quarter}`);
+      this.royaleYearQuarterOptions = response.data.royaleYearQuarters;
+      this.royaleYearQuarter = response.data.royaleYearQuarter;
+      this.royaleStandings = response.data.royaleStandings;
+      this.userRoyalePublisherID = response.data.userRoyalePublisherID;
+      this.userPublisherBusy = false;
     }
   }
 };

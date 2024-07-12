@@ -445,16 +445,6 @@ public class FantasyCriticService
         return _fantasyCriticRepo.GetLeagueFollowers(league);
     }
 
-    public Task<bool> UserIsFollowingLeague(FantasyCriticUser? currentUser, League league)
-    {
-        if (currentUser is null)
-        {
-            return Task.FromResult(false);
-        }
-
-        return _fantasyCriticRepo.UserIsFollowingLeague(currentUser, league);
-    }
-
     public async Task<Result> FollowLeague(League league, FantasyCriticUser user)
     {
         if (!league.PublicLeague)
@@ -551,11 +541,6 @@ public class FantasyCriticService
         await _discordPushService.SendLeagueManagerAnnouncementMessage(leagueYear, message);
     }
 
-    public Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear)
-    {
-        return _fantasyCriticRepo.GetManagerMessages(leagueYear);
-    }
-
     public Task<Result> DeleteManagerMessage(LeagueYear leagueYear, Guid messageID)
     {
         return _fantasyCriticRepo.DeleteManagerMessage(leagueYear, messageID);
@@ -564,12 +549,6 @@ public class FantasyCriticService
     public Task<Result> DismissManagerMessage(Guid messageID, Guid userID)
     {
         return _fantasyCriticRepo.DismissManagerMessage(messageID, userID);
-    }
-
-    public Task<FantasyCriticUser?> GetPreviousYearWinner(LeagueYear leagueYear)
-    {
-        int previousYear = leagueYear.Year - 1;
-        return _fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, previousYear);
     }
 
     public Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year)

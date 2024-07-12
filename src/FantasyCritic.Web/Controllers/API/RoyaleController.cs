@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Royale;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -84,7 +85,7 @@ public class RoyaleController : FantasyCriticController
             return BadRequest();
         }
 
-        RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser, request.PublisherName);
+        RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser.ToVeryMinimal(), request.PublisherName);
         return Ok(publisher.PublisherID);
     }
 
@@ -104,7 +105,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -124,7 +125,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -144,7 +145,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -181,24 +182,77 @@ public class RoyaleController : FantasyCriticController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRoyalePublisher(Guid id)
     {
-        RoyalePublisher? publisher = await _royaleService.GetPublisher(id);
-        if (publisher is null)
+        RoyalePublisherData? publisherData = await _royaleService.GetPublisherData(id);
+        if (publisherData is null)
         {
             return NotFound();
         }
 
-        IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
+        var publisher = publisherData.RoyalePublisher;
+        var quartersWon = publisherData.QuartersWonByUser;
+        var masterGameTags = publisherData.MasterGameTags;
+
         var currentDate = _clock.GetToday();
-        var masterGameTags = await _interLeagueService.GetMasterGameTags();
         bool thisPlayerIsViewing = false;
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsSuccess)
         {
-            thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.Id;
+            thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
         }
 
         var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, thisPlayerIsViewing);
         return Ok(viewModel);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{year}/{quarter}")]
+    public async Task<IActionResult> RoyaleData(int year, int quarter)
+    {
+        var royaleData = await _royaleService.GetRoyaleYearQuarterData(year, quarter);
+        if (royaleData is null)
+        {
+            return NotFound();
+        }
+
+        var currentUser = await GetCurrentUser();
+
+        var allRoyaleYearQuarters = royaleData.AllYearQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
+        var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.ActiveYearQuarter);
+        Guid? userRoyalePublisherID = null;
+
+        var previousWinnersByUser = royaleData.AllYearQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
+        var publishersToShow = royaleData.RoyalePublishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
+        int ranking = 1;
+
+        List<RoyaleStandingsViewModel> publisherViewModels = new List<RoyaleStandingsViewModel>();
+        foreach (var publisher in publishersToShow)
+        {
+            int? thisRanking = null;
+            if (publisher.GetTotalFantasyPoints() > 0)
+            {
+                thisRanking = ranking;
+                ranking++;
+            }
+
+            var winningQuarters = previousWinnersByUser[publisher.User];
+            if (currentUser.IsSuccess && currentUser.Value.Id == publisher.User.UserID)
+            {
+                userRoyalePublisherID = publisher.PublisherID;
+            }
+
+            var publisherViewModel = new RoyaleStandingsViewModel(publisher, thisRanking, winningQuarters);
+            publisherViewModels.Add(publisherViewModel);
+        }
+
+        var vm = new
+        {
+            RoyaleYearQuarters = allRoyaleYearQuarters,
+            RoyaleYearQuarter = royaleYearQuarterViewModel,
+            UserRoyalePublisherID = userRoyalePublisherID,
+            RoyaleStandings = publisherViewModels
+        };
+
+        return Ok(vm);
     }
 
     [AllowAnonymous]
@@ -210,7 +264,8 @@ public class RoyaleController : FantasyCriticController
         int ranking = 1;
         List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
         var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<RoyaleYearQuarter>> previousWinners = await _royaleService.GetRoyaleWinners();
+        var previousQuarters = await _royaleService.GetYearQuarters();
+        var previousWinnersByUser = previousQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
         var currentUserResult = await GetCurrentUser();
         foreach (var publisher in publishersToShow)
         {
@@ -221,11 +276,11 @@ public class RoyaleController : FantasyCriticController
                 ranking++;
             }
 
-            var winningQuarters = previousWinners.GetValueOrDefault(publisher.User, new List<RoyaleYearQuarter>());
+            var winningQuarters = previousWinnersByUser[publisher.User];
             bool thisPlayerIsViewing = false;
             if (currentUserResult.IsSuccess)
             {
-                thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.Id;
+                thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
             }
 
             var currentDate = _clock.GetToday();
@@ -235,6 +290,7 @@ public class RoyaleController : FantasyCriticController
 
         return Ok(viewModels);
     }
+
 
     [HttpPost]
     public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
@@ -247,7 +303,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -282,7 +338,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -321,7 +377,7 @@ public class RoyaleController : FantasyCriticController
             return NotFound();
         }
 
-        if (!publisher.User.Equals(currentUser))
+        if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
         }
@@ -352,37 +408,35 @@ public class RoyaleController : FantasyCriticController
 
     public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string? gameName, Guid publisherID)
     {
-        RoyalePublisher? publisher = await _royaleService.GetPublisher(publisherID);
-        if (publisher is null)
+        RoyalePublisherData? publisherData = await _royaleService.GetPublisherData(publisherID);
+        if (publisherData is null)
         {
             return NotFound();
         }
 
-        var yearQuarter = await _royaleService.GetYearQuarter(publisher.YearQuarter.YearQuarter.Year, publisher.YearQuarter.YearQuarter.Quarter);
-        if (yearQuarter is null)
-        {
-            return BadRequest();
-        }
+        var publisher = publisherData.RoyalePublisher;
+        var masterGameTags = publisherData.MasterGameTags;
+        IReadOnlyList<MasterGameYear> masterGameYears = publisherData.MasterGameYears
+            .OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(publisher.YearQuarter.YearQuarter.Year), false))
+            .ToList();
 
         var currentDate = _clock.GetToday();
-        var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.YearQuarter);
         if (!string.IsNullOrWhiteSpace(gameName))
         {
-            masterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames, false);
+            masterGameYears = MasterGameSearching.SearchMasterGameYears(gameName, masterGameYears, false);
         }
         else
         {
-            masterGames = masterGames
-                .Where(x => x.CouldReleaseInQuarter(yearQuarter.YearQuarter))
+            masterGameYears = masterGameYears
+                .Where(x => x.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter))
                 .Where(x => !x.MasterGame.IsReleased(currentDate))
                 .Where(x => !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, x.MasterGame, currentDate).Any())
                 .Take(1000)
                 .ToList();
         }
 
-        var viewModels = masterGames.Select(masterGame =>
-            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, yearQuarter, publisher.PublisherGames.Any(y =>
+        var viewModels = masterGameYears.Select(masterGame =>
+            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher.YearQuarter, publisher.PublisherGames.Any(y =>
                 y.MasterGame.MasterGame.Equals(masterGame.MasterGame)), masterGameTags)).ToList();
         return viewModels;
     }

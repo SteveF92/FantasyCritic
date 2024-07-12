@@ -13,7 +13,7 @@ internal class RoyalePublisherEntity
     public RoyalePublisherEntity(RoyalePublisher domainRoyalePublisher)
     {
         PublisherID = domainRoyalePublisher.PublisherID;
-        UserID = domainRoyalePublisher.User.Id;
+        UserID = domainRoyalePublisher.User.UserID;
         Year = domainRoyalePublisher.YearQuarter.YearQuarter.Year;
         Quarter = domainRoyalePublisher.YearQuarter.YearQuarter.Quarter;
         PublisherName = domainRoyalePublisher.PublisherName;
@@ -31,8 +31,11 @@ internal class RoyalePublisherEntity
     public string? PublisherSlogan { get; set; }
     public decimal Budget { get; set; }
 
-    public RoyalePublisher ToDomain(RoyaleYearQuarter royaleYearQuarter, FantasyCriticUser user, IEnumerable<RoyalePublisherGame> publisherGames)
+    public string PublisherDisplayName { get; set; } = null!;
+
+    public RoyalePublisher ToDomain(RoyaleYearQuarter royaleYearQuarter, IEnumerable<RoyalePublisherGame> publisherGames)
     {
+        var user = new VeryMinimalFantasyCriticUser(UserID, PublisherDisplayName);
         return new RoyalePublisher(PublisherID, royaleYearQuarter, user, PublisherName, PublisherIcon, PublisherSlogan, publisherGames, Budget);
     }
 }

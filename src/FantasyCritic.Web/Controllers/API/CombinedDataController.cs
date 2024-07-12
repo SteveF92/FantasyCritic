@@ -103,6 +103,4 @@ public class CombinedDataController : FantasyCriticController
 
         return Ok(vm);
     }
-
-
 }
