@@ -185,6 +185,105 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure fantasycritic.sp_getroyalepublisher
+DROP PROCEDURE IF EXISTS `sp_getroyalepublisher`;
+DELIMITER //
+CREATE PROCEDURE `sp_getroyalepublisher`(
+	IN `P_PublisherID` CHAR(36)
+)
+BEGIN
+	SELECT tbl_royale_supportedquarter.*,
+	     tbl_user.DisplayName AS WinningUserDisplayName
+	FROM tbl_royale_supportedquarter
+	LEFT JOIN tbl_user ON tbl_royale_supportedquarter.WinningUser = tbl_user.UserID
+	ORDER BY YEAR,
+	         QUARTER;
+
+	SELECT tbl_royale_publisher.*,
+	       tbl_user.DisplayName AS PublisherDisplayName
+	FROM tbl_royale_publisher
+	JOIN tbl_user ON tbl_user.UserID = tbl_royale_publisher.UserID
+	WHERE PublisherID = P_PublisherID;
+	
+	
+	SELECT *
+	FROM tbl_royale_publishergame
+	WHERE tbl_royale_publishergame.PublisherID = P_PublisherID; 
+	
+	-- Master Game Data
+	
+	SELECT *
+	FROM tbl_mastergame_tag;
+	
+	
+	SELECT *
+	FROM tbl_mastergame_subgame;
+	
+	
+	SELECT *
+	FROM tbl_mastergame_hastag;
+	
+	
+	SELECT tbl_caching_mastergameyear.*,
+	       tbl_user.DisplayName AS AddedByUserDisplayName
+	FROM tbl_caching_mastergameyear
+	JOIN tbl_user ON tbl_user.UserID = tbl_caching_mastergameyear.AddedByUserID
+	join tbl_royale_publisher on tbl_royale_publisher.Year = tbl_caching_mastergameyear.Year
+	WHERE tbl_royale_publisher.PublisherID = P_PublisherID;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure fantasycritic.sp_getroyaleyearquarterdata
+DROP PROCEDURE IF EXISTS `sp_getroyaleyearquarterdata`;
+DELIMITER //
+CREATE PROCEDURE `sp_getroyaleyearquarterdata`(
+	IN `P_Year` INT,
+	IN `P_Quarter` INT
+)
+BEGIN
+	SELECT tbl_royale_supportedquarter.*,
+	       tbl_user.DisplayName AS WinningUserDisplayName
+	FROM tbl_royale_supportedquarter
+	LEFT JOIN tbl_user ON tbl_royale_supportedquarter.WinningUser = tbl_user.UserID
+	ORDER BY YEAR,
+	         QUARTER;
+	
+	SELECT tbl_royale_publisher.*,
+	       tbl_user.DisplayName AS PublisherDisplayName
+	FROM tbl_royale_publisher
+	JOIN tbl_user ON tbl_user.UserID = tbl_royale_publisher.UserID
+	WHERE YEAR = P_Year
+	  AND QUARTER = P_Quarter;
+	  
+	SELECT *
+	FROM tbl_royale_publishergame
+	JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
+	WHERE tbl_royale_publisher.Year = P_Year
+	  AND tbl_royale_publisher.Quarter = P_Quarter;
+	
+	
+	-- Master Game Data
+	
+	SELECT *
+	FROM tbl_mastergame_tag;
+	
+	
+	SELECT *
+	FROM tbl_mastergame_subgame;
+	
+	
+	SELECT *
+	FROM tbl_mastergame_hastag;
+	
+	
+	SELECT tbl_caching_mastergameyear.*,
+	       tbl_user.DisplayName AS AddedByUserDisplayName
+	FROM tbl_caching_mastergameyear
+	JOIN tbl_user ON tbl_user.UserID = tbl_caching_mastergameyear.AddedByUserID
+	WHERE tbl_caching_mastergameyear.`Year` = P_Year;
+END//
+DELIMITER ;
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
