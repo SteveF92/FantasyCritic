@@ -105,16 +105,6 @@ public class RoyaleService
         return _royaleRepo.GetRoyaleYearQuarterData(year, quarter);
     }
 
-    public async Task<IReadOnlyList<MasterGameYear>> GetMasterGamesForYearQuarter(YearQuarter yearQuarter)
-    {
-        IEnumerable<MasterGameYear> masterGameYears = await _masterGameRepo.GetMasterGameYears(yearQuarter.Year);
-
-        masterGameYears = masterGameYears.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate >= yearQuarter.FirstDateOfQuarter);
-        masterGameYears = masterGameYears.OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year), false));
-
-        return masterGameYears.ToList();
-    }
-
     public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
     {
         if (publisher.PublisherGames.Count >= MAX_GAMES)

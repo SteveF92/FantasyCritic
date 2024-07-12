@@ -336,17 +336,6 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return domain;
     }
 
-    private async Task<RoyaleYearQuarter> GetYearQuarterOrThrow(int year, int quarter)
-    {
-        var yearQuarter = await GetYearQuarter(year, quarter);
-        if (yearQuarter is null)
-        {
-            throw new Exception($"Royale Year Quarter not found: {year} | {quarter}");
-        }
-
-        return yearQuarter;
-    }
-
     private async Task<IReadOnlyList<RoyalePublisherGame>> GetGamesForPublisher(Guid publisherID, RoyaleYearQuarter yearQuarter)
     {
         const string sql = "select * from tbl_royale_publishergame where PublisherID = @publisherID;";
