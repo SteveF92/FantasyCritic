@@ -31,10 +31,9 @@ export default {
     async initializePublisherPage(context, publisherID) {
       try {
         context.commit('clearPublisherStoreData');
-        const publisherResponse = await axios.get('/api/League/GetPublisher/' + publisherID);
-        const publisher = publisherResponse.data;
-        const leagueYearResponse = await axios.get('/api/League/GetLeagueYear?leagueID=' + publisher.leagueID + '&year=' + publisher.year);
+        const leagueYearResponse = await axios.get('/api/League/GetLeagueYearForPublisher/' + publisherID);
         const leagueYear = leagueYearResponse.data;
+        const publisher = leagueYear.publishers.filter((x) => x.publisherID === publisherID)[0];
 
         const initializeParams = { publisher, leagueYear };
         context.commit('initializeInternal', initializeParams);

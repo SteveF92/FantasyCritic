@@ -188,6 +188,54 @@ public class LeagueController : BaseLeagueController
         return Ok(leagueYearViewModel);
     }
 
+    [AllowAnonymous]
+    [HttpGet("{publisherID}")]
+    public async Task<IActionResult> GetLeagueYearForPublisher(Guid publisherID)
+    {
+        var leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
+        if (leagueYearKey is null)
+        {
+            return NotFound();
+        }
+
+        var leagueYearRecord = await GetExistingLeagueYearWithSupplementalData(leagueYearKey.LeagueID, leagueYearKey.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var league = leagueYear.League;
+        var currentUser = validResult.CurrentUser;
+        var relationship = validResult.Relationship;
+        var supplementalData = validResult.SupplementalData;
+
+        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
+        {
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
+        }
+
+        var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
+        var currentInstant = _clock.GetCurrentInstant();
+        var currentDate = currentInstant.ToEasternDate();
+        bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
+        var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
+        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false)).ToList();
+        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true)).ToList();
+        var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
+        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
+        var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();
+
+        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
+            relationship.LeagueInvite, currentUser, relationship.InLeague, supplementalData.UserIsFollowingLeague);
+
+        var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
+            activeUsers, completePlayStatus, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
+            currentUser, supplementalData, counterPickedByDictionary, gameNewsViewModel);
+        return Ok(leagueYearViewModel);
+    }
+
     [HttpGet("{year}")]
     public async Task<IActionResult> GetMyPublishers(int year)
     {
