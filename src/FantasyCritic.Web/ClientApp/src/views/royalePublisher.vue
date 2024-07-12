@@ -208,39 +208,39 @@ export default {
     }
   },
   watch: {
-    $route() {
-      this.fetchPublisher();
+    async $route() {
+      await this.fetchPublisher();
     }
   },
-  mounted() {
-    this.fetchPublisher();
+  async created() {
+    await this.fetchPublisher();
   },
   methods: {
-    fetchPublisher() {
-      axios
-        .get('/api/Royale/GetRoyalePublisher/' + this.publisherid)
-        .then((response) => {
-          this.publisher = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchPublisher() {
+      try {
+        const response = await axios.get('/api/Royale/GetRoyalePublisher/' + this.publisherid);
+        this.publisher = response.data;
+      } catch (error) {
+        this.error = error.response.data;
+      }
     },
-    gamePurchased(purchaseInfo) {
-      this.fetchPublisher();
+    async gamePurchased(purchaseInfo) {
+      await this.fetchPublisher();
       let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
       this.makeToast(message);
     },
-    publisherNameChanged() {
-      this.fetchPublisher();
+    async publisherNameChanged() {
+      await this.fetchPublisher();
       let message = 'Publisher name changed.';
       this.makeToast(message);
     },
-    publisherIconChanged() {
-      this.fetchPublisher();
+    async publisherIconChanged() {
+      await this.fetchPublisher();
       let message = 'Publisher icon changed.';
       this.makeToast(message);
     },
-    publisherSloganChanged() {
-      this.fetchPublisher();
+    async publisherSloganChanged() {
+      await this.fetchPublisher();
       let message = 'Publisher slogan changed.';
       this.makeToast(message);
     },
@@ -248,45 +248,41 @@ export default {
       this.gameToModify = publisherGame;
       this.$refs.sellRoyaleGameModalRef.show();
     },
-    sellGame() {
+    async sellGame() {
       const request = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID
       };
 
-      axios
-        .post('/api/royale/SellGame', request)
-        .then(() => {
-          this.fetchPublisher();
-          let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
-          this.makeToast(message);
-        })
-        .catch((response) => {
-          this.errorInfo = "You can't sell that game. " + response.response.data;
-        });
+      try {
+        await axios.post('/api/royale/SellGame', request);
+        await this.fetchPublisher();
+        let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
+        this.makeToast(message);
+      } catch (error) {
+        this.errorInfo = "You can't sell that game. " + error.response.data;
+      }
     },
     setGameToSetBudget(publisherGame) {
       this.gameToModify = publisherGame;
       this.advertisingBudgetToSet = publisherGame.advertisingMoney;
       this.$refs.setAdvertisingMoneyModalRef.show();
     },
-    setBudget() {
+    async setBudget() {
       const request = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID,
         advertisingMoney: this.advertisingBudgetToSet
       };
 
-      axios
-        .post('/api/royale/SetAdvertisingMoney', request)
-        .then(() => {
-          this.fetchPublisher();
-          this.advertisingBudgetToSet = 0;
-        })
-        .catch((response) => {
-          this.advertisingBudgetToSet = 0;
-          this.errorInfo = "You can't set that budget. " + response.response.data;
-        });
+      try {
+        await axios.post('/api/royale/SetAdvertisingMoney', request);
+        await this.fetchPublisher();
+        this.advertisingBudgetToSet = 0;
+      } catch (error) {
+        this.advertisingBudgetToSet = 0;
+        this.errorInfo = "You can't set that budget. " + error.response.data;
+      }
     },
     getReleaseDate(game) {
       if (game.releaseDate) {
