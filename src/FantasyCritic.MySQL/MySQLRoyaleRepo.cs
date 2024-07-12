@@ -153,7 +153,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return new RoyaleYearQuarterData(supportedQuarters, activeRoyaleQuarter, domainPublishers, possibleTags.Values.ToList());
     }
 
-    public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
+    public async Task<RoyalePublisherData?> GetPublisherData(Guid publisherID)
     {
         var param = new
         {
@@ -205,8 +205,11 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             domainPublisherGames.Add(domain);
         }
 
+        var quartersWonByUser = supportedQuarters.Where(x => x.WinningUser is not null && x.WinningUser.UserID == publisherEntity.UserID).ToList();
+
         var domainPublisher = publisherEntity.ToDomain(quarterForPublisher, domainPublisherGames);
-        return domainPublisher;
+        var domainPublisherData = new RoyalePublisherData(domainPublisher, quartersWonByUser, possibleTags.Values.ToList());
+        return domainPublisherData;
     }
 
     public async Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)

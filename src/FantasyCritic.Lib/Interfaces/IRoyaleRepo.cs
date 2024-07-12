@@ -9,7 +9,7 @@ public interface IRoyaleRepo
     Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, IVeryMinimalFantasyCriticUser user);
     Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters();
     Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter);
-    Task<RoyalePublisher?> GetPublisher(Guid publisherID);
+    Task<RoyalePublisherData?> GetPublisherData(Guid publisherID);
     Task PurchaseGame(RoyalePublisherGame game);
     Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund);
     Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney);

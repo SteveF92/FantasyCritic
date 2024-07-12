@@ -69,9 +69,15 @@ public class RoyaleService
         return _royaleRepo.GetPublisher(yearQuarter, user);
     }
 
-    public Task<RoyalePublisher?> GetPublisher(Guid publisherID)
+    public Task<RoyalePublisherData?> GetPublisherData(Guid publisherID)
     {
-        return _royaleRepo.GetPublisher(publisherID);
+        return _royaleRepo.GetPublisherData(publisherID);
+    }
+
+    public async Task<RoyalePublisher?> GetPublisher(Guid publisherID)
+    {
+        var publisherData = await _royaleRepo.GetPublisherData(publisherID);
+        return publisherData?.RoyalePublisher;
     }
 
     public Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter)

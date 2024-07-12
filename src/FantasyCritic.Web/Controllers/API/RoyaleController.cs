@@ -181,15 +181,17 @@ public class RoyaleController : FantasyCriticController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRoyalePublisher(Guid id)
     {
-        RoyalePublisher? publisher = await _royaleService.GetPublisher(id);
-        if (publisher is null)
+        RoyalePublisherData? publisherData = await _royaleService.GetPublisherData(id);
+        if (publisherData is null)
         {
             return NotFound();
         }
 
-        IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
+        var publisher = publisherData.RoyalePublisher;
+        var quartersWon = publisherData.QuartersWonByUser;
+        var masterGameTags = publisherData.MasterGameTags;
+
         var currentDate = _clock.GetToday();
-        var masterGameTags = await _interLeagueService.GetMasterGameTags();
         bool thisPlayerIsViewing = false;
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsSuccess)
