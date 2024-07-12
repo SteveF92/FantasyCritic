@@ -208,7 +208,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var quartersWonByUser = supportedQuarters.Where(x => x.WinningUser is not null && x.WinningUser.UserID == publisherEntity.UserID).ToList();
 
         var domainPublisher = publisherEntity.ToDomain(quarterForPublisher, domainPublisherGames);
-        var domainPublisherData = new RoyalePublisherData(domainPublisher, quartersWonByUser, possibleTags.Values.ToList());
+        var domainPublisherData = new RoyalePublisherData(domainPublisher, quartersWonByUser, masterGameYearDictionary.Values.ToList(), possibleTags.Values.ToList());
         return domainPublisherData;
     }
 

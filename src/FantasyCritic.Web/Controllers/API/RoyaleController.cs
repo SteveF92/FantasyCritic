@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Royale;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -413,37 +414,35 @@ public class RoyaleController : FantasyCriticController
 
     public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string? gameName, Guid publisherID)
     {
-        RoyalePublisher? publisher = await _royaleService.GetPublisher(publisherID);
-        if (publisher is null)
+        RoyalePublisherData? publisherData = await _royaleService.GetPublisherData(publisherID);
+        if (publisherData is null)
         {
             return NotFound();
         }
 
-        var yearQuarter = await _royaleService.GetYearQuarter(publisher.YearQuarter.YearQuarter.Year, publisher.YearQuarter.YearQuarter.Quarter);
-        if (yearQuarter is null)
-        {
-            return BadRequest();
-        }
+        var publisher = publisherData.RoyalePublisher;
+        var masterGameTags = publisherData.MasterGameTags;
+        IReadOnlyList<MasterGameYear> masterGameYears = publisherData.MasterGameYears
+            .OrderByDescending(x => x.GetProjectedFantasyPoints(ScoringSystem.GetDefaultScoringSystem(publisher.YearQuarter.YearQuarter.Year), false))
+            .ToList();
 
         var currentDate = _clock.GetToday();
-        var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var masterGames = await _royaleService.GetMasterGamesForYearQuarter(yearQuarter.YearQuarter);
         if (!string.IsNullOrWhiteSpace(gameName))
         {
-            masterGames = MasterGameSearching.SearchMasterGameYears(gameName, masterGames, false);
+            masterGameYears = MasterGameSearching.SearchMasterGameYears(gameName, masterGameYears, false);
         }
         else
         {
-            masterGames = masterGames
-                .Where(x => x.CouldReleaseInQuarter(yearQuarter.YearQuarter))
+            masterGameYears = masterGameYears
+                .Where(x => x.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter))
                 .Where(x => !x.MasterGame.IsReleased(currentDate))
                 .Where(x => !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, x.MasterGame, currentDate).Any())
                 .Take(1000)
                 .ToList();
         }
 
-        var viewModels = masterGames.Select(masterGame =>
-            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, yearQuarter, publisher.PublisherGames.Any(y =>
+        var viewModels = masterGameYears.Select(masterGame =>
+            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher.YearQuarter, publisher.PublisherGames.Any(y =>
                 y.MasterGame.MasterGame.Equals(masterGame.MasterGame)), masterGameTags)).ToList();
         return viewModels;
     }
