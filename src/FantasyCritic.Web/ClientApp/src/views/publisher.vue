@@ -223,8 +223,8 @@ export default {
       }
     }
   },
-  mounted() {
-    this.initializePage();
+  async created() {
+    await this.initializePage();
   },
   methods: {
     async initializePage() {

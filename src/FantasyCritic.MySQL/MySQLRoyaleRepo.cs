@@ -150,7 +150,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             domainPublishers.Add(domain);
         }
 
-        return new RoyaleYearQuarterData(supportedQuarters, activeRoyaleQuarter, domainPublishers, possibleTags.Values.ToList());
+        return new RoyaleYearQuarterData(supportedQuarters, activeRoyaleQuarter, domainPublishers);
     }
 
     public async Task<RoyalePublisherData?> GetPublisherData(Guid publisherID)

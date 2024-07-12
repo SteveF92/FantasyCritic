@@ -218,13 +218,13 @@ public class RoyaleController : FantasyCriticController
 
         var allRoyaleYearQuarters = royaleData.AllYearQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
         var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.ActiveYearQuarter);
-        RoyalePublisherViewModel? userRoyalePublisherViewModel = null;
-        var currentDate = _clock.GetToday();
+        Guid? userRoyalePublisherID = null;
 
         var previousWinnersByUser = royaleData.AllYearQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
         var publishersToShow = royaleData.RoyalePublishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
         int ranking = 1;
-        List<RoyalePublisherViewModel> publisherViewModels = new List<RoyalePublisherViewModel>();
+
+        List<RoyaleStandingsViewModel> publisherViewModels = new List<RoyaleStandingsViewModel>();
         foreach (var publisher in publishersToShow)
         {
             int? thisRanking = null;
@@ -235,26 +235,20 @@ public class RoyaleController : FantasyCriticController
             }
 
             var winningQuarters = previousWinnersByUser[publisher.User];
-            bool thisPlayerIsViewing = false;
-            if (currentUser.IsSuccess)
+            if (currentUser.IsSuccess && currentUser.Value.Id == publisher.User.UserID)
             {
-                thisPlayerIsViewing = currentUser.Value.Id == publisher.User.UserID;
+                userRoyalePublisherID = publisher.PublisherID;
             }
 
-            var publisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, royaleData.MasterGameTags, thisPlayerIsViewing);
+            var publisherViewModel = new RoyaleStandingsViewModel(publisher, thisRanking, winningQuarters);
             publisherViewModels.Add(publisherViewModel);
-
-            if (thisPlayerIsViewing)
-            {
-                userRoyalePublisherViewModel = publisherViewModel;
-            }
         }
 
         var vm = new
         {
             RoyaleYearQuarters = allRoyaleYearQuarters,
             RoyaleYearQuarter = royaleYearQuarterViewModel,
-            UserRoyalePublisher = userRoyalePublisherViewModel,
+            UserRoyalePublisherID = userRoyalePublisherID,
             RoyaleStandings = publisherViewModels
         };
 

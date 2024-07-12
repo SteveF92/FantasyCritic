@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Domain.Results;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;

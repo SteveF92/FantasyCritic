@@ -24,7 +24,7 @@
       <h1>Critics Royale</h1>
     </div>
 
-    <div v-if="!userPublisherBusy && !userRoyalePublisher && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
+    <div v-if="!userPublisherBusy && !userRoyalePublisherID && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
       <div v-if="isAuth" class="alert alert-info">
         Create your publisher to start playing!
         <b-button v-b-modal="'createRoyalePublisher'" class="login-button" variant="primary">Create Publisher</b-button>
@@ -45,7 +45,7 @@
 
     <div class="leaderboard-header">
       <h2>Leaderboards {{ year }}-Q{{ quarter }}</h2>
-      <b-button v-if="royaleStandings && userRoyalePublisher" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }">View My Publisher</b-button>
+      <b-button v-if="royaleStandings && userRoyalePublisherID" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisherID } }">View My Publisher</b-button>
     </div>
 
     <div v-if="royaleStandings">
@@ -170,7 +170,7 @@ export default {
       perPage: 10,
       currentPage: 1,
       selectedYear: null,
-      userRoyalePublisher: null,
+      userRoyalePublisherID: null,
       royaleYearQuarter: null,
       royaleYearQuarterOptions: null,
       royaleStandings: null,
@@ -239,7 +239,7 @@ export default {
       this.royaleYearQuarterOptions = response.data.royaleYearQuarters;
       this.royaleYearQuarter = response.data.royaleYearQuarter;
       this.royaleStandings = response.data.royaleStandings;
-      this.userRoyalePublisher = response.data.userRoyalePublisher;
+      this.userRoyalePublisherID = response.data.userRoyalePublisherID;
       this.userPublisherBusy = false;
     }
   }
