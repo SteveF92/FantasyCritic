@@ -79,26 +79,26 @@
         <span v-else>--</span>
       </template>
       <template #cell(dateAdjustedHypeFactor)="data">
-        <span v-if="yearOpenForPlay">{{ data.item.dateAdjustedHypeFactor | score(1) }}</span>
-        <span v-if="!yearOpenForPlay">--</span>
+        <span v-if="showYearStats">{{ data.item.dateAdjustedHypeFactor | score(1) }}</span>
+        <span v-if="!showYearStats">--</span>
       </template>
       <template #cell(projectedOrRealFantasyPoints)="data">
         <span v-if="data.item.fantasyPoints !== null">{{ data.item.fantasyPoints | score(1) }}</span>
-        <span v-if="data.item.fantasyPoints === null && yearOpenForPlay" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
-        <span v-if="data.item.fantasyPoints === null && !yearOpenForPlay" class="projected-text">--</span>
+        <span v-if="data.item.fantasyPoints === null && showYearStats" class="projected-text">~{{ data.item.projectedFantasyPoints | score(1) }}</span>
+        <span v-if="data.item.fantasyPoints === null && !showYearStats" class="projected-text">--</span>
       </template>
       <template #cell(eligiblePercentStandardGame)="data">
-        <span v-if="yearOpenForPlay">{{ data.item.eligiblePercentStandardGame | percent(1) }}</span>
-        <span v-if="!yearOpenForPlay">--</span>
+        <span v-if="showYearStats">{{ data.item.eligiblePercentStandardGame | percent(1) }}</span>
+        <span v-if="!showYearStats">--</span>
       </template>
       <template #cell(adjustedPercentCounterPick)="data">
-        <template v-if="yearOpenForPlay">
+        <template v-if="showYearStats">
           <span v-if="data.item.adjustedPercentCounterPick !== null">
             {{ data.item.adjustedPercentCounterPick | percent(1) }}
           </span>
           <span v-else>N/A</span>
         </template>
-        <span v-if="!yearOpenForPlay">--</span>
+        <span v-if="!showYearStats">--</span>
       </template>
       <template #cell(addedTimestamp)="data">
         {{ data.item.addedTimestamp | date }}
@@ -124,7 +124,7 @@ export default {
   },
   props: {
     masterGames: { type: Array, required: true },
-    yearOpenForPlay: { type: Boolean, required: true }
+    showYearStats: { type: Boolean, required: true }
   },
   data() {
     return {

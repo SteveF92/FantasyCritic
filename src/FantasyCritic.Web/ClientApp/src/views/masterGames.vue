@@ -59,7 +59,7 @@
       </div>
 
       <div v-if="showGames">
-        <masterGamesTable :master-games="gamesToShow" :year-open-for-play="selectedYearIsOpenForPlay"></masterGamesTable>
+        <masterGamesTable :master-games="gamesToShow" :show-year-stats="selectedYearIsOpenForPlayOrFinished"></masterGamesTable>
       </div>
 
       <div v-else class="spinner">
@@ -134,11 +134,12 @@ export default {
     showGames() {
       return this.gamesToShow && !this.isBusy;
     },
-    selectedYearIsOpenForPlay() {
-      return this.supportedYears.filter((x) => x.year === this.selectedYear)[0].openForPlay;
+    selectedYearIsOpenForPlayOrFinished() {
+      const selectedYear = this.supportedYears.filter((x) => x.year === this.selectedYear)[0];
+      return selectedYear.openForPlay || selectedYear.finished;
     }
   },
-  async mounted() {
+  async created() {
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
     await Promise.all([this.fetchGamesForYear(), this.fetchMyLeaguesForYear()]);
   },
