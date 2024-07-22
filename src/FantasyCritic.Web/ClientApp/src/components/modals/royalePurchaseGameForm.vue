@@ -123,7 +123,7 @@ export default {
         masterGameID: masterGameID
       };
 
-      const response = axios.post('/api/royale/PurchaseGame', request);
+      const response = await axios.post('/api/royale/PurchaseGame', request);
       this.purchaseResult = response.data;
       if (!this.purchaseResult.success) {
         this.isBusy = false;
