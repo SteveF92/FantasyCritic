@@ -114,7 +114,7 @@ BEGIN
 	-- Retrieve the PublisherID from the temporary table
 	
 	SELECT PublisherID INTO v_PublisherID
-	FROM TEMPTABLE
+	FROM TempTable
 	WHERE LeagueID = P_LeagueID
 	LIMIT 1;
 	
