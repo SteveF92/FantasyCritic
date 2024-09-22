@@ -1,7 +1,7 @@
 <template>
   <div v-if="publisher && leagueYear">
     <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="cover-art-mode-options">
+      <div v-if="isPlusUser" class="cover-art-mode-options">
         <b-button v-if="userIsPublisher" v-show="coverArtMode" variant="secondary" size="sm" @click="prepareSnapshot">
           <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
           <span>Share</span>
