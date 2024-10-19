@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Domain;
+
 namespace FantasyCritic.MySQL.Entities;
 internal class TopBidsAndDropsEntity
 {
@@ -46,6 +48,52 @@ internal class TopBidsAndDropsEntity
     public int TotalDropCount { get; set; }
     public int SuccessfulDrops { get; set; }
     public int FailedDrops { get; set; }
+
+    public TopBidsAndDropsEntity WithNewMasterGameID(Guid masterGameID)
+    {
+        return new TopBidsAndDropsEntity()
+        {
+            Year = Year,
+            ProcessDate = ProcessDate,
+            MasterGameID = masterGameID,
+            TotalStandardBidCount = TotalStandardBidCount,
+            SuccessfulStandardBids = SuccessfulStandardBids,
+            FailedStandardBids = FailedStandardBids,
+            TotalStandardBidLeagues = TotalStandardBidLeagues,
+            TotalStandardBidAmount = TotalStandardBidAmount,
+            TotalCounterPickBidCount = TotalCounterPickBidCount,
+            SuccessfulCounterPickBids = SuccessfulCounterPickBids,
+            FailedCounterPickBids = FailedCounterPickBids,
+            TotalCounterPickBidLeagues = TotalCounterPickBidLeagues,
+            TotalCounterPickBidAmount = TotalCounterPickBidAmount,
+            TotalDropCount = TotalDropCount,
+            SuccessfulDrops = SuccessfulDrops,
+            FailedDrops = FailedDrops,
+        };
+    }
+
+    public TopBidsAndDropsEntity MergeWith(TopBidsAndDropsEntity removeGameData)
+    {
+        return new TopBidsAndDropsEntity()
+        {
+            Year = Year,
+            ProcessDate = ProcessDate,
+            MasterGameID = MasterGameID,
+            TotalStandardBidCount = TotalStandardBidCount + removeGameData.TotalStandardBidCount,
+            SuccessfulStandardBids = SuccessfulStandardBids + removeGameData.SuccessfulStandardBids,
+            FailedStandardBids = FailedStandardBids + removeGameData.FailedStandardBids,
+            TotalStandardBidLeagues = TotalStandardBidLeagues + removeGameData.TotalStandardBidLeagues,
+            TotalStandardBidAmount = TotalStandardBidAmount + removeGameData.TotalStandardBidAmount,
+            TotalCounterPickBidCount = TotalCounterPickBidCount + removeGameData.TotalCounterPickBidCount,
+            SuccessfulCounterPickBids = SuccessfulCounterPickBids + removeGameData.SuccessfulCounterPickBids,
+            FailedCounterPickBids = FailedCounterPickBids + removeGameData.FailedCounterPickBids,
+            TotalCounterPickBidLeagues = TotalCounterPickBidLeagues + removeGameData.TotalCounterPickBidLeagues,
+            TotalCounterPickBidAmount = TotalCounterPickBidAmount + removeGameData.TotalCounterPickBidAmount,
+            TotalDropCount = TotalDropCount + removeGameData.TotalDropCount,
+            SuccessfulDrops = SuccessfulDrops + removeGameData.SuccessfulDrops,
+            FailedDrops = FailedDrops + removeGameData.FailedDrops,
+        };
+    }
 
     public TopBidsAndDropsGame ToDomain(MasterGameYear masterGameYear)
     {

@@ -2395,10 +2395,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "UPDATE tbl_league_specialauction SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_mastergame_changerequest SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_mastergame_request SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
+            "UPDATE tbl_mastergame_changelog SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_mastergame_subgame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;" +
             "UPDATE tbl_royale_publishergame SET MasterGameID = @mergeIntoMasterGameID WHERE MasterGameID = @removeMasterGameID;";
 
+        const string getTopBidsAndDrops = "select * from tbl_caching_topbidsanddrops WHERE MasterGameID = @mergeIntoMasterGameID OR MasterGameID = @removeMasterGameID;";
+        const string removeTopBidsAndDropsSQL = "DELETE FROM tbl_caching_topbidsanddrops WHERE MasterGameID = @mergeIntoMasterGameID OR MasterGameID = @removeMasterGameID;";
         const string removeGameSQL = "DELETE FROM tbl_mastergame WHERE MasterGameID = @removeMasterGameID;";
+        const string removeGameYearSQL = "DELETE FROM tbl_caching_mastergameyear WHERE MasterGameID = @removeMasterGameID;";
         const string removeTagsSQL = "DELETE FROM tbl_mastergame_hastag WHERE MasterGameID = @removeMasterGameID;";
 
         var requestObject = new
@@ -2430,10 +2434,49 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             publishersIDsWithBothGames
         };
 
+        var topBidsAndDropsEntities = await connection.QueryAsync<TopBidsAndDropsEntity>(getTopBidsAndDrops, requestObject);
+        var fixedTopBidsAndDropsEntities = new List<TopBidsAndDropsEntity>();
+        var groupedEntities = topBidsAndDropsEntities.GroupBy(x => $"{x.Year}|{x.ProcessDate.ToISOString()}");
+        foreach (var group in groupedEntities)
+        {
+            var removeGameData = group.SingleOrDefault(x => x.MasterGameID == removeMasterGame.MasterGameID);
+            var mergeIntoGameData = group.SingleOrDefault(x => x.MasterGameID == mergeIntoMasterGame.MasterGameID);
+            if (removeGameData is null && mergeIntoGameData is null)
+            {
+                throw new Exception("Both cannot be null.");
+            }
+
+            if (removeGameData is null && mergeIntoGameData is not null)
+            {
+                fixedTopBidsAndDropsEntities.Add(mergeIntoGameData);
+                continue;
+            }
+
+            if (removeGameData is not null && mergeIntoGameData is null)
+            {
+                fixedTopBidsAndDropsEntities.Add(removeGameData.WithNewMasterGameID(mergeIntoMasterGame.MasterGameID));
+                continue;
+            }
+
+            if (removeGameData is null || mergeIntoGameData is null)
+            {
+                throw new Exception("Neither should be null at this point.");
+            }
+
+            //Both exist
+            var mergedData = mergeIntoGameData.MergeWith(removeGameData);
+            fixedTopBidsAndDropsEntities.Add(mergedData);
+        }
+
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(fixQueueSQL, fixQueueObject, transaction);
+
+        await connection.ExecuteAsync(removeTopBidsAndDropsSQL, requestObject, transaction);
+        await connection.BulkInsertAsync(fixedTopBidsAndDropsEntities, "tbl_caching_topbidsanddrops", 500, transaction);
+
         await connection.ExecuteAsync(mergeSQL, requestObject, transaction);
         await connection.ExecuteAsync(removeTagsSQL, requestObject, transaction);
+        await connection.ExecuteAsync(removeGameYearSQL, requestObject, transaction);
         await connection.ExecuteAsync(removeGameSQL, requestObject, transaction);
         await transaction.CommitAsync();
     }
