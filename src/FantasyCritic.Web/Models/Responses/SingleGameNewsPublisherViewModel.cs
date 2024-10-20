@@ -37,8 +37,8 @@ public class SingleGameNewsPublisherViewModel
         }
         else if (publisherPairs.Count == 2)
         {
-            var standardPublisherPair = publisherPairs.Single(x => x.Publisher.PublisherGames.Where(y => !y.CounterPick).Where(y => y.MasterGame is not null).Any(y => y.MasterGame!.MasterGame.MasterGameID == masterGame.MasterGameID));
-            var counterPickPublisherPair = publisherPairs.Single(x => x.Publisher.PublisherID != standardPublisherPair.Publisher.PublisherID);
+            var standardPublisherPair = publisherPairs.First(x => x.Publisher.PublisherGames.Where(y => !y.CounterPick).Where(y => y.MasterGame is not null).Any(y => y.MasterGame!.MasterGame.MasterGameID == masterGame.MasterGameID));
+            var counterPickPublisherPair = publisherPairs.First(x => x.Publisher.PublisherID != standardPublisherPair.Publisher.PublisherID);
             LeagueID = standardPublisherPair.LeagueYear.League.LeagueID;
             Year = standardPublisherPair.LeagueYear.Year;
             LeagueName = standardPublisherPair.LeagueYear.League.LeagueName;
