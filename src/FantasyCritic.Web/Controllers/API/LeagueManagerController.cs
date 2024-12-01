@@ -152,6 +152,15 @@ public class LeagueManagerController : BaseLeagueController
             throw new Exception("Most recent league year could not be found");
         }
 
+        if (league.ConferenceID.HasValue)
+        {
+            var conference = await _conferenceService.GetConference(league.ConferenceID.Value);
+            if (!conference!.Years.Contains(request.Year))
+            {
+                return BadRequest($"This league is part of a conference that has not yet been renewed for {request.Year}");
+            }
+        }
+
         var updatedOptions = mostRecentLeagueYear.Options.UpdateOptionsForYear(request.Year);
         await _fantasyCriticService.AddNewLeagueYear(league, request.Year, updatedOptions, mostRecentLeagueYear);
 
