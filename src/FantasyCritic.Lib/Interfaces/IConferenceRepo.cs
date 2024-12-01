@@ -7,6 +7,7 @@ public interface IConferenceRepo
     Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser user);
     Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options);
     Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague);
+    Task<Result> AddNewConferenceYear(Conference conference, int year);
     Task<Conference?> GetConference(Guid conferenceID);
     Task<ConferenceYear?> GetConferenceYear(Guid conferenceID, int year);
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInConference(Conference conference);

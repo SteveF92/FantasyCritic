@@ -127,6 +127,11 @@ public class MySQLConferenceRepo : IConferenceRepo
         await transaction.CommitAsync();
     }
 
+    public Task<Result> AddNewConferenceYear(Conference conference, int year)
+    {
+        throw new NotImplementedException();
+    }
+
     private static async Task AddPlayerToConferenceInternal(Conference conference, IMinimalFantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
     {
         var userAddObject = new

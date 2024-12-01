@@ -79,6 +79,11 @@ public class ConferenceService
         return Result.Success();
     }
 
+    public Task<Result> AddNewConferenceYear(Conference conference, int year)
+    {
+        return _conferenceRepo.AddNewConferenceYear(conference, year);
+    }
+
     public Task<Conference?> GetConference(Guid conferenceID)
     {
         return _conferenceRepo.GetConference(conferenceID);

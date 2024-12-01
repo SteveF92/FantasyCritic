@@ -122,9 +122,39 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
-    public Task<IActionResult> AddNewConferenceYear([FromBody] NewConferenceYearRequest request)
+    public async Task<IActionResult> AddNewConferenceYear([FromBody] NewConferenceYearRequest request)
     {
-        throw new NotImplementedException();
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+        var validResult = conferenceRecord.ValidResult!;
+
+        if (validResult.Conference.Years.Contains(request.Year))
+        {
+            return BadRequest();
+        }
+
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.Year);
+        if (selectedSupportedYear is null)
+        {
+            return BadRequest("That year is not supported.");
+        }
+
+        if (!selectedSupportedYear.OpenForCreation)
+        {
+            return BadRequest("That year is not open for play.");
+        }
+
+        var newYearResult = await _conferenceService.AddNewConferenceYear(validResult.Conference, request.Year);
+        if (newYearResult.IsFailure)
+        {
+            return BadRequest(newYearResult.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]
