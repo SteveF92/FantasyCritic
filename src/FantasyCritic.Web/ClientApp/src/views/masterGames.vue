@@ -162,7 +162,7 @@ export default {
     async fetchMyLeaguesForYear() {
       const response = await axios.get('/api/League/MyLeagues?year=' + this.selectedYear);
       let allLeaguesForYear = response.data;
-      this.myLeaguesForYear = _.filter(allLeaguesForYear, { testLeague: false });
+      this.myLeaguesForYear = _.filter(allLeaguesForYear, { testLeague: false, userIsFollowingLeague: false });
     },
     async changeYear() {
       await Promise.all([this.fetchGamesForYear(), this.fetchMyLeaguesForYear()]);
