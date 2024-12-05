@@ -132,20 +132,23 @@ public class MySQLConferenceRepo : IConferenceRepo
         throw new NotImplementedException();
     }
 
-    public Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyList<FantasyCriticUser> activeUsers)
+    public Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<MinimalFantasyCriticUser, bool> usersToChange)
     {
         throw new NotImplementedException();
     }
 
     private static async Task AddPlayerToConferenceInternal(Conference conference, IMinimalFantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
     {
+        var mostRecentYear = conference.Years.Max();
         var userAddObject = new
         {
             conferenceID = conference.ConferenceID,
             userID = user.UserID,
+            mostRecentYear
         };
 
         await connection.ExecuteAsync("insert into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", userAddObject, transaction);
+        await connection.ExecuteAsync("insert into tbl_conference_activeplayer(ConferenceID,Year,UserID) VALUES (@conferenceID,@mostRecentYear,@userID);", userAddObject, transaction);
     }
 
     public async Task<Conference?> GetConference(Guid conferenceID)
@@ -230,11 +233,15 @@ public class MySQLConferenceRepo : IConferenceRepo
                                      from tbl_league_hasuser join tbl_league on tbl_league_hasuser.LeagueID = tbl_league.LeagueID
                                      where tbl_league.ConferenceID = @conferenceID;
                                      """;
-        const string activePlayerSQL = """
+        const string activeLeaguePlayerSQL = """
                                        SELECT tbl_league_activeplayer.LeagueID, tbl_league_activeplayer.Year, tbl_league_activeplayer.UserID FROM tbl_league_activeplayer
                                        JOIN tbl_league ON tbl_league_activeplayer.LeagueID = tbl_league.LeagueID
                                        WHERE tbl_league.ConferenceID = @conferenceID;
                                        """;
+        const string activeConferencePlayerSQL = """
+                                                 SELECT tbl_conference_activeplayer.ConferenceID, tbl_conference_activeplayer.Year, tbl_conference_activeplayer.UserID FROM tbl_conference_activeplayer
+                                                 WHERE tbl_conference_activeplayer.ConferenceID = @conferenceID;
+                                                 """;
 
         var queryObject = new
         {
@@ -246,11 +253,13 @@ public class MySQLConferenceRepo : IConferenceRepo
         await using var connection = new MySqlConnection(_connectionString);
         var leagueManagers = await connection.QueryAsync<LeagueManagerEntity>(leagueManagerSQL, queryObject);
         var leagueUsers = await connection.QueryAsync<LeagueUserEntity>(leagueUserSQL, queryObject);
-        var leagueActivePlayers = await connection.QueryAsync<LeagueActivePlayerEntity>(activePlayerSQL, queryObject);
+        var leagueActivePlayers = await connection.QueryAsync<LeagueActivePlayerEntity>(activeLeaguePlayerSQL, queryObject);
+        var conferenceActivePlayers = await connection.QueryAsync<ConferenceActivePlayerEntity>(activeConferencePlayerSQL, queryObject);
 
         var leagueManagerLookup = leagueManagers.ToLookup(x => x.LeagueManager);
         var leagueUserLookup = leagueUsers.ToLookup(x => x.UserID);
         var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
+        var conferenceActivePlayerLookup = conferenceActivePlayers.ToLookup(x => x.UserID);
 
         List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
         foreach (var user in usersInConference)
@@ -258,7 +267,8 @@ public class MySQLConferenceRepo : IConferenceRepo
             var leaguesManaged = leagueManagerLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
             var leaguesIn = leagueUserLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
             var leagueYearsActiveIn = leagueActivePlayerLookup[user.Id].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
-            var player = new ConferencePlayer(user.ToMinimal(), leaguesIn, leaguesManaged, leagueYearsActiveIn);
+            var conferenceYearsActiveIn = conferenceActivePlayerLookup[user.Id].Select(x => x.Year).ToHashSet();
+            var player = new ConferencePlayer(user.ToMinimal(), leaguesIn, leaguesManaged, conferenceYearsActiveIn, leagueYearsActiveIn);
             conferencePlayers.Add(player);
         }
         
@@ -267,7 +277,12 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task RemovePlayerFromConference(Conference conference, FantasyCriticUser removeUser)
     {
-        const string sql = """
+        const string removeFromActivePlayerSQL = """
+                                               delete from tbl_conference_activeplayer
+                                               where ConferenceID = @conferenceID and UserID = @userID;
+                                               """;
+
+        const string removeFromConferenceSQL = """
                            delete from tbl_conference_hasuser
                            where ConferenceID = @conferenceID and UserID = @userID;
                            """;
@@ -279,7 +294,11 @@ public class MySQLConferenceRepo : IConferenceRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(sql, deleteParam);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(removeFromActivePlayerSQL, deleteParam, transaction: transaction);
+        await connection.ExecuteAsync(removeFromConferenceSQL, deleteParam, transaction: transaction);
+        await transaction.CommitAsync();
     }
 
     public async Task<IReadOnlyList<ConferenceLeague>> GetLeaguesInConference(Conference conference)

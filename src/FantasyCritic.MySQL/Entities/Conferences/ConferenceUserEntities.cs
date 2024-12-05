@@ -17,3 +17,10 @@ internal class LeagueActivePlayerEntity
     public Guid UserID { get; set; }
     public int Year { get; set; }
 }
+
+internal class ConferenceActivePlayerEntity
+{
+    public Guid ConferenceID { get; set; }
+    public Guid UserID { get; set; }
+    public int Year { get; set; }
+}

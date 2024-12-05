@@ -491,6 +491,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
         var leagueUsers = resultSets.Read<ConferenceUserEntity>().ToList();
         var leagueActivePlayers = resultSets.Read<LeagueActivePlayerEntity>();
+        var conferenceActivePlayers = resultSets.Read<ConferenceActivePlayerEntity>();
+
         IEnumerable<ManagerMessageEntity> messageEntities = resultSets.Read<ManagerMessageEntity>();
         IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = resultSets.Read<ManagerMessageDismissalEntity>().ToList();
 
@@ -529,6 +531,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var leagueManagerLookup = leagues.ToLookup(x => x.LeagueManager);
         var leagueUserLookup = leagueUsers.ToLookup(x => x.UserID);
         var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
+        var conferenceActivePlayerLookup = conferenceActivePlayers.ToLookup(x => x.UserID);
 
         List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
         foreach (var user in distinctUsers)
@@ -536,7 +539,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             var leaguesManaged = leagueManagerLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();
             var leaguesIn = leagueUserLookup[user.UserID].Where(x => x.LeagueID.HasValue).Select(x => x.LeagueID!.Value).ToHashSet();
             var leagueYearsActiveIn = leagueActivePlayerLookup[user.UserID].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
-            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, leagueYearsActiveIn);
+            var conferenceYearsActiveIn = conferenceActivePlayerLookup[user.UserID].Select(x => x.Year).ToHashSet();
+            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, conferenceYearsActiveIn,leagueYearsActiveIn);
             conferencePlayers.Add(player);
         }
 

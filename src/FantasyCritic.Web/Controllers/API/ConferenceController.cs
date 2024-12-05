@@ -1,13 +1,10 @@
-using Amazon.Runtime.Internal.Transform;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Models.Requests.Conferences;
-using FantasyCritic.Web.Models.Requests.LeagueManager;
 using FantasyCritic.Web.Models.Responses.Conferences;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
