@@ -1,10 +1,13 @@
+using Amazon.Runtime.Internal.Transform;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Models.Requests.Conferences;
+using FantasyCritic.Web.Models.Requests.LeagueManager;
 using FantasyCritic.Web.Models.Responses.Conferences;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -148,10 +151,38 @@ public class ConferenceController : BaseLeagueController
             return BadRequest("That year is not open for play.");
         }
 
-        var newYearResult = await _conferenceService.AddNewConferenceYear(validResult.Conference, request.Year);
+        var invalidLeagues = request.LeaguesToRenew.Except(validResult.ConferenceLeagues.Select(x => x.LeagueID)).ToList();
+        if (invalidLeagues.Any())
+        {
+            return BadRequest("Invalid leagues selected for renewing.");
+        }
+
+        var leagueDictionary = validResult.ConferenceLeagues.ToDictionary(x => x.LeagueID);
+        var leaguesToRenew = request.LeaguesToRenew.Select(requestedLeague => leagueDictionary[requestedLeague]).ToList();
+
+        var newYearResult = await _conferenceService.AddNewConferenceYear(validResult.Conference, request.Year, leaguesToRenew);
         if (newYearResult.IsFailure)
         {
             return BadRequest(newYearResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Authorize("PlusUser")]
+    public async Task<IActionResult> SetPlayerActiveStatus([FromBody] ConferencePlayerActiveRequest request)
+    {
+        var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceYearRecord.FailedResult is not null)
+        {
+            return conferenceYearRecord.FailedResult;
+        }
+
+        var result = await _conferenceService.SetPlayerActiveStatus(conferenceYearRecord.ValidResult!.ConferenceYear, request.ActiveStatus);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
         }
 
         return Ok();
@@ -417,11 +448,10 @@ public class ConferenceController : BaseLeagueController
 
         var validResult = conferenceRecord.ValidResult!;
 
-        var mostRecentYear = validResult.Conference.Years.Max();
-        var conferenceYear = await _conferenceService.GetConferenceYear(validResult.Conference.ConferenceID, mostRecentYear);
+        var conferenceYear = await _conferenceService.GetConferenceYear(validResult.Conference.ConferenceID, request.Year);
         if (conferenceYear is null)
         {
-            throw new Exception($"Something went wrong with conference years for conference: {request.ConferenceID} and year: {mostRecentYear}");
+            throw new Exception($"Something went wrong with conference years for conference: {request.ConferenceID} and year: {request.Year}");
         }
 
         var allUsersInConference = await _conferenceService.GetUsersInConference(validResult.Conference);

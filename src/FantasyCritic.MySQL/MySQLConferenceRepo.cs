@@ -127,7 +127,12 @@ public class MySQLConferenceRepo : IConferenceRepo
         await transaction.CommitAsync();
     }
 
-    public Task<Result> AddNewConferenceYear(Conference conference, int year)
+    public Task<Result> AddNewConferenceYear(Conference conference, int year, IReadOnlyList<ConferenceLeague> leaguesToRenew)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyList<FantasyCriticUser> activeUsers)
     {
         throw new NotImplementedException();
     }

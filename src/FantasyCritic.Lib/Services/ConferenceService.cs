@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
@@ -79,9 +80,40 @@ public class ConferenceService
         return Result.Success();
     }
 
-    public Task<Result> AddNewConferenceYear(Conference conference, int year)
+    public Task<Result> AddNewConferenceYear(Conference conference, int year, IReadOnlyList<ConferenceLeague> leaguesToRenew)
     {
-        return _conferenceRepo.AddNewConferenceYear(conference, year);
+        return _conferenceRepo.AddNewConferenceYear(conference, year, leaguesToRenew);
+    }
+
+    public async Task<Result> SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<Guid, bool> userActiveStatus)
+    {
+        var playersInLeague = await GetPlayersInConference(conferenceYear.Conference);
+
+        var playerDictionary = playersInLeague.ToDictionary(x => x.User.UserID);
+        var usersToChange = new Dictionary<MinimalFantasyCriticUser, bool>();
+        foreach (var userToChange in userActiveStatus)
+        {
+            if (!playerDictionary.TryGetValue(userToChange.Key, out var playerRecord))
+            {
+                return Result.Failure("That user is not in that conference.");
+            }
+
+            bool userIsCurrentlyActive = playerRecord.YearsActiveIn.Contains(conferenceYear.Year);
+            if (userIsCurrentlyActive == userToChange.Value)
+            {
+                //Nothing to change
+                continue;
+            }
+
+            usersToChange.Add(playerRecord.User, userToChange.Value);
+        }
+
+        if (usersToChange.Any())
+        {
+            await _conferenceRepo.SetPlayerActiveStatus(conferenceYear, usersToChange);
+        }
+
+        return Result.Success();
     }
 
     public Task<Conference?> GetConference(Guid conferenceID)

@@ -8,7 +8,7 @@ public class ConferenceYearPlayerViewModel
     {
         UserID = conferencePlayer.User.UserID;
         DisplayName = conferencePlayer.User.DisplayName;
-        LeaguesActiveIn = conferencePlayer.YearsActiveIn.Where(x => x.Year == conferenceYear.Year).Select(x => x.LeagueID).ToHashSet();
+        LeaguesActiveIn = conferencePlayer.LeagueYearsActiveIn.Where(x => x.Year == conferenceYear.Year).Select(x => x.LeagueID).ToHashSet();
     }
 
     public Guid UserID { get; }

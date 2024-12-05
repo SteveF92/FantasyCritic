@@ -14,7 +14,7 @@ public class ConferenceYearViewModel
 
         LeagueYears = conferenceLeagueYears.Select(x =>
             new ConferenceLeagueYearViewModel(x,
-                conferencePlayers.Where(y => y.YearsActiveIn.Contains(x.Key)).ToList(), accessingUser,
+                conferencePlayers.Where(y => y.LeagueYearsActiveIn.Contains(x.Key)).ToList(), accessingUser,
                 x.League.LeagueID == domain.Conference.PrimaryLeagueID))
             .OrderByDescending(x => x.IsPrimaryLeague).ThenBy(x => x.LeagueName).ToList();
 
