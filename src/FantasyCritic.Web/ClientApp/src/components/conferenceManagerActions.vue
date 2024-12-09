@@ -6,6 +6,10 @@
       <b-dropdown-item v-b-modal="'assignPlayers'">Assign Players to Leagues</b-dropdown-item>
       <b-dropdown-item v-b-modal="'conferenceManagerMessageForm'">Post New Manager Message</b-dropdown-item>
       <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item v-b-modal="'addNewConferenceYear'">Add New Conference Year</b-dropdown-item>
+      <b-dropdown-item v-b-modal="'renewLeaguesForNewYear'">Renew Leagues for New Year</b-dropdown-item>
+      <b-dropdown-item v-b-modal="'setPlayerActiveStatus'">Manage Active Players</b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
       <b-dropdown-item v-b-modal="'editConferenceSettings'">Edit Conference Settings</b-dropdown-item>
       <b-dropdown-item v-b-modal="'promoteNewConferenceManager'">Promote New Conference Manager</b-dropdown-item>
       <b-dropdown-item v-b-modal="'reassignLeagueManager'">Reassign League Managers</b-dropdown-item>
@@ -18,6 +22,10 @@
       <InvitePlayers></InvitePlayers>
       <PromoteNewConferenceManager></PromoteNewConferenceManager>
       <ReassignLeagueManager></ReassignLeagueManager>
+
+      <AddNewConferenceYear></AddNewConferenceYear>
+      <RenewLeaguesForNewYear></RenewLeaguesForNewYear>
+      <SetPlayerActiveStatus></SetPlayerActiveStatus>
     </div>
   </div>
 </template>
@@ -30,6 +38,10 @@ import InvitePlayers from '@/components/modals/conference/invitePlayers.vue';
 import PromoteNewConferenceManager from '@/components/modals/conference/promoteNewConferenceManager.vue';
 import ReassignLeagueManager from '@/components/modals/conference/reassignLeagueManager.vue';
 
+import AddNewConferenceYear from '@/components/modals/conference/addNewConferenceYear.vue';
+import RenewLeaguesForNewYear from '@/components/modals/conference/renewLeaguesForNewYear.vue';
+import SetPlayerActiveStatus from '@/components/modals/conference/setPlayerActiveStatus.vue';
+
 export default {
   components: {
     AddLeagueToConference,
@@ -38,7 +50,10 @@ export default {
     EditConferenceSettings,
     InvitePlayers,
     PromoteNewConferenceManager,
-    ReassignLeagueManager
+    ReassignLeagueManager,
+    AddNewConferenceYear,
+    RenewLeaguesForNewYear,
+    SetPlayerActiveStatus
   }
 };
 </script>

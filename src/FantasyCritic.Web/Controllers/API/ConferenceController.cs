@@ -145,22 +145,62 @@ public class ConferenceController : BaseLeagueController
 
         if (!selectedSupportedYear.OpenForCreation)
         {
-            return BadRequest("That year is not open for play.");
+            return BadRequest("That year is not open for creating new leagues.");
         }
 
-        var invalidLeagues = request.LeaguesToRenew.Except(validResult.ConferenceLeagues.Select(x => x.LeagueID)).ToList();
-        if (invalidLeagues.Any())
-        {
-            return BadRequest("Invalid leagues selected for renewing.");
-        }
-
-        var leagueDictionary = validResult.ConferenceLeagues.ToDictionary(x => x.LeagueID);
-        var leaguesToRenew = request.LeaguesToRenew.Select(requestedLeague => leagueDictionary[requestedLeague]).ToList();
-
-        var newYearResult = await _conferenceService.AddNewConferenceYear(validResult.Conference, request.Year, leaguesToRenew);
+        var newYearResult = await _conferenceService.AddNewConferenceYear(validResult.Conference, request.Year);
         if (newYearResult.IsFailure)
         {
             return BadRequest(newYearResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Authorize("PlusUser")]
+    public async Task<IActionResult> AddNewLeagueYear([FromBody] AddNewLeagueYearRequest request)
+    {
+        var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
+        if (conferenceRecord.FailedResult is not null)
+        {
+            return conferenceRecord.FailedResult;
+        }
+        var validResult = conferenceRecord.ValidResult!;
+
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.Year);
+        if (selectedSupportedYear is null)
+        {
+            return BadRequest("That year is not supported.");
+        }
+
+        if (!selectedSupportedYear.OpenForCreation)
+        {
+            return BadRequest("That year is not open for play.");
+        }
+
+        var league = validResult.ConferenceLeagues.SingleOrDefault(x => x.LeagueID == request.LeagueID);
+        if (league is null)
+        {
+            return BadRequest("That league is not in that conference");
+        }
+
+        var leagueRecord = await GetExistingLeague(league.LeagueID, RequiredRelationship.LoggedIn);
+        if (leagueRecord.FailedResult is not null)
+        {
+            return leagueRecord.FailedResult;
+        }
+
+        if (leagueRecord.ValidResult!.League.Years.Contains(request.Year))
+        {
+            return BadRequest($"That league has already been renewed for {request.Year}");
+        }
+
+        var newLeagueResult = await _conferenceService.AddNewLeagueYear(validResult.Conference, request.Year, leagueRecord.ValidResult.League);
+        if (newLeagueResult.IsFailure)
+        {
+            return BadRequest(newLeagueResult.Error);
         }
 
         return Ok();

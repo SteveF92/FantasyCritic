@@ -127,15 +127,62 @@ public class MySQLConferenceRepo : IConferenceRepo
         await transaction.CommitAsync();
     }
 
-    public Task<Result> AddNewConferenceYear(Conference conference, int year, IReadOnlyList<ConferenceLeague> leaguesToRenew)
+    public async Task<Result> AddNewConferenceYear(Conference conference, int year)
     {
-        throw new NotImplementedException();
+        var primaryLeaguePreviousLeagueYear = await _combinedDataRepo.GetLeagueYear(conference.PrimaryLeagueID, year - 1);
+        if (primaryLeaguePreviousLeagueYear is null)
+        {
+            return Result.Failure("Cannot find previous league year for primary league.");
+        }
+
+        ConferenceYearEntity conferenceYearEntity = new ConferenceYearEntity(conference, year);
+
+        const string createConferenceYearSQL =
+            """
+            insert into tbl_conference_year(ConferenceID,Year) VALUES
+            (@ConferenceID,@Year)
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(createConferenceYearSQL, conferenceYearEntity, transaction);
+        await _fantasyCriticRepo.AddNewLeagueYearInTransaction(primaryLeaguePreviousLeagueYear.League, year, primaryLeaguePreviousLeagueYear.Options, connection, transaction);
+        await transaction.CommitAsync();
+        return Result.Success();
     }
 
-    public Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<MinimalFantasyCriticUser, bool> usersToChange)
+
+    public async Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<MinimalFantasyCriticUser, bool> usersToChange)
     {
-        throw new NotImplementedException();
+        const string deleteActiveUserSQL = "delete from tbl_conference_activeplayer where Conference = @conferenceID and Year = @year and UserID = @userID;";
+        const string insertSQL = "insert into tbl_conference_activeplayer(ConferenceID,Year,UserID) VALUES (@conferenceID,@year,@userID);";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        foreach (var userToChange in usersToChange)
+        {
+            var paramsObject = new
+            {
+                conferenceID = conferenceYear.Conference.ConferenceID,
+                userID = userToChange.Key.UserID,
+                conferenceYear.Year
+            };
+
+            if (userToChange.Value)
+            {
+                await connection.ExecuteAsync(insertSQL, paramsObject, transaction);
+            }
+            else
+            {
+                await connection.ExecuteAsync(deleteActiveUserSQL, paramsObject, transaction);
+            }
+        }
+
+        await transaction.CommitAsync();
     }
+
 
     private static async Task AddPlayerToConferenceInternal(Conference conference, IMinimalFantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
     {

@@ -69,7 +69,7 @@ public class LeagueManagerController : BaseLeagueController
         bool yearIsOpen = selectedSupportedYear.OpenForCreation || (userIsBetaUser && selectedSupportedYear.OpenForBetaUsers);
         if (!yearIsOpen)
         {
-            return BadRequest("That year is not open for play.");
+            return BadRequest("That year is not open for creating new leagues.");
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
@@ -126,11 +126,16 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
+        if (league.ConferenceID.HasValue)
+        {
+            return BadRequest("This league is part of a conference. The conference manager must add the new year via the conference controls.");
+        }
+
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var selectedSupportedYear = supportedYears.SingleOrDefault(x => x.Year == request.Year);
         if (selectedSupportedYear is null)
         {
-            return BadRequest();
+            return BadRequest("That year is not open for league creation.");
         }
 
         var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
@@ -150,15 +155,6 @@ public class LeagueManagerController : BaseLeagueController
         if (mostRecentLeagueYear is null)
         {
             throw new Exception("Most recent league year could not be found");
-        }
-
-        if (league.ConferenceID.HasValue)
-        {
-            var conference = await _conferenceService.GetConference(league.ConferenceID.Value);
-            if (!conference!.Years.Contains(request.Year))
-            {
-                return BadRequest($"This league is part of a conference that has not yet been renewed for {request.Year}");
-            }
         }
 
         var updatedOptions = mostRecentLeagueYear.Options.UpdateOptionsForYear(request.Year);

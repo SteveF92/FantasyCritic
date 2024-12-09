@@ -79,9 +79,27 @@ public class ConferenceService
         return Result.Success();
     }
 
-    public Task<Result> AddNewConferenceYear(Conference conference, int year, IReadOnlyList<ConferenceLeague> leaguesToRenew)
+    public Task<Result> AddNewConferenceYear(Conference conference, int year)
     {
-        return _conferenceRepo.AddNewConferenceYear(conference, year, leaguesToRenew);
+        return _conferenceRepo.AddNewConferenceYear(conference, year);
+    }
+
+    public async Task<Result> AddNewLeagueYear(Conference conference, int year, League leagueToRenew)
+    {
+        var conferenceYear = await GetConferenceYear(conference.ConferenceID, year);
+        if (conferenceYear is null)
+        {
+            return Result.Failure($"Conference is not active in {year}.");
+        }
+
+        var primaryLeagueYear = await _combinedDataRepo.GetLeagueYear(conference.PrimaryLeagueID, year);
+        if (primaryLeagueYear is null)
+        {
+            return Result.Failure("Primary league is not active in that year.");
+        }
+
+        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options);
+        return Result.Success();
     }
 
     public async Task<Result> SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<Guid, bool> userActiveStatus)

@@ -1121,6 +1121,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options)
     {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await AddNewLeagueYearInTransaction(league, year, options, connection, transaction);
+        await transaction.CommitAsync();
+    }
+
+    public async Task AddNewLeagueYearInTransaction(League league, int year, LeagueOptions options, MySqlConnection connection, MySqlTransaction transaction)
+    {
         bool? conferenceLocked = null;
         if (league.ConferenceID.HasValue)
         {
@@ -1143,13 +1152,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked);
             """;
 
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
-        await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
-        await transaction.CommitAsync();
     }
 
     public async Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID)
