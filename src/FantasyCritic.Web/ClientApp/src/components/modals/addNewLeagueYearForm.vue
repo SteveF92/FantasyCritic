@@ -34,10 +34,6 @@ export default {
   },
   methods: {
     async fetchAvailableYears() {
-      if (!this.isManager) {
-        return;
-      }
-
       try {
         const response = await axios.get('/api/LeagueManager/AvailableYears/' + this.league.leagueID);
         this.availableYears = response.data;

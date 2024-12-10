@@ -120,6 +120,32 @@ public class ConferenceController : BaseLeagueController
         return Ok();
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> AvailableYears(Guid id)
+    {
+        var leagueRecord = await GetExistingConference(id, ConferenceRequiredRelationship.ConferenceManager);
+        if (leagueRecord.FailedResult is not null)
+        {
+            return leagueRecord.FailedResult;
+        }
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
+        var conference = validResult.Conference;
+
+        IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
+        var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
+        var availableYears = openYears.Except(conference.Years);
+
+        var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
+        if (userIsBetaUser)
+        {
+            var betaYears = supportedYears.Where(x => x.OpenForBetaUsers).Select(x => x.Year);
+            availableYears = availableYears.Concat(betaYears).Distinct();
+        }
+
+        return Ok(availableYears);
+    }
+
     [HttpPost]
     [Authorize("PlusUser")]
     public async Task<IActionResult> AddNewConferenceYear([FromBody] NewConferenceYearRequest request)
