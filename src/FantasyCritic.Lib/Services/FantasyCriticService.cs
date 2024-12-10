@@ -257,9 +257,8 @@ public class FantasyCriticService
 
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, LeagueYear mostRecentLeagueYear)
     {
-        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options);
         var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, mostRecentLeagueYear.Year);
-        await _fantasyCriticRepo.SetPlayersActive(league, year, mostRecentActivePlayers);
+        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers);
     }
 
     public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears, bool recalculateWinners)

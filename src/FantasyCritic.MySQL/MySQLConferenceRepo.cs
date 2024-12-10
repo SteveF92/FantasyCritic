@@ -129,6 +129,12 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task<Result> AddNewConferenceYear(Conference conference, int year)
     {
+        var previousConferenceYear = await _combinedDataRepo.GetConferenceYearData(conference.ConferenceID, year - 1);
+        if (previousConferenceYear is null)
+        {
+            return Result.Failure("Cannot find previous conference year.");
+        }
+
         var primaryLeaguePreviousLeagueYear = await _combinedDataRepo.GetLeagueYear(conference.PrimaryLeagueID, year - 1);
         if (primaryLeaguePreviousLeagueYear is null)
         {
@@ -136,6 +142,17 @@ public class MySQLConferenceRepo : IConferenceRepo
         }
 
         ConferenceYearEntity conferenceYearEntity = new ConferenceYearEntity(conference, year);
+
+        var newActivePlayersToAdd = previousConferenceYear.PlayersInConference
+            .Where(x => x.YearsActiveIn.Contains(previousConferenceYear.ConferenceYear.Year)).Select(x => x.User)
+            .Select(x => new ConferenceActivePlayerEntity()
+            {
+                UserID = x.UserID,
+                ConferenceID = conference.ConferenceID,
+                Year = year
+            })
+            .ToList();
+        var mostRecentActivePrimaryLeaguePlayers = primaryLeaguePreviousLeagueYear.Publishers.Select(x => x.User).ToList();
 
         const string createConferenceYearSQL =
             """
@@ -147,7 +164,8 @@ public class MySQLConferenceRepo : IConferenceRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(createConferenceYearSQL, conferenceYearEntity, transaction);
-        await _fantasyCriticRepo.AddNewLeagueYearInTransaction(primaryLeaguePreviousLeagueYear.League, year, primaryLeaguePreviousLeagueYear.Options, connection, transaction);
+        await connection.BulkInsertAsync(newActivePlayersToAdd, "tbl_conference_activeplayer", 500, transaction, insertIgnore: true);
+        await _fantasyCriticRepo.AddNewLeagueYearInTransaction(primaryLeaguePreviousLeagueYear.League, year, primaryLeaguePreviousLeagueYear.Options, mostRecentActivePrimaryLeaguePlayers, connection, transaction);
         await transaction.CommitAsync();
         return Result.Success();
     }

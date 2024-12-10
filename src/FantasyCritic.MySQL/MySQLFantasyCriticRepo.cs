@@ -1119,16 +1119,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task AddNewLeagueYear(League league, int year, LeagueOptions options)
+    public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
     {
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await AddNewLeagueYearInTransaction(league, year, options, connection, transaction);
+        await AddNewLeagueYearInTransaction(league, year, options, mostRecentActivePlayers, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    public async Task AddNewLeagueYearInTransaction(League league, int year, LeagueOptions options, MySqlConnection connection, MySqlTransaction transaction)
+    public async Task AddNewLeagueYearInTransaction(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, MySqlConnection connection, MySqlTransaction transaction)
     {
         bool? conferenceLocked = null;
         if (league.ConferenceID.HasValue)
@@ -1152,9 +1152,19 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked);
             """;
 
+        const string activePlayersSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
+        var activePlayersObjects = mostRecentActivePlayers.Select(x => new
+        {
+            leagueID = league.LeagueID,
+            userID = x.Id,
+            year
+        });
+
+
         await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
+        await connection.ExecuteAsync(activePlayersSQL, activePlayersObjects, transaction: transaction);
     }
 
     public async Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID)
@@ -1208,21 +1218,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var users = results.Select(x => x.ToDomain()).ToList();
         return users;
-    }
-
-    public async Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers)
-    {
-        const string insertSQL = "insert into tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
-        var insertObjects = mostRecentActivePlayers.Select(x => new
-        {
-            leagueID = league.LeagueID,
-            userID = x.Id,
-            year
-        });
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
-        await connection.ExecuteAsync(insertSQL, insertObjects);
     }
 
     public async Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange)

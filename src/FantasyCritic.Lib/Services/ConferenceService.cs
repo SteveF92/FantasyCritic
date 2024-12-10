@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
@@ -98,7 +99,8 @@ public class ConferenceService
             return Result.Failure("Primary league is not active in that year.");
         }
 
-        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options);
+        var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(leagueToRenew.LeagueID, year - 1);
+        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options, mostRecentActivePlayers);
         return Result.Success();
     }
 

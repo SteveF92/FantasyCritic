@@ -12,14 +12,13 @@ public interface IFantasyCriticRepo
     Task<League?> GetLeague(Guid id);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options);
-    Task AddNewLeagueYear(League league, int year, LeagueOptions options);
+    Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction);
 
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league);
     Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year);
 
-    Task SetPlayersActive(League league, int year, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
     Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange);
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
     Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league);
