@@ -11,8 +11,10 @@ ENGINE=InnoDB
 ;
 
 INSERT INTO tbl_conference_activeplayer (ConferenceID, UserID, Year)
-SELECT ConferenceID, UserID, 2024 as Year
-FROM tbl_conference_hasuser;
+SELECT distinct tbl_conference_hasuser.ConferenceID, tbl_conference_hasuser.UserID, tbl_league_activeplayer.`Year`
+FROM tbl_conference_hasuser
+JOIN tbl_league ON tbl_league.ConferenceID = tbl_conference_hasuser.ConferenceID
+JOIN tbl_league_activeplayer ON tbl_league_activeplayer.LeagueID = tbl_league.LeagueID AND tbl_conference_hasuser.UserID = tbl_league_activeplayer.UserID;
 
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
