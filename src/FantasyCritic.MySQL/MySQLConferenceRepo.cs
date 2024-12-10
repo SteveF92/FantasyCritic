@@ -173,7 +173,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<MinimalFantasyCriticUser, bool> usersToChange)
     {
-        const string deleteActiveUserSQL = "delete from tbl_conference_activeplayer where Conference = @conferenceID and Year = @year and UserID = @userID;";
+        const string deleteActiveUserSQL = "delete from tbl_conference_activeplayer where ConferenceID = @conferenceID and Year = @year and UserID = @userID;";
         const string insertSQL = "insert into tbl_conference_activeplayer(ConferenceID,Year,UserID) VALUES (@conferenceID,@year,@userID);";
 
         await using var connection = new MySqlConnection(_connectionString);

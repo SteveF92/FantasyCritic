@@ -8,7 +8,7 @@
       <b-dropdown-divider></b-dropdown-divider>
       <b-dropdown-item v-b-modal="'addNewConferenceYear'">Add New Conference Year</b-dropdown-item>
       <b-dropdown-item v-b-modal="'renewLeagueForNewYear'">Renew A League for New Year</b-dropdown-item>
-      <b-dropdown-item v-b-modal="'setPlayerActiveStatus'">Manage Active Players</b-dropdown-item>
+      <b-dropdown-item v-b-modal="'manageActivePlayers'">Manage Active Players</b-dropdown-item>
       <b-dropdown-divider></b-dropdown-divider>
       <b-dropdown-item v-b-modal="'editConferenceSettings'">Edit Conference Settings</b-dropdown-item>
       <b-dropdown-item v-b-modal="'promoteNewConferenceManager'">Promote New Conference Manager</b-dropdown-item>
@@ -25,7 +25,7 @@
 
       <AddNewConferenceYear></AddNewConferenceYear>
       <RenewLeagueForNewYear></RenewLeagueForNewYear>
-      <SetPlayerActiveStatus></SetPlayerActiveStatus>
+      <ManageActivePlayers></ManageActivePlayers>
     </div>
   </div>
 </template>
@@ -40,7 +40,7 @@ import ReassignLeagueManager from '@/components/modals/conference/reassignLeague
 
 import AddNewConferenceYear from '@/components/modals/conference/addNewConferenceYear.vue';
 import RenewLeagueForNewYear from '@/components/modals/conference/renewLeagueForNewYear.vue';
-import SetPlayerActiveStatus from '@/components/modals/conference/setPlayerActiveStatus.vue';
+import ManageActivePlayers from '@/components/modals/conference/manageActivePlayers.vue';
 
 export default {
   components: {
@@ -53,7 +53,7 @@ export default {
     ReassignLeagueManager,
     AddNewConferenceYear,
     RenewLeagueForNewYear,
-    SetPlayerActiveStatus
+    ManageActivePlayers
   }
 };
 </script>

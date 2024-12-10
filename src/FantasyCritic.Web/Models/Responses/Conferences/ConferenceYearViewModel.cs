@@ -48,7 +48,7 @@ public class ConferenceYearViewModel
         }
 
         Standings = standingVMs;
-        PlayersForYear = conferencePlayers.Select(x => new ConferenceYearPlayerViewModel(domain, x)).ToList();
+        PlayersForYear = conferencePlayers.Where(x => x.YearsActiveIn.Contains(Year)).Select(x => new ConferenceYearPlayerViewModel(domain, x)).ToList();
 
         ManagerMessages = managerMessages.Select(x => new ManagerMessageViewModel(x, x.IsDismissed(accessingUser))).OrderBy(x => x.Timestamp).ToList();
         if (!Conference.UserIsInConference)

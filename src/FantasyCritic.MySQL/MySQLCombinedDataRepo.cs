@@ -540,7 +540,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             var leaguesIn = leagueUserLookup[user.UserID].Where(x => x.LeagueID.HasValue).Select(x => x.LeagueID!.Value).ToHashSet();
             var leagueYearsActiveIn = leagueActivePlayerLookup[user.UserID].Select(x => new LeagueYearKey(x.LeagueID, x.Year)).ToHashSet();
             var conferenceYearsActiveIn = conferenceActivePlayerLookup[user.UserID].Select(x => x.Year).ToHashSet();
-            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, conferenceYearsActiveIn,leagueYearsActiveIn);
+            var player = new ConferencePlayer(user, leaguesIn, leaguesManaged, conferenceYearsActiveIn, leagueYearsActiveIn);
             conferencePlayers.Add(player);
         }
 

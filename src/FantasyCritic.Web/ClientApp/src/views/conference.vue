@@ -72,13 +72,13 @@
 
           <div class="alert alert-info">
             <template v-if="numberOfPlayersInConferenceNotInAnyLeague > 1">
-              Your conference currently contains {{ numberOfPlayersInConference }} players, {{ numberOfPlayersInConferenceNotInAnyLeague }} of which have not been assigned to a league.
+              Your conference currently contains {{ numberOfPlayersActiveForYear }} active players, {{ numberOfPlayersInConferenceNotInAnyLeague }} of which have not been assigned to a league.
             </template>
             <template v-if="numberOfPlayersInConferenceNotInAnyLeague === 1">
-              Your conference currently contains {{ numberOfPlayersInConference }} players, {{ numberOfPlayersInConferenceNotInAnyLeague }} of which has not been assigned to a league.
+              Your conference currently contains {{ numberOfPlayersActiveForYear }} active players, {{ numberOfPlayersInConferenceNotInAnyLeague }} of which has not been assigned to a league.
             </template>
             <template v-if="numberOfPlayersInConferenceNotInAnyLeague === 0">
-              Your conference currently contains {{ numberOfPlayersInConference }} players, all of which have been assigned to a league.
+              Your conference currently contains {{ numberOfPlayersActiveForYear }} active players, all of which have been assigned to a league.
             </template>
           </div>
         </template>
@@ -148,11 +148,11 @@ export default {
     };
   },
   computed: {
-    numberOfPlayersInConference() {
-      return this.conference.players.length;
+    numberOfPlayersActiveForYear() {
+      return this.conferenceYear.playersForYear.length;
     },
     numberOfPlayersInConferenceNotInAnyLeague() {
-      return this.conference.players.filter((x) => x.leaguesIn.length === 0).length;
+      return this.conferenceYear.playersForYear.filter((x) => x.leaguesActiveIn.length === 0).length;
     },
     numberOfLeaguesNotStartedDrafting() {
       return this.conferenceYear.leagueYears.filter((x) => !x.draftStarted).length;
