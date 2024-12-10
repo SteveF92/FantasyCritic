@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="renewLeagueForNewYear" ref="renewLeagueForNewYearRef" title="Renew League for New Year" size="lg" @hidden="clearData">
+  <b-modal id="renewLeagueForNewYear" ref="renewLeagueForNewYearRef" title="Renew League for New Year" size="lg" @show="initialize" @hidden="clearData">
     <div class="alert alert-info">
       Renewing a league for {{ conference.activeYear }} will use the settings you have chosen for the Primary League.
       <br />
@@ -36,13 +36,16 @@ export default {
       errorInfo: null
     };
   },
-  async mounted() {
+  async created() {
     this.clearData();
-    const response = await axios.get('/api/Conference/GetConference/' + this.conference.conferenceID);
-    const leaguesAlreadyRenewed = this.conferenceYear.leagueYears.map((x) => x.leagueID);
-    this.renewableLeagues = response.data.leaguesInConference.filter((x) => !leaguesAlreadyRenewed.includes(x.leagueID));
+    await this.initialize();
   },
   methods: {
+    async initialize() {
+      const response = await axios.get('/api/Conference/GetConference/' + this.conference.conferenceID);
+      const leaguesAlreadyRenewed = this.conferenceYear.leagueYears.map((x) => x.leagueID);
+      this.renewableLeagues = response.data.leaguesInConference.filter((x) => !leaguesAlreadyRenewed.includes(x.leagueID));
+    },
     async renewLeague() {
       const model = {
         conferenceID: this.conference.conferenceID,

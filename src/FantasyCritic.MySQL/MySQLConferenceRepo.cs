@@ -611,18 +611,19 @@ public class MySQLConferenceRepo : IConferenceRepo
                     continue;
                 }
 
-                if (leagueHasPlayerInPreviousYearLookup[conferenceLeague].Any(x => x.Id == leagueUser.UserID))
-                {
-                    continue;
-                }
-
-                usersThatCanBeSafelyRemovedFromLeague.Add(new LeagueHasUserEntity() { LeagueID = leagueUser.LeagueID, UserID = leagueUser.UserID });
                 activePlayersToRemove.Add(new LeagueYearActivePlayer()
                 {
                     LeagueID = leagueUser.LeagueID,
                     Year = conferenceYear.Year,
                     UserID = leagueUser.UserID
                 });
+
+                if (leagueHasPlayerInPreviousYearLookup[conferenceLeague].Any(x => x.Id == leagueUser.UserID))
+                {
+                    continue;
+                }
+
+                usersThatCanBeSafelyRemovedFromLeague.Add(new LeagueHasUserEntity() { LeagueID = leagueUser.LeagueID, UserID = leagueUser.UserID });
             }
 
             List<LeagueHasUserEntity> newUsersToAdd = new List<LeagueHasUserEntity>();

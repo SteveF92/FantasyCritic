@@ -106,8 +106,8 @@ export default {
   methods: {
     initialize() {
       let unassignedPlayers = [];
-      for (const player of this.conference.players) {
-        if (player.leaguesIn.length === 0) {
+      for (const player of this.conferenceYear.playersForYear) {
+        if (player.leaguesActiveIn.length === 0) {
           unassignedPlayers.push(player);
         }
       }
@@ -182,6 +182,7 @@ export default {
 
       const model = {
         conferenceID: this.conference.conferenceID,
+        year: this.conferenceYear.year,
         leagueAssignments: finalLeagueAssignments
       };
 
