@@ -408,7 +408,7 @@ public class DiscordPushService
                 continue;
             }
 
-            preparedMessages.Add(new PreparedDiscordMessage(channel, $"**{action.ActionType}** {action.Description} (at {action.Timestamp.ToEasternDate()})"));
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## {action.ActionType}\n{action.Description}\n_(at {action.Timestamp.ToEasternDate()})_"));
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
@@ -525,7 +525,7 @@ public class DiscordPushService
             return;
         }
 
-        var leagueManagerActionMessage = $"**League Manager Action**: {message}";
+        var leagueManagerActionMessage = $"## League Manager Action\n{message}";
 
         var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, leagueManagerActionMessage));
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
