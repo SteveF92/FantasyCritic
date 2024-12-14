@@ -79,7 +79,7 @@ export default {
     async changeleagueName() {
       const model = {
         leagueID: this.league.leagueID,
-        leagueName: this.newleagueName,
+        leagueName: this.newleagueName.trim(),
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
         customRulesLeague: this.customRulesLeague

@@ -30,7 +30,7 @@ export default {
     changePublisherName() {
       const model = {
         publisherID: this.userPublisher.publisherID,
-        publisherName: this.newPublisherName
+        publisherName: this.newPublisherName.trim()
       };
       axios
         .post('/api/league/changePublisherName', model)

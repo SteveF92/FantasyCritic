@@ -55,7 +55,7 @@ export default {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         userID: this.playerToCreatePublisherFor.user.userID,
-        publisherName: this.publisherName
+        publisherName: this.publisherName.trim()
       };
       axios
         .post('/api/leagueManager/createPublisherForUser', model)

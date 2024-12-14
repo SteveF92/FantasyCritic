@@ -147,8 +147,8 @@ export default {
     async postRequest() {
       this.leagueYearSettings.year = this.initialYear;
       let selectedConferenceOptions = {
-        conferenceName: this.conferenceName,
-        primaryLeagueName: this.primaryLeagueName,
+        conferenceName: this.conferenceName.trim(),
+        primaryLeagueName: this.primaryLeagueName.trim(),
         customRulesConference: this.customRulesConference,
         leagueYearSettings: this.leagueYearSettings
       };

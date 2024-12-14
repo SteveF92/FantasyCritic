@@ -31,7 +31,7 @@ export default {
     changePublisherSlogan() {
       const model = {
         publisherID: this.userPublisher.publisherID,
-        publisherSlogan: this.newPublisherSlogan
+        publisherSlogan: this.newPublisherSlogan.trim()
       };
       axios
         .post('/api/league/changePublisherSlogan', model)

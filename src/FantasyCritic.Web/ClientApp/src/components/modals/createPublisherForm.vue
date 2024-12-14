@@ -28,7 +28,7 @@ export default {
       const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
-        publisherName: this.publisherName
+        publisherName: this.publisherName.trim()
       };
       axios
         .post('/api/league/createPublisher', model)

@@ -85,7 +85,7 @@ public class RegisterModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var user = new FantasyCriticUser { Id = Guid.NewGuid(), UserName = Input.DisplayName, Email = Input.Email };
+            var user = new FantasyCriticUser { Id = Guid.NewGuid(), UserName = Input.DisplayName.Trim(), Email = Input.Email };
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {

@@ -29,7 +29,7 @@ export default {
       const model = {
         year: this.royaleYearQuarter.year,
         quarter: this.royaleYearQuarter.quarter,
-        publisherName: this.publisherName
+        publisherName: this.publisherName.trim()
       };
       axios
         .post('/api/royale/createRoyalePublisher', model)
