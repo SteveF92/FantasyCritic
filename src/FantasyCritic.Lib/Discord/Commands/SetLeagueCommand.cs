@@ -98,7 +98,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
                 return;
             }
 
-            var usersInLeague = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, dateToCheck.Year);
+            var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
             if (!usersInLeague.Contains(fantasyCriticUser))
             {
                 await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
