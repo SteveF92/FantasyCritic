@@ -4,7 +4,7 @@
       <div class="row league-header">
         <h1 class="header">Public Leagues</h1>
         <div class="year-selector">
-          <b-form-select v-model="selectedYear" :options="supportedYears" @change="fetchPublicLeaguesForYear" />
+          <b-form-select v-model="selectedYear" :options="supportedYears" value-field="year" text-field="year" @change="fetchPublicLeaguesForYear" />
         </div>
       </div>
       <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
@@ -40,7 +40,6 @@
 
 <script>
 import axios from 'axios';
-import _ from 'lodash';
 
 export default {
   data() {
