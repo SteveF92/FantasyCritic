@@ -65,7 +65,7 @@ public class MySQLMasterGameUpdater
         await connection.ExecuteAsync("DELETE FROM tbl_mastergame_tag WHERE Name NOT IN @betaKeepTags;", paramsObject, transaction);
 
         await connection.BulkInsertAsync(tagEntities, "tbl_mastergame_tag", 500, transaction);
-        await connection.BulkInsertAsync(masterGameEntities, "tbl_mastergame", 500, transaction);
+        await connection.BulkInsertAsync(masterGameEntities, "tbl_mastergame", 500, transaction, new List<string>() { "AddedByUserDisplayName" });
         await connection.BulkInsertAsync(masterSubGameEntities, "tbl_mastergame_subgame", 500, transaction);
         await connection.BulkInsertAsync(productionGamesHaveTagEntities, "tbl_mastergame_hastag", 500, transaction);
 
