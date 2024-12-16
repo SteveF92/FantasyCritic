@@ -3089,6 +3089,18 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
+        if (league.ConferenceID.HasValue)
+        {
+            var conferenceAddObject = new
+            {
+                conferenceID = league.ConferenceID.Value,
+                userID = user.UserID,
+                mostRecentYear = mostRecentYear.Year
+            };
+            await connection.ExecuteAsync("insert ignore into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceAddObject, transaction);
+            await connection.ExecuteAsync("insert ignore into tbl_conference_activeplayer(ConferenceID,Year,UserID) VALUES (@conferenceID,@mostRecentYear,@userID);", conferenceAddObject, transaction);
+        }
+
         await AddPlayerToLeagueInternal(league, user.Id, mostRecentYear.Year, mostRecentYearNotStarted, connection, transaction);
         await transaction.CommitAsync();
     }

@@ -106,9 +106,9 @@ public class ConferenceService
 
     public async Task<Result> SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<Guid, bool> userActiveStatus)
     {
-        var playersInLeague = await GetPlayersInConference(conferenceYear.Conference);
+        var playersInConference = await GetPlayersInConference(conferenceYear.Conference);
 
-        var playerDictionary = playersInLeague.ToDictionary(x => x.User.UserID);
+        var playerDictionary = playersInConference.ToDictionary(x => x.User.UserID);
         var usersToChange = new Dictionary<MinimalFantasyCriticUser, bool>();
         foreach (var userToChange in userActiveStatus)
         {
