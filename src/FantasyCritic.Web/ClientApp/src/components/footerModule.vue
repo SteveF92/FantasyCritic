@@ -57,12 +57,6 @@
             </a>
           </div>
           <div>
-            <a href="https://twitter.com/fantasy_critic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" fixed-width />
-              <span class="full-contact">@fantasy_critic</span>
-            </a>
-          </div>
-          <div>
             <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
               <font-awesome-icon :icon="['fab', 'reddit']" size="lg" class="reddit-icon" fixed-width />
               <span class="full-contact">r/fantasycritic</span>
@@ -72,12 +66,6 @@
             <a href="https://discord.gg/dNa7DD3" target="_blank">
               <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
               <span class="full-contact">Discord</span>
-            </a>
-          </div>
-          <div>
-            <a href="https://www.facebook.com/fantasycritic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'facebook']" size="lg" class="fb-icon" fixed-width />
-              <span class="full-contact">Facebook</span>
             </a>
           </div>
           <div>

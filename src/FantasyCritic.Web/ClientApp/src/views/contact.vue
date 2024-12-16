@@ -58,22 +58,16 @@
 
       <h2>How to Reach Me Directly</h2>
       <div class="text-well">
-        <ul class="unbulleted-list">
-          <li>
-            <a href="https://twitter.com/fantasy_critic" target="_blank">
-              <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" fixed-width />
-              @fantasy_critic
-            </a>
-          </li>
-          <li>
-            <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
-            elitefusion#8608 (You can find me at the top of the members list in our Discord)
-          </li>
-        </ul>
+        <p>I prefer that people contact me on Discord. It's the only place I check regularly. My username is "elitefusion" and I can be found at the top of our members list in the official server.</p>
+        <p>
+          If for some reason Discord is not an option for you, you can contact me at
+          <a href="mailto:steve.fallon@fantasycritic.games">steve.fallon@fantasycritic.games</a>
+          .
+        </p>
         <h3>Account issues</h3>
         <p>
-          If you have an issue with your account(can't login, can't verify email, etc), please reach out to me directly via DM on Discord or Twitter. Additionally, if one of your league members is
-          having issues with their account, you should have them reach out to me directly, rather than contacting me on their behalf.
+          If you have an issue with your account(can't login, can't verify email, etc), please reach out to me directly via DM on Discord. Additionally, if one of your league members is having issues
+          with their account, you should have them reach out to me directly, rather than contacting me on their behalf.
         </p>
         <h3>Other Issues</h3>
         <p>

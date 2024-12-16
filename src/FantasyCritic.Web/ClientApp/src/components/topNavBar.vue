@@ -67,10 +67,6 @@
           <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
           <span class="brand-text">Patreon</span>
         </b-nav-item>
-        <b-nav-item href="https://twitter.com/fantasy_critic" target="_blank">
-          <font-awesome-icon :icon="['fab', 'twitter']" size="lg" class="twitter-icon" fixed-width />
-          <span class="brand-text">Twitter</span>
-        </b-nav-item>
         <b-nav-item href="https://discord.gg/dNa7DD3" target="_blank">
           <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" fixed-width />
           <span class="brand-text">Discord</span>
