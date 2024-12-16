@@ -51,9 +51,14 @@
                   <input id="ggLink" v-model="ggLink" name="ggLink" class="form-control input" />
                 </div>
 
+                <b-alert variant="warning" :show="invalidOpenCriticRequest">
+                  If you are requesting an Open Critic link, please include the link here. It is possible that Open Critic may not have created a page yet if this game was recently released or is a
+                  lesser known title.
+                </b-alert>
+
                 <div class="form-group">
                   <div class="right-button">
-                    <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || isBusy" />
+                    <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || isBusy || invalidOpenCriticRequest" />
                   </div>
                 </div>
               </form>
@@ -145,6 +150,21 @@ export default {
     }
 
     await this.fetchMyRequests();
+  },
+  computed: {
+    invalidOpenCriticRequest() {
+      if (!this.requestNote) {
+        return false;
+      }
+
+      if (this.openCriticLink) {
+        return false;
+      }
+
+      const searchStrings = ['Open Critic', 'OpenCritic', 'OC'];
+
+      return searchStrings.some((x) => this.requestNote.toLocaleUpperCase().includes(x.toLocaleUpperCase()));
+    }
   },
   methods: {
     async fetchMyRequests() {
