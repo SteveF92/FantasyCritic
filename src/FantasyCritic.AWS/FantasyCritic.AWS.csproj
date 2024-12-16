@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -12,12 +12,12 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudWatchLogs" Version="*" />
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.305.40" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.313.16" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.309.7" />
-    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.304.4" />
-    <PackageReference Include="AWSSDK.SimpleEmailV2" Version="3.7.304.3" />
-    <PackageReference Include="Serilog.Sinks.AwsCloudWatch" Version="4.2.29" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.411.7" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.409.6" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.410.6" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.64" />
+    <PackageReference Include="AWSSDK.SimpleEmailV2" Version="3.7.406.2" />
+    <PackageReference Include="Serilog.Sinks.AwsCloudWatch" Version="4.3.37" />
   </ItemGroup>
 
   <ItemGroup>
