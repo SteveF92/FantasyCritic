@@ -37,7 +37,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(14.8095m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(14.8095m));
     }
 
     [Test]
@@ -57,7 +57,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(13.8095m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(13.8095m));
     }
 
     [Test]
@@ -77,7 +77,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(29.625m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(29.625m));
     }
 
     [Test]
@@ -97,7 +97,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(-4.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(-4.1441m));
     }
 
     [Test]
@@ -117,7 +117,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(-14.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(-14.1441m));
     }
 
     [Test]
@@ -137,7 +137,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(-24.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(-24.1441m));
     }
 
     [Test]
@@ -157,7 +157,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(-34.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(-34.1441m));
     }
 
     [Test]
@@ -177,7 +177,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(-44.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(-44.1441m));
     }
 
     [Test]
@@ -197,7 +197,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(-54.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(-54.1441m));
     }
 
     [Test]
@@ -217,7 +217,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(-64.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(-64.1441m));
     }
 
     [Test]
@@ -237,7 +237,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(null, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(null));
     }
 
     [Test]
@@ -257,7 +257,7 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, false, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(0m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(0m));
     }
 
     [Test]
@@ -277,6 +277,6 @@ public class LegacyScoringTests
         PublisherSlot testSlot = new PublisherSlot(1, 1, true, null, testGame);
         decimal? fantasyPoints = testSlot.GetFantasyPoints(true, _releaseSystem, _scoringSystem, fakeToday);
 
-        Assert.AreEqual(4.1441m, fantasyPoints);
+        Assert.That(fantasyPoints, Is.EqualTo(4.1441m));
     }
 }

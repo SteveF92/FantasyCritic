@@ -30,6 +30,6 @@ public class TimingTests
     {
         IClock fakeClock = new FakeClock(GetInstantFromEasternString(instantString));
         var isBidLock = fakeClock.IsBidLockWindow();
-        Assert.AreEqual(expected, isBidLock);
+        Assert.That(isBidLock, Is.EqualTo(expected));
     }
 }

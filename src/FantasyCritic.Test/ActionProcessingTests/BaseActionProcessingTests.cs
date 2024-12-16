@@ -195,6 +195,6 @@ public abstract class BaseActionProcessingTests
     [Test]
     public void NoSpecialAuctionsTest()
     {
-        Assert.AreEqual(0, _results[ActionProcessingSetName].SpecialAuctionsProcessed.Count);
+        Assert.That(_results[ActionProcessingSetName].SpecialAuctionsProcessed, Is.Empty);
     }
 }

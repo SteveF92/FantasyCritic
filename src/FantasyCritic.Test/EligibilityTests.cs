@@ -70,7 +70,7 @@ public class EligibilityTests
         var slotTags = new List<LeagueTagStatus>();
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -89,8 +89,8 @@ public class EligibilityTests
         var slotTags = new List<LeagueTagStatus>();
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because the Port tag has been banned", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because the Port tag has been banned"));
     }
 
     [Test]
@@ -112,7 +112,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -134,8 +134,8 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (New Gaming Franchise)", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because it does not have any of the following required tags: (New Gaming Franchise)"));
     }
 
     [Test]
@@ -160,7 +160,7 @@ public class EligibilityTests
         var slotTags = new List<LeagueTagStatus>();
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -185,8 +185,8 @@ public class EligibilityTests
         var slotTags = new List<LeagueTagStatus>();
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because the Currently in Early Access tag has been banned", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because the Currently in Early Access tag has been banned"));
     }
 
     [Test]
@@ -210,7 +210,7 @@ public class EligibilityTests
         var slotTags = new List<LeagueTagStatus>();
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -238,7 +238,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -268,7 +268,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -300,7 +300,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -329,7 +329,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -359,8 +359,8 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because the Unannounced Game tag has been banned", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because the Unannounced Game tag has been banned"));
     }
 
     [Test]
@@ -388,7 +388,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -417,7 +417,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -445,8 +445,8 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Unannounced Game)", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because it does not have any of the following required tags: (Unannounced Game)"));
     }
 
     [Test]
@@ -475,7 +475,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -505,8 +505,8 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because the Remake tag has been banned", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because the Remake tag has been banned"));
     }
 
     [Test]
@@ -534,7 +534,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(0, claimErrors.Count);
+        Assert.That(claimErrors.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -562,8 +562,8 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Unannounced Game)", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because it does not have any of the following required tags: (Unannounced Game)"));
     }
 
     [Test]
@@ -592,8 +592,8 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Remake)", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because it does not have any of the following required tags: (Remake)"));
     }
 
     [Test]
@@ -621,7 +621,7 @@ public class EligibilityTests
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
-        Assert.AreEqual(1, claimErrors.Count);
-        Assert.AreEqual("That game is not eligible because it does not have any of the following required tags: (Remake)", claimErrors[0].Error);
+        Assert.That(claimErrors.Count, Is.EqualTo(1));
+        Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because it does not have any of the following required tags: (Remake)"));
     }
 }
