@@ -406,7 +406,7 @@ public class GameAcquisitionService
             }
 
             var masterGameYear = masterGameYearDictionary[bid.MasterGame.MasterGameID];
-            var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, leagueYear.Year, false, currentDate, dateOfPotentialAcquisition,
+            var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, false, currentDate, dateOfPotentialAcquisition,
                 bid.CounterPick, false, false, false);
             masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
         }
@@ -462,7 +462,7 @@ public class GameAcquisitionService
             foreach (var bid in distinctBids)
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYearOrThrow(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);
-                var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame, activeBidsForLeague.Key.Year,
+                var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(activeBidsForLeague.Key, bid.MasterGame,
                     false, currentDate, dateOfPotentialAcquisition, bid.CounterPick, false, false, false);
                 masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
             }

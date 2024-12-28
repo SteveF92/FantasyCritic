@@ -24,7 +24,7 @@ public static class GameEligibilityFunctions
 
         if (request.MasterGame is not null)
         {
-            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate,
+            var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, false, currentDate,
                 dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease, drafting, partOfSpecialAuction);
             claimErrors.AddRange(masterGameErrors);
         }
@@ -107,7 +107,7 @@ public static class GameEligibilityFunctions
         var basicErrors = GetBasicErrors(leagueYear.League, publisher);
         dropErrors.AddRange(basicErrors);
 
-        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, true, currentDate, dateOfPotentialDrop, false, false, false, false);
+        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, true, currentDate, dateOfPotentialDrop, false, false, false, false);
         dropErrors.AddRange(masterGameErrors);
 
         //Drop limits
@@ -169,7 +169,7 @@ public static class GameEligibilityFunctions
             throw new Exception($"Invalid conditional drop for bid: {request.BidID}");
         }
 
-        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.MasterGame.MasterGame, leagueYear.Year,
+        var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.ConditionalDropPublisherGame.MasterGame.MasterGame,
             true, currentDate, dateOfPotentialDrop, false, false, false, false);
         dropErrors.AddRange(masterGameErrors);
 
@@ -223,7 +223,7 @@ public static class GameEligibilityFunctions
 
         var dateOfPotentialAcquisition = currentDate;
 
-        IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, leagueYear.Year, false, currentDate,
+        IReadOnlyList<ClaimError> masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, false, currentDate,
             dateOfPotentialAcquisition, request.PublisherGame.CounterPick, false, false, false);
         associationErrors.AddRange(masterGameErrors);
 
@@ -291,7 +291,7 @@ public static class GameEligibilityFunctions
         return claimErrors;
     }
 
-    public static IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, int year, bool dropping,
+    public static IReadOnlyList<ClaimError> GetGenericSlotMasterGameErrors(LeagueYear leagueYear, MasterGame masterGame, bool dropping,
         LocalDate currentDate, LocalDate dateOfPotentialAcquisition, bool counterPick, bool counterPickedGameIsManualWillNotRelease,
         bool drafting, bool partOfSpecialAuction)
     {
@@ -321,6 +321,7 @@ public static class GameEligibilityFunctions
             }
         }
 
+        int year = leagueYear.Year;
         if (released && masterGame.ReleaseDate.HasValue && masterGame.ReleaseDate.Value.Year < year)
         {
             claimErrors.Add(new ClaimError($"That game was released prior to the start of {year}.", false));
@@ -344,8 +345,7 @@ public static class GameEligibilityFunctions
             var releaseStatus = masterGame.GetWillReleaseStatus(year);
             if (releaseStatus == WillReleaseStatus.MightRelease)
             {
-                if (leagueYear.Options.MightReleaseDroppableDate.HasValue && dateOfPotentialAcquisition >=
-                    leagueYear.Options.MightReleaseDroppableDate.Value.InYear(dateOfPotentialAcquisition.Year))
+                if (leagueYear.MightReleaseDroppableDate.HasValue && dateOfPotentialAcquisition >= leagueYear.MightReleaseDroppableDate.Value)
                 {
                     claimErrors.Add(new ClaimError($"That game may not release in {year}, and your league is past the 'might release droppable' date, therefore this game cannot be counter picked.", false));
                 }
