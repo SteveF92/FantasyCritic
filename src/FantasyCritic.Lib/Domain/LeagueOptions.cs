@@ -294,7 +294,7 @@ public class LeagueOptions
 
     public LeagueOptions UpdateOptionsForYear(int requestYear)
     {
-        var newScoringSystem = ScoringSystem.GetDefaultScoringSystem(requestYear);
+        var newScoringSystem = ScoringSystem.SupportedInYear(requestYear) ? ScoringSystem : ScoringSystem.GetDefaultScoringSystem(requestYear);
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
             AllowMoveIntoIneligible, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem,
