@@ -8,6 +8,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -1134,6 +1135,46 @@ public class DiscordPushService
 
             var embed = _discordFormatter.BuildRegularEmbed(title, "", null, embedFieldBuilders, leagueLink);
             preparedMessages.Add(new PreparedDiscordMessage(textChannel, roleToMention?.Mention ?? "", embed));
+        }
+
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+    }
+
+    public async Task SendSuperDropMessages(List<Publisher> publishers)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+
+        var preparedMessages = new List<PreparedDiscordMessage>();
+
+        foreach (var publisher in publishers)
+        {
+            var leagueID = publisher.LeagueYearKey.LeagueID;
+            var leagueChannels = await discordRepo.GetLeagueChannels(leagueID);
+            if (!leagueChannels.Any())
+            {
+                return;
+            }
+
+
+            foreach (var leagueChannel in leagueChannels)
+            {
+                var guild = _client.GetGuild(leagueChannel.GuildID);
+                var channel = guild?.GetChannel(leagueChannel.ChannelID);
+                if (channel is not SocketTextChannel textChannel)
+                {
+                    continue;
+                }
+                preparedMessages.Add(new PreparedDiscordMessage(textChannel, $"**Super Drop Granted** to {publisher.GetPublisherAndUserDisplayName()}"));
+            }
+
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);

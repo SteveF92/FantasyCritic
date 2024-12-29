@@ -621,6 +621,7 @@ public class AdminService
         }
 
         await _fantasyCriticRepo.GrantSuperDrops(publishersToGrantSuperDrop, superDropActions);
+        await _discordPushService.SendSuperDropMessages(publishersToGrantSuperDrop);
     }
 
     public async Task ExpireTrades()
