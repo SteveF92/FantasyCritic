@@ -363,14 +363,33 @@ public static class GameEligibilityFunctions
         bool releaseRequiredForPoints = leagueYear.Options.ReleaseSystem.Equals(ReleaseSystem.MustBeReleased);
         bool willNotReleaseAndMustRelease = willNotRelease && releaseRequiredForPoints;
         bool hasScore = masterGame.CriticScore.HasValue;
-        if (hasScore && !manuallyEligible && !partOfSpecialAuction && !willNotReleaseAndMustRelease)
+        if (dropping)
         {
-            claimErrors.Add(new ClaimError("That game already has a score.", true));
+            if (!willNotReleaseAndMustRelease)
+            {
+                if (hasScore)
+                {
+                    claimErrors.Add(new ClaimError("That game already has a score.", true));
+                }
+                else if (masterGame.HasAnyReviews)
+                {
+                    claimErrors.Add(new ClaimError("That game already has reviews.", true));
+                }
+            }
         }
-
-        if (!hasScore && masterGame.HasAnyReviews && !manuallyEligible && !partOfSpecialAuction)
+        else
         {
-            claimErrors.Add(new ClaimError("That game already has reviews.", true));
+            if (!manuallyEligible && !partOfSpecialAuction)
+            {
+                if (hasScore)
+                {
+                    claimErrors.Add(new ClaimError("That game already has a score.", true));
+                }
+                else if (masterGame.HasAnyReviews)
+                {
+                    claimErrors.Add(new ClaimError("That game already has reviews.", true));
+                }
+            }
         }
 
         return claimErrors;
