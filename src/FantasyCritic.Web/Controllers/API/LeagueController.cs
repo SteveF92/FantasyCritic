@@ -1,5 +1,6 @@
 using System.Text;
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -36,10 +37,12 @@ public class LeagueController : BaseLeagueController
     private readonly ILogger<LeagueController> _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly TradeService _tradeService;
+    private readonly DiscordPushService _discordPushService;
 
     public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
-        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService, ConferenceService conferenceService)
+        IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService, ConferenceService conferenceService,
+        DiscordPushService discordPushService)
         : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService)
     {
         _draftService = draftService;
@@ -50,6 +53,7 @@ public class LeagueController : BaseLeagueController
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
         _tradeService = tradeService;
+        _discordPushService = discordPushService;
     }
 
     [AllowAnonymous]
@@ -167,7 +171,7 @@ public class LeagueController : BaseLeagueController
         {
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
-        
+
         var counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
         var currentInstant = _clock.GetCurrentInstant();
         var currentDate = currentInstant.ToEasternDate();
@@ -773,6 +777,16 @@ public class LeagueController : BaseLeagueController
         var draftResult = await _draftService.DraftGame(domainRequest, false, request.AllowIneligibleSlot);
         var viewModel = new PlayerClaimResultViewModel(draftResult.Result);
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
+
+        if (!draftResult.DraftComplete)
+        {
+            var updatedDraftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+            if (updatedDraftStatus != null)
+            {
+                await _discordPushService.SendNextDraftPublisherMessage(leagueYear, updatedDraftStatus.NextDraftPublisher,
+                    updatedDraftStatus.DraftPhase.Equals(DraftPhase.CounterPicks));
+            }
+        }
 
         if (draftResult.DraftComplete)
         {

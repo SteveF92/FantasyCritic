@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -29,12 +30,13 @@ public class LeagueManagerController : BaseLeagueController
     private readonly EmailSendingService _emailSendingService;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly TradeService _tradeService;
+    private readonly DiscordPushService _discordPushService;
     private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
         EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService, TradeService tradeService, ConferenceService conferenceService,
-        EnvironmentConfiguration environmentConfiguration)
+        DiscordPushService discordPushService, EnvironmentConfiguration environmentConfiguration)
         : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService)
     {
         _draftService = draftService;
@@ -44,6 +46,7 @@ public class LeagueManagerController : BaseLeagueController
         _emailSendingService = emailSendingService;
         _gameAcquisitionService = gameAcquisitionService;
         _tradeService = tradeService;
+        _discordPushService = discordPushService;
         _environmentConfiguration = environmentConfiguration;
     }
 
@@ -751,6 +754,15 @@ public class LeagueManagerController : BaseLeagueController
         if (draftComplete)
         {
             await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("DraftFinished");
+        }
+        else
+        {
+            await _discordPushService.SendDraftStartEndMessage(leagueYear, false);
+            var firstDraftPublisher = leagueYear.Publishers.Where(p => p.AutoDraftMode.Equals(AutoDraftMode.Off)).MinBy(r => r.DraftPosition);
+            if (firstDraftPublisher != null)
+            {
+                await _discordPushService.SendNextDraftPublisherMessage(leagueYear, firstDraftPublisher, false);
+            }
         }
 
         return Ok();

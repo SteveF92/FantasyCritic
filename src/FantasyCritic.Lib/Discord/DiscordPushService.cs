@@ -1214,4 +1214,62 @@ public class DiscordPushService
 
         return combinedChannels;
     }
+
+    public async Task SendDraftStartEndMessage(LeagueYear leagueYear, bool isEnding)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+
+        var channels = await GetChannelsForLeague(leagueYear.League.LeagueID, discordRepo);
+        if (!channels.Any())
+        {
+            return;
+        }
+
+        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, $"## The Draft has {(isEnding ? "Completed" : "Begun")}!")).ToList();
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+    }
+
+    public async Task SendNextDraftPublisherMessage(LeagueYear leagueYear, Publisher publisher, bool isDraftingCounterPick)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+        var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
+
+        var channels = await GetChannelsForLeague(leagueYear.League.LeagueID, discordRepo);
+        if (!channels.Any())
+        {
+            return;
+        }
+
+        SocketUser? discordUser = null;
+        var publisherDiscordUser = await GetDiscordUserIdForFantasyCriticUser(publisher.User.ToMinimal(), userStore);
+        if (publisherDiscordUser != null)
+        {
+            discordUser = await _client.GetUserAsync(publisherDiscordUser.Value) as SocketUser;
+        }
+
+        var message = $"Next up to draft a {(isDraftingCounterPick ? "counter " : "")}pick: **{publisher.GetPublisherAndUserDisplayName()}**";
+        if (discordUser != null)
+        {
+            message += $" ({discordUser.Mention})";
+        }
+
+        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, message)).ToList();
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+    }
 }
