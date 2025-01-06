@@ -3132,9 +3132,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             {
                 conferenceID = league.ConferenceID.Value,
                 userID = userIDToAdd,
+                activeYear = leagueYear
             };
 
             await connection.ExecuteAsync("insert ignore into tbl_conference_hasuser(ConferenceID,UserID) VALUES (@conferenceID,@userID);", conferenceUserAddObject, transaction);
+            await connection.ExecuteAsync("insert ignore into tbl_conference_activeplayer(ConferenceID,Year,UserID) VALUES (@conferenceID,@activeYear,@userID);", conferenceUserAddObject, transaction);
         }
     }
 
