@@ -31,8 +31,8 @@
           <b-td>{{ bid.priority }}</b-td>
           <b-td v-if="bid.conditionalDropPublisherGame">{{ bid.conditionalDropPublisherGame.gameName }}</b-td>
           <b-td v-else>None</b-td>
-          <b-td>{{ !bid.allowIneligibleSlot | yesNo }}</b-td>
           <b-td>{{ bid.counterPick | yesNo }}</b-td>
+          <b-td>{{ !bid.allowIneligibleSlot | yesNo }}</b-td>
         </b-tr>
       </draggable>
       <b-tbody v-if="!settingPriority">
