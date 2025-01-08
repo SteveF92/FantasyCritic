@@ -14,11 +14,16 @@ public static class LeagueTagExtensions
     public static IReadOnlyList<ClaimError> GameHasValidTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotSpecificTags,
         MasterGame masterGame, IEnumerable<MasterGameTag> masterGameTags, LocalDate dateOfAcquisition)
     {
+        List<ClaimError> claimErrors = new List<ClaimError>();
+        if (masterGameTags.Any(x => x.Name == "Cancelled"))
+        {
+            claimErrors.Add(new ClaimError("That game is not eligible because it has been cancelled.", true));
+        }
+
         var combinedLeagueTags = CombineTags(leagueTags, slotSpecificTags);
         var bannedTags = combinedLeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).ToList();
         var requiredTags = combinedLeagueTags.Where(x => x.Status.Equals(TagStatus.Required)).ToList();
 
-        List<ClaimError> claimErrors = new List<ClaimError>();
         foreach (var bannedTag in bannedTags)
         {
             if (!bannedTag.GameMeetsTagCriteria(masterGame, masterGameTags, dateOfAcquisition))
