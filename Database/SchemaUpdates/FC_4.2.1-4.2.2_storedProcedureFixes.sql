@@ -15,6 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping structure for procedure fantasycritic.sp_gethomepagedata
+DROP PROCEDURE IF EXISTS `sp_gethomepagedata`;
 DELIMITER //
 CREATE PROCEDURE `sp_gethomepagedata`(
 	IN `P_UserID` CHAR(36)
@@ -178,6 +179,7 @@ END//
 DELIMITER ;
 
 -- Dumping structure for procedure fantasycritic.sp_getleaguesforuser
+DROP PROCEDURE IF EXISTS `sp_getleaguesforuser`;
 DELIMITER //
 CREATE PROCEDURE `sp_getleaguesforuser`(
 	IN `P_UserID` CHAR(36)
