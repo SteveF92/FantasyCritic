@@ -1140,7 +1140,7 @@ public class DiscordPushService
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
-    public async Task SendSuperDropMessages(List<Publisher> publishers)
+    public async Task SendSuperDropMessages(IReadOnlyList<Publisher> publishers)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -1160,9 +1160,8 @@ public class DiscordPushService
             var leagueChannels = await discordRepo.GetLeagueChannels(leagueID);
             if (!leagueChannels.Any())
             {
-                return;
+                continue;
             }
-
 
             foreach (var leagueChannel in leagueChannels)
             {
@@ -1174,7 +1173,6 @@ public class DiscordPushService
                 }
                 preparedMessages.Add(new PreparedDiscordMessage(textChannel, $"**Super Drop Granted** to {publisher.GetPublisherAndUserDisplayName()}"));
             }
-
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
