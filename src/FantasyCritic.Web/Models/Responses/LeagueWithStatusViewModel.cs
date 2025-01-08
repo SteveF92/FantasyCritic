@@ -23,6 +23,8 @@ public class LeagueWithStatusViewModel
         CustomRulesLeague = league.CustomRulesLeague;
         UserIsInLeague = leagueStatus.UserIsInLeague;
         UserIsFollowingLeague = leagueStatus.UserIsFollowingLeague;
+        UserIsActiveInMostRecentYearForLeague = leagueStatus.UserIsActiveInMostRecentYearForLeague;
+        LeagueIsActiveInActiveYear = leagueStatus.LeagueIsActiveInActiveYear;
         OneShotMode = leagueStatus.MostRecentYearOneShot;
     }
 
@@ -40,5 +42,9 @@ public class LeagueWithStatusViewModel
     public bool Archived { get; }
     public bool UserIsInLeague { get; }
     public bool UserIsFollowingLeague { get; }
+    public bool UserIsActiveInMostRecentYearForLeague { get; }
+    public bool LeagueIsActiveInActiveYear { get; }
     public bool OneShotMode { get; }
+
+    public override string ToString() => $"{LeagueName}|{ActiveYear}";
 }

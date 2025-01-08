@@ -38,12 +38,14 @@ internal class LeagueEntity
 
     public bool UserIsInLeague { get; set; }
     public bool UserIsFollowingLeague { get; set; }
+    public bool UserIsActiveInMostRecentYearForLeague { get; set; }
+    public bool LeagueIsActiveInActiveYear { get; set; }
 
     public string ManagerDisplayName { get; set; } = null!;
     public string ManagerEmailAddress { get; set; } = null!;
 
     public bool MostRecentYearOneShot { get; set; }
-
+    
     public League ToDomain(IEnumerable<int> years)
     {
         var minimalManager = new MinimalFantasyCriticUser(LeagueManager, ManagerDisplayName, ManagerEmailAddress);
