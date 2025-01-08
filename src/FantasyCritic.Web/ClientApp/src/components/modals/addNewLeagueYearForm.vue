@@ -50,7 +50,7 @@ export default {
       try {
         await axios.post('/api/leagueManager/AddNewLeagueYear', model);
         this.$refs.addNewLeagueYearRef.hide();
-        this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.selectedYear }, query: { freshSettings: true } });
+        this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.selectedYear } });
       } catch (error) {
         this.error = error.response.data;
       }
