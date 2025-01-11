@@ -148,7 +148,7 @@ export default {
       this.desiredBidPriorities = this.currentBids;
     }
   },
-  mounted() {
+  created() {
     this.clearData();
   },
   methods: {
@@ -189,7 +189,6 @@ export default {
           if (!this.editBidResult.success) {
             return;
           }
-          this.$refs.currentBidsFormRef.hide();
           this.notifyAction('Bid for ' + this.bidBeingEdited.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
           this.clearData();
         })
