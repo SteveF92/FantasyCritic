@@ -947,7 +947,7 @@ public class DiscordPushService
         };
 
         var externalLogins = await userStore.GetLoginsAsync(fakedFullUser, CancellationToken.None);
-        var discordProviderKey = externalLogins.SingleOrDefault(x => x.LoginProvider == "discord")?.ProviderKey;
+        var discordProviderKey = externalLogins.SingleOrDefault(x => x.LoginProvider == "Discord")?.ProviderKey;
         if (discordProviderKey is not null)
         {
             return ulong.TryParse(discordProviderKey, out var discordUserId)
