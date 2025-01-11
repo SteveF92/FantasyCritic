@@ -2,18 +2,18 @@ namespace FantasyCritic.Lib.Domain;
 
 public record MyGameNewsSet(IReadOnlyList<SingleGameNews> UpcomingGames, IReadOnlyList<SingleGameNews> RecentGames)
 {
-    public static MyGameNewsSet BuildMyGameNews(IReadOnlyList<SingleGameNews> myGameDetails, LocalDate currentDate)
+    public static MyGameNewsSet BuildMyGameNews(IReadOnlyList<SingleGameNews> myGameDetails, LocalDate currentDate, int count)
     {
         var upcomingReleases = myGameDetails
             .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() > currentDate)
             .OrderBy(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
-            .Take(10)
+            .Take(count)
             .ToList();
 
         var recentReleases = myGameDetails
             .Where(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate() <= currentDate)
             .OrderByDescending(x => x.MasterGameYear.MasterGame.GetDefiniteMaximumReleaseDate())
-            .Take(10)
+            .Take(count)
             .ToList();
 
         return new MyGameNewsSet(upcomingReleases, recentReleases);

@@ -21,7 +21,8 @@
         :height="28" />
     </span>
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
-      <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small>
+      <b-pagination v-model="currentPage" :total-rows="gameNewsItems.length" :per-page="perPage" aria-controls="my-table" align="fill" size="sm" class="my-0 pagination-dark mb-1"></b-pagination>
+      <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small :per-page="perPage" :current-page="currentPage">
         <template #cell(gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
@@ -51,6 +52,7 @@
         </template>
       </b-table>
     </div>
+    <div v-else><h4>No Games Found</h4></div>
   </div>
 </template>
 <script>
@@ -72,6 +74,8 @@ export default {
       recentReleasesMode: false,
       sortBy: 'maximumReleaseDate',
       sortDesc: false,
+      currentPage: 1,
+      perPage: 10,
       baseGameNewsFields: [
         { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }

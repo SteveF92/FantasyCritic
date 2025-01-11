@@ -69,7 +69,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
             }
 
             var myGameNews = await _publisherService.GetMyGameNews(user);
-            var myGameNewsSet = MyGameNewsSet.BuildMyGameNews(myGameNews, dateToCheck);
+            var myGameNewsSet = MyGameNewsSet.BuildMyGameNews(myGameNews, dateToCheck, 10);
             var gameNewsToUse = isRecentReleases ? myGameNewsSet.RecentGames : myGameNewsSet.UpcomingGames;
             var gameMessages = gameNewsToUse
                 .Select(x => DiscordSharedMessageUtilities.BuildGameWithPublishersMessage(x, _baseAddress))

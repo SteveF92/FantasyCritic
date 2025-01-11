@@ -18,7 +18,7 @@ public static class GameNewsFunctions
                 .Where(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate() < tomorrow)
                 .OrderByDescending(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate())
                 .GroupBy(x => x.MasterGame!)
-                .Take(10);
+                .Take(50);
         }
         else
         {
@@ -27,7 +27,7 @@ public static class GameNewsFunctions
                 .Where(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate() > yesterday)
                 .OrderBy(x => x.MasterGame!.MasterGame.GetDefiniteMaximumReleaseDate())
                 .GroupBy(x => x.MasterGame!)
-                .Take(10);
+                .Take(50);
         }
 
         return orderedByReleaseDate.ToList();

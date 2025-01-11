@@ -831,7 +831,7 @@ public class LeagueController : BaseLeagueController
         var currentDate = _clock.GetToday();
 
         var myGameNews = await _publisherService.GetMyGameNews(currentUser);
-        var myGameNewsSet = MyGameNewsSet.BuildMyGameNews(myGameNews, currentDate);
+        var myGameNewsSet = MyGameNewsSet.BuildMyGameNews(myGameNews, currentDate, 50);
         var myGameNewsViewModel = new GameNewsViewModel(myGameNewsSet, currentDate);
         return myGameNewsViewModel;
     }

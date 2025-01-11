@@ -80,7 +80,7 @@ public class CombinedDataController : FantasyCriticController
         }
 
         //My Game News
-        var myGameNews = MyGameNewsSet.BuildMyGameNews(homePageData.MyGameDetails, currentDate);
+        var myGameNews = MyGameNewsSet.BuildMyGameNews(homePageData.MyGameDetails, currentDate, 50);
         var myGameNewsViewModel = new GameNewsViewModel(myGameNews, currentDate);
 
         //Public Leagues
