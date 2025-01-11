@@ -63,8 +63,8 @@ export default {
       midYearStandingsFields: [
         { key: 'userName', label: 'User', thClass: 'bg-primary' },
         { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
         { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
+        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
         { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
         { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
         { key: 'budget', label: 'Budget', thClass: 'bg-primary' }

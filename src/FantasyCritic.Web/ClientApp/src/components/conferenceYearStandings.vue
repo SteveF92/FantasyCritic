@@ -38,8 +38,8 @@ export default {
         { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
         { key: 'displayName', label: 'User', thClass: 'bg-primary' },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
-        { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true }
+        { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
+        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true }
       ],
       sortBy: 'totalFantasyPoints',
       sortDesc: true
