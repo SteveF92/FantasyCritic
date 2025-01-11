@@ -1,13 +1,16 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Helpers;
+using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models.Requests.Conferences;
 using FantasyCritic.Web.Models.Responses.Conferences;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -21,8 +24,9 @@ public class ConferenceController : BaseLeagueController
     private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public ConferenceController(IClock clock, ILogger<ConferenceController> logger, FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService,
-        InterLeagueService interLeagueService, LeagueMemberService leagueMemberService, ConferenceService conferenceService, EnvironmentConfiguration environmentConfiguration)
-        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService)
+        InterLeagueService interLeagueService, LeagueMemberService leagueMemberService, ConferenceService conferenceService, EnvironmentConfiguration environmentConfiguration,
+        DiscordPushService discordPushService, IHubContext<UpdateHub> hubContext)
+        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService, discordPushService, hubContext)
     {
         _clock = clock;
         _logger = logger;

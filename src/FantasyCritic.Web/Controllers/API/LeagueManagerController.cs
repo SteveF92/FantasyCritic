@@ -37,7 +37,7 @@ public class LeagueManagerController : BaseLeagueController
         LeagueMemberService leagueMemberService, DraftService draftService, PublisherService publisherService, IClock clock, IHubContext<UpdateHub> hubContext,
         EmailSendingService emailSendingService, GameAcquisitionService gameAcquisitionService, TradeService tradeService, ConferenceService conferenceService,
         DiscordPushService discordPushService, EnvironmentConfiguration environmentConfiguration)
-        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService)
+        : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService, discordPushService, hubContext)
     {
         _draftService = draftService;
         _publisherService = publisherService;
@@ -748,22 +748,10 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
-        var draftComplete = await _draftService.StartDraft(leagueYear);
-        await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
+        var startDraftResult = await _draftService.StartDraft(leagueYear);
+        await _discordPushService.SendDraftStartEndMessage(leagueYear, false);
 
-        if (draftComplete)
-        {
-            await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("DraftFinished");
-        }
-        else
-        {
-            await _discordPushService.SendDraftStartEndMessage(leagueYear, false);
-            var firstDraftPublisher = leagueYear.Publishers.Where(p => p.AutoDraftMode.Equals(AutoDraftMode.Off)).MinBy(r => r.DraftPosition);
-            if (firstDraftPublisher != null)
-            {
-                await _discordPushService.SendNextDraftPublisherMessage(leagueYear, firstDraftPublisher, false);
-            }
-        }
+        await PushDraftMessages(startDraftResult.AutoDraftResult.UpdatedLeagueYear, startDraftResult.DraftComplete);
 
         return Ok();
     }
@@ -881,14 +869,10 @@ public class LeagueManagerController : BaseLeagueController
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false,
             masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
-        var result = await _draftService.DraftGame(domainRequest, true, request.AllowIneligibleSlot);
-        var viewModel = new ManagerClaimResultViewModel(result.Result);
-        await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
+        var draftResult = await _draftService.DraftGame(domainRequest, true, request.AllowIneligibleSlot);
+        var viewModel = new ManagerClaimResultViewModel(draftResult.Result);
 
-        if (result.DraftComplete)
-        {
-            await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("DraftFinished");
-        }
+        await PushDraftMessages(draftResult.AuthDraftResult.UpdatedLeagueYear, draftResult.DraftComplete);
 
         return Ok(viewModel);
     }

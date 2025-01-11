@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
@@ -35,13 +36,13 @@ public class DraftService
         _discordPushService = discordPushService;
     }
 
-    public async Task<bool> StartDraft(LeagueYear leagueYear)
+    public async Task<StartDraftResult> StartDraft(LeagueYear leagueYear)
     {
         await _fantasyCriticRepo.StartDraft(leagueYear);
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
         var draftComplete = await CompleteDraft(updatedLeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
-        return draftComplete;
+        return new StartDraftResult(autoDraftResult, draftComplete);
     }
 
     public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
@@ -110,7 +111,7 @@ public class DraftService
         return Result.Success();
     }
 
-    public async Task<(ClaimResult Result, bool DraftComplete)> DraftGame(ClaimGameDomainRequest request, bool managerAction, bool allowIneligibleSlot)
+    public async Task<DraftResult> DraftGame(ClaimGameDomainRequest request, bool managerAction, bool allowIneligibleSlot)
     {
         var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, true, allowIneligibleSlot);
         int standardGamesAdded = 0;
@@ -126,7 +127,7 @@ public class DraftService
 
         var autoDraftResult = await AutoDraftForLeague(request.LeagueYear, standardGamesAdded, counterPicksAdded);
         var draftComplete = await CompleteDraft(request.LeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
-        return (result, draftComplete);
+        return new DraftResult(result, autoDraftResult, draftComplete);
     }
 
     public async Task<bool> RunAutoDraftAndCheckIfComplete(LeagueYear leagueYear)
@@ -141,7 +142,7 @@ public class DraftService
         return draftComplete;
     }
 
-    private async Task<(int StandardGamesAdded, int CounterPicksAdded)> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
+    private async Task<AutoDraftResult> AutoDraftForLeague(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
     {
         int depth = 0;
         while (true)
@@ -152,18 +153,18 @@ public class DraftService
             var draftStatus = DraftFunctions.GetDraftStatus(updatedLeagueYear);
             if (draftStatus is null)
             {
-                return (standardGamesAdded, counterPicksAdded);
+                return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
             var nextPublisher = draftStatus.NextDraftPublisher;
             if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
             {
-                return (standardGamesAdded, counterPicksAdded);
+                return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
             if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
             {
-                return (standardGamesAdded, counterPicksAdded);
+                return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
             if (draftStatus.DraftPhase.Equals(DraftPhase.StandardGames))
@@ -205,14 +206,14 @@ public class DraftService
 
                 if (!addedAGame)
                 {
-                    return (standardGamesAdded, counterPicksAdded);
+                    return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
                 }
             }
             else if (draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks))
             {
                 if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.StandardGamesOnly))
                 {
-                    return (standardGamesAdded, counterPicksAdded);
+                    return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
                 }
 
                 var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher)
@@ -238,12 +239,12 @@ public class DraftService
 
                 if (!addedAGame)
                 {
-                    return (standardGamesAdded, counterPicksAdded);
+                    return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
                 }
             }
             else
             {
-                return (standardGamesAdded, counterPicksAdded);
+                return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
             leagueYear = updatedLeagueYear;

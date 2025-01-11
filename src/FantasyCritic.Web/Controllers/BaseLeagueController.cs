@@ -1,7 +1,12 @@
+using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Helpers;
+using Microsoft.AspNetCore.SignalR;
+using FantasyCritic.Web.Hubs;
 
 namespace FantasyCritic.Web.Controllers;
 public abstract class BaseLeagueController : FantasyCriticController
@@ -10,14 +15,19 @@ public abstract class BaseLeagueController : FantasyCriticController
     protected readonly InterLeagueService _interLeagueService;
     protected readonly LeagueMemberService _leagueMemberService;
     protected readonly ConferenceService _conferenceService;
+    private readonly DiscordPushService _discordPushService;
+    private readonly IHubContext<UpdateHub> _hubContext;
 
     protected BaseLeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
-        LeagueMemberService leagueMemberService, ConferenceService conferenceService) : base(userManager)
+        LeagueMemberService leagueMemberService, ConferenceService conferenceService, DiscordPushService discordPushService, IHubContext<UpdateHub> hubContext)
+        : base(userManager)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
         _leagueMemberService = leagueMemberService;
         _conferenceService = conferenceService;
+        _discordPushService = discordPushService;
+        _hubContext = hubContext;
     }
 
     protected async Task<GenericResultRecord<LeagueRecord>> GetExistingLeague(Guid leagueID, RequiredRelationship requiredRelationship)
@@ -432,5 +442,24 @@ public abstract class BaseLeagueController : FantasyCriticController
         ConferenceUserRelationship relationship = new ConferenceUserRelationship(isInConference, isConferenceManager, userIsAdmin);
         return new GenericResultRecord<ConferenceYearWithSupplementalDataRecord>(new ConferenceYearWithSupplementalDataRecord(currentUserRecord.ToNullable(), conferenceYearData.ConferenceYear,
             conferenceYearData.PlayersInConference, relationship, conferenceYearData.LeagueYears, conferenceYearData.ConferenceYearStandings, conferenceYearData.ManagerMessages), null);
+    }
+
+    protected async Task PushDraftMessages(LeagueYear leagueYear, bool draftComplete)
+    {
+        await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
+        if (draftComplete)
+        {
+            var updatedDraftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+            if (updatedDraftStatus != null)
+            {
+                await _discordPushService.SendNextDraftPublisherMessage(leagueYear, updatedDraftStatus.NextDraftPublisher,
+                updatedDraftStatus.DraftPhase.Equals(DraftPhase.CounterPicks));
+            }
+        }
+        else
+        {
+            await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("DraftFinished");
+            await _discordPushService.SendDraftStartEndMessage(leagueYear, true);
+        }
     }
 }
