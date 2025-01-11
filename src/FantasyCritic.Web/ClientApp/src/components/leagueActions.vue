@@ -19,7 +19,7 @@
           <li class="fake-link action">
             <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year } }">See League History</router-link>
           </li>
-          <li v-b-modal="'leagueOptionsModal'" class="fake-link action">See League Options</li>
+          <li v-b-modal="`leagueOptionsModal_${league.leagueID}-${leagueYear.year}`" class="fake-link action">See League Options</li>
           <li v-b-modal="'eligibilityOverridesModal'" class="fake-link action">See Eligibility Overrides</li>
           <li v-b-modal="'tagOverridesModal'" class="fake-link action">See Tag Overrides</li>
         </ul>
@@ -111,7 +111,7 @@
       </div>
     </div>
     <div>
-      <leagueOptionsModal></leagueOptionsModal>
+      <leagueOptionsModal :league="league" :league-year-options="leagueYear.settings" :possible-league-options="possibleLeagueOptions" :supported-year="supportedYear"></leagueOptionsModal>
       <eligibilityOverridesModal></eligibilityOverridesModal>
       <tagOverridesModal></tagOverridesModal>
 
@@ -305,10 +305,6 @@ export default {
 .actions-list {
   list-style: square;
   padding-left: 20px;
-}
-
-.action {
-  color: #d6993a !important;
 }
 
 .action-note {

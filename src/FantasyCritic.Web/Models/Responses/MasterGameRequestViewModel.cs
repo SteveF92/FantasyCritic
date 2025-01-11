@@ -1,10 +1,11 @@
 using FantasyCritic.Lib.SharedSerialization.API;
+using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
 
 public class MasterGameRequestViewModel
 {
-    public MasterGameRequestViewModel(MasterGameRequest domain, LocalDate currentDate)
+    public MasterGameRequestViewModel(MasterGameRequest domain, LocalDate currentDate, IEnumerable<LeagueYear> leagueYearsForRequestingPlayer)
     {
         RequestID = domain.RequestID;
         RequesterDisplayName = domain.User.UserName;
@@ -30,6 +31,7 @@ public class MasterGameRequestViewModel
 
         Hidden = domain.Hidden;
         RequestNote = domain.RequestNote;
+        LeagueOptionsForRequestingPlayer = leagueYearsForRequestingPlayer.Select(x => new LeagueYearSettingsViewModel(x)).ToList();
     }
 
     public Guid RequestID { get; }
@@ -49,4 +51,5 @@ public class MasterGameRequestViewModel
     public FantasyCriticUserViewModel? ResponseUser { get; }
     public MasterGameViewModel? MasterGame { get; }
     public bool Hidden { get; }
+    public IReadOnlyList<LeagueYearSettingsViewModel> LeagueOptionsForRequestingPlayer { get; }
 }

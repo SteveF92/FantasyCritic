@@ -47,6 +47,20 @@
         </div>
         <hr />
       </div>
+      <div v-if="request?.leagueOptionsForRequestingPlayer?.length > 0" class="row">
+        <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
+          <h3>League Options for Requesting Player</h3>
+          <ul>
+            <li v-for="(leagueOptions, index) in request.leagueOptionsForRequestingPlayer" :key="`${leagueOptions.leagueID}-${leagueOptions.year}`">
+              League {{ index + 1 }}
+              <router-link :to="{ name: 'league', params: { leagueid: leagueOptions.leagueID, year: leagueOptions.year } }" class="league-link">(Link)</router-link>
+              <span v-b-modal="`leagueOptionsModal_${leagueOptions.leagueID}-${leagueOptions.year}`" class="fake-link action">(Settings)</span>
+              <leagueOptionsModal :league-year-options="leagueOptions" :supported-year="supportedYears.find((x) => x.year === leagueOptions.year)"></leagueOptionsModal>
+            </li>
+          </ul>
+        </div>
+        <hr />
+      </div>
       <div class="row">
         <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
           <ValidationObserver v-slot="{ invalid }">
@@ -124,11 +138,15 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
+import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
+import BasicMixin from '@/mixins/basicMixin.js';
 
 export default {
   components: {
-    MasterGameTagSelector
+    MasterGameTagSelector,
+    LeagueOptionsModal
   },
+  mixins: [BasicMixin],
   data() {
     return {
       createdGame: null,
@@ -270,6 +288,10 @@ export default {
 
 label {
   font-size: 18px;
+}
+
+.league-link {
+  margin-right: 5px;
 }
 </style>
 <style>

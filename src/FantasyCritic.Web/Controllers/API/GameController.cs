@@ -258,7 +258,7 @@ public class GameController : FantasyCriticController
         IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetMasterGameRequestsForUser(currentUser);
 
         var currentDate = _clock.GetToday();
-        var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, currentDate)).ToList();
+        var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, currentDate, new List<LeagueYear>())).ToList();
         return viewModels;
     }
 

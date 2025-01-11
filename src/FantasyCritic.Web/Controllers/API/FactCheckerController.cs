@@ -19,15 +19,19 @@ public class FactCheckerController : FantasyCriticController
     private readonly InterLeagueService _interLeagueService;
     private readonly IClock _clock;
     private readonly ILogger _logger;
+    private readonly LeagueMemberService _leagueMemberService;
+    private readonly FantasyCriticService _fantasyCriticService;
 
     public FactCheckerController(AdminService adminService, IClock clock, InterLeagueService interLeagueService,
-        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager)
+        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService, FantasyCriticService fantasyCriticService)
         : base(userManager)
     {
         _adminService = adminService;
         _clock = clock;
         _interLeagueService = interLeagueService;
         _logger = logger;
+        _leagueMemberService = leagueMemberService;
+        _fantasyCriticService = fantasyCriticService;
     }
 
     [HttpPost]
@@ -176,7 +180,7 @@ public class FactCheckerController : FantasyCriticController
         IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
 
         var currentDate = _clock.GetToday();
-        var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, currentDate)).OrderBy(x => x.GameName).ToList();
+        var viewModels = requests.Select(x => new MasterGameRequestViewModel(x, currentDate, new List<LeagueYear>())).OrderBy(x => x.GameName).ToList();
         return viewModels;
     }
 
@@ -199,8 +203,28 @@ public class FactCheckerController : FantasyCriticController
             return NotFound();
         }
 
+        var activeYears = (await _interLeagueService.GetSupportedYears()).Where(x => x.OpenForPlay).ToList();
+        var leaguesForUser = await _leagueMemberService.GetLeaguesForUser(request.User);
+        var leagueYears = new List<LeagueYear>();
+        foreach (var league in leaguesForUser)
+        {
+            foreach (var activeYear in activeYears)
+            {
+                if (!league.League.Years.Contains(activeYear.Year))
+                {
+                    continue;
+                }
+
+                var leagueYear = await _fantasyCriticService.GetLeagueYear(league.League.LeagueID, activeYear.Year);
+                if (leagueYear is not null)
+                {
+                    leagueYears.Add(leagueYear);
+                }
+            }
+        }
+
         var currentDate = _clock.GetToday();
-        var vm = new MasterGameRequestViewModel(request, currentDate);
+        var vm = new MasterGameRequestViewModel(request, currentDate, leagueYears);
         return vm;
     }
 
