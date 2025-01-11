@@ -748,8 +748,8 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
-        var startDraftResult = await _draftService.StartDraft(leagueYear);
         await _discordPushService.SendDraftStartEndMessage(leagueYear, false);
+        var startDraftResult = await _draftService.StartDraft(leagueYear);
 
         await PushDraftMessages(startDraftResult.AutoDraftResult.UpdatedLeagueYear, startDraftResult.DraftComplete);
 

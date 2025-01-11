@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
+using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
@@ -1237,7 +1238,7 @@ public class DiscordPushService
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
-    public async Task SendNextDraftPublisherMessage(LeagueYear leagueYear, Publisher publisher, bool isDraftingCounterPick)
+    public async Task SendNextDraftPublisherMessage(LeagueYear leagueYear, DraftStatus updatedDraftStatus)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -1256,20 +1257,66 @@ public class DiscordPushService
             return;
         }
 
-        SocketUser? discordUser = null;
-        var publisherDiscordUser = await GetDiscordUserIdForFantasyCriticUser(publisher.User.ToMinimal(), userStore);
-        if (publisherDiscordUser != null)
+        var nextPublisherUp = updatedDraftStatus.NextDraftPublisher;
+        var isDraftingCounterPick = updatedDraftStatus.DraftPhase.Equals(DraftPhase.CounterPicks);
+        var sendRepeatDraftPublisherMessage = ShouldSendRepeatDraftPublisherMessage(updatedDraftStatus);
+        if (!sendRepeatDraftPublisherMessage)
         {
-            discordUser = await _client.GetUserAsync(publisherDiscordUser.Value) as SocketUser;
+            SocketUser? discordUser = null;
+            var publisherDiscordUser = await GetDiscordUserIdForFantasyCriticUser(nextPublisherUp.User.ToMinimal(), userStore);
+            if (publisherDiscordUser != null)
+            {
+                discordUser = await _client.GetUserAsync(publisherDiscordUser.Value) as SocketUser;
+            }
+
+            var message = $"Next up to draft a {(isDraftingCounterPick ? "counter " : "")}pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
+            if (discordUser != null)
+            {
+                message += $" ({discordUser.Mention})";
+            }
+
+            var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, message)).ToList();
+            await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+        }
+        else
+        {
+            var message = $"Up for another pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
+            if (isDraftingCounterPick)
+            {
+                var previousGameWasCounterPick = updatedDraftStatus.PreviousDraftPublisher!.PublisherGames.MaxBy(x => x.OverallDraftPosition)!.CounterPick;
+                if (!previousGameWasCounterPick)
+                {
+                    message = $"Up for another pick, this time a counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
+                }
+                else
+                {
+                    message = $"Up for another counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
+                }
+            }
+
+            var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, message)).ToList();
+            await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+        }
+    }
+
+    private static bool ShouldSendRepeatDraftPublisherMessage(DraftStatus updatedDraftStatus)
+    {
+        if (updatedDraftStatus.PreviousDraftPublisher is null)
+        {
+            return false;
         }
 
-        var message = $"Next up to draft a {(isDraftingCounterPick ? "counter " : "")}pick: **{publisher.GetPublisherAndUserDisplayName()}**";
-        if (discordUser != null)
+        if (updatedDraftStatus.PreviousDraftPublisher.PublisherID != updatedDraftStatus.NextDraftPublisher.PublisherID)
         {
-            message += $" ({discordUser.Mention})";
+            return false;
         }
 
-        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, message)).ToList();
-        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+        var mostRecentDraftedGameIsCounterPick = updatedDraftStatus.NextDraftPublisher.PublisherGames.MaxBy(x => x.Timestamp)?.CounterPick ?? false;
+        if (mostRecentDraftedGameIsCounterPick && updatedDraftStatus.NextDraftPublisher.AutoDraftMode.Equals(AutoDraftMode.StandardGamesOnly))
+        {
+            return false;
+        }
+
+        return true;
     }
 }

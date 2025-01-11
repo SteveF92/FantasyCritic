@@ -449,17 +449,16 @@ public abstract class BaseLeagueController : FantasyCriticController
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
         if (draftComplete)
         {
-            var updatedDraftStatus = DraftFunctions.GetDraftStatus(leagueYear);
-            if (updatedDraftStatus != null)
-            {
-                await _discordPushService.SendNextDraftPublisherMessage(leagueYear, updatedDraftStatus.NextDraftPublisher,
-                updatedDraftStatus.DraftPhase.Equals(DraftPhase.CounterPicks));
-            }
+            await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("DraftFinished");
+            await _discordPushService.SendDraftStartEndMessage(leagueYear, true);
         }
         else
         {
-            await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("DraftFinished");
-            await _discordPushService.SendDraftStartEndMessage(leagueYear, true);
+            var updatedDraftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+            if (updatedDraftStatus != null)
+            {
+                await _discordPushService.SendNextDraftPublisherMessage(leagueYear, updatedDraftStatus);
+            }
         }
     }
 }

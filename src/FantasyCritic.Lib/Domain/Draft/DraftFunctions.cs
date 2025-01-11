@@ -76,9 +76,19 @@ public static class DraftFunctions
         }
 
         var nextDraftPublisher = GetNextDraftPublisher(leagueYear);
+        Publisher? previousDraftPublisher = null;
+        if (leagueYear.Publishers.Any(x => x.PublisherGames.Any()))
+        {
+            var mostRecentGame = leagueYear.Publishers.SelectMany(x => x.PublisherGames).MaxBy(x => x.Timestamp);
+            if (mostRecentGame is not null)
+            {
+                previousDraftPublisher = leagueYear.Publishers.Single(x => x.PublisherID == mostRecentGame.PublisherID);
+            }
+        }
+
         var draftPositionStatus = GetDraftPositionStatus(leagueYear, draftPhase, nextDraftPublisher);
 
-        DraftStatus draftStatus = new DraftStatus(draftPhase, nextDraftPublisher, draftPositionStatus.DraftPosition, draftPositionStatus.OverallDraftPosition);
+        DraftStatus draftStatus = new DraftStatus(draftPhase, nextDraftPublisher, previousDraftPublisher, draftPositionStatus.DraftPosition, draftPositionStatus.OverallDraftPosition);
         return draftStatus;
     }
 
