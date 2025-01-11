@@ -16,6 +16,8 @@ export default {
   },
   actions: {
     async initializeLeaguePage(context, leaguePageParams) {
+      const draftOrderView = localStorage.getItem('draftOrderView');
+      context.commit('setDraftOrderView', draftOrderView === 'true');
       context.commit('clearPublisherStoreData');
       context.commit('clearLeagueStoreData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
@@ -138,6 +140,7 @@ export default {
     },
     setDraftOrderView(state, draftOrderView) {
       state.draftOrderView = draftOrderView;
+      localStorage.setItem('draftOrderView', draftOrderView.toString());
     }
   }
 };
