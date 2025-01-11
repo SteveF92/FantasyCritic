@@ -872,7 +872,10 @@ public class LeagueManagerController : BaseLeagueController
         var draftResult = await _draftService.DraftGame(domainRequest, true, request.AllowIneligibleSlot);
         var viewModel = new ManagerClaimResultViewModel(draftResult.Result);
 
-        await PushDraftMessages(draftResult.AuthDraftResult.UpdatedLeagueYear, draftResult.DraftComplete);
+        if (draftResult.Result.Success)
+        {
+            await PushDraftMessages(draftResult.AuthDraftResult.UpdatedLeagueYear, draftResult.DraftComplete);
+        }
 
         return Ok(viewModel);
     }
