@@ -85,7 +85,6 @@
 </template>
 <script>
 import axios from 'axios';
-import _ from 'lodash';
 
 import LeagueMixin from '@/mixins/leagueMixin.js';
 

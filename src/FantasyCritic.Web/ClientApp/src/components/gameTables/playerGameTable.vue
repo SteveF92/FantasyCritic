@@ -81,7 +81,6 @@
 import GlobalFunctions from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 import PublisherMixin from '@/mixins/publisherMixin.js';
-import _ from 'lodash';
 
 export default {
   components: {
@@ -99,7 +98,7 @@ export default {
       if (!this.sortOrderMode) {
         return this.gameSlots;
       }
-      let slotsWithGames = _.reject(this.publisher.gameSlots, ['publisherGame', null]);
+      let slotsWithGames = this.publisher.gameSlots.filter((x) => x.publisherGame);
       if (this.includeRemovedInSorted) {
         let fakeFormerSlots = [];
 

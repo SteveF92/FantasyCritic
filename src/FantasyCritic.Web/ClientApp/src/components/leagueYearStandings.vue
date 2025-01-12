@@ -48,7 +48,6 @@
 import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import GlobalFunctions from '@/globalFunctions';
-import _ from 'lodash';
 
 export default {
   mixins: [LeagueMixin],

@@ -1,5 +1,4 @@
 import { mapState } from 'vuex';
-import _ from 'lodash';
 import globalFunctions from '@/globalFunctions';
 
 let leagueMixin = {

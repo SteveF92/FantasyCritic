@@ -71,7 +71,6 @@
 
 <script>
 import axios from 'axios';
-import _ from 'lodash';
 
 import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 

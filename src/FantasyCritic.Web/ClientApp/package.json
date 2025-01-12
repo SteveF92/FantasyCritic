@@ -23,7 +23,6 @@
     "bootstrap-vue": "^2.23.1",
     "grapheme-breaker-mjs": "^1.0.4",
     "html2canvas": "^1.4.1",
-    "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "register-service-worker": "^1.7.2",
     "vee-validate": "^3.4.15",

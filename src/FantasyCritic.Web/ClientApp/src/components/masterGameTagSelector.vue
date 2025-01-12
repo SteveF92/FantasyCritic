@@ -20,7 +20,6 @@
 <script>
 import Multiselect from 'vue-multiselect';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import _ from 'lodash';
 
 export default {
   components: {

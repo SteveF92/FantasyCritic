@@ -59,11 +59,11 @@
 </template>
 <script>
 import html2canvas from 'html2canvas';
-import _ from 'lodash';
 
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 import GlobalFunctions from '@/globalFunctions';
+import globalFunctions from '@/globalFunctions';
 
 export default {
   components: {
@@ -87,7 +87,7 @@ export default {
         return this.publisher.gameSlots;
       }
 
-      return _.orderBy(this.publisher.gameSlots, ['counterPick', 'publisherGame.timestamp'], ['asc', 'asc']);
+      return globalFunctions.orderBy(this.publisher.gameSlots, (x) => `${x.counterPick ? '1' : '0'}-${x.publisherGame.timestamp}`);
     },
     iconIsValid() {
       return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);

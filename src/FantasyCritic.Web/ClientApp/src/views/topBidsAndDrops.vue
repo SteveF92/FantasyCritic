@@ -81,9 +81,9 @@
 
 <script>
 import axios from 'axios';
-import _ from 'lodash';
 import moment from 'moment';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import globalFunctions from '@/globalFunctions';
 
 export default {
   components: {
@@ -133,9 +133,8 @@ export default {
         return moment(date).year();
       });
 
-      const uniqueYearsList = _.uniq(yearsList);
-      const sortedYears = _.sortBy(uniqueYearsList).reverse();
-
+      const uniqueYearsList = [...new Set(yearsList)];
+      const sortedYears = globalFunctions.orderBy(uniqueYearsList, (x) => x);
       return sortedYears;
     },
     months() {
@@ -158,15 +157,15 @@ export default {
     },
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
-      return _.orderBy(relevant, ['successfulStandardBids'], ['desc']);
+      return globalFunctions.orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
     },
     topCounterPicks() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
-      return _.orderBy(relevant, ['successfulCounterPickBids'], ['desc']);
+      return globalFunctions.orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
     },
     topDrops() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
-      return _.orderBy(relevant, ['successfulDrops'], ['desc']);
+      return globalFunctions.orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
     }
   },
   watch: {

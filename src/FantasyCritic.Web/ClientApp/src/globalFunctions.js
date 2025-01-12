@@ -96,5 +96,29 @@ export default {
   },
   intersection(array, ...args) {
     return array.filter((item) => args.every((arr) => arr.includes(item)));
+  },
+  except(arrayOne, arrayTwo) {
+    return arrayOne.filter((x) => !arrayTwo.includes(x));
+  },
+  startCase(valueString) {
+    return valueString.replace(/([a-z])([A-Z])/g, '$1 $2');
+  },
+  orderBy(arr, keySelector) {
+    return [...arr].sort((a, b) => {
+      const valA = keySelector(a);
+      const valB = keySelector(b);
+      if (valA < valB) return -1;
+      if (valA > valB) return 1;
+      return 0;
+    });
+  },
+  orderByDescending(arr, keySelector) {
+    return [...arr].sort((a, b) => {
+      const valA = keySelector(a);
+      const valB = keySelector(b);
+      if (valA < valB) return 1;
+      if (valA > valB) return -1;
+      return 0;
+    });
   }
 };

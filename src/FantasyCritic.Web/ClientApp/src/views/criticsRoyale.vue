@@ -154,7 +154,7 @@
 import axios from 'axios';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import _ from 'lodash';
+import globalFunctions from '@/globalFunctions';
 
 export default {
   components: {
@@ -188,11 +188,10 @@ export default {
       return this.royaleStandings.length;
     },
     years() {
-      const yearsList = this.royaleYearQuarterOptions.map((x) => x.year); // Extracting 'year' property from objects
+      const yearsList = this.royaleYearQuarterOptions.map((x) => x.year);
 
-      const uniqueYearsList = _.uniq(yearsList);
-      const sortedYears = _.sortBy(uniqueYearsList).reverse();
-
+      const uniqueYearsList = [...new Set(yearsList)];
+      const sortedYears = globalFunctions.orderBy(uniqueYearsList, (x) => x);
       return sortedYears;
     },
     quartersInSelectedYear() {

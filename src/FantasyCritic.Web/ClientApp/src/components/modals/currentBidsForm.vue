@@ -94,7 +94,6 @@
 <script>
 import axios from 'axios';
 import draggable from 'vuedraggable';
-import _ from 'lodash';
 
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';

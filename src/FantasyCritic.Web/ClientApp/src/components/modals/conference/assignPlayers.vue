@@ -77,7 +77,6 @@
 </template>
 <script>
 import axios from 'axios';
-import _ from 'lodash';
 import draggable from 'vuedraggable';
 
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
