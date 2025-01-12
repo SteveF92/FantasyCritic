@@ -33,9 +33,7 @@ export default {
   },
   computed: {
     tag() {
-      let allTags = this.$store.getters.allTags;
-      let singleTag = _.filter(allTags, { name: this.tagName });
-      return singleTag[0];
+      return this.$store.getters.allTags.find((x) => x.name === this.tagName);
     },
     badgeColor() {
       return {

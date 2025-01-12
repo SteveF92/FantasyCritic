@@ -112,7 +112,7 @@ export default {
       }
 
       let allGames = this.proposerPublisherGames.concat(this.counterPartyPublisherGames);
-      let nullGames = _.some(allGames, (x) => !x.game);
+      let nullGames = allGames.some((x) => !x.game);
       if (nullGames) {
         return 'All games must be defined.';
       }
@@ -136,7 +136,7 @@ export default {
       return '';
     },
     otherPublishers() {
-      return _.filter(this.leagueYear.publishers, (x) => x.publisherID !== this.userPublisher.publisherID);
+      return this.leagueYear.publishers.filter((x) => x.publisherID !== this.userPublisher.publisherID);
     }
   },
   methods: {
@@ -148,10 +148,10 @@ export default {
       list.push(element);
     },
     removeProposerGame(id) {
-      this.proposerPublisherGames = _.filter(this.proposerPublisherGames, (x) => x.id !== id);
+      this.proposerPublisherGames = this.proposerPublisherGames.filter((x) => x.id !== id);
     },
     removeCounterPartyGame(id) {
-      this.counterPartyPublisherGames = _.filter(this.counterPartyPublisherGames, (x) => x.id !== id);
+      this.counterPartyPublisherGames = this.counterPartyPublisherGames.filter((x) => x.id !== id);
     },
     getGameOptionName(game) {
       if (game.counterPick) {

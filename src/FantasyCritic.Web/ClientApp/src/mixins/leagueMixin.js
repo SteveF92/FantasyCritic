@@ -1,5 +1,6 @@
 import { mapState } from 'vuex';
 import _ from 'lodash';
+import globalFunctions from '@/globalFunctions';
 
 let leagueMixin = {
   computed: {
@@ -37,7 +38,7 @@ let leagueMixin = {
       if (!this.leagueYear || !this.leagueYear.publishers) {
         return null;
       }
-      let next = _.find(this.leagueYear.publishers, ['nextToDraft', true]);
+      let next = this.leagueYear.publishers.find((x) => x.nextToDraft);
       return next;
     },
     userIsNextInDraft() {
@@ -55,7 +56,7 @@ let leagueMixin = {
     },
     topPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
+        return globalFunctions.maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
       }
       return null;
     },

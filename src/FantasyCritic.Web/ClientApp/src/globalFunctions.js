@@ -89,5 +89,12 @@ export default {
 
     value = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
     return value;
+  },
+  maxBy(array, func) {
+    const max = Math.max(...array.map(func));
+    return array.find((item) => func(item) === max);
+  },
+  intersection(array, ...args) {
+    return array.filter((item) => args.every((arr) => arr.includes(item)));
   }
 };

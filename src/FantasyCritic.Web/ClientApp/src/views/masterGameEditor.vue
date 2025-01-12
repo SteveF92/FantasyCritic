@@ -220,7 +220,7 @@ export default {
     populateTags() {
       let allTags = this.$store.getters.allTags;
       let masterGameTagNames = this.masterGame.tags;
-      let matchingTags = _.filter(allTags, (x) => masterGameTagNames.includes(x.name));
+      let matchingTags = allTags.filter(allTags, (x) => masterGameTagNames.includes(x.name));
       this.tags = matchingTags;
     },
     clearDates() {
@@ -233,7 +233,7 @@ export default {
       this.masterGame.earlyAccessReleaseDate = null;
     },
     async sendEditMasterGameRequest() {
-      let tagNames = _.map(this.tags, 'name');
+      let tagNames = this.tags.map((x) => x.name);
 
       let request = this.masterGame;
       request.minorEdit = this.minorEdit;

@@ -147,15 +147,13 @@ export default {
   },
   computed: {
     myStandardLeagues() {
-      let nonTest = _.filter(this.myLeagues, ['testLeague', false]);
-      return _.filter(nonTest, ['archived', false]);
+      return this.myLeagues.filter((x) => !x.testLeague && !x.archived);
     },
     myArchivedLeagues() {
-      let nonTest = _.filter(this.myLeagues, ['testLeague', false]);
-      return _.filter(nonTest, ['archived', true]);
+      return this.myLeagues.filter((x) => !x.testLeague && x.archived);
     },
     myTestLeagues() {
-      return _.filter(this.myLeagues, ['testLeague', true]);
+      return this.myLeagues.filter((x) => x.testLeague);
     }
   },
   async created() {

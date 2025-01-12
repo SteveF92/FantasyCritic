@@ -129,7 +129,7 @@ export default {
   },
   computed: {
     years() {
-      const yearsList = _.map(this.processDateOptions, (date) => {
+      const yearsList = this.processDateOptions.map((date) => {
         return moment(date).year();
       });
 
@@ -212,7 +212,7 @@ export default {
         .format('MMMM');
     },
     getProcessingDatesForYearMonth(year, month) {
-      return _.filter(this.processDateOptions, (date) => {
+      return this.processDateOptions.filter((date) => {
         const momentDate = moment(date);
         return momentDate.year() === year && momentDate.month() === month - 1; // Moment.js uses 0-indexed months
       });

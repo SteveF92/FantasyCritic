@@ -103,7 +103,7 @@ export default {
       if (this.includeRemovedInSorted) {
         let fakeFormerSlots = [];
 
-        let overallSlotNumber = _.maxBy(this.publisher.gameSlots, 'overallSlotNumber').overallSlotNumber;
+        let overallSlotNumber = Math.max(this.publisher.gameSlots.map((x) => x.overallSlotNumber));
         for (const formerGame of this.publisher.formerGames) {
           overallSlotNumber++;
           let fakeSlot = this.getFakeGameSlot(formerGame, overallSlotNumber);

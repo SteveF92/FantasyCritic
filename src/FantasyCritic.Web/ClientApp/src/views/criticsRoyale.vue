@@ -188,7 +188,7 @@ export default {
       return this.royaleStandings.length;
     },
     years() {
-      const yearsList = _.map(this.royaleYearQuarterOptions, 'year'); // Extracting 'year' property from objects
+      const yearsList = this.royaleYearQuarterOptions.map((x) => x.year); // Extracting 'year' property from objects
 
       const uniqueYearsList = _.uniq(yearsList);
       const sortedYears = _.sortBy(uniqueYearsList).reverse();

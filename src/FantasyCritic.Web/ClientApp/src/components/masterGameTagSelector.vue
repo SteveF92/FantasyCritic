@@ -41,7 +41,7 @@ export default {
       if (this.includeSystem) {
         return this.$store.getters.allTags;
       }
-      return _.filter(this.$store.getters.allTags, (x) => !x.systemTagOnly);
+      return this.$store.getters.allTags.filter((x) => !x.systemTagOnly);
     }
   },
   watch: {
@@ -57,7 +57,7 @@ export default {
       this.$emit('input', this.internalValue);
     },
     updateInternal() {
-      this.internalValue = _.cloneDeep(this.value);
+      this.internalValue = structuredClone(this.value);
     }
   }
 };

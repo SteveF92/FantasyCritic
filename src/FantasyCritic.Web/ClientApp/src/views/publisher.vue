@@ -172,7 +172,7 @@ export default {
       return this.$store.getters.moveGameError;
     },
     hasIneligibleGame() {
-      return _.some(this.publisher.gameSlots, (x) => !x.gameMeetsSlotCriteria);
+      return this.publisher.gameSlots.some((x) => !x.gameMeetsSlotCriteria);
     },
     allowMoveIntoIneligible() {
       return this.leagueYear.settings.allowMoveIntoIneligible;

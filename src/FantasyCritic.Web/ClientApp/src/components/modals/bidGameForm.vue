@@ -179,11 +179,11 @@ export default {
     publisherSlotsAreFilled() {
       let userGames = this.userPublisher.games;
       let standardGameSlots = this.leagueYear.settings.standardGames;
-      let userStandardGames = _.filter(userGames, { counterPick: false });
+      let userStandardGames = userGames.filter((x) => !x.counterPick);
       return userStandardGames.length >= standardGameSlots;
     },
     droppableGames() {
-      return _.filter(this.userPublisher.games, { counterPick: false });
+      return this.userPublisher.games.filter((x) => !x.counterPick);
     },
     modalID() {
       if (!this.specialAuction) {

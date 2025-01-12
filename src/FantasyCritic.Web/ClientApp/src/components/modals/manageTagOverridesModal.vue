@@ -113,7 +113,7 @@ export default {
         .catch(() => {});
     },
     setTags(masterGame) {
-      let tagNames = _.map(this.chosenTags, 'name');
+      let tagNames = this.chosenTags.map((x) => x.name);
 
       const model = {
         leagueID: this.leagueYear.leagueID,

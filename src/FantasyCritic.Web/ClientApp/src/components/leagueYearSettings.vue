@@ -350,7 +350,7 @@ export default {
       this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
     }
 
-    this.internalValue = _.cloneDeep(this.value);
+    this.internalValue = structuredClone(this.value);
   },
   methods: {
     updateInternalValue() {

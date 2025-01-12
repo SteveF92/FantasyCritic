@@ -75,8 +75,8 @@ export default {
     initializeInternal(state, initializeParams) {
       state.publisher = initializeParams.publisher;
       state.leagueYear = initializeParams.leagueYear;
-      state.cleanGameSlots = _.cloneDeep(state.publisher.gameSlots);
-      state.editableGameSlots = _.cloneDeep(state.publisher.gameSlots);
+      state.cleanGameSlots = structuredClone(state.publisher.gameSlots);
+      state.editableGameSlots = structuredClone(state.publisher.gameSlots);
     },
     clearPublisherStoreData(state) {
       state.publisher = null;
@@ -93,7 +93,7 @@ export default {
       state.moveMode = false;
       state.desiredPositions = null;
       state.heldSlot = null;
-      state.editableGameSlots = _.cloneDeep(state.cleanGameSlots);
+      state.editableGameSlots = structuredClone(state.cleanGameSlots);
     },
     completeMoveMode(state) {
       state.moveMode = false;
@@ -104,9 +104,9 @@ export default {
       state.heldSlot = holdSlot;
     },
     moveGameInternal(state, moveIntoSlot) {
-      let tempSlot = _.cloneDeep(moveIntoSlot);
-      moveIntoSlot.publisherGame = _.cloneDeep(state.heldSlot.publisherGame);
-      state.heldSlot.publisherGame = _.cloneDeep(tempSlot.publisherGame);
+      let tempSlot = structuredClone(moveIntoSlot);
+      moveIntoSlot.publisherGame = structuredClone(state.heldSlot.publisherGame);
+      state.heldSlot.publisherGame = structuredClone(tempSlot.publisherGame);
       state.heldSlot = null;
     },
     setDesiredPositions(state) {

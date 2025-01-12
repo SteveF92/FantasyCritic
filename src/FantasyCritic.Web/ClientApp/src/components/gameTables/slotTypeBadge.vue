@@ -75,9 +75,7 @@ export default {
   },
   methods: {
     getTag(tagName) {
-      let allTags = this.$store.getters.allTags;
-      let singleTag = _.filter(allTags, { name: tagName });
-      return singleTag[0];
+      return this.$store.getters.allTags.find((x) => x.name === tagName);
     },
     getMultiBadgeColor(tagNames) {
       let colorString = '';

@@ -184,7 +184,7 @@ export default {
   },
   methods: {
     async createMasterGame() {
-      let tagNames = _.map(this.tags, 'name');
+      let tagNames = this.tags.map((x) => x.name);
 
       let request = {
         gameName: this.gameName,

@@ -124,7 +124,7 @@ export default {
   },
   computed: {
     droppableGames() {
-      let list = _.filter(this.userPublisher.games, { counterPick: false });
+      let list = this.userPublisher.games.filter((x) => !x.counterPick);
       list.unshift(this.defaultCondtionalDrop);
       return list;
     },

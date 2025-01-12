@@ -143,8 +143,8 @@ export default {
       this.leaguesLocked = leaguesLocked;
       this.leaguesDraftStarted = leaguesDraftStarted;
 
-      this.editableUnassignedPlayers = _.cloneDeep(this.initialUnassignedPlayers);
-      this.editableLeagueAssignments = _.cloneDeep(this.initialLeagueAssignments);
+      this.editableUnassignedPlayers = structuredClone(this.initialUnassignedPlayers);
+      this.editableLeagueAssignments = structuredClone(this.initialLeagueAssignments);
     },
     collapseLeague(leagueID) {
       this.leaguesCollapsed[leagueID] = true;
@@ -167,8 +167,8 @@ export default {
       }
     },
     resetChanges() {
-      this.editableUnassignedPlayers = _.cloneDeep(this.initialUnassignedPlayers);
-      this.editableLeagueAssignments = _.cloneDeep(this.initialLeagueAssignments);
+      this.editableUnassignedPlayers = structuredClone(this.initialUnassignedPlayers);
+      this.editableLeagueAssignments = structuredClone(this.initialLeagueAssignments);
     },
     clearData() {
       this.errorInfo = null;

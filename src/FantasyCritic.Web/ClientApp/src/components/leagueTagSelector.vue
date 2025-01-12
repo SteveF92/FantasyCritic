@@ -49,7 +49,7 @@
 <script>
 import draggable from 'vuedraggable';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import _ from 'lodash';
+import GlobalFunctions from '@/globalFunctions';
 
 export default {
   components: {
@@ -76,27 +76,27 @@ export default {
   },
   computed: {
     tagOptions() {
-      return _.filter(this.$store.getters.allTags, (x) => !x.systemTagOnly);
+      return this.$store.getters.allTags.filter((x) => !x.systemTagOnly);
     },
     showWarning() {
       let recommendedAllowedTags = ['Reimagining'];
       let recommendedBannedTags = ['DirectorsCut', 'ReleasedInternationally', 'CurrentlyInEarlyAccess'];
-      let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = GlobalFunctions.intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = GlobalFunctions.intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showDanger() {
       let recommendedAllowedTags = ['NewGame', 'NewGamingFranchise', 'WillReleaseInternationallyFirst'];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = GlobalFunctions.intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = GlobalFunctions.intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showPortDanger() {
       let recommendedAllowedTags = [];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = _.intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = _.intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = GlobalFunctions.intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = GlobalFunctions.intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showEarlyAccessWarning() {
@@ -114,7 +114,7 @@ export default {
       this.$emit('input', this.internalValue);
     },
     resetValues() {
-      this.internalValue = _.cloneDeep(this.initialValue);
+      this.internalValue = structuredClone(this.initialValue);
     },
     initializeValues() {
       this.initialValue = {
@@ -142,7 +142,7 @@ export default {
         this.initialValue.allowed.push(tag.name);
       });
 
-      this.internalValue = _.cloneDeep(this.initialValue);
+      this.internalValue = structuredClone(this.initialValue);
     }
   }
 };

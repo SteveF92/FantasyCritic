@@ -40,10 +40,10 @@ export default {
   },
   computed: {
     showNoTagsWarning() {
-      return _.some(this.internalValue, (x) => x.requiredTags.length === 0);
+      return this.internalValue.some((x) => x.requiredTags.length === 0);
     },
     showPortDanger() {
-      return _.some(this.internalValue, (x) => _.some(x.requiredTags, (y) => y.name === 'Port'));
+      return this.internalValue.some((x) => x.requiredTags.some((y) => y.name === 'Port'));
     }
   },
   watch: {
@@ -71,14 +71,14 @@ export default {
       let allTags = this.$store.getters.allTags;
       let matchingTags = [];
       tagNames.forEach((tagName) => {
-        let match = _.filter(allTags, { name: tagName });
-        matchingTags.push(match[0]);
+        const match = allTags.find((x) => x.name === tagName);
+        matchingTags.push(match);
       });
 
       return matchingTags;
     },
     removeSlot(specialSlot) {
-      this.internalValue = _.filter(this.internalValue, (x) => x.specialSlotPosition !== specialSlot.specialSlotPosition);
+      this.internalValue = this.internalValue.filter((x) => x.specialSlotPosition !== specialSlot.specialSlotPosition);
 
       let slotNumber = 0;
       this.internalValue.forEach((singleValue) => {

@@ -28,7 +28,6 @@
 <script>
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
 import GlobalFunctions from '@/globalFunctions';
-import _ from 'lodash';
 
 export default {
   mixins: [ConferenceMixin],
@@ -71,14 +70,14 @@ export default {
     },
     topPublisher() {
       if (this.conferenceYear.standings && this.conferenceYear.standings.length > 0) {
-        return _.maxBy(this.conferenceYear.standings, 'totalFantasyPoints');
+        return GlobalFunctions.maxBy(this.conferenceYear.standings, (x) => x.totalFantasyPoints);
       }
 
       return null;
     },
     projectedTopPublisher() {
       if (this.conferenceYear.standings && this.conferenceYear.standings.length > 0) {
-        return _.maxBy(this.conferenceYear.standings, 'totalProjectedPoints');
+        return GlobalFunctions.maxBy(this.conferenceYear.standings, (x) => x.totalProjectedPoints);
       }
 
       return null;

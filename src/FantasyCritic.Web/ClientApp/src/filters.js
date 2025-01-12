@@ -91,7 +91,7 @@ Vue.filter('thousands', function (value) {
 });
 
 Vue.filter('selectTextFromPossibleOptions', function (value, possibleOptions) {
-  let matchingValue = _.filter(possibleOptions, (x) => x.value === value)[0];
+  const matchingValue = possibleOptions.find((x) => x.value === value);
   if (matchingValue) {
     return matchingValue.text;
   }

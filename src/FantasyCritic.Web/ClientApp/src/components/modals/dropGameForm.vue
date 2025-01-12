@@ -54,7 +54,7 @@ export default {
       return this.dropMasterGame;
     },
     droppableGames() {
-      return _.filter(this.userPublisher.games, { counterPick: false });
+      return this.userPublisher.games.filter((x) => !x.counterPick);
     }
   },
   methods: {

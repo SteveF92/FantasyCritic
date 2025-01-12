@@ -119,8 +119,7 @@ export default {
       document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
 
       if (leagueYearPayload.userID) {
-        let matchingPublishers = _.filter(leagueYearPayload.leagueYear.publishers, (x) => x.userID === leagueYearPayload.userID);
-        state.userPublisher = matchingPublishers[0];
+        state.userPublisher = leagueYearPayload.leagueYear.publishers.find((x) => x.userID === leagueYearPayload.userID);
       }
     },
     setGameNews(state, gameNews) {

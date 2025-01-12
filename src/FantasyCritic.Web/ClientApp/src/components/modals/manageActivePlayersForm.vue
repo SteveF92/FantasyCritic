@@ -45,10 +45,7 @@ export default {
   },
   methods: {
     userIsActive(user) {
-      let matchingPlayer = _.find(this.leagueYear.players, function (item) {
-        return item.user && item.user.userID === user.userID;
-      });
-
+      let matchingPlayer = this.leagueYear.players.find((item) => item.user && item.user.userID === user.userID);
       return !!matchingPlayer;
     },
     setCurrentActivePlayers() {

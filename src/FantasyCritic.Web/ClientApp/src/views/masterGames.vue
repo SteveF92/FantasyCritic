@@ -102,27 +102,27 @@ export default {
           return this.flatMasterGameYears;
         }
 
-        return _.filter(this.flatMasterGameYears, { isReleased: false });
+        return this.flatMasterGameYears.filter((x) => !x.isReleased);
       }
 
       if (this.possibleMasterGameYears) {
         let filteredGames = this.possibleMasterGameYears;
         if (this.eligibilityFilter === 'eligibleOnly') {
-          filteredGames = _.filter(filteredGames, { isEligible: true });
+          filteredGames = filteredGames.filter((x) => x.isEligible);
         } else if (this.eligibilityFilter === 'eligibleInOpenSlotOnly') {
-          filteredGames = _.filter(filteredGames, { isEligibleInOpenSlot: true });
+          filteredGames = filteredGames.filter((x) => x.isEligibleInOpenSlot);
         } else if (this.eligibilityFilter === 'ineligibleOnly') {
-          filteredGames = _.filter(filteredGames, { isEligible: false });
+          filteredGames = filteredGames.filter((x) => !x.isEligible);
         }
 
         if (this.takenStatusFilter === 'taken') {
-          filteredGames = _.filter(filteredGames, { taken: true });
+          filteredGames = filteredGames.filter((x) => x.taken);
         } else if (this.takenStatusFilter === 'notTaken') {
-          filteredGames = _.filter(filteredGames, { taken: false });
+          filteredGames = filteredGames.filter((x) => !x.taken);
         }
 
         if (this.unreleasedOnlyFilter) {
-          filteredGames = _.filter(filteredGames, { isReleased: false });
+          filteredGames = filteredGames.filter((x) => !x.isReleased);
         }
 
         let flattenedGames = filteredGames.map((v) => v.masterGame);

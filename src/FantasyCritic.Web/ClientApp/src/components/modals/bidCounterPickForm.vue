@@ -70,11 +70,11 @@ export default {
     publisherSlotsAreFilled() {
       let userGames = this.userPublisher.games;
       let counterPickSlots = this.leagueYear.settings.counterPicks;
-      let counterPicks = _.filter(userGames, { counterPick: true });
+      let counterPicks = userGames.filter((x) => x.counterPick);
       return counterPicks.length >= counterPickSlots;
     },
     droppableGames() {
-      return _.filter(this.publisher.games, { counterPick: false });
+      return this.publisher.games.filter((x) => !x.counterPick);
     },
     bidButtonText() {
       return 'Place Counter Pick Bid';
@@ -83,7 +83,7 @@ export default {
       return this.bidCounterPick && !this.bidCounterPick.masterGame;
     },
     availableCounterPicks() {
-      return _.filter(this.possibleCounterPicks, (x) => x.willRelease && !x.released);
+      return this.possibleCounterPicks.filter((x) => x.willRelease && !x.released);
     }
   },
   methods: {

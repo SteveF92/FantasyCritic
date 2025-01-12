@@ -122,14 +122,14 @@ export default {
     },
     topPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return _.maxBy(this.leagueYear.publishers, 'totalFantasyPoints');
+        return GlobalFunctions.maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
       }
 
       return null;
     },
     projectedTopPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return _.maxBy(this.leagueYear.publishers, 'totalProjectedPoints');
+        return GlobalFunctions.maxBy(this.leagueYear.publishers, (x) => x.totalProjectedPoints);
       }
 
       return null;

@@ -154,7 +154,7 @@ export default {
       return this.baseChangeLogFields;
     },
     reversedMasterGameYears() {
-      let tempMasterGameYears = _.cloneDeep(this.masterGameYears);
+      let tempMasterGameYears = structuredClone(this.masterGameYears);
       tempMasterGameYears.reverse();
       return tempMasterGameYears;
     },
