@@ -21,8 +21,18 @@
         :height="28" />
     </span>
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
-      <b-pagination v-model="currentPage" :total-rows="gameNewsItems.length" :per-page="perPage" aria-controls="my-table" align="fill" size="sm" class="my-0 pagination-dark mb-1"></b-pagination>
-      <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small :per-page="perPage" :current-page="currentPage">
+      <b-table
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :items="gameNewsItems"
+        :fields="gameNewsFields"
+        bordered
+        striped
+        responsive
+        small
+        :per-page="perPage"
+        :current-page="currentPage"
+        class="mb-0">
         <template #cell(gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
@@ -51,6 +61,7 @@
           </span>
         </template>
       </b-table>
+      <b-pagination v-model="currentPage" :total-rows="gameNewsItems.length" :per-page="perPage" aria-controls="my-table" align="right" size="sm" class="my-0 pagination-dark"></b-pagination>
     </div>
     <div v-else><h4>No Games Found</h4></div>
   </div>
