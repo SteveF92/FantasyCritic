@@ -49,7 +49,7 @@
 <script>
 import draggable from 'vuedraggable';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import GlobalFunctions from '@/globalFunctions';
+import { intersection } from '@/globalFunctions';
 
 export default {
   components: {
@@ -81,22 +81,22 @@ export default {
     showWarning() {
       let recommendedAllowedTags = ['Reimagining'];
       let recommendedBannedTags = ['DirectorsCut', 'ReleasedInternationally', 'CurrentlyInEarlyAccess'];
-      let bannedIntersection = GlobalFunctions.intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = GlobalFunctions.intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showDanger() {
       let recommendedAllowedTags = ['NewGame', 'NewGamingFranchise', 'WillReleaseInternationallyFirst'];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = GlobalFunctions.intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = GlobalFunctions.intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showPortDanger() {
       let recommendedAllowedTags = [];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = GlobalFunctions.intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = GlobalFunctions.intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
+      let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showEarlyAccessWarning() {

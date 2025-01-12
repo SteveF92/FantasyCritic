@@ -27,7 +27,7 @@
 </template>
 <script>
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
-import GlobalFunctions from '@/globalFunctions';
+import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
 
 export default {
   mixins: [ConferenceMixin],
@@ -70,14 +70,14 @@ export default {
     },
     topPublisher() {
       if (this.conferenceYear.standings && this.conferenceYear.standings.length > 0) {
-        return GlobalFunctions.maxBy(this.conferenceYear.standings, (x) => x.totalFantasyPoints);
+        return maxBy(this.conferenceYear.standings, (x) => x.totalFantasyPoints);
       }
 
       return null;
     },
     projectedTopPublisher() {
       if (this.conferenceYear.standings && this.conferenceYear.standings.length > 0) {
-        return GlobalFunctions.maxBy(this.conferenceYear.standings, (x) => x.totalProjectedPoints);
+        return maxBy(this.conferenceYear.standings, (x) => x.totalProjectedPoints);
       }
 
       return null;
@@ -97,7 +97,7 @@ export default {
       return this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
     },
     ordinal_suffix_of(num) {
-      return GlobalFunctions.ordinal_suffix_of(num);
+      return ordinal_suffix_of(num);
     },
     sortCompare(aRow, bRow, key) {
       // Extend with other sortable columns as necessary.

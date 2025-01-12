@@ -62,8 +62,7 @@ import html2canvas from 'html2canvas';
 
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
-import GlobalFunctions from '@/globalFunctions';
-import globalFunctions from '@/globalFunctions';
+import { orderBy, publisherIconIsValid } from '@/globalFunctions';
 
 export default {
   components: {
@@ -87,10 +86,10 @@ export default {
         return this.publisher.gameSlots;
       }
 
-      return globalFunctions.orderBy(this.publisher.gameSlots, (x) => `${x.counterPick ? '1' : '0'}-${x.publisherGame.timestamp}`);
+      return orderBy(this.publisher.gameSlots, (x) => `${x.counterPick ? '1' : '0'}-${x.publisherGame.timestamp}`);
     },
     iconIsValid() {
-      return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+      return publisherIconIsValid(this.publisher.publisherIcon);
     },
     showRoundingWarning() {
       if (this.userInfo?.showDecimalPlaces) {

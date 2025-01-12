@@ -159,7 +159,7 @@ import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import CollapseCard from '@/components/collapseCard.vue';
-import globalFunctions from '@/globalFunctions';
+import { except, startCase } from '@/globalFunctions';
 
 export default {
   components: {
@@ -206,7 +206,7 @@ export default {
     isInLeagueButNotInvolved() {
       let involvedParties = [this.trade.proposerUserID, this.trade.counterPartyUserID];
       let allUserIDsInLeague = this.leagueYear.players.map((x) => x.user.userID);
-      let nonInvolvedParties = globalFunctions.except(allUserIDsInLeague, involvedParties);
+      let nonInvolvedParties = except(allUserIDsInLeague, involvedParties);
       return nonInvolvedParties.includes(this.userInfo.userID);
     },
     canVote() {
@@ -221,7 +221,7 @@ export default {
         finalHeader += ` (Proposed on ${proposedDate})`;
       } else {
         const completedDate = this.formatLongDateTime(this.trade.completedTimestamp);
-        finalHeader += ` (${globalFunctions.startCase(this.trade.status)} on ${completedDate})`;
+        finalHeader += ` (${startCase(this.trade.status)} on ${completedDate})`;
       }
 
       return finalHeader;

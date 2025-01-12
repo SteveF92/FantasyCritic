@@ -47,7 +47,7 @@
 <script>
 import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin.js';
-import GlobalFunctions from '@/globalFunctions';
+import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
 
 export default {
   mixins: [LeagueMixin],
@@ -121,14 +121,14 @@ export default {
     },
     topPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return GlobalFunctions.maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
+        return maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
       }
 
       return null;
     },
     projectedTopPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return GlobalFunctions.maxBy(this.leagueYear.publishers, (x) => x.totalProjectedPoints);
+        return maxBy(this.leagueYear.publishers, (x) => x.totalProjectedPoints);
       }
 
       return null;
@@ -160,7 +160,7 @@ export default {
       return this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
     },
     ordinal_suffix_of(num) {
-      return GlobalFunctions.ordinal_suffix_of(num);
+      return ordinal_suffix_of(num);
     },
     sortCompare(aRow, bRow, key) {
       // Extend with other sortable columns as necessary.

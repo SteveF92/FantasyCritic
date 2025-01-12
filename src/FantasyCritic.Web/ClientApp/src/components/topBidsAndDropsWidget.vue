@@ -46,7 +46,7 @@
 
 <script>
 import MasterGamePopover from '@/components/masterGamePopover.vue';
-import globalFunctions from '@/globalFunctions';
+import { orderByDescending } from '@/globalFunctions';
 
 export default {
   components: {
@@ -81,15 +81,15 @@ export default {
   computed: {
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
-      return globalFunctions.orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
+      return orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
     },
     topCounterPicks() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
-      return globalFunctions.orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
+      return orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
     },
     topDrops() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
-      return globalFunctions.orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
+      return orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
     }
   }
 };

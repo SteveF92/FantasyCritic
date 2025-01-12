@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import GlobalFunctions from '@/globalFunctions';
+import { formatPublisherGameReleaseDate, formatPublisherGameAcquiredDate, formatPublisherGameRemovedDate } from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 import PublisherMixin from '@/mixins/publisherMixin.js';
 
@@ -167,13 +167,13 @@ export default {
   },
   methods: {
     getReleaseDate(publisherGame) {
-      return GlobalFunctions.formatPublisherGameReleaseDate(publisherGame);
+      return formatPublisherGameReleaseDate(publisherGame);
     },
     getAcquiredDate(publisherGame) {
-      return GlobalFunctions.formatPublisherGameAcquiredDate(publisherGame);
+      return formatPublisherGameAcquiredDate(publisherGame);
     },
     getRemovedDate(publisherGame) {
-      return GlobalFunctions.formatPublisherGameRemovedDate(publisherGame);
+      return formatPublisherGameRemovedDate(publisherGame);
     },
     getFakeGameSlot(formerPublisherGame, overallSlotNumber) {
       //Return a fake slot object so the row draws properly

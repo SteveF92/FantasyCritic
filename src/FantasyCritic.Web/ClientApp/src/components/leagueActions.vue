@@ -216,7 +216,7 @@ import ManagerMessageModal from '@/components/modals/managerMessageModal.vue';
 import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal.vue';
 
-import GlobalFunctions from '@/globalFunctions';
+import { publisherIconIsValid } from '@/globalFunctions';
 
 export default {
   components: {
@@ -268,7 +268,7 @@ export default {
   mixins: [LeagueMixin],
   computed: {
     iconIsValid() {
-      return GlobalFunctions.publisherIconIsValid(this.userPublisher.publisherIcon);
+      return publisherIconIsValid(this.userPublisher.publisherIcon);
     }
   }
 };

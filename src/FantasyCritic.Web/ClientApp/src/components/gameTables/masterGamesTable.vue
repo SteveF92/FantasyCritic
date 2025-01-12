@@ -113,7 +113,7 @@
   </div>
 </template>
 <script>
-import GlobalFunctions from '@/globalFunctions';
+import { formatMasterGameReleaseDate } from '@/globalFunctions';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
@@ -183,7 +183,7 @@ export default {
   },
   methods: {
     getReleaseDate(game) {
-      return GlobalFunctions.formatMasterGameReleaseDate(game);
+      return formatMasterGameReleaseDate(game);
     },
     openCriticLink(game) {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
