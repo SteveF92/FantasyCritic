@@ -16,12 +16,12 @@
       <div class="bottom-text-area">
         <template v-if="game">
           <template v-if="game.willRelease">
-            <div class="game-text">{{ globalFunctions.formatPublisherGameReleaseDate(game, true) }}</div>
-            <div v-if="game.criticScore" class="game-text">Score: {{ globalFunctions.roundNumber(game.criticScore, 2) }}</div>
+            <div class="game-text">{{ formatPublisherGameReleaseDate(game, true) }}</div>
+            <div v-if="game.criticScore" class="game-text">Score: {{ roundNumber(game.criticScore, 2) }}</div>
             <div v-if="!game.criticScore" class="game-text">
               <span v-show="!useSmallImages" class="projection-label">Projection:</span>
               <span v-show="useSmallImages" class="projection-label">Proj.</span>
-              <span class="projected-text">~{{ globalFunctions.roundNumber(gameSlot.projectedFantasyPoints, 2) }}</span>
+              <span class="projected-text">~{{ roundNumber(gameSlot.projectedFantasyPoints, 2) }}</span>
             </div>
           </template>
           <template v-else>
@@ -43,8 +43,8 @@
 import PublisherMixin from '@/mixins/publisherMixin.js';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
-import GlobalFunctions from '@/globalFunctions';
 import GGMixin from '@/mixins/ggMixin.js';
+import { formatPublisherGameReleaseDate, roundNumber } from '@/globalFunctions';
 
 export default {
   components: {
@@ -62,9 +62,6 @@ export default {
       }
 
       return false;
-    },
-    globalFunctions() {
-      return GlobalFunctions;
     },
     game() {
       return this.gameSlot.publisherGame;
@@ -136,6 +133,8 @@ export default {
     }
   },
   methods: {
+    formatPublisherGameReleaseDate,
+    roundNumber,
     getTag(tagName) {
       return this.$store.getters.allTags.find((x) => x.name === tagName);
     },

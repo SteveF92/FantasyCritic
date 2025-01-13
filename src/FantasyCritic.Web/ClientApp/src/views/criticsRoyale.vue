@@ -154,7 +154,7 @@
 import axios from 'axios';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import globalFunctions from '@/globalFunctions';
+import { orderBy } from '@/globalFunctions';
 
 export default {
   components: {
@@ -191,7 +191,7 @@ export default {
       const yearsList = this.royaleYearQuarterOptions.map((x) => x.year);
 
       const uniqueYearsList = [...new Set(yearsList)];
-      const sortedYears = globalFunctions.orderBy(uniqueYearsList, (x) => x);
+      const sortedYears = orderBy(uniqueYearsList, (x) => x);
       return sortedYears;
     },
     quartersInSelectedYear() {

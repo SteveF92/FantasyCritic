@@ -1,5 +1,5 @@
 import { mapState } from 'vuex';
-import globalFunctions from '@/globalFunctions';
+import { maxBy } from '@/globalFunctions';
 
 let leagueMixin = {
   computed: {
@@ -55,7 +55,7 @@ let leagueMixin = {
     },
     topPublisher() {
       if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return globalFunctions.maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
+        return maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
       }
       return null;
     },

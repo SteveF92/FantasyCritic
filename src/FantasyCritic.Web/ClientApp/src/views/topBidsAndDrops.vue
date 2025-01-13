@@ -83,7 +83,7 @@
 import axios from 'axios';
 import moment from 'moment';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
-import globalFunctions from '@/globalFunctions';
+import { orderBy, orderByDescending } from '@/globalFunctions';
 
 export default {
   components: {
@@ -134,7 +134,7 @@ export default {
       });
 
       const uniqueYearsList = [...new Set(yearsList)];
-      const sortedYears = globalFunctions.orderBy(uniqueYearsList, (x) => x);
+      const sortedYears = orderBy(uniqueYearsList, (x) => x);
       return sortedYears;
     },
     months() {
@@ -157,15 +157,15 @@ export default {
     },
     topBids() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
-      return globalFunctions.orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
+      return orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
     },
     topCounterPicks() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
-      return globalFunctions.orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
+      return orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
     },
     topDrops() {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
-      return globalFunctions.orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
+      return orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
     }
   },
   watch: {

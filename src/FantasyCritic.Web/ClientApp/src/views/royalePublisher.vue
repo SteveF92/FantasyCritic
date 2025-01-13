@@ -134,7 +134,7 @@ import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePubli
 import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePublisherSloganForm.vue';
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 
-import GlobalFunctions from '@/globalFunctions';
+import { publisherIconIsValid } from '@/globalFunctions';
 
 export default {
   components: {
@@ -204,7 +204,7 @@ export default {
       };
     },
     iconIsValid() {
-      return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+      return publisherIconIsValid(this.publisher.publisherIcon);
     }
   },
   watch: {

@@ -140,12 +140,12 @@
 
 <script>
 import html2canvas from 'html2canvas';
+import { ToggleButton } from 'vue-js-toggle-button';
 
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
-import GlobalFunctions from '@/globalFunctions';
+import { publisherIconIsValid } from '@/globalFunctions';
 import PublisherMixin from '@/mixins/publisherMixin.js';
-import { ToggleButton } from 'vue-js-toggle-button';
 
 export default {
   components: {
@@ -165,7 +165,7 @@ export default {
   },
   computed: {
     iconIsValid() {
-      return GlobalFunctions.publisherIconIsValid(this.publisher.publisherIcon);
+      return publisherIconIsValid(this.publisher.publisherIcon);
     },
     moveGameError() {
       return this.$store.getters.moveGameError;

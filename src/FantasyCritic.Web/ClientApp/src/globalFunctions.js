@@ -29,7 +29,7 @@ export function formatPublisherGameReleaseDate(publisherGame, shorten) {
     return 'Unknown';
   }
 
-  return this.formatMasterGameReleaseDate(publisherGame.masterGame, shorten);
+  return formatMasterGameReleaseDate(publisherGame.masterGame, shorten);
 }
 
 export function formatMasterGameReleaseDate(masterGame, shorten) {
@@ -50,7 +50,7 @@ export function formatMasterGameReleaseDate(masterGame, shorten) {
 export function formatPublisherGameAcquiredDate(publisherGame) {
   let type = '';
   if (publisherGame.overallDraftPosition) {
-    type = `Drafted ${this.ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
+    type = `Drafted ${ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
   } else if (publisherGame.bidAmount || publisherGame.bidAmount === 0) {
     type = 'Picked up for $' + publisherGame.bidAmount;
   } else if (publisherGame.acquiredInTradeID) {

@@ -23,7 +23,7 @@
 </template>
 <script>
 import axios from 'axios';
-import GlobalFunctions from '@/globalFunctions';
+import { publisherIconIsValid } from '@/globalFunctions';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
@@ -36,7 +36,7 @@ export default {
   },
   computed: {
     iconIsValid() {
-      return GlobalFunctions.publisherIconIsValid(this.newPublisherIcon);
+      return publisherIconIsValid(this.newPublisherIcon);
     }
   },
   mounted() {
