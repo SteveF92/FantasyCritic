@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    // Aligns with modern JavaScript while retaining compatibility
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": false, // Start with relaxed settings for gradual migration
+    "esModuleInterop": true, // Enables better compatibility with CommonJS modules
+    "skipLibCheck": true, // Speeds up compilation by skipping type checks of declaration files
+    "allowSyntheticDefaultImports": true, // Enables default import syntax
+    "sourceMap": true, // Useful for debugging in Vite
+    "baseUrl": ".", // Simplifies import paths
+    "paths": {
+      "@/*": ["src/*"] // Matches Vite's default alias for `src`
+    },
+    "lib": ["dom", "esnext"], // Adds DOM and modern JS features
+    "types": ["vite/client"] // Ensures Vite-specific typings are available
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

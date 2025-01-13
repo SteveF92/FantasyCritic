@@ -1,7 +1,7 @@
 import GraphemeBreaker from 'grapheme-breaker-mjs';
 import { DateTime } from 'luxon';
 
-export function publisherIconIsValid(publisherIcon) {
+export function publisherIconIsValid(publisherIcon: string): boolean {
   if (!publisherIcon) {
     return true;
   }
@@ -9,7 +9,7 @@ export function publisherIconIsValid(publisherIcon) {
   return length === 1;
 }
 
-export function ordinal_suffix_of(i) {
+export function ordinal_suffix_of(i: number): string {
   const j = i % 10,
     k = i % 100;
   if (j == 1 && k != 11) {
@@ -24,7 +24,7 @@ export function ordinal_suffix_of(i) {
   return i + 'th';
 }
 
-export function formatPublisherGameReleaseDate(publisherGame, shorten) {
+export function formatPublisherGameReleaseDate(publisherGame, shorten: boolean): string {
   if (!publisherGame.masterGame) {
     return 'Unknown';
   }
@@ -32,7 +32,7 @@ export function formatPublisherGameReleaseDate(publisherGame, shorten) {
   return formatMasterGameReleaseDate(publisherGame.masterGame, shorten);
 }
 
-export function formatMasterGameReleaseDate(masterGame, shorten) {
+export function formatMasterGameReleaseDate(masterGame, shorten: boolean): string {
   if (masterGame.releaseDate) {
     if (shorten) {
       return DateTime.fromISO(masterGame.releaseDate).toFormat('MMM dd, yyyy');
@@ -47,7 +47,7 @@ export function formatMasterGameReleaseDate(masterGame, shorten) {
   return masterGame.estimatedReleaseDate + ' (Estimated)';
 }
 
-export function formatPublisherGameAcquiredDate(publisherGame) {
+export function formatPublisherGameAcquiredDate(publisherGame): string {
   let type = '';
   if (publisherGame.overallDraftPosition) {
     type = `Drafted ${ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
@@ -63,30 +63,24 @@ export function formatPublisherGameAcquiredDate(publisherGame) {
   return type + ' on ' + date;
 }
 
-export function formatPublisherGameRemovedDate(publisherGame) {
+export function formatPublisherGameRemovedDate(publisherGame): string {
   if (!publisherGame.removedTimestamp) {
     return '';
   }
   return DateTime.fromISO(publisherGame.removedTimestamp).toFormat('MMMM dd, yyyy');
 }
 
-export function formatLongDateTime(dateTime) {
+export function formatLongDateTime(dateTime: string): string {
   return DateTime.fromISO(dateTime).toFormat('MMMM dd, yyyy, h:mm:ss a');
 }
 
-export function formatLongDate(date) {
+export function formatLongDate(date: string) {
   return DateTime.fromISO(date).toFormat('MMMM dd, yyyy');
 }
 
-export function toISODateString(date) {
-  const fullString = date.toISOString();
-  const dateString = fullString.substring(0, 10);
-  return dateString;
-}
-
-export function roundNumber(value, decimals) {
+export function roundNumber(value: number, decimals: number): string {
   if (value === 0) {
-    return 0;
+    return '0';
   }
   if (!value) {
     return '--';
@@ -97,27 +91,27 @@ export function roundNumber(value, decimals) {
   }
 
   value = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
-  return value;
+  return value.toString();
 }
 
-export function maxBy(array, func) {
+export function maxBy<T>(array: T[], func: (item: T) => number): T | undefined {
   const max = Math.max(...array.map(func));
   return array.find((item) => func(item) === max);
 }
 
-export function intersection(array, ...args) {
+export function intersection<T>(array: T[], ...args: T[][]): T[] {
   return array.filter((item) => args.every((arr) => arr.includes(item)));
 }
 
-export function except(arrayOne, arrayTwo) {
+export function except<T>(arrayOne: T[], arrayTwo: T[]): T[] {
   return arrayOne.filter((x) => !arrayTwo.includes(x));
 }
 
-export function startCase(valueString) {
+export function startCase(valueString: string): string {
   return valueString.replace(/([a-z])([A-Z])/g, '$1 $2');
 }
 
-export function orderBy(arr, keySelector) {
+export function orderBy<T, K>(arr: T[], keySelector: (item: T) => K): T[] {
   return [...arr].sort((a, b) => {
     const valA = keySelector(a);
     const valB = keySelector(b);
@@ -127,7 +121,7 @@ export function orderBy(arr, keySelector) {
   });
 }
 
-export function orderByDescending(arr, keySelector) {
+export function orderByDescending<T, K>(arr: T[], keySelector: (item: T) => K): T[] {
   return [...arr].sort((a, b) => {
     const valA = keySelector(a);
     const valB = keySelector(b);
