@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 Vue.filter('score', function (value, decimals) {
   if (value === 0) {
@@ -37,28 +37,28 @@ Vue.filter('money', function (value, decimals) {
 
 Vue.filter('dateTime', function (value) {
   if (value) {
-    return moment(String(value)).local().format('MMMM Do, YYYY, h:mm:ss a');
+    return DateTime.fromISO(String(value)).toLocaleString(DateTime.DATETIME_FULL);
   }
   return '';
 });
 
 Vue.filter('dateTimeAt', function (value) {
   if (value) {
-    return moment(String(value)).local().format('MMMM Do, YYYY, [at] h:mm:ss a');
+    return DateTime.fromISO(value).toFormat("MMMM dd, yyyy, 'at' h:mm:ss a");
   }
   return '';
 });
 
 Vue.filter('date', function (value) {
   if (value) {
-    return moment(String(value)).local().format('YYYY-MM-DD');
+    return DateTime.fromISO(value).toFormat('yyyy-MM-dd');
   }
   return '';
 });
 
 Vue.filter('longDate', function (value) {
   if (value) {
-    return moment(String(value)).local().format('MMMM Do, YYYY');
+    return DateTime.fromISO(value).toFormat('MMMM dd, yyyy');
   }
   return '';
 });

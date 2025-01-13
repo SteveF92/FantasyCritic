@@ -81,7 +81,7 @@
 
 <script>
 import axios from 'axios';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { orderBy, orderByDescending } from '@/globalFunctions';
 
@@ -129,10 +129,7 @@ export default {
   },
   computed: {
     years() {
-      const yearsList = this.processDateOptions.map((date) => {
-        return moment(date).year();
-      });
-
+      const yearsList = this.processDateOptions.map((date) => DateTime.fromISO(date).year);
       const uniqueYearsList = [...new Set(yearsList)];
       const sortedYears = orderBy(uniqueYearsList, (x) => x);
       return sortedYears;
@@ -193,8 +190,8 @@ export default {
         const response = await axios.get(requestPath);
 
         this.processDateInternal = response.data.processDate;
-        this.selectedYear = moment(this.processDateInternal).year();
-        this.selectedMonth = moment(this.processDateInternal).month() + 1;
+        this.selectedYear = DateTime.fromISO(this.processDateInternal).year;
+        this.selectedMonth = DateTime.fromISO(this.processDateInternal).month;
         this.allTopBidsAndDrops = response.data.data;
         this.selectedYearWithinProcessDate = response.data.yearWithMostData;
       } catch (error) {
@@ -206,14 +203,12 @@ export default {
         return null;
       }
 
-      return moment()
-        .month(month - 1)
-        .format('MMMM');
+      return DateTime.now().set({ month }).toFormat('MMMM');
     },
     getProcessingDatesForYearMonth(year, month) {
       return this.processDateOptions.filter((date) => {
-        const momentDate = moment(date);
-        return momentDate.year() === year && momentDate.month() === month - 1; // Moment.js uses 0-indexed months
+        const luxonDate = DateTime.fromISO(date);
+        return luxonDate.year === year && luxonDate.month === month; // Luxon uses 1-indexed months
       });
     }
   }

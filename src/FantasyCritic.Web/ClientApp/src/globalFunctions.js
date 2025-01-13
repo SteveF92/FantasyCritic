@@ -1,5 +1,5 @@
-import moment from 'moment';
 import GraphemeBreaker from 'grapheme-breaker-mjs';
+import { DateTime } from 'luxon';
 
 export function publisherIconIsValid(publisherIcon) {
   if (!publisherIcon) {
@@ -35,9 +35,9 @@ export function formatPublisherGameReleaseDate(publisherGame, shorten) {
 export function formatMasterGameReleaseDate(masterGame, shorten) {
   if (masterGame.releaseDate) {
     if (shorten) {
-      return moment(masterGame.releaseDate).format('MMM Do, YYYY');
+      return DateTime.fromISO(masterGame.releaseDate).toFormat('MMM dd, yyyy');
     }
-    return moment(masterGame.releaseDate).format('MMMM Do, YYYY');
+    return DateTime.fromISO(masterGame.releaseDate).toFormat('MMMM dd, yyyy');
   }
 
   if (shorten) {
@@ -58,7 +58,8 @@ export function formatPublisherGameAcquiredDate(publisherGame) {
   } else {
     type = 'Acquired';
   }
-  let date = moment(publisherGame.timestamp).format('MMMM Do, YYYY');
+
+  let date = DateTime.fromISO(publisherGame.timestamp).toFormat('MMMM dd, yyyy');
   return type + ' on ' + date;
 }
 
@@ -66,15 +67,15 @@ export function formatPublisherGameRemovedDate(publisherGame) {
   if (!publisherGame.removedTimestamp) {
     return '';
   }
-  return moment(publisherGame.removedTimestamp).format('MMMM Do, YYYY');
+  return DateTime.fromISO(publisherGame.removedTimestamp).toFormat('MMMM dd, yyyy');
 }
 
 export function formatLongDateTime(dateTime) {
-  return moment(String(dateTime)).local().format('MMMM Do, YYYY, h:mm:ss a');
+  return DateTime.fromISO(dateTime).toFormat('MMMM dd, yyyy, h:mm:ss a');
 }
 
 export function formatLongDate(date) {
-  return moment(String(date)).local().format('MMMM Do, YYYY');
+  return DateTime.fromISO(date).toFormat('MMMM dd, yyyy');
 }
 
 export function toISODateString(date) {

@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import BidGameForm from '@/components/modals/bidGameForm.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
@@ -44,8 +44,7 @@ export default {
   },
   computed: {
     scheduledEndTime() {
-      let date = moment(this.specialAuction.scheduledEndTime);
-      return date.format('YYYY-MM-DD HH:mm:ss');
+      return DateTime.fromISO(this.specialAuction.scheduledEndTime).toFormat('yyyy-MM-dd HH:mm:ss');
     },
     isLocked() {
       return this.specialAuction.isLocked || this.specialAuction.processed || this.forceLocked;

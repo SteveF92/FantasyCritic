@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
@@ -87,7 +87,7 @@ export default {
       if (releaseDate === '9999-12-31') {
         return 'No Maximum Release Date';
       }
-      return moment(releaseDate).format('MMMM Do, YYYY');
+      return DateTime.fromISO(releaseDate).toFormat('MMMM dd, yyyy');
     },
     openCriticLink(game) {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;

@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import GGMixin from '@/mixins/ggMixin.js';
 
@@ -112,7 +112,7 @@ export default {
       return this.getGGLinkForGame(this.masterGame);
     },
     releaseDate() {
-      return moment(this.masterGame.releaseDate).format('MMMM Do, YYYY');
+      return DateTime.fromISO(this.masterGame.releaseDate).toFormat('MMMM dd, yyyy');
     },
     openCriticLink() {
       return `https://opencritic.com/game/${this.masterGame.openCriticID}/${this.masterGame.openCriticSlug ?? 'b'}`;

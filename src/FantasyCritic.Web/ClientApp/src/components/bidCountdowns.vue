@@ -20,8 +20,7 @@
 </template>
 
 <script>
-import moment from 'moment';
-
+import { DateTime } from 'luxon';
 export default {
   props: {
     mode: { type: String, required: true }
@@ -37,14 +36,14 @@ export default {
         return null;
       }
 
-      return moment(this.$store.getters.bidTimes.nextPublicBiddingTime).toDate();
+      return DateTime.fromISO(this.$store.getters.bidTimes.nextPublicBiddingTime).toJSDate();
     },
     nextBidTime() {
       if (this.mode !== 'NextBid') {
         return null;
       }
 
-      return moment(this.$store.getters.bidTimes.nextBidLockTime).toDate();
+      return DateTime.fromISO(this.$store.getters.bidTimes.nextBidLockTime).toJSDate();
     },
     actionProcessing() {
       return this.forceActionProcessing || this.$store.getters.bidTimes.actionProcessingMode;

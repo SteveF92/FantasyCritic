@@ -125,7 +125,7 @@
 
 <script>
 import axios from 'axios';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm.vue';
@@ -286,7 +286,7 @@ export default {
     },
     getReleaseDate(game) {
       if (game.releaseDate) {
-        return moment(game.releaseDate).format('YYYY-MM-DD');
+        return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
     },

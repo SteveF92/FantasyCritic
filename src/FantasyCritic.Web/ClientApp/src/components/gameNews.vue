@@ -67,7 +67,7 @@
   </div>
 </template>
 <script>
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 
@@ -128,7 +128,7 @@ export default {
   methods: {
     getReleaseDate(game) {
       if (game.releaseDate) {
-        return moment(game.releaseDate).format('YYYY-MM-DD');
+        return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
     }
