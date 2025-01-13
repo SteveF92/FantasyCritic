@@ -1,23 +1,21 @@
 <template>
-  <div>
-    <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Recent Master Game Changes</h1>
+  <div class="col-md-10 offset-md-1 col-sm-12">
+    <h1>Recent Master Game Changes</h1>
 
-      <b-table small bordered striped responsive :items="recentChanges" :fields="gameFields">
-        <template #cell(masterGame.gameName)="data">
-          <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
-        </template>
-        <template #cell(timestamp)="data">
-          {{ data.item.change.timestamp | longDate }}
-        </template>
-        <template #cell(description)="data">
-          {{ data.item.change.description }}
-        </template>
-        <template #cell(changedByUser)="data">
-          {{ data.item.change.changedByUser.displayName }}
-        </template>
-      </b-table>
-    </div>
+    <b-table small bordered striped responsive :items="recentChanges" :fields="gameFields">
+      <template #cell(masterGame.gameName)="data">
+        <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
+      </template>
+      <template #cell(timestamp)="data">
+        {{ data.item.change.timestamp | longDate }}
+      </template>
+      <template #cell(description)="data">
+        {{ data.item.change.description }}
+      </template>
+      <template #cell(changedByUser)="data">
+        {{ data.item.change.changedByUser.displayName }}
+      </template>
+    </b-table>
   </div>
 </template>
 

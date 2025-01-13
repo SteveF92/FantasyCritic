@@ -1,21 +1,17 @@
 <template>
-  <div>
-    <div class="col-md-10 offset-md-1 col-sm-12">
-      <div v-if="conferenceYear && conference">
-        <h1>Conference History: {{ conference.conferenceName }} (Year {{ year }})</h1>
-        <hr />
-        <div v-if="conferenceYear.managerMessages && conferenceYear.managerMessages.length > 0">
-          <h2>Manager's Messages</h2>
-          <div v-for="message in conferenceYear.managerMessages" :key="message.messageID" class="alert alert-info">
-            <b-button v-if="conference.isManager" class="delete-button" variant="warning" @click="deleteMessage(message)">Delete</b-button>
-            <h5>{{ message.timestamp | dateTime }}</h5>
-            <div class="preserve-whitespace">{{ message.messageText }}</div>
-          </div>
-          <hr />
-        </div>
-        <b-alert :show="conferenceYear.managerMessages && conferenceYear.managerMessages.length === 0">Conference Manager Messages would show up here, but there are none to show.</b-alert>
+  <div v-if="conferenceYear && conference" class="col-md-10 offset-md-1 col-sm-12">
+    <h1>Conference History: {{ conference.conferenceName }} (Year {{ year }})</h1>
+    <hr />
+    <div v-if="conferenceYear.managerMessages && conferenceYear.managerMessages.length > 0">
+      <h2>Manager's Messages</h2>
+      <div v-for="message in conferenceYear.managerMessages" :key="message.messageID" class="alert alert-info">
+        <b-button v-if="conference.isManager" class="delete-button" variant="warning" @click="deleteMessage(message)">Delete</b-button>
+        <h5>{{ message.timestamp | dateTime }}</h5>
+        <div class="preserve-whitespace">{{ message.messageText }}</div>
       </div>
+      <hr />
     </div>
+    <b-alert :show="conferenceYear.managerMessages && conferenceYear.managerMessages.length === 0">Conference Manager Messages would show up here, but there are none to show.</b-alert>
   </div>
 </template>
 <script>

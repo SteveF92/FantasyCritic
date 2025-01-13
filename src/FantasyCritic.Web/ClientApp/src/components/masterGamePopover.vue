@@ -1,15 +1,13 @@
 <template>
-  <span>
-    <span v-if="masterGame">
-      <a :id="popoverID" href="javascript:;" :class="{ 'text-white': currentlyIneligible }">
-        {{ masterGame.gameName }}
-      </a>
-      <b-popover :target="popoverID" triggers="click blur" custom-class="master-game-popover">
-        <div class="mg-popover">
-          <masterGameSummary :master-game="masterGame"></masterGameSummary>
-        </div>
-      </b-popover>
-    </span>
+  <span v-if="masterGame">
+    <a :id="popoverID" href="javascript:;" :class="{ 'text-white': currentlyIneligible }">
+      {{ masterGame.gameName }}
+    </a>
+    <b-popover :target="popoverID" triggers="click blur" custom-class="master-game-popover">
+      <div class="mg-popover">
+        <masterGameSummary :master-game="masterGame"></masterGameSummary>
+      </div>
+    </b-popover>
   </span>
 </template>
 

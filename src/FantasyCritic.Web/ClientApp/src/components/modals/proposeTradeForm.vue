@@ -1,87 +1,85 @@
 <template>
-  <div>
-    <form class="form-horizontal" hide-footer>
-      <b-modal id="proposeTradeForm" ref="proposeTradeFormRef" size="lg" title="Propose Trade" @hidden="clearData">
+  <form class="form-horizontal" hide-footer>
+    <b-modal id="proposeTradeForm" ref="proposeTradeFormRef" size="lg" title="Propose Trade" @hidden="clearData">
+      <div class="form-group">
+        <label for="counterParty" class="control-label">Publisher to trade with</label>
+        <b-form-select v-model="counterParty">
+          <option v-for="publisher in otherPublishers" :key="publisher.publisherID" :value="publisher">
+            {{ publisher.publisherName }}
+          </option>
+        </b-form-select>
+      </div>
+
+      <div v-if="counterParty">
+        <div class="row">
+          <div class="col-6">
+            <h4 class="text-black">Offer</h4>
+
+            <div>
+              <div v-for="(item, index) in proposerPublisherGames" :key="item.publisherGameID">
+                <div class="trade-game-row">
+                  <label>{{ index + 1 }}</label>
+                  <b-form-select v-model="item.game">
+                    <option v-for="publisherGame in userPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
+                      {{ getGameOptionName(publisherGame) }}
+                    </option>
+                  </b-form-select>
+
+                  <div class="close-button fake-link" @click="removeProposerGame(item.id)">
+                    <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
+                  </div>
+                </div>
+              </div>
+              <b-button variant="secondary" class="full-width-button" @click="addGame(proposerPublisherGames)">Add Game</b-button>
+            </div>
+          </div>
+          <div class="col-6">
+            <h4 class="text-black">Receive</h4>
+
+            <div>
+              <div v-for="(item, index) in counterPartyPublisherGames" :key="item.publisherGameID">
+                <div class="trade-game-row">
+                  <label>{{ index + 1 }}</label>
+                  <b-form-select v-model="item.game">
+                    <option v-for="publisherGame in counterParty.games" :key="publisherGame.publisherGameID" :value="publisherGame">
+                      {{ getGameOptionName(publisherGame) }}
+                    </option>
+                  </b-form-select>
+
+                  <div class="close-button fake-link" @click="removeCounterPartyGame(item.id)">
+                    <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
+                  </div>
+                </div>
+              </div>
+              <b-button variant="secondary" class="full-width-button" @click="addGame(counterPartyPublisherGames)">Add Game</b-button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <label>Budget (Current Budget: ${{ userPublisher.budget }})</label>
+            <input id="proposerBudgetSendAmount" v-model="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
+          </div>
+          <div class="col-6">
+            <label>Budget (Current Budget: ${{ counterParty.budget }})</label>
+            <input id="counterPartyBudgetSendAmount" v-model="counterPartyBudgetSendAmount" name="counterPartyBudgetSendAmount" type="number" class="form-control input" />
+          </div>
+        </div>
+
         <div class="form-group">
-          <label for="counterParty" class="control-label">Publisher to trade with</label>
-          <b-form-select v-model="counterParty">
-            <option v-for="publisher in otherPublishers" :key="publisher.publisherID" :value="publisher">
-              {{ publisher.publisherName }}
-            </option>
-          </b-form-select>
+          <label for="messageText" class="control-label">Message (All players will see this message.)</label>
+          <textarea v-model="message" class="form-control" rows="3"></textarea>
         </div>
+      </div>
 
-        <div v-if="counterParty">
-          <div class="row">
-            <div class="col-6">
-              <h4 class="text-black">Offer</h4>
+      <div v-show="clientError" class="alert alert-warning">{{ clientError }}</div>
+      <div v-show="serverError" class="alert alert-danger">{{ serverError }}</div>
 
-              <div>
-                <div v-for="(item, index) in proposerPublisherGames" :key="item.publisherGameID">
-                  <div class="trade-game-row">
-                    <label>{{ index + 1 }}</label>
-                    <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in userPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
-                        {{ getGameOptionName(publisherGame) }}
-                      </option>
-                    </b-form-select>
-
-                    <div class="close-button fake-link" @click="removeProposerGame(item.id)">
-                      <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
-                    </div>
-                  </div>
-                </div>
-                <b-button variant="secondary" class="full-width-button" @click="addGame(proposerPublisherGames)">Add Game</b-button>
-              </div>
-            </div>
-            <div class="col-6">
-              <h4 class="text-black">Receive</h4>
-
-              <div>
-                <div v-for="(item, index) in counterPartyPublisherGames" :key="item.publisherGameID">
-                  <div class="trade-game-row">
-                    <label>{{ index + 1 }}</label>
-                    <b-form-select v-model="item.game">
-                      <option v-for="publisherGame in counterParty.games" :key="publisherGame.publisherGameID" :value="publisherGame">
-                        {{ getGameOptionName(publisherGame) }}
-                      </option>
-                    </b-form-select>
-
-                    <div class="close-button fake-link" @click="removeCounterPartyGame(item.id)">
-                      <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
-                    </div>
-                  </div>
-                </div>
-                <b-button variant="secondary" class="full-width-button" @click="addGame(counterPartyPublisherGames)">Add Game</b-button>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <label>Budget (Current Budget: ${{ userPublisher.budget }})</label>
-              <input id="proposerBudgetSendAmount" v-model="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
-            </div>
-            <div class="col-6">
-              <label>Budget (Current Budget: ${{ counterParty.budget }})</label>
-              <input id="counterPartyBudgetSendAmount" v-model="counterPartyBudgetSendAmount" name="counterPartyBudgetSendAmount" type="number" class="form-control input" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="messageText" class="control-label">Message (All players will see this message.)</label>
-            <textarea v-model="message" class="form-control" rows="3"></textarea>
-          </div>
-        </div>
-
-        <div v-show="clientError" class="alert alert-warning">{{ clientError }}</div>
-        <div v-show="serverError" class="alert alert-danger">{{ serverError }}</div>
-
-        <template #modal-footer>
-          <input v-show="counterParty" type="submit" class="btn btn-primary" value="Propose Trade" :disabled="isBusy" @click="proposeTrade" />
-        </template>
-      </b-modal>
-    </form>
-  </div>
+      <template #modal-footer>
+        <input v-show="counterParty" type="submit" class="btn btn-primary" value="Propose Trade" :disabled="isBusy" @click="proposeTrade" />
+      </template>
+    </b-modal>
+  </form>
 </template>
 <script>
 import axios from 'axios';

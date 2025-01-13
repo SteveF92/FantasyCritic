@@ -1,80 +1,78 @@
 <template>
-  <div>
-    <b-table
-      :items="tableRows"
-      :fields="tableFields"
-      bordered
-      responsive
-      striped
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
-      primary-key="overallSlotNumber"
-      tbody-tr-class="btable-player-game-row">
-      <template #head(projectedFantasyPoints)>
-        Projected
-        <br />
-        points
-        <font-awesome-icon v-b-popover.hover.focus.top="projectedPointsText" color="black" size="lg" icon="info-circle" />
-      </template>
+  <b-table
+    :items="tableRows"
+    :fields="tableFields"
+    bordered
+    responsive
+    striped
+    :sort-by.sync="sortBy"
+    :sort-desc.sync="sortDesc"
+    primary-key="overallSlotNumber"
+    tbody-tr-class="btable-player-game-row">
+    <template #head(projectedFantasyPoints)>
+      Projected
+      <br />
+      points
+      <font-awesome-icon v-b-popover.hover.focus.top="projectedPointsText" color="black" size="lg" icon="info-circle" />
+    </template>
 
-      <template #head(publisherGame.timestamp)>
-        <span v-show="!sortOrderMode || !includeRemovedInSorted">Acquired</span>
-        <span v-show="sortOrderMode && includeRemovedInSorted">Acquired/Dropped</span>
-      </template>
+    <template #head(publisherGame.timestamp)>
+      <span v-show="!sortOrderMode || !includeRemovedInSorted">Acquired</span>
+      <span v-show="sortOrderMode && includeRemovedInSorted">Acquired/Dropped</span>
+    </template>
 
-      <template #cell(publisherGame.gameName)="data">
-        <gameNameColumn
-          :game-slot="data.item"
-          :has-special-slots="leagueYear.settings.hasSpecialSlots"
-          :supported-year="leagueYear.supportedYear"
-          :counter-pick-deadline="leagueYear.settings.counterPickDeadline"></gameNameColumn>
-      </template>
+    <template #cell(publisherGame.gameName)="data">
+      <gameNameColumn
+        :game-slot="data.item"
+        :has-special-slots="leagueYear.settings.hasSpecialSlots"
+        :supported-year="leagueYear.supportedYear"
+        :counter-pick-deadline="leagueYear.settings.counterPickDeadline"></gameNameColumn>
+    </template>
 
-      <template #cell(publisherGame.masterGame.maximumReleaseDate)="data">
-        <template v-if="data.item.publisherGame">
-          {{ getReleaseDate(data.item.publisherGame) }}
+    <template #cell(publisherGame.masterGame.maximumReleaseDate)="data">
+      <template v-if="data.item.publisherGame">
+        {{ getReleaseDate(data.item.publisherGame) }}
+      </template>
+    </template>
+
+    <template #cell(publisherGame.masterGame.criticScore)="data">
+      <template v-if="data.item.publisherGame">
+        {{ data.item.publisherGame.criticScore | score(2) }}
+      </template>
+    </template>
+
+    <template #cell(projectedFantasyPoints)="data">~{{ data.item.projectedFantasyPoints | score(2) }}</template>
+
+    <template #cell(publisherGame.fantasyPoints)="data">
+      <template v-if="data.item.publisherGame">
+        {{ data.item.publisherGame.fantasyPoints | score(2) }}
+      </template>
+      <template v-if="!data.item.publisherGame && data.item.counterPick && leagueYear.supportedYear.finished">-15</template>
+    </template>
+
+    <template #cell(publisherGame.timestamp)="data">
+      <template v-if="data.item.publisherGame">
+        {{ getAcquiredDate(data.item.publisherGame) }}
+        <template v-if="data.item.publisherGame.removedTimestamp">
+          <br />
+          {{ data.item.publisherGame.removedNote }} on {{ getRemovedDate(data.item.publisherGame) }}
         </template>
       </template>
+    </template>
 
-      <template #cell(publisherGame.masterGame.criticScore)="data">
-        <template v-if="data.item.publisherGame">
-          {{ data.item.publisherGame.criticScore | score(2) }}
-        </template>
-      </template>
-
-      <template #cell(projectedFantasyPoints)="data">~{{ data.item.projectedFantasyPoints | score(2) }}</template>
-
-      <template #cell(publisherGame.fantasyPoints)="data">
-        <template v-if="data.item.publisherGame">
-          {{ data.item.publisherGame.fantasyPoints | score(2) }}
-        </template>
-        <template v-if="!data.item.publisherGame && data.item.counterPick && leagueYear.supportedYear.finished">-15</template>
-      </template>
-
-      <template #cell(publisherGame.timestamp)="data">
-        <template v-if="data.item.publisherGame">
-          {{ getAcquiredDate(data.item.publisherGame) }}
-          <template v-if="data.item.publisherGame.removedTimestamp">
-            <br />
-            {{ data.item.publisherGame.removedNote }} on {{ getRemovedDate(data.item.publisherGame) }}
-          </template>
-        </template>
-      </template>
-
-      <template #custom-foot>
-        <b-tr>
-          <b-td class="total-description">
-            <span class="total-description-text">Total Fantasy Points</span>
-          </b-td>
-          <b-td></b-td>
-          <b-td></b-td>
-          <b-td class="average-critic-column">{{ publisher.averageCriticScore | score(2) }} (Average)</b-td>
-          <b-td class="total-column projected-text bg-info">~{{ publisher.totalProjectedPoints | score(2) }}</b-td>
-          <b-td class="total-column bg-success">{{ publisher.totalFantasyPoints | score(2) }}</b-td>
-        </b-tr>
-      </template>
-    </b-table>
-  </div>
+    <template #custom-foot>
+      <b-tr>
+        <b-td class="total-description">
+          <span class="total-description-text">Total Fantasy Points</span>
+        </b-td>
+        <b-td></b-td>
+        <b-td></b-td>
+        <b-td class="average-critic-column">{{ publisher.averageCriticScore | score(2) }} (Average)</b-td>
+        <b-td class="total-column projected-text bg-info">~{{ publisher.totalProjectedPoints | score(2) }}</b-td>
+        <b-td class="total-column bg-success">{{ publisher.totalFantasyPoints | score(2) }}</b-td>
+      </b-tr>
+    </template>
+  </b-table>
 </template>
 
 <script>

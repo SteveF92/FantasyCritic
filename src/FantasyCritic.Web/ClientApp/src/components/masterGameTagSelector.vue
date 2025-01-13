@@ -1,20 +1,18 @@
 <template>
-  <div>
-    <multiselect
-      v-if="tagOptions"
-      v-model="internalValue"
-      tag-placeholder="Add this as new tag"
-      placeholder="Search or add a tag"
-      label="readableName"
-      track-by="name"
-      :options="tagOptions"
-      :multiple="true"
-      @input="handleInput">
-      <template #tag="{ option }">
-        <masterGameTagBadge :tag-name="option.name"></masterGameTagBadge>
-      </template>
-    </multiselect>
-  </div>
+  <multiselect
+    v-if="tagOptions"
+    v-model="internalValue"
+    tag-placeholder="Add this as new tag"
+    placeholder="Search or add a tag"
+    label="readableName"
+    track-by="name"
+    :options="tagOptions"
+    :multiple="true"
+    @input="handleInput">
+    <template #tag="{ option }">
+      <masterGameTagBadge :tag-name="option.name"></masterGameTagBadge>
+    </template>
+  </multiselect>
 </template>
 
 <script>

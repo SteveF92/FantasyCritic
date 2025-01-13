@@ -1,39 +1,37 @@
 <template>
-  <div v-if="interLeagueDataLoaded">
-    <div class="col-md-10 offset-md-1 col-sm-12">
-      <div class="row league-header">
-        <h1 class="header">Public Leagues</h1>
-        <div class="year-selector">
-          <b-form-select v-model="selectedYear" :options="supportedYears" value-field="year" text-field="year" @change="fetchPublicLeaguesForYear" />
-        </div>
+  <div class="col-md-10 offset-md-1 col-sm-12" v-if="interLeagueDataLoaded">
+    <div class="row league-header">
+      <h1 class="header">Public Leagues</h1>
+      <div class="year-selector">
+        <b-form-select v-model="selectedYear" :options="supportedYears" value-field="year" text-field="year" @change="fetchPublicLeaguesForYear" />
       </div>
-      <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
-        <b-form-group>
-          <label>Search by League Name</label>
-          <b-input-group size="sm">
-            <b-form-input id="filter-input" v-model="filter" type="search" placeholder="Type to Search"></b-form-input>
-          </b-input-group>
-        </b-form-group>
+    </div>
+    <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
+      <b-form-group>
+        <label>Search by League Name</label>
+        <b-input-group size="sm">
+          <b-form-input id="filter-input" v-model="filter" type="search" placeholder="Type to Search"></b-form-input>
+        </b-input-group>
+      </b-form-group>
 
-        <b-table
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :items="publicLeagues"
-          :fields="leagueFields"
-          bordered
-          striped
-          responsive
-          :per-page="perPage"
-          :current-page="currentPage"
-          :filter="filter"
-          :filter-included-fields="filterOn"
-          @filtered="onFiltered">
-          <template #cell(leagueName)="data">
-            <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
-          </template>
-        </b-table>
-        <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
-      </div>
+      <b-table
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :items="publicLeagues"
+        :fields="leagueFields"
+        bordered
+        striped
+        responsive
+        :per-page="perPage"
+        :current-page="currentPage"
+        :filter="filter"
+        :filter-included-fields="filterOn"
+        @filtered="onFiltered">
+        <template #cell(leagueName)="data">
+          <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
+        </template>
+      </b-table>
+      <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
     </div>
   </div>
 </template>

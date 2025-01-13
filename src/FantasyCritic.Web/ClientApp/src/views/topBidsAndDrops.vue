@@ -1,80 +1,78 @@
 <template>
-  <div>
-    <div class="col-md-10 offset-md-1 col-sm-12">
-      <h1>Top Bids and Drops</h1>
-      <hr />
+  <div class="col-md-10 offset-md-1 col-sm-12">
+    <h1>Top Bids and Drops</h1>
+    <hr />
 
-      <div v-if="processDateInternal && selectedYear && selectedMonthString" class="header-area">
-        <h2>For Week Ending {{ processDateInternal | longDate }}</h2>
-        <div>
-          <b-dropdown id="year-dropdown" :text="selectedYear.toString()">
-            <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectedYear = year">
-              {{ year }}
-            </b-dropdown-item>
-          </b-dropdown>
-          <b-dropdown id="month-dropdown" :text="selectedMonthString">
-            <b-dropdown-item v-for="month in months" :key="month" :active="selectedMonth === month" @click="selectedMonth = month">
-              {{ convertMonth(month) }}
-            </b-dropdown-item>
-          </b-dropdown>
-          <b-dropdown id="process-date-dropdown" :text="processDateInternal">
-            <b-dropdown-item
-              v-for="processDateOption in getProcessingDatesForYearMonth(selectedYear, selectedMonth)"
-              :key="processDateOption"
-              :active="processDateOption === processDateInternal"
-              :to="{ name: 'topBidsAndDrops', params: { processDate: processDateOption } }">
-              {{ processDateOption }}
-            </b-dropdown-item>
-          </b-dropdown>
-        </div>
-      </div>
-
-      <b-alert v-if="yearOptionsWithinProcessDate && yearOptionsWithinProcessDate.length > 1" show variant="info">
-        Since this date was at the end of the year, there was more than one season open when bids and drops were processed. You can choose to see the data for either year.
-        <br />
-        <label class="multiple-season-year-select-label">Select a year:</label>
-
-        <b-dropdown id="year-dropdown" :text="selectedYearWithinProcessDate.toString()">
-          <b-dropdown-item v-for="year in yearOptionsWithinProcessDate" :key="year" :active="selectedYearWithinProcessDate === year" @click="selectedYearWithinProcessDate = year">
+    <div v-if="processDateInternal && selectedYear && selectedMonthString" class="header-area">
+      <h2>For Week Ending {{ processDateInternal | longDate }}</h2>
+      <div>
+        <b-dropdown id="year-dropdown" :text="selectedYear.toString()">
+          <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectedYear = year">
             {{ year }}
           </b-dropdown-item>
         </b-dropdown>
-      </b-alert>
+        <b-dropdown id="month-dropdown" :text="selectedMonthString">
+          <b-dropdown-item v-for="month in months" :key="month" :active="selectedMonth === month" @click="selectedMonth = month">
+            {{ convertMonth(month) }}
+          </b-dropdown-item>
+        </b-dropdown>
+        <b-dropdown id="process-date-dropdown" :text="processDateInternal">
+          <b-dropdown-item
+            v-for="processDateOption in getProcessingDatesForYearMonth(selectedYear, selectedMonth)"
+            :key="processDateOption"
+            :active="processDateOption === processDateInternal"
+            :to="{ name: 'topBidsAndDrops', params: { processDate: processDateOption } }">
+            {{ processDateOption }}
+          </b-dropdown-item>
+        </b-dropdown>
+      </div>
+    </div>
 
-      <div v-if="!this.topBidsAndDrops" class="spinner">
-        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
-      </div>
-      <div v-else>
-        <b-tabs pills class="top-bids-and-drops-tabs">
-          <b-tab title="Top Bids" title-item-class="tab-header">
-            <b-table :items="topBids" :fields="standardBidFields" :sort-by.sync="standardSortBy" :sort-desc.sync="sortDesc" bordered striped responsive class="top-bids-drops-table">
-              <template #cell(masterGameYear)="data">
-                <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
-              </template>
-              <template #cell(totalStandardBidAmount)="data">
-                {{ data.item.totalStandardBidAmount | money(0) }}
-              </template>
-            </b-table>
-          </b-tab>
-          <b-tab title="Top Counter Picks" title-item-class="tab-header">
-            <b-table :items="topCounterPicks" :fields="counterPickFields" :sort-by.sync="counterPickSortBy" :sort-desc.sync="sortDesc" bordered striped responsive>
-              <template #cell(masterGameYear)="data">
-                <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
-              </template>
-              <template #cell(totalCounterPickBidAmount)="data">
-                {{ data.item.totalCounterPickBidAmount | money(0) }}
-              </template>
-            </b-table>
-          </b-tab>
-          <b-tab title="Top Drops" title-item-class="tab-header">
-            <b-table :items="topDrops" :fields="dropFields" :sort-by.sync="dropSortBy" :sort-desc.sync="sortDesc" bordered striped responsive>
-              <template #cell(masterGameYear)="data">
-                <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
-              </template>
-            </b-table>
-          </b-tab>
-        </b-tabs>
-      </div>
+    <b-alert v-if="yearOptionsWithinProcessDate && yearOptionsWithinProcessDate.length > 1" show variant="info">
+      Since this date was at the end of the year, there was more than one season open when bids and drops were processed. You can choose to see the data for either year.
+      <br />
+      <label class="multiple-season-year-select-label">Select a year:</label>
+
+      <b-dropdown id="year-dropdown" :text="selectedYearWithinProcessDate.toString()">
+        <b-dropdown-item v-for="year in yearOptionsWithinProcessDate" :key="year" :active="selectedYearWithinProcessDate === year" @click="selectedYearWithinProcessDate = year">
+          {{ year }}
+        </b-dropdown-item>
+      </b-dropdown>
+    </b-alert>
+
+    <div v-if="!this.topBidsAndDrops" class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+    </div>
+    <div v-else>
+      <b-tabs pills class="top-bids-and-drops-tabs">
+        <b-tab title="Top Bids" title-item-class="tab-header">
+          <b-table :items="topBids" :fields="standardBidFields" :sort-by.sync="standardSortBy" :sort-desc.sync="sortDesc" bordered striped responsive class="top-bids-drops-table">
+            <template #cell(masterGameYear)="data">
+              <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+            </template>
+            <template #cell(totalStandardBidAmount)="data">
+              {{ data.item.totalStandardBidAmount | money(0) }}
+            </template>
+          </b-table>
+        </b-tab>
+        <b-tab title="Top Counter Picks" title-item-class="tab-header">
+          <b-table :items="topCounterPicks" :fields="counterPickFields" :sort-by.sync="counterPickSortBy" :sort-desc.sync="sortDesc" bordered striped responsive>
+            <template #cell(masterGameYear)="data">
+              <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+            </template>
+            <template #cell(totalCounterPickBidAmount)="data">
+              {{ data.item.totalCounterPickBidAmount | money(0) }}
+            </template>
+          </b-table>
+        </b-tab>
+        <b-tab title="Top Drops" title-item-class="tab-header">
+          <b-table :items="topDrops" :fields="dropFields" :sort-by.sync="dropSortBy" :sort-desc.sync="sortDesc" bordered striped responsive>
+            <template #cell(masterGameYear)="data">
+              <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
+            </template>
+          </b-table>
+        </b-tab>
+      </b-tabs>
     </div>
   </div>
 </template>
