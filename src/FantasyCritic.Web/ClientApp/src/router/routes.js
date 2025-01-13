@@ -16,6 +16,7 @@ import MasterGames from '@/views/masterGames.vue';
 import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
 import PublicLeagues from '@/views/publicLeagues.vue';
 import LeagueHistory from '@/views/leagueHistory.vue';
+import LeagueAllTimeStats from '@/views/leagueAllTimeStats.vue';
 import ConferenceHistory from '@/views/conferenceHistory.vue';
 import AdminConsole from '@/views/adminConsole.vue';
 import MasterGameRequest from '@/views/masterGameRequest.vue';
@@ -255,6 +256,16 @@ export const routes = [
         year: parsedYear
       };
     }
+  },
+  {
+    path: '/leagueAllTimeStats/:leagueid',
+    component: LeagueAllTimeStats,
+    name: 'leagueAllTimeStats',
+    meta: {
+      title: 'League All-Time Stats',
+      isPublic: true
+    },
+    props: true
   },
   {
     path: '/conferenceHistory/:conferenceid/:year',

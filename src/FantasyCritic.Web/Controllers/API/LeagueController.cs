@@ -191,6 +191,39 @@ public class LeagueController : BaseLeagueController
     }
 
     [AllowAnonymous]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetLeagueAllTimeStats(Guid id)
+    {
+        var leagueRecord = await GetExistingLeague(id, RequiredRelationship.AllowAnonymous);
+        if (leagueRecord.FailedResult is not null)
+        {
+            return leagueRecord.FailedResult;
+        }
+
+        var validResult = leagueRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser;
+        var league = validResult.League;
+        var relationship = validResult.Relationship;
+
+        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
+        {
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
+        }
+
+        bool userIsFollowingLeague = false;
+        if (currentUser is not null)
+        {
+            var leagueFollowers = await _fantasyCriticService.GetLeagueFollowers(league);
+            userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Id);
+        }
+
+        var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
+            relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
+        var allTimeStatsViewModel = new LeagueAllTimeStatsViewModel(leagueViewModel);
+        return Ok(allTimeStatsViewModel);
+    }
+
+    [AllowAnonymous]
     [HttpGet("{publisherID}")]
     public async Task<IActionResult> GetLeagueYearForPublisher(Guid publisherID)
     {
