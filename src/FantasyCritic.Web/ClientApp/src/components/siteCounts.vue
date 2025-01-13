@@ -33,7 +33,7 @@ export default {
       error: ''
     };
   },
-  mounted() {
+  created() {
     this.fetchSiteCounts();
   },
   methods: {

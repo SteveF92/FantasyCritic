@@ -203,7 +203,7 @@ export default {
       return this.unannouncedCheckbox;
     }
   },
-  async mounted() {
+  async created() {
     await this.fetchMyRequests();
   },
   methods: {

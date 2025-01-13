@@ -39,7 +39,7 @@ export default {
       return publisherIconIsValid(this.newPublisherIcon);
     }
   },
-  mounted() {
+  created() {
     this.clearData();
   },
   methods: {

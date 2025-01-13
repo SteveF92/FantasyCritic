@@ -344,7 +344,7 @@ export default {
       this.updateInternalValue();
     }
   },
-  mounted() {
+  created() {
     if (this.currentNumberOfPlayers && this.freshSettings) {
       this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
     }

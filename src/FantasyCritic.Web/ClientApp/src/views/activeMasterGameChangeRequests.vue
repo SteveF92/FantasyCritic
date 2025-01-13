@@ -117,7 +117,7 @@ export default {
       generatedSQL: ''
     };
   },
-  mounted() {
+  created() {
     this.fetchMyRequests();
   },
   methods: {

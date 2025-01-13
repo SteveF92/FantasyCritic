@@ -31,7 +31,7 @@ export default {
       ]
     };
   },
-  mounted() {
+  created() {
     this.autoDraftMode = this.userPublisher.autoDraftMode;
   },
   methods: {

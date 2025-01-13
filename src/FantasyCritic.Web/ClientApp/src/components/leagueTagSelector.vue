@@ -106,7 +106,7 @@ export default {
       return this.internalValue.allowed.includes('CurrentlyInEarlyAccess') && !this.internalValue.allowed.includes('PlannedForEarlyAccess');
     }
   },
-  mounted() {
+  created() {
     this.initializeValues();
   },
   methods: {

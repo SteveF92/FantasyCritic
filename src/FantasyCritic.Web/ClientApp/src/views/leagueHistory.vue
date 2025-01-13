@@ -96,14 +96,9 @@ export default {
       if (to.path !== from.path) {
         this.initializePage();
       }
-    },
-    userIsNextInDraft: function (val, oldVal) {
-      if (val && val !== oldVal) {
-        document.getElementById('draft-notification-sound').play();
-      }
     }
   },
-  mounted() {
+  created() {
     this.initializePage();
   },
   methods: {

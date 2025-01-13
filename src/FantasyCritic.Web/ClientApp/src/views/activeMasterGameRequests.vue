@@ -71,7 +71,7 @@ export default {
       responseNote: ''
     };
   },
-  mounted() {
+  created() {
     this.fetchMyRequests();
   },
   methods: {

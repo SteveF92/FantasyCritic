@@ -61,7 +61,7 @@ export default {
       return this.leagueYear.players.length;
     }
   },
-  mounted() {
+  created() {
     this.freshSettings = false;
     if (this.$route.query.freshSettings) {
       this.freshSettings = this.$route.query.freshSettings;

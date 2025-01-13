@@ -125,7 +125,7 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     this.leagueYearSettings = {
       standardGames: '',
       gamesToDraft: '',

@@ -211,7 +211,7 @@ export default {
       };
     }
   },
-  mounted() {
+  created() {
     if (this.specialAuction) {
       this.bidMasterGame = this.specialAuction.masterGameYear;
     }

@@ -46,7 +46,7 @@ export default {
       this.updateInternal();
     }
   },
-  mounted() {
+  created() {
     this.updateInternal();
   },
   methods: {

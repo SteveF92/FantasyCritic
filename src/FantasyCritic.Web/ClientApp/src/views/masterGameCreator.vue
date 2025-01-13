@@ -175,7 +175,7 @@ export default {
       return `https://ggapp.io/games/${this.ggToken}/a`;
     }
   },
-  async mounted() {
+  async created() {
     await this.fetchRequest();
     await this.parseEstimatedReleaseDate();
   },

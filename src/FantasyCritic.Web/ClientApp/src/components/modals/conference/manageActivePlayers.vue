@@ -39,7 +39,7 @@ export default {
       errorInfo: ''
     };
   },
-  mounted() {
+  created() {
     this.setCurrentActivePlayers();
   },
   methods: {

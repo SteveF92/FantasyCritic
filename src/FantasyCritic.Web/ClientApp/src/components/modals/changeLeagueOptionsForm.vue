@@ -69,7 +69,7 @@ export default {
       return this.league.publicLeague && !this.publicLeague;
     }
   },
-  mounted() {
+  created() {
     this.newleagueName = this.league.leagueName;
     this.publicLeague = this.league.publicLeague;
     this.testLeague = this.league.testLeague;

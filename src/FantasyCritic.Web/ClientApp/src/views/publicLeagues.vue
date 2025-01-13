@@ -62,7 +62,7 @@ export default {
       return this.publicLeagues.length;
     }
   },
-  async mounted() {
+  async created() {
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
     await this.fetchPublicLeaguesForYear(this.selectedYear);
   },

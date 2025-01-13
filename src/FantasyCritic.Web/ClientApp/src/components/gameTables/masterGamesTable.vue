@@ -178,7 +178,7 @@ export default {
       return gameRows;
     }
   },
-  mounted() {
+  created() {
     this.totalRows = this.masterGames.length;
   },
   methods: {

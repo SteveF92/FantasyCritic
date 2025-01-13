@@ -78,7 +78,7 @@ export default {
       sortDesc: true
     };
   },
-  mounted() {
+  created() {
     this.fetchActionedGames();
   },
   methods: {

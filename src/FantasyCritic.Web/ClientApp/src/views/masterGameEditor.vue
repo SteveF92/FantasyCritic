@@ -167,7 +167,7 @@ export default {
       this.fetchMasterGame();
     }
   },
-  async mounted() {
+  async created() {
     await this.fetchMasterGame();
     await this.fetchChangeRequest();
     this.populateTags();

@@ -175,7 +175,7 @@ export default {
       await this.loadAll();
     }
   },
-  async mounted() {
+  async created() {
     await this.loadAll();
   },
   methods: {

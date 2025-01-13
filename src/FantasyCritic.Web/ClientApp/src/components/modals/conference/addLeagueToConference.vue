@@ -48,7 +48,7 @@ export default {
       errorInfo: null
     };
   },
-  mounted() {
+  created() {
     this.clearData();
   },
   methods: {

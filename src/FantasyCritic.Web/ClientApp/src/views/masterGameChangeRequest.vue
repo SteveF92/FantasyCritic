@@ -141,7 +141,7 @@ export default {
       isBusy: false
     };
   },
-  async mounted() {
+  async created() {
     let masterGameID = this.$route.query.mastergameid;
     if (masterGameID) {
       await this.fetchMasterGame(masterGameID);

@@ -24,7 +24,7 @@ export default {
       errorInfo: ''
     };
   },
-  mounted() {
+  created() {
     this.clearData();
   },
   methods: {
