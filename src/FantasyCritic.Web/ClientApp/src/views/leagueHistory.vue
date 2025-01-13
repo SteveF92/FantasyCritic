@@ -7,7 +7,7 @@
     <div v-if="league && !league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">You are viewing a private league.</div>
 
     <div v-if="league && leagueYear">
-      <h1>League History: {{ league.leagueName }} (Year {{ year }})</h1>
+      <h1>{{ league.leagueName }} History ({{ year }})</h1>
       <hr />
       <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
         <h2>Manager's Messages</h2>
