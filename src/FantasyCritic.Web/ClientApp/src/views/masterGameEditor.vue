@@ -217,7 +217,7 @@ export default {
     populateTags() {
       let allTags = this.$store.getters.allTags;
       let masterGameTagNames = this.masterGame.tags;
-      let matchingTags = allTags.filter(allTags, (x) => masterGameTagNames.includes(x.name));
+      let matchingTags = allTags.filter((x) => masterGameTagNames.includes(x.name));
       this.tags = matchingTags;
     },
     clearDates() {
