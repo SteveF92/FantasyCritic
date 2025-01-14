@@ -2,6 +2,7 @@ using Discord.WebSocket;
 using Discord;
 using Discord.Interactions;
 using FantasyCritic.Lib.DependencyInjection;
+using System.Threading.Channels;
 
 namespace FantasyCritic.Lib.Discord;
 public class DiscordBotService
@@ -62,7 +63,7 @@ public class DiscordBotService
                 }
             }
         }
-        catch
+        catch (Exception e)
         {
             // If Slash Command execution fails it is most likely that the original interaction acknowledgement will persist. It is a good idea to delete the original
             // response, or at least let the user know that something went wrong during the command execution.
@@ -70,6 +71,7 @@ public class DiscordBotService
             {
                 await interaction.GetOriginalResponseAsync().ContinueWith(async (msg) => await msg.Result.DeleteAsync());
             }
+            Serilog.Log.Error(e, "Error responding to Discord Slash Command");
         }
     }
 }
