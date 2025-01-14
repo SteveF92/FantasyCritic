@@ -15,6 +15,7 @@ using FantasyCritic.Web.Models.Requests.League;
 using FantasyCritic.Web.Models.Requests.League.Trades;
 using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Models.Responses.AllTimeStats;
 using FantasyCritic.Web.Models.RoundTrip;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
@@ -217,9 +218,14 @@ public class LeagueController : BaseLeagueController
             userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Id);
         }
 
+        var allTimeStats = await _fantasyCriticService.GetLeagueAllTimeStats(league);
+        var systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var currentInstant = _clock.GetCurrentInstant();
+        var currentDate = currentInstant.ToEasternDate();
+
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
-        var allTimeStatsViewModel = new LeagueAllTimeStatsViewModel(leagueViewModel);
+        var allTimeStatsViewModel = new LeagueAllTimeStatsViewModel(leagueViewModel, allTimeStats, systemWideValues, currentDate);
         return Ok(allTimeStatsViewModel);
     }
 

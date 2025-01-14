@@ -554,4 +554,19 @@ public class FantasyCriticService
     {
         return _fantasyCriticRepo.DraftIsActiveOrPaused(leagueID, year);
     }
+
+    public async Task<LeagueAllTimeStats> GetLeagueAllTimeStats(League league)
+    {
+        var leagueYears = new List<LeagueYear>();
+        foreach (var year in league.Years)
+        {
+            var leagueYear = await GetLeagueYear(league.LeagueID, year);
+            if (leagueYear is not null && leagueYear.SupportedYear.Finished)
+            {
+                leagueYears.Add(leagueYear);
+            }
+        }
+
+        return new LeagueAllTimeStats(leagueYears);
+    }
 }
