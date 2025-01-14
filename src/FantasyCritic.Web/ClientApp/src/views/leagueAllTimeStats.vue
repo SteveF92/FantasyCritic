@@ -9,8 +9,33 @@
     <div v-if="leagueAllTimeStats">
       <h1>{{ league.leagueName }} All Time Stats</h1>
       <hr />
+      <h2>Player Stats</h2>
+      <b-table :sort-by.sync="playerSortBy" :sort-desc.sync="playerSortDesc" :items="leagueAllTimeStats.playerAllTimeStats" :fields="playerStatFields" bordered small responsive striped>
+        <template #cell(playerName)="data">
+          <div>{{ data.item.playerName }}</div>
+          <div class="won-years">
+            <span v-for="year in data.item.yearsWon" :key="year" class="badge badge-success">
+              <font-awesome-icon icon="crown" class="year-winner-crown" />
+              {{ year }}
+            </span>
+          </div>
+        </template>
+        <template #cell(totalFantasyPoints)="data">
+          {{ data.item.totalFantasyPoints | score(2) }}
+        </template>
+        <template #cell(averageFinishRanking)="data">
+          {{ data.item.averageFinishRanking | score(2) }}
+        </template>
+        <template #cell(averageFantasyPoints)="data">
+          {{ data.item.averageFantasyPoints | score(2) }}
+        </template>
+        <template #cell(averageCriticScore)="data">
+          {{ data.item.averageCriticScore | score(2) }}
+        </template>
+      </b-table>
+
       <h2>Individual Year Stats</h2>
-      <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
+      <b-table :sort-by.sync="individualSortBy" :sort-desc.sync="individualSortDesc" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
         <template #cell(publisherName)="data">
           <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID } }">
             {{ data.item.publisherName }}
@@ -47,6 +72,18 @@ export default {
       errorInfo: '',
       forbidden: false,
       leagueAllTimeStats: null,
+      playerStatFields: [
+        { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
+        { key: 'yearsPlayedIn', label: 'Years Played In', thClass: 'bg-primary', sortable: true },
+        { key: 'yearsWon.length', label: 'Years Won', thClass: 'bg-primary', sortable: true },
+        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
+        { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
+        { key: 'averageFinishRanking', label: 'Average Rank', thClass: 'bg-primary', sortable: true },
+        { key: 'averageFantasyPoints', label: 'Average Fantasy Points', thClass: 'bg-primary', sortable: true },
+        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true }
+      ],
+      playerSortBy: 'totalFantasyPoints',
+      playerSortDesc: true,
       publisherFields: [
         { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
         { key: 'year', label: 'Year', thClass: 'bg-primary', sortable: true },
@@ -56,8 +93,8 @@ export default {
         { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
         { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true }
       ],
-      sortBy: 'totalFantasyPoints',
-      sortDesc: true
+      individualSortBy: 'totalFantasyPoints',
+      individualSortDesc: true
     };
   },
   computed: {
@@ -88,4 +125,12 @@ export default {
   }
 };
 </script>
-<style scoped></style>
+<style scoped>
+.won-years span {
+  margin-right: 2px;
+}
+
+.year-winner-crown {
+  color: #d6993a;
+}
+</style>

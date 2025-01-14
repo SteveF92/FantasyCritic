@@ -555,7 +555,7 @@ public class FantasyCriticService
         return _fantasyCriticRepo.DraftIsActiveOrPaused(leagueID, year);
     }
 
-    public async Task<LeagueAllTimeStats> GetLeagueAllTimeStats(League league)
+    public async Task<LeagueAllTimeStats> GetLeagueAllTimeStats(League league, LocalDate dateToCheck)
     {
         var leagueYears = new List<LeagueYear>();
         foreach (var year in league.Years)
@@ -567,6 +567,41 @@ public class FantasyCriticService
             }
         }
 
-        return new LeagueAllTimeStats(leagueYears);
+        var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
+        var playerAllTimeStats = new List<LeaguePlayerAllTimeStats>();
+        var groupedByPlayer = leagueYears.SelectMany(x => x.Publishers).GroupBy(x => x.User);
+        foreach (var playerGroup in groupedByPlayer)
+        {
+            var player = new VeryMinimalFantasyCriticUser(playerGroup.Key.UserID, playerGroup.Key.DisplayName);
+            var yearsPlayedIn = playerGroup.Count();
+            var yearsWon = leagueYears.Where(x => x.WinningUser is not null && x.WinningUser.UserID == player.UserID).Select(x => x.Year).ToList();
+
+            var totalFantasyPoints = playerGroup.Sum(x => x.GetTotalFantasyPoints(leagueYearDictionary[x.LeagueYearKey].SupportedYear, leagueYearDictionary[x.LeagueYearKey].Options));
+            var allPublisherGames = playerGroup.SelectMany(x => x.PublisherGames).ToList();
+            var gamesReleased = allPublisherGames
+                .Where(x => !x.CounterPick)
+                .Where(x => x.MasterGame is not null)
+                .Where(x => x.MasterGame!.MasterGame.IsReleased(dateToCheck))
+                .ToList();
+
+            var allFinishRankings = new List<int>();
+            foreach (var publisher in playerGroup)
+            {
+                var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+                var ranking = leagueYear.Publishers.Count(y => y.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options) >
+                                                               publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options)) + 1;
+                allFinishRankings.Add(ranking);
+            }
+
+            var averageFinishRanking = allFinishRankings.Average();
+            var averageGamesReleased = (double) gamesReleased.Count / yearsPlayedIn;
+            var averageFantasyPoints = totalFantasyPoints / yearsPlayedIn;
+            var averageCriticScore = gamesReleased.Where(x => x.MasterGame!.MasterGame.CriticScore.HasValue).Select(x => x.MasterGame!.MasterGame.CriticScore).Average() ?? 0m;
+
+            playerAllTimeStats.Add(new LeaguePlayerAllTimeStats(player, yearsPlayedIn, yearsWon, totalFantasyPoints, gamesReleased.Count,
+                averageFinishRanking, averageGamesReleased, averageFantasyPoints, averageCriticScore));
+        }
+
+        return new LeagueAllTimeStats(leagueYears, playerAllTimeStats);
     }
 }

@@ -218,10 +218,11 @@ public class LeagueController : BaseLeagueController
             userIsFollowingLeague = leagueFollowers.Any(x => x.Id == currentUser.Id);
         }
 
-        var allTimeStats = await _fantasyCriticService.GetLeagueAllTimeStats(league);
-        var systemWideValues = await _interLeagueService.GetSystemWideValues();
         var currentInstant = _clock.GetCurrentInstant();
         var currentDate = currentInstant.ToEasternDate();
+        var allTimeStats = await _fantasyCriticService.GetLeagueAllTimeStats(league, currentDate);
+        var systemWideValues = await _interLeagueService.GetSystemWideValues();
+
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);

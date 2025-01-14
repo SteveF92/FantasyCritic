@@ -51,7 +51,6 @@ public class AllTimeStatsPublisherViewModel
     public uint Budget { get; }
 
     public int GamesReleased { get; }
-    public int GamesWillRelease { get; }
     public int FreeGamesDropped { get; }
     public int WillNotReleaseGamesDropped { get; }
     public int WillReleaseGamesDropped { get; }

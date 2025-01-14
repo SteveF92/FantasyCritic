@@ -1,3 +1,3 @@
 namespace FantasyCritic.Lib.Domain;
 
-public record LeagueAllTimeStats(IReadOnlyList<LeagueYear> LeagueYears);
+public record LeagueAllTimeStats(IReadOnlyList<LeagueYear> LeagueYears, IReadOnlyList<LeaguePlayerAllTimeStats> PlayerAllTimeStats);

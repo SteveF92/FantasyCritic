@@ -5,6 +5,8 @@ public class LeagueAllTimeStatsViewModel
     public LeagueAllTimeStatsViewModel(LeagueViewModel leagueViewModel, LeagueAllTimeStats allTimeStats, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         League = leagueViewModel;
+
+        PlayerAllTimeStats = allTimeStats.PlayerAllTimeStats.Select(x => new LeaguePlayerAllTimeStatsViewModel(x)).ToList();
         Publishers = new List<AllTimeStatsPublisherViewModel>();
         foreach (var leagueYear in allTimeStats.LeagueYears)
         {
@@ -19,5 +21,6 @@ public class LeagueAllTimeStatsViewModel
     }
 
     public LeagueViewModel League { get; }
+    public List<LeaguePlayerAllTimeStatsViewModel> PlayerAllTimeStats { get; }
     public List<AllTimeStatsPublisherViewModel> Publishers { get; }
 }
