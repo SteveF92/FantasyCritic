@@ -22,7 +22,7 @@
                   <font-awesome-icon v-b-popover.hover.focus="'Copy League ID to Clipboard'" :icon="['far', 'copy']" size="xs" class="fake-link" />
                 </span>
               </h1>
-              <router-link :to="{ name: 'leagueAllTimeStats', params: { leagueid: league.leagueID } }" class="all-time-stats-link">All-Time League Stats</router-link>
+              <router-link v-if="league.years.length > 2" :to="{ name: 'leagueAllTimeStats', params: { leagueid: league.leagueID } }" class="all-time-stats-link">All-Time League Stats</router-link>
             </div>
 
             <div class="selector-area">
