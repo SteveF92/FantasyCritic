@@ -86,7 +86,7 @@ export default {
         return this.publisher.gameSlots;
       }
 
-      return orderBy(this.publisher.gameSlots, (x) => `${x.counterPick ? '1' : '0'}-${x.publisherGame.timestamp}`);
+      return orderBy(this.publisher.gameSlots, (x) => `${x.counterPick ? '1' : '0'}-${x.publisherGame?.timestamp ?? 'Z' + x.slotNumber}`);
     },
     iconIsValid() {
       return publisherIconIsValid(this.publisher.publisherIcon);

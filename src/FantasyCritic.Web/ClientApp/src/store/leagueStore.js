@@ -16,7 +16,9 @@ export default {
   actions: {
     async initializeLeaguePage(context, leaguePageParams) {
       const draftOrderView = localStorage.getItem('draftOrderView');
+      const showProjections = localStorage.getItem('showProjections');
       context.commit('setDraftOrderView', draftOrderView === 'true');
+      context.commit('setShowProjections', showProjections === 'true');
       context.commit('clearPublisherStoreData');
       context.commit('clearLeagueStoreData');
       context.commit('setInviteCode', leaguePageParams.inviteCode);
@@ -135,6 +137,7 @@ export default {
     },
     setShowProjections(state, showProjections) {
       state.showProjections = showProjections;
+      localStorage.setItem('showProjections', showProjections.toString());
     },
     setDraftOrderView(state, draftOrderView) {
       state.draftOrderView = draftOrderView;
