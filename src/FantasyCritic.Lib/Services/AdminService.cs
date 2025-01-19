@@ -359,7 +359,7 @@ public class AdminService
             var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
             if (actionProcessingSets.Any())
             {
-                var mostRecentSet = actionProcessingSets.MaxBy(x => x.ProcessTime)!;
+                var mostRecentSet = actionProcessingSets.Where(x => x.ProcessName.StartsWith("Drop/Bid Processing")).MaxBy(x => x.ProcessTime)!;
                 var timeSinceMostRecentProcessing = now - mostRecentSet.ProcessTime;
                 if (timeSinceMostRecentProcessing < Duration.FromHours(4))
                 {
