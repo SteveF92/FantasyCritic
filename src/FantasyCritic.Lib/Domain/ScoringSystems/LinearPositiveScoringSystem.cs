@@ -52,5 +52,8 @@ public class LinearPositiveScoringSystem : ScoringSystem
         return fantasyPoints;
     }
 
+    public override decimal GetMinimumScore() => -20;
+    public override decimal GetMaximumScore() => 30;
+
     public override string GetReadableString() => "1 Point per Point over 90";
 }

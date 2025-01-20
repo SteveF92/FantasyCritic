@@ -94,6 +94,20 @@ export function roundNumber(value: number, decimals: number): string {
   return value.toString();
 }
 
+export function formatMoney(value: number, decimals: number): string {
+  if (decimals !== 0 && !decimals) {
+    decimals = 2;
+  }
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+  return formatter.format(value);
+}
+
 export function maxBy<T>(array: T[], func: (item: T) => number): T | undefined {
   const max = Math.max(...array.map(func));
   return array.find((item) => func(item) === max);

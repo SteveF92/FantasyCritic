@@ -32,7 +32,7 @@
 <script>
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import GGMixin from '@/mixins/ggMixin.js';
-import { roundNumber } from '@/globalFunctions';
+import { roundNumber, formatMoney } from '@/globalFunctions';
 export default {
   components: {
     MasterGameSummary
@@ -68,9 +68,13 @@ export default {
   },
   methods: {
     formatStat(stat) {
-      if (this.statType === 'Score') {
+      if (this.statType === 'Score' || this.statType === 'Factor') {
         return roundNumber(stat, 2);
       }
+      if (this.statType === 'Budget') {
+        return formatMoney(stat, 0);
+      }
+
       return stat;
     }
   }

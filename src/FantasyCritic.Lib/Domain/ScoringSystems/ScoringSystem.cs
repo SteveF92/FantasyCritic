@@ -38,6 +38,9 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
     public override string ToString() => Name;
     public abstract string GetReadableString();
 
+    public abstract decimal GetMinimumScore();
+    public abstract decimal GetMaximumScore();
+
     public bool Equals(ScoringSystem? other)
     {
         if (ReferenceEquals(null, other)) return false;

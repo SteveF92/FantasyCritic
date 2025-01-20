@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Lib.Domain;
 
@@ -78,6 +79,48 @@ public class PublisherGame : IEquatable<PublisherGame>
         }
 
         return new MasterGameYearWithCounterPick(MasterGame, CounterPick);
+    }
+
+    public double GetSleeperFactor(ScoringSystem scoringSystem)
+    {
+        double minFantasyPoints = (double)scoringSystem.GetMinimumScore();
+        double maxFantasyPoints = (double)scoringSystem.GetMaximumScore();
+
+        var hypeFactor = MasterGame!.DateAdjustedHypeFactor;
+        var fantasyPoints = (double)(FantasyPoints ?? 0);
+
+        // Ensure FantasyPoints are within the valid range
+        fantasyPoints = Math.Clamp(fantasyPoints, minFantasyPoints, maxFantasyPoints);
+
+        // Sleeper Factor formula
+        double sleeperFactor = (fantasyPoints * (100 - hypeFactor)) / (maxFantasyPoints - minFantasyPoints);
+
+        return sleeperFactor;
+    }
+
+    
+    public double GetDisappointmentFactor(ScoringSystem scoringSystem)
+    {
+        double minFantasyPoints = (double)scoringSystem.GetMinimumScore();
+        double maxFantasyPoints = (double)scoringSystem.GetMaximumScore();
+
+        var hypeFactor = MasterGame!.DateAdjustedHypeFactor;
+        var fantasyPoints = (double) (FantasyPoints ?? 0);
+        if (hypeFactor <= 0)
+        {
+            return 0;
+        }
+
+        // Constants
+        const double effectiveThreshold = 12.0; // "Excellent" threshold for FantasyPoints
+
+        // Ensure FantasyPoints are within valid range
+        fantasyPoints = Math.Clamp(fantasyPoints, minFantasyPoints, maxFantasyPoints);
+
+        // Calculate disappointment factor
+        double disappointmentFactor = hypeFactor * Math.Max(0, (1 - (fantasyPoints / effectiveThreshold)));
+
+        return disappointmentFactor;
     }
 
     public override string ToString() => GameName;

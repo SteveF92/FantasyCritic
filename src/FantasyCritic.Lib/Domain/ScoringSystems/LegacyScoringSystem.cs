@@ -32,5 +32,8 @@ public class LegacyScoringSystem : ScoringSystem
         return fantasyPoints;
     }
 
+    public override decimal GetMinimumScore() => -70;
+    public override decimal GetMaximumScore() => 40;
+
     public override string GetReadableString() => "Legacy";
 }
