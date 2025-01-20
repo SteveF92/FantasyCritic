@@ -1,8 +1,10 @@
+using FantasyCritic.Lib.Domain.AllTimeStats;
+
 namespace FantasyCritic.Web.Models.Responses.AllTimeStats;
 
-public class LeaguePlayerAllTimeStatsViewModel
+public class LeaguePlayerAllTimeStatsResponse
 {
-    public LeaguePlayerAllTimeStatsViewModel(LeaguePlayerAllTimeStats domain)
+    public LeaguePlayerAllTimeStatsResponse(LeaguePlayerAllTimeStats domain)
     {
         UserID = domain.User.UserID;
         PlayerName = domain.User.DisplayName;

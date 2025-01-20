@@ -226,7 +226,7 @@ public class LeagueController : BaseLeagueController
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, userIsFollowingLeague);
-        var allTimeStatsViewModel = new LeagueAllTimeStatsViewModel(leagueViewModel, allTimeStats, systemWideValues, currentDate);
+        var allTimeStatsViewModel = new LeagueAllTimeStatsResponse(leagueViewModel, allTimeStats, systemWideValues, currentDate);
         return Ok(allTimeStatsViewModel);
     }
 

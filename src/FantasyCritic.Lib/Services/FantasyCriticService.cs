@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain.AllTimeStats;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -602,6 +603,8 @@ public class FantasyCriticService
                 averageFinishRanking, averageGamesReleased, averageFantasyPoints, averageCriticScore));
         }
 
-        return new LeagueAllTimeStats(leagueYears, playerAllTimeStats);
+        var hallOfFameGameLists = new List<HallOfFameGameList>();
+
+        return new LeagueAllTimeStats(leagueYears, playerAllTimeStats, hallOfFameGameLists);
     }
 }

@@ -1,12 +1,14 @@
+using FantasyCritic.Lib.Domain.AllTimeStats;
+
 namespace FantasyCritic.Web.Models.Responses.AllTimeStats;
 
-public class LeagueAllTimeStatsViewModel
+public class LeagueAllTimeStatsResponse
 {
-    public LeagueAllTimeStatsViewModel(LeagueViewModel leagueViewModel, LeagueAllTimeStats allTimeStats, SystemWideValues systemWideValues, LocalDate currentDate)
+    public LeagueAllTimeStatsResponse(LeagueViewModel leagueViewModel, LeagueAllTimeStats allTimeStats, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         League = leagueViewModel;
 
-        PlayerAllTimeStats = allTimeStats.PlayerAllTimeStats.Select(x => new LeaguePlayerAllTimeStatsViewModel(x)).ToList();
+        PlayerAllTimeStats = allTimeStats.PlayerAllTimeStats.Select(x => new LeaguePlayerAllTimeStatsResponse(x)).ToList();
         Publishers = new List<AllTimeStatsPublisherViewModel>();
         foreach (var leagueYear in allTimeStats.LeagueYears)
         {
@@ -18,9 +20,12 @@ public class LeagueAllTimeStatsViewModel
                 Publishers.Add(new AllTimeStatsPublisherViewModel(leagueYear, publisher, ranking, systemWideValues, currentDate));
             }
         }
+
+        HallOfFameGameLists = allTimeStats.HallOfFameGameLists.Select(x => new HallOfFameGameListResponse(x, currentDate)).ToList();
     }
 
     public LeagueViewModel League { get; }
-    public List<LeaguePlayerAllTimeStatsViewModel> PlayerAllTimeStats { get; }
+    public List<LeaguePlayerAllTimeStatsResponse> PlayerAllTimeStats { get; }
     public List<AllTimeStatsPublisherViewModel> Publishers { get; }
+    public List<HallOfFameGameListResponse> HallOfFameGameLists { get; }
 }
