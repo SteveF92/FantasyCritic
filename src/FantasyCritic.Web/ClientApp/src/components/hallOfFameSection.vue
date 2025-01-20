@@ -1,7 +1,7 @@
 <template>
   <div class="hall-of-fame-section">
     <h3>{{ hallOfFameList.name }}</h3>
-    <div class="cover-art-container">
+    <div class="hall-of-fame-container">
       <HallOfFameGame
         v-for="game in hallOfFameList.games"
         :key="game.masterGame.masterGameID"
@@ -24,11 +24,10 @@ export default {
 };
 </script>
 <style scoped>
-.cover-art-container {
+.hall-of-fame-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
-  max-width: 1500px;
 }
 </style>

@@ -1,24 +1,23 @@
 <template>
   <div class="hall-of-fame-game">
-    <div class="game-area">
-      <div class="game-image-area" :class="{ 'small-game-image-area': useSmallImages }">
-        <a :id="popoverID" href="javascript:;" class="no-link-style">
-          <img v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
-          <div v-else class="game-text game-name">
-            {{ gameName }}
-          </div>
-        </a>
-      </div>
+    <div class="game-image-area" :class="{ 'small-game-image-area': useSmallImages }">
+      <a :id="popoverID" href="javascript:;" class="no-link-style">
+        <img v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+        <div v-else class="game-text game-name">
+          {{ gameName }}
+        </div>
+      </a>
+    </div>
 
-      <div class="bottom-text-area">
-        <span class="stat-area">{{ statName }}: {{ formatStat(hallOfFameGame.stat) }}</span>
-        <span>
-          Picked by
-          <router-link :to="{ name: 'publisher', params: { publisherid: hallOfFameGame.pickedBy.publisherID } }">
-            {{ hallOfFameGame.pickedBy.playerName }}
-          </router-link>
-          in {{ hallOfFameGame.pickedBy.year }}
-        </span>
+    <div>
+      <div class="game-text">{{ statName }}: {{ formatStat(hallOfFameGame.stat) }}</div>
+      <hr class="divider" />
+      <div class="game-text">
+        Picked by
+        <router-link :to="{ name: 'publisher', params: { publisherid: hallOfFameGame.pickedBy.publisherID } }">
+          {{ hallOfFameGame.pickedBy.playerName }}
+        </router-link>
+        in {{ hallOfFameGame.pickedBy.year }}
       </div>
     </div>
 
@@ -83,8 +82,11 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #cccccc;
+  background-color: #333333;
   padding: 12px;
+
+  text-align: center;
+  width: 200px;
 }
 
 .game-image-area {
@@ -107,15 +109,24 @@ export default {
   border-radius: 5%;
 }
 
-.bottom-text-area {
-  height: 50px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.game-text {
+  text-shadow:
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1rem;
 }
 
 .no-link-style {
   color: white;
   text-decoration: none;
+}
+
+.divider {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 </style>
