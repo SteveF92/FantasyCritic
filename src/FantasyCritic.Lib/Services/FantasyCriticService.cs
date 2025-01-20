@@ -607,11 +607,36 @@ public class FantasyCriticService
 
         var masterGames = await _interLeagueService.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
-        //Build Hall of Fame
-        var mostPoints = leagueYears
+        var publisherGamesWithScores = leagueYears
             .SelectMany(x => x.Publishers)
             .SelectMany(x => x.PublisherGames)
-            .Where(x => !x.CounterPick && x.MasterGame is not null && x.FantasyPoints.HasValue)
+            .Where(x => x.MasterGame is not null && x.FantasyPoints.HasValue && x.MasterGame!.MasterGame.CriticScore.HasValue)
+            .ToList();
+
+        //Build Hall of Fame
+        var mostPoints = publisherGamesWithScores
+            .Where(x => !x.CounterPick)
+            .OrderByDescending(x => x.MasterGame!.MasterGame.CriticScore)
+            .Take(10)
+            .Select(x => new HallOfFameGame(masterGameDictionary[x.MasterGame!.MasterGame.MasterGameID], publisherDictionary[x.PublisherID], x.MasterGame.MasterGame.CriticScore!.Value))
+            .ToList();
+
+        var leastPoints = publisherGamesWithScores
+            .Where(x => !x.CounterPick)
+            .OrderBy(x => x.MasterGame!.MasterGame.CriticScore)
+            .Take(10)
+            .Select(x => new HallOfFameGame(masterGameDictionary[x.MasterGame!.MasterGame.MasterGameID], publisherDictionary[x.PublisherID], x.MasterGame.MasterGame.CriticScore!.Value))
+            .ToList();
+
+        var bestCounterPicks = publisherGamesWithScores
+            .Where(x => x.CounterPick)
+            .OrderBy(x => x.MasterGame!.MasterGame.CriticScore)
+            .Take(10)
+            .Select(x => new HallOfFameGame(masterGameDictionary[x.MasterGame!.MasterGame.MasterGameID], publisherDictionary[x.PublisherID], x.MasterGame.MasterGame.CriticScore!.Value))
+            .ToList();
+
+        var worstCounterPicks = publisherGamesWithScores
+            .Where(x => x.CounterPick)
             .OrderByDescending(x => x.MasterGame!.MasterGame.CriticScore)
             .Take(10)
             .Select(x => new HallOfFameGame(masterGameDictionary[x.MasterGame!.MasterGame.MasterGameID], publisherDictionary[x.PublisherID], x.MasterGame.MasterGame.CriticScore!.Value))
@@ -619,7 +644,10 @@ public class FantasyCriticService
 
         var hallOfFameGameLists = new List<HallOfFameGameList>()
         {
-            new HallOfFameGameList("Highest Scoring Games", "Critic Score", "Score", mostPoints)
+            new HallOfFameGameList("Highest Scoring Games", "Critic Score", "Score", mostPoints),
+            new HallOfFameGameList("Lowest Scoring Games", "Critic Score", "Score", leastPoints),
+            new HallOfFameGameList("Best Counter Picks", "Critic Score", "Score", bestCounterPicks),
+            new HallOfFameGameList("Worst Counter Picks", "Critic Score", "Score", worstCounterPicks),
         };
 
         return new LeagueAllTimeStats(leagueYears, playerAllTimeStats, hallOfFameGameLists);

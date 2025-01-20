@@ -1,6 +1,6 @@
 <template>
   <div class="hall-of-fame-section">
-    <h3>{{ hallOfFameList.name }}</h3>
+    <h2>{{ hallOfFameList.name }}</h2>
     <div class="hall-of-fame-container">
       <HallOfFameGame
         v-for="game in hallOfFameList.games"

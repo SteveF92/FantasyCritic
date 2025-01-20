@@ -36,8 +36,9 @@
         </b-table>
 
         <div class="hall-of-fame">
-          <h2>Hall of Fame</h2>
-          <hallOfFameSection v-for="hallOfFameList in leagueAllTimeStats.hallOfFameGameLists" :key="hallOfFameList.name" :hallOfFameList="hallOfFameList"></hallOfFameSection>
+          <div class="hall-of-fame-lists">
+            <hallOfFameSection v-for="hallOfFameList in leagueAllTimeStats.hallOfFameGameLists" :key="hallOfFameList.name" :hallOfFameList="hallOfFameList"></hallOfFameSection>
+          </div>
         </div>
         <h2>Individual Year Stats</h2>
         <b-table :sort-by.sync="individualSortBy" :sort-desc.sync="individualSortDesc" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
@@ -152,5 +153,12 @@ export default {
 
 .year-winner-crown {
   color: #d6993a;
+}
+
+.hall-of-fame-lists {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  margin-bottom: 50px;
 }
 </style>

@@ -4,7 +4,7 @@
       <a :id="popoverID" href="javascript:;" class="no-link-style">
         <img v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
         <div v-else class="game-text game-name">
-          {{ gameName }}
+          {{ masterGame.gameName }}
         </div>
       </a>
     </div>
