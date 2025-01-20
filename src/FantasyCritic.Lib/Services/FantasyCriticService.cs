@@ -605,6 +605,8 @@ public class FantasyCriticService
 
         var publisherDictionary = leagueYears.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID);
 
+        var masterGames = await _interLeagueService.GetMasterGames();
+        var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
         //Build Hall of Fame
         var mostPoints = leagueYears
             .SelectMany(x => x.Publishers)
@@ -612,7 +614,7 @@ public class FantasyCriticService
             .Where(x => !x.CounterPick && x.MasterGame is not null && x.FantasyPoints.HasValue)
             .OrderByDescending(x => x.MasterGame!.MasterGame.CriticScore)
             .Take(10)
-            .Select(x => new HallOfFameGame(x.MasterGame!.MasterGame!, publisherDictionary[x.PublisherID], x.MasterGame.MasterGame.CriticScore!.Value))
+            .Select(x => new HallOfFameGame(masterGameDictionary[x.MasterGame!.MasterGame.MasterGameID], publisherDictionary[x.PublisherID], x.MasterGame.MasterGame.CriticScore!.Value))
             .ToList();
 
         var hallOfFameGameLists = new List<HallOfFameGameList>()

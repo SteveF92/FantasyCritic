@@ -7,9 +7,11 @@ public class MinimalPublisherViewModel
         PublisherID = domain.PublisherID;
         Year = domain.LeagueYearKey.Year;
         PublisherName = domain.PublisherName;
+        PlayerName = domain.User.DisplayName;
     }
 
     public Guid PublisherID { get; }
     public int Year { get; }
     public string PublisherName { get; }
+    public string PlayerName { get; }
 }
