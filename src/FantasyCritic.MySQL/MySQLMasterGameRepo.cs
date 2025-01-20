@@ -145,7 +145,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateGGStats(MasterGame masterGame, GGGame ggGame)
     {
-        const string sql = "update tbl_mastergame set GGCoverArtFileName = @ggCoverArtFileName, GGSlug = @ggSlug where MasterGameID = @masterGameID;";
+        const string sql = """
+                           update tbl_mastergame set GGCoverArtFileName = @ggCoverArtFileName, GGSlug = @ggSlug where MasterGameID = @masterGameID;
+                           update tbl_caching_mastergameyear set GGCoverArtFileName = @ggCoverArtFileName, GGSlug = @ggSlug where MasterGameID = @masterGameID;
+                           """;
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql,
