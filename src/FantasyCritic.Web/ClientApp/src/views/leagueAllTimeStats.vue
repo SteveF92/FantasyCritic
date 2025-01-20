@@ -77,7 +77,7 @@ export default {
       errorInfo: '',
       forbidden: false,
       leagueAllTimeStats: null,
-      playerStatFields: [
+      playerStatFieldsInternal: [
         { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
         { key: 'yearsPlayedIn', label: 'Years Played In', thClass: 'bg-primary', sortable: true },
         { key: 'yearsWon.length', label: 'Years Won', thClass: 'bg-primary', sortable: true },
@@ -105,6 +105,15 @@ export default {
   computed: {
     league() {
       return this.leagueAllTimeStats?.league;
+    },
+    playerStatFields() {
+      const yearsPlayedIn = this.leagueAllTimeStats.playerAllTimeStats.map((x) => x.yearsPlayedIn);
+      const allSameYearsPlayed = yearsPlayedIn.every((x) => x === yearsPlayedIn[0]);
+      if (!allSameYearsPlayed) {
+        return this.playerStatFieldsInternal;
+      }
+
+      return this.playerStatFieldsInternal.slice(0, 1).concat(this.playerStatFieldsInternal.slice(2));
     }
   },
   watch: {
