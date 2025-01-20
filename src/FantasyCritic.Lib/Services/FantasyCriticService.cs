@@ -603,7 +603,22 @@ public class FantasyCriticService
                 averageFinishRanking, averageGamesReleased, averageFantasyPoints, averageCriticScore));
         }
 
-        var hallOfFameGameLists = new List<HallOfFameGameList>();
+        var publisherDictionary = leagueYears.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID);
+
+        //Build Hall of Fame
+        var mostPoints = leagueYears
+            .SelectMany(x => x.Publishers)
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => !x.CounterPick && x.MasterGame is not null && x.FantasyPoints.HasValue)
+            .OrderByDescending(x => x.MasterGame!.MasterGame.CriticScore)
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.MasterGame!.MasterGame!, publisherDictionary[x.PublisherID], x.MasterGame.MasterGame.CriticScore!.Value))
+            .ToList();
+
+        var hallOfFameGameLists = new List<HallOfFameGameList>()
+        {
+            new HallOfFameGameList("Highest Scoring Games", "Critic Score", "Score", mostPoints)
+        };
 
         return new LeagueAllTimeStats(leagueYears, playerAllTimeStats, hallOfFameGameLists);
     }

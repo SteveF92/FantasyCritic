@@ -35,6 +35,10 @@
           </template>
         </b-table>
 
+        <div class="hall-of-fame">
+          <h2>Hall of Fame</h2>
+          <hallOfFameSection v-for="hallOfFameList in leagueAllTimeStats.hallOfFameGameLists" :key="hallOfFameList.name" :hallOfFameList="hallOfFameList"></hallOfFameSection>
+        </div>
         <h2>Individual Year Stats</h2>
         <b-table :sort-by.sync="individualSortBy" :sort-desc.sync="individualSortDesc" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
           <template #cell(publisherName)="data">
@@ -67,8 +71,10 @@
 <script>
 import axios from 'axios';
 import { ordinal_suffix_of } from '@/globalFunctions';
+import HallOfFameSection from '@/components/hallOfFameSection.vue';
 
 export default {
+  components: { HallOfFameSection },
   props: {
     leagueid: { type: String, required: true }
   },

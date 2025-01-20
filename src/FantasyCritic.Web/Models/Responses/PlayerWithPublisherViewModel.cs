@@ -20,7 +20,7 @@ public class PlayerWithPublisherViewModel
         bool removable, bool previousYearWinner, int ranking, int projectedRanking)
     {
         User = new PlayerViewModel(leagueYear.League.LeagueID, leagueYear.League.LeagueName, user, removable);
-        Publisher = new MinimalPublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues);
+        Publisher = new PlayerPublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues);
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
         ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues);
         PreviousYearWinner = previousYearWinner;
@@ -32,7 +32,7 @@ public class PlayerWithPublisherViewModel
     public Guid? InviteID { get; }
     public string? InviteName { get; }
     public PlayerViewModel? User { get; }
-    public MinimalPublisherViewModel? Publisher { get; }
+    public PlayerPublisherViewModel? Publisher { get; }
     public decimal? TotalFantasyPoints { get; }
     public decimal? ProjectedFantasyPoints { get; }
     public bool? PreviousYearWinner { get; }
