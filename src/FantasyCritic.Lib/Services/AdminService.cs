@@ -887,24 +887,6 @@ public class AdminService
                 dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
                 double peakHypeFactor = hypeFactor;
 
-                var cachedMasterGame = masterGameCacheLookup.GetValueOrDefault(masterGame.MasterGameID);
-                if (cachedMasterGame is not null)
-                {
-                    var bigEnoughSampleSize = leaguesWithGame > 5 && allLeagueYears.Count > 20;
-                    if (bigEnoughSampleSize && cachedMasterGame.PeakHypeFactor > peakHypeFactor)
-                    {
-                        peakHypeFactor = cachedMasterGame.PeakHypeFactor;
-                    }
-
-                    if (masterGame.CriticScore.HasValue)
-                    {
-                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
-                            adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
-                            dateAdjustedHypeFactor, peakHypeFactor, cachedMasterGame.LinearRegressionHypeFactor));
-                        continue;
-                    }
-                }
-
                 //Linear Regression
                 double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
                 double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
@@ -916,6 +898,30 @@ public class AdminService
                                                     + hypeFactorCalculation;
 
                 linearRegressionHypeFactor = FixDouble(linearRegressionHypeFactor);
+
+                var cachedMasterGame = masterGameCacheLookup.GetValueOrDefault(masterGame.MasterGameID);
+                if (cachedMasterGame is not null)
+                {
+                    var bigEnoughSampleSize = leaguesWithGame > 5 && allLeagueYears.Count > 20;
+                    if (bigEnoughSampleSize && cachedMasterGame.PeakHypeFactor > peakHypeFactor)
+                    {
+                        peakHypeFactor = cachedMasterGame.PeakHypeFactor;
+                    }
+
+                    var linearRegressionHypeFactorToUse = cachedMasterGame.LinearRegressionHypeFactor;
+                    if (linearRegressionHypeFactorToUse == 0)
+                    {
+                        linearRegressionHypeFactorToUse = linearRegressionHypeFactor;
+                    }
+
+                    if (masterGame.CriticScore.HasValue)
+                    {
+                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
+                            adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
+                            dateAdjustedHypeFactor, peakHypeFactor, linearRegressionHypeFactorToUse));
+                        continue;
+                    }
+                }
 
                 calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
                     adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,

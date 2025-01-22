@@ -5,8 +5,8 @@ public class DefaultHypeFactorService : IHypeFactorService
 {
     public Task<HypeConstants> GetHypeConstants()
     {
-        //These were the correct values on 2022-03-28 and are likely good enough.
-        var defaults = new HypeConstants(72.15607447516923, 1.599796665594027, -2.4574452697921627, 0.10576458996831795);
+        //These were the correct values on 2025-01-21 and are likely good enough.
+        var defaults = new HypeConstants(72.95706879412415, 2.2150845010046707, -5.817742823276648, 0.10208646257897502);
         return Task.FromResult(defaults);
     }
 }
