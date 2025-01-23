@@ -623,7 +623,7 @@ public class FantasyCriticService
         //Build Hall of Fame
         var mostPoints = publisherGamesWithScores
             .Where(x => !x.CounterPick)
-            .OrderByDescending(x => x.MasterGame!.MasterGame.CriticScore)
+            .OrderByDescending(x => x.FantasyPoints)
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
@@ -633,7 +633,7 @@ public class FantasyCriticService
 
         var leastPoints = publisherGamesWithScores
             .Where(x => !x.CounterPick)
-            .OrderBy(x => x.MasterGame!.MasterGame.CriticScore)
+            .OrderBy(x => x.FantasyPoints)
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
@@ -643,7 +643,7 @@ public class FantasyCriticService
 
         var bestCounterPicks = publisherGamesWithScores
             .Where(x => x.CounterPick)
-            .OrderBy(x => x.MasterGame!.MasterGame.CriticScore)
+            .OrderBy(x => x.FantasyPoints)
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
@@ -653,7 +653,7 @@ public class FantasyCriticService
 
         var worstCounterPicks = publisherGamesWithScores
             .Where(x => x.CounterPick)
-            .OrderByDescending(x => x.MasterGame!.MasterGame.CriticScore)
+            .OrderByDescending(x => x.FantasyPoints)
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
