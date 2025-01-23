@@ -362,13 +362,31 @@ public static class HostingExtensions
         {
             OnPrepareResponse = (context) =>
             {
-                var headers = context.Context.Response.GetTypedHeaders();
+                var fileExtension = Path.GetExtension(context.File.Name).ToLower();
 
-                headers.CacheControl = new CacheControlHeaderValue
+                if (fileExtension == ".html")
                 {
-                    Public = true,
-                    MaxAge = TimeSpan.FromDays(365)
-                };
+                    // Prevent caching for HTML files
+                    var headers = context.Context.Response.GetTypedHeaders();
+                    headers.CacheControl = new CacheControlHeaderValue
+                    {
+                        NoCache = true,
+                        NoStore = true,
+                        MustRevalidate = true
+                    };
+                    context.Context.Response.Headers["Pragma"] = "no-cache";
+                    context.Context.Response.Headers["Expires"] = "0";
+                }
+                else
+                {
+                    // Cache for other static files (like JS, CSS, images)
+                    var headers = context.Context.Response.GetTypedHeaders();
+                    headers.CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromDays(365) // Cache static assets for 1 year
+                    };
+                }
             }
         });
 
