@@ -557,7 +557,7 @@ public class FantasyCriticService
         return _fantasyCriticRepo.DraftIsActiveOrPaused(leagueID, year);
     }
 
-    public async Task<LeagueAllTimeStats> GetLeagueAllTimeStats(League league, LocalDate dateToCheck)
+    public async Task<LeagueAllTimeStats> GetLeagueAllTimeStats(League league, LocalDate currentDate)
     {
         var leagueYears = new List<LeagueYear>();
         foreach (var year in league.Years)
@@ -583,7 +583,7 @@ public class FantasyCriticService
             var gamesReleased = allPublisherGames
                 .Where(x => !x.CounterPick)
                 .Where(x => x.MasterGame is not null)
-                .Where(x => x.MasterGame!.MasterGame.IsReleased(dateToCheck))
+                .Where(x => x.MasterGame!.MasterGame.IsReleased(currentDate))
                 .ToList();
 
             var timesCounterPicked = 0;
@@ -627,7 +627,7 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
-                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value}
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
             }))
             .ToList();
 
@@ -637,27 +637,27 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
-                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value}
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
             }))
             .ToList();
 
-        var bestCounterPicks = publisherGamesWithScores
-            .Where(x => x.CounterPick)
-            .OrderBy(x => x.FantasyPoints)
-            .Take(10)
-            .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
-            {
-                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value}
-            }))
-            .ToList();
-
-        var worstCounterPicks = publisherGamesWithScores
+        var bestCounterPicks = publisherGamesWithMasterGames
             .Where(x => x.CounterPick)
             .OrderByDescending(x => x.FantasyPoints)
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
-                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value}
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
+            }))
+            .ToList();
+
+        var worstCounterPicks = publisherGamesWithScores
+            .Where(x => x.CounterPick)
+            .OrderBy(x => x.FantasyPoints)
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
+            {
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
             }))
             .ToList();
 
@@ -678,7 +678,7 @@ public class FantasyCriticService
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
                 {"Hype Factor", x.MasterGame!.DateAdjustedHypeFactor},
-                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value},
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"},
                 {"Sleeper Factor", x.GetSleeperFactor(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem)}
             }))
             .ToList();
@@ -690,7 +690,7 @@ public class FantasyCriticService
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
                 {"Hype Factor", x.MasterGame!.DateAdjustedHypeFactor},
-                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value},
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"},
                 {"Flop Factor",  x.GetDisappointmentFactor(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem)}
             }))
             .ToList();

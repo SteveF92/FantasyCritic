@@ -67,6 +67,9 @@ export default {
   },
   methods: {
     formatStat(statName, stat) {
+      if (stat === 'DNR') {
+        return 'DNR';
+      }
       const matchingStatType = this.statTypes.find((x) => x.statName === statName).statType;
       if (matchingStatType === 'Score' || matchingStatType === 'Factor') {
         return roundNumber(stat, 2);

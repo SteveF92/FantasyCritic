@@ -59,6 +59,16 @@ public class MasterGameYear : IEquatable<MasterGameYear>
     public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => MasterGame.CouldReleaseInQuarter(yearQuarter);
 
     public bool IsRelevantInYear(bool strict) => IsRelevantInYear(Year, strict);
+
+    public bool IsReleasedAndReleasedInYear(LocalDate currentDate)
+    {
+        if (!MasterGame.IsReleased(currentDate))
+        {
+            return false;
+        }
+
+        return MasterGame.ReleaseDate!.Value.Year == Year;
+    }
     
     public bool IsRelevantInYear(int year, bool strict)
     {
