@@ -362,31 +362,13 @@ public static class HostingExtensions
         {
             OnPrepareResponse = (context) =>
             {
-                var fileExtension = Path.GetExtension(context.File.Name).ToLower();
-
-                if (fileExtension == ".html")
+                // Cache for other static files (like JS, CSS, images)
+                var headers = context.Context.Response.GetTypedHeaders();
+                headers.CacheControl = new CacheControlHeaderValue
                 {
-                    // Prevent caching for HTML files
-                    var headers = context.Context.Response.GetTypedHeaders();
-                    headers.CacheControl = new CacheControlHeaderValue
-                    {
-                        NoCache = true,
-                        NoStore = true,
-                        MustRevalidate = true
-                    };
-                    context.Context.Response.Headers["Pragma"] = "no-cache";
-                    context.Context.Response.Headers["Expires"] = "0";
-                }
-                else
-                {
-                    // Cache for other static files (like JS, CSS, images)
-                    var headers = context.Context.Response.GetTypedHeaders();
-                    headers.CacheControl = new CacheControlHeaderValue
-                    {
-                        Public = true,
-                        MaxAge = TimeSpan.FromDays(365) // Cache static assets for 1 year
-                    };
-                }
+                    Public = true,
+                    MaxAge = TimeSpan.FromDays(365) // Cache static assets for 1 year
+                };
             }
         });
 
@@ -401,7 +383,22 @@ public static class HostingExtensions
         app.MapRazorPages();
         app.MapHub<UpdateHub>("/updatehub");
 
-        app.MapFallbackToFile("index.html");
+        app.MapFallbackToFile("index.html", new StaticFileOptions()
+        {
+            OnPrepareResponse = (context) =>
+            {
+                // Prevent caching for HTML files
+                var headers = context.Context.Response.GetTypedHeaders();
+                headers.CacheControl = new CacheControlHeaderValue
+                {
+                    NoCache = true,
+                    NoStore = true,
+                    MustRevalidate = true
+                };
+                context.Context.Response.Headers["Pragma"] = "no-cache";
+                context.Context.Response.Headers["Expires"] = "0";
+            }
+        });
 
         return app;
     }
