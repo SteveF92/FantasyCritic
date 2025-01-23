@@ -627,7 +627,8 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
-                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"},
+                {"Fantasy Points", x.FantasyPoints ?? 0 }
             }))
             .ToList();
 
@@ -637,7 +638,8 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
-                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"},
+                {"Fantasy Points", x.FantasyPoints ?? 0 }
             }))
             .ToList();
 
@@ -647,7 +649,8 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
-                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"},
+                {"Fantasy Points", x.FantasyPoints ?? 0 }
             }))
             .ToList();
 
@@ -657,7 +660,8 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
             {
-                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"}
+                {"Critic Score", x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR"},
+                {"Fantasy Points", x.FantasyPoints ?? 0 }
             }))
             .ToList();
 
@@ -695,7 +699,11 @@ public class FantasyCriticService
             }))
             .ToList();
 
-        var criticScoreTypes = new List<HallOfFameStatType>() {new HallOfFameStatType("Critic Score", "Score")};
+        var criticScoreTypes = new List<HallOfFameStatType>()
+        {
+            new HallOfFameStatType("Critic Score", "Score"),
+            new HallOfFameStatType("Fantasy Points", "Score")
+        };
         var budgetTypes = new List<HallOfFameStatType>() {new HallOfFameStatType("Spent", "Budget")};
         var sleeperFactorTypes = new List<HallOfFameStatType>()
         {
