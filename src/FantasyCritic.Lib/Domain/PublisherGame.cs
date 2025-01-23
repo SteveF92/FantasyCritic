@@ -123,6 +123,52 @@ public class PublisherGame : IEquatable<PublisherGame>
         return disappointmentFactor;
     }
 
+    public double GetDraftValue(ScoringSystem scoringSystem)
+    {
+        if (!OverallDraftPosition.HasValue || OverallDraftPosition.Value <= 0)
+        {
+            return 0; // No valid draft position
+        }
+
+        double minFantasyPoints = (double)scoringSystem.GetMinimumScore();
+        double maxFantasyPoints = (double)scoringSystem.GetMaximumScore();
+
+        var fantasyPoints = (double)(FantasyPoints ?? 0);
+
+        // Ensure FantasyPoints are within the valid range
+        fantasyPoints = Math.Clamp(fantasyPoints, minFantasyPoints, maxFantasyPoints);
+
+        // Draft Value = FantasyPoints / OverallDraftPosition
+        double draftValue = fantasyPoints / OverallDraftPosition.Value;
+
+        return draftValue;
+    }
+
+    public double GetBidValue(ScoringSystem scoringSystem)
+    {
+        if (!BidAmount.HasValue)
+        {
+            return 0; // No valid bid amount
+        }
+
+        double minFantasyPoints = (double)scoringSystem.GetMinimumScore();
+        double maxFantasyPoints = (double)scoringSystem.GetMaximumScore();
+
+        var fantasyPoints = (double)(FantasyPoints ?? 0);
+
+        // Ensure FantasyPoints are within the valid range
+        fantasyPoints = Math.Clamp(fantasyPoints, minFantasyPoints, maxFantasyPoints);
+
+        // Convert BidAmount to a double and ensure it's at least 0.5 if BidAmount is 0
+        double bidAmount = (double)BidAmount.Value;
+        bidAmount = bidAmount == 0 ? 0.5 : bidAmount;  // Convert 0 bid to 0.5
+
+        // Bid Value = FantasyPoints / BidAmount
+        double bidValue = fantasyPoints / bidAmount;
+
+        return bidValue;
+    }
+
     public override string ToString() => GameName;
 
     public bool Equals(PublisherGame? other)
