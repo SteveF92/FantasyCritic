@@ -699,11 +699,60 @@ public class FantasyCriticService
             }))
             .ToList();
 
+        var highestDraftValue = publisherGamesWithScores
+            .Where(x => !x.CounterPick && x.OverallDraftPosition.HasValue)
+            .OrderByDescending(x => x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem))
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
+            {
+                {"Drafted", x.OverallDraftPosition!.Value},
+                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value},
+                {"Draft Value",  x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem)}
+            }))
+            .ToList();
+
+        var lowestDraftValue = publisherGamesWithMasterGames
+            .Where(x => !x.CounterPick && x.OverallDraftPosition.HasValue)
+            .OrderBy(x => x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem))
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
+            {
+                {"Drafted", x.OverallDraftPosition!.Value},
+                {"Critic Score", x.MasterGame!.MasterGame.CriticScore.HasValue ? x.MasterGame!.MasterGame.CriticScore.Value : "DNR"},
+                {"Draft Value",  x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem)}
+            }))
+            .ToList();
+
+        var highestBidValue = publisherGamesWithScores
+            .Where(x => !x.CounterPick && x.BidAmount.HasValue && publisherDictionary[x.PublisherID].LeagueYearKey.Year > 2018)
+            .OrderByDescending(x => x.GetBidValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem))
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
+            {
+                {"Spent", x.BidAmount!.Value},
+                {"Critic Score", x.MasterGame!.MasterGame.CriticScore!.Value},
+                {"Bid Value",  x.GetBidValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem)}
+            }))
+            .ToList();
+
+        var lowestBidValue = publisherGamesWithMasterGames
+            .Where(x => !x.CounterPick && x.BidAmount.HasValue && publisherDictionary[x.PublisherID].LeagueYearKey.Year > 2018)
+            .OrderBy(x => x.GetBidValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem))
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, object>()
+            {
+                {"Spent",  x.BidAmount!.Value},
+                {"Critic Score", x.MasterGame!.MasterGame.CriticScore.HasValue ? x.MasterGame!.MasterGame.CriticScore.Value : "DNR"},
+                {"Bid Value",  x.GetBidValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem)}
+            }))
+            .ToList();
+
         var criticScoreTypes = new List<HallOfFameStatType>()
         {
             new HallOfFameStatType("Critic Score", "Score"),
             new HallOfFameStatType("Fantasy Points", "Score")
         };
+
         var budgetTypes = new List<HallOfFameStatType>() {new HallOfFameStatType("Spent", "Budget")};
         var sleeperFactorTypes = new List<HallOfFameStatType>()
         {
@@ -718,6 +767,34 @@ public class FantasyCriticService
             new HallOfFameStatType("Flop Factor", "Factor")
         };
 
+        var highestValueDraftPicksTypes = new List<HallOfFameStatType>()
+        {
+            new HallOfFameStatType("Drafted", "Position"),
+            new HallOfFameStatType("Critic Score", "Score"),
+            new HallOfFameStatType("Draft Value", "Factor")
+        };
+
+        var lowestValueDraftPicksTypes = new List<HallOfFameStatType>()
+        {
+            new HallOfFameStatType("Drafted", "Position"),
+            new HallOfFameStatType("Critic Score", "Score"),
+            new HallOfFameStatType("Draft Value", "Factor")
+        };
+
+        var highestValuePickupsTypes = new List<HallOfFameStatType>()
+        {
+            new HallOfFameStatType("Spent", "Budget"),
+            new HallOfFameStatType("Critic Score", "Score"),
+            new HallOfFameStatType("Bid Value", "Factor")
+        };
+
+        var lowestValuePickupsTypes = new List<HallOfFameStatType>()
+        {
+            new HallOfFameStatType("Spent", "Budget"),
+            new HallOfFameStatType("Critic Score", "Score"),
+            new HallOfFameStatType("Bid Value", "Factor")
+        };
+
         var hallOfFameGameLists = new List<HallOfFameGameList>()
         {
             new HallOfFameGameList("Highest Scoring Games", criticScoreTypes, mostPoints),
@@ -727,6 +804,11 @@ public class FantasyCriticService
             new HallOfFameGameList("Most Budget Spent On", budgetTypes, mostDollarsSpentOn),
             new HallOfFameGameList("Sleeper Factor", sleeperFactorTypes, highestSleeperFactor),
             new HallOfFameGameList("Flop Factor", disappointmentFactorTypes, lowestSleeperFactor),
+
+            new HallOfFameGameList("Highest Value Draft Picks", highestValueDraftPicksTypes, highestDraftValue),
+            new HallOfFameGameList("Lowest Value Draft Picks", lowestValueDraftPicksTypes, lowestDraftValue),
+            new HallOfFameGameList("Highest Value Pickups", highestValuePickupsTypes, highestBidValue),
+            new HallOfFameGameList("Lowest Value Pickups", lowestValuePickupsTypes, lowestBidValue),
         };
 
         return new LeagueAllTimeStats(leagueYears, playerAllTimeStats, hallOfFameGameLists);
