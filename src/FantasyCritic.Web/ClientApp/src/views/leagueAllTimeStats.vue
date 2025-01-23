@@ -92,7 +92,8 @@ export default {
         { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
         { key: 'averageFinishRanking', label: 'Average Rank', thClass: 'bg-primary', sortable: true },
         { key: 'averageFantasyPoints', label: 'Average Fantasy Points', thClass: 'bg-primary', sortable: true },
-        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true }
+        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true },
+        { key: 'timesCounterPicked', label: 'Times Counter Picked', thClass: 'bg-primary', sortable: true }
       ],
       playerSortBy: 'totalFantasyPoints',
       playerSortDesc: true,

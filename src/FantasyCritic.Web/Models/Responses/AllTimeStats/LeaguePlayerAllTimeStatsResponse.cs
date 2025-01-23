@@ -16,6 +16,7 @@ public class LeaguePlayerAllTimeStatsResponse
         AverageGamesReleased = domain.AverageGamesReleased;
         AverageFantasyPoints = domain.AverageFantasyPoints;
         AverageCriticScore = domain.AverageCriticScore;
+        TimesCounterPicked = domain.TimesCounterPicked;
     }
 
     public Guid UserID { get; }
@@ -28,4 +29,5 @@ public class LeaguePlayerAllTimeStatsResponse
     public double AverageGamesReleased { get; }
     public decimal AverageFantasyPoints { get; }
     public decimal AverageCriticScore { get; }
+    public int TimesCounterPicked { get; }
 }

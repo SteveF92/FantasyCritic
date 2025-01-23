@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models.Requests.League;
