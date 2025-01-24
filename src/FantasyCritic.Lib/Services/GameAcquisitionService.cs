@@ -558,6 +558,7 @@ public class GameAcquisitionService
             return Result.Failure("There is already a special auction for that game.");
         }
 
+        var nycEndDate = scheduledEndTime.ToEasternDate();
         MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, nycEndDate);
         var claimErrors = SlotEligibilityFunctions.GetClaimErrorsForLeagueYear(eligibilityFactors);
         if (claimErrors.Any())
