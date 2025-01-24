@@ -508,24 +508,17 @@ public class GameAcquisitionService
         var today = now.ToEasternDate();
         var masterGame = masterGameYear.MasterGame;
 
-        var nycEndDate = scheduledEndTime.ToEasternDate();
-        if (masterGame.ReleaseDate != today)
+        if (masterGame.ReleaseDate.HasValue)
         {
-            if (masterGame.IsReleased(today))
+            if (masterGame.IsReleased(today) && masterGame.ReleaseDate.Value != today)
             {
                 return Result.Failure("That game is already released.");
             }
 
-            if (masterGame.IsReleased(nycEndDate))
+            var oneDayBufferMaxTime = (masterGame.ReleaseDate.Value.PlusDays(1) + new LocalTime(23, 59, 0)).InZoneStrictly(TimeExtensions.EasternTimeZone).ToInstant();
+            if (scheduledEndTime > oneDayBufferMaxTime)
             {
-                return Result.Failure("That game will be released before the end time you specified.");
-            }
-        }
-        else
-        {
-            if (nycEndDate != today)
-            {
-                return Result.Failure("That game will be released before the end time you specified.");
+                return Result.Failure("Your scheduled end time is too far after the game's release. The system allows up to a one day buffer.");
             }
         }
 
