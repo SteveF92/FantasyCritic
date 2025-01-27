@@ -697,6 +697,7 @@ public class AdminService
         var averageCounterPickPoints = allCounterPicksWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
 
         Dictionary<int, List<decimal>> pointsForPosition = new Dictionary<int, List<decimal>>();
+        Dictionary<uint, List<decimal>> pointsForBidAmount = new Dictionary<uint, List<decimal>>();
         foreach (var leagueYear in allLeagueYears)
         {
             var publishers = leagueYear.Publishers;
@@ -712,10 +713,23 @@ public class AdminService
 
                 pointsForPosition[pickPosition].Add(game.FantasyPoints!.Value);
             }
+
+            var pickupGames = orderedGames.Where(x => x.BidAmount.HasValue).ToList();
+            foreach (var game in pickupGames)
+            {
+                if (!pointsForBidAmount.ContainsKey(game.BidAmount!.Value))
+                {
+                    pointsForBidAmount[game.BidAmount!.Value] = new List<decimal>();
+                }
+
+                pointsForBidAmount[game.BidAmount!.Value].Add(game.FantasyPoints!.Value);
+            }
         }
 
         var averageStandardGamePointsByPickPosition = pointsForPosition.Select(position => new AveragePickPositionPoints(position.Key, position.Value.Count, position.Value.Average())).ToList();
-        var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints, averageStandardGamePointsByPickPosition);
+        var averageStandardGamePointsByBidAmount = pointsForBidAmount.Select(bidAmount => new AverageBidAmountPoints(bidAmount.Key, bidAmount.Value.Count, bidAmount.Value.Average())).ToList();
+        var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints,
+            averageStandardGamePointsByPickPosition, averageStandardGamePointsByBidAmount);
         await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
     }
 

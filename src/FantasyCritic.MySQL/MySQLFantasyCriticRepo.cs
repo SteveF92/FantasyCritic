@@ -2728,16 +2728,20 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task<SystemWideValues> GetSystemWideValues()
     {
         const string sql = """
-                               select * from tbl_caching_averagepositionpoints;
-                               select * from tbl_caching_systemwidevalues;
+                            select * from tbl_caching_averagepositionpoints;
+                            select * from tbl_caching_averagebidamountpoints;
+                            select * from tbl_caching_systemwidevalues;
                            """;
 
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync(sql);
 
         var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
+        var bidAmountPoints = resultSets.Read<AverageBidAmountPointsEntity>();
         var systemWideValues = resultSets.ReadSingle<SystemWideValuesEntity>();
-        return systemWideValues.ToDomain(positionPoints.Select(x => x.ToDomain()));
+        var positionPointsList = positionPoints.Select(x => x.ToDomain()).ToList();
+        var bidAmountsList = bidAmountPoints.Select(x => x.ToDomain()).ToList();
+        return systemWideValues.ToDomain(positionPointsList, bidAmountsList);
     }
 
     public async Task<SystemWideSettings> GetSystemWideSettings()
@@ -2909,17 +2913,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         const string deleteSQL = "delete from tbl_caching_systemwidevalues;";
         const string deletePositionsSQL = "delete from tbl_caching_averagepositionpoints;";
+        const string deleteBidAmountsSQL = "delete from tbl_caching_averagebidamountpoints;";
         const string insertSQL = "INSERT into tbl_caching_systemwidevalues VALUES (@AverageStandardGamePoints,@AveragePickupOnlyStandardGamePoints,@AverageCounterPickPoints);";
 
         SystemWideValuesEntity entity = new SystemWideValuesEntity(systemWideValues);
         var positionEntities = systemWideValues.AverageStandardGamePointsByPickPosition.Select(x => new AveragePositionPointsEntity(x)).ToList();
+        var bidAmountsEntities = systemWideValues.AverageStandardGamePointsByBidAmount.Select(x => new AverageBidAmountPointsEntity(x)).ToList();
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(deleteSQL, transaction: transaction);
         await connection.ExecuteAsync(deletePositionsSQL, transaction: transaction);
+        await connection.ExecuteAsync(deleteBidAmountsSQL, transaction: transaction);
         await connection.ExecuteAsync(insertSQL, entity, transaction);
         await connection.BulkInsertAsync(positionEntities, "tbl_caching_averagepositionpoints", 500, transaction);
+        await connection.BulkInsertAsync(bidAmountsEntities, "tbl_caching_averagebidamountpoints", 500, transaction);
         await transaction.CommitAsync();
     }
 

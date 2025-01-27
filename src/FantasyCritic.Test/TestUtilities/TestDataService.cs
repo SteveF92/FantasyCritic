@@ -29,7 +29,8 @@ public class TestDataService
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
         var averagePickPositionPointsEntities = csv.GetRecords<AveragePositionPointsEntity>().ToList();
         var domains = averagePickPositionPointsEntities.Select(x => x.ToDomain());
-        return new SystemWideValues(7.873290541m, 6.921084619m, -4.054802347m, domains);
+        var bidAmounts = new List<AverageBidAmountPoints>();
+        return new SystemWideValues(7.873290541m, 6.921084619m, -4.054802347m, domains, bidAmounts);
     }
 
     public IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> GetActiveBids(IReadOnlyList<LeagueYear> leagueYears, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears)

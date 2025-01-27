@@ -2,19 +2,21 @@ namespace FantasyCritic.Lib.Domain;
 
 public class SystemWideValues
 {
-    public SystemWideValues(decimal averageStandardGamePoints, decimal averagePickupOnlyStandardGamePoints,
-        decimal averageCounterPickPoints, IEnumerable<AveragePickPositionPoints> averageStandardGamePointsByPickPosition)
+    public SystemWideValues(decimal averageStandardGamePoints, decimal averagePickupOnlyStandardGamePoints, decimal averageCounterPickPoints,
+        IEnumerable<AveragePickPositionPoints> averageStandardGamePointsByPickPosition, IEnumerable<AverageBidAmountPoints> averageStandardGamePointsByBidAmount)
     {
         AverageStandardGamePoints = averageStandardGamePoints;
         AveragePickupOnlyStandardGamePoints = averagePickupOnlyStandardGamePoints;
         AverageCounterPickPoints = averageCounterPickPoints;
         AverageStandardGamePointsByPickPosition = averageStandardGamePointsByPickPosition.ToList();
+        AverageStandardGamePointsByBidAmount = averageStandardGamePointsByBidAmount.ToList();
     }
 
     public decimal AverageStandardGamePoints { get; }
     public decimal AveragePickupOnlyStandardGamePoints { get; }
     public decimal AverageCounterPickPoints { get; }
     public IReadOnlyList<AveragePickPositionPoints> AverageStandardGamePointsByPickPosition { get; }
+    public IReadOnlyList<AverageBidAmountPoints> AverageStandardGamePointsByBidAmount { get; }
 
     public decimal GetEmptySlotAveragePoints(bool counterPick, int lowestPossiblePickNumber, int highestPossiblePickNumber)
     {

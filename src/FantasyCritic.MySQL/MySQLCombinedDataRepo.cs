@@ -374,6 +374,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         //SupplementalData Results
         var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
+        var bidAmountPoints = resultSets.Read<AverageBidAmountPointsEntity>();
         var systemWideValuesEntity = resultSets.ReadSingle<SystemWideValuesEntity>();
         var messageEntities = resultSets.Read<ManagerMessageEntity>();
         var dismissalEntities = resultSets.Read<ManagerMessageDismissalEntity>();
@@ -441,7 +442,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             winningUser, publishers);
 
         var userPublisher = leagueYear.GetUserPublisher(currentUser);
-        var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
+        var positionPointsList = positionPoints.Select(x => x.ToDomain());
+        var bidAmountsList = bidAmountPoints.Select(x => x.ToDomain());
+        var systemWideValues = systemWideValuesEntity.ToDomain(positionPointsList, bidAmountsList);
         var managersMessages = DomainConversionUtilities.GetManagersMessages(dismissalEntities, messageEntities);
         var activeTrades = DomainConversionUtilities.GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary);
         var activeSpecialAuctions = DomainConversionUtilities.GetActiveSpecialAuctions(specialAuctionEntities, masterGameYearDictionary);
@@ -498,8 +501,11 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         IEnumerable<ManagerMessageDismissalEntity> dismissalEntities = resultSets.Read<ManagerMessageDismissalEntity>().ToList();
 
         var positionPoints = resultSets.Read<AveragePositionPointsEntity>();
+        var bidAmountPoints = resultSets.Read<AverageBidAmountPointsEntity>();
         var systemWideValuesEntity = resultSets.ReadSingle<SystemWideValuesEntity>();
-        var systemWideValues = systemWideValuesEntity.ToDomain(positionPoints.Select(x => x.ToDomain()));
+        var positionPointsList = positionPoints.Select(x => x.ToDomain());
+        var bidAmountsList = bidAmountPoints.Select(x => x.ToDomain());
+        var systemWideValues = systemWideValuesEntity.ToDomain(positionPointsList, bidAmountsList);
 
         var leagueEntities = resultSets.Read<LeagueEntity>();
         var allYearsForLeagues = resultSets.Read<LeagueYearKeyEntity>();
