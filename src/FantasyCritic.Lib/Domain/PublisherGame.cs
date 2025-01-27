@@ -99,7 +99,7 @@ public class PublisherGame : IEquatable<PublisherGame>
     }
 
     
-    public double GetDisappointmentFactor(ScoringSystem scoringSystem)
+    public double GetFlopFactor(ScoringSystem scoringSystem)
     {
         double minFantasyPoints = (double)scoringSystem.GetMinimumScore();
         double maxFantasyPoints = (double)scoringSystem.GetMaximumScore();

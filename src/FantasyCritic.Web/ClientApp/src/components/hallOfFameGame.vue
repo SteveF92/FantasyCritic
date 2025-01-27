@@ -10,7 +10,7 @@
     </div>
 
     <div>
-      <div v-for="(stat, statName, index) in hallOfFameGame.stats" :key="index" class="game-text">{{ statName }}: {{ formatStat(statName, stat) }}</div>
+      <div v-for="(stat, statName, index) in hallOfFameGame.stats" :key="index" class="game-text">{{ statName }}: {{ formatStat(stat) }}</div>
       <hr class="divider" />
       <div class="game-text">
         Picked by
@@ -39,8 +39,7 @@ export default {
   },
   mixins: [GGMixin],
   props: {
-    hallOfFameGame: { type: Object, required: true },
-    statTypes: { type: Array, required: true }
+    hallOfFameGame: { type: Object, required: true }
   },
   computed: {
     masterGame() {
@@ -66,19 +65,20 @@ export default {
     }
   },
   methods: {
-    formatStat(statName, stat) {
-      if (stat === 'DNR') {
+    formatStat(stat) {
+      const statValue = stat.stat;
+      const statType = stat.statType;
+      if (statValue === 'DNR') {
         return 'DNR';
       }
-      const matchingStatType = this.statTypes.find((x) => x.statName === statName).statType;
-      if (matchingStatType === 'Score' || matchingStatType === 'Factor') {
-        return roundNumber(stat, 2);
+      if (statType === 'Score' || statType === 'Factor') {
+        return roundNumber(statValue, 2);
       }
-      if (matchingStatType === 'Budget') {
-        return formatMoney(stat, 0);
+      if (statType === 'Budget') {
+        return formatMoney(statValue, 0);
       }
 
-      return stat;
+      return statValue;
     }
   }
 };

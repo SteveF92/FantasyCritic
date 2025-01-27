@@ -18,7 +18,6 @@ using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.AllTimeStats;
 using FantasyCritic.Web.Models.RoundTrip;
-using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
