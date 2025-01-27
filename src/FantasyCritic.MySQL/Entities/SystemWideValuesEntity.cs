@@ -21,8 +21,9 @@ public class SystemWideValuesEntity
     public required decimal AveragePickupOnlyStandardGamePoints { get; init; }
     public required decimal AverageCounterPickPoints { get; init; }
 
-    public SystemWideValues ToDomain(IEnumerable<AveragePickPositionPoints> averageStandardGamePointsByPickPosition)
+    public SystemWideValues ToDomain(IEnumerable<AveragePickPositionPoints> averageStandardGamePointsByPickPosition, IEnumerable<AverageBidAmountPoints> averageStandardGamePointsByBidAmount)
     {
-        return new SystemWideValues(AverageStandardGamePoints, AveragePickupOnlyStandardGamePoints, AverageCounterPickPoints, averageStandardGamePointsByPickPosition);
+        return new SystemWideValues(AverageStandardGamePoints, AveragePickupOnlyStandardGamePoints, AverageCounterPickPoints,
+            averageStandardGamePointsByPickPosition, averageStandardGamePointsByBidAmount);
     }
 }
