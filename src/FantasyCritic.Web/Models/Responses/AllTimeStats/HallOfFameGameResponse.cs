@@ -8,10 +8,12 @@ public class HallOfFameGameResponse
     {
         MasterGame = new MasterGameYearViewModel(domain.Game, currentDate);
         PickedBy = new MinimalPublisherViewModel(domain.PickedBy);
-        Stats = domain.Stats.ToDictionary();
+        Stats = domain.Stats.ToDictionary(x => x.Key, y => new HallOfFameGameStatResponse(y.Value.Stat, y.Value.StatType));
     }
 
     public MasterGameYearViewModel MasterGame { get; }
     public MinimalPublisherViewModel PickedBy { get; }
-    public Dictionary<string, object> Stats { get; }
+    public Dictionary<string, HallOfFameGameStatResponse> Stats { get; }
 }
+
+public record HallOfFameGameStatResponse(object Stat, string StatType);
