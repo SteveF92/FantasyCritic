@@ -208,6 +208,11 @@ public class FactCheckerController : FantasyCriticController
         var leagueYears = new List<LeagueYear>();
         foreach (var league in leaguesForUser)
         {
+            if (!league.LeagueIsActiveInActiveYear || league.UserIsFollowingLeague || !league.UserIsInLeague || league.League.TestLeague)
+            {
+                continue;
+            }
+
             foreach (var activeYear in activeYears)
             {
                 if (!league.League.Years.Contains(activeYear.Year))
