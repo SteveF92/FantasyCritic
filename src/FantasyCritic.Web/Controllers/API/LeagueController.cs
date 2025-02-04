@@ -176,8 +176,8 @@ public class LeagueController : BaseLeagueController
         var currentDate = currentInstant.ToEasternDate();
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
-        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false)).ToList();
-        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true)).ToList();
+        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false, 50)).ToList();
+        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true, 50)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
         var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
         var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();
@@ -263,8 +263,8 @@ public class LeagueController : BaseLeagueController
         var currentDate = currentInstant.ToEasternDate();
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var publishers = leagueYear.Publishers.Select(x => new LeagueYearPublisherPair(leagueYear, x)).ToList();
-        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false)).ToList();
-        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true)).ToList();
+        var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false, 50)).ToList();
+        var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true, 50)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
         var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
         var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();

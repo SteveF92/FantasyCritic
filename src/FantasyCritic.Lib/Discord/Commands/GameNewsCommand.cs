@@ -110,7 +110,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
                 return;
             }
 
-            var gameNewsData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, dateToCheck, isRecentReleases);
+            var gameNewsData = GameNewsFunctions.GetGameNews(leagueYearPublisherPairs, dateToCheck, isRecentReleases, 10);
             if (gameNewsData.Count == 0)
             {
                 await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
