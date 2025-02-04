@@ -8,7 +8,6 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Domain.Draft;
@@ -1275,6 +1274,11 @@ public class DiscordPushService
                 message += $" ({discordUser.Mention})";
             }
 
+            var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
+                    leagueYear.Year)
+                .BuildUrl();
+            message += $" [Go to League](<{leagueUrl}>)";
+
             var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, message)).ToList();
             await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
         }
@@ -1284,14 +1288,9 @@ public class DiscordPushService
             if (isDraftingCounterPick)
             {
                 var previousGameWasCounterPick = updatedDraftStatus.PreviousDraftPublisher!.PublisherGames.MaxBy(x => x.OverallDraftPosition)!.CounterPick;
-                if (!previousGameWasCounterPick)
-                {
-                    message = $"Up for another pick, this time a counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
-                }
-                else
-                {
-                    message = $"Up for another counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
-                }
+                message = previousGameWasCounterPick
+                    ? $"Up for another counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**"
+                    : $"Up for another pick, this time a counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
             }
 
             var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, message)).ToList();
