@@ -609,6 +609,12 @@ public class DiscordPushService
                 finalMessage = "There were no bids this week.";
             }
 
+            if (finalMessage.Length > 4096)
+            {
+                Logger.Warning("Too many public bids for league: {leagueId}", publicBiddingSet.LeagueYear.League.LeagueID);
+                finalMessage = "There are too many bids to list in a Discord Message.";
+            }
+
             foreach (var leagueChannel in leagueChannels)
             {
                 var guild = _client.GetGuild(leagueChannel.GuildID);
