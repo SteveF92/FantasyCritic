@@ -159,7 +159,7 @@ export default {
         return false;
       }
 
-      const searchStrings = ['Open Critic', 'OpenCritic', 'OC'];
+      const searchStrings = ['Open Critic', 'OpenCritic', ' OC '];
 
       return searchStrings.some((x) => this.requestNote.toLocaleUpperCase().includes(x.toLocaleUpperCase()));
     }
