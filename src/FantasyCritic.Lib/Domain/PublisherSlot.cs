@@ -6,7 +6,8 @@ namespace FantasyCritic.Lib.Domain;
 
 public class PublisherSlot
 {
-    public PublisherSlot(int slotNumber, int overallSlotNumber, bool counterPick, SpecialGameSlot? specialGameSlot, PublisherGame? publisherGame)
+    public PublisherSlot(int slotNumber, int overallSlotNumber, bool counterPick, SpecialGameSlot? specialGameSlot,
+        PublisherGame? publisherGame, bool? counterPickedGameIsValid)
     {
         SlotNumber = slotNumber;
         OverallSlotNumber = overallSlotNumber;
@@ -18,6 +19,8 @@ public class PublisherSlot
         {
             throw new Exception($"Something has gone horribly wrong with publisher game: {publisherGame.PublisherGameID}");
         }
+
+        CounterPickedGameIsValid = counterPickedGameIsValid;
     }
 
     public int SlotNumber { get; }
@@ -25,6 +28,7 @@ public class PublisherSlot
     public bool CounterPick { get; }
     public SpecialGameSlot? SpecialGameSlot { get; }
     public PublisherGame? PublisherGame { get; }
+    public bool? CounterPickedGameIsValid { get; }
 
     public bool SlotIsValid(LeagueYear leagueYear)
     {
@@ -60,6 +64,12 @@ public class PublisherSlot
         {
             return null;
         }
+
+        if (CounterPick && CounterPickedGameIsValid.HasValue && !CounterPickedGameIsValid.Value)
+        {
+            return 0m;
+        }
+
         if (PublisherGame.ManualCriticScore.HasValue)
         {
             return scoringSystem.GetPointsForScore(PublisherGame.ManualCriticScore.Value, CounterPick);
@@ -173,6 +183,6 @@ public class PublisherSlot
 
     public PublisherSlot GetWithReplacedGame(PublisherGame newPublisherGame)
     {
-        return new PublisherSlot(SlotNumber, OverallSlotNumber, CounterPick, SpecialGameSlot, newPublisherGame);
+        return new PublisherSlot(SlotNumber, OverallSlotNumber, CounterPick, SpecialGameSlot, newPublisherGame, CounterPickedGameIsValid);
     }
 }

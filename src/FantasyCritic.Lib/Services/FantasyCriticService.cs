@@ -217,7 +217,7 @@ public class FantasyCriticService
         foreach (var publisher in publishers)
         {
             Dictionary<Guid, int> slotAssignmentsForPublisher = new Dictionary<Guid, int>();
-            var slots = publisher.GetPublisherSlots(leagueYear.Options);
+            var slots = publisher.GetPublisherSlots(leagueYear);
             var filledNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is not null).ToList();
 
             int normalSlotNumber = 0;
@@ -279,7 +279,7 @@ public class FantasyCriticService
             var leagueYear = leagueYearDictionary[publishersForLeagueYear.Key];
             foreach (var publisher in sortedLeagueYearPublishers)
             {
-                var slots = publisher.GetPublisherSlots(leagueYear.Options).Where(x => x.PublisherGame is not null).ToList();
+                var slots = publisher.GetPublisherSlots(leagueYear).Where(x => x.PublisherGame is not null).ToList();
                 foreach (var publisherSlot in slots)
                 {
                     //Before 2022, games that were 'ineligible' still gave points. It was just a warning.
@@ -304,6 +304,8 @@ public class FantasyCriticService
         return new YearCalculatedStatsSet(publisherGameCalculatedStats, winningUsers);
     }
 
+
+
     public async Task UpdatePublisherGameCalculatedStats(LeagueYear leagueYear)
     {
         Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
@@ -311,7 +313,7 @@ public class FantasyCriticService
         var currentDate = _clock.GetToday();
         foreach (var publisher in leagueYear.Publishers)
         {
-            var slots = publisher.GetPublisherSlots(leagueYear.Options);
+            var slots = publisher.GetPublisherSlots(leagueYear);
             var slotsThatHaveGames = slots.Where(x => x.PublisherGame is not null).ToList();
             foreach (var publisherSlot in slotsThatHaveGames)
             {

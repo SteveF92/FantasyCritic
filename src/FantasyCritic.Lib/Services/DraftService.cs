@@ -4,7 +4,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
-using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using Serilog;
@@ -172,7 +171,7 @@ public class DraftService
                 var publisherWatchList = await _publisherService.GetQueuedGames(nextPublisher);
                 var availableGames = await _gameSearchingService.GetTopAvailableGames(updatedLeagueYear, nextPublisher);
                 var availableGamesEligibleInRemainingSlots = new List<PossibleMasterGameYear>();
-                var openSlots = nextPublisher.GetPublisherSlots(updatedLeagueYear.Options).Where(x => !x.CounterPick && x.PublisherGame is null).ToList();
+                var openSlots = nextPublisher.GetPublisherSlots(updatedLeagueYear).Where(x => !x.CounterPick && x.PublisherGame is null).ToList();
                 foreach (var availableGame in availableGames)
                 {
                     foreach (var slot in openSlots)

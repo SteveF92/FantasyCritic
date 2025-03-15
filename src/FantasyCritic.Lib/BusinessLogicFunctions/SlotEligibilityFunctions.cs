@@ -25,7 +25,7 @@ public static class SlotEligibilityFunctions
         return false;
     }
 
-    public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueOptions leagueOptions, MasterGameWithEligibilityFactors? eligibilityFactors,
+    public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueYear leagueYear, MasterGameWithEligibilityFactors? eligibilityFactors,
         bool counterPick, int? validDropSlot, bool acquiringNow, bool managerOverride, bool allowIneligibleSlot)
     {
         string filledSpacesText = "User's game spaces are filled.";
@@ -34,7 +34,7 @@ public static class SlotEligibilityFunctions
             filledSpacesText = "User's counter pick spaces are filled.";
         }
 
-        var slots = publisher.GetPublisherSlots(leagueOptions);
+        var slots = publisher.GetPublisherSlots(leagueYear);
         var openSlots = slots.Where(x => x.CounterPick == counterPick && (x.PublisherGame is null || (validDropSlot.HasValue && validDropSlot.Value == x.SlotNumber)))
             .OrderBy(x => x.SlotNumber).ToList();
         if (eligibilityFactors is null)
@@ -102,9 +102,9 @@ public static class SlotEligibilityFunctions
         return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError("Game is not eligible in any open slots.", false, false, true) });
     }
 
-    public static int? GetTradeSlotResult(Publisher publisher, LeagueOptions leagueOptions, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers)
+    public static int? GetTradeSlotResult(Publisher publisher, LeagueYear leagueYear, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers)
     {
-        var slots = publisher.GetPublisherSlots(leagueOptions);
+        var slots = publisher.GetPublisherSlots(leagueYear);
         var openSlots = slots.Where(x => x.CounterPick == masterGameYearWithCounterPick.CounterPick && openSlotNumbers.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
         if (!openSlots.Any())
         {

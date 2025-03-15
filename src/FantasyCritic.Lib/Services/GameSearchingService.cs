@@ -29,7 +29,7 @@ public class GameSearchingService
 
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(year);
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = Publisher.GetPublisherSlots(leagueYear.Options, new List<PublisherGame>());
+        var slots = Publisher.GetPublisherSlots(leagueYear, new List<PublisherGame>(), new List<PublisherGame>());
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
@@ -77,7 +77,7 @@ public class GameSearchingService
         if (currentPublisher is not null)
         {
             myPublisherMasterGames = currentPublisher.MyMasterGames;
-            var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+            var slots = currentPublisher.GetPublisherSlots(leagueYear);
             openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
         }
 
@@ -110,7 +110,7 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+        var slots = currentPublisher.GetPublisherSlots(leagueYear);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
@@ -144,7 +144,7 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> masterGames = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
         IReadOnlyList<MasterGameYear> matchingMasterGames = masterGames.OrderByDescending(x => x.DateAdjustedHypeFactor).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+        var slots = currentPublisher.GetPublisherSlots(leagueYear);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();
@@ -178,7 +178,7 @@ public class GameSearchingService
         IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
         var masterGamesForThisYear = masterGameYears.Where(x => x.Year == leagueYear.Year);
         var masterGameYearDictionary = masterGamesForThisYear.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+        var slots = currentPublisher.GetPublisherSlots(leagueYear);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
 
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
@@ -214,7 +214,7 @@ public class GameSearchingService
         }
         var publicBiddingMasterGameYears = publicBiddingGames.MasterGames.Select(m => m.MasterGameYear).ToList();
         List<PossibleMasterGameYear> possibleMasterGames = new List<PossibleMasterGameYear>();
-        var slots = currentPublisher.GetPublisherSlots(leagueYear.Options);
+        var slots = currentPublisher.GetPublisherSlots(leagueYear);
         var openNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is null).OrderBy(x => x.SlotNumber).ToList();
 
         LocalDate currentDate = _clock.GetToday();

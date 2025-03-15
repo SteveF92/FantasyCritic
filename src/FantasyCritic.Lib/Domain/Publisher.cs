@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Calculations;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain;
@@ -94,7 +95,7 @@ public class Publisher : IEquatable<Publisher>
 
         var leagueOptions = leagueYear.Options;
         bool ineligiblePointsShouldCount = leagueYear.Options.HasSpecialSlots;
-        var slots = GetPublisherSlots(leagueOptions);
+        var slots = GetPublisherSlots(leagueYear);
         decimal projectedScore = 0;
         foreach (var slot in slots)
         {
@@ -127,13 +128,14 @@ public class Publisher : IEquatable<Publisher>
         return points;
     }
 
-    public IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueOptions leagueOptions)
+    public IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueYear leagueYear)
     {
-        return GetPublisherSlots(leagueOptions, PublisherGames);
+        return GetPublisherSlots(leagueYear, PublisherGames, leagueYear.Publishers.Where(x => x.PublisherID != PublisherID).SelectMany(x => x.PublisherGames).ToList());
     }
 
-    public static IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueOptions leagueOptions, IReadOnlyList<PublisherGame> publisherGames)
+    public static IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueYear leagueYear, IReadOnlyList<PublisherGame> publisherGames, IReadOnlyList<PublisherGame> otherPublisherGames)
     {
+        var leagueOptions = leagueYear.Options;
         List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
 
         int overallSlotNumber = 0;
@@ -143,20 +145,49 @@ public class Publisher : IEquatable<Publisher>
             PublisherGame? standardGame = standardGamesBySlot.GetValueOrDefault(standardGameIndex);
             SpecialGameSlot? specialSlot = leagueOptions.GetSpecialGameSlotByOverallSlotNumber(standardGameIndex);
 
-            publisherSlots.Add(new PublisherSlot(standardGameIndex, overallSlotNumber, false, specialSlot, standardGame));
+            publisherSlots.Add(new PublisherSlot(standardGameIndex, overallSlotNumber, false, specialSlot, standardGame, null));
             overallSlotNumber++;
         }
+
+        var publisherGameLookup = otherPublisherGames.Where(x => x.MasterGame is not null).ToLookup(x => x.MasterGame!.MasterGame);
 
         var counterPicksBySlot = publisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
         for (int counterPickIndex = 0; counterPickIndex < leagueOptions.CounterPicks; counterPickIndex++)
         {
             PublisherGame? counterPick = counterPicksBySlot.GetValueOrDefault(counterPickIndex);
+            var counterPickedGameIsValid = GetCounterPickedGameIsValid(counterPick, leagueYear, publisherGameLookup);
 
-            publisherSlots.Add(new PublisherSlot(counterPickIndex, overallSlotNumber, true, null, counterPick));
+            publisherSlots.Add(new PublisherSlot(counterPickIndex, overallSlotNumber, true, null, counterPick, counterPickedGameIsValid));
             overallSlotNumber++;
         }
 
         return publisherSlots;
+    }
+
+    private static bool? GetCounterPickedGameIsValid(PublisherGame? publisherGame, LeagueYear leagueYear, ILookup<MasterGame, PublisherGame> publisherGameLookup)
+    {
+        if (publisherGame is null || !publisherGame.CounterPick)
+        {
+            return null;
+        }
+
+        bool? counterPickedGameIsValid = null;
+        if (publisherGame.CounterPick && publisherGame.MasterGame is not null)
+        {
+            var counterPickedGame = publisherGameLookup[publisherGame.MasterGame.MasterGame].FirstOrDefault(x => !x.CounterPick);
+            if (counterPickedGame is not null)
+            {
+                var relevantSpecialGameSlot = leagueYear.Options.GetSpecialGameSlotByOverallSlotNumber(counterPickedGame.SlotNumber);
+                var slotForGame = new PublisherSlot(counterPickedGame.SlotNumber, counterPickedGame.SlotNumber, counterPickedGame.CounterPick, relevantSpecialGameSlot, counterPickedGame, null);
+                counterPickedGameIsValid = slotForGame.SlotIsValid(leagueYear);
+            }
+            else
+            {
+                counterPickedGameIsValid = leagueYear.GameIsEligibleInAnySlot(publisherGame.MasterGame.MasterGame, publisherGame.Timestamp.ToEasternDate());
+            }
+        }
+
+        return counterPickedGameIsValid;
     }
 
     public PublisherGame? GetPublisherGame(MasterGame masterGame, bool counterPick) => GetPublisherGameByMasterGameID(masterGame.MasterGameID, counterPick);

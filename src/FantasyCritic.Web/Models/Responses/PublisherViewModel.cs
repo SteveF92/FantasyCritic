@@ -32,7 +32,7 @@ public class PublisherViewModel
             .OrderBy(x => x.PublisherGame.Timestamp)
             .Select(x => new PublisherGameViewModel(x, currentDate))
             .ToList();
-        GameSlots = publisher.GetPublisherSlots(leagueYear.Options)
+        GameSlots = publisher.GetPublisherSlots(leagueYear)
             .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, systemWideValues, counterPickedByDictionary))
             .ToList();
 

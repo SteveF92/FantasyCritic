@@ -24,6 +24,7 @@ public class PublisherSlotViewModel
 
         EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();
         GameMeetsSlotCriteria = !EligibilityErrors.Any();
+        CounterPickedGameIsInvalid = slot.CounterPickedGameIsValid.HasValue && !slot.CounterPickedGameIsValid.Value;
 
         ProjectedFantasyPoints = slot.GetProjectedFantasyPoints(leagueYear.SupportedYear, leagueYear.Options.ScoringSystem, systemWideValues,
             leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames);
@@ -36,5 +37,6 @@ public class PublisherSlotViewModel
     public PublisherGameViewModel? PublisherGame { get; }
     public IReadOnlyList<string> EligibilityErrors { get; }
     public bool GameMeetsSlotCriteria { get; }
+    public bool CounterPickedGameIsInvalid { get; }
     public decimal ProjectedFantasyPoints { get; }
 }

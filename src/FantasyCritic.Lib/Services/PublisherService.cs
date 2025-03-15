@@ -182,7 +182,7 @@ public class PublisherService
     {
         var requestedPositionsWithGames = slotStates.Where(x => x.Value.HasValue).ToList();
         var gameDictionary = publisher.PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.PublisherGameID);
-        var slotDictionary = publisher.GetPublisherSlots(leagueYear.Options).Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+        var slotDictionary = publisher.GetPublisherSlots(leagueYear).Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
         foreach (var requestedSlotState in requestedPositionsWithGames)
         {
             var moveIntoSlot = slotDictionary.GetValueOrDefault(requestedSlotState.Key);

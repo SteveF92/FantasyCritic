@@ -24,6 +24,7 @@
 
       <font-awesome-icon v-if="game.manualCriticScore" v-b-popover.hover.focus="manuallyScoredText" color="white" size="lg" icon="pen" />
       <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="exclamation-triangle" />
+      <font-awesome-icon v-if="gameSlot.counterPickedGameIsInvalid" v-b-popover.hover.focus="counterPickedGameIsInvalidText" color="white" size="lg" icon="exclamation-triangle" />
     </span>
 
     <span v-if="gameSlot.counterPick && !game" class="game-status">
@@ -96,6 +97,17 @@ export default {
 
           let fullText = `${mainText}<br/><br/>${eligibilityErrorsListElement}`;
           return fullText;
+        }
+      };
+    },
+    counterPickedGameIsInvalidText() {
+      return {
+        html: true,
+        title: () => {
+          return 'Counter Picked Game is Ineligible';
+        },
+        content: () => {
+          return 'This counter pick counts for 0 points because the game in question is not eligible in this league, or in the slot the other player currently has it in.';
         }
       };
     },
@@ -275,7 +287,11 @@ export default {
   height: 25px;
   border-radius: 4px;
   color: #ffffff;
-  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+  text-shadow:
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black;
 }
 
 .lock-icon {
