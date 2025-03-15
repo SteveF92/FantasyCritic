@@ -17,7 +17,7 @@
           </b-form-select>
         </div>
 
-        <div v-if="draftResult && !draftResult.success" class="alert alert-danger bid-error">
+        <div v-if="draftResult && !draftResult.success" class="alert draft-error" :class="{ 'alert-danger': !draftResult.showAsWarning, 'alert-warning': draftResult.showAsWarning }">
           <h3 class="alert-heading">Error!</h3>
           <ul>
             <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
@@ -26,6 +26,13 @@
 
         <div v-if="selectedCounterPick">
           <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter-Pick" />
+        </div>
+
+        <div v-if="draftResult && draftResult.overridable" class="form-check">
+          <span>
+            <label>Do you want to override these warnings?</label>
+            <input v-model="draftOverride" class="form-check-input override-checkbox" type="checkbox" />
+          </span>
         </div>
       </form>
     </div>
@@ -42,7 +49,8 @@ export default {
     return {
       selectedCounterPick: null,
       possibleCounterPicks: [],
-      draftResult: null
+      draftResult: null,
+      draftOverride: false
     };
   },
   methods: {
@@ -50,6 +58,7 @@ export default {
       let request = {
         publisherID: this.nextPublisherUp.publisherID,
         gameName: this.selectedCounterPick.gameName,
+        managerOverride: this.draftOverride,
         counterPick: true,
         masterGameID: null
       };
@@ -90,6 +99,7 @@ export default {
     clearData() {
       this.selectedCounterPick = null;
       this.possibleCounterPicks = [];
+      this.draftOverride = false;
     }
   }
 };
