@@ -126,6 +126,7 @@ public static class HostingExtensions
         services.AddScoped<RoyaleService>();
         services.AddScoped<ConferenceService>();
         services.AddScoped<EmailSendingService>();
+        services.AddScoped<AllTimeStatsService>();
 
         //Email Services
         //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));

@@ -38,11 +38,12 @@ public class LeagueController : BaseLeagueController
     private readonly ILogger<LeagueController> _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly TradeService _tradeService;
+    private readonly AllTimeStatsService _allTimeStatsService;
 
     public LeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
         LeagueMemberService leagueMemberService, DraftService draftService, GameSearchingService gameSearchingService, PublisherService publisherService, IClock clock,
         IHubContext<UpdateHub> hubContext, ILogger<LeagueController> logger, GameAcquisitionService gameAcquisitionService, TradeService tradeService, ConferenceService conferenceService,
-        DiscordPushService discordPushService)
+        DiscordPushService discordPushService, AllTimeStatsService allTimeStatsService)
         : base(userManager, fantasyCriticService, interLeagueService, leagueMemberService, conferenceService, discordPushService, hubContext)
     {
         _draftService = draftService;
@@ -53,6 +54,7 @@ public class LeagueController : BaseLeagueController
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
         _tradeService = tradeService;
+        _allTimeStatsService = allTimeStatsService;
     }
 
     [AllowAnonymous]
@@ -220,7 +222,7 @@ public class LeagueController : BaseLeagueController
 
         var currentInstant = _clock.GetCurrentInstant();
         var currentDate = currentInstant.ToEasternDate();
-        var allTimeStats = await _fantasyCriticService.GetLeagueAllTimeStats(league, currentDate);
+        var allTimeStats = await _allTimeStatsService.GetLeagueAllTimeStats(league, currentDate);
         var systemWideValues = await _interLeagueService.GetSystemWideValues();
 
 
