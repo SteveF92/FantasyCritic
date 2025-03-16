@@ -2,7 +2,7 @@
   <div class="alert alert-primary">
     <template v-if="actionProcessing">
       <h3>Bids are processing as we speak</h3>
-      On a good day, bids process within 10 minutes. If it's been more than 20 minutes, check Twitter for updates.
+      On a good day, bids process within 10 minutes. If it's been more than 20 minutes, check Discord for updates.
     </template>
     <vac v-if="!actionProcessing && nextPublicRevealTime" :end-time="nextPublicRevealTime" @finish="publicBidRevealTimeElapsed">
       <template #process="{ timeObj }">

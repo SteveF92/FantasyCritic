@@ -65,7 +65,7 @@ import {
 
 import { faCircle as regCircle, faSquare as regSquare, faCopy as regCopy } from '@fortawesome/free-regular-svg-icons';
 
-import { faFontAwesome, faMicrosoft, faVuejs, faTwitter, faReddit, faGithub, faFacebook, faDiscord, faPatreon } from '@fortawesome/free-brands-svg-icons';
+import { faFontAwesome, faMicrosoft, faVuejs, faReddit, faGithub, faFacebook, faDiscord, faPatreon } from '@fortawesome/free-brands-svg-icons';
 
 library.add(
   faEnvelope,
@@ -90,7 +90,6 @@ library.add(
   faFontAwesome,
   faMicrosoft,
   faVuejs,
-  faTwitter,
   faReddit,
   regCircle,
   solidCircle,

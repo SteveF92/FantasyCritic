@@ -1,7 +1,7 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="hasError" class="alert alert-danger" role="alert">
-      Something went wrong with this conference. Contact us on Twitter or Discord for support. Please include the conference ID in your message (Linking the URL will do).
+      Something went wrong with this conference. Contact us on Discord or via email for support. Please include the conference ID in your message (Linking the URL will do).
     </div>
 
     <div v-if="errorInfo" class="alert alert-danger" role="alert">{{ errorInfo }}</div>

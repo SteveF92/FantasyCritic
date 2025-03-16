@@ -8,7 +8,7 @@
     </div>
     <template v-if="possibleLeagueOptions">
       <div v-if="possibleLeagueOptions.openYears.length === 0" class="alert alert-warning">
-        Unfortunately, leagues cannot be created right now, as the current year is closed and the next year is not open yet. Check Twitter for updates.
+        Unfortunately, leagues cannot be created right now, as the current year is closed and the next year is not open yet. Check Discord for updates.
       </div>
       <template v-else>
         <div class="alert alert-info">

@@ -30,17 +30,12 @@
         </p>
 
         <p>
-          If you want to follow updates about the site, join our
-          <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-            subreddit
+          If you want to follow updates about the site, the best place to go is our
+          <a href="https://discord.gg/dNa7DD3" target="_blank">
+            Discord Server
             <font-awesome-icon icon="external-link-alt" size="sm" />
           </a>
-          and follow
-          <a href="https://twitter.com/fantasy_critic" target="_blank">
-            @fantasy_critic
-            <font-awesome-icon icon="external-link-alt" size="sm" />
-          </a>
-          on Twitter
+          .
         </p>
 
         <p>
@@ -145,7 +140,6 @@
           <li>Vue.JS</li>
           <li>MySQL</li>
           <li>MySQLConnector</li>
-          <li>IdentityServer</li>
           <li>Bootstrap</li>
           <li>Vue-Bootstrap</li>
           <li>Vite</li>
@@ -153,7 +147,6 @@
           <li>NodaTime</li>
           <li>Dapper</li>
           <li>Newtonsoft.JSON</li>
-          <li>MoreLINQ</li>
           <li>CSharpFunctionalExtensions</li>
           <li>Patreon.Net</li>
           <li>Razor.Templating.Core</li>
@@ -180,7 +173,7 @@
             , for helping develop the "Projected Points" algorithm.
           </li>
           <li>
-            <a href="https://twitter.com/WhatsGoode1" target="_blank">Matt Goode</a>
+            <a href="https://mattgoode.carrd.com/" target="_blank">Matt Goode</a>
             , for the draft notification sound.
           </li>
           <li>

@@ -8,7 +8,7 @@
     </div>
     <template v-if="possibleLeagueOptions">
       <div v-if="possibleLeagueOptions.openYears.length === 0" class="alert alert-warning">
-        Unfortunately, conferences cannot be created right now, as the current year is closed and the next year is not open yet. Check Twitter for updates.
+        Unfortunately, conferences cannot be created right now, as the current year is closed and the next year is not open yet. Check Discord for updates.
       </div>
       <template v-else>
         <div class="alert alert-info">Conferences are a new feature for 2024. They are intended for large groups that do not fit into one league. For more details, see the FAQ page.</div>

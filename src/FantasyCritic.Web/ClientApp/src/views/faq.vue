@@ -29,7 +29,7 @@
           GitHub
           <font-awesome-icon icon="external-link-alt" size="sm" />
         </a>
-        . Contacting me on Twitter or Discord is also an option.
+        . Contacting me on Discord or via email is also an option.
       </template>
     </collapseCard>
     <collapseCard>
@@ -55,14 +55,9 @@
     <collapseCard>
       <template #header>How can I follow updates for the site?</template>
       <template #body>
-        Follow us on twitter
-        <a href="https://twitter.com/fantasy_critic" target="_blank">
-          @fantasy_critic
-          <font-awesome-icon icon="external-link-alt" size="sm" />
-        </a>
-        and join our
-        <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-          subreddit
+        The best place to go is our
+        <a href="https://discord.gg/dNa7DD3" target="_blank">
+          Discord Server
           <font-awesome-icon icon="external-link-alt" size="sm" />
         </a>
         .

@@ -52,7 +52,7 @@
                 <br />
                 You can get the "secret phrase" in two ways:
                 <ul>
-                  <li>Ask me on Discord/Twitter, with an explanation of the situation.</li>
+                  <li>Ask me on Discord or via email, with an explanation of the situation.</li>
                   <li>Look through the site's source code on GitHub. It's in there, in the file that controls this dialog box.</li>
                 </ul>
                 Once you have it, type it into the box below and click the button.
