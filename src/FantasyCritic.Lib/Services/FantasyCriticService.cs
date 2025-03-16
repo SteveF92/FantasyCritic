@@ -649,7 +649,7 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame !.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame !.MasterGame.CriticScore !.Value : "DNR", "Score")},
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR", "Score")},
                 {"Fantasy Points", new HallOfFameGameStat(x.FantasyPoints ?? 0, "Score") }
             }))
             .ToList();
@@ -660,7 +660,7 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame !.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame !.MasterGame.CriticScore !.Value : "DNR", "Score")},
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR", "Score")},
                 {"Fantasy Points", new HallOfFameGameStat(x.FantasyPoints ?? 0, "Score") }
             }))
             .ToList();
@@ -671,7 +671,7 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame !.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame !.MasterGame.CriticScore !.Value : "DNR", "Score")},
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR", "Score")},
                 {"Fantasy Points", new HallOfFameGameStat(x.FantasyPoints ?? 0, "Score") }
             }))
             .ToList();
@@ -692,8 +692,8 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Hype Factor", new HallOfFameGameStat(x.MasterGame !.DateAdjustedHypeFactor, "Factor")},
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame !.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame !.MasterGame.CriticScore !.Value : "DNR", "Score")},
+                {"Hype Factor", new HallOfFameGameStat(x.MasterGame!.DateAdjustedHypeFactor, "Factor")},
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR", "Score")},
                 {"Sleeper Factor", new HallOfFameGameStat(x.GetSleeperFactor(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem), "Factor")}
             }))
             .ToList();
@@ -704,33 +704,33 @@ public class FantasyCriticService
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Hype Factor", new HallOfFameGameStat(x.MasterGame !.DateAdjustedHypeFactor, "Factor")},
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame !.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame !.MasterGame.CriticScore !.Value : "DNR", "Score")},
+                {"Hype Factor", new HallOfFameGameStat(x.MasterGame!.DateAdjustedHypeFactor, "Factor")},
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR", "Score")},
                 {"Flop Factor",  new HallOfFameGameStat(x.GetFlopFactor(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem), "Factor")}
             }))
             .ToList();
 
         var highestDraftValue = publisherGamesWithScores
             .Where(x => !x.CounterPick && x.OverallDraftPosition.HasValue)
-            .OrderByDescending(x => x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem))
+            .OrderByDescending(x => x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey]))
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
                 {"Drafted", new HallOfFameGameStat(x.OverallDraftPosition !.Value, "Position")},
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.MasterGame.CriticScore!.Value, "Score")},
-                {"Draft Value",  new HallOfFameGameStat(x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem), "Factor")}
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR", "Score")},
+                {"Draft Value",  new HallOfFameGameStat(x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey]), "Factor")}
             }))
             .ToList();
 
         var lowestDraftValue = publisherGamesWithMasterGames
             .Where(x => !x.CounterPick && x.OverallDraftPosition.HasValue)
-            .OrderBy(x => x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem))
+            .OrderBy(x => x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey]))
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
                 {"Drafted", new HallOfFameGameStat(x.OverallDraftPosition !.Value, "Position")},
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame !.MasterGame.CriticScore.HasValue ? x.MasterGame !.MasterGame.CriticScore.Value : "DNR", "Score")},
-                {"Draft Value",  new HallOfFameGameStat(x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem), "Factor")}
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.IsReleasedAndReleasedInYear(currentDate) ? x.MasterGame!.MasterGame.CriticScore!.Value : "DNR", "Score")},
+                {"Draft Value",  new HallOfFameGameStat(x.GetDraftValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey]), "Factor")}
             }))
             .ToList();
 
@@ -746,15 +746,29 @@ public class FantasyCriticService
             }))
             .ToList();
 
-        var lowestBidValue = publisherGamesWithMasterGames
+        var worstBidValue = publisherGamesWithScores
             .Where(x => !x.CounterPick && x.BidAmount.HasValue && publisherDictionary[x.PublisherID].LeagueYearKey.Year > 2018)
             .OrderBy(x => x.GetBidValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem))
             .Take(10)
             .Select(x => new HallOfFameGame(x.MasterGame!, publisherDictionary[x.PublisherID], new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Spent",  new HallOfFameGameStat(x.BidAmount !.Value, "Budget")},
-                {"Critic Score", new HallOfFameGameStat(x.MasterGame !.MasterGame.CriticScore.HasValue ? x.MasterGame !.MasterGame.CriticScore.Value : "DNR", "Score")},
+                {"Spent", new HallOfFameGameStat(x.BidAmount !.Value, "Budget")},
+                {"Critic Score", new HallOfFameGameStat(x.MasterGame!.MasterGame.CriticScore!.Value, "Score")},
                 {"Bid Value",  new HallOfFameGameStat(x.GetBidValue(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem), "Factor")}
+            }))
+            .ToList();
+
+        var worstDollarsPerPoint = publisherGamesWithMasterGames
+            .Where(x => !x.CounterPick && x.BidAmount.HasValue && publisherDictionary[x.PublisherID].LeagueYearKey.Year > 2018)
+            .Select(x => new {game = x, value = x.GetDollarsPerPoint(leagueYearDictionary[publisherDictionary[x.PublisherID].LeagueYearKey].Options.ScoringSystem)})
+            .Where(x => x.value > 0)
+            .OrderByDescending(x => x.value)
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.game.MasterGame!, publisherDictionary[x.game.PublisherID], new Dictionary<string, HallOfFameGameStat>()
+            {
+                {"Spent",  new HallOfFameGameStat(x.game.BidAmount !.Value, "Budget")},
+                {"Critic Score", new HallOfFameGameStat(x.game.MasterGame!.MasterGame.CriticScore.HasValue ? x.game.MasterGame!.MasterGame.CriticScore.Value : "DNR", "Score")},
+                {"Dollars Per Point",  new HallOfFameGameStat(x.value, "Budget")}
             }))
             .ToList();
 
@@ -770,8 +784,9 @@ public class FantasyCriticService
 
             new HallOfFameGameList("Highest Value Draft Picks", highestDraftValue),
             new HallOfFameGameList("Lowest Value Draft Picks", lowestDraftValue),
-            new HallOfFameGameList("Highest Value Pickups", highestBidValue),
-            new HallOfFameGameList("Lowest Value Pickups", lowestBidValue),
+            new HallOfFameGameList("Highest Bid Value", highestBidValue),
+            new HallOfFameGameList("Worst Bid Value", worstBidValue),
+            new HallOfFameGameList("Worst Dollars Per Point", worstDollarsPerPoint),
         };
         return hallOfFameGameLists;
     }

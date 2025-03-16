@@ -123,9 +123,10 @@ public class PublisherGame : IEquatable<PublisherGame>
         return disappointmentFactor;
     }
 
-    public double GetDraftValue(ScoringSystem scoringSystem)
+    public double GetDraftValue(LeagueYear leagueYear)
     {
-        if (!OverallDraftPosition.HasValue || OverallDraftPosition.Value <= 0)
+        var scoringSystem = leagueYear.Options.ScoringSystem;
+        if (!DraftPosition.HasValue || DraftPosition.Value <= 0)
         {
             return 0; // No valid draft position
         }
@@ -138,11 +139,10 @@ public class PublisherGame : IEquatable<PublisherGame>
         // Ensure FantasyPoints are within the valid range
         fantasyPoints = Math.Clamp(fantasyPoints, minFantasyPoints, maxFantasyPoints);
 
-        // Draft Value = FantasyPoints / OverallDraftPosition
-        double draftValue = fantasyPoints / OverallDraftPosition.Value;
-
+        double draftValue = fantasyPoints * DraftPosition.Value;
         return draftValue;
     }
+
 
     public double GetBidValue(ScoringSystem scoringSystem)
     {
@@ -166,6 +166,35 @@ public class PublisherGame : IEquatable<PublisherGame>
         // Bid Value = FantasyPoints / BidAmount
         double bidValue = fantasyPoints / bidAmount;
 
+        return bidValue;
+    }
+
+    public double GetDollarsPerPoint(ScoringSystem scoringSystem)
+    {
+        if (!BidAmount.HasValue)
+        {
+            return 0; // No valid bid amount
+        }
+
+        if (FantasyPoints is null || FantasyPoints <= 0)
+        {
+            return 0;
+        }
+
+        double minFantasyPoints = (double)scoringSystem.GetMinimumScore();
+        double maxFantasyPoints = (double)scoringSystem.GetMaximumScore();
+
+        var fantasyPoints = (double)(FantasyPoints ?? 0);
+
+        // Ensure FantasyPoints are within the valid range
+        fantasyPoints = Math.Clamp(fantasyPoints, minFantasyPoints, maxFantasyPoints);
+
+        // Convert BidAmount to a double and ensure it's at least 0.5 if BidAmount is 0
+        double bidAmount = (double)BidAmount.Value;
+        bidAmount = bidAmount == 0 ? 0.5 : bidAmount;  // Convert 0 bid to 0.5
+
+        // Bid Value = FantasyPoints / BidAmount
+        double bidValue = bidAmount / fantasyPoints;
         return bidValue;
     }
 
