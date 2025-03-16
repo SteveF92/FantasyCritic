@@ -371,7 +371,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                                          "where UserID = @userID;";
         const string deleteRoyalePublishers = "delete tbl_royale_publisher from tbl_royale_publisher " +
                                               "where UserID = @userID;";
-        const string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>' WHERE UserID = @userID;";
+        const string updatePublisherNames = "UPDATE tbl_league_publisher SET PublisherName = '<Deleted>', PublisherIcon = null, PublisherSlogan = null WHERE UserID = @userID;";
         const string deleteUnprocessedDrops = "DELETE tbl_league_pickupbid FROM tbl_league_pickupbid " +
                                               "join tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID " +
                                               "WHERE UserID = @userID AND Successful IS null;";
