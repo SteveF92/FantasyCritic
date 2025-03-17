@@ -19,18 +19,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Discord" Version="9.0.0" />
-    <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="9.0.0" />
-    <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Discord" Version="9.1.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="9.1.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="9.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.3" />
     <PackageReference Include="Razor.Templating.Core" Version="2.1.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.0" />
+    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.3" />
   </ItemGroup>
 
   <PropertyGroup>

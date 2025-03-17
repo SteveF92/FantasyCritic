@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="*" />
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.411.7" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.409.6" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.410.6" />
-    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.64" />
-    <PackageReference Include="AWSSDK.SimpleEmailV2" Version="3.7.406.2" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.410.1" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.411.56" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.410.51" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.415.18" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.113" />
+    <PackageReference Include="AWSSDK.SimpleEmailV2" Version="3.7.408.16" />
     <PackageReference Include="Serilog.Sinks.AwsCloudWatch" Version="4.3.37" />
   </ItemGroup>
 
