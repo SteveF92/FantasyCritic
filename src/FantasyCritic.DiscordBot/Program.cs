@@ -3,7 +3,6 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
-using Dapper.NodaTime;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -18,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using FantasyCritic.Lib.Discord.Models;
+using AdaskoTheBeAsT.Dapper.NodaTime;
 
 namespace FantasyCritic.DiscordBot;
 
@@ -76,7 +76,7 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        DapperNodaTimeSetup.Register();
+        DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
         await new Program().RunAsync();
     }
 
