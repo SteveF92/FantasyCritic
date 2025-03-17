@@ -1,0 +1,15 @@
+@model FantasyCritic.EmailTemplates.Models.ChangeEmailNotificationModel
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <p>
+        Hello @Model.DisplayName,
+    </p>
+    <p>
+        We just received a request to change your email address to @(Model.NewEmailAddress). If you did not request this, please contact us on either Discord or via email.
+    </p>
+</body>
+</html>

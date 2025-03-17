@@ -17,4 +17,11 @@
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\ChangeEmailNotification.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

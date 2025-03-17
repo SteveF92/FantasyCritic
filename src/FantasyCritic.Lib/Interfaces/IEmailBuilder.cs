@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Identity;
 namespace FantasyCritic.Lib.Interfaces;
 public interface IEmailBuilder
 {
+    public Task<string> BuildEmailChangeNotificationEmail(FantasyCriticUser user, string newEmailAddress);
     public Task<string> BuildChangeEmailEmail(FantasyCriticUser user, string link);
     public Task<string> BuildConfirmEmailEmail(FantasyCriticUser user, string link);
     public Task<string> BuildLeagueInviteEmail(League league, string baseURL);

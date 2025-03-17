@@ -13,3 +13,5 @@ public class ChangeEmailModel
     public string DisplayName { get; }
     public string Link { get; }
 }
+
+public record ChangeEmailNotificationModel(string DisplayName, string EmailAddress, string NewEmailAddress);

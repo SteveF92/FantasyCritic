@@ -89,7 +89,7 @@ public class EmailModel : PageModel
         if (Input.NewEmail != email)
         {
             var changeEmailLink = await LinkBuilder.GetChangeEmailLink(_userManager, user, Input.NewEmail, Request);
-            await _emailSendingService.SendChangeEmail(user, changeEmailLink);
+            await _emailSendingService.SendChangeEmail(user, Input.NewEmail, changeEmailLink);
 
             StatusMessage = "Confirmation link to change email sent. Please check your email.";
             return RedirectToPage();

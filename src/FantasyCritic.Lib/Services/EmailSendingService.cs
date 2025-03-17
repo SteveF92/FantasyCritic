@@ -90,12 +90,17 @@ public class EmailSendingService
         await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
     }
 
-    public async Task SendChangeEmail(FantasyCriticUser user, string link)
+    public async Task SendChangeEmail(FantasyCriticUser user, string newEmailAddress, string link)
     {
         string emailAddress = user.Email;
-        const string emailSubject = "FantasyCritic - Change Your Email.";
-        var htmlResult = await _emailBuilder.BuildChangeEmailEmail(user, link);
-        await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+        const string oldEmailSubject = "FantasyCritic - Email Change Request Notification.";
+        const string newEmailSubject = "FantasyCritic - Change Your Email.";
+
+        var oldEmailHtmlResult = await _emailBuilder.BuildEmailChangeNotificationEmail(user, newEmailAddress);
+        var newEmailHtmlResult = await _emailBuilder.BuildChangeEmailEmail(user, link);
+
+        await _emailSender.SendEmailAsync(emailAddress, oldEmailSubject, oldEmailHtmlResult);
+        await _emailSender.SendEmailAsync(newEmailAddress, newEmailSubject, newEmailHtmlResult);
     }
 
     public async Task SendSiteInviteEmail(string inviteEmail, League league, string baseURL)

@@ -9,6 +9,13 @@ namespace FantasyCritic.EmailTemplates;
 
 public class RazorEmailBuilder : IEmailBuilder
 {
+    public async Task<string> BuildEmailChangeNotificationEmail(FantasyCriticUser user, string newEmailAddress)
+    {
+        ChangeEmailNotificationModel model = new ChangeEmailNotificationModel(user.DisplayName, user.EmailAddress, newEmailAddress);
+        var htmlResult = await GetHTMLString("ChangeEmailNotification", model);
+        return htmlResult;
+    }
+
     public async Task<string> BuildChangeEmailEmail(FantasyCriticUser user, string link)
     {
         ChangeEmailModel model = new ChangeEmailModel(user, link);
