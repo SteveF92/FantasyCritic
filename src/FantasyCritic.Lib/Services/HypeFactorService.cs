@@ -1,4 +1,6 @@
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Statistics;
+using MathNet.Numerics.LinearRegression;
 using Serilog;
 
 namespace FantasyCritic.Lib.Services;
@@ -6,15 +8,13 @@ public class HypeFactorService : IHypeFactorService
 {
     private static readonly ILogger _logger = Log.ForContext<AdminService>();
 
-    private readonly IExternalHypeFactorService _externalHypeFactorService;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly InterLeagueService _interLeagueService;
 
-    public HypeFactorService(IMasterGameRepo masterGameRepo, InterLeagueService interLeagueService, IExternalHypeFactorService externalHypeFactorService)
+    public HypeFactorService(IMasterGameRepo masterGameRepo, InterLeagueService interLeagueService)
     {
         _masterGameRepo = masterGameRepo;
         _interLeagueService = interLeagueService;
-        _externalHypeFactorService = externalHypeFactorService;
     }
 
     public async Task<HypeConstants> GetHypeConstants()
@@ -35,9 +35,27 @@ public class HypeFactorService : IHypeFactorService
             allMasterGameYears.AddRange(relevantGames);
         }
 
-        var hypeConstants = await _externalHypeFactorService.GetHypeConstants(allMasterGameYears);
+        var hypeConstants = RunRegression(allMasterGameYears);
         _logger.Information($"Hype Constants: {hypeConstants}");
 
         return hypeConstants;
+    }
+
+    private static HypeConstants RunRegression(IReadOnlyList<MasterGameYear> allMasterGameYears)
+    {
+        var models = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x)).Where(x => x.CriticScore.HasValue).ToList();
+
+        var xData = models.Select(d => new[]
+        {
+            d.EligiblePercentStandardGame,
+            d.AdjustedPercentCounterPick,
+            d.DateAdjustedHypeFactor
+        }).ToArray();
+
+        var yData = models.Select(d => d.CriticScore!.Value).ToArray();
+
+        var coefficients = MultipleRegression.NormalEquations(xData, yData, intercept: true);
+
+        return new HypeConstants(coefficients[0], coefficients[1], coefficients[2], coefficients[3]);
     }
 }

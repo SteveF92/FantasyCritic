@@ -17,11 +17,11 @@ public class MasterGameYearScriptInput
 
         if (masterGameYear.MasterGame.CriticScore.HasValue)
         {
-            CriticScore = masterGameYear.MasterGame.CriticScore.Value;
+            CriticScore = (double) masterGameYear.MasterGame.CriticScore.Value;
         }
         else if (!masterGameYear.CouldRelease())
         {
-            CriticScore = 70m;
+            CriticScore = 70.0;
         }
     }
 
@@ -34,5 +34,5 @@ public class MasterGameYearScriptInput
     public double? AverageDraftPosition { get; }
     public int TotalBidAmount { get; }
     public double BidPercentile { get; }
-    public decimal? CriticScore { get; }
+    public double? CriticScore { get; }
 }

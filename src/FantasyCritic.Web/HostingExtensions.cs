@@ -32,13 +32,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using NodaTime.Serialization.JsonNet;
-using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
-using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 using Microsoft.Extensions.Configuration;
 using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Web.Authorization;
+
+using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
+using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
 
@@ -52,17 +53,10 @@ public static class HostingExtensions
         Log.Information($"Startup: Running in {environment} mode.");
 
         var rdsInstanceName = configuration["AWS:rdsInstanceName"]!;
-        var awsBucket = configuration["AWS:bucket"]!;
         var postmarkAPIKey = configuration["Postmark:apiKey"]!;
         var openCriticAPIKey = configuration["OpenCritic:apiKey"]!;
         var baseAddress = configuration["BaseAddress"]!;
         var discordBotToken = configuration["BotToken"]!;
-
-        var rootFolder = configuration["LinuxRootFolder"]!;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            rootFolder = configuration["RootFolder"]!;
-        }
 
         IClock clock = SystemClock.Instance;
 
@@ -103,8 +97,6 @@ public static class HostingExtensions
 
         if (environment.IsProduction() || environment.IsStaging())
         {
-            var tempFolder = Path.Combine(rootFolder, "Temp");
-            services.AddScoped<IExternalHypeFactorService>(_ => new LambdaHypeFactorService(configuration["AWS:region"]!, awsBucket, tempFolder));
             services.AddScoped<IHypeFactorService, HypeFactorService>();
         }
         else

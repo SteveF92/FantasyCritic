@@ -1,20 +1,7 @@
 namespace FantasyCritic.Lib.Domain;
 
-public class HypeConstants
+public record HypeConstants(double BaseScore, double StandardGameConstant, double CounterPickConstant, double HypeFactorConstant)
 {
-    public HypeConstants(double baseScore, double standardGameConstant, double counterPickConstant, double hypeFactorConstant)
-    {
-        BaseScore = baseScore;
-        StandardGameConstant = standardGameConstant;
-        CounterPickConstant = counterPickConstant;
-        HypeFactorConstant = hypeFactorConstant;
-    }
-
-    public double BaseScore { get; }
-    public double StandardGameConstant { get; }
-    public double CounterPickConstant { get; }
-    public double HypeFactorConstant { get; }
-
     public override string ToString()
     {
         return
