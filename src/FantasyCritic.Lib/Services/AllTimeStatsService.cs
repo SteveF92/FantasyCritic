@@ -1,33 +1,52 @@
-using Discord;
 using FantasyCritic.Lib.Domain.AllTimeStats;
+using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
+using NodaTime;
 
 namespace FantasyCritic.Lib.Services;
 public class AllTimeStatsService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IMasterGameRepo _masterGameRepo;
     private readonly ICombinedDataRepo _combinedDataRepo;
 
-    public AllTimeStatsService(IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo)
+    public AllTimeStatsService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, ICombinedDataRepo combinedDataRepo)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
+        _masterGameRepo = masterGameRepo;
         _combinedDataRepo = combinedDataRepo;
     }
 
     public async Task<LeagueAllTimeStats> GetLeagueAllTimeStats(League league, LocalDate currentDate)
     {
         var leagueYears = new List<LeagueYear>();
+        var allPickupBids = new List<PickupBid>();
+        var oldLeagueActions = new List<LeagueAction>();
         foreach (var year in league.Years)
         {
             var leagueYear = await _combinedDataRepo.GetLeagueYear(league.LeagueID, year);
-            if (leagueYear is not null && leagueYear.SupportedYear.Finished)
+            if (leagueYear is null || !leagueYear.SupportedYear.Finished)
             {
-                leagueYears.Add(leagueYear);
+                continue;
+            }
+
+            leagueYears.Add(leagueYear);
+            var pickupBidsForYear = await _fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
+            allPickupBids.AddRange(pickupBidsForYear);
+
+            if (year <= 2021)
+            {
+                //After 2021, we have the "outcome" column on bids.
+                var leagueActions = await _fantasyCriticRepo.GetLeagueActions(leagueYear);
+                oldLeagueActions.AddRange(leagueActions);
             }
         }
+
+        var pickupBidsByGame = allPickupBids.GroupBy(x => x.MasterGame);
+        var oldLeagueActionsByPublisher = oldLeagueActions.ToLookup(x => x.Publisher);
 
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
         var playerAllTimeStats = new List<LeaguePlayerAllTimeStats>();
@@ -64,19 +83,80 @@ public class AllTimeStatsService
             var averageFantasyPoints = totalFantasyPoints / yearsPlayedIn;
             var averageCriticScore = gamesReleased.Where(x => x.MasterGame!.MasterGame.CriticScore.HasValue).Select(x => x.MasterGame!.MasterGame.CriticScore).Average() ?? 0m;
 
-
             playerAllTimeStats.Add(new LeaguePlayerAllTimeStats(player, yearsPlayedIn, yearsWon, totalFantasyPoints, gamesReleased.Count,
                 averageFinishRanking, averageGamesReleased, averageFantasyPoints, averageCriticScore, timesCounterPicked));
         }
 
-        var systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
-        var hallOfFameGameLists = GetHallOfFameLists(leagueYears, leagueYearDictionary, systemWideValues, currentDate);
+        var bidOverspends = await GetBidOverspends(pickupBidsByGame, oldLeagueActionsByPublisher);
+        var hallOfFameGameLists = GetHallOfFameLists(leagueYears, leagueYearDictionary, currentDate, bidOverspends);
 
         return new LeagueAllTimeStats(leagueYears, playerAllTimeStats, hallOfFameGameLists);
     }
 
-    private static IReadOnlyList<HallOfFameGameList> GetHallOfFameLists(IReadOnlyList<LeagueYear> leagueYears, IReadOnlyDictionary<LeagueYearKey, LeagueYear> leagueYearDictionary,
-        SystemWideValues systemWideValues, LocalDate currentDate)
+    private async Task<IReadOnlyList<BidOverspend>> GetBidOverspends(IEnumerable<IGrouping<MasterGame, PickupBid>> pickupBidsByGame, ILookup<Publisher, LeagueAction> oldLeagueActionsByPublisher)
+    {
+        var result = new List<BidOverspend>();
+
+        foreach (var gameGroup in pickupBidsByGame)
+        {
+            var bidsForGame = gameGroup.ToList();
+            var successfulBids = bidsForGame.Where(x => x.Successful == true);
+
+            foreach (var successfulBid in successfulBids)
+            {
+                var unsuccessfulBids = bidsForGame
+                    .Where(x => x.Successful == false)
+                    .Where(x => (successfulBid.ProcessSetID is not null && successfulBid.ProcessSetID == x.ProcessSetID) ||
+                                //I added ProcessSetID in 2022, before that, we can use time ranges.
+                                TimeFunctions.InstantsAreWithinDuration(successfulBid.Timestamp, x.Timestamp, Duration.FromDays(7)))
+                    .ToList();
+
+                List<PickupBid> wasOutbid = new List<PickupBid>();
+
+                foreach (var unsuccessfulBid in unsuccessfulBids)
+                {
+                    if (unsuccessfulBid.Outcome is not null)
+                    {
+                        if (unsuccessfulBid.Outcome.Contains("outbid"))
+                        {
+                            wasOutbid.Add(unsuccessfulBid);
+                        }
+                        continue;
+                    }
+
+                    //If outcome is null, we have to check the actions
+                    var publisherFailedBids = oldLeagueActionsByPublisher[unsuccessfulBid.Publisher].Where(x => x.ActionType == "Pickup Failed").ToList();
+                    var matchingAction = publisherFailedBids.FirstOrDefault(x =>
+                        x.Timestamp > unsuccessfulBid.Timestamp && (x.Timestamp - unsuccessfulBid.Timestamp) <= Duration.FromDays(7) &&
+                        x.MasterGameName == unsuccessfulBid.MasterGame.GameName);
+
+                    if (matchingAction is not null && matchingAction.Description.Contains("outbid"))
+                    {
+                        wasOutbid.Add(unsuccessfulBid);
+                    }
+                }
+
+                uint? highestUnsuccessfulBid = wasOutbid.Any()
+                    ? wasOutbid.Max(x => (uint?)x.BidAmount)
+                    : null;
+
+                var masterGameYear = await _masterGameRepo.GetMasterGameYear(successfulBid.MasterGame.MasterGameID,
+                    successfulBid.Publisher.LeagueYearKey.Year);
+
+                var publisherGame = successfulBid.Publisher.PublisherGames.FirstOrDefault(x => x.MasterGame?.MasterGame.MasterGameID == masterGameYear!.MasterGame.MasterGameID);
+                var fantasyPoints = publisherGame?.FantasyPoints;
+
+                result.Add(new BidOverspend(successfulBid.Publisher, masterGameYear!, successfulBid.BidAmount,
+                    highestUnsuccessfulBid, masterGameYear!.MasterGame.CriticScore, fantasyPoints));
+            }
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyList<HallOfFameGameList> GetHallOfFameLists(IReadOnlyList<LeagueYear> leagueYears,
+        IReadOnlyDictionary<LeagueYearKey, LeagueYear> leagueYearDictionary, LocalDate currentDate,
+        IReadOnlyList<BidOverspend> bidOverspends)
     {
         var publisherDictionary = leagueYears.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID);
 
@@ -107,6 +187,7 @@ public class AllTimeStatsService
                 DollarsPerPoint = game.GetDollarsPerPoint(scoringSystem)
             });
         }
+
 
         //Build Hall of Fame
         var mostPoints = calculatedAllTimeStats
@@ -247,6 +328,20 @@ public class AllTimeStatsService
             }))
             .ToList();
 
+        var overspends = bidOverspends
+            .Where(x => x.Overspend > 0)
+            .OrderByDescending(x => x.Overspend)
+            .Take(10)
+            .Select(x => new HallOfFameGame(x.MasterGame, x.Publisher, new Dictionary<string, HallOfFameGameStat>()
+            {
+                {"Spent",  new HallOfFameGameStat(x.WinningBidAmount, "Budget")},
+                {"Next Highest Bid",  new HallOfFameGameStat(x.NextHighestBid?.ToString() ?? "None", "Budget")},
+                {"Overspend",  new HallOfFameGameStat(x.Overspend, "Budget")},
+                {"Critic Score", new HallOfFameGameStat(x.FormattedCriticScore, "Score")},
+
+            }))
+            .ToList();
+
         var hallOfFameGameLists = new List<HallOfFameGameList>()
         {
             new HallOfFameGameList("Highest Scoring Games", mostPoints),
@@ -262,6 +357,7 @@ public class AllTimeStatsService
             new HallOfFameGameList("Highest Bid Value", highestBidValue),
             new HallOfFameGameList("Worst Bid Value", worstBidValue),
             new HallOfFameGameList("Worst Dollars Per Point", worstDollarsPerPoint),
+            new HallOfFameGameList("Biggest Overspends", overspends),
         };
         return hallOfFameGameLists;
     }

@@ -12,5 +12,10 @@ public record AllTimeStatsCalculation(MasterGameYear Game, Publisher PickedBy, b
     public required double DollarsPerPoint { get; init; }
 
     public object FormattedCriticScore => FantasyPoints.HasValue && CriticScore.HasValue ? CriticScore.Value : "DNR";
-
 };
+
+public record BidOverspend(Publisher Publisher, MasterGameYear MasterGame, uint WinningBidAmount, uint? NextHighestBid, decimal? CriticScore, decimal? FantasyPoints)
+{
+    public uint Overspend => WinningBidAmount - (NextHighestBid ?? 0u);
+    public object FormattedCriticScore => FantasyPoints.HasValue && CriticScore.HasValue ? CriticScore.Value : "DNR";
+}

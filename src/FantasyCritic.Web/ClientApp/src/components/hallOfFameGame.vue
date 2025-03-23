@@ -68,8 +68,8 @@ export default {
     formatStat(stat) {
       const statValue = stat.stat;
       const statType = stat.statType;
-      if (statValue === 'DNR') {
-        return 'DNR';
+      if (statValue === 'DNR' || statValue == 'None') {
+        return statValue;
       }
       if (statType === 'Score' || statType === 'Factor') {
         return roundNumber(statValue, 2);

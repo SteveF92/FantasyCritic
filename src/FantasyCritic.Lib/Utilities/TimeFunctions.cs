@@ -4,6 +4,17 @@ namespace FantasyCritic.Lib.Utilities;
 
 public static class TimeFunctions
 {
+    public static bool InstantsAreWithinDuration(Instant instantOne, Instant instantTwo, Duration duration)
+    {
+        Duration difference = instantOne - instantTwo;
+        if (difference < Duration.Zero)
+        {
+            difference = -difference;
+        }
+
+        return difference <= duration;
+    }
+
     public static EstimatedReleaseDateRange ParseEstimatedReleaseDate(string estimatedReleaseDate, IClock clock)
     {
         var range = ParseEstimatedReleaseDateInner(estimatedReleaseDate, clock);
