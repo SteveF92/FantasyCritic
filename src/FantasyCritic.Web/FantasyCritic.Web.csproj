@@ -19,9 +19,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Discord" Version="9.1.0" />
-    <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="9.1.0" />
-    <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="9.1.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Discord" Version="9.2.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Patreon" Version="9.2.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="9.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.3" />
