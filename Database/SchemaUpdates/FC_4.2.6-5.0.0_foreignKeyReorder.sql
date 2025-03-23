@@ -4,7 +4,7 @@ ALTER TABLE `tbl_league_activeplayer`
 	DROP FOREIGN KEY `FK_tbl_league_activeplayer_tbl_league_year`;
 
 ALTER TABLE `tbl_league_eligibilityoverride`
-	DROP FOREIGN KEY `tbl_league_eligibilityoverride_ibfk_1`;
+	DROP FOREIGN KEY `FK_tbl_league_eligibilityoverride_tbl_league_year`;
 
 ALTER TABLE `tbl_league_manageraction`
 	DROP FOREIGN KEY `FK_tbl_league_manageraction_tbl_league_year`;
@@ -118,7 +118,7 @@ ALTER TABLE `tbl_league_activeplayer`
 	REFERENCES `tbl_league_year` (`LeagueID`, `Year`);
 
 ALTER TABLE `tbl_league_eligibilityoverride`
-	ADD CONSTRAINT `tbl_league_eligibilityoverride_ibfk_1`
+	ADD CONSTRAINT `FK_tbl_league_eligibilityoverride_tbl_league_year`
 	FOREIGN KEY (`LeagueID`, `Year`)
 	REFERENCES `tbl_league_year` (`LeagueID`, `Year`);
 
@@ -128,7 +128,7 @@ ALTER TABLE `tbl_league_manageraction`
 	REFERENCES `tbl_league_year` (`LeagueID`, `Year`);
 
 ALTER TABLE `tbl_league_managermessage`
-	ADD CONSTRAINT `FK__tbl_league_year`
+	ADD CONSTRAINT `FK_tbl_league_managermessage_tbl_league_year`
 	FOREIGN KEY (`LeagueID`, `Year`)
 	REFERENCES `tbl_league_year` (`LeagueID`, `Year`);
 
