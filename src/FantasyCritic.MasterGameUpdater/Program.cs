@@ -1,5 +1,6 @@
 using System.ComponentModel.Design;
 using System.Reflection;
+using Dapper.NodaTime;
 using DiscordDotNetUtilities;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -18,7 +19,7 @@ using NodaTime.Serialization.JsonNet;
 using FantasyCritic.MySQL.SyncingRepos;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.SharedSerialization.API;
-using AdaskoTheBeAsT.Dapper.NodaTime;
+using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.MasterGameUpdater;
 
@@ -47,7 +48,7 @@ public static class Program
         _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]!);
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-        DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
+        DapperNodaTimeSetup.Register();
 
         await UpdateMasterGames();
     }

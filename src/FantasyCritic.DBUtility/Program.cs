@@ -1,5 +1,5 @@
 using System.Reflection;
-using AdaskoTheBeAsT.Dapper.NodaTime;
+using Dapper.NodaTime;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
@@ -28,7 +28,7 @@ class Program
 
         _connectionString = configuration["ConnectionString"]!;
 
-        DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
+        DapperNodaTimeSetup.Register();
         await BackfillTopBidsAndDrops();
     }
 

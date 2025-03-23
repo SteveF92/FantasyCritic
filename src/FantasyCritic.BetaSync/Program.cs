@@ -2,13 +2,13 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using Dapper.NodaTime;
 using FantasyCritic.MySQL;
 using NodaTime;
 using FantasyCritic.Lib.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using FantasyCritic.MySQL.SyncingRepos;
-using AdaskoTheBeAsT.Dapper.NodaTime;
 
 namespace FantasyCritic.BetaSync;
 
@@ -36,7 +36,7 @@ public static class Program
         _productionRDSName = configuration["productionRDSName"]!;
         _betaRDSName = configuration["betaRDSName"]!;
 
-        DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
+        DapperNodaTimeSetup.Register();
 
         await RefreshAndCleanDatabase();
     }
