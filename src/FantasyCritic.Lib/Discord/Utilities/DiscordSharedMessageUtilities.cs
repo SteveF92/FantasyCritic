@@ -172,23 +172,25 @@ public static class DiscordSharedMessageUtilities
         if (bid.Successful!.Value)
         {
             message += $"- Won by {bid.Publisher.GetPublisherAndUserDisplayName()} with a bid of ${bid.BidAmount} {counterPickMessage}";
-            if (bid.ConditionalDropPublisherGame is not null)
+            if (bid.ConditionalDropPublisherGame is null)
             {
-                if (!bid.Outcome!.Contains("Attempted to conditionally drop"))
-                {
-                    message += $"\n\t Dropped game '{bid.ConditionalDropPublisherGame.GameName}' conditionally";
-                }
-                else
-                {
-                    int startIndex = bid.Outcome.IndexOf("Attempted to conditionally drop", StringComparison.Ordinal);
-                    string conditionalDropOutcome = bid.Outcome.Substring(startIndex).TrimEnd('.');
-                    message += $"\n\t {conditionalDropOutcome}";
-                }
+                return message;
+            }
+
+            if (!bid.Outcome!.Contains("Attempted to conditionally drop"))
+            {
+                message += $"\n\t Dropped game '{bid.ConditionalDropPublisherGame.GameName}' conditionally";
+            }
+            else
+            {
+                int startIndex = bid.Outcome.IndexOf("Attempted to conditionally drop", StringComparison.Ordinal);
+                string conditionalDropOutcome = bid.Outcome[startIndex..].TrimEnd('.');
+                message += $"\n\t {conditionalDropOutcome}";
             }
         }
         else
         {
-            message += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} did not succeed: {bid.Outcome} {counterPickMessage}\n";
+            message += $"- {bid.Publisher.GetPublisherAndUserDisplayName()}'s bid of ${bid.BidAmount} did not succeed: {bid.Outcome} {counterPickMessage}";
         }
         return message;
     }

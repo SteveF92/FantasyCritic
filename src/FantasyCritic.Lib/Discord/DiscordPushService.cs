@@ -695,7 +695,7 @@ public class DiscordPushService
             }
             else
             {
-                leagueActionDictionaryByGame.Add(leagueActionBid.MasterGame.GameName, new List<PickupBid> { leagueActionBid });
+                leagueActionDictionaryByGame.Add(leagueActionBid.MasterGame.GameName, [leagueActionBid]);
             }
         }
 

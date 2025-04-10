@@ -6,7 +6,7 @@
       <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
       <div v-show="lastJobFailed" class="alert alert-danger">'{{ jobAttempted }}' failed.</div>
       <div v-show="isBusy" class="alert alert-info">Request is processing...</div>
-      <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' sucessfully run.</div>
+      <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
 
       <div v-if="isFactChecker">
         <h2>Master Game Management</h2>
