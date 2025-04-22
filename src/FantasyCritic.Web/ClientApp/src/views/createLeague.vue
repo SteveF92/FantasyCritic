@@ -141,11 +141,11 @@ export default {
       gamesToDraft: '',
       counterPicks: '',
       counterPicksToDraft: '',
-      pickupSystem: 'SecretBidding',
+      pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
       tiebreakSystem: 'LowestProjectedPoints',
       tradingSystem: 'Standard',
       draftSystem: 'Flexible',
-      scoringSystem: 'Standard',
+      scoringSystem: 'LinearPositive',
       releaseSystem: 'MustBeReleased',
       specialGameSlots: [],
       tags: { banned: [], allowed: [], required: [] }

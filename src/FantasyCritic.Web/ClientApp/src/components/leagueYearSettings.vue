@@ -365,6 +365,7 @@ export default {
       }
 
       this.internalValue.counterPickDeadline = `${this.year}-11-01`;
+      this.internalValue.mightReleaseDroppableDate = `${this.year}-11-01`;
 
       if (!this.intendedNumberOfPlayers) {
         return;
@@ -410,6 +411,13 @@ export default {
       if (this.gameMode === 'Beginner') {
         this.internalValue.counterPicks = 0;
         this.internalValue.counterPicksToDraft = 0;
+        this.internalValue.tradingSystem = 'NoTrades';
+        this.internalValue.grantSuperDrops = true;
+      }
+
+      if (this.gameMode === 'Advanced') {
+        this.internalValue.pickupSystem = 'SecretBidding';
+        this.internalValue.counterPicksBlockDrops = true;
       }
 
       this.internalValue.minimumBidAmount = 0;
@@ -417,13 +425,14 @@ export default {
       this.internalValue.willNotReleaseDroppableGames = 0;
       this.internalValue.unlimitedFreeDroppableGames = false;
       this.internalValue.unlimitedWillReleaseDroppableGames = false;
-      if (!this.oneShotMode) {
-        this.internalValue.willReleaseDroppableGames = 1;
-        this.internalValue.unlimitedWillNotReleaseDroppableGames = true;
-        this.internalValue.tradingSystem = 'NoTrades';
-      } else {
+      if (this.oneShotMode) {
         this.internalValue.willReleaseDroppableGames = 0;
         this.internalValue.unlimitedWillNotReleaseDroppableGames = false;
+        this.internalValue.tradingSystem = 'NoTrades';
+        this.internalValue.grantSuperDrops = false;
+      } else {
+        this.internalValue.willReleaseDroppableGames = 1;
+        this.internalValue.unlimitedWillNotReleaseDroppableGames = true;
       }
 
       let alwaysBannedTags = ['Port', 'PlannedForEarlyAccess', 'CurrentlyInEarlyAccess', 'ReleasedInternationally'];
