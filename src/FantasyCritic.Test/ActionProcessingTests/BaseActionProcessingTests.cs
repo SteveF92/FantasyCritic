@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -20,6 +21,12 @@ public abstract class BaseActionProcessingTests
     protected abstract string ActionProcessingSetName { get; }
     protected abstract bool DefaultAllowIneligible { get; }
     protected virtual Guid? OnlyRunLeagueID => null;
+
+    [ModuleInitializer]
+    public static void Init()
+    {
+        Verifier.UseProjectRelativeDirectory("./ActionProcessingTests/Expected");
+    }
 
     [OneTimeSetUp]
     public void Process()
@@ -49,7 +56,7 @@ public abstract class BaseActionProcessingTests
         var actionProcessor = new ActionProcessor(systemWideValues, ProcessingTime, currentDate, masterGameYearDictionary);
         _results[ActionProcessingSetName] = actionProcessor.ProcessActions(allActiveBids, allActiveDrops, publishers);
 
-        Verifier.UseProjectRelativeDirectory("./ActionProcessingTests/Expected");
+        
     }
 
     [Test]
