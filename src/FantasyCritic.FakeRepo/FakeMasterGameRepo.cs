@@ -226,4 +226,14 @@ public class FakeMasterGameRepo : IMasterGameRepo
     {
         throw new NotImplementedException();
     }
+
+    public Task<MasterGame> GetTestMasterGame(int year)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<MasterGameYear> GetTestMasterGameYear(int year)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -26,6 +26,15 @@
           <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Refresh Caches</b-button>
           <b-button variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Game Discord Queue</b-button>
         </div>
+        <template v-if="isDevelopment">
+          <h2>Discord Push Service</h2>
+          <div>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofScoreUpdate')">Send Spoof Score Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofEditUpdate')">Send Spoof Edit Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofNewUpdate')">Send Spoof NewGame Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofReleasedUpdate')">Send Spoof Released Update</b-button>
+          </div>
+        </template>
       </div>
 
       <div v-if="isActionRunner">
