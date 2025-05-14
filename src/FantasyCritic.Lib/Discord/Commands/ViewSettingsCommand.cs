@@ -58,7 +58,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
                 Name = "Game News",
-                Value = GetGameNewsSettingDescription(leagueChannel.SendLeagueMasterGameUpdates, leagueChannel.SendNotableMisses, gameNewsChannel?.GameNewsSetting, gameNewsChannel?.SkippedTags),
+                Value = GetGameNewsSettingDescription(leagueChannel.SendLeagueMasterGameUpdates, leagueChannel.SendNotableMisses, gameNewsChannel?.GameNewsSettingOld, gameNewsChannel?.SkippedTags),
                 IsInline = false
             });
 
@@ -81,7 +81,7 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
     }
 
     private static string GetGameNewsSettingDescription(bool sendLeagueMasterGameUpdates,
-        bool sendNotableMisses, GameNewsSetting? gameNewsSetting, IReadOnlyList<MasterGameTag>? skippedTags)
+        bool sendNotableMisses, GameNewsSettingOld? gameNewsSetting, IReadOnlyList<MasterGameTag>? skippedTags)
     {
         var parts = new List<string>
         {
@@ -97,15 +97,15 @@ public class ViewSettingsCommand : InteractionModuleBase<SocketInteractionContex
         {
             parts.Add("❌ Non-League Master Game Updates");
         }
-        else if (gameNewsSetting.Equals(GameNewsSetting.All))
+        else if (gameNewsSetting.Equals(GameNewsSettingOld.All))
         {
             parts.Add("✅ All Master Game Updates");
         }
-        else if (gameNewsSetting.Equals(GameNewsSetting.MightReleaseInYear))
+        else if (gameNewsSetting.Equals(GameNewsSettingOld.MightReleaseInYear))
         {
             parts.Add("✅ Any 'Might Release' Master Game Updates");
         }
-        else if (gameNewsSetting.Equals(GameNewsSetting.WillReleaseInYear))
+        else if (gameNewsSetting.Equals(GameNewsSettingOld.WillReleaseInYear))
         {
             parts.Add("✅ Any 'Will Release' Master Game Updates");
         }

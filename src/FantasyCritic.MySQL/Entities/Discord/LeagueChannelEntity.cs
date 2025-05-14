@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Discord.Models;
+
 namespace FantasyCritic.MySQL.Entities.Discord;
 internal class LeagueChannelEntity
 {

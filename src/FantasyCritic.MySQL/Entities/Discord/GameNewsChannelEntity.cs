@@ -8,11 +8,11 @@ internal class GameNewsChannelEntity
 
     }
 
-    public GameNewsChannelEntity(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting)
+    public GameNewsChannelEntity(ulong guildID, ulong channelID, GameNewsSettingOld gameNewsSettingOld)
     {
         GuildID = guildID;
         ChannelID = channelID;
-        GameNewsSetting = gameNewsSetting.Value;
+        GameNewsSetting = gameNewsSettingOld.Value;
     }
 
     public ulong GuildID { get; set; }
@@ -21,6 +21,6 @@ internal class GameNewsChannelEntity
 
     public GameNewsChannel ToDomain(IEnumerable<MasterGameTag> skippedTags)
     {
-        return new GameNewsChannel(GuildID, ChannelID, Lib.Discord.Models.GameNewsSetting.FromValue(GameNewsSetting), skippedTags.ToList());
+        return new GameNewsChannel(GuildID, ChannelID, Lib.Discord.Models.GameNewsSettingOld.FromValue(GameNewsSetting), skippedTags.ToList());
     }
 }

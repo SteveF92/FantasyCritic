@@ -56,15 +56,15 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
-    public async Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting)
+    public async Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSettingOld gameNewsSettingOld)
     {
-        bool deleting = gameNewsSetting.Equals(GameNewsSetting.Off);
+        bool deleting = gameNewsSettingOld.Equals(GameNewsSettingOld.Off);
         var deleteSQL = "DELETE FROM tbl_discord_gamenewschannel where GuildID=@GuildID AND ChannelID=@ChannelID;";
         var insertSQL = "INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,GameNewsSetting) VALUES (@GuildID,@ChannelID,@GameNewsSetting);";
         var updateSQL = "UPDATE tbl_discord_gamenewschannel SET GameNewsSetting = @GameNewsSetting where GuildID=@GuildID AND ChannelID=@ChannelID;";
         var selectTagsSQL = "SELECT * from tbl_discord_gamenewschannelskiptag where GuildID=@guildID AND ChannelID=@channelID;";
         var deleteTagsSQL = "DELETE from tbl_discord_gamenewschannelskiptag where GuildID=@guildID AND ChannelID=@channelID;";
-        var gameNewsChannelEntity = new GameNewsChannelEntity(guildID, channelID, gameNewsSetting);
+        var gameNewsChannelEntity = new GameNewsChannelEntity(guildID, channelID, gameNewsSettingOld);
 
         var param = new
         {
