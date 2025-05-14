@@ -9,6 +9,17 @@ public record GameNewsSetting
     public required bool ShowNewGameNews { get; init; }
     public required bool ShowEditedGameNews { get; init; }
 
+    public bool IsOff()
+    {
+        return !(ShowWillReleaseInYearNews &&
+                 ShowMightReleaseInYearNews &&
+                 ShowWillNotReleaseInYearNews &&
+                 ShowScoreGameNews &&
+                 ShowReleasedGameNews &&
+                 ShowNewGameNews &&
+                 ShowEditedGameNews);
+    }
+
     public static GameNewsSetting GetOffSetting()
     {
         return new GameNewsSetting()
