@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Discord.Models.GameNewsRecords;
+using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Lib.Discord.Interfaces;
 public interface IRelevantGameNewsHandler

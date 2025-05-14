@@ -57,7 +57,7 @@ public static class Program
     {
         RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(_localConnectionString, _clock);
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
-        MySQLMasterGameRepo localMasterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
+        MySQLMasterGameRepo localMasterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore, _clock);
         MySQLMasterGameUpdater gameUpdater = new MySQLMasterGameUpdater(_localConnectionString);
         AdminService localAdminService = GetAdminService();
 
@@ -94,7 +94,7 @@ public static class Program
         FantasyCriticUserManager userManager = null!;
         RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(_localConnectionString, _clock);
         IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
-        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore);
+        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore, _clock);
         ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(localRepoConfig);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo, combinedDataRepo);
         IConferenceRepo conferenceRepo = new MySQLConferenceRepo(localRepoConfig, localUserStore, masterGameRepo, combinedDataRepo);

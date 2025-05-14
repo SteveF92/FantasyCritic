@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Discord.Models.GameNewsRecords;
 using Serilog;
 
 

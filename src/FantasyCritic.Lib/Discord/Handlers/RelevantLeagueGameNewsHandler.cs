@@ -2,7 +2,6 @@ using FantasyCritic.Lib.Discord.Entity;
 using FantasyCritic.Lib.Discord.Enums;
 using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Discord.Models.GameNewsRecords;
 using Serilog;
 
 

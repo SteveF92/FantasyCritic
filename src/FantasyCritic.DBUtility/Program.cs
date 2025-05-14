@@ -36,7 +36,7 @@ class Program
     {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration(_connectionString, _clock);
         IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repoConfig);
-        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(repoConfig, userStore);
+        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(repoConfig, userStore, _clock);
         ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(repoConfig);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo, combinedDataRepo);
 

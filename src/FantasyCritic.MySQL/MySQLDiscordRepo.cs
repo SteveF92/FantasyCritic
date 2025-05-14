@@ -4,16 +4,16 @@ using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities.Discord;
 using Serilog;
-using System.Data;
 
 namespace FantasyCritic.MySQL;
 public class MySQLDiscordRepo : IDiscordRepo
 {
+    private static readonly ILogger _logger = Log.ForContext<MySQLDiscordRepo>();
+
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IConferenceRepo _conferenceRepo;
     private readonly ICombinedDataRepo _combinedDataRepo;
-    private readonly ILogger _logger;
     private readonly IClock _clock;
     private readonly string _connectionString;
 
@@ -26,7 +26,6 @@ public class MySQLDiscordRepo : IDiscordRepo
         _conferenceRepo = conferenceRepo;
         _combinedDataRepo = combinedDataRepo;
         _clock = clock;
-        _logger = Serilog.Log.ForContext<MySQLDiscordRepo>();
         _connectionString = configuration.ConnectionString;
     }
 
@@ -465,19 +464,13 @@ public class MySQLDiscordRepo : IDiscordRepo
         {
             return null; // No data found
         }
-
         
         var skippedTagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(skippedTagsSql, queryObject);
-        
         var skippedTagNames = skippedTagEntities.Select(x => x.TagName).ToList();
-
         var masterTagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-
         var skippedTags = skippedTagNames.Select(tag => masterTagDictionary[tag]).ToList();
 
         return optionsResult.ToDomain(skippedTags);
-
-
     }
 
     private async Task<LeagueChannelEntity?> GetLeagueChannelEntity(ulong guildID, ulong channelID)

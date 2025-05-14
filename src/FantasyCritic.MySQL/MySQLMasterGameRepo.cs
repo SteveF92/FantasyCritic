@@ -17,11 +17,11 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     private readonly string _connectionString;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
+    private readonly IClock _clock;
 
     private IReadOnlyList<MasterGameTag>? _tagCache;
     private Dictionary<Guid, MasterGame>? _masterGamesCache;
     private Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
-    private IClock _clock; 
 
     public MySQLMasterGameRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IClock clock)
     {

@@ -131,7 +131,7 @@ public class CompleteGameNewsSettings
             embedMessage.AppendLine("  -- None");
         }
 
-            embedMessage.AppendLine("------------------------");
+        embedMessage.AppendLine("------------------------");
 
         return embedMessage.ToString();
     }

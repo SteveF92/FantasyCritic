@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Lib.Domain;
