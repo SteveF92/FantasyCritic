@@ -5,15 +5,17 @@ public class CombinedChannelGameSetting
 {
     private static readonly ILogger Logger = Log.ForContext<CombinedChannelGameSetting>();
 
-    private readonly bool _sendLeagueMasterGameUpdates;
-    private readonly bool _sendNotableMisses;
+    private readonly bool _showPickedGameNews;
+    private readonly bool _showEligibleGameNews;
+    private readonly NotableMissSetting _notableMissSetting;
     private readonly GameNewsSetting _gameNewsSetting;
     private readonly IReadOnlyList<MasterGameTag> _skippedTags;
 
-    public CombinedChannelGameSetting(bool sendLeagueMasterGameUpdates, bool sendNotableMisses, GameNewsSetting gameNewsSetting, IReadOnlyList<MasterGameTag> skippedTags)
+    public CombinedChannelGameSetting(bool showPickedGameNews, bool showEligibleGameNews, NotableMissSetting notableMissSetting, GameNewsSetting gameNewsSetting, IReadOnlyList<MasterGameTag> skippedTags)
     {
-        _sendLeagueMasterGameUpdates = sendLeagueMasterGameUpdates;
-        _sendNotableMisses = sendNotableMisses;
+        _showPickedGameNews = showPickedGameNews;
+        _showEligibleGameNews = showEligibleGameNews;
+        _notableMissSetting = notableMissSetting;
         _gameNewsSetting = gameNewsSetting;
         _skippedTags = skippedTags;
     }
