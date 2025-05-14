@@ -6,16 +6,17 @@ internal class CompleteGameNewsSettingsEntity
 {
     public ulong GuildID { get; set; }
     public ulong ChannelID { get; set; }
-    public bool EnableGameNews { get; set; } = true;
-    public bool? ShowPickedGameNews { get; set; } = null;
-    public bool? ShowEligibleGameNews { get; set; } = null;
-    public NotableMissSetting? NotableMissSetting { get; set; } = null;
-    public bool ShowMightReleaseInYearNews { get; set; } = true;
-    public bool ShowWillReleaseInYearNews { get; set; } = true;
-    public bool ShowScoreGameNews { get; set; } = true;
-    public bool ShowReleasedGameNews { get; set; } = true;
-    public bool ShowNewGameNews { get; set; } = true;
-    public bool ShowEditedGameNews { get; set; } = true;
+    public bool EnableGameNews { get; set; }
+    public bool? ShowPickedGameNews { get; set; } 
+    public bool? ShowEligibleGameNews { get; set; } 
+    public NotableMissSetting? NotableMissSetting { get; set; }
+    public bool ShowWillReleaseInYearNews { get; set; }
+    public bool ShowMightReleaseInYearNews { get; set; }
+    public bool ShowWillNotReleaseInYearNews { get; set; }
+    public bool ShowScoreGameNews { get; set; }
+    public bool ShowReleasedGameNews { get; set; }
+    public bool ShowNewGameNews { get; set; }
+    public bool ShowEditedGameNews { get; set; }
 
     public CompleteGameNewsSettings ToDomain(List<MasterGameTag> skippedTags)
     {
@@ -25,8 +26,9 @@ internal class CompleteGameNewsSettingsEntity
             ShowPickedGameNews = ShowPickedGameNews,
             ShowEligibleGameNews = ShowEligibleGameNews,
             NotableMissSetting = NotableMissSetting,
-            ShowMightReleaseInYearNews = ShowMightReleaseInYearNews,
             ShowWillReleaseInYearNews = ShowWillReleaseInYearNews,
+            ShowMightReleaseInYearNews = ShowMightReleaseInYearNews,
+            ShowWillNotReleaseInYearNews = ShowWillNotReleaseInYearNews,
             ShowScoreGameNews = ShowScoreGameNews,
             ShowReleasedGameNews = ShowReleasedGameNews,
             ShowNewGameNews = ShowNewGameNews,

@@ -438,8 +438,9 @@ public class MySQLDiscordRepo : IDiscordRepo
                     lc.ShowEligibleGameNews,
                     lc.NotableMissSetting,
                     gnc.EnableGameNews,
-                    gnc.ShowMightReleaseInYearNews,
                     gnc.ShowWillReleaseInYearNews,
+                    gnc.ShowMightReleaseInYearNews,
+                    gnc.ShowWillNotReleaseInYearNews,
                     gnc.ShowScoreGameNews,
                     gnc.ShowReleasedGameNews,
                     gnc.ShowNewGameNews,
@@ -447,7 +448,7 @@ public class MySQLDiscordRepo : IDiscordRepo
                 FROM tbl_discord_gamenewschannel gnc
                 LEFT JOIN tbl_discord_leaguechannel lc
                     ON gnc.GuildID = lc.GuildID AND gnc.ChannelID = lc.ChannelID
-                WHERE gnc.GuildID = GuildID AND gnc.ChannelID = ChannelID
+                WHERE gnc.GuildID = @GuildID AND gnc.ChannelID = @ChannelID
                 GROUP BY gnc.GuildID, gnc.ChannelID;
             """;
 
