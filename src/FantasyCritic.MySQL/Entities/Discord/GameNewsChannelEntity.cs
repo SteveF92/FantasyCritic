@@ -8,19 +8,44 @@ internal class GameNewsChannelEntity
 
     }
 
-    public GameNewsChannelEntity(ulong guildID, ulong channelID, GameNewsSettingOld gameNewsSettingOld)
+    public GameNewsChannelEntity(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting)
     {
         GuildID = guildID;
         ChannelID = channelID;
-        GameNewsSetting = gameNewsSettingOld.Value;
+
+        ShowWillReleaseInYearNews = gameNewsSetting.ShowWillReleaseInYearNews;
+        ShowMightReleaseInYearNews = gameNewsSetting.ShowMightReleaseInYearNews;
+        ShowWillNotReleaseInYearNews = gameNewsSetting.ShowWillNotReleaseInYearNews;
+        ShowScoreGameNews = gameNewsSetting.ShowScoreGameNews;
+        ShowReleasedGameNews = gameNewsSetting.ShowReleasedGameNews;
+        ShowNewGameNews = gameNewsSetting.ShowNewGameNews;
+        ShowEditedGameNews = gameNewsSetting.ShowEditedGameNews;
     }
 
     public ulong GuildID { get; set; }
     public ulong ChannelID { get; set; }
-    public string GameNewsSetting { get; set; } = null!;
+
+    public bool ShowWillReleaseInYearNews { get; set; }
+    public bool ShowMightReleaseInYearNews { get; set; }
+    public bool ShowWillNotReleaseInYearNews { get; set; }
+    public bool ShowScoreGameNews { get; set; }
+    public bool ShowReleasedGameNews { get; set; }
+    public bool ShowNewGameNews { get; set; }
+    public bool ShowEditedGameNews { get; set; }
 
     public GameNewsChannel ToDomain(IEnumerable<MasterGameTag> skippedTags)
     {
-        return new GameNewsChannel(GuildID, ChannelID, Lib.Discord.Models.GameNewsSettingOld.FromValue(GameNewsSetting), skippedTags.ToList());
+        var settings = new GameNewsSetting()
+        {
+            ShowWillReleaseInYearNews = ShowWillReleaseInYearNews,
+            ShowMightReleaseInYearNews = ShowMightReleaseInYearNews,
+            ShowWillNotReleaseInYearNews = ShowWillNotReleaseInYearNews,
+            ShowScoreGameNews = ShowScoreGameNews,
+            ShowReleasedGameNews = ShowReleasedGameNews,
+            ShowNewGameNews = ShowNewGameNews,
+            ShowEditedGameNews = ShowEditedGameNews,
+        };
+
+        return new GameNewsChannel(GuildID, ChannelID, settings, skippedTags.ToList());
     }
 }
