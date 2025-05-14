@@ -41,8 +41,35 @@ public class CombinedChannelGameSetting
         throw new NotImplementedException();
     }
 
-    public override string ToString()
+    private bool CheckCommonGameNewsOnlyRelevance(MasterGame masterGame, LocalDate currentDate)
     {
-        throw new NotImplementedException();
+        //If user set any tags to be skipped, check if the game has any of those tags
+        if (masterGame.Tags.Intersect(_skippedTags).Any())
+        {
+            return false;
+        }
+
+        //If user asked for all game news about games that will be released in the year
+        //Check if the game will be, and return true if so
+        if (_gameNewsSetting.ShowWillReleaseInYearNews)
+        {
+            if (masterGame.WillReleaseInYear(currentDate.Year))
+            {
+                return true;
+            }
+        }
+
+        //If user asked for all game news about games that might be released in the year
+        //Check to see if it might be released in the year, and return true if so
+        if (_gameNewsSetting.ShowMightReleaseInYearNews)
+        {
+            if (masterGame.MightReleaseInYear(currentDate.Year))
+            {
+                return true;
+            }
+        }
+
+        //Fallback
+        return false;
     }
 }
