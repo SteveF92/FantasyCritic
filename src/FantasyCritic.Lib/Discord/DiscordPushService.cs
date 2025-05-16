@@ -150,14 +150,14 @@ public class DiscordPushService
             }
 
             var newMasterGamesToSend = _newMasterGameMessages
-                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
+                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, today))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
-                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, x.NewCriticScore, today))
+                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, x.NewCriticScore, today))
                 .ToList();
             var editsToSend = _masterGameEditMessages
                 .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame.MasterGame,
-                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(), combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
+                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(), today))
                 .ToList();
 
             if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())
@@ -336,7 +336,7 @@ public class DiscordPushService
             }
 
             IReadOnlyList<MasterGameYear> relevantGamesForLeague = masterGamesReleasingToday
-                .Where(x => combinedChannel.CombinedSetting.ReleasedGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears))
+                .Where(x => combinedChannel.CombinedSetting.ReleasedGameIsRelevant(x.MasterGame))
                 .ToList();
             if (!relevantGamesForLeague.Any())
             {

@@ -67,5 +67,5 @@ public class CombinedChannel
 
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 
-    public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags);
+    public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags, ActiveLeagueYears, ChannelKey);
 }

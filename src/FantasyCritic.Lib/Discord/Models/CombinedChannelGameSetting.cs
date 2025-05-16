@@ -1,75 +1,56 @@
-using Serilog;
+using FantasyCritic.Lib.Discord.Handlers;
+using FantasyCritic.Lib.Discord.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Models;
 public class CombinedChannelGameSetting
 {
-    private static readonly ILogger Logger = Log.ForContext<CombinedChannelGameSetting>();
-
     private readonly bool _showPickedGameNews;
     private readonly bool _showEligibleGameNews;
     private readonly NotableMissSetting _notableMissSetting;
     private readonly GameNewsSetting _gameNewsSetting;
     private readonly IReadOnlyList<MasterGameTag> _skippedTags;
+    private readonly IReadOnlyList<LeagueYear>? _activeLeagueYears;
+    private readonly DiscordChannelKey _channelKey;
 
-    public CombinedChannelGameSetting(bool showPickedGameNews, bool showEligibleGameNews, NotableMissSetting notableMissSetting, GameNewsSetting gameNewsSetting, IReadOnlyList<MasterGameTag> skippedTags)
+    public CombinedChannelGameSetting(bool showPickedGameNews, bool showEligibleGameNews, NotableMissSetting notableMissSetting, GameNewsSetting gameNewsSetting, IReadOnlyList<MasterGameTag> skippedTags,
+        IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey)
     {
         _showPickedGameNews = showPickedGameNews;
         _showEligibleGameNews = showEligibleGameNews;
         _notableMissSetting = notableMissSetting;
         _gameNewsSetting = gameNewsSetting;
         _skippedTags = skippedTags;
+        _activeLeagueYears = activeLeagueYears;
+        _channelKey = channelKey;
     }
 
-    public bool NewGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, DiscordChannelKey channelKey, LocalDate currentDate)
+    public bool NewGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
-        throw new NotImplementedException();
+        return GetRelevanceHandler().NewGameIsRelevant(masterGame, currentDate);
     }
 
-    public bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, IReadOnlyList<LeagueYear>? activeLeagueYears,
-        DiscordChannelKey channelKey, LocalDate currentDate)
+    public bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, LocalDate currentDate)
     {
-        throw new NotImplementedException();
+        return GetRelevanceHandler().ExistingGameIsRelevant(masterGame, releaseStatusChanged, currentDate);
     }
 
-    public bool ReleasedGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears)
+    public bool ReleasedGameIsRelevant(MasterGame masterGame)
     {
-        throw new NotImplementedException();
+        return GetRelevanceHandler().ReleasedGameIsRelevant(masterGame);
     }
 
-    public bool ScoredGameIsRelevant(MasterGame masterGame, IReadOnlyList<LeagueYear>? activeLeagueYears, decimal? criticScore, LocalDate currentDate)
+    public bool ScoredGameIsRelevant(MasterGame masterGame, decimal? criticScore, LocalDate currentDate)
     {
-        throw new NotImplementedException();
+        return GetRelevanceHandler().ScoredGameIsRelevant(masterGame, criticScore, currentDate);
     }
 
-    private bool CheckCommonGameNewsOnlyRelevance(MasterGame masterGame, LocalDate currentDate)
+    private IGameNewsRelevanceHandler GetRelevanceHandler()
     {
-        //If user set any tags to be skipped, check if the game has any of those tags
-        if (masterGame.Tags.Intersect(_skippedTags).Any())
+        if (_activeLeagueYears is not null)
         {
-            return false;
+            return new LeagueGameNewsRelevanceHandler(_showPickedGameNews, _showEligibleGameNews, _notableMissSetting, _gameNewsSetting, _skippedTags, _activeLeagueYears, _channelKey);
         }
 
-        //If user asked for all game news about games that will be released in the year
-        //Check if the game will be, and return true if so
-        if (_gameNewsSetting.ShowWillReleaseInYearNews)
-        {
-            if (masterGame.WillReleaseInYear(currentDate.Year))
-            {
-                return true;
-            }
-        }
-
-        //If user asked for all game news about games that might be released in the year
-        //Check to see if it might be released in the year, and return true if so
-        if (_gameNewsSetting.ShowMightReleaseInYearNews)
-        {
-            if (masterGame.MightReleaseInYear(currentDate.Year))
-            {
-                return true;
-            }
-        }
-
-        //Fallback
-        return false;
+        return new GameNewsOnlyRelevanceHandler(_showPickedGameNews, _showEligibleGameNews, _notableMissSetting, _gameNewsSetting, _skippedTags, _channelKey);
     }
 }
