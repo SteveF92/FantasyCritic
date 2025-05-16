@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Discord.Handlers;
+
 namespace FantasyCritic.Lib.Discord.Models;
 
 public record MinimalLeagueChannel(Guid LeagueID, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID) : IDiscordChannel
@@ -67,5 +69,13 @@ public class CombinedChannel
 
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 
-    public CombinedChannelGameSetting CombinedSetting => new CombinedChannelGameSetting(ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags, ActiveLeagueYears, ChannelKey);
+    public  BaseGameNewsRelevanceHandler GetRelevanceHandler()
+    {
+        if (ActiveLeagueYears is not null)
+        {
+            return new LeagueGameNewsRelevanceHandler(ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags, ChannelKey, ActiveLeagueYears);
+        }
+
+        return new GameNewsOnlyRelevanceHandler(ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags, ChannelKey);
+    }
 }
