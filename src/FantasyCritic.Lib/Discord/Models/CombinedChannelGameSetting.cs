@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.Discord.Handlers;
-using FantasyCritic.Lib.Discord.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.Models;
 public class CombinedChannelGameSetting
@@ -44,11 +43,11 @@ public class CombinedChannelGameSetting
         return GetRelevanceHandler().ScoredGameIsRelevant(masterGame, criticScore, currentDate);
     }
 
-    private IGameNewsRelevanceHandler GetRelevanceHandler()
+    private BaseGameNewsRelevanceHandler GetRelevanceHandler()
     {
         if (_activeLeagueYears is not null)
         {
-            return new LeagueGameNewsRelevanceHandler(_showPickedGameNews, _showEligibleGameNews, _notableMissSetting, _gameNewsSetting, _skippedTags, _activeLeagueYears, _channelKey);
+            return new LeagueGameNewsRelevanceHandler(_showPickedGameNews, _showEligibleGameNews, _notableMissSetting, _gameNewsSetting, _skippedTags, _channelKey, _activeLeagueYears);
         }
 
         return new GameNewsOnlyRelevanceHandler(_showPickedGameNews, _showEligibleGameNews, _notableMissSetting, _gameNewsSetting, _skippedTags, _channelKey);
