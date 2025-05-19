@@ -23,6 +23,6 @@ public abstract class BaseGameNewsRelevanceHandler
 
     public abstract bool NewGameIsRelevant(MasterGame masterGame, LocalDate currentDate);
     public abstract bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, LocalDate currentDate);
-    public abstract bool ReleasedGameIsRelevant(MasterGame masterGame);
-    public abstract bool ScoredGameIsRelevant(MasterGame masterGame, decimal? criticScore, LocalDate currentDate);
+    public abstract bool ReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate);
+    public abstract bool ScoredGameIsRelevant(MasterGame masterGame, decimal? oldCriticScore, decimal? newCriticScore, LocalDate currentDate);
 }

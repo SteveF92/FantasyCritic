@@ -69,7 +69,7 @@ public class CombinedChannel
 
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 
-    public  BaseGameNewsRelevanceHandler GetRelevanceHandler()
+    public BaseGameNewsRelevanceHandler GetRelevanceHandler()
     {
         if (ActiveLeagueYears is not null)
         {

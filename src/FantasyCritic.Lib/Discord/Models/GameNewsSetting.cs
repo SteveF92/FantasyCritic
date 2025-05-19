@@ -20,6 +20,17 @@ public record GameNewsSetting
                  ShowEditedGameNews);
     }
 
+    public bool IsAllOn()
+    {
+               return ShowWillReleaseInYearNews &&
+               ShowMightReleaseInYearNews &&
+               ShowWillNotReleaseInYearNews &&
+               ShowScoreGameNews &&
+               ShowReleasedGameNews &&
+               ShowNewGameNews &&
+               ShowEditedGameNews;
+    }
+
     public static GameNewsSetting GetOffSetting()
     {
         return new GameNewsSetting()
