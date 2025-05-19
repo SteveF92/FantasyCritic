@@ -1,7 +1,6 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using FantasyCritic.Lib.Discord.Enums;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Interfaces;
 using System.Collections.Concurrent;
@@ -20,9 +19,9 @@ namespace FantasyCritic.Lib.Discord.Commands
         private static IReadOnlyList<MasterGameTag>? _masterGameTags;
 
         /// <summary>
-        /// First ulong - ChannelID, Second ulong - SnapshotMessageID
+        /// First ulong - ChannelID, Second ulong - CommandMessageID
         /// </summary>
-        private static readonly ConcurrentDictionary<ulong, ulong> _channelSnapshotDict = new();
+        private static readonly ConcurrentDictionary<ulong, ulong> _channelCommandDict = new();
 
         public GameNewsSettingsCommand(IDiscordRepo discordRepo, IMasterGameRepo masterGameRepo)
         {
@@ -62,11 +61,11 @@ namespace FantasyCritic.Lib.Discord.Commands
 
                 if (isLeagueChannel)
                 {
-                    await SendLeagueGameNewsSnapshot();
+                    await SendLeagueGameNewsCommand();
                 }
                 else
                 {
-                    await SendGameNewsOnlySnapShot();
+                    await SendGameNewsOnlyCommand();
                 }
             }
             catch (Exception ex)
@@ -77,9 +76,9 @@ namespace FantasyCritic.Lib.Discord.Commands
             }
         }
 
-        #region SnapShot Messages
+        #region Command Messages
 
-        private async Task SendGameNewsSnapShotMessage()
+        private async Task SendGameNewsCommandMessage()
         {
             var guildId = Context.Guild.Id;
             var channelId = Context.Channel.Id;
@@ -88,33 +87,32 @@ namespace FantasyCritic.Lib.Discord.Commands
 
             if (leagueChannel != null)
             {
-                await SendLeagueGameNewsSnapshot();
+                await SendLeagueGameNewsCommand();
             }
             else
             {
-                await SendGameNewsOnlySnapShot();
+                await SendGameNewsOnlyCommand();
             }
         }
 
-        private async Task SendLeagueGameNewsSnapshot()
+        private async Task SendLeagueGameNewsCommand()
         {
-            
-            var message = await FollowupAsync(await CreateSnapShotMessageString(), components: GetLeagueSnapshotComponent());
-            _channelSnapshotDict[Context.Channel.Id] = message.Id;
+            var message = await FollowupAsync(await CreateCommandMessageString(), components: GetLeagueCommandComponent());
+            _channelCommandDict[Context.Channel.Id] = message.Id;
         }
 
-        private async Task SendGameNewsOnlySnapShot()
+        private async Task SendGameNewsOnlyCommand()
         {
-            var message = await FollowupAsync(await CreateSnapShotMessageString(), components: GetGameNewsOnlySnapshotComponent());
-            _channelSnapshotDict[Context.Channel.Id] = message.Id;
+            var message = await FollowupAsync(await CreateCommandMessageString(), components: GetGameNewsOnlyCommandComponent());
+            _channelCommandDict[Context.Channel.Id] = message.Id;
         }
 
-        private async Task UpdateSnapShotMessage()
+        private async Task UpdateCommandMessage()
         {
-            _channelSnapshotDict.TryGetValue(Context.Channel.Id, out ulong snapshotMessageID);
-            if (snapshotMessageID == default)
+            _channelCommandDict.TryGetValue(Context.Channel.Id, out ulong CommandMessageID);
+            if (CommandMessageID == default)
             {
-                Serilog.Log.Error("Could not find the gamenews snapshot message for given channel {ChannelId}", Context.Channel.Id);
+                Serilog.Log.Error("Could not find the gamenews Command message for given channel {ChannelId}", Context.Channel.Id);
                 return;
             }
 
@@ -127,20 +125,19 @@ namespace FantasyCritic.Lib.Discord.Commands
                 return;
             }
 
-            var updatedComponents = leagueChannel == null ? GetGameNewsOnlySnapshotComponent() : GetLeagueSnapshotComponent();
+            var updatedComponents = leagueChannel == null ? GetGameNewsOnlyCommandComponent() : GetLeagueCommandComponent();
 
-            var msgContent = await CreateSnapShotMessageString();
+            var msgContent = await CreateCommandMessageString();
 
-            await Context.Channel.ModifyMessageAsync(snapshotMessageID, msg =>
+            await Context.Channel.ModifyMessageAsync(CommandMessageID, msg =>
             {
                 msg.Content = msgContent;
                 msg.Components = updatedComponents;
             });
         }
 
-        public async Task<string> CreateSnapShotMessageString()
+        public async Task<string> CreateCommandMessageString()
         {
-
             var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
             var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
 
@@ -149,7 +146,6 @@ namespace FantasyCritic.Lib.Discord.Commands
                 //This should not be posible at this point, as we only call this method after checking if game news channel is null
                 return "Game News was not found for this channel, if this error persists contact support";
             }
-
 
             bool enableGameNews = true;  //<-- Just a filler bool to show game news is on, even though it would be on at this point.
             bool? showPickedGameNews = leagueChannel?.ShowPickedGameNews;
@@ -174,7 +170,6 @@ namespace FantasyCritic.Lib.Discord.Commands
             message.AppendLine($"  -- Is League Channel: {(leagueChannel != null ? "**True**" : "**False**")}");
             message.AppendLine($"  -- Setting State: {(IsRecommendedSettings(leagueChannel, gameNewsChannel) == true ? "**Recommended**" : "**Custom**")}");
 
-            
             if (leagueChannel != null)
             {
                 message.AppendLine("\n**LeagueChannel Settings:**");
@@ -217,7 +212,6 @@ namespace FantasyCritic.Lib.Discord.Commands
 
         private bool IsRecommendedSettings(MinimalLeagueChannel? leagueChannel, GameNewsChannel gameNewsChannel)
         {
-          
             bool leagueRecommended = leagueChannel == null ? true :
                 leagueChannel.ShowPickedGameNews
                 && leagueChannel.ShowEligibleGameNews;
@@ -229,11 +223,11 @@ namespace FantasyCritic.Lib.Discord.Commands
             return result;
         }
 
-        #endregion SnapShot Messages
+        #endregion Command Messages
 
-        #region SnapShot Components
+        #region Command Components
 
-        private MessageComponent GetLeagueSnapshotComponent()
+        private MessageComponent GetLeagueCommandComponent()
         {
             return new ComponentBuilder()
                 .AddRow(new ActionRowBuilder()
@@ -246,7 +240,7 @@ namespace FantasyCritic.Lib.Discord.Commands
                 .Build();
         }
 
-        private MessageComponent GetGameNewsOnlySnapshotComponent()
+        private MessageComponent GetGameNewsOnlyCommandComponent()
         {
             return new ComponentBuilder()
                 .AddRow(new ActionRowBuilder()
@@ -258,7 +252,7 @@ namespace FantasyCritic.Lib.Discord.Commands
                 .Build();
         }
 
-        #endregion SnapShot Components
+        #endregion Command Components
 
         #region Setting Category Messages
 
@@ -296,6 +290,7 @@ namespace FantasyCritic.Lib.Discord.Commands
         private async Task SendLeagueGameNewsSettingsMessage(MinimalLeagueChannel settings)
         {
             var leagueGameNewsSettingsMessage = new ComponentBuilder()
+                .AddRow(new ActionRowBuilder().WithButton(GetEnablePickedGameNewsButton(settings.ShowPickedGameNews)))
                 .AddRow(new ActionRowBuilder().WithButton(GetEnableEligibleLeagueGameNewsOnlyButton(settings.ShowEligibleGameNews)))
                 .AddRow(new ActionRowBuilder().WithSelectMenu(GetNotableMissSettingSelection(settings.NotableMissSetting ?? NotableMissSetting.None)))
                 .Build();
@@ -304,7 +299,6 @@ namespace FantasyCritic.Lib.Discord.Commands
 
         private async Task SendGameNewsSkipTagsSettingsMessage(GameNewsChannel settings)
         {
-            
             var gameNewsSkipTagsSettingsMessage = new ComponentBuilder()
                 .AddRow(new ActionRowBuilder().WithSelectMenu(GetSkippedTagsSelection(settings.SkippedTags)))
                 .Build();
@@ -321,9 +315,11 @@ namespace FantasyCritic.Lib.Discord.Commands
             // Defer the interaction response to extend the response window
             await DeferAsync();
 
+            var guildID = Context.Guild.Id;
+            var channelID = Context.Channel.Id;
+
             var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
             var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
-            
 
             GameNewsSetting settings = gameNewsChannel?.GameNewsSetting ?? GameNewsSetting.GetRecommendedSetting();
 
@@ -337,14 +333,12 @@ namespace FantasyCritic.Lib.Discord.Commands
             if (button == "enable_game_news")
             {
                 await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settings);
-                await SendGameNewsSnapShotMessage();
+                await SendGameNewsCommandMessage();
                 return;
             }
 
-            
-
-            //Get snapshot message ID for any buttons that will update snapshot
-            _channelSnapshotDict.TryGetValue(Context.Channel.Id, out var snapshotMessageID);
+            //Get Command message ID for any buttons that will update Command
+            _channelCommandDict.TryGetValue(Context.Channel.Id, out var CommandMessageID);
 
             // Toggle the specified setting
             switch (button)
@@ -378,85 +372,72 @@ namespace FantasyCritic.Lib.Discord.Commands
                 case "disable_game_news":
                     try
                     {
-                        await Context.Channel.DeleteMessageAsync(snapshotMessageID);
+                        await Context.Channel.DeleteMessageAsync(CommandMessageID);
                     }
                     catch (Exception ex)
                     {
-                        await FollowupAsync($"There was an error trying to delete the original snapshot message Error:{ex.Message}", ephemeral: true);
+                        await FollowupAsync($"There was an error trying to delete the original Command message Error:{ex.Message}", ephemeral: true);
                         break;
                     }
-                    settings.EnableGameNews = false;
-                    await DeleteExistingGameNewsChannel();
+
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, GameNewsSetting.GetOffSetting());
                     await FollowupAsync("Game News has been disabled", ephemeral: true);
                     break;
 
                 case "set_recommended_settings":
-                    settings.Recommended = true;
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateSnapShotMessage(settings);
+
+                    settings = GameNewsSetting.GetRecommendedSetting();
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, settings);
+                    if (leagueChannel != null)
+                    {
+                        await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, NotableMissSetting.ScoreUpdates);
+                    }
+                    await UpdateCommandMessage();
                     await FollowupAsync("Recommended settings have been set", ephemeral: true);
                     break;
 
                 case "picked_game_news":
-                    if (settings.ShowPickedGameNews.HasValue)
-                    {
-                        settings.ShowPickedGameNews = !settings.ShowPickedGameNews.Value;
-                        await UpdateGameNewsSettings(settings);
-                        await UpdateButtonState("picked_game_news", settings.ShowPickedGameNews.Value);
-                        await UpdateSnapShotMessage(settings);
-                    }
+
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, !leagueChannel.ShowPickedGameNews, leagueChannel.ShowEligibleGameNews, leagueChannel.NotableMissSetting);
+                    await UpdateButtonState("picked_game_news", !leagueChannel.ShowPickedGameNews);
+                    await UpdateCommandMessage();
+
                     break;
 
                 case "eligible_game_news":
-                    if (settings.ShowEligibleGameNews.HasValue)
-                    {
-                        settings.ShowEligibleGameNews = !settings.ShowEligibleGameNews.Value;
-                        await UpdateGameNewsSettings(settings);
-                        await UpdateButtonState("eligible_game_news", settings.ShowEligibleGameNews.Value);
-                        await UpdateSnapShotMessage(settings);
-                    }
-                    break;
 
-                case "might_release_in_year":
-                    settings.ShowMightReleaseInYearNews = !settings.ShowMightReleaseInYearNews;
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateButtonState("might_release_in_year", settings.ShowMightReleaseInYearNews);
-                    await UpdateSnapShotMessage(settings);
-                    break;
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, leagueChannel.ShowPickedGameNews, !leagueChannel.ShowEligibleGameNews, leagueChannel.NotableMissSetting);
+                    await UpdateButtonState("eligible_game_news", !leagueChannel.ShowEligibleGameNews);
+                    await UpdateCommandMessage();
 
-                case "will_release_in_year":
-                    settings.ShowWillReleaseInYearNews = !settings.ShowWillReleaseInYearNews;
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateButtonState("will_release_in_year", settings.ShowWillReleaseInYearNews);
-                    await UpdateSnapShotMessage(settings);
                     break;
 
                 case "score_game_news":
-                    settings.ShowScoreGameNews = !settings.ShowScoreGameNews;
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateButtonState("score_game_news", settings.ShowScoreGameNews);
-                    await UpdateSnapShotMessage(settings);
+                    var scoreGameNewsChanged = settings with { ShowScoreGameNews = !settings.ShowScoreGameNews };
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, scoreGameNewsChanged);
+                    await UpdateButtonState("score_game_news", scoreGameNewsChanged.ShowScoreGameNews);
+                    await UpdateCommandMessage();
                     break;
 
                 case "released_game_news":
-                    settings.ShowReleasedGameNews = !settings.ShowReleasedGameNews;
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateButtonState("released_game_news", settings.ShowReleasedGameNews);
-                    await UpdateSnapShotMessage(settings);
+                    var releasedGameNewsChanged = settings with { ShowReleasedGameNews = !settings.ShowReleasedGameNews };
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, releasedGameNewsChanged);
+                    await UpdateButtonState("released_game_news", releasedGameNewsChanged.ShowReleasedGameNews);
+                    await UpdateCommandMessage();
                     break;
 
                 case "new_game_news":
-                    settings.ShowNewGameNews = !settings.ShowNewGameNews;
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateButtonState("new_game_news", settings.ShowNewGameNews);
-                    await UpdateSnapShotMessage(settings);
+                    var newGameNewsChanged = settings with { ShowNewGameNews = !settings.ShowNewGameNews };
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, newGameNewsChanged);
+                    await UpdateButtonState("new_game_news", newGameNewsChanged.ShowNewGameNews);
+                    await UpdateCommandMessage();
                     break;
 
                 case "edited_game_news":
-                    settings.ShowEditedGameNews = !settings.ShowEditedGameNews;
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateButtonState("edited_game_news", settings.ShowEditedGameNews);
-                    await UpdateSnapShotMessage(settings);
+                    var editedGameNewsChanged = settings with { ShowEditedGameNews = !settings.ShowEditedGameNews };
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, editedGameNewsChanged);
+                    await UpdateButtonState("edited_game_news", editedGameNewsChanged.ShowEditedGameNews);
+                    await UpdateCommandMessage();
                     break;
             }
         }
@@ -484,30 +465,32 @@ namespace FantasyCritic.Lib.Discord.Commands
             // Retrieve the selected values
             var selectedValues = component.Data.Values;
 
-            CompleteGameNewsSettings? settings;
-            try
+            if (selectedValues == null || !selectedValues.Any())
             {
-                settings = await _discordRepo.GetCompleteGameNewsSettings(Context.Guild.Id, Context.Channel.Id);
-            }
-            catch (Exception ex)
-            {
-                Serilog.Log.Error(ex, "Error retrieving game news settings for channel {ChannelId}", Context.Channel.Id);
-                await FollowupAsync("Failed to retrieve game news settings.", ephemeral: true);
                 return;
             }
 
-            if (settings == null)
+            var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
+            var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
+
+            if (gameNewsChannel == null)
             {
-                await FollowupAsync("Settings could not be found for this interaction.", ephemeral: true);
+                await FollowupAsync("Something went wrong, no settings could be found for this channel", ephemeral: true);
                 return;
             }
 
             switch (selection)
             {
                 case "notable_miss":
-                    settings.NotableMissSetting = NotableMissSetting.TryFromValue(selectedValues.FirstOrDefault() ?? "");
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateSnapShotMessage(settings);
+                    await _discordRepo.SetLeagueGameNewsSetting(
+                        leagueChannel!.LeagueID,
+                        Context.Guild.Id,
+                        Context.Channel.Id,
+                        leagueChannel.ShowPickedGameNews,
+                        leagueChannel.ShowEligibleGameNews,
+                        NotableMissSetting.FromValue(selectedValues.First()));
+
+                    await UpdateCommandMessage();
                     break;
 
                 case "skipped_tags":
@@ -515,10 +498,8 @@ namespace FantasyCritic.Lib.Discord.Commands
                         .Where(tag => selectedValues.Contains(tag.Name))
                         .ToList();
 
-                    settings.SkippedTags = selectedTags ?? settings.SkippedTags;
-
-                    await UpdateGameNewsSettings(settings);
-                    await UpdateSnapShotMessage(settings);
+                    await _discordRepo.SetSkippedGameNewsTags(Context.Guild.Id, Context.Channel.Id, selectedTags ?? new List<MasterGameTag>());
+                    await UpdateCommandMessage();
                     break;
 
                 default:
@@ -573,46 +554,6 @@ namespace FantasyCritic.Lib.Discord.Commands
         }
 
         #endregion Handle Interactions
-
-        #region RepoHelpers
-
-        private async Task CreateNewGameNewsChannel()
-        {
-            var guildID = Context.Guild.Id;
-            var channelID = Context.Channel.Id;
-
-            await _discordRepo.SetGameNewsSetting(guildID, channelID, GameNewsSetting.GetRecommendedSetting());
-        }
-
-        private async Task DeleteExistingGameNewsChannel()
-        {
-            var guildID = Context.Guild.Id;
-            var channelId = Context.Channel.Id;
-            await _discordRepo.DeleteGameNewsChannel(guildID, channelId);
-        }
-
-        private async Task UpdateGameNewsSettings(CompleteGameNewsSettings settings)
-        {
-            var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
-
-            if (leagueChannel != null)
-            {
-                await _discordRepo.SetLeagueGameNewsSetting(
-                    leagueChannel.LeagueID,
-                    leagueChannel.GuildID,
-                    leagueChannel.ChannelID,
-                    new LeagueGameNewsSettingsRecord(
-                        settings.ShowPickedGameNews ?? false,
-                        settings.ShowEligibleGameNews ?? false,
-                        settings.NotableMissSetting ?? NotableMissSetting.None
-                        )
-                    );
-            }
-
-            await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settings.ToGameNewsSettings());
-        }
-
-        #endregion RepoHelpers
 
         #region Button Builders
 
