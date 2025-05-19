@@ -31,6 +31,31 @@ public record GameNewsSetting
                ShowEditedGameNews;
     }
 
+    public bool IsRecommended()
+    {
+        return ShowWillReleaseInYearNews &&
+               ShowMightReleaseInYearNews &&
+               ShowWillNotReleaseInYearNews &&
+               ShowScoreGameNews &&
+               ShowReleasedGameNews &&
+               ShowNewGameNews &&
+               ShowEditedGameNews;
+    }
+
+    public static GameNewsSetting GetRecommendedSetting()
+    {
+        return new GameNewsSetting()
+        {
+            ShowWillReleaseInYearNews = true,
+            ShowMightReleaseInYearNews = true,
+            ShowWillNotReleaseInYearNews = true,
+            ShowScoreGameNews = true,
+            ShowReleasedGameNews = true,
+            ShowNewGameNews = true,
+            ShowEditedGameNews = true,
+        };
+    }
+
     public static GameNewsSetting GetOffSetting()
     {
         return new GameNewsSetting()
