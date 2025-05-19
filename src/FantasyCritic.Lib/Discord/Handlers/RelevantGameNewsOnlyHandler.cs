@@ -19,12 +19,12 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
         throw new NotImplementedException();
     }
 
-    public override bool ReleasedGameIsRelevant(MasterGame masterGame)
+    public override bool ReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
         throw new NotImplementedException();
     }
 
-    public override bool ScoredGameIsRelevant(MasterGame masterGame, decimal? criticScore, LocalDate currentDate)
+    public override bool ScoredGameIsRelevant(MasterGame masterGame, decimal? oldCriticScore, decimal? newCriticScore, LocalDate currentDate)
     {
         throw new NotImplementedException();
     }

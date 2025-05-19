@@ -153,19 +153,20 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             bool eligibleInYear = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
 
             //This is the logic for only showing picked games in the league
-            if (!_showPickedGameNews && inPublisherRoster == true)
+            if (!_showPickedGameNews && inPublisherRoster)
             {
                 return false;
             }
 
-            //If the game is in the publisher roster we always want to show it - unless we decide to make this a setting in the future
-            if (inPublisherRoster)
+            //If the game is in the publisher roster we always want to show it
+            if (_showPickedGameNews && inPublisherRoster)
             {
                 return true;
             }
 
-            //If the game is not eligible in the league year, and user requested to not show eligible games, dont show
-            if (!eligibleInYear && _showEligibleGameNews)
+            //From now on the master game is not in the publisher roster
+            //If Eligible Game News is turned off, and the game is eligible in the league year, we don't want to show it
+            if (!_showEligibleGameNews && eligibleInYear)
             {
                 return false;
             }
