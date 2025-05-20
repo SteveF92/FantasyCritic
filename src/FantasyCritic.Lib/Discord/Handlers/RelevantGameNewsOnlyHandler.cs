@@ -148,6 +148,16 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
             }
         }
 
+        //If user asked for all game news about games that will not be released in the year
+        //Check to see if it will not be released in the year, and return true if so
+        if (_gameNewsSetting.ShowWillNotReleaseInYearNews)
+        {
+            if (!masterGame.WillReleaseInYear(currentDate.Year))
+            {
+                return true;
+            }
+        }
+
         //Fallback
         return false;
     }

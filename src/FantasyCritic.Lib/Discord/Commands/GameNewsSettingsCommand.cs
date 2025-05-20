@@ -152,8 +152,9 @@ namespace FantasyCritic.Lib.Discord.Commands
             bool? showEligibleGameNews = leagueChannel?.ShowEligibleGameNews;
             NotableMissSetting? notableMissSetting = leagueChannel?.NotableMissSetting;
             bool showNewGameNews = gameNewsChannel.GameNewsSetting.ShowNewGameNews;
-            bool showMightReleaseInYearNews = gameNewsChannel.GameNewsSetting.ShowMightReleaseInYearNews;
             bool showWillReleaseInYearNews = gameNewsChannel.GameNewsSetting.ShowWillReleaseInYearNews;
+            bool showMightReleaseInYearNews = gameNewsChannel.GameNewsSetting.ShowMightReleaseInYearNews;
+            bool showWillNotReleaseInYearNews = gameNewsChannel.GameNewsSetting.ShowWillNotReleaseInYearNews;
             bool showReleasedGameNews = gameNewsChannel.GameNewsSetting.ShowReleasedGameNews;
             bool showScoreGameNews = gameNewsChannel.GameNewsSetting.ShowScoreGameNews;
             bool showEditedGameNews = gameNewsChannel.GameNewsSetting.ShowEditedGameNews;
@@ -179,13 +180,14 @@ namespace FantasyCritic.Lib.Discord.Commands
 
             if (notableMissSetting != null)
             {
-                message.AppendLine($"    --- Notable Miss Setting: **{notableMissSetting.ReadableName}**");
+                message.AppendLine($"  -- Notable Miss Setting: **{notableMissSetting.ReadableName}**");
             }
 
             message.AppendLine("\n** Game Release Settings:**");
             message.AppendLine($"  -- {GetEmoji(showNewGameNews)} Show New Game News");
-            message.AppendLine($"  -- {GetEmoji(showMightReleaseInYearNews)} Show Might Release In Year News");
             message.AppendLine($"  -- {GetEmoji(showWillReleaseInYearNews)} Show Will Release In Year News");
+            message.AppendLine($"  -- {GetEmoji(showMightReleaseInYearNews)} Show Might Release In Year News");
+            message.AppendLine($"  -- {GetEmoji(showWillNotReleaseInYearNews)} Show Will Not Release In Year News");
             message.AppendLine($"  -- {GetEmoji(showReleasedGameNews)} Show Released Game News");
 
             message.AppendLine("\n**Game Update Settings:**");
@@ -269,8 +271,9 @@ namespace FantasyCritic.Lib.Discord.Commands
         {
             var gameReleaseSettingsMessage = new ComponentBuilder()
                 .AddRow(new ActionRowBuilder().WithButton(GetNewGameNewsButton(settings.ShowNewGameNews)))
-                .AddRow(new ActionRowBuilder().WithButton(GetMightReleaseInYearButton(settings.ShowMightReleaseInYearNews)))
                 .AddRow(new ActionRowBuilder().WithButton(GetWillReleaseInYearButton(settings.ShowWillReleaseInYearNews)))
+                .AddRow(new ActionRowBuilder().WithButton(GetMightReleaseInYearButton(settings.ShowMightReleaseInYearNews)))
+                .AddRow(new ActionRowBuilder().WithButton(GetWillNotReleaseInYearButton(settings.ShowWillNotReleaseInYearNews)))
                 .AddRow(new ActionRowBuilder().WithButton(GetReleasedGameNewsButton(settings.ShowReleasedGameNews)))
                 .Build();
 
@@ -385,9 +388,9 @@ namespace FantasyCritic.Lib.Discord.Commands
                     break;
 
                 case "set_recommended_settings":
-
                     settings = GameNewsSetting.GetRecommendedSetting();
                     await _discordRepo.SetGameNewsSetting(guildID, channelID, settings);
+                    await _discordRepo.SetSkippedGameNewsTags(guildID, channelID, new List<MasterGameTag>());
                     if (leagueChannel != null)
                     {
                         await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, NotableMissSetting.ScoreUpdates);
@@ -397,7 +400,6 @@ namespace FantasyCritic.Lib.Discord.Commands
                     break;
 
                 case "picked_game_news":
-
                     await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, !leagueChannel.ShowPickedGameNews, leagueChannel.ShowEligibleGameNews, leagueChannel.NotableMissSetting);
                     await UpdateButtonState("picked_game_news", !leagueChannel.ShowPickedGameNews);
                     await UpdateCommandMessage();
@@ -405,7 +407,6 @@ namespace FantasyCritic.Lib.Discord.Commands
                     break;
 
                 case "eligible_game_news":
-
                     await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, leagueChannel.ShowPickedGameNews, !leagueChannel.ShowEligibleGameNews, leagueChannel.NotableMissSetting);
                     await UpdateButtonState("eligible_game_news", !leagueChannel.ShowEligibleGameNews);
                     await UpdateCommandMessage();
@@ -430,6 +431,27 @@ namespace FantasyCritic.Lib.Discord.Commands
                     var newGameNewsChanged = settings with { ShowNewGameNews = !settings.ShowNewGameNews };
                     await _discordRepo.SetGameNewsSetting(guildID, channelID, newGameNewsChanged);
                     await UpdateButtonState("new_game_news", newGameNewsChanged.ShowNewGameNews);
+                    await UpdateCommandMessage();
+                    break;
+
+                case "will_release_in_year":
+                    var willReleaseInYearGameNewsChanged = settings with { ShowWillReleaseInYearNews = !settings.ShowWillReleaseInYearNews };
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, willReleaseInYearGameNewsChanged);
+                    await UpdateButtonState("will_release_in_year", willReleaseInYearGameNewsChanged.ShowWillReleaseInYearNews);
+                    await UpdateCommandMessage();
+                    break;
+
+                case "might_release_in_year":
+                    var mightReleaseInYearGameNewsChanged = settings with { ShowMightReleaseInYearNews = !settings.ShowMightReleaseInYearNews };
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, mightReleaseInYearGameNewsChanged);
+                    await UpdateButtonState("might_release_in_year", mightReleaseInYearGameNewsChanged.ShowMightReleaseInYearNews);
+                    await UpdateCommandMessage();
+                    break;
+
+                case "will_not_release_in_year":
+                    var willNotReleaseInYearGameNewsChanged = settings with { ShowWillNotReleaseInYearNews = !settings.ShowWillNotReleaseInYearNews };
+                    await _discordRepo.SetGameNewsSetting(guildID, channelID, willNotReleaseInYearGameNewsChanged);
+                    await UpdateButtonState("will_not_release_in_year", willNotReleaseInYearGameNewsChanged.ShowWillNotReleaseInYearNews);
                     await UpdateCommandMessage();
                     break;
 
@@ -640,6 +662,15 @@ namespace FantasyCritic.Lib.Discord.Commands
                 .WithStyle(ButtonStyle.Primary);
         }
 
+        private ButtonBuilder GetWillReleaseInYearButton(bool initialSetting)
+        {
+            return new ButtonBuilder()
+                .WithCustomId("button_will_release_in_year")
+                .WithLabel("Enable Will Release in Year")
+                .WithEmote(new Emoji(initialSetting ? "✅" : "❌"))
+                .WithStyle(ButtonStyle.Primary);
+        }
+
         private ButtonBuilder GetMightReleaseInYearButton(bool initialSetting)
         {
             return new ButtonBuilder()
@@ -649,11 +680,11 @@ namespace FantasyCritic.Lib.Discord.Commands
                 .WithStyle(ButtonStyle.Primary);
         }
 
-        private ButtonBuilder GetWillReleaseInYearButton(bool initialSetting)
+        private ButtonBuilder GetWillNotReleaseInYearButton(bool initialSetting)
         {
             return new ButtonBuilder()
-                .WithCustomId("button_will_release_in_year")
-                .WithLabel("Enable Will Release in Year")
+                .WithCustomId("button_will_not_release_in_year")
+                .WithLabel("Enable Will Not Release in Year")
                 .WithEmote(new Emoji(initialSetting ? "✅" : "❌"))
                 .WithStyle(ButtonStyle.Primary);
         }

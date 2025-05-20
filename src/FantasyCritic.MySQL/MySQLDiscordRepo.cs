@@ -32,7 +32,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, NotableMissSetting.ScoreUpdates, null);
         var existingChannel = await GetLeagueChannelEntity(guildID, channelID);
         var sql = existingChannel == null
-            ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,SendLeagueMasterGameUpdates,SendNotableMisses) VALUES (@GuildID, @ChannelID, @LeagueID, @SendLeagueMasterGameUpdates, @SendNotableMisses)"
+            ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,ShowPickedGameNews,ShowEligibleGameNews,NotableMissSetting) VALUES (@GuildID, @ChannelID, @LeagueID, @ShowPickedGameNews, @ShowEligibleGameNews, @NotableMissSetting)"
             : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
@@ -56,8 +56,8 @@ public class MySQLDiscordRepo : IDiscordRepo
                   UPDATE tbl_discord_leaguechannel SET
                   ShowPickedGameNews=@ShowPickedGameNews,
                   ShowEligibleGameNews=@ShowEligibleGameNews,
-                  SendNotableMisses=@SendNotableMisses
-                  WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+                  NotableMissSetting=@NotableMissSetting
+                  WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID;
                   """;
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
@@ -69,7 +69,7 @@ public class MySQLDiscordRepo : IDiscordRepo
 
         var insertSQL = """
                         INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,ShowWillReleaseInYearNews,ShowMightReleaseInYearNews,ShowWillNotReleaseInYearNews,ShowScoreGameNews,ShowReleasedGameNews,ShowNewGameNews,ShowEditedGameNews) 
-                        VALUES (@GuildID,@ChannelID,@GameNewsSetting,@ShowWillReleaseInYearNews,@ShowMightReleaseInYearNews,@ShowWillNotReleaseInYearNews,@ShowScoreGameNews,@ShowReleasedGameNews,@ShowNewGameNews,@ShowEditedGameNews);
+                        VALUES (@GuildID,@ChannelID,@ShowWillReleaseInYearNews,@ShowMightReleaseInYearNews,@ShowWillNotReleaseInYearNews,@ShowScoreGameNews,@ShowReleasedGameNews,@ShowNewGameNews,@ShowEditedGameNews);
                         """;
         var updateSQL = """
                         UPDATE tbl_discord_gamenewschannel SET 

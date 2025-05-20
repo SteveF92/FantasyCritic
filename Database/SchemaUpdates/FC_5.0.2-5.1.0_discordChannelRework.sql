@@ -97,3 +97,5 @@ ALTER TABLE `tbl_discord_leaguechannel`
 	CHANGE COLUMN `NotableMissSetting` `NotableMissSetting` VARCHAR(50) NOT NULL AFTER `ShowCurrentYearGameNewsOnly`,
 	DROP COLUMN `SendLeagueMasterGameUpdates`,
 	DROP COLUMN `SendNotableMisses`;
+
+DROP TABLE `tbl_discord_gamenewsoptions`;

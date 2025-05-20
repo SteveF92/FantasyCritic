@@ -182,6 +182,12 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             {
                 return true;
             }
+
+            //This will provide game updates for any game that will not release in the leagues years
+            if (_gameNewsSetting.ShowWillNotReleaseInYearNews && !masterGame.WillReleaseInYear(leagueYear.Year))
+            {
+                return true;
+            }
         }
 
         //Fallback
@@ -195,17 +201,15 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         {
             return false;
         }
-        else if (_notableMissSetting == NotableMissSetting.ScoreUpdates)
+        if (_notableMissSetting == NotableMissSetting.ScoreUpdates)
         {
             return true;
         }
-        else if (_notableMissSetting == NotableMissSetting.InitialScore)
+        if (_notableMissSetting == NotableMissSetting.InitialScore)
         {
             return initialScore;
         }
-        else
-        {
-            throw new ArgumentOutOfRangeException(nameof(_notableMissSetting), _notableMissSetting, null);
-        }
+
+        throw new ArgumentOutOfRangeException(nameof(_notableMissSetting), _notableMissSetting, null);
     }
 }
