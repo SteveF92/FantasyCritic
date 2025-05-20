@@ -11,35 +11,31 @@ public record GameNewsSetting
 
     public bool IsOff()
     {
-        return !(ShowWillReleaseInYearNews &&
-                 ShowMightReleaseInYearNews &&
-                 ShowWillNotReleaseInYearNews &&
-                 ShowScoreGameNews &&
-                 ShowReleasedGameNews &&
-                 ShowNewGameNews &&
-                 ShowEditedGameNews);
+        return
+            !ShowWillReleaseInYearNews &&
+            !ShowMightReleaseInYearNews &&
+            !ShowWillNotReleaseInYearNews &&
+            !ShowScoreGameNews &&
+            !ShowReleasedGameNews &&
+            !ShowNewGameNews &&
+            !ShowEditedGameNews;
     }
 
     public bool IsAllOn()
     {
-               return ShowWillReleaseInYearNews &&
-               ShowMightReleaseInYearNews &&
-               ShowWillNotReleaseInYearNews &&
-               ShowScoreGameNews &&
-               ShowReleasedGameNews &&
-               ShowNewGameNews &&
-               ShowEditedGameNews;
+        return
+            ShowWillReleaseInYearNews &&
+            ShowMightReleaseInYearNews &&
+            ShowWillNotReleaseInYearNews &&
+            ShowScoreGameNews &&
+            ShowReleasedGameNews &&
+            ShowNewGameNews &&
+            ShowEditedGameNews;
     }
 
     public bool IsRecommended()
     {
-        return ShowWillReleaseInYearNews &&
-               ShowMightReleaseInYearNews &&
-               ShowWillNotReleaseInYearNews &&
-               ShowScoreGameNews &&
-               ShowReleasedGameNews &&
-               ShowNewGameNews &&
-               ShowEditedGameNews;
+        return Equals(GetRecommendedSetting());
     }
 
     public static GameNewsSetting GetRecommendedSetting()

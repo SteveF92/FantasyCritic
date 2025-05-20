@@ -143,7 +143,7 @@ namespace FantasyCritic.Lib.Discord.Commands
 
             if (gameNewsChannel == null)
             {
-                //This should not be posible at this point, as we only call this method after checking if game news channel is null
+                //This should not be possible at this point, as we only call this method after checking if game news channel is null
                 return "Game News was not found for this channel, if this error persists contact support";
             }
 
