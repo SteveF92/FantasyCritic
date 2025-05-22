@@ -94,7 +94,7 @@ SendLeagueMasterGameUpdates = 1 AND SendNotableMisses = 1;
 ALTER TABLE `tbl_discord_leaguechannel`
 	CHANGE COLUMN `ShowPickedGameNews` `ShowPickedGameNews` BIT(1) NOT NULL AFTER `BidAlertRoleID`,
 	CHANGE COLUMN `ShowEligibleGameNews` `ShowEligibleGameNews` BIT(1) NOT NULL AFTER `ShowPickedGameNews`,
-	CHANGE COLUMN `NotableMissSetting` `NotableMissSetting` VARCHAR(50) NOT NULL AFTER `ShowCurrentYearGameNewsOnly`,
+	CHANGE COLUMN `NotableMissSetting` `NotableMissSetting` VARCHAR(50) NOT NULL AFTER `ShowEligibleGameNews`,
 	DROP COLUMN `SendLeagueMasterGameUpdates`,
 	DROP COLUMN `SendNotableMisses`;
 
