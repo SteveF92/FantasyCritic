@@ -165,6 +165,10 @@
           </li>
           <li>krahazed (Todd Coward), who works hard to keep the Master Games list accurate and up to date.</li>
           <li>
+            <a href="https://github.com/Katerlad" target="_blank">Katerlad</a>
+            , for additional work on the Discord Bot.
+          </li>
+          <li>
             <a href="https://github.com/AndrewKralovec" target="_blank">Andrew Kralovec</a>
             , for additional front end development.
           </li>
