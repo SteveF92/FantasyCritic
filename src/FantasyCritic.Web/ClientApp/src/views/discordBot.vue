@@ -448,8 +448,8 @@
                   <code>/game-news-settings</code>
                 </p>
                 <span>
-                  Allows you to choose exactly what types of game news you want to be notified about. This command provides an interface, complete with buttons, allowing you to fine to your desired
-                  settings. The options you can choose from include:
+                  Allows you to choose exactly what types of game news you want to be notified about. While the other commands use parameters, this one actually provides an interface with clickable
+                  buttons. If you're not sure what to choose, you can click "Set Recommended Settings" and you'll probably be happy. If you want to fine tune, the options you can choose from include:
                   <ul>
                     <li>
                       <strong>League News Settings</strong>
@@ -459,7 +459,24 @@
                     </li>
                     <li>
                       <strong>Game Release Settings</strong>
-                      - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release this year and other similiar filters.
+                      - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release this year and other similiar filters. This one requires some
+                      definitions.
+                      <ul>
+                        <li>
+                          <strong>Will Release</strong>
+                          - A game that is confirmed to release in the current year, whether it has a specific release date or not. For example, both "October 19, 2025" and "Late 2025" both count as
+                          "Will Release" for 2025.
+                        </li>
+                        <li>
+                          <strong>Might Release</strong>
+                          - A game that is neither confirmed for release in the current year nor confirmed not to release in the current year. For example, "TBA", "Unannounced", and "Late 2025 or
+                          Later" all count as "Might Release" for 2025.
+                        </li>
+                        <li>
+                          <strong>Will Not Release</strong>
+                          - A game that is confirmed not to release in the current year. For example, "2026 or Later" and "May 26, 2026" both count as "Will Not Release" for 2025.
+                        </li>
+                      </ul>
                     </li>
                     <li>
                       <strong>Game News Update Settings</strong>
@@ -467,7 +484,7 @@
                     </li>
                     <li>
                       <strong>Skipped Tags Settings</strong>
-                      - Tells the bot to never notify you about a game with a specific tag. This is most commonly used to tell you to never notify you about an unnannounced game being added to the
+                      - Tells the bot to never notify you about a game with a specific tag. This is most commonly used to tell you to never notify you about an unannounced game being added to the
                       database, for example.
                     </li>
                   </ul>
