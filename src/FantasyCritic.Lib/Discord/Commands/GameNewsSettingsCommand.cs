@@ -189,7 +189,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         {
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
-                Name = "League Channel Settings",
+                Name = "League Settings",
                 Value = $"> {GetEmoji(showPickedGameNews)} Show Picked Game News\n" +
                         $"> {GetEmoji(showEligibleGameNews)} Show Eligible Game News\n" +
                         (notableMissSetting != null
@@ -747,9 +747,9 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithPlaceholder("Notable Miss Options")
             .WithMinValues(1)
             .WithMaxValues(1)
-            .AddOption("NotableMissSetting.InitialScore", "InitialScore", description: NotableMissSetting.InitialScore.Description, isDefault: defaultSetting == NotableMissSetting.InitialScore)
-            .AddOption("NotableMissSetting.ScoreUpdates", "ScoreUpdates", description: NotableMissSetting.ScoreUpdates.Description, isDefault: defaultSetting == NotableMissSetting.ScoreUpdates)
-            .AddOption("NotableMissSetting.None", "None", description: NotableMissSetting.None.Description, isDefault: defaultSetting == NotableMissSetting.None);
+            .AddOption("Initial Score", "InitialScore", description: NotableMissSetting.InitialScore.Description, isDefault: defaultSetting == NotableMissSetting.InitialScore)
+            .AddOption("Initial Score and Updates", "ScoreUpdates", description: NotableMissSetting.ScoreUpdates.Description, isDefault: defaultSetting == NotableMissSetting.ScoreUpdates)
+            .AddOption("None", "None", description: NotableMissSetting.None.Description, isDefault: defaultSetting == NotableMissSetting.None);
     }
 
     private static SelectMenuBuilder GetSkippedTagsSelection(IReadOnlyList<MasterGameTag>? skippedTags)
