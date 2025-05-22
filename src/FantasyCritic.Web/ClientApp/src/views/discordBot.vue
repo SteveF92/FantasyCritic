@@ -14,7 +14,7 @@
           </div>
           <br />
           <p>
-            New for the 2023 season! This bot was co-developed by
+            The official Fantasy Critic bot was co-developed by
             <a href="https://github.com/rarDevelopment" target="_blank">Robert (rardk64)</a>
             and myself (Steve Fallon), and is integrated into the site itself.
           </p>
@@ -44,9 +44,9 @@
                 </li>
                 <li>
                   For
-                  <router-link :to="{ hash: '#set-game-news' }" @click.native="showCollapse('set-game-news')">Game News</router-link>
+                  <router-link :to="{ hash: '#game-news-settings' }" @click.native="showCollapse('game-news-settings')">Game News</router-link>
                   use the
-                  <code>/set-game-news</code>
+                  <code>/game-news-settings</code>
                   command in the appropriate channel(s).
                 </li>
                 <li>You can also use both commands in the same channel to configure your channel to receive both types of updates!</li>
@@ -117,7 +117,7 @@
                 <li><router-link :to="{ hash: '#set-conference' }">Set Up a Conference in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#remove-conference' }">Remove the Conference in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#set-bid-alert-role' }">Set a Role to Alert for Bid Information</router-link></li>
-                <li><router-link :to="{ hash: '#set-game-news' }">Configure Game News Announcements</router-link></li>
+                <li><router-link :to="{ hash: '#game-news-settings' }">Configure Game News Announcements</router-link></li>
                 <li><router-link :to="{ hash: '#view-settings' }">View Bot Settings</router-link></li>
               </ul>
               <hr />
@@ -442,63 +442,36 @@
               </div>
               <hr />
               <div class="discord-command-explanation">
-                <h5 id="set-game-news">Configure Game News Announcements</h5>
+                <h5 id="game-news-settings">Configure Game News Announcements</h5>
                 <p>
                   <span class="command-label">Command:</span>
-                  <code>/set-game-news</code>
+                  <code>/game-news-settings</code>
                 </p>
-                <p>
-                  <span class="discord-param-text">
-                    <span class="param-label">Parameters:</span>
-                    <p class="parameter-explanation">
-                      <code>setting:</code>
-                      The game news setting for games to include in game news announcements. You can choose from the following settings:
-                    </p>
-                    <ul>
-                      <li>
-                        <strong>Recommended (Default)</strong>
-                        - Game News will be set to Might Release (see below).
-                      </li>
-                      <li>
-                        <strong>All</strong>
-                        - All updates to games on the site will be posted by the bot.
-                      </li>
-                      <li>
-                        <strong>Might Release In Year</strong>
-                        - Only games that are considered "Might Release" will be included in game news announcements. This includes anything slated for the current year, as well as "TBD" release dates
-                        which might release in the current year. If you choose this, you will also be asked if you'd like to hear about games in your league no matter what.
-                      </li>
-                      <li>
-                        <strong>Will Release In Year</strong>
-                        - Only games that are considered "Will Release" will be included in game news announcements. This includes anything slated for the current year. If you choose this, you will
-                        also be asked if you'd like to hear about games in your league no matter what.
-                      </li>
-                      <li>
-                        <strong>League Games Only</strong>
-                        - Only games that are on league member's rosters will be included. If you choose this, you will also be asked if you'd also like to hear about "notable misses", which are games
-                        that scored well but were not picked up by anybody in the league.
-                      </li>
-                      <li>
-                        <strong>Off</strong>
-                        - No game news will be posted by the bot.
-                      </li>
-                    </ul>
-                    <p class="parameter-explanation">
-                      <code>skip_unannounced:</code>
-                      Whether or not to skip games tagged as "Unannounced" in game news announcements.
-                    </p>
-                  </span>
-                </p>
-                <span>Allows you to configure how much game news you want the bot to provide.</span>
-              </div>
-              <hr />
-              <div class="discord-command-explanation">
-                <h5 id="view-settings">View Bot Settings</h5>
-                <p>
-                  <span class="command-label">Command:</span>
-                  <code>/view-settings</code>
-                </p>
-                <span>Displays the current settings for the bot.</span>
+                <span>
+                  Allows you to choose exactly what types of game news you want to be notified about. This command provides an interface, complete with buttons, allowing you to fine to your desired
+                  settings. The options you can choose from include:
+                  <ul>
+                    <li>
+                      <strong>League News Settings</strong>
+                      - Tells the bot to always notify you about games that are picked in your league or eligible in your league. - There is also the "Notable Miss" setting which allows you to tell
+                      the bot to notify you about games that have scored very well that your league missed. You can choose between being notified about the game when it first gets a score, or any
+                      updates about that game's score.
+                    </li>
+                    <li>
+                      <strong>Game Release Settings</strong>
+                      - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release this year and other similiar filters.
+                    </li>
+                    <li>
+                      <strong>Game News Update Settings</strong>
+                      - Tells the bot whether or not to notify you when a game is edited in the master database or when the game has a change in score.
+                    </li>
+                    <li>
+                      <strong>Skipped Tags Settings</strong>
+                      - Tells the bot to never notify you about a game with a specific tag. This is most commonly used to tell you to never notify you about an unnannounced game being added to the
+                      database, for example.
+                    </li>
+                  </ul>
+                </span>
               </div>
               <hr />
               <div>
