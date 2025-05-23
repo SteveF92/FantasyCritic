@@ -44,7 +44,7 @@ public record GameNewsSetting
         {
             ShowWillReleaseInYearNews = true,
             ShowMightReleaseInYearNews = true,
-            ShowWillNotReleaseInYearNews = true,
+            ShowWillNotReleaseInYearNews = false,
             ShowScoreGameNews = true,
             ShowReleasedGameNews = true,
             ShowNewGameNews = true,

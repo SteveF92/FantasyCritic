@@ -357,6 +357,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         {
             await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settings);
             await SendGameNewsCommandMessage();
+            if (leagueChannel != null)
+            {
+                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, NotableMissSetting.ScoreUpdates);
+            }
             return;
         }
 
