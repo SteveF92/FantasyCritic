@@ -163,7 +163,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         }
 
         //If ShowPickedGameNews is turned off, and the game is picked in the league year, we don't want to show it
-        if (!_gameNewsSetting.ShowAlreadyReleasedGameNews && masterGame.IsReleased(currentDate))
+        if (!_gameNewsSetting.ShowAlreadyReleasedNews && masterGame.IsReleased(currentDate))
         {
             return false;
         }

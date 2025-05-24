@@ -3,7 +3,7 @@ public record GameNewsSetting
 {
     public required bool ShowJustReleasedAnnouncements { get; init; }
     public required bool ShowNewGameAnnouncements { get; init; }
-    public required bool ShowAlreadyReleasedGameNews { get; init; }
+    public required bool ShowAlreadyReleasedNews { get; init; }
     public required bool ShowWillReleaseInYearNews { get; init; }
     public required bool ShowMightReleaseInYearNews { get; init; }
     public required bool ShowWillNotReleaseInYearNews { get; init; }
@@ -13,7 +13,7 @@ public record GameNewsSetting
     public bool IsOff()
     {
         return
-            !ShowAlreadyReleasedGameNews &&
+            !ShowAlreadyReleasedNews &&
             !ShowWillReleaseInYearNews &&
             !ShowMightReleaseInYearNews &&
             !ShowWillNotReleaseInYearNews &&
@@ -26,7 +26,7 @@ public record GameNewsSetting
     public bool IsAllOn()
     {
         return
-            ShowAlreadyReleasedGameNews &&
+            ShowAlreadyReleasedNews &&
             ShowWillReleaseInYearNews &&
             ShowMightReleaseInYearNews &&
             ShowWillNotReleaseInYearNews &&
@@ -45,7 +45,7 @@ public record GameNewsSetting
     {
         return new GameNewsSetting()
         {
-            ShowAlreadyReleasedGameNews = false,
+            ShowAlreadyReleasedNews = false,
             ShowWillReleaseInYearNews = true,
             ShowMightReleaseInYearNews = true,
             ShowWillNotReleaseInYearNews = false,
@@ -60,7 +60,7 @@ public record GameNewsSetting
     {
         return new GameNewsSetting()
         {
-            ShowAlreadyReleasedGameNews = false,
+            ShowAlreadyReleasedNews = false,
             ShowWillReleaseInYearNews = false,
             ShowMightReleaseInYearNews = false,
             ShowWillNotReleaseInYearNews = false,

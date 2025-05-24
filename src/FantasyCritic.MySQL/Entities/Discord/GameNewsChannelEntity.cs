@@ -13,6 +13,7 @@ internal class GameNewsChannelEntity
         GuildID = guildID;
         ChannelID = channelID;
 
+        ShowAlreadyReleasedNews = gameNewsSetting.ShowAlreadyReleasedNews;
         ShowWillReleaseInYearNews = gameNewsSetting.ShowWillReleaseInYearNews;
         ShowMightReleaseInYearNews = gameNewsSetting.ShowMightReleaseInYearNews;
         ShowWillNotReleaseInYearNews = gameNewsSetting.ShowWillNotReleaseInYearNews;
@@ -25,7 +26,7 @@ internal class GameNewsChannelEntity
     public ulong GuildID { get; set; }
     public ulong ChannelID { get; set; }
 
-    public bool ShowAlreadyReleasedGameNews { get; set; }
+    public bool ShowAlreadyReleasedNews { get; set; }
     public bool ShowWillReleaseInYearNews { get; set; }
     public bool ShowMightReleaseInYearNews { get; set; }
     public bool ShowWillNotReleaseInYearNews { get; set; }
@@ -38,7 +39,7 @@ internal class GameNewsChannelEntity
     {
         var settings = new GameNewsSetting()
         {
-            ShowAlreadyReleasedGameNews = ShowAlreadyReleasedGameNews,
+            ShowAlreadyReleasedNews = ShowAlreadyReleasedNews,
             ShowWillReleaseInYearNews = ShowWillReleaseInYearNews,
             ShowMightReleaseInYearNews = ShowMightReleaseInYearNews,
             ShowWillNotReleaseInYearNews = ShowWillNotReleaseInYearNews,

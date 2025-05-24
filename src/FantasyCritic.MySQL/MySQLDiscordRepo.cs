@@ -69,18 +69,18 @@ public class MySQLDiscordRepo : IDiscordRepo
         var deleteSQL = "DELETE FROM tbl_discord_gamenewschannel where GuildID=@GuildID AND ChannelID=@ChannelID;";
 
         var insertSQL = """
-                        INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,ShowAlreadyReleasedGameNews,ShowWillReleaseInYearNews,ShowMightReleaseInYearNews,ShowWillNotReleaseInYearNews,ShowScoreGameNews,ShowJustReleasedAnnouncements,ShowNewGameAnnouncements,ShowEditedGameNews) 
-                        VALUES (@GuildID,@ChannelID,@ShowAlreadyReleasedGameNews,@ShowWillReleaseInYearNews,@ShowMightReleaseInYearNews,@ShowWillNotReleaseInYearNews,@ShowScoreGameNews,@ShowJustReleasedAnnouncements,@ShowNewGameAnnouncements,@ShowEditedGameNews);
+                        INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,ShowAlreadyReleasedNews,ShowWillReleaseInYearNews,ShowMightReleaseInYearNews,ShowWillNotReleaseInYearNews,ShowScoreGameNews,ShowJustReleasedAnnouncements,ShowNewGameAnnouncements,ShowEditedGameNews) 
+                        VALUES (@GuildID,@ChannelID,@ShowAlreadyReleasedNews,@ShowWillReleaseInYearNews,@ShowMightReleaseInYearNews,@ShowWillNotReleaseInYearNews,@ShowScoreGameNews,@ShowJustReleasedAnnouncements,@ShowNewGameAnnouncements,@ShowEditedGameNews);
                         """;
         var updateSQL = """
                         UPDATE tbl_discord_gamenewschannel SET
-                        ShowAlreadyReleasedGameNews = @ShowAlreadyReleasedGameNews,
+                        ShowAlreadyReleasedNews = @ShowAlreadyReleasedNews,
                         ShowWillReleaseInYearNews = @ShowWillReleaseInYearNews,
                         ShowMightReleaseInYearNews = @ShowMightReleaseInYearNews,
                         ShowWillNotReleaseInYearNews = @ShowWillNotReleaseInYearNews,
                         ShowScoreGameNews = @ShowScoreGameNews,
-                        ShowReleasedGameNews = @ShowReleasedGameNews,
-                        ShowNewGameNews = @ShowNewGameNews,
+                        ShowJustReleasedAnnouncements = @ShowJustReleasedAnnouncements,
+                        ShowNewGameAnnouncements = @ShowNewGameAnnouncements,
                         ShowEditedGameNews = @ShowEditedGameNews
                         where GuildID=@GuildID AND ChannelID=@ChannelID;
                         """;

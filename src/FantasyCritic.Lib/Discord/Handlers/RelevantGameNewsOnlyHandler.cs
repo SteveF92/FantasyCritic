@@ -70,7 +70,7 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
         }
 
         //If user has turned off already released game news, and the game is released return false
-        if (!_gameNewsSetting.ShowAlreadyReleasedGameNews && masterGame.IsReleased(currentDate))
+        if (!_gameNewsSetting.ShowAlreadyReleasedNews && masterGame.IsReleased(currentDate))
         {
             return false;
         }
