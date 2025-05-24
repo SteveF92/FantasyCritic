@@ -1,35 +1,38 @@
 namespace FantasyCritic.Lib.Discord.Models;
 public record GameNewsSetting
 {
+    public required bool ShowJustReleasedAnnouncements { get; init; }
+    public required bool ShowNewGameAnnouncements { get; init; }
+    public required bool ShowAlreadyReleasedGameNews { get; init; }
     public required bool ShowWillReleaseInYearNews { get; init; }
     public required bool ShowMightReleaseInYearNews { get; init; }
     public required bool ShowWillNotReleaseInYearNews { get; init; }
     public required bool ShowScoreGameNews { get; init; }
-    public required bool ShowReleasedGameNews { get; init; }
-    public required bool ShowNewGameNews { get; init; }
     public required bool ShowEditedGameNews { get; init; }
 
     public bool IsOff()
     {
         return
+            !ShowAlreadyReleasedGameNews &&
             !ShowWillReleaseInYearNews &&
             !ShowMightReleaseInYearNews &&
             !ShowWillNotReleaseInYearNews &&
             !ShowScoreGameNews &&
-            !ShowReleasedGameNews &&
-            !ShowNewGameNews &&
+            !ShowJustReleasedAnnouncements &&
+            !ShowNewGameAnnouncements &&
             !ShowEditedGameNews;
     }
 
     public bool IsAllOn()
     {
         return
+            ShowAlreadyReleasedGameNews &&
             ShowWillReleaseInYearNews &&
             ShowMightReleaseInYearNews &&
             ShowWillNotReleaseInYearNews &&
             ShowScoreGameNews &&
-            ShowReleasedGameNews &&
-            ShowNewGameNews &&
+            ShowJustReleasedAnnouncements &&
+            ShowNewGameAnnouncements &&
             ShowEditedGameNews;
     }
 
@@ -42,12 +45,13 @@ public record GameNewsSetting
     {
         return new GameNewsSetting()
         {
+            ShowAlreadyReleasedGameNews = false,
             ShowWillReleaseInYearNews = true,
             ShowMightReleaseInYearNews = true,
             ShowWillNotReleaseInYearNews = false,
             ShowScoreGameNews = true,
-            ShowReleasedGameNews = true,
-            ShowNewGameNews = true,
+            ShowJustReleasedAnnouncements = true,
+            ShowNewGameAnnouncements = true,
             ShowEditedGameNews = true,
         };
     }
@@ -56,12 +60,13 @@ public record GameNewsSetting
     {
         return new GameNewsSetting()
         {
+            ShowAlreadyReleasedGameNews = false,
             ShowWillReleaseInYearNews = false,
             ShowMightReleaseInYearNews = false,
             ShowWillNotReleaseInYearNews = false,
             ShowScoreGameNews = false,
-            ShowReleasedGameNews = false,
-            ShowNewGameNews = false,
+            ShowJustReleasedAnnouncements = false,
+            ShowNewGameAnnouncements = false,
             ShowEditedGameNews = false,
         };
     }

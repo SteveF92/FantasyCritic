@@ -17,8 +17,8 @@ internal class GameNewsChannelEntity
         ShowMightReleaseInYearNews = gameNewsSetting.ShowMightReleaseInYearNews;
         ShowWillNotReleaseInYearNews = gameNewsSetting.ShowWillNotReleaseInYearNews;
         ShowScoreGameNews = gameNewsSetting.ShowScoreGameNews;
-        ShowReleasedGameNews = gameNewsSetting.ShowReleasedGameNews;
-        ShowNewGameNews = gameNewsSetting.ShowNewGameNews;
+        ShowReleasedGameNews = gameNewsSetting.ShowJustReleasedAnnouncements;
+        ShowNewGameNews = gameNewsSetting.ShowNewGameAnnouncements;
         ShowEditedGameNews = gameNewsSetting.ShowEditedGameNews;
     }
 
@@ -41,8 +41,8 @@ internal class GameNewsChannelEntity
             ShowMightReleaseInYearNews = ShowMightReleaseInYearNews,
             ShowWillNotReleaseInYearNews = ShowWillNotReleaseInYearNews,
             ShowScoreGameNews = ShowScoreGameNews,
-            ShowReleasedGameNews = ShowReleasedGameNews,
-            ShowNewGameNews = ShowNewGameNews,
+            ShowJustReleasedAnnouncements = ShowReleasedGameNews,
+            ShowNewGameAnnouncements = ShowNewGameNews,
             ShowEditedGameNews = ShowEditedGameNews,
         };
 

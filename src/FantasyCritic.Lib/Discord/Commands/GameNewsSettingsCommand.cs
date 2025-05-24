@@ -147,11 +147,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         bool? showEligibleGameNews = leagueChannel?.ShowEligibleGameNews;
         bool? showIneligibleGameNews = leagueChannel?.ShowIneligibleGameNews;
         NotableMissSetting? notableMissSetting = leagueChannel?.NotableMissSetting;
-        bool showNewGameNews = gameNewsChannel?.GameNewsSetting.ShowNewGameNews ?? false;
+        bool showNewGameNews = gameNewsChannel?.GameNewsSetting.ShowNewGameAnnouncements ?? false;
         bool showWillReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowWillReleaseInYearNews ?? false;
         bool showMightReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowMightReleaseInYearNews ?? false;
         bool showWillNotReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowWillNotReleaseInYearNews ?? false;
-        bool showReleasedGameNews = gameNewsChannel?.GameNewsSetting.ShowReleasedGameNews ?? false;
+        bool showReleasedGameNews = gameNewsChannel?.GameNewsSetting.ShowJustReleasedAnnouncements ?? false;
         bool showScoreGameNews = gameNewsChannel?.GameNewsSetting.ShowScoreGameNews ?? false;
         bool showEditedGameNews = gameNewsChannel?.GameNewsSetting.ShowEditedGameNews ?? false;
         var skippedTags = gameNewsChannel?.SkippedTags ?? new List<MasterGameTag>();
@@ -288,11 +288,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     {
         //Discord only allows 5 rows! If we want to add more, we have to rethink this.
         var gameStatusSettingsMessage = new ComponentBuilder()
-            .AddRow(new ActionRowBuilder().WithButton(GetNewGameNewsButton(settings.ShowNewGameNews)))
+            .AddRow(new ActionRowBuilder().WithButton(GetNewGameNewsButton(settings.ShowNewGameAnnouncements)))
             .AddRow(new ActionRowBuilder().WithButton(GetWillReleaseInYearButton(settings.ShowWillReleaseInYearNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetMightReleaseInYearButton(settings.ShowMightReleaseInYearNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetWillNotReleaseInYearButton(settings.ShowWillNotReleaseInYearNews)))
-            .AddRow(new ActionRowBuilder().WithButton(GetReleasedGameNewsButton(settings.ShowReleasedGameNews)))
+            .AddRow(new ActionRowBuilder().WithButton(GetReleasedGameNewsButton(settings.ShowJustReleasedAnnouncements)))
             .Build();
 
         await FollowupAsync("**Set Game News Status Settings** \n", components: gameStatusSettingsMessage, ephemeral: true);
@@ -454,16 +454,16 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 break;
 
             case "released_game_news":
-                var releasedGameNewsChanged = settings with { ShowReleasedGameNews = !settings.ShowReleasedGameNews };
+                var releasedGameNewsChanged = settings with { ShowJustReleasedAnnouncements = !settings.ShowJustReleasedAnnouncements };
                 await _discordRepo.SetGameNewsSetting(guildID, channelID, releasedGameNewsChanged);
-                await UpdateButtonState("released_game_news", releasedGameNewsChanged.ShowReleasedGameNews);
+                await UpdateButtonState("released_game_news", releasedGameNewsChanged.ShowJustReleasedAnnouncements);
                 await UpdateCommandMessage();
                 break;
 
             case "new_game_news":
-                var newGameNewsChanged = settings with { ShowNewGameNews = !settings.ShowNewGameNews };
+                var newGameNewsChanged = settings with { ShowNewGameAnnouncements = !settings.ShowNewGameAnnouncements };
                 await _discordRepo.SetGameNewsSetting(guildID, channelID, newGameNewsChanged);
-                await UpdateButtonState("new_game_news", newGameNewsChanged.ShowNewGameNews);
+                await UpdateButtonState("new_game_news", newGameNewsChanged.ShowNewGameAnnouncements);
                 await UpdateCommandMessage();
                 break;
 

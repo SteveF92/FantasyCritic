@@ -336,7 +336,7 @@ public class DiscordPushService
             }
 
             IReadOnlyList<MasterGameYear> relevantGamesForLeague = masterGamesReleasingToday
-                .Where(x => combinedChannel.GetRelevanceHandler().ReleasedGameIsRelevant(x.MasterGame, _clock.GetToday()))
+                .Where(x => combinedChannel.GetRelevanceHandler().JustReleasedGameIsRelevant(x.MasterGame, _clock.GetToday()))
                 .ToList();
             if (!relevantGamesForLeague.Any())
             {

@@ -26,58 +26,68 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
     public override bool NewGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
+
         //Exit Early if the user has disabled new game news for this channel
-        if (!_gameNewsSetting.ShowNewGameNews)
+        if (!_gameNewsSetting.ShowNewGameAnnouncements)
         {
             return false;
         }
 
         //Common Relevance Logic
-        bool commonRelevance = CheckCommonLeagueRelevance(masterGame, currentDate);
-        if (commonRelevance)
-        {
-            return true;
-        }
-
-        return false;
+        return CheckCommonLeagueRelevance(masterGame, currentDate);
+        
     }
 
     public override bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, LocalDate currentDate)
     {
-        //Exit Early if the user has disabled game edit news for this channel
+        //Picked Games, Aka games in the publisher roster for any league year will exit early and return the picked game news setting
+        bool isPickedGame = CheckIsPickedGame(masterGame);
+        if (isPickedGame)
+        {
+            return _showPickedGameNews;
+        }
+
+        //From now on out these checks are for games that are not in the publisher roster for any league year
+        //Exit Early if the user has disabled edited game news for this channel
         if (!_gameNewsSetting.ShowEditedGameNews)
         {
             return false;
         }
 
-        //Common Relevance Logic
-        bool commonRelevance = CheckCommonLeagueRelevance(masterGame, currentDate);
-        if (commonRelevance)
-        {
-            return true;
-        }
-
-        //Fallback
-        Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, _channelKey);
-        return false;
+        return CheckCommonLeagueRelevance(masterGame, currentDate);
     }
 
-    public override bool ReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
+    public override bool JustReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
-        //Common Relevance Logic
-        bool commonRelevance = CheckCommonLeagueRelevance(masterGame, currentDate);
-        if (commonRelevance)
+        //Picked Games, Aka games in the publisher roster for any league year will exit early and return the picked game news setting
+        bool isPickedGame = CheckIsPickedGame(masterGame);
+        if (isPickedGame)
         {
-            return true;
+            return _showPickedGameNews;
         }
 
-        return _gameNewsSetting.ShowReleasedGameNews;
+        //From now on out these checks are for games that are not in the publisher roster for any league year
+        //Exit Early if the user has disabled just released game announcements for this channel
+        if (!_gameNewsSetting.ShowJustReleasedAnnouncements)
+        {
+            return false;
+        }
+
+        return CheckCommonLeagueRelevance(masterGame, currentDate);
     }
 
     public override bool ScoredGameIsRelevant(MasterGame masterGame, decimal? oldCriticScore, decimal? newCriticScore, LocalDate currentDate)
     {
         bool initialScore = oldCriticScore == null;
 
+        //Picked Games, Aka games in the publisher roster for any league year will exit early and return the picked game news setting
+        bool isPickedGame = CheckIsPickedGame(masterGame);
+        if (isPickedGame)
+        {
+            return _showPickedGameNews;
+        }
+
+        //From now on out these checks are for games that are not in the publisher roster for any league year
         //Exit Early if the user has disabled score game news for this channel
         if (!_gameNewsSetting.ShowScoreGameNews)
         {
@@ -91,16 +101,24 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return true;
         }
 
+        //Notable miss logic will override a false condition from the common relevance check if the game meets these conditions
         //If the game is a notable miss, and if the user wants to see it
-        bool isNotableMiss = newCriticScore >= NotableMissSetting.Threshold;
+        bool isNotableMiss = newCriticScore >= NotableMissSetting.Threshold
+            && _activeLeagueYears.Any(leagueYear => leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate));
+
         if (isNotableMiss && CheckNotableMissRelevance(initialScore))
         {
             return true;
         }
+        else
+        {
+            return false;
+        }
+    }
 
-        //Fallback
-        Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, _channelKey);
-        return false;
+    private bool CheckIsPickedGame(MasterGame masterGame)
+    {
+        return _activeLeagueYears.Any(leagueYear => leagueYear.Publishers.Any(publisher => publisher.MyMasterGames.Contains(masterGame)));
     }
 
     private bool CheckCommonLeagueRelevance(MasterGame masterGame, LocalDate currentDate)
@@ -121,12 +139,6 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return true;
         }
 
-        //If the game has any skipped tags don't show it!
-        if (masterGame.Tags.Intersect(_skippedTags).Any())
-        {
-            return false;
-        }
-
         //Fallback
         Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, _channelKey);
         return false;
@@ -134,53 +146,54 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
     private bool CheckSingleLeagueCommonRelevance(LeagueYear leagueYear, MasterGame masterGame, LocalDate currentDate)
     {
-        bool inPublisherRoster = leagueYear.Publishers.Any(x => x.MyMasterGames.Contains(masterGame));
         bool eligibleInYear = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
+        bool ineligibleInYear = !eligibleInYear;
 
-        //This is the logic for only showing picked games in the league
-        if (!_showPickedGameNews && inPublisherRoster)
+        //If the game has any skipped tags don't show it!
+        if (masterGame.Tags.Intersect(_skippedTags).Any())
         {
             return false;
         }
 
-        //If the game is in the publisher roster we always want to show it
-        if (_showPickedGameNews && inPublisherRoster)
-        {
-            return true;
-        }
-
-        //From now on the master game is not in the publisher roster
         //If Eligible Game News is turned off, and the game is eligible in the league year, we don't want to show it
         if (!_showEligibleGameNews && eligibleInYear)
         {
             return false;
         }
 
-        //If I don't want news for ineligible games, and this game is ineligible, don't show it.
-        if (!_showIneligibleGameNews && !eligibleInYear)
+        //If  ineligible game news is turned off, and the game is ineligible in the league year, we don't want to show it
+        if (!_showIneligibleGameNews && ineligibleInYear)
         {
             return false;
         }
 
-        //This will provide game news for any game that is slated to release in the leagues years
-        if (_gameNewsSetting.ShowWillReleaseInYearNews && masterGame.WillReleaseInYear(leagueYear.Year))
+        //If ShowPickedGameNews is turned off, and the game is picked in the league year, we don't want to show it
+        if (!_gameNewsSetting.ShowAlreadyReleasedGameNews && masterGame.IsReleased(currentDate))
         {
-            return true;
+            return false;
         }
 
-        //This will provide game updates for any game that might release in the leagues years
-        if (_gameNewsSetting.ShowMightReleaseInYearNews && masterGame.MightReleaseInYear(leagueYear.Year))
+        //If ShowWillReleaseInYearNews is turned off, and the game will release in the league year, we don't want to show it
+        if (!_gameNewsSetting.ShowWillReleaseInYearNews && masterGame.WillReleaseInYear(leagueYear.Year))
         {
-            return true;
+            return false;
         }
 
-        //This will provide game updates for any game that will not release in the leagues years
-        if (_gameNewsSetting.ShowWillNotReleaseInYearNews && !masterGame.WillReleaseInYear(leagueYear.Year))
+        //If ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it
+        if (!_gameNewsSetting.ShowMightReleaseInYearNews && masterGame.MightReleaseInYear(leagueYear.Year))
         {
-            return true;
+            return false;
         }
 
-        return false;
+        //if ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it
+        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews && !masterGame.WillReleaseInYear(leagueYear.Year))
+        {
+            return false;
+        }
+
+        //Fallback is true because all the checks above are filters, if it passes all of them then the news is relevant
+        //If something is still showing up that we don't want to see we are missing a filter condition above
+        return true;
     }
 
     private bool CheckNotableMissRelevance(bool initialScore)
