@@ -69,11 +69,12 @@ public class MySQLDiscordRepo : IDiscordRepo
         var deleteSQL = "DELETE FROM tbl_discord_gamenewschannel where GuildID=@GuildID AND ChannelID=@ChannelID;";
 
         var insertSQL = """
-                        INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,ShowWillReleaseInYearNews,ShowMightReleaseInYearNews,ShowWillNotReleaseInYearNews,ShowScoreGameNews,ShowReleasedGameNews,ShowNewGameNews,ShowEditedGameNews) 
-                        VALUES (@GuildID,@ChannelID,@ShowWillReleaseInYearNews,@ShowMightReleaseInYearNews,@ShowWillNotReleaseInYearNews,@ShowScoreGameNews,@ShowReleasedGameNews,@ShowNewGameNews,@ShowEditedGameNews);
+                        INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,ShowAlreadyReleasedGameNews,ShowWillReleaseInYearNews,ShowMightReleaseInYearNews,ShowWillNotReleaseInYearNews,ShowScoreGameNews,ShowJustReleasedAnnouncements,ShowNewGameAnnouncements,ShowEditedGameNews) 
+                        VALUES (@GuildID,@ChannelID,@ShowAlreadyReleasedGameNews,@ShowWillReleaseInYearNews,@ShowMightReleaseInYearNews,@ShowWillNotReleaseInYearNews,@ShowScoreGameNews,@ShowJustReleasedAnnouncements,@ShowNewGameAnnouncements,@ShowEditedGameNews);
                         """;
         var updateSQL = """
-                        UPDATE tbl_discord_gamenewschannel SET 
+                        UPDATE tbl_discord_gamenewschannel SET
+                        ShowAlreadyReleasedGameNews = @ShowAlreadyReleasedGameNews,
                         ShowWillReleaseInYearNews = @ShowWillReleaseInYearNews,
                         ShowMightReleaseInYearNews = @ShowMightReleaseInYearNews,
                         ShowWillNotReleaseInYearNews = @ShowWillNotReleaseInYearNews,

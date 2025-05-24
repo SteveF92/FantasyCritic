@@ -17,32 +17,34 @@ internal class GameNewsChannelEntity
         ShowMightReleaseInYearNews = gameNewsSetting.ShowMightReleaseInYearNews;
         ShowWillNotReleaseInYearNews = gameNewsSetting.ShowWillNotReleaseInYearNews;
         ShowScoreGameNews = gameNewsSetting.ShowScoreGameNews;
-        ShowReleasedGameNews = gameNewsSetting.ShowJustReleasedAnnouncements;
-        ShowNewGameNews = gameNewsSetting.ShowNewGameAnnouncements;
+        ShowJustReleasedAnnouncements = gameNewsSetting.ShowJustReleasedAnnouncements;
+        ShowNewGameAnnouncements = gameNewsSetting.ShowNewGameAnnouncements;
         ShowEditedGameNews = gameNewsSetting.ShowEditedGameNews;
     }
 
     public ulong GuildID { get; set; }
     public ulong ChannelID { get; set; }
 
+    public bool ShowAlreadyReleasedGameNews { get; set; }
     public bool ShowWillReleaseInYearNews { get; set; }
     public bool ShowMightReleaseInYearNews { get; set; }
     public bool ShowWillNotReleaseInYearNews { get; set; }
     public bool ShowScoreGameNews { get; set; }
-    public bool ShowReleasedGameNews { get; set; }
-    public bool ShowNewGameNews { get; set; }
+    public bool ShowJustReleasedAnnouncements { get; set; }
+    public bool ShowNewGameAnnouncements { get; set; }
     public bool ShowEditedGameNews { get; set; }
 
     public GameNewsChannel ToDomain(IEnumerable<MasterGameTag> skippedTags)
     {
         var settings = new GameNewsSetting()
         {
+            ShowAlreadyReleasedGameNews = ShowAlreadyReleasedGameNews,
             ShowWillReleaseInYearNews = ShowWillReleaseInYearNews,
             ShowMightReleaseInYearNews = ShowMightReleaseInYearNews,
             ShowWillNotReleaseInYearNews = ShowWillNotReleaseInYearNews,
             ShowScoreGameNews = ShowScoreGameNews,
-            ShowJustReleasedAnnouncements = ShowReleasedGameNews,
-            ShowNewGameAnnouncements = ShowNewGameNews,
+            ShowJustReleasedAnnouncements = ShowJustReleasedAnnouncements,
+            ShowNewGameAnnouncements = ShowNewGameAnnouncements,
             ShowEditedGameNews = ShowEditedGameNews,
         };
 
