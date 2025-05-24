@@ -1,35 +1,28 @@
-using FantasyCritic.Lib.Discord.Handlers;
 using FantasyCritic.Lib.Discord.Models;
 using Serilog;
+
+namespace FantasyCritic.Lib.Discord.Handlers;
 
 public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
 {
     private static readonly ILogger _logger = Log.ForContext<GameNewsOnlyRelevanceHandler>();
 
-    public GameNewsOnlyRelevanceHandler(bool showPickedGameNews, bool showEligibleGameNews, NotableMissSetting notableMissSetting,
-        GameNewsSetting gameNewsSetting, IReadOnlyList<MasterGameTag> skippedTags, DiscordChannelKey channelKey)
-        : base(showPickedGameNews, showEligibleGameNews, notableMissSetting, gameNewsSetting, skippedTags, channelKey)
+    public GameNewsOnlyRelevanceHandler(GameNewsSetting gameNewsSetting, IReadOnlyList<MasterGameTag> skippedTags, DiscordChannelKey channelKey)
+        : base(gameNewsSetting, skippedTags, channelKey)
     {
     }
 
     public override bool NewGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
         //Exit Early if the user has disabled new game news for this channel
-        if (_gameNewsSetting.ShowNewGameNews == false)
+        if (!_gameNewsSetting.ShowNewGameNews)
         {
             return false;
         }
 
         //Common Relevance Logic
         bool commonRelevance = CheckCommonGameNewsOnlyRelevance(masterGame,currentDate);
-        if (commonRelevance == true)
-        {
-            return true;
-        }
-
-        //Specific Edited Game Relevance Logic
-        bool specificRelevance = false;
-        if (specificRelevance == true)
+        if (commonRelevance)
         {
             return true;
         }
@@ -42,21 +35,14 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
     public override bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, LocalDate currentDate)
     {
         //Exit Early if the user has disabled edited game news for this channel
-        if (_gameNewsSetting.ShowEditedGameNews == false)
+        if (!_gameNewsSetting.ShowEditedGameNews)
         {
             return false;
         }
 
         //Common Relevance Logic
         bool commonRelevance = CheckCommonGameNewsOnlyRelevance(masterGame, currentDate);
-        if (commonRelevance == true)
-        {
-            return true;
-        }
-
-        //Specific Edited Game Relevance Logic
-        bool specificRelevance = false;
-        if (specificRelevance == true)
+        if (commonRelevance)
         {
             return true;
         }
@@ -69,21 +55,14 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
     public override bool ReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
         //Exit Early if the user has disabled released game news for this channel
-        if (_gameNewsSetting.ShowReleasedGameNews == false)
+        if (!_gameNewsSetting.ShowReleasedGameNews)
         {
             return false;
         }
 
         //Common Relevance Logic
         bool commonRelevance = CheckCommonGameNewsOnlyRelevance(masterGame, currentDate);
-        if (commonRelevance == true)
-        {
-            return true;
-        }
-
-        //Specific Edited Game Relevance Logic
-        bool specificRelevance = false;
-        if (specificRelevance == true)
+        if (commonRelevance)
         {
             return true;
         }
@@ -96,21 +75,14 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
     public override bool ScoredGameIsRelevant(MasterGame masterGame, decimal? oldCriticScore, decimal? newCriticScore, LocalDate currentDate)
     {
         //Exit Early if the user has disabled score game news for this channel
-        if (_gameNewsSetting.ShowScoreGameNews == false)
+        if (!_gameNewsSetting.ShowScoreGameNews)
         {
             return false;
         }
 
         //Common Relevance Logic
         bool commonRelevance = CheckCommonGameNewsOnlyRelevance(masterGame, currentDate);
-        if (commonRelevance == true)
-        {
-            return true;
-        }
-
-        //Specific Edited Game Relevance Logic
-        bool specificRelevance = false;
-        if (specificRelevance == true)
+        if (commonRelevance)
         {
             return true;
         }

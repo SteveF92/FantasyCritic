@@ -2,17 +2,19 @@ using FantasyCritic.Lib.Discord.Handlers;
 
 namespace FantasyCritic.Lib.Discord.Models;
 
-public record MinimalLeagueChannel(Guid LeagueID, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID) : IDiscordChannel
+public record MinimalLeagueChannel(Guid LeagueID, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews,
+    NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID) : IDiscordChannel
 {
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 
     public MultiYearLeagueChannel ToMultiYearLeagueChannel(IReadOnlyList<LeagueYear> activeLeagueYears)
-        => new MultiYearLeagueChannel(LeagueID, activeLeagueYears, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, BidAlertRoleID);
+        => new MultiYearLeagueChannel(LeagueID, activeLeagueYears, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, NotableMissSetting, BidAlertRoleID);
 }
 
-public record LeagueChannel(LeagueYear LeagueYear, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID);
+public record LeagueChannel(LeagueYear LeagueYear, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID);
 
-public record MultiYearLeagueChannel(Guid LeagueID, IReadOnlyList<LeagueYear> ActiveLeagueYears, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID);
+public record MultiYearLeagueChannel(Guid LeagueID, IReadOnlyList<LeagueYear> ActiveLeagueYears, ulong GuildID, ulong ChannelID,
+    bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID);
 
 public record GameNewsChannel(ulong GuildID, ulong ChannelID, GameNewsSetting GameNewsSetting, IReadOnlyList<MasterGameTag> SkippedTags)
 {
@@ -35,6 +37,7 @@ public class CombinedChannel
             LeagueID = leagueChannel.LeagueID;
             ShowPickedGameNews = leagueChannel.ShowPickedGameNews;
             ShowEligibleGameNews = leagueChannel.ShowEligibleGameNews;
+            ShowIneligibleGameNews = leagueChannel.ShowIneligibleGameNews;
             NotableMissSetting = leagueChannel.NotableMissSetting;
             ActiveLeagueYears = leagueChannel.ActiveLeagueYears;
         }
@@ -63,6 +66,7 @@ public class CombinedChannel
     public IReadOnlyList<LeagueYear>? ActiveLeagueYears { get; }
     public bool ShowPickedGameNews { get; }
     public bool ShowEligibleGameNews { get; }
+    public bool ShowIneligibleGameNews { get; }
     public NotableMissSetting NotableMissSetting { get; }
     public GameNewsSetting GameNewsSetting { get; }
     public IReadOnlyList<MasterGameTag> SkippedTags { get; }
@@ -73,9 +77,9 @@ public class CombinedChannel
     {
         if (ActiveLeagueYears is not null)
         {
-            return new LeagueGameNewsRelevanceHandler(ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags, ChannelKey, ActiveLeagueYears);
+            return new LeagueGameNewsRelevanceHandler(ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags, ChannelKey, ActiveLeagueYears);
         }
 
-        return new GameNewsOnlyRelevanceHandler(ShowPickedGameNews, ShowEligibleGameNews, NotableMissSetting, GameNewsSetting, SkippedTags, ChannelKey);
+        return new GameNewsOnlyRelevanceHandler(GameNewsSetting, SkippedTags, ChannelKey);
     }
 }

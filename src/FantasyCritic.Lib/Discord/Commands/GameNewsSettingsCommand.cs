@@ -55,7 +55,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
             bool isLeagueChannel = leagueChannel != null;
 
-            if (gameNewsChannel == null)
+            if (gameNewsChannel == null && !isLeagueChannel)
             {
                 await SendDisabledGameNewsMessage();
                 return;
@@ -86,7 +86,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var channelId = Context.Channel.Id;
 
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(guildId, channelId);
-
         if (leagueChannel != null)
         {
             await SendLeagueGameNewsCommand();
@@ -143,28 +142,19 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
 
-        if (gameNewsChannel == null)
-        {
-            //This should not be possible at this point, as we only call this method after checking if game news channel is null
-            //return "Game News was not found for this channel, if this error persists contact support";
-            return _discordFormatter.BuildErrorEmbedWithUserFooter(
-                "No Game News Found",
-                "Game News was not found for this channel, if this error persists contact support",
-                Context.User);
-        }
-
         bool enableGameNews = true;  //<-- Just a filler bool to show game news is on, even though it would be on at this point.
         bool? showPickedGameNews = leagueChannel?.ShowPickedGameNews;
         bool? showEligibleGameNews = leagueChannel?.ShowEligibleGameNews;
+        bool? showIneligibleGameNews = leagueChannel?.ShowIneligibleGameNews;
         NotableMissSetting? notableMissSetting = leagueChannel?.NotableMissSetting;
-        bool showNewGameNews = gameNewsChannel.GameNewsSetting.ShowNewGameNews;
-        bool showWillReleaseInYearNews = gameNewsChannel.GameNewsSetting.ShowWillReleaseInYearNews;
-        bool showMightReleaseInYearNews = gameNewsChannel.GameNewsSetting.ShowMightReleaseInYearNews;
-        bool showWillNotReleaseInYearNews = gameNewsChannel.GameNewsSetting.ShowWillNotReleaseInYearNews;
-        bool showReleasedGameNews = gameNewsChannel.GameNewsSetting.ShowReleasedGameNews;
-        bool showScoreGameNews = gameNewsChannel.GameNewsSetting.ShowScoreGameNews;
-        bool showEditedGameNews = gameNewsChannel.GameNewsSetting.ShowEditedGameNews;
-        var skippedTags = gameNewsChannel.SkippedTags;
+        bool showNewGameNews = gameNewsChannel?.GameNewsSetting.ShowNewGameNews ?? false;
+        bool showWillReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowWillReleaseInYearNews ?? false;
+        bool showMightReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowMightReleaseInYearNews ?? false;
+        bool showWillNotReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowWillNotReleaseInYearNews ?? false;
+        bool showReleasedGameNews = gameNewsChannel?.GameNewsSetting.ShowReleasedGameNews ?? false;
+        bool showScoreGameNews = gameNewsChannel?.GameNewsSetting.ShowScoreGameNews ?? false;
+        bool showEditedGameNews = gameNewsChannel?.GameNewsSetting.ShowEditedGameNews ?? false;
+        var skippedTags = gameNewsChannel?.SkippedTags ?? new List<MasterGameTag>();
 
         string GetEmoji(bool? setting) => setting switch
         {
@@ -192,6 +182,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 Name = "League Settings",
                 Value = $"> {GetEmoji(showPickedGameNews)} Show Picked Game News\n" +
                         $"> {GetEmoji(showEligibleGameNews)} Show Eligible Game News\n" +
+                        $"> {GetEmoji(showIneligibleGameNews)} Show Ineligible Game News\n" +
                         (notableMissSetting != null
                             ? $"> ℹ️ Notable Miss Setting: **{notableMissSetting.ReadableName}**"
                             : ""),
@@ -199,9 +190,15 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             });
         }
 
+        string gameStatusSettingsSectionHeader = "Game Status Settings";
+        if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
+        {
+            gameStatusSettingsSectionHeader = "Non-Picked Game Status Settings";
+        }
+
         embedFieldBuilders.Add(new EmbedFieldBuilder
         {
-            Name = "Game Release Settings",
+            Name = gameStatusSettingsSectionHeader,
             Value = $"> {GetEmoji(showNewGameNews)} Show New Game News\n" +
                     $"> {GetEmoji(showWillReleaseInYearNews)} Show Will Release In Year News\n" +
                     $"> {GetEmoji(showMightReleaseInYearNews)} Show Might Release In Year News\n" +
@@ -234,11 +231,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         return embed;
     }
 
-    private static bool IsRecommendedSettings(MinimalLeagueChannel? leagueChannel, GameNewsChannel gameNewsChannel)
+    private static bool IsRecommendedSettings(MinimalLeagueChannel? leagueChannel, GameNewsChannel? gameNewsChannel)
     {
         bool leagueRecommended = leagueChannel is null or { ShowPickedGameNews: true, ShowEligibleGameNews: true };
 
-        bool gameNewsRecommended = gameNewsChannel.GameNewsSetting.IsRecommended();
+        bool gameNewsRecommended = gameNewsChannel?.GameNewsSetting.IsRecommended() ?? true;
 
         bool result = leagueRecommended && gameNewsRecommended;
 
@@ -289,7 +286,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     private async Task SendGameNewsReleaseSettingsMessage(GameNewsSetting settings)
     {
-        var gameReleaseSettingsMessage = new ComponentBuilder()
+        //Discord only allows 5 rows! If we want to add more, we have to rethink this.
+        var gameStatusSettingsMessage = new ComponentBuilder()
             .AddRow(new ActionRowBuilder().WithButton(GetNewGameNewsButton(settings.ShowNewGameNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetWillReleaseInYearButton(settings.ShowWillReleaseInYearNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetMightReleaseInYearButton(settings.ShowMightReleaseInYearNews)))
@@ -297,7 +295,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .AddRow(new ActionRowBuilder().WithButton(GetReleasedGameNewsButton(settings.ShowReleasedGameNews)))
             .Build();
 
-        await FollowupAsync("**Set Game News Release Settings** \n", components: gameReleaseSettingsMessage, ephemeral: true);
+        await FollowupAsync("**Set Game News Status Settings** \n", components: gameStatusSettingsMessage, ephemeral: true);
     }
 
     private async Task SendGameNewsUpdateSettingsMessage(GameNewsSetting settings)
@@ -315,7 +313,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var leagueGameNewsSettingsMessage = new ComponentBuilder()
             .AddRow(new ActionRowBuilder().WithButton(GetEnablePickedGameNewsButton(settings.ShowPickedGameNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetEnableEligibleLeagueGameNewsOnlyButton(settings.ShowEligibleGameNews)))
-            .AddRow(new ActionRowBuilder().WithSelectMenu(GetNotableMissSettingSelection(settings.NotableMissSetting ?? NotableMissSetting.None)))
+            .AddRow(new ActionRowBuilder().WithButton(GetEnableIneligibleLeagueGameNewsOnlyButton(settings.ShowIneligibleGameNews)))
+            .AddRow(new ActionRowBuilder().WithSelectMenu(GetNotableMissSettingSelection(settings.NotableMissSetting)))
             .Build();
         await FollowupAsync("**Set League Game News Settings** \n", components: leagueGameNewsSettingsMessage, ephemeral: true);
     }
@@ -359,7 +358,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             await SendGameNewsCommandMessage();
             if (leagueChannel != null)
             {
-                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, NotableMissSetting.ScoreUpdates);
+                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, false, NotableMissSetting.ScoreUpdates);
             }
             return;
         }
@@ -379,7 +378,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 await SendLeagueGameNewsSettingsMessage(leagueChannel);
                 break;
 
-            case "change_game_release_settings":
+            case "change_game_status_settings":
                 await SendGameNewsReleaseSettingsMessage(settings);
                 break;
 
@@ -417,22 +416,32 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 await _discordRepo.SetSkippedGameNewsTags(guildID, channelID, new List<MasterGameTag>());
                 if (leagueChannel != null)
                 {
-                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, NotableMissSetting.ScoreUpdates);
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, false, NotableMissSetting.ScoreUpdates);
                 }
                 await UpdateCommandMessage();
                 await FollowupAsync("Recommended settings have been set", ephemeral: true);
                 break;
 
             case "picked_game_news":
-                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, !leagueChannel.ShowPickedGameNews, leagueChannel.ShowEligibleGameNews, leagueChannel.NotableMissSetting);
+                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, !leagueChannel.ShowPickedGameNews, leagueChannel.ShowEligibleGameNews, leagueChannel.ShowIneligibleGameNews,
+                    leagueChannel.NotableMissSetting);
                 await UpdateButtonState("picked_game_news", !leagueChannel.ShowPickedGameNews);
                 await UpdateCommandMessage();
 
                 break;
 
             case "eligible_game_news":
-                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, leagueChannel.ShowPickedGameNews, !leagueChannel.ShowEligibleGameNews, leagueChannel.NotableMissSetting);
+                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, leagueChannel.ShowPickedGameNews, !leagueChannel.ShowEligibleGameNews, leagueChannel.ShowIneligibleGameNews,
+                    leagueChannel.NotableMissSetting);
                 await UpdateButtonState("eligible_game_news", !leagueChannel.ShowEligibleGameNews);
+                await UpdateCommandMessage();
+
+                break;
+
+            case "ineligible_game_news":
+                await _discordRepo.SetLeagueGameNewsSetting(leagueChannel!.LeagueID, guildID, channelID, leagueChannel.ShowPickedGameNews, leagueChannel.ShowEligibleGameNews, !leagueChannel.ShowIneligibleGameNews,
+                    leagueChannel.NotableMissSetting);
+                await UpdateButtonState("ineligible_game_news", !leagueChannel.ShowIneligibleGameNews);
                 await UpdateCommandMessage();
 
                 break;
@@ -534,6 +543,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                     Context.Channel.Id,
                     leagueChannel.ShowPickedGameNews,
                     leagueChannel.ShowEligibleGameNews,
+                    leagueChannel.ShowIneligibleGameNews,
                     NotableMissSetting.FromValue(selectedValues.First()));
 
                 await UpdateCommandMessage();
@@ -614,8 +624,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     private static ButtonBuilder GetChangeGameReleaseSettingsButton()
     {
         return new ButtonBuilder()
-            .WithCustomId("button_change_game_release_settings")
-            .WithLabel("Change Game Release Settings")
+            .WithCustomId("button_change_game_status_settings")
+            .WithLabel("Change Game Status Settings")
             .WithStyle(ButtonStyle.Primary);
     }
 
@@ -673,6 +683,15 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         return new ButtonBuilder()
             .WithCustomId("button_eligible_game_news")
             .WithLabel("Enable Eligible League Game News")
+            .WithEmote(new Emoji(initialSetting ? "✅" : "❌"))
+            .WithStyle(ButtonStyle.Primary);
+    }
+
+    private static ButtonBuilder GetEnableIneligibleLeagueGameNewsOnlyButton(bool initialSetting)
+    {
+        return new ButtonBuilder()
+            .WithCustomId("button_ineligible_game_news")
+            .WithLabel("Enable Ineligible League Game News")
             .WithEmote(new Emoji(initialSetting ? "✅" : "❌"))
             .WithStyle(ButtonStyle.Primary);
     }
