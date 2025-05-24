@@ -147,11 +147,12 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         bool? showEligibleGameNews = leagueChannel?.ShowEligibleGameNews;
         bool? showIneligibleGameNews = leagueChannel?.ShowIneligibleGameNews;
         NotableMissSetting? notableMissSetting = leagueChannel?.NotableMissSetting;
-        bool showNewGameNews = gameNewsChannel?.GameNewsSetting.ShowNewGameAnnouncements ?? false;
+        bool? showAlreadyReleasedGameNews = gameNewsChannel?.GameNewsSetting.ShowAlreadyReleasedGameNews;
+        bool showNewGameAnnouncements = gameNewsChannel?.GameNewsSetting.ShowNewGameAnnouncements ?? false;
         bool showWillReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowWillReleaseInYearNews ?? false;
         bool showMightReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowMightReleaseInYearNews ?? false;
         bool showWillNotReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowWillNotReleaseInYearNews ?? false;
-        bool showReleasedGameNews = gameNewsChannel?.GameNewsSetting.ShowJustReleasedAnnouncements ?? false;
+        bool showJustReleasedAnnouncements = gameNewsChannel?.GameNewsSetting.ShowJustReleasedAnnouncements ?? false;
         bool showScoreGameNews = gameNewsChannel?.GameNewsSetting.ShowScoreGameNews ?? false;
         bool showEditedGameNews = gameNewsChannel?.GameNewsSetting.ShowEditedGameNews ?? false;
         var skippedTags = gameNewsChannel?.SkippedTags ?? new List<MasterGameTag>();
@@ -180,7 +181,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
                 Name = "League Settings",
-                Value = $"> {GetEmoji(showPickedGameNews)} Show Picked Game News\n" +
+                Value = $"> {GetEmoji(showPickedGameNews)} Enable Picked Game News Override\n" +
                         $"> {GetEmoji(showEligibleGameNews)} Show Eligible Game News\n" +
                         $"> {GetEmoji(showIneligibleGameNews)} Show Ineligible Game News\n" +
                         (notableMissSetting != null
@@ -189,6 +190,20 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 IsInline = false
             });
         }
+
+        string announcementsSectionHeader = "Game Announcements";
+        if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
+        {
+            announcementsSectionHeader = "Non-Picked Game Announcements";
+        }
+
+        embedFieldBuilders.Add(new EmbedFieldBuilder
+        {
+            Name = announcementsSectionHeader,
+            Value = $"> {GetEmoji(showNewGameAnnouncements)} Show New Game News\n" +
+                    $"> {GetEmoji(showJustReleasedAnnouncements)} Show Released Game News",
+            IsInline = false
+        });
 
         string gameStatusSettingsSectionHeader = "Game Status Settings";
         if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
@@ -199,11 +214,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         embedFieldBuilders.Add(new EmbedFieldBuilder
         {
             Name = gameStatusSettingsSectionHeader,
-            Value = $"> {GetEmoji(showNewGameNews)} Show New Game News\n" +
+            Value = $"> {GetEmoji(showAlreadyReleasedGameNews)} Show Already Released Game News\n" +
                     $"> {GetEmoji(showWillReleaseInYearNews)} Show Will Release In Year News\n" +
                     $"> {GetEmoji(showMightReleaseInYearNews)} Show Might Release In Year News\n" +
-                    $"> {GetEmoji(showWillNotReleaseInYearNews)} Show Will Not Release In Year News\n" +
-                    $"> {GetEmoji(showReleasedGameNews)} Show Released Game News",
+                    $"> {GetEmoji(showWillNotReleaseInYearNews)} Show Will Not Release In Year News\n",
+                    
             IsInline = false
         });
 
@@ -253,8 +268,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 .WithButton(GetDisableGameNewsButton())
                 .WithButton(GetSetRecommendedSettingsButton()))
             .AddRow(new ActionRowBuilder().WithButton(GetChangeLeagueNewsSettingsButton()))
-            .AddRow(new ActionRowBuilder().WithButton(GetChangeGameReleaseSettingsButton()))
-            .AddRow(new ActionRowBuilder().WithButton(GetChangeGameUpdateSettingsButton()))
+            .AddRow(new ActionRowBuilder()
+                .WithButton(GetChangeGameAnnouncementsSettingsButton()))
+                .WithButton(GetChangeGameStatusSettingsButton())
+                .WithButton(GetChangeGameUpdateSettingsButton())
             .AddRow(new ActionRowBuilder().WithButton(GetChangeSkippedTagsSettingsButton()))
             .Build();
     }
@@ -265,8 +282,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .AddRow(new ActionRowBuilder()
                 .WithButton(GetDisableGameNewsButton())
                 .WithButton(GetSetRecommendedSettingsButton()))
-            .AddRow(new ActionRowBuilder().WithButton(GetChangeGameReleaseSettingsButton()))
-            .AddRow(new ActionRowBuilder().WithButton(GetChangeGameUpdateSettingsButton()))
+            .AddRow(new ActionRowBuilder()
+                .WithButton(GetChangeGameAnnouncementsSettingsButton()))
+                .WithButton(GetChangeGameStatusSettingsButton())
+                .WithButton(GetChangeGameUpdateSettingsButton())
             .AddRow(new ActionRowBuilder().WithButton(GetChangeSkippedTagsSettingsButton()))
             .Build();
     }
@@ -284,15 +303,24 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         await FollowupAsync("Game News is currently off for this channel, Do you want to turn it on?:", components: enableGameNewsMessage, ephemeral: true);
     }
 
+    private async Task SendGameAnnoucementsSettingsMessage(GameNewsSetting settings)
+    {
+        
+        var gameAnnouncementsSettingsMessage = new ComponentBuilder()
+            .AddRow(new ActionRowBuilder().WithButton(GetNewGameAnnouncementButton(settings.ShowNewGameAnnouncements)))
+            .AddRow(new ActionRowBuilder().WithButton(GetJustReleasedAnnouncementButton(settings.ShowJustReleasedAnnouncements)))
+            .Build();
+        await FollowupAsync("**Set Game Announcements Settings** \n", components: gameAnnouncementsSettingsMessage, ephemeral: true);
+    }
+
     private async Task SendGameNewsReleaseSettingsMessage(GameNewsSetting settings)
     {
         //Discord only allows 5 rows! If we want to add more, we have to rethink this.
         var gameStatusSettingsMessage = new ComponentBuilder()
-            .AddRow(new ActionRowBuilder().WithButton(GetNewGameNewsButton(settings.ShowNewGameAnnouncements)))
+            .AddRow(new ActionRowBuilder().WithButton(GetAlreadyReleasedGameNewsButton(settings.ShowAlreadyReleasedGameNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetWillReleaseInYearButton(settings.ShowWillReleaseInYearNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetMightReleaseInYearButton(settings.ShowMightReleaseInYearNews)))
             .AddRow(new ActionRowBuilder().WithButton(GetWillNotReleaseInYearButton(settings.ShowWillNotReleaseInYearNews)))
-            .AddRow(new ActionRowBuilder().WithButton(GetReleasedGameNewsButton(settings.ShowJustReleasedAnnouncements)))
             .Build();
 
         await FollowupAsync("**Set Game News Status Settings** \n", components: gameStatusSettingsMessage, ephemeral: true);
@@ -376,6 +404,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                     return;
                 }
                 await SendLeagueGameNewsSettingsMessage(leagueChannel);
+                break;
+
+            case "change_game_announcements_settings":
+                await SendGameAnnoucementsSettingsMessage(settings);
                 break;
 
             case "change_game_status_settings":
@@ -621,7 +653,15 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithStyle(ButtonStyle.Primary);
     }
 
-    private static ButtonBuilder GetChangeGameReleaseSettingsButton()
+    private static ButtonBuilder GetChangeGameAnnouncementsSettingsButton()
+    {
+        return new ButtonBuilder()
+            .WithCustomId("button_change_game_announcement_settings")
+            .WithLabel("Change Game Announcement Settings")
+            .WithStyle(ButtonStyle.Primary);
+    }
+
+    private static ButtonBuilder GetChangeGameStatusSettingsButton()
     {
         return new ButtonBuilder()
             .WithCustomId("button_change_game_status_settings")
@@ -696,6 +736,15 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithStyle(ButtonStyle.Primary);
     }
 
+    private static ButtonBuilder GetAlreadyReleasedGameNewsButton(bool initialSetting)
+    {
+        return new ButtonBuilder()
+            .WithCustomId("button_already_released_game_news")
+            .WithLabel("Enable Already Released Game News")
+            .WithEmote(new Emoji(initialSetting ? "✅" : "❌"))
+            .WithStyle(ButtonStyle.Primary);
+    }
+
     private static ButtonBuilder GetWillReleaseInYearButton(bool initialSetting)
     {
         return new ButtonBuilder()
@@ -723,7 +772,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithStyle(ButtonStyle.Primary);
     }
 
-    private static ButtonBuilder GetNewGameNewsButton(bool initialSetting)
+    private static ButtonBuilder GetNewGameAnnouncementButton(bool initialSetting)
     {
         return new ButtonBuilder()
             .WithCustomId("button_new_game_news")
@@ -741,7 +790,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithStyle(ButtonStyle.Primary);
     }
 
-    private static ButtonBuilder GetReleasedGameNewsButton(bool initialSetting)
+    private static ButtonBuilder GetJustReleasedAnnouncementButton(bool initialSetting)
     {
         return new ButtonBuilder()
             .WithCustomId("button_released_game_news")
