@@ -26,7 +26,6 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
     public override bool NewGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
-
         //Exit Early if the user has disabled new game news for this channel
         if (!_gameNewsSetting.ShowNewGameAnnouncements)
         {
@@ -35,19 +34,17 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
         //Common Relevance Logic
         return CheckCommonLeagueRelevance(masterGame, currentDate);
-        
     }
 
     public override bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, LocalDate currentDate)
     {
-        //Picked Games, Aka games in the publisher roster for any league year will exit early and return the picked game news setting
+        //Picked Games, Aka games in the publisher roster for any league year will exit early if enable picked game override is true.
         bool isPickedGame = CheckIsPickedGame(masterGame);
-        if (isPickedGame)
+        if (isPickedGame && _showPickedGameNews)
         {
-            return _showPickedGameNews;
+            return true;
         }
 
-        //From now on out these checks are for games that are not in the publisher roster for any league year
         //Exit Early if the user has disabled edited game news for this channel
         if (!_gameNewsSetting.ShowEditedGameNews)
         {
@@ -59,14 +56,13 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
     public override bool JustReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
     {
-        //Picked Games, Aka games in the publisher roster for any league year will exit early and return the picked game news setting
+        //Picked Games, Aka games in the publisher roster for any league year will exit early if enable picked game override is true.
         bool isPickedGame = CheckIsPickedGame(masterGame);
-        if (isPickedGame)
+        if (isPickedGame && _showPickedGameNews)
         {
-            return _showPickedGameNews;
+            return true;
         }
 
-        //From now on out these checks are for games that are not in the publisher roster for any league year
         //Exit Early if the user has disabled just released game announcements for this channel
         if (!_gameNewsSetting.ShowJustReleasedAnnouncements)
         {
@@ -80,14 +76,13 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
     {
         bool initialScore = oldCriticScore == null;
 
-        //Picked Games, Aka games in the publisher roster for any league year will exit early and return the picked game news setting
+        //Picked Games, Aka games in the publisher roster for any league year will exit early if enable picked game override is true.
         bool isPickedGame = CheckIsPickedGame(masterGame);
-        if (isPickedGame)
+        if (isPickedGame && _showPickedGameNews)
         {
-            return _showPickedGameNews;
+            return true;
         }
 
-        //From now on out these checks are for games that are not in the publisher roster for any league year
         //Exit Early if the user has disabled score game news for this channel
         if (!_gameNewsSetting.ShowScoreGameNews)
         {
