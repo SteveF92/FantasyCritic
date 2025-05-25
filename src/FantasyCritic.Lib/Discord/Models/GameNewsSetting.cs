@@ -12,28 +12,12 @@ public record GameNewsSetting
 
     public bool IsOff()
     {
-        return
-            !ShowAlreadyReleasedNews &&
-            !ShowWillReleaseInYearNews &&
-            !ShowMightReleaseInYearNews &&
-            !ShowWillNotReleaseInYearNews &&
-            !ShowScoreGameNews &&
-            !ShowJustReleasedAnnouncements &&
-            !ShowNewGameAnnouncements &&
-            !ShowEditedGameNews;
+        return Equals(GetOffSetting());
     }
 
     public bool IsAllOn()
     {
-        return
-            ShowAlreadyReleasedNews &&
-            ShowWillReleaseInYearNews &&
-            ShowMightReleaseInYearNews &&
-            ShowWillNotReleaseInYearNews &&
-            ShowScoreGameNews &&
-            ShowJustReleasedAnnouncements &&
-            ShowNewGameAnnouncements &&
-            ShowEditedGameNews;
+        return Equals(GetAllOnSetting());
     }
 
     public bool IsRecommended()
@@ -49,6 +33,21 @@ public record GameNewsSetting
             ShowWillReleaseInYearNews = true,
             ShowMightReleaseInYearNews = true,
             ShowWillNotReleaseInYearNews = false,
+            ShowScoreGameNews = true,
+            ShowJustReleasedAnnouncements = true,
+            ShowNewGameAnnouncements = true,
+            ShowEditedGameNews = true,
+        };
+    }
+
+    public static GameNewsSetting GetAllOnSetting()
+    {
+        return new GameNewsSetting()
+        {
+            ShowAlreadyReleasedNews = true,
+            ShowWillReleaseInYearNews = true,
+            ShowMightReleaseInYearNews = true,
+            ShowWillNotReleaseInYearNews = true,
             ShowScoreGameNews = true,
             ShowJustReleasedAnnouncements = true,
             ShowNewGameAnnouncements = true,
