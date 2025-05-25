@@ -155,7 +155,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         {
             embedFieldBuilders.Add(new EmbedFieldBuilder
             {
-                Name = "League Settings",
+                Name = "League News Settings",
                 Value = $"> {GetEmoji(showPickedGameNews)} Enable Picked Game News Override\n" +
                         $"> {GetEmoji(showEligibleGameNews)} Show Eligible Game News\n" +
                         $"> {GetEmoji(showIneligibleGameNews)} Show Ineligible Game News\n" +
@@ -164,6 +164,25 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                             : ""),
                 IsInline = false
             });
+
+            if (CheckIsPickedOnly(leagueChannel))
+            {
+                embedFieldBuilders.Add(new EmbedFieldBuilder
+                {
+                    Name = "Tips",
+                    Value = "> ℹ️ To change other options, you must turn off \"Picked Game News Override\", or enable \"Eligible/Ineligible Game News\".",
+                    IsInline = false
+                });
+                var result = _discordFormatter.BuildRegularEmbedWithUserFooter(
+                    "Current Game News Settings",
+                    "> **Need Help?**\n" +
+                    "> Documentation [[Link]](https://www.fantasycritic.games/discord-bot/)\n" +
+                    "> Discord [[Link]](https://discord.com/invite/dNa7DD3)",
+                    Context.User,
+                    embedFieldBuilders);
+
+                return result;
+            }
         }
 
         string announcementsSectionHeader = "Game Announcements";
@@ -197,26 +216,40 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             IsInline = false
         });
 
+        string gameUpdateSettingsSectionHeader = "Game Update Settings";
+        if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
+        {
+            gameUpdateSettingsSectionHeader = "Non-Picked Game Update Settings";
+        }
+
         embedFieldBuilders.Add(new EmbedFieldBuilder
         {
-            Name = "Game Update Settings",
+            Name = gameUpdateSettingsSectionHeader,
             Value = $"> {GetEmoji(showScoreGameNews)} Show Score Game News\n" +
                     $"> {GetEmoji(showEditedGameNews)} Show Edited Game News",
             IsInline = false
         });
 
+        string skippedTagsSectionHeader = "Skipped Tags Settings";
+        if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
+        {
+            skippedTagsSectionHeader = "Non-Picked Skipped Tags Settings";
+        }
+
         embedFieldBuilders.Add(new EmbedFieldBuilder
         {
-            Name = "Skipped Tags",
+            Name = skippedTagsSectionHeader,
             Value = skippedTags.Any() ? string.Join("\n", skippedTags.Select(tag => $" - {tag.ReadableName}")) : "None",
-            IsInline = false
+            IsInline = false,
         });
 
         var embed = _discordFormatter.BuildRegularEmbedWithUserFooter(
-            "Current Game News Settings",
-            string.Empty,
-            Context.User,
-            embedFieldBuilders);
+                    "Current Game News Settings",
+                    "> **Need Help?**\n" +
+                    "> Documentation [[Link]](https://www.fantasycritic.games/discord-bot/)\n" +
+                    "> Discord [[Link]](https://discord.com/invite/dNa7DD3)",
+                    Context.User,
+                    embedFieldBuilders);
 
         return embed;
     }
@@ -273,10 +306,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     private async Task SendCustomSettingsMessage()
     {
-        bool isLeagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id) != null;
+        var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
 
         var customSettingsBuilder = new ComponentBuilder();
-        if (isLeagueChannel)
+        if (leagueChannel != null)
         {
             customSettingsBuilder.AddRow(new ActionRowBuilder().WithButton(GetChangeLeagueNewsSettingsButton()));
         }
@@ -291,7 +324,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         await FollowupAsync("**Custom Game News Settings** \n", components: customSettingsMessage, ephemeral: true);
     }
 
-    private async Task SendGameAnnoucementsSettingsMessage(GameNewsSetting settings)
+    private async Task SendGameAnnouncementsSettingsMessage(GameNewsSetting settings)
     {
         var gameAnnouncementsSettingsMessage = new ComponentBuilder()
             .AddRow(new ActionRowBuilder().WithButton(GetNewGameAnnouncementButton(settings.ShowNewGameAnnouncements)))
@@ -323,6 +356,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         await FollowupAsync("**Set Game News Update Settings** \n", components: gameNewsUpdateSettingsMessage, ephemeral: true);
     }
 
+    private async Task SendUnableToChangeSettingsMessage()
+    {
+        await FollowupAsync("ℹ️ Unable to change these settings unless Picked Game News Override is off, or Eligible/Ineligible Game News is enabled", ephemeral: true);
+    }
+
     private async Task SendLeagueGameNewsSettingsMessage(MinimalLeagueChannel settings)
     {
         var leagueGameNewsSettingsMessage = new ComponentBuilder()
@@ -351,6 +389,15 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     {
         // Defer the interaction response to extend the response window
         await DeferAsync();
+
+        // Cast the interaction to SocketMessageComponent
+        var interaction = Context.Interaction as SocketMessageComponent;
+
+        if (interaction == null)
+        {
+            await FollowupAsync("Failed to process the button interaction.", ephemeral: true);
+            return;
+        }
 
         var guildID = Context.Guild.Id;
         var channelID = Context.Channel.Id;
@@ -385,6 +432,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         switch (button)
         {
             case "change_league_news_settings":
+                await interaction.DeleteOriginalResponseAsync();
+
                 if (leagueChannel == null)
                 {
                     await FollowupAsync("This channel is not a league channel, if you are certain a league has been assigned to this channel contact support", ephemeral: true);
@@ -394,24 +443,35 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 break;
 
             case "change_game_announcements_settings":
-                await SendGameAnnoucementsSettingsMessage(settings);
+                if (CheckIsPickedOnly(leagueChannel))
+                {
+                    await SendUnableToChangeSettingsMessage();
+                    break;
+                }
+                await SendGameAnnouncementsSettingsMessage(settings);
                 break;
 
             case "change_game_status_settings":
+                if (CheckIsPickedOnly(leagueChannel))
+                {
+                    await SendUnableToChangeSettingsMessage();
+                    break;
+                }
                 await SendGameNewsReleaseSettingsMessage(settings);
                 break;
 
             case "change_game_update_settings":
+                if (CheckIsPickedOnly(leagueChannel))
+                {
+                    await SendUnableToChangeSettingsMessage();
+                    break;
+                }
                 await SendGameNewsUpdateSettingsMessage(settings);
                 break;
 
             case "change_skipped_tags_settings":
-                if (gameNewsChannel == null)
-                {
-                    await FollowupAsync("This channel is not a game news channel, try resending the game news command, if this persists contact support", ephemeral: true);
-                    return;
-                }
-                await SendGameNewsSkipTagsSettingsMessage(gameNewsChannel);
+                await interaction.DeleteOriginalResponseAsync();
+                await SendGameNewsSkipTagsSettingsMessage(gameNewsChannel!);
                 break;
 
             case "picked_game_news":
@@ -419,7 +479,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                     leagueChannel.NotableMissSetting);
                 await UpdateButtonState("picked_game_news", !leagueChannel.ShowPickedGameNews);
                 await UpdateCommandMessage();
-
                 break;
 
             case "eligible_game_news":
@@ -427,7 +486,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                     leagueChannel.NotableMissSetting);
                 await UpdateButtonState("eligible_game_news", !leagueChannel.ShowEligibleGameNews);
                 await UpdateCommandMessage();
-
                 break;
 
             case "ineligible_game_news":
@@ -571,6 +629,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                         {
                             await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, true, true, true, NotableMissSetting.ScoreUpdates);
                         }
+                        await UpdateCommandMessage();
                         break;
 
                     case "Recommended":
@@ -590,7 +649,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                             await FollowupAsync("This channel is not a league channel, if you are certain a league has been assigned to this channel contact support", ephemeral: true);
                             return;
                         }
-                        await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.GetOffSetting());
                         await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, true, false, false, NotableMissSetting.None);
                         await UpdateCommandMessage();
                         break;
@@ -789,7 +847,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     {
         return new ButtonBuilder()
             .WithCustomId("button_new_game_announcements")
-            .WithLabel("Enable New Game News")
+            .WithLabel("Enable New Game Announcements")
             .WithEmote(new Emoji(initialSetting ? "✅" : "❌"))
             .WithStyle(ButtonStyle.Primary);
     }
@@ -884,4 +942,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     }
 
     #endregion Select Menu Builders
+
+    private bool CheckIsPickedOnly(MinimalLeagueChannel? leagueChannel)
+    {
+        return leagueChannel?.ShowPickedGameNews ?? false
+            && !leagueChannel.ShowEligibleGameNews
+            && !leagueChannel.ShowIneligibleGameNews;
+    }
 }
