@@ -59,8 +59,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             }
 
             await SendGameNewsCommandMessage();
-
-            
         }
         catch (Exception ex)
         {
@@ -195,7 +193,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                     $"> {GetEmoji(showWillReleaseInYearNews)} Show Will Release In Year News\n" +
                     $"> {GetEmoji(showMightReleaseInYearNews)} Show Might Release In Year News\n" +
                     $"> {GetEmoji(showWillNotReleaseInYearNews)} Show Will Not Release In Year News\n",
-                    
+
             IsInline = false
         });
 
@@ -280,7 +278,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var customSettingsBuilder = new ComponentBuilder();
         if (isLeagueChannel)
         {
-            customSettingsBuilder.AddRow(new ActionRowBuilder().WithButton(GetChangeLeagueNewsSettingsButton())); 
+            customSettingsBuilder.AddRow(new ActionRowBuilder().WithButton(GetChangeLeagueNewsSettingsButton()));
         }
 
         var customSettingsMessage = customSettingsBuilder
@@ -295,7 +293,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     private async Task SendGameAnnoucementsSettingsMessage(GameNewsSetting settings)
     {
-        
         var gameAnnouncementsSettingsMessage = new ComponentBuilder()
             .AddRow(new ActionRowBuilder().WithButton(GetNewGameAnnouncementButton(settings.ShowNewGameAnnouncements)))
             .AddRow(new ActionRowBuilder().WithButton(GetJustReleasedAnnouncementButton(settings.ShowJustReleasedAnnouncements)))
@@ -564,7 +561,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 break;
 
             case "preset_settings":
-                
+
                 var preset = selectedValues.First();
                 switch (preset)
                 {
@@ -575,6 +572,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                             await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, true, true, true, NotableMissSetting.ScoreUpdates);
                         }
                         break;
+
                     case "Recommended":
                         var recommendedSettings = GameNewsSetting.GetRecommendedSetting();
                         await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, recommendedSettings);
@@ -585,6 +583,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                         }
                         await UpdateCommandMessage();
                         break;
+
                     case "LeagueOnly":
                         if (leagueChannel == null)
                         {
@@ -595,6 +594,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                         await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, true, false, false, NotableMissSetting.None);
                         await UpdateCommandMessage();
                         break;
+
                     case "Custom":
                         await SendCustomSettingsMessage();
                         break;
@@ -884,6 +884,4 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     }
 
     #endregion Select Menu Builders
-
-    
 }
