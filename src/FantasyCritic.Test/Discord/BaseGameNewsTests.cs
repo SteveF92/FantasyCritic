@@ -14,50 +14,82 @@ internal abstract class BaseGameNewsTests
     public static LocalDate CurrentDateForTesting = new LocalDate(2025, 04, 02);
     public static DiscordChannelKey ChannelKey => new DiscordChannelKey(0, 0);
 
-    public static readonly MasterGame Eligible_Past_ReleasedLastWeek =
-        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["NGF"]);
+    // ========== PAST RELEASES ==========
 
-    public static readonly MasterGame Ineligible_Past_ReleasedLastWeek =
-        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["PRT"]);
+    // Eligible (NGF) - Released Last Week
+    public static readonly MasterGame Eligible_Past_ReleasedLastWeek_NoScore =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["NGF"], null);
+    public static readonly MasterGame Eligible_Past_ReleasedLastWeek_Score75 =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["NGF"], 75m);
+    public static readonly MasterGame Eligible_Past_ReleasedLastWeek_Score90 =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["NGF"], 90m);
 
-    public static readonly MasterGame Unannounced_Past_ReleasedLastWeek =
-        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["UNA"]);
+    // Ineligible (PRT) - Released Last Week
+    public static readonly MasterGame Ineligible_Past_ReleasedLastWeek_NoScore =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["PRT"], null);
+    public static readonly MasterGame Ineligible_Past_ReleasedLastWeek_Score75 =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["PRT"], 75m);
+    public static readonly MasterGame Ineligible_Past_ReleasedLastWeek_Score90 =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["PRT"], 90m);
 
-    public static readonly MasterGame Eligible_Past_ReleasedToday =
-        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["NGF"]);
+    // Unannounced (UNA) - Released Last Week
+    public static readonly MasterGame Unannounced_Past_ReleasedLastWeek_NoScore =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["UNA"], null);
+    public static readonly MasterGame Unannounced_Past_ReleasedLastWeek_Score75 =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["UNA"], 75m);
+    public static readonly MasterGame Unannounced_Past_ReleasedLastWeek_Score90 =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["UNA"], 90m);
 
-    public static readonly MasterGame Ineligible_Past_ReleasedToday =
-        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["PRT"]);
+    // Eligible (NGF) - Released Today
+    public static readonly MasterGame Eligible_Past_ReleasedToday_NoScore =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["NGF"], null);
+    public static readonly MasterGame Eligible_Past_ReleasedToday_Score75 =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["NGF"], 75m);
+    public static readonly MasterGame Eligible_Past_ReleasedToday_Score90 =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["NGF"], 90m);
 
-    public static readonly MasterGame Unannounced_Past_ReleasedToday =
-        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["UNA"]);
+    // Ineligible (PRT) - Released Today
+    public static readonly MasterGame Ineligible_Past_ReleasedToday_NoScore =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["PRT"], null);
+    public static readonly MasterGame Ineligible_Past_ReleasedToday_Score75 =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["PRT"], 75m);
+    public static readonly MasterGame Ineligible_Past_ReleasedToday_Score90 =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["PRT"], 90m);
 
+    // Unannounced (UNA) - Released Today
+    public static readonly MasterGame Unannounced_Past_ReleasedToday_NoScore =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["UNA"], null);
+    public static readonly MasterGame Unannounced_Past_ReleasedToday_Score75 =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["UNA"], 75m);
+    public static readonly MasterGame Unannounced_Past_ReleasedToday_Score90 =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["UNA"], 90m);
+
+    // ========== FUTURE RELEASES ==========
+
+    // Eligible (NGF)
     public static readonly MasterGame Eligible_Future_Confirmed2025 =
-        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
-
-    public static readonly MasterGame Ineligible_Future_Confirmed2025 =
-        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
-
-    public static readonly MasterGame Unannounced_Future_Confirmed2025 =
-        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["UNA"]);
-
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"], null);
     public static readonly MasterGame Eligible_Future_MightBe2025 =
-        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
-
-    public static readonly MasterGame Ineligible_Future_MightBe2025 =
-        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
-
-    public static readonly MasterGame Unannounced_Future_MightBe2025 =
-        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["UNA"]);
-
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"], null);
     public static readonly MasterGame Eligible_Future_ConfirmedNot2025 =
-        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
+        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["NGF"], null);
 
+    // Ineligible (PRT)
+    public static readonly MasterGame Ineligible_Future_Confirmed2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"], null);
+    public static readonly MasterGame Ineligible_Future_MightBe2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"], null);
     public static readonly MasterGame Ineligible_Future_ConfirmedNot2025 =
-        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
+        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["PRT"], null);
 
+    // Unannounced (UNA)
+    public static readonly MasterGame Unannounced_Future_Confirmed2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["UNA"], null);
+    public static readonly MasterGame Unannounced_Future_MightBe2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["UNA"], null);
     public static readonly MasterGame Unannounced_Future_ConfirmedNot2025 =
-        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["UNA"]);
+        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["UNA"], null);
+
 
     public static LeagueYear GetTestLeagueYear()
     {
@@ -81,11 +113,11 @@ internal abstract class BaseGameNewsTests
         return new LeagueYear(league, supportedYear, leagueOptions, PlayStatus.DraftFinal, true, new List<EligibilityOverride>(), new List<TagOverride>(), Instant.MinValue, null, publishers, null);
     }
 
-    private static MasterGame CreateBasicMasterGame(LocalDate minimumReleaseDate, LocalDate maximumReleaseDate, MasterGameTag tag)
+    private static MasterGame CreateBasicMasterGame(LocalDate minimumReleaseDate, LocalDate maximumReleaseDate, MasterGameTag tag, decimal? criticScore)
     {
         LocalDate? confirmedReleaseDate = minimumReleaseDate == maximumReleaseDate ? minimumReleaseDate : null;
         return new MasterGame(Guid.NewGuid(), "Test Master Game", "Release Date String", minimumReleaseDate, maximumReleaseDate, null, null, null,
-            confirmedReleaseDate, null, null, null, null, false, null, "", null, null, null, false, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(),
+            confirmedReleaseDate, null, null, null, criticScore, false, null, "", null, null, null, false, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(),
             new List<MasterSubGame>(), new List<MasterGameTag>() { tag });
     }
 }
