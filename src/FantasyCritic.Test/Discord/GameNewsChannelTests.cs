@@ -45,10 +45,10 @@ internal class GameNewsChannelTests : BaseGameNewsTests
 
 
     [Test]
-    public void ConfirmedGame_IsRelevant_WhenSettingIsAll_AndNoTagsSkipped()
+    public void NewGameIsRelevant_EligibleConfirmed2025_SettingAll_NoSkippedTags()
     {
         var setting = Setting_All_NoSkippedTags;
-        var result = setting.NewGameIsRelevant(Eligible_Future_Confirmed2025, null, ChannelKey, CurrentDateForTesting);
+        var result = setting.NewGameIsRelevant(Eligible_Confirmed2025, null, ChannelKey, CurrentDateForTesting);
         Assert.That(result, Is.True);
     }
 }
