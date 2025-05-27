@@ -51,4 +51,28 @@ internal class GameNewsChannelTests : BaseGameNewsTests
         var result = setting.NewGameIsRelevant(Eligible_Confirmed2025, null, ChannelKey, CurrentDateForTesting);
         Assert.That(result, Is.True);
     }
+
+    [Test]
+    public void ExistingGameIsRelevant_EligibleConfirmed2025_SettingAll_NoSkippedTags()
+    {
+        var setting = Setting_All_NoSkippedTags;
+        var result = setting.ExistingGameIsRelevant(Eligible_Confirmed2025, false, null, ChannelKey, CurrentDateForTesting);
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public void ReleasedGameIsRelevant_EligibleConfirmed2025_SettingAll_NoSkippedTags()
+    {
+        var setting = Setting_All_NoSkippedTags;
+        var result = setting.ReleasedGameIsRelevant(Eligible_ReleasedToday_NoScore, null);
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public void ReleasedGameIsRelevant_Eligible_ReleasedToday_Score75_SettingAll_NoSkippedTags()
+    {
+        var setting = Setting_All_NoSkippedTags;
+        var result = setting.ScoredGameIsRelevant(Eligible_ReleasedToday_Score75, null, 75m, CurrentDateForTesting);
+        Assert.That(result, Is.True);
+    }
 }
