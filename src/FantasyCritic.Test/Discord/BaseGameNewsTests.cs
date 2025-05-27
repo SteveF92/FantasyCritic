@@ -1,0 +1,81 @@
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Enums;
+using FantasyCritic.Lib.Identity;
+using FantasyCritic.Test.TestUtilities;
+using NodaTime;
+using System;
+using System.Collections.Generic;
+
+namespace FantasyCritic.Test.Discord;
+internal abstract class BaseGameNewsTests
+{
+    // Eligible (NGF) - Past Releases
+    public static readonly MasterGame Eligible_Past_ReleasedLastWeek =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["NGF"]);
+
+    public static readonly MasterGame Eligible_Past_ReleasedToday =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["NGF"]);
+
+    // Ineligible (PRT) - Past Releases
+    public static readonly MasterGame Ineligible_Past_ReleasedLastWeek =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+    public static readonly MasterGame Ineligible_Past_ReleasedToday =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+    // Eligible (NGF) - Future Releases
+    public static readonly MasterGame Eligible_Future_Confirmed2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
+
+    public static readonly MasterGame Eligible_Future_MightBe2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
+
+    public static readonly MasterGame Eligible_Future_ConfirmedNot2025 =
+        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
+
+    // Ineligible (PRT) - Future Releases
+    public static readonly MasterGame Ineligible_Future_Confirmed2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+    public static readonly MasterGame Ineligible_Future_MightBe2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+    public static readonly MasterGame Ineligible_Future_ConfirmedNot2025 =
+        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+
+    public static LocalDate CurrentDateForTesting = new LocalDate(2025, 04, 02);
+    public static DiscordChannelKey ChannelKey => new DiscordChannelKey(0, 0);
+
+    public static LeagueYear GetTestLeagueYear()
+    {
+        var league = new League(Guid.Empty, "Test League",
+            new MinimalFantasyCriticUser(Guid.Empty, "Test USer", "email@email.com"),
+            null, null, new List<int>() { 2025 }, true, false, false, false, 0);
+        var supportedYear = new SupportedYear(2025, true, true, true, new LocalDate(2024, 12, 8), false);
+
+        var leagueTags = new List<LeagueTagStatus>()
+        {
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)
+        };
+
+        var leagueOptions = new LeagueOptions(10, 5, 2, 1, 0, 0, 0, false, false, false, false, 0, leagueTags,
+            new List<SpecialGameSlot>(),
+            DraftSystem.Flexible, PickupSystem.SemiPublicBiddingSecretCounterPicks, ScoringSystem.GetDefaultScoringSystem(2025),
+            TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, ReleaseSystem.MustBeReleased,
+            new AnnualDate(10, 1), new AnnualDate(10, 1));
+
+        var publishers = new List<Publisher>();
+        return new LeagueYear(league, supportedYear, leagueOptions, PlayStatus.DraftFinal, true, new List<EligibilityOverride>(), new List<TagOverride>(), Instant.MinValue, null, publishers, null);
+    }
+
+    private static MasterGame CreateBasicMasterGame(LocalDate minimumReleaseDate, LocalDate maximumReleaseDate, MasterGameTag tag)
+    {
+        LocalDate? confirmedReleaseDate = minimumReleaseDate == maximumReleaseDate ? minimumReleaseDate : null;
+        return new MasterGame(Guid.NewGuid(), "Test Master Game", "Release Date String", minimumReleaseDate, maximumReleaseDate, null, null, null,
+            confirmedReleaseDate, null, null, null, null, false, null, "", null, null, null, false, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(),
+            new List<MasterSubGame>(), new List<MasterGameTag>() { tag });
+    }
+}
