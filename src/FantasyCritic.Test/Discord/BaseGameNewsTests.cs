@@ -11,43 +11,53 @@ using System.Collections.Generic;
 namespace FantasyCritic.Test.Discord;
 internal abstract class BaseGameNewsTests
 {
-    // Eligible (NGF) - Past Releases
+    public static LocalDate CurrentDateForTesting = new LocalDate(2025, 04, 02);
+    public static DiscordChannelKey ChannelKey => new DiscordChannelKey(0, 0);
+
     public static readonly MasterGame Eligible_Past_ReleasedLastWeek =
         CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["NGF"]);
+
+    public static readonly MasterGame Ineligible_Past_ReleasedLastWeek =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+    public static readonly MasterGame Unannounced_Past_ReleasedLastWeek =
+        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["UNA"]);
 
     public static readonly MasterGame Eligible_Past_ReleasedToday =
         CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["NGF"]);
 
-    // Ineligible (PRT) - Past Releases
-    public static readonly MasterGame Ineligible_Past_ReleasedLastWeek =
-        CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["PRT"]);
-
     public static readonly MasterGame Ineligible_Past_ReleasedToday =
         CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["PRT"]);
 
-    // Eligible (NGF) - Future Releases
+    public static readonly MasterGame Unannounced_Past_ReleasedToday =
+        CreateBasicMasterGame(new LocalDate(2025, 4, 2), new LocalDate(2025, 4, 2), MasterGameTagDictionary.TagDictionary["UNA"]);
+
     public static readonly MasterGame Eligible_Future_Confirmed2025 =
         CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
+
+    public static readonly MasterGame Ineligible_Future_Confirmed2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+    public static readonly MasterGame Unannounced_Future_Confirmed2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["UNA"]);
 
     public static readonly MasterGame Eligible_Future_MightBe2025 =
         CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
 
-    public static readonly MasterGame Eligible_Future_ConfirmedNot2025 =
-        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
-
-    // Ineligible (PRT) - Future Releases
-    public static readonly MasterGame Ineligible_Future_Confirmed2025 =
-        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2025, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
-
     public static readonly MasterGame Ineligible_Future_MightBe2025 =
         CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
+
+    public static readonly MasterGame Unannounced_Future_MightBe2025 =
+        CreateBasicMasterGame(new LocalDate(2025, 6, 1), new LocalDate(2026, 6, 1), MasterGameTagDictionary.TagDictionary["UNA"]);
+
+    public static readonly MasterGame Eligible_Future_ConfirmedNot2025 =
+        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["NGF"]);
 
     public static readonly MasterGame Ineligible_Future_ConfirmedNot2025 =
         CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["PRT"]);
 
-
-    public static LocalDate CurrentDateForTesting = new LocalDate(2025, 04, 02);
-    public static DiscordChannelKey ChannelKey => new DiscordChannelKey(0, 0);
+    public static readonly MasterGame Unannounced_Future_ConfirmedNot2025 =
+        CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["UNA"]);
 
     public static LeagueYear GetTestLeagueYear()
     {
