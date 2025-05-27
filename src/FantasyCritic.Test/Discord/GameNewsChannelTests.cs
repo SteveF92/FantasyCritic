@@ -11,29 +11,38 @@ internal class GameNewsChannelTests : BaseGameNewsTests
 {
     // No skipped tags
     public static readonly CombinedChannelGameSetting Setting_All_NoSkippedTags =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.All, new List<MasterGameTag>());
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("All"), new OriginalLeagueChannel(false, false), new List<MasterGameTag>()));
 
     public static readonly CombinedChannelGameSetting Setting_WillReleaseInYear_NoSkippedTags =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.WillReleaseInYear, new List<MasterGameTag>());
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("WillReleaseInYear"), new OriginalLeagueChannel(false, false), new List<MasterGameTag>()));
 
     public static readonly CombinedChannelGameSetting Setting_MightReleaseInYear_NoSkippedTags =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.MightReleaseInYear, new List<MasterGameTag>());
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("MightReleaseInYear"), new OriginalLeagueChannel(false, false), new List<MasterGameTag>()));
 
     public static readonly CombinedChannelGameSetting Setting_Off_NoSkippedTags =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.Off, new List<MasterGameTag>());
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("Off"), new OriginalLeagueChannel(false, false), new List<MasterGameTag>()));
 
     // Skipped tag: UNA (Unannounced game)
     public static readonly CombinedChannelGameSetting Setting_All_SkipUNA =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.All, new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] });
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("All"), new OriginalLeagueChannel(false, false), new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] }));
 
     public static readonly CombinedChannelGameSetting Setting_WillReleaseInYear_SkipUNA =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.WillReleaseInYear, new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] });
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("WillReleaseInYear"), new OriginalLeagueChannel(false, false), new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] }));
 
     public static readonly CombinedChannelGameSetting Setting_MightReleaseInYear_SkipUNA =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.MightReleaseInYear, new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] });
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("MightReleaseInYear"), new OriginalLeagueChannel(false, false), new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] }));
 
     public static readonly CombinedChannelGameSetting Setting_Off_SkipUNA =
-        new CombinedChannelGameSetting(false, false, GameNewsSetting.Off, new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] });
+        DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
+            new OriginalGameChannel("Off"), new OriginalLeagueChannel(false, false), new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] }));
+
 
     [Test]
     public void ConfirmedGame_IsRelevant_WhenSettingIsAll_AndNoTagsSkipped()
