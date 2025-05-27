@@ -64,7 +64,7 @@ internal class GameNewsChannelTests : BaseGameNewsTests
     public void ReleasedGameIsRelevant_EligibleConfirmed2025_SettingAll_NoSkippedTags()
     {
         var setting = Setting_All_NoSkippedTags;
-        var result = setting.ReleasedGameIsRelevant(Eligible_ReleasedToday_NoScore, null);
+        var result = setting.ReleasedGameIsRelevant(Eligible_ReleasedToday, null);
         Assert.That(result, Is.True);
     }
 
@@ -72,7 +72,7 @@ internal class GameNewsChannelTests : BaseGameNewsTests
     public void ReleasedGameIsRelevant_Eligible_ReleasedToday_Score75_SettingAll_NoSkippedTags()
     {
         var setting = Setting_All_NoSkippedTags;
-        var result = setting.ScoredGameIsRelevant(Eligible_ReleasedToday_Score75, null, 75m, CurrentDateForTesting);
+        var result = setting.ScoredGameIsRelevant(Eligible_ReleasedToday, null, 75m, CurrentDateForTesting);
         Assert.That(result, Is.True);
     }
 }
