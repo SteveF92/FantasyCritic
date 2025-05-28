@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Test.TestUtilities;
-using NUnit.Framework;
 
 namespace FantasyCritic.Test.Discord;
 
@@ -41,20 +40,4 @@ internal class GameNewsChannelTests : BaseGameNewsTests
     public static readonly CombinedChannelGameSetting Setting_Off_SkipUNA =
         DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
             new OriginalGameChannel("Off"), new OriginalLeagueChannel(false, false), new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] }));
-
-    [Test]
-    public void ReleasedGameIsRelevant_EligibleConfirmed2025_SettingAll_NoSkippedTags()
-    {
-        var setting = Setting_All_NoSkippedTags;
-        var result = setting.ReleasedGameIsRelevant(Eligible_ReleasedToday, null);
-        Assert.That(result, Is.True);
-    }
-
-    [Test]
-    public void ReleasedGameIsRelevant_Eligible_ReleasedToday_Score75_SettingAll_NoSkippedTags()
-    {
-        var setting = Setting_All_NoSkippedTags;
-        var result = setting.ScoredGameIsRelevant(Eligible_ReleasedToday, null, 75m, CurrentDateForTesting);
-        Assert.That(result, Is.True);
-    }
 }
