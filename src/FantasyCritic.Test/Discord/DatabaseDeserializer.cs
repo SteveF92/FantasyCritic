@@ -10,10 +10,11 @@ internal static class DatabaseDeserializer
     {
         var translatedSetting = GameNewsSetting.GetOffSetting();
         var hasGameChannel = structure.GameChannel.GameNewsSetting != "Off";
+        var hasLeagueChannel = structure.LeagueChannel is not null;
         if (hasGameChannel)
         {
             bool showReleasedGameNews = structure.GameChannel.GameNewsSetting == "All";
-            if (!structure.LeagueChannel.SendLeagueMasterGameUpdates)
+            if (!hasLeagueChannel)
             {
                 showReleasedGameNews = true;
             }
@@ -31,18 +32,18 @@ internal static class DatabaseDeserializer
             };
         }
 
-        if (structure.LeagueChannel.SendLeagueMasterGameUpdates)
+        if (hasLeagueChannel)
         {
             var leagueYearList = new List<LeagueYear>();
             if (leagueYear is not null)
             {
                 leagueYearList.Add(leagueYear);
             }
-            var notableMissSetting = structure.LeagueChannel.SendNotableMisses
+            var notableMissSetting = (structure.LeagueChannel?.SendNotableMisses ?? true)
                 ? NotableMissSetting.ScoreUpdates
                 : NotableMissSetting.None;
             var showIneligibleGameNews = structure.GameChannel.GameNewsSetting == "All";
-            return new LeagueGameNewsRelevanceHandler(structure.LeagueChannel.SendLeagueMasterGameUpdates, hasGameChannel, showIneligibleGameNews, notableMissSetting, translatedSetting, structure.SkippedTags,
+            return new LeagueGameNewsRelevanceHandler(structure.LeagueChannel!.SendLeagueMasterGameUpdates, hasGameChannel, showIneligibleGameNews, notableMissSetting, translatedSetting, structure.SkippedTags,
                 new DiscordChannelKey(0, 0), leagueYearList);
         }
 
@@ -50,6 +51,6 @@ internal static class DatabaseDeserializer
     }
 }
 
-public record OriginalDatabaseStructure(OriginalGameChannel GameChannel, OriginalLeagueChannel LeagueChannel, List<MasterGameTag> SkippedTags);
+public record OriginalDatabaseStructure(OriginalGameChannel GameChannel, OriginalLeagueChannel? LeagueChannel, List<MasterGameTag> SkippedTags);
 public record OriginalGameChannel(string GameNewsSetting);
 public record OriginalLeagueChannel(bool SendLeagueMasterGameUpdates, bool SendNotableMisses);
