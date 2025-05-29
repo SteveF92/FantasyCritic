@@ -12,16 +12,22 @@ internal static class DatabaseDeserializer
         var hasGameChannel = structure.GameChannel.GameNewsSetting != "Off";
         if (hasGameChannel)
         {
+            bool showReleasedGameNews = structure.GameChannel.GameNewsSetting == "All";
+            if (!structure.LeagueChannel.SendLeagueMasterGameUpdates)
+            {
+                showReleasedGameNews = true;
+            }
+
             translatedSetting = new GameNewsSetting(){
-                ShowJustReleasedAnnouncements = true,
+                ShowJustReleasedAnnouncements = showReleasedGameNews,
                 ShowNewGameAnnouncements = true,
-                ShowAlreadyReleasedNews = true,
+                ShowAlreadyReleasedNews = showReleasedGameNews,
                 ShowWillReleaseInYearNews = true,
                 ShowMightReleaseInYearNews = structure.GameChannel!.GameNewsSetting == "All" ||
                                              structure.GameChannel.GameNewsSetting == "MightReleaseInYear",
                 ShowWillNotReleaseInYearNews = structure.GameChannel.GameNewsSetting == "All",
-                ShowScoreGameNews = true,
-                ShowEditedGameNews = true
+                ShowScoreGameNews = showReleasedGameNews,
+                ShowEditedGameNews = showReleasedGameNews
             };
         }
 
