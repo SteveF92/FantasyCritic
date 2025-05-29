@@ -14,7 +14,7 @@ internal static class DatabaseDeserializer
         if (hasGameChannel)
         {
             bool showReleasedGameNews = structure.GameChannel.GameNewsSetting == "All";
-            if (!hasLeagueChannel)
+            if (!hasLeagueChannel || structure.LeagueChannel?.SendLeagueMasterGameUpdates == false)
             {
                 showReleasedGameNews = true;
             }
