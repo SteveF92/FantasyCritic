@@ -181,7 +181,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         }
 
         //if ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it
-        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews && !masterGame.WillReleaseInYear(leagueYear.Year))
+        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews && !masterGame.CouldReleaseInYear(leagueYear.Year))
         {
             return false;
         }
