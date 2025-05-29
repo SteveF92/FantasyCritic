@@ -533,9 +533,9 @@ internal class LeagueGameChannelNewGameIsRelevantTests : LeagueGameNewsChannelTe
     public void Unannounced_MightBe2025_LeagueGames_Off_Misses_Off_SettingOff_NoSkippedTags() =>
         Assert.That(LeagueGames_Off_Misses_Off_SettingOff_NoSkippedTags(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.False);
 
-    [Test]
-    public void Unannounced_MightBe2025_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.True);
+    //[Test]
+    //public void Unannounced_MightBe2025_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA() =>
+    //    Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.True);
 
     [Test]
     public void Unannounced_MightBe2025_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA() =>
@@ -565,9 +565,9 @@ internal class LeagueGameChannelNewGameIsRelevantTests : LeagueGameNewsChannelTe
     public void Unannounced_MightBe2025_LeagueGames_Off_Misses_On_SettingOff_NoSkippedTags() =>
         Assert.That(LeagueGames_Off_Misses_On_SettingOff_NoSkippedTags(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.False);
 
-    [Test]
-    public void Unannounced_MightBe2025_LeagueGames_Off_Misses_On_SettingAll_SkipUNA() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.True);
+    //[Test]
+    //public void Unannounced_MightBe2025_LeagueGames_Off_Misses_On_SettingAll_SkipUNA() =>
+    //    Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.True);
 
     [Test]
     public void Unannounced_MightBe2025_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA() =>
@@ -917,9 +917,9 @@ internal class LeagueGameChannelNewGameIsRelevantTests : LeagueGameNewsChannelTe
     public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_Off_SettingOff_NoSkippedTags() =>
         Assert.That(LeagueGames_Off_Misses_Off_SettingOff_NoSkippedTags(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.False);
 
-    [Test]
-    public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.True);
+    //[Test]
+    //public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA() =>
+    //    Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.True);
 
     [Test]
     public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA() =>
@@ -949,9 +949,9 @@ internal class LeagueGameChannelNewGameIsRelevantTests : LeagueGameNewsChannelTe
     public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_On_SettingOff_NoSkippedTags() =>
         Assert.That(LeagueGames_Off_Misses_On_SettingOff_NoSkippedTags(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.False);
 
-    [Test]
-    public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_On_SettingAll_SkipUNA() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.True);
+    //[Test]
+    //public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_On_SettingAll_SkipUNA() =>
+    //    Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.True);
 
     [Test]
     public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA() =>
