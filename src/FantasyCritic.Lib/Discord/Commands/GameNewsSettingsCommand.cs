@@ -173,22 +173,16 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                     Value = "> ℹ️ To change other options, you must turn off \"Picked Game News Override\", or enable \"Eligible/Ineligible Game News\".",
                     IsInline = false
                 });
-                var result = _discordFormatter.BuildRegularEmbedWithUserFooter(
-                    "Current Game News Settings",
-                    "> **Need Help?**\n" +
-                    "> Documentation [[Link]](https://www.fantasycritic.games/discord-bot/)\n" +
-                    "> Discord [[Link]](https://discord.com/invite/dNa7DD3)",
-                    Context.User,
-                    embedFieldBuilders);
 
-                return result;
+
+                return GetGameNewsSettingsEmbed(embedFieldBuilders);
             }
         }
 
-        string announcementsSectionHeader = "Game Announcements";
+        string announcementsSectionHeader = "Game Announcement Filters";
         if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
         {
-            announcementsSectionHeader = "Non-Picked Game Announcements";
+            announcementsSectionHeader = "Non-Picked Game Announcement Filters";
         }
 
         embedFieldBuilders.Add(new EmbedFieldBuilder
@@ -199,10 +193,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             IsInline = false
         });
 
-        string gameStatusSettingsSectionHeader = "Game Status Settings";
+        string gameStatusSettingsSectionHeader = "Game Status Filters";
         if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
         {
-            gameStatusSettingsSectionHeader = "Non-Picked Game Status Settings";
+            gameStatusSettingsSectionHeader = "Non-Picked Game Status Filters";
         }
 
         embedFieldBuilders.Add(new EmbedFieldBuilder
@@ -216,10 +210,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             IsInline = false
         });
 
-        string gameUpdateSettingsSectionHeader = "Game Update Settings";
+        string gameUpdateSettingsSectionHeader = "Game Update Filters";
         if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
         {
-            gameUpdateSettingsSectionHeader = "Non-Picked Game Update Settings";
+            gameUpdateSettingsSectionHeader = "Non-Picked Game Update Filters";
         }
 
         embedFieldBuilders.Add(new EmbedFieldBuilder
@@ -230,10 +224,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             IsInline = false
         });
 
-        string skippedTagsSectionHeader = "Skipped Tags Settings";
+        string skippedTagsSectionHeader = "Skipped Tags Filters";
         if (leagueChannel != null && leagueChannel.ShowPickedGameNews)
         {
-            skippedTagsSectionHeader = "Non-Picked Skipped Tags Settings";
+            skippedTagsSectionHeader = "Non-Picked Skipped Tags Filters";
         }
 
         embedFieldBuilders.Add(new EmbedFieldBuilder
@@ -243,15 +237,18 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             IsInline = false,
         });
 
-        var embed = _discordFormatter.BuildRegularEmbedWithUserFooter(
+        return GetGameNewsSettingsEmbed(embedFieldBuilders);
+    }
+
+    private Embed GetGameNewsSettingsEmbed(List<EmbedFieldBuilder> builders)
+    {
+        return _discordFormatter.BuildRegularEmbedWithUserFooter(
                     "Current Game News Settings",
                     "> **Need Help?**\n" +
                     "> Documentation [[Link]](https://www.fantasycritic.games/discord-bot/)\n" +
                     "> Discord [[Link]](https://discord.com/invite/dNa7DD3)",
                     Context.User,
-                    embedFieldBuilders);
-
-        return embed;
+                    builders);
     }
 
     private string GetSettingState(MinimalLeagueChannel? leagueChannel, GameNewsSetting gameNewsSettings)
