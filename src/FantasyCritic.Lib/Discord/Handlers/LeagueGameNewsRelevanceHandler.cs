@@ -85,7 +85,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
         //Common Relevance Logic
         bool commonRelevance = CheckCommonLeagueRelevance(masterGame, currentDate);
-        if (commonRelevance)
+        if (commonRelevance && _gameNewsSetting.ShowScoreGameNews)
         {
             return true;
         }
@@ -100,7 +100,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return true;
         }
 
-        return _gameNewsSetting.ShowScoreGameNews;
+        return false;
     }
 
     private bool CheckIsPickedGame(MasterGame masterGame)
@@ -112,7 +112,6 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
     {
         //If all settings are turned on of course the league wants to see the game updates
         if (_gameNewsSetting.IsAllOn()
-            && _showPickedGameNews
             && _showEligibleGameNews
             && _showIneligibleGameNews)
         {
@@ -126,8 +125,6 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return true;
         }
 
-        //Fallback
-        Logger.Warning("Invalid game news configuration for: {gameName}, {channelKey}", masterGame.GameName, _channelKey);
         return false;
     }
 
