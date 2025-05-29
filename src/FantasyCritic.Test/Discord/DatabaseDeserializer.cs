@@ -9,7 +9,7 @@ internal static class DatabaseDeserializer
     public static BaseGameNewsRelevanceHandler GetCombinedChannelGameSetting(OriginalDatabaseStructure structure, LeagueYear? leagueYear = null)
     {
         var translatedSetting = GameNewsSetting.GetOffSetting();
-        var hasGameChannel = structure.GameChannel is not null;
+        var hasGameChannel = structure.GameChannel.GameNewsSetting != "Off";
         if (hasGameChannel)
         {
             translatedSetting = new GameNewsSetting(){
@@ -25,7 +25,7 @@ internal static class DatabaseDeserializer
             };
         }
 
-        if (structure.LeagueChannel is not null)
+        if (structure.LeagueChannel.SendLeagueMasterGameUpdates)
         {
             var leagueYearList = new List<LeagueYear>();
             if (leagueYear is not null)
@@ -35,7 +35,7 @@ internal static class DatabaseDeserializer
             var notableMissSetting = structure.LeagueChannel.SendNotableMisses
                 ? NotableMissSetting.ScoreUpdates
                 : NotableMissSetting.None;
-            var showIneligibleGameNews = structure.GameChannel?.GameNewsSetting == "All";
+            var showIneligibleGameNews = structure.GameChannel.GameNewsSetting == "All";
             return new LeagueGameNewsRelevanceHandler(structure.LeagueChannel.SendLeagueMasterGameUpdates, hasGameChannel, showIneligibleGameNews, notableMissSetting, translatedSetting, structure.SkippedTags,
                 new DiscordChannelKey(0, 0), leagueYearList);
         }
@@ -44,6 +44,6 @@ internal static class DatabaseDeserializer
     }
 }
 
-public record OriginalDatabaseStructure(OriginalGameChannel? GameChannel, OriginalLeagueChannel? LeagueChannel, List<MasterGameTag> SkippedTags);
+public record OriginalDatabaseStructure(OriginalGameChannel GameChannel, OriginalLeagueChannel LeagueChannel, List<MasterGameTag> SkippedTags);
 public record OriginalGameChannel(string GameNewsSetting);
 public record OriginalLeagueChannel(bool SendLeagueMasterGameUpdates, bool SendNotableMisses);
