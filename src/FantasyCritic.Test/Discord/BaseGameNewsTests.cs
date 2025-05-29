@@ -44,7 +44,7 @@ internal abstract class BaseGameNewsTests
     public static readonly MasterGame Unannounced_ConfirmedNot2025 =
         CreateBasicMasterGame(new LocalDate(2026, 1, 1), new LocalDate(2026, 1, 1), MasterGameTagDictionary.TagDictionary["UNA"]);
 
-    public static List<LeagueYear> GetTestLeagueYear(bool includeGame)
+    public static LeagueYear GetTestLeagueYear(bool includeGame)
     {
         var league = new League(Guid.Empty, "Test League",
             new MinimalFantasyCriticUser(Guid.Empty, "Test USer", "email@email.com"),
@@ -73,11 +73,8 @@ internal abstract class BaseGameNewsTests
         {
             new Publisher(Guid.Empty, new LeagueYearKey(Guid.Empty, 2025), FantasyCriticUser.GetFakeUser(), "Publisher", null, null, 1, games, new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, AutoDraftMode.Off)
         };
-        return
-        [
-            new LeagueYear(league, supportedYear, leagueOptions, PlayStatus.DraftFinal, true,
-                new List<EligibilityOverride>(), new List<TagOverride>(), Instant.MinValue, null, publishers, null)
-        ];
+        return new LeagueYear(league, supportedYear, leagueOptions, PlayStatus.DraftFinal, true,
+            new List<EligibilityOverride>(), new List<TagOverride>(), Instant.MinValue, null, publishers, null);
     }
 
     private static MasterGame CreateBasicMasterGame(LocalDate minimumReleaseDate, LocalDate maximumReleaseDate, MasterGameTag tag)
