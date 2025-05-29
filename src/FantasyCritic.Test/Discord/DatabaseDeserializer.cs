@@ -20,15 +20,15 @@ internal static class DatabaseDeserializer
             }
 
             translatedSetting = new GameNewsSetting(){
-                ShowJustReleasedAnnouncements = showReleasedGameNews,
+                ShowJustReleasedAnnouncements = true,
                 ShowNewGameAnnouncements = true,
                 ShowAlreadyReleasedNews = showReleasedGameNews,
                 ShowWillReleaseInYearNews = true,
                 ShowMightReleaseInYearNews = structure.GameChannel!.GameNewsSetting == "All" ||
                                              structure.GameChannel.GameNewsSetting == "MightReleaseInYear",
                 ShowWillNotReleaseInYearNews = structure.GameChannel.GameNewsSetting == "All",
-                ShowScoreGameNews = showReleasedGameNews,
-                ShowEditedGameNews = showReleasedGameNews
+                ShowScoreGameNews = true,
+                ShowEditedGameNews = true
             };
         }
 
