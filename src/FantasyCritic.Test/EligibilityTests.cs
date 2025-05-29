@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Test.TestUtilities;
 using NodaTime;
 using NodaTime.Text;
 using NUnit.Framework;
@@ -14,31 +15,6 @@ namespace FantasyCritic.Test;
 [TestFixture]
 public class EligibilityTests
 {
-    private static readonly MasterGameTagType RemakeLevelType = new MasterGameTagType("RemakeLevel");
-    private static readonly MasterGameTagType OtherType = new MasterGameTagType("Other");
-
-    private static readonly Dictionary<string, MasterGameTag> _tagDictionary = new List<MasterGameTag>()
-    {
-        new MasterGameTag("Cancelled", "Cancelled", "CNCL", OtherType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("CurrentlyInEarlyAccess", "Currently in Early Access", "C-EA", OtherType, true, false, "", new List<string>(), ""),
-        new MasterGameTag("DirectorsCut", "Director's Cut", "DC", RemakeLevelType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("ExpansionPack", "Expansion Pack", "EXP", OtherType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("FreeToPlay", "Free to Play", "FTP", OtherType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("NewGame", "New Game", "NG", RemakeLevelType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("NewGamingFranchise", "New Gaming Franchise", "NGF", OtherType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("PartialRemake", "Partial Remake", "P-RMKE", RemakeLevelType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("PlannedForEarlyAccess", "Planned for Early Access", "P-EA", OtherType, true, false, "", new List<string>(), ""),
-        new MasterGameTag("Port", "Port", "PRT", RemakeLevelType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("Reimagining", "Reimagining", "RIMG", RemakeLevelType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("ReleasedInternationally", "Released Internationally", "R-INT", OtherType, true, false, "", new List<string>(), ""),
-        new MasterGameTag("Remake", "Remake", "RMKE", RemakeLevelType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("Remaster", "Remaster", "RMSTR", RemakeLevelType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("UnannouncedGame", "Unannounced Game", "UNA", OtherType, true, false, "", new List<string>(), ""),
-        new MasterGameTag("VirtualReality", "Virtual Reality", "VR", OtherType, false, false, "", new List<string>(), ""),
-        new MasterGameTag("WillReleaseInternationallyFirst", "Will Release Internationally First", "W-INT", OtherType, true, false, "", new List<string>(), ""),
-        new MasterGameTag("YearlyInstallment", "Yearly Installment", "YI", OtherType, false, false, "", new List<string>(), ""),
-    }.ToDictionary(x => x.ShortName);
-
     private static MasterGame CreateBasicMasterGame(string name, LocalDate releaseDate, MasterGameTag tag)
     {
         return new MasterGame(Guid.NewGuid(), name, releaseDate.ToISOString(), releaseDate, releaseDate, null, null, null,
@@ -60,11 +36,11 @@ public class EligibilityTests
         Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-31T20:49:24Z").GetValueOrThrow();
         var acquisitionDate = acquisitionTime.ToEasternDate();
 
-        MasterGame masterGame = CreateBasicMasterGame("Elden Ring", new LocalDate(2022, 2, 25), _tagDictionary["NGF"]);
+        MasterGame masterGame = CreateBasicMasterGame("Elden Ring", new LocalDate(2022, 2, 25), MasterGameTagDictionary.TagDictionary["NGF"]);
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)
         };
 
         var slotTags = new List<LeagueTagStatus>();
@@ -79,11 +55,11 @@ public class EligibilityTests
         Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-31T20:49:24Z").GetValueOrThrow();
         var acquisitionDate = acquisitionTime.ToEasternDate();
 
-        MasterGame masterGame = CreateBasicMasterGame("GTA 5 (PS5)", new LocalDate(2022, 2, 25), _tagDictionary["PRT"]);
+        MasterGame masterGame = CreateBasicMasterGame("GTA 5 (PS5)", new LocalDate(2022, 2, 25), MasterGameTagDictionary.TagDictionary["PRT"]);
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)
         };
 
         var slotTags = new List<LeagueTagStatus>();
@@ -99,16 +75,16 @@ public class EligibilityTests
         Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-31T20:49:24Z").GetValueOrThrow();
         var acquisitionDate = acquisitionTime.ToEasternDate();
 
-        MasterGame masterGame = CreateBasicMasterGame("Elden Ring", new LocalDate(2022, 2, 25), _tagDictionary["NGF"]);
+        MasterGame masterGame = CreateBasicMasterGame("Elden Ring", new LocalDate(2022, 2, 25), MasterGameTagDictionary.TagDictionary["NGF"]);
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["NGF"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["NGF"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -121,16 +97,16 @@ public class EligibilityTests
         Instant acquisitionTime = InstantPattern.ExtendedIso.Parse("2022-01-31T20:49:24Z").GetValueOrThrow();
         var acquisitionDate = acquisitionTime.ToEasternDate();
 
-        MasterGame masterGame = CreateBasicMasterGame("Horizon Forbidden West", new LocalDate(2022, 2, 25), _tagDictionary["NG"]);
+        MasterGame masterGame = CreateBasicMasterGame("Horizon Forbidden West", new LocalDate(2022, 2, 25), MasterGameTagDictionary.TagDictionary["NG"]);
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["NGF"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["NGF"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -147,14 +123,14 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Have a Nice Death", new LocalDate(2022, 1, 3), null,
             new LocalDate(2022, 3, 6), null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["C-EA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["C-EA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>();
@@ -172,14 +148,14 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Have a Nice Death", new LocalDate(2022, 1, 3), null,
             new LocalDate(2022, 3, 6), null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["C-EA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["C-EA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>();
@@ -198,13 +174,13 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
             new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["C-EA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["C-EA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>();
@@ -222,19 +198,19 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
             new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["C-EA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["C-EA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["P-EA"], TagStatus.Required),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["P-EA"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -250,21 +226,21 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
             new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["C-EA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["C-EA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["P-EA"], TagStatus.Required),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["P-EA"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -280,23 +256,23 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Baldur's Gate 3", new LocalDate(2022, 1, 3), null,
             new LocalDate(2020, 10, 6), null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["C-EA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["C-EA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Required),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Required),
-            new LeagueTagStatus(_tagDictionary["NG"], TagStatus.Required),
-            new LeagueTagStatus(_tagDictionary["NGF"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["NG"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["NGF"], TagStatus.Required),
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -312,15 +288,15 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
             null, null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["UNA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["UNA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
@@ -341,16 +317,16 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
             null, null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["UNA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["UNA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["UNA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["UNA"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
@@ -372,19 +348,19 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
             null, null, new LocalDate(2022, 1, 25), new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["NG"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["UNA"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["UNA"], TagStatus.Required),
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -400,15 +376,15 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
             null, null, new LocalDate(2022, 1, 25), new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["NG"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["UNA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["UNA"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
@@ -429,19 +405,19 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
             null, null, new LocalDate(2022, 1, 25), new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["NG"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["UNA"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["UNA"], TagStatus.Required),
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -458,20 +434,20 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 1, 27), null,
             null, null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["RMKE"],
-                _tagDictionary["UNA"]
+                MasterGameTagDictionary.TagDictionary["RMKE"],
+                MasterGameTagDictionary.TagDictionary["UNA"]
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Required),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["RMKE"], TagStatus.Required),
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -487,16 +463,16 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 1, 27), null,
             null, null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["RMKE"],
-                _tagDictionary["UNA"]
+                MasterGameTagDictionary.TagDictionary["RMKE"],
+                MasterGameTagDictionary.TagDictionary["UNA"]
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Banned)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["RMKE"], TagStatus.Banned)
         };
 
         var slotTags = new List<LeagueTagStatus>()
@@ -518,19 +494,19 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 2, 3), null,
             null, null, new LocalDate(2022, 2, 2), new List<MasterGameTag>()
             {
-                _tagDictionary["RMKE"],
+                MasterGameTagDictionary.TagDictionary["RMKE"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["RMKE"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -546,19 +522,19 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("The Last of Us Remake", new LocalDate(2022, 2, 8), null,
             null, null, new LocalDate(2022, 2, 2), new List<MasterGameTag>()
             {
-                _tagDictionary["RMKE"],
+                MasterGameTagDictionary.TagDictionary["RMKE"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["UNA"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["UNA"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -575,20 +551,20 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
             null, null, null, new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
-                _tagDictionary["UNA"],
+                MasterGameTagDictionary.TagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["UNA"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["RMKE"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
@@ -605,19 +581,19 @@ public class EligibilityTests
         MasterGame masterGame = CreateComplexMasterGame("Star Wars Jedi: Fallen Order 2", new LocalDate(2022, 1, 27), null,
             null, null, new LocalDate(2022, 1, 25), new List<MasterGameTag>()
             {
-                _tagDictionary["NG"],
+                MasterGameTagDictionary.TagDictionary["NG"],
             });
 
         var leagueTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["PRT"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["C-EA"], TagStatus.Banned),
-            new LeagueTagStatus(_tagDictionary["R-INT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["C-EA"], TagStatus.Banned),
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["R-INT"], TagStatus.Banned),
         };
 
         var slotTags = new List<LeagueTagStatus>()
         {
-            new LeagueTagStatus(_tagDictionary["RMKE"], TagStatus.Required)
+            new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["RMKE"], TagStatus.Required)
         };
 
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
