@@ -83,12 +83,6 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return true;
         }
 
-        //Exit Early if the user has disabled score game news for this channel
-        if (!_gameNewsSetting.ShowScoreGameNews)
-        {
-            return false;
-        }
-
         //Common Relevance Logic
         bool commonRelevance = CheckCommonLeagueRelevance(masterGame, currentDate);
         if (commonRelevance)
@@ -105,10 +99,8 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return _gameNewsSetting.ShowScoreGameNews;
     }
 
     private bool CheckIsPickedGame(MasterGame masterGame)
