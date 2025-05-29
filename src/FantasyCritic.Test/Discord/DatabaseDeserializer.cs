@@ -18,7 +18,7 @@ internal static class DatabaseDeserializer
                 ShowAlreadyReleasedNews = true,
                 ShowWillReleaseInYearNews = true,
                 ShowMightReleaseInYearNews = structure.GameChannel!.GameNewsSetting == "All" ||
-                                             structure.GameChannel.GameNewsSetting == "Might",
+                                             structure.GameChannel.GameNewsSetting == "MightReleaseInYear",
                 ShowWillNotReleaseInYearNews = structure.GameChannel.GameNewsSetting == "All",
                 ShowScoreGameNews = true,
                 ShowEditedGameNews = true
