@@ -36,7 +36,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         return CheckCommonLeagueRelevance(masterGame, currentDate);
     }
 
-    public override bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, LocalDate currentDate)
+    public override bool ExistingGameIsRelevant(MasterGame masterGame, WillReleaseStatus? prevReleaseStatus, LocalDate currentDate)
     {
         //Picked Games, Aka games in the publisher roster for any league year will exit early if enable picked game override is true.
         bool isPickedGame = CheckIsPickedGame(masterGame);
@@ -51,7 +51,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return false;
         }
 
-        return CheckCommonLeagueRelevance(masterGame, currentDate);
+        return CheckCommonLeagueRelevance(masterGame, currentDate, prevReleaseStatus);
     }
 
     public override bool JustReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
@@ -108,18 +108,19 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         return _activeLeagueYears.Any(leagueYear => leagueYear.Publishers.Any(publisher => publisher.MyMasterGames.Contains(masterGame)));
     }
 
-    private bool CheckCommonLeagueRelevance(MasterGame masterGame, LocalDate currentDate)
+    private bool CheckCommonLeagueRelevance(MasterGame masterGame, LocalDate currentDate, WillReleaseStatus? prevReleaseStatus = null)
     {
         //If all settings are turned on of course the league wants to see the game updates
         if (_gameNewsSetting.IsAllOn()
             && _showEligibleGameNews
-            && _showIneligibleGameNews)
+            && _showIneligibleGameNews
+            && !_skippedTags.Any())
         {
             return true;
         }
 
         //Now check the years in the league and compare the news settings
-        bool isRelevantToAnyLeagueYear = _activeLeagueYears.Any(x => CheckSingleLeagueCommonRelevance(x, masterGame, currentDate));
+        bool isRelevantToAnyLeagueYear = _activeLeagueYears.Any(x => CheckSingleLeagueCommonRelevance(x, masterGame, currentDate, prevReleaseStatus));
         if (isRelevantToAnyLeagueYear)
         {
             return true;
@@ -128,7 +129,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         return false;
     }
 
-    private bool CheckSingleLeagueCommonRelevance(LeagueYear leagueYear, MasterGame masterGame, LocalDate currentDate)
+    private bool CheckSingleLeagueCommonRelevance(LeagueYear leagueYear, MasterGame masterGame, LocalDate currentDate, WillReleaseStatus? prevReleaseStatus)
     {
         bool eligibleInYear = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
         bool ineligibleInYear = !eligibleInYear;
@@ -151,26 +152,34 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return false;
         }
 
-        //If ShowPickedGameNews is turned off, and the game is picked in the league year, we don't want to show it
-        if (!_gameNewsSetting.ShowAlreadyReleasedNews && masterGame.IsReleased(currentDate))
+        //If ShowPickedGameNews is turned off, and the game is picked in the league year, we don't want to show it unless there is a prevReleaseStatus override
+        if (!_gameNewsSetting.ShowAlreadyReleasedNews
+            && masterGame.IsReleased(currentDate)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
 
-        //If ShowWillReleaseInYearNews is turned off, and the game will release in the league year, we don't want to show it
-        if (!_gameNewsSetting.ShowWillReleaseInYearNews && masterGame.WillReleaseInYear(leagueYear.Year))
+        //If ShowWillReleaseInYearNews is turned off, and the game will release in the league year, we don't want to show it unless there is a prevReleaseStatus override
+        if (!_gameNewsSetting.ShowWillReleaseInYearNews
+            && masterGame.WillReleaseInYear(leagueYear.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
 
-        //If ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it
-        if (!_gameNewsSetting.ShowMightReleaseInYearNews && masterGame.MightReleaseInYear(leagueYear.Year))
+        //If ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it unless there is a prevReleaseStatus override
+        if (!_gameNewsSetting.ShowMightReleaseInYearNews
+            && masterGame.MightReleaseInYear(leagueYear.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
 
-        //if ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it
-        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews && !masterGame.CouldReleaseInYear(leagueYear.Year))
+        //if ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it we don't want to show it unless there is a prevReleaseStatus override
+        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews
+            && !masterGame.CouldReleaseInYear(leagueYear.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
@@ -179,6 +188,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         //If something is still showing up that we don't want to see we are missing a filter condition above
         return true;
     }
+
 
     private bool CheckNotableMissRelevance(bool initialScore)
     {

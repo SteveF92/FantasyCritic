@@ -157,7 +157,7 @@ public class DiscordPushService
                 .ToList();
             var editsToSend = _masterGameEditMessages
                 .Where(x => combinedChannel.GetRelevanceHandler().ExistingGameIsRelevant(x.ExistingGame.MasterGame,
-                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(), today))
+                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus() ? x.ExistingGame.GetWillReleaseStatus() : null, today))
                 .ToList();
 
             if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())

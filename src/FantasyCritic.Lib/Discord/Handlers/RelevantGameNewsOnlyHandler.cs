@@ -23,7 +23,7 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
         return CheckCommonGameNewsOnlyRelevance(masterGame, currentDate);
     }
 
-    public override bool ExistingGameIsRelevant(MasterGame masterGame, bool releaseStatusChanged, LocalDate currentDate)
+    public override bool ExistingGameIsRelevant(MasterGame masterGame, WillReleaseStatus? prevReleaseStatus, LocalDate currentDate)
     {
         //Exit Early if the user has disabled edited game news for this channel
         if (!_gameNewsSetting.ShowEditedGameNews)
@@ -31,7 +31,7 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
             return false;
         }
 
-        return CheckCommonGameNewsOnlyRelevance(masterGame, currentDate);
+        return CheckCommonGameNewsOnlyRelevance(masterGame, currentDate, prevReleaseStatus);
     }
 
     public override bool JustReleasedGameIsRelevant(MasterGame masterGame, LocalDate currentDate)
@@ -56,9 +56,10 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
         return CheckCommonGameNewsOnlyRelevance(masterGame, currentDate);
     }
 
-    private bool CheckCommonGameNewsOnlyRelevance(MasterGame masterGame, LocalDate currentDate)
+    private bool CheckCommonGameNewsOnlyRelevance(MasterGame masterGame, LocalDate currentDate, WillReleaseStatus? prevReleaseStatus = null)
     {
-        if (_gameNewsSetting.IsAllOn())
+        if (_gameNewsSetting.IsAllOn()
+            && !_skippedTags.Any())
         {
            return true;
         }
@@ -70,25 +71,33 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
         }
 
         //If user has turned off already released game news, and the game is released return false
-        if (!_gameNewsSetting.ShowAlreadyReleasedNews && masterGame.IsReleased(currentDate))
+        if (!_gameNewsSetting.ShowAlreadyReleasedNews
+            && masterGame.IsReleased(currentDate)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
 
         //if the user has turned off WillReleaseInYear news, and the game will release in the year, return false
-        if (!_gameNewsSetting.ShowWillReleaseInYearNews && masterGame.WillReleaseInYear(currentDate.Year))
+        if (!_gameNewsSetting.ShowWillReleaseInYearNews
+            && masterGame.WillReleaseInYear(currentDate.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
 
         //If user has turned off MightReleaseInYear news, and the game might release in the year, return false
-        if (!_gameNewsSetting.ShowMightReleaseInYearNews && masterGame.MightReleaseInYear(currentDate.Year))
+        if (!_gameNewsSetting.ShowMightReleaseInYearNews
+            && masterGame.MightReleaseInYear(currentDate.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
 
         //if the user has turned off WillNotReleaseInYear news, and the game will not release in the year, return false
-        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews && !masterGame.CouldReleaseInYear(currentDate.Year))
+        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews
+            && !masterGame.CouldReleaseInYear(currentDate.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
         }
