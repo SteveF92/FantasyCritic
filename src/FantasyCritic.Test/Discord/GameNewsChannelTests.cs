@@ -22,7 +22,7 @@ internal class GameNewsChannelTests : BaseGameNewsTests
 
     public static readonly BaseGameNewsRelevanceHandler Setting_Off_NoSkippedTags =
         DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
-            new OriginalGameChannel("Off"), null, new List<MasterGameTag>()));
+            null, null, new List<MasterGameTag>()));
 
     // Skipped tag: UNA (Unannounced game)
     public static readonly BaseGameNewsRelevanceHandler Setting_All_SkipUNA =
@@ -39,5 +39,5 @@ internal class GameNewsChannelTests : BaseGameNewsTests
 
     public static readonly BaseGameNewsRelevanceHandler Setting_Off_SkipUNA =
         DatabaseDeserializer.GetCombinedChannelGameSetting(new OriginalDatabaseStructure(
-            new OriginalGameChannel("Off"), null, new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] }));
+            null, null, new List<MasterGameTag> { MasterGameTagDictionary.TagDictionary["UNA"] }));
 }
