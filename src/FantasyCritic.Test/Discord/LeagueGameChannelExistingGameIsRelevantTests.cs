@@ -2991,10 +2991,9 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
     public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
         Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, false, CurrentDateForTesting), Is.False);
 
-    //If setting is all, then it should not skip the game even if skipped tags are present
-    //[Test]
-    //public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-    //    Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, false, CurrentDateForTesting), Is.False);
+    [Test]
+    public void Unannounced_ConfirmedNot2025_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, false, CurrentDateForTesting), Is.False);
 
 
     [Test]
