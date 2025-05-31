@@ -36,7 +36,7 @@ using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Web.Authorization;
-
+using Microsoft.Identity.Web;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
@@ -253,11 +253,6 @@ public static class HostingExtensions
                     options.ClientId = configuration["Authentication:Google:ClientId"]!;
                     options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
                 })
-                .AddMicrosoftAccount(microsoftOptions =>
-                {
-                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
-                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
-                })
                 .AddTwitch(options =>
                 {
                     options.ClientId = configuration["Authentication:Twitch:ClientId"]!;
@@ -273,6 +268,12 @@ public static class HostingExtensions
                     options.ClientId = configuration["Authentication:Discord:ClientId"]!;
                     options.ClientSecret = configuration["Authentication:Discord:ClientSecret"]!;
                 });
+
+            authenticationBuilder.AddMicrosoftIdentityWebApp(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
+                microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
+            });
         }
 
         services.AddSingleton<IXmlRepository, MySQLXmlRepository>();
