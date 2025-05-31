@@ -255,8 +255,6 @@ public static class HostingExtensions
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
-                    microsoftOptions.AuthorizationEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
-                    microsoftOptions.TokenEndpoint = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
                     microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
                     microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
                 })
