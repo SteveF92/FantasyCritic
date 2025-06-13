@@ -6,51 +6,68 @@ using FantasyCritic.Lib.Domain;
 namespace FantasyCritic.Test.Discord;
 internal static class DatabaseDeserializer
 {
-    public static BaseGameNewsRelevanceHandler GetCombinedChannelGameSetting(OriginalDatabaseStructure structure, LeagueYear? leagueYear = null)
+    public static BaseGameNewsRelevanceHandler GetCombinedChannelGameSetting(OriginalDatabaseStructure originalStructure, LeagueYear? leagueYear = null)
     {
+        var newStructure = TranslateDatabaseStructure(originalStructure);
         var translatedSetting = GameNewsSetting.GetOffSetting();
-        var hasGameChannel = structure.GameChannel is not null;
-        var hasLeagueChannel = structure.LeagueChannel is not null;
-        if (hasGameChannel)
+        if (newStructure.GameChannel is not null)
         {
-            bool showReleasedGameNews = structure.GameChannel?.GameNewsSetting == "All";
-            if (!hasLeagueChannel || structure.LeagueChannel?.SendLeagueMasterGameUpdates == false)
-            {
-                showReleasedGameNews = true;
-            }
-
             translatedSetting = new GameNewsSetting(){
-                ShowJustReleasedAnnouncements = true,
-                ShowNewGameAnnouncements = true,
-                ShowAlreadyReleasedNews = showReleasedGameNews,
-                ShowWillReleaseInYearNews = true,
-                ShowMightReleaseInYearNews = structure.GameChannel!.GameNewsSetting == "All" ||
-                                             structure.GameChannel.GameNewsSetting == "MightReleaseInYear",
-                ShowWillNotReleaseInYearNews = structure.GameChannel.GameNewsSetting == "All",
-                ShowScoreGameNews = true,
-                ShowEditedGameNews = true
+                ShowJustReleasedAnnouncements = newStructure.GameChannel.ShowJustReleasedAnnouncements,
+                ShowNewGameAnnouncements = newStructure.GameChannel.ShowNewGameAnnouncements,
+                ShowAlreadyReleasedNews = newStructure.GameChannel.ShowAlreadyReleasedNews,
+                ShowWillReleaseInYearNews = newStructure.GameChannel.ShowWillReleaseInYearNews,
+                ShowMightReleaseInYearNews = newStructure.GameChannel.ShowMightReleaseInYearNews,
+                ShowWillNotReleaseInYearNews = newStructure.GameChannel.ShowWillNotReleaseInYearNews,
+                ShowScoreGameNews = newStructure.GameChannel.ShowScoreGameNews,
+                ShowEditedGameNews = newStructure.GameChannel.ShowEditedGameNews
             };
         }
 
-        if (hasLeagueChannel)
+        if (newStructure.LeagueChannel is not null)
         {
             var leagueYearList = new List<LeagueYear>();
             if (leagueYear is not null)
             {
                 leagueYearList.Add(leagueYear);
             }
-            var notableMissSetting = (structure.LeagueChannel?.SendNotableMisses ?? true)
-                ? NotableMissSetting.ScoreUpdates
-                : NotableMissSetting.None;
-            var showIneligibleGameNews = structure.GameChannel?.GameNewsSetting == "All";
-            return new LeagueGameNewsRelevanceHandler(structure.LeagueChannel!.SendLeagueMasterGameUpdates, hasGameChannel, showIneligibleGameNews, notableMissSetting, translatedSetting, structure.SkippedTags,
+
+            var notableMissSetting = NotableMissSetting.FromValue(newStructure.LeagueChannel.NotableMissSetting);
+            return new LeagueGameNewsRelevanceHandler(newStructure.LeagueChannel.ShowPickedGameNews, newStructure.LeagueChannel.ShowEligibleGameNews,
+            newStructure.LeagueChannel.ShowIneligibleGameNews, notableMissSetting, translatedSetting, newStructure.SkippedTags,
                 new DiscordChannelKey(0, 0), leagueYearList);
         }
 
-        return new GameNewsOnlyRelevanceHandler(translatedSetting, structure.SkippedTags, new DiscordChannelKey(0, 0));
+        return new GameNewsOnlyRelevanceHandler(translatedSetting, newStructure.SkippedTags, new DiscordChannelKey(0, 0));
+    }
+
+    private static NewDatabaseStructure TranslateDatabaseStructure(OriginalDatabaseStructure originalStructure)
+    {
+        throw new System.NotImplementedException();
     }
 }
 
 public record OriginalDatabaseStructure(OriginalGameChannel? GameChannel, OriginalLeagueChannel? LeagueChannel, List<MasterGameTag> SkippedTags);
 public record OriginalGameChannel(string GameNewsSetting);
 public record OriginalLeagueChannel(bool SendLeagueMasterGameUpdates, bool SendNotableMisses);
+
+public record NewDatabaseStructure(NewGameChannel? GameChannel, NewLeagueChannel? LeagueChannel, List<MasterGameTag> SkippedTags);
+public record NewGameChannel
+{
+    public required bool ShowAlreadyReleasedNews {get; init;}
+    public required bool ShowWillReleaseInYearNews {get; init;}
+    public required bool ShowMightReleaseInYearNews {get; init;}
+    public required bool ShowWillNotReleaseInYearNews { get; init; }
+    public required bool ShowJustReleasedAnnouncements { get; init; }
+    public required bool ShowNewGameAnnouncements { get; init; }
+    public required bool ShowScoreGameNews { get; init; }
+    public required bool ShowEditedGameNews { get; init; }
+}
+
+public record NewLeagueChannel
+{
+    public required bool ShowPickedGameNews { get; init; }
+    public required bool ShowEligibleGameNews { get; init; }
+    public required bool ShowIneligibleGameNews { get; init; }
+    public required string NotableMissSetting { get; init; }
+}
