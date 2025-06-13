@@ -80,7 +80,7 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
 
         //if the user has turned off WillReleaseInYear news, and the game will release in the year, return false
         if (!_gameNewsSetting.ShowWillReleaseInYearNews
-            && masterGame.WillReleaseInYear(currentDate.Year)
+            && masterGame.WillReleaseInYear(currentDate.Year) && !masterGame.IsReleased(currentDate)
             && !IsPrevReleaseStatusOverride(prevReleaseStatus))
         {
             return false;
