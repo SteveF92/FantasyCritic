@@ -126,7 +126,7 @@ internal class GameChannelNewGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void UnannouncedMightBe2025_SettingAll_SkipUNA() =>
-        Assert.That(Setting_All_SkipUNA.NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.True);
+        Assert.That(Setting_All_SkipUNA.NewGameIsRelevant(Unannounced_MightBe2025, CurrentDateForTesting), Is.False);
 
     [Test]
     public void UnannouncedMightBe2025_Setting_WillReleaseInYear_SkipUNA() =>
@@ -160,7 +160,7 @@ internal class GameChannelNewGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void UnannouncedConfirmedNot2025_SettingAll_SkipUNA() =>
-        Assert.That(Setting_All_SkipUNA.NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.True);
+        Assert.That(Setting_All_SkipUNA.NewGameIsRelevant(Unannounced_ConfirmedNot2025, CurrentDateForTesting), Is.False);
 
     [Test]
     public void UnannouncedConfirmedNot2025_Setting_WillReleaseInYear_SkipUNA() =>

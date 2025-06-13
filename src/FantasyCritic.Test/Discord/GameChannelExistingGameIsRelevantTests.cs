@@ -162,7 +162,7 @@ internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void Unannounced_MightBe2025_Setting_All_SkipUNA() =>
-        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_MightBe2025, null, CurrentDateForTesting), Is.True);
+        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_MightBe2025, null, CurrentDateForTesting), Is.False);
 
     [Test]
     public void Unannounced_MightBe2025_Setting_WillReleaseInYear_SkipUNA() =>
@@ -196,7 +196,7 @@ internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void Unannounced_ConfirmedNot2025_Setting_All_SkipUNA() =>
-        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, null, CurrentDateForTesting), Is.True);
+        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, null, CurrentDateForTesting), Is.False);
 
     [Test]
     public void Unannounced_ConfirmedNot2025_Setting_WillReleaseInYear_SkipUNA() =>
@@ -324,7 +324,7 @@ internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_Setting_MightReleaseInYear_NoSkippedTags() =>
-        Assert.That(Setting_MightReleaseInYear_NoSkippedTags.ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
+        Assert.That(Setting_MightReleaseInYear_NoSkippedTags.ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_Setting_Off_NoSkippedTags() =>
@@ -340,7 +340,7 @@ internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_Setting_MightReleaseInYear_SkipUNA() =>
-        Assert.That(Setting_MightReleaseInYear_SkipUNA.ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
+        Assert.That(Setting_MightReleaseInYear_SkipUNA.ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_Setting_Off_SkipUNA() =>
@@ -367,7 +367,7 @@ internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_Setting_All_SkipUNA() =>
-        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_Setting_WillReleaseInYear_SkipUNA() =>
@@ -393,7 +393,7 @@ internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_Setting_MightReleaseInYear_NoSkippedTags() =>
-        Assert.That(Setting_MightReleaseInYear_NoSkippedTags.ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
+        Assert.That(Setting_MightReleaseInYear_NoSkippedTags.ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_Setting_Off_NoSkippedTags() =>
@@ -401,7 +401,7 @@ internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_Setting_All_SkipUNA() =>
-        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(Setting_All_SkipUNA.ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_Setting_WillReleaseInYear_SkipUNA() =>

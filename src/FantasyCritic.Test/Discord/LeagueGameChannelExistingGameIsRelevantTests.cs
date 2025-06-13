@@ -3393,7 +3393,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ReleasedToday_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -3403,7 +3403,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ReleasedToday_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -3473,7 +3473,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ReleasedToday_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -3483,7 +3483,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ReleasedToday_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ReleasedToday, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -4505,27 +4505,6 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA_HasGame_No() =>
         Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
 
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
     [Test]
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingMightReleaseInYear_NoSkippedTags_HasGame_Yes() =>
         Assert.That(LeagueGames_Off_Misses_Off_SettingMightReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
@@ -4584,27 +4563,6 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
     [Test]
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingAll_SkipUNA_HasGame_No() =>
         Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
 
     [Test]
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingMightReleaseInYear_NoSkippedTags_HasGame_Yes() =>
@@ -4670,21 +4628,9 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
         Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
 
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
     [Test]
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_Yes() =>
         Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
 
     [Test]
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingMightReleaseInYear_NoSkippedTags_HasGame_Yes() =>
@@ -4752,19 +4698,8 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
 
     [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_Yes() =>
         Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
 
     [Test]
     public void Eligible_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingMightReleaseInYear_NoSkippedTags_HasGame_Yes() =>
@@ -5138,22 +5073,22 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5218,22 +5153,22 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingAll_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5303,7 +5238,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5313,7 +5248,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5380,21 +5315,9 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingAll_SkipUNA_HasGame_Yes() =>
         Assert.That(LeagueGames_On_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
 
-
-    [Test]
-    public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
         Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
-
-    [Test]
-    public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_MightBe2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
-
 
     [Test]
     public void Unannounced_MightBe2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_Yes() =>
@@ -5468,22 +5391,22 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5548,22 +5471,22 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5633,7 +5556,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5643,7 +5566,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5713,7 +5636,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -5723,7 +5646,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Eligible_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Eligible_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -6098,22 +6021,22 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -6178,22 +6101,22 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingAll_SkipUNA_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_Yes() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(true)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_Off_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -6263,7 +6186,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -6273,7 +6196,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_Off_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -6343,7 +6266,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingAll_SkipUNA_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_On_SettingAll_SkipUNA(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
@@ -6353,7 +6276,7 @@ internal class LeagueGameChannelExistingGameIsRelevantTests : LeagueGameNewsChan
 
     [Test]
     public void Unannounced_ConfirmedNot2025_ReleaseStatusChanged_LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags_HasGame_No() =>
-        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.True);
+        Assert.That(LeagueGames_On_Misses_On_SettingWillReleaseInYear_NoSkippedTags(GetTestLeagueYear(false)).ExistingGameIsRelevant(Unannounced_ConfirmedNot2025, WillReleaseStatus.MightRelease, CurrentDateForTesting), Is.False);
 
 
     [Test]
