@@ -43,7 +43,48 @@ internal static class DatabaseDeserializer
 
     private static NewDatabaseStructure TranslateDatabaseStructure(OriginalDatabaseStructure originalStructure)
     {
-        throw new System.NotImplementedException();
+        NewGameChannel? translatedGameChannel = null;
+        if (originalStructure.GameChannel is not null)
+        {
+            bool showAlreadyReleasedNews = originalStructure.GameChannel.GameNewsSetting == "All";
+            if (originalStructure.LeagueChannel is null || originalStructure.LeagueChannel?.SendLeagueMasterGameUpdates == false)
+            {
+                showAlreadyReleasedNews = true;
+            }
+
+            translatedGameChannel = new NewGameChannel()
+            {
+                ShowJustReleasedAnnouncements = true,
+                ShowNewGameAnnouncements = true,
+                ShowAlreadyReleasedNews = showAlreadyReleasedNews,
+                ShowWillReleaseInYearNews = true,
+                ShowMightReleaseInYearNews = originalStructure.GameChannel.GameNewsSetting == "All" ||
+                                             originalStructure.GameChannel.GameNewsSetting == "MightReleaseInYear",
+                ShowWillNotReleaseInYearNews = originalStructure.GameChannel.GameNewsSetting == "All",
+                ShowScoreGameNews = true,
+                ShowEditedGameNews = true
+            };
+        }
+   
+
+        NewLeagueChannel? translatedLeagueChannel = null;
+        if (originalStructure.LeagueChannel is not null)
+        {
+            var notableMissSetting = originalStructure.LeagueChannel.SendNotableMisses
+                ? "ScoreUpdates"
+                : "None";
+            var showIneligibleGameNews = originalStructure.GameChannel?.GameNewsSetting == "All";
+
+            translatedLeagueChannel = new NewLeagueChannel()
+            {
+                ShowPickedGameNews = originalStructure.LeagueChannel.SendLeagueMasterGameUpdates,
+                ShowEligibleGameNews = true,
+                ShowIneligibleGameNews = showIneligibleGameNews,
+                NotableMissSetting = notableMissSetting
+            };
+        };
+
+        return new NewDatabaseStructure(translatedGameChannel, translatedLeagueChannel, originalStructure.SkippedTags);
     }
 }
 
