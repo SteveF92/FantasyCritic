@@ -1963,7 +1963,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<Trade> domainTrades = new List<Trade>();
         foreach (var tradeEntity in tradeEntities)
         {
-            var leagueYear = leagueYearDictionary[tradeEntity.LeagueID];
+            var leagueYear = leagueYearDictionary.GetValueOrDefault(tradeEntity.LeagueID);
+            if (leagueYear is null)
+            {
+                //Deleted league
+                continue;
+            }
             Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
             Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
