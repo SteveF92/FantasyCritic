@@ -120,7 +120,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         }
 
         //Now check the years in the league and compare the news settings
-        bool isRelevantToAnyLeagueYear = _activeLeagueYears.Any(x => CheckSingleLeagueCommonRelevance(x, masterGame, currentDate, prevReleaseStatus));
+        bool isRelevantToAnyLeagueYear = _activeLeagueYears.Any(x => CheckSingleYearLeagueCommonRelevance(x, masterGame, currentDate, prevReleaseStatus));
         if (isRelevantToAnyLeagueYear)
         {
             return true;
@@ -129,7 +129,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         return false;
     }
 
-    private bool CheckSingleLeagueCommonRelevance(LeagueYear leagueYear, MasterGame masterGame, LocalDate currentDate, WillReleaseStatus? prevReleaseStatus)
+    private bool CheckSingleYearLeagueCommonRelevance(LeagueYear leagueYear, MasterGame masterGame, LocalDate currentDate, WillReleaseStatus? prevReleaseStatus)
     {
         bool eligibleInYear = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
         bool ineligibleInYear = !eligibleInYear;
@@ -176,7 +176,7 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return false;
         }
 
-        //if ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it we don't want to show it unless there is a prevReleaseStatus override
+        //if ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it unless there is a prevReleaseStatus override
         if (!_gameNewsSetting.ShowWillNotReleaseInYearNews
             && !masterGame.CouldReleaseInYear(leagueYear.Year)
             && !IsPrevReleaseStatusOverride(prevReleaseStatus))
@@ -192,19 +192,16 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
     private bool CheckNotableMissRelevance(bool initialScore)
     {
-        if (_notableMissSetting == NotableMissSetting.None)
-        {
-            return false;
-        }
+        
         if (_notableMissSetting == NotableMissSetting.ScoreUpdates)
         {
             return true;
         }
-        if (_notableMissSetting == NotableMissSetting.InitialScore)
+        if (_notableMissSetting == NotableMissSetting.InitialScore && initialScore)
         {
-            return initialScore;
+            return true;
         }
 
-        throw new ArgumentOutOfRangeException(nameof(_notableMissSetting), _notableMissSetting, null);
+        return false;
     }
 }
