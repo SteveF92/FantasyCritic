@@ -1936,7 +1936,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<Trade>> GetTradesForYear(int year)
     {
-        var leagueYears = await GetLeagueYears(2022);
+        var leagueYears = await GetLeagueYears(year);
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.League.LeagueID);
 
         const string baseTableSQL = "select * from tbl_league_trade WHERE Year = @year;";
