@@ -65,7 +65,20 @@ internal static class DatabaseDeserializer
                 ShowEditedGameNews = true
             };
         }
-   
+        else
+        {
+            translatedGameChannel = new NewGameChannel()
+            {
+                ShowAlreadyReleasedNews = false,
+                ShowWillReleaseInYearNews = false,
+                ShowMightReleaseInYearNews = false,
+                ShowWillNotReleaseInYearNews = false,
+                ShowJustReleasedAnnouncements = false,
+                ShowNewGameAnnouncements = false,
+                ShowScoreGameNews = false,
+                ShowEditedGameNews = false
+            };
+        }
 
         NewLeagueChannel? translatedLeagueChannel = null;
         if (originalStructure.LeagueChannel is not null)
