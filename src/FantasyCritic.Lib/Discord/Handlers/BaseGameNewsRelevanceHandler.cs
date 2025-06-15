@@ -38,4 +38,41 @@ public abstract class BaseGameNewsRelevanceHandler
 
         return false;
     }
+
+    protected bool IsReleaseStatusRelevant(MasterGame masterGame, WillReleaseStatus? prevReleaseStatus, LocalDate currentDate)
+    {
+        //If user has turned off already released game news, and the game is released return false unless the previous release status is overridden
+        if (!_gameNewsSetting.ShowAlreadyReleasedNews
+            && masterGame.IsReleased(currentDate)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
+        {
+            return false;
+        }
+
+        //if the user has turned off WillReleaseInYear news, and the game will release in the year, return false unless the previous release status is overridden
+        if (!_gameNewsSetting.ShowWillReleaseInYearNews
+            && masterGame.WillReleaseInYear(currentDate.Year) && !masterGame.IsReleased(currentDate)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
+        {
+            return false;
+        }
+
+        //If user has turned off MightReleaseInYear news, and the game might release in the year, return false unless the previous release status is overridden
+        if (!_gameNewsSetting.ShowMightReleaseInYearNews
+            && masterGame.MightReleaseInYear(currentDate.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
+        {
+            return false;
+        }
+
+        //if the user has turned off WillNotReleaseInYear news, and the game will not release in the year, return false unless the previous release status is overridden
+        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews
+            && !masterGame.CouldReleaseInYear(currentDate.Year)
+            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

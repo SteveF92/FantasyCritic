@@ -152,34 +152,8 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
             return false;
         }
 
-        //If ShowPickedGameNews is turned off, and the game is picked in the league year, we don't want to show it unless there is a prevReleaseStatus override
-        if (!_gameNewsSetting.ShowAlreadyReleasedNews
-            && masterGame.IsReleased(currentDate)
-            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
-        {
-            return false;
-        }
-
-        //If ShowWillReleaseInYearNews is turned off, and the game will release in the league year, we don't want to show it unless there is a prevReleaseStatus override
-        if (!_gameNewsSetting.ShowWillReleaseInYearNews
-            && masterGame.WillReleaseInYear(leagueYear.Year)
-            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
-        {
-            return false;
-        }
-
-        //If ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it unless there is a prevReleaseStatus override
-        if (!_gameNewsSetting.ShowMightReleaseInYearNews
-            && masterGame.MightReleaseInYear(leagueYear.Year)
-            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
-        {
-            return false;
-        }
-
-        //if ShowAlreadyReleasedGameNews is turned off, and the game is already released, we don't want to show it unless there is a prevReleaseStatus override
-        if (!_gameNewsSetting.ShowWillNotReleaseInYearNews
-            && !masterGame.CouldReleaseInYear(leagueYear.Year)
-            && !IsPrevReleaseStatusOverride(prevReleaseStatus))
+        //If the game is not relevant based on its release status, return false
+        if (!IsReleaseStatusRelevant(masterGame, prevReleaseStatus, currentDate))
         {
             return false;
         }
