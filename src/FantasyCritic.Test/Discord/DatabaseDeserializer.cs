@@ -87,11 +87,12 @@ internal static class DatabaseDeserializer
                 ? "ScoreUpdates"
                 : "None";
             var showIneligibleGameNews = originalStructure.GameChannel?.GameNewsSetting == "All";
+            var showEligibleGameNews = originalStructure.GameChannel == null && originalStructure.LeagueChannel.SendLeagueMasterGameUpdates ? false : true;
 
             translatedLeagueChannel = new NewLeagueChannel()
             {
                 ShowPickedGameNews = originalStructure.LeagueChannel.SendLeagueMasterGameUpdates,
-                ShowEligibleGameNews = true,
+                ShowEligibleGameNews = showEligibleGameNews,
                 ShowIneligibleGameNews = showIneligibleGameNews,
                 NotableMissSetting = notableMissSetting
             };
