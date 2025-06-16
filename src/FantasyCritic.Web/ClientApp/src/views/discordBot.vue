@@ -449,19 +449,57 @@
                 </p>
                 <span>
                   Allows you to choose exactly what types of game news you want to be notified about. While the other commands use parameters, this one actually provides an interface with clickable
-                  buttons. If you're not sure what to choose, you can click "Set Recommended Settings" and you'll probably be happy. If you want to fine tune, the options you can choose from include:
+                  buttons. If you're not sure what to choose, you can click the selection menu and choose from a few presets,
+                  you will start with recommended settings, but if you ever get into a weird state, this is where you can reset to recmmended.
+                  If you want to fine tune the options you can click "Set Custom Filters [Advanced]"
                   <ul>
                     <li>
                       <strong>League News Settings</strong>
-                      - Tells the bot to always notify you about games that are picked in your league or eligible in your league. - There is also the "Notable Miss" setting which allows you to tell
-                      the bot to notify you about games that have scored very well that your league missed. You can choose between being notified about the game when it first gets a score, or any
-                      updates about that game's score.
+                      - Tells the bot to notify the channel of game news based relevance to your league!
+                      <ul>
+                        <li>
+                          <strong>Enable Picked Game News Override</strong>
+                          - If Enabled, you will always see game news for games in your leagues roster no matter what, aka any game picked by a publisher in your league.
+                          All other filter categories will be for Eligible or Ineligible games only.
+                        </li>
+                        <li>
+                          <strong>Show Eligible Game News</strong>
+                          - If Enabled, Shows game news for games eligible in your league, but have not been picked. Other filter categories will be displayed to filter within this category.
+                        </li>
+                        <li>
+                          <strong>Show Ineligible Game News</strong>
+                          - If Enabled, Shows game news for games ineligible for your league, like banned tags, or games not releasing this year. Other filter categories will be displayed to filter within this category.
+                        </li>
+                        <li>
+                          <strong>Notable Miss Setting</strong>
+                          - Lets you see score updates on eligible games that have scored well that your league didnt pick! This will show even if you have eligible game news or score game news is turned off.
+                          You can set it to show all score updates, just the initial score, or no notable miss news at all.
+                        </li>
+                      </ul>
                     </li>
                     <li>
-                      <strong>Game Release Settings</strong>
+                      <strong>Game Announcement Filters</strong>
+                      - Filters for one time announcement news
+                      <ul>
+                        <li>
+                          <strong>Show New Game Announcements</strong>
+                          - If Enabled, the channel will recieve a one time announcement about games Fantasy Critic just learned about and added to the site, will only show games not affected by other filters. 
+                        </li>
+                        <li>
+                          <strong>Show Just Released Announcements</strong>
+                          - If Enabled, the channel will recieve a one time announcement about a game that just hit its release date! Will only show games not affected by other filters. 
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <strong>Game Release Status Filters</strong>
                       - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release this year and other similiar filters. This one requires some
                       definitions.
                       <ul>
+                        <li>
+                          <strong>Already Released</strong>
+                          - A game that has passed its release date.
+                        </li>
                         <li>
                           <strong>Will Release</strong>
                           - A game that is confirmed to release in the current year, whether it has a specific release date or not. For example, both "October 19, 2025" and "Late 2025" both count as
@@ -479,11 +517,21 @@
                       </ul>
                     </li>
                     <li>
-                      <strong>Game News Update Settings</strong>
-                      - Tells the bot whether or not to notify you when a game is edited in the master database or when the game has a change in score.
+                      <strong>Game News Update Filters</strong>
+                      - Filters for continious update type news.
+                      <ul>
+                        <li>
+                          <strong>Show Score Game News</strong>
+                          - If Enabled, will show updates on a games critic score. Will only show scores for games not affected by other filters.
+                        </li>
+                        <li>
+                          <strong>Show Edited Game News</strong>
+                          - If Enabled, will show news about edits to a game, like thier release date, name change, or notes etc.. Will only show edits for games not affected by other filters.
+                        </li>
+                      </ul>
                     </li>
                     <li>
-                      <strong>Skipped Tags Settings</strong>
+                      <strong>Skipped Tags Filters</strong>
                       - Tells the bot to never notify you about a game with a specific tag. This is most commonly used to tell you to never notify you about an unannounced game being added to the
                       database, for example.
                     </li>

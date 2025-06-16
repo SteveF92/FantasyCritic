@@ -256,7 +256,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         return _discordFormatter.BuildRegularEmbedWithUserFooter(
                     "Current Game News Settings",
                     "> **Need Help?**\n" +
-                    "> Documentation [[Link]](https://www.fantasycritic.games/discord-bot/)\n" +
+                    "> Documentation [[Link]](https://www.fantasycritic.games/discord-bot#game-news-settings)\n" +
                     "> Discord [[Link]](https://discord.com/invite/dNa7DD3)",
                     Context.User,
                     builders);
