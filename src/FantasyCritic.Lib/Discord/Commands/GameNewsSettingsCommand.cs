@@ -51,8 +51,20 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
             // Check to see if game news is enabled for this channel
             var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
+            var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
 
-            if (gameNewsChannel == null)
+            if (leagueChannel != null)
+            {
+                if (!leagueChannel.ShowPickedGameNews
+                    && !leagueChannel.ShowEligibleGameNews
+                    && !leagueChannel.ShowIneligibleGameNews
+                    && gameNewsChannel == null)
+                {
+                    await SendDisabledGameNewsMessage();
+                    return;
+                }
+            }
+            else if (gameNewsChannel == null)
             {
                 await SendDisabledGameNewsMessage();
                 return;
@@ -75,7 +87,9 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var isLeagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id) != null;
 
         var commandMessageComponents = new ComponentBuilder()
-            .WithSelectMenu(GetPresetSettingSelection(isLeagueChannel))
+            .AddRow(new ActionRowBuilder().WithSelectMenu(GetPresetSettingSelection(isLeagueChannel)))
+            .AddRow(new ActionRowBuilder().WithButton(GetSetCustomFiltersButton()))
+            .AddRow(new ActionRowBuilder().WithButton(GetDisableGameNewsButtion()))
             .Build();
 
         var message = await FollowupAsync(embed: await CreateCommandMessageEmbed(), components: commandMessageComponents);
@@ -95,13 +109,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
         bool isLeagueChannel = leagueChannel != null;
 
-        if (gameNewsChannel == null)
-        {
-            Serilog.Log.Error("Could not find the GameNews channel for given channel {ChannelId}", Context.Channel.Id);
-            return;
-        }
-
-        var components = new ComponentBuilder().WithSelectMenu(GetPresetSettingSelection(isLeagueChannel)).Build();
+        var components = new ComponentBuilder()
+            .AddRow(new ActionRowBuilder().WithSelectMenu(GetPresetSettingSelection(isLeagueChannel)))
+            .AddRow(new ActionRowBuilder().WithButton(GetSetCustomFiltersButton()))
+            .AddRow(new ActionRowBuilder().WithButton(GetDisableGameNewsButtion()))
+            .Build();
 
         var msgEmbed = await CreateCommandMessageEmbed();
 
@@ -118,11 +130,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
 
         bool enableGameNews = true;  //<-- Just a filler bool to show game news is on, even though it would be on at this point.
-        bool? showPickedGameNews = leagueChannel?.ShowPickedGameNews;
-        bool? showEligibleGameNews = leagueChannel?.ShowEligibleGameNews;
-        bool? showIneligibleGameNews = leagueChannel?.ShowIneligibleGameNews;
-        NotableMissSetting? notableMissSetting = leagueChannel?.NotableMissSetting;
-        bool? showAlreadyReleasedGameNews = gameNewsChannel?.GameNewsSetting.ShowAlreadyReleasedNews;
+        bool showPickedGameNews = leagueChannel?.ShowPickedGameNews ?? false;
+        bool showEligibleGameNews = leagueChannel?.ShowEligibleGameNews ?? false;
+        bool showIneligibleGameNews = leagueChannel?.ShowIneligibleGameNews ?? false;
+        NotableMissSetting notableMissSetting = leagueChannel?.NotableMissSetting ?? NotableMissSetting.None;
+        bool showAlreadyReleasedGameNews = gameNewsChannel?.GameNewsSetting.ShowAlreadyReleasedNews ?? false;
         bool showNewGameAnnouncements = gameNewsChannel?.GameNewsSetting.ShowNewGameAnnouncements ?? false;
         bool showWillReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowWillReleaseInYearNews ?? false;
         bool showMightReleaseInYearNews = gameNewsChannel?.GameNewsSetting.ShowMightReleaseInYearNews ?? false;
@@ -146,7 +158,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 Name = "General News Settings",
                 Value = $"> ℹ️ Game News Enabled: {(enableGameNews == false ? "**No**" : "**Yes**")}\n" +
                         $"> ℹ️ Is League Channel: {(leagueChannel != null ? "**Yes**" : "**No**")}\n" +
-                        $"> ℹ️  State: {GetSettingState(leagueChannel, gameNewsChannel!.GameNewsSetting)}",
+                        $"> ℹ️  State: {GetSettingState(leagueChannel, gameNewsChannel?.GameNewsSetting)}",
                 IsInline = false
             }
         };
@@ -170,10 +182,9 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 embedFieldBuilders.Add(new EmbedFieldBuilder
                 {
                     Name = "Tips",
-                    Value = "> ℹ️ To change other options, you must turn off \"Picked Game News Override\", or enable \"Eligible/Ineligible Game News\".",
+                    Value = "> ℹ️ To change other filters, you must turn off \"Picked Game News Override\", or enable \"Eligible/Ineligible Game News\". Right now you are only showing league picked news, so there is nothing else to filter.",
                     IsInline = false
                 });
-
 
                 return GetGameNewsSettingsEmbed(embedFieldBuilders);
             }
@@ -251,9 +262,9 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                     builders);
     }
 
-    private string GetSettingState(MinimalLeagueChannel? leagueChannel, GameNewsSetting gameNewsSettings)
+    private string GetSettingState(MinimalLeagueChannel? leagueChannel, GameNewsSetting? gameNewsSettings)
     {
-        if (gameNewsSettings.IsAllOn()
+        if (gameNewsSettings?.IsAllOn() ?? false
             && (leagueChannel?.ShowEligibleGameNews ?? true)
             && (leagueChannel?.ShowPickedGameNews ?? true)
             && leagueChannel?.NotableMissSetting == NotableMissSetting.ScoreUpdates)
@@ -277,8 +288,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         return "Custom";
     }
 
-    private static bool IsRecommendedSettings(MinimalLeagueChannel? leagueChannel, GameNewsSetting gameNewsSetting)
+    private static bool IsRecommendedSettings(MinimalLeagueChannel? leagueChannel, GameNewsSetting? gameNewsSetting)
     {
+        if (gameNewsSetting == null) return false;
+
         bool leagueRecommended = leagueChannel is null or { ShowPickedGameNews: true, ShowEligibleGameNews: true };
 
         bool gameNewsRecommended = gameNewsSetting.IsRecommended();
@@ -402,7 +415,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
 
-        GameNewsSetting settings = gameNewsChannel?.GameNewsSetting ?? GameNewsSetting.GetRecommendedSetting();
+        GameNewsSetting settings = gameNewsChannel?.GameNewsSetting ?? GameNewsSetting.GetOffSetting();
 
         if (_masterGameTags == null)
         {
@@ -413,12 +426,12 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         // so we will make a new settings class, and set it default.
         if (button == "enable_game_news")
         {
-            await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, settings);
-            await SendGameNewsCommandMessage();
+            await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.GetRecommendedSetting());
             if (leagueChannel != null)
             {
                 await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, guildID, channelID, true, true, false, NotableMissSetting.ScoreUpdates);
             }
+            await SendGameNewsCommandMessage();
             return;
         }
 
@@ -428,6 +441,28 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         // Toggle the specified setting
         switch (button)
         {
+            case "disable_game_news":
+                try
+                {
+                    await Context.Channel.DeleteMessageAsync(CommandMessageID);
+                }
+                catch (Exception ex)
+                {
+                    await FollowupAsync($"There was an error trying to delete the original Command message Error:{ex.Message}", ephemeral: true);
+                    break;
+                }
+                await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.GetOffSetting());
+                if (leagueChannel != null)
+                {
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, false, false, false, NotableMissSetting.None);
+                }
+                await UpdateCommandMessage();
+                break;
+
+            case "set_custom_filters":
+                await SendCustomSettingsMessage();
+                break;
+
             case "change_league_news_settings":
                 await interaction.DeleteOriginalResponseAsync();
 
@@ -440,7 +475,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 break;
 
             case "change_game_announcements_settings":
-                if (CheckIsPickedOnly(leagueChannel))
+                if (leagueChannel != null && CheckIsPickedOnly(leagueChannel))
                 {
                     await SendUnableToChangeSettingsMessage();
                     break;
@@ -449,7 +484,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 break;
 
             case "change_game_status_settings":
-                if (CheckIsPickedOnly(leagueChannel))
+                if (leagueChannel != null && CheckIsPickedOnly(leagueChannel))
                 {
                     await SendUnableToChangeSettingsMessage();
                     break;
@@ -458,7 +493,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 break;
 
             case "change_game_update_settings":
-                if (CheckIsPickedOnly(leagueChannel))
+                if (leagueChannel != null && CheckIsPickedOnly(leagueChannel))
                 {
                     await SendUnableToChangeSettingsMessage();
                     break;
@@ -585,12 +620,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
 
-        if (gameNewsChannel == null)
-        {
-            await FollowupAsync("Something went wrong, no settings could be found for this channel", ephemeral: true);
-            return;
-        }
-
         switch (selection)
         {
             case "notable_miss":
@@ -647,28 +676,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                             return;
                         }
                         await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, true, false, false, NotableMissSetting.None);
-                        await UpdateCommandMessage();
-                        break;
-
-                    case "Custom":
-                        await SendCustomSettingsMessage();
-                        break;
-
-                    case "Disable":
-                        try
-                        {
-                            await Context.Channel.DeleteMessageAsync(CommandMessageID);
-                        }
-                        catch (Exception ex)
-                        {
-                            await FollowupAsync($"There was an error trying to delete the original Command message Error:{ex.Message}", ephemeral: true);
-                            break;
-                        }
                         await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.GetOffSetting());
-                        if (leagueChannel != null)
-                        {
-                            await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, false, false, false, NotableMissSetting.None);
-                        }
                         await UpdateCommandMessage();
                         break;
                 }
@@ -775,6 +783,22 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithCustomId("button_enable_game_news")
             .WithLabel("Enable Game News")
             .WithStyle(ButtonStyle.Success);
+    }
+
+    private static ButtonBuilder GetDisableGameNewsButtion()
+    {
+        return new ButtonBuilder()
+            .WithCustomId("button_disable_game_news")
+            .WithLabel("Disable Game News")
+            .WithStyle(ButtonStyle.Danger);
+    }
+
+    private static ButtonBuilder GetSetCustomFiltersButton()
+    {
+        return new ButtonBuilder()
+            .WithCustomId("button_set_custom_filters")
+            .WithLabel("Set Custom Filters [Advanced]")
+            .WithStyle(ButtonStyle.Primary);
     }
 
     private static ButtonBuilder GetEnablePickedGameNewsButton(bool initialSetting)
@@ -907,9 +931,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             selectMenu.AddOption("Show League News Only", "LeagueOnly", description: "Only news about games picked by your league, nothing else!");
         }
 
-        selectMenu.AddOption("Show Custom Game News [Advanced] ", "Custom", description: "Sends a follow up message with options to customize");
-        selectMenu.AddOption("Disable Game News", "Disable", description: "Disables the game news for this channel");
-
         return selectMenu;
     }
 
@@ -940,10 +961,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     #endregion Select Menu Builders
 
-    private bool CheckIsPickedOnly(MinimalLeagueChannel? leagueChannel)
+    private bool CheckIsPickedOnly(MinimalLeagueChannel leagueChannel)
     {
-        return leagueChannel?.ShowPickedGameNews ?? false
-            && !leagueChannel.ShowEligibleGameNews
-            && !leagueChannel.ShowIneligibleGameNews;
+        return leagueChannel.ShowPickedGameNews == true
+            && leagueChannel.ShowEligibleGameNews == false
+            && leagueChannel.ShowIneligibleGameNews == false;
     }
 }
