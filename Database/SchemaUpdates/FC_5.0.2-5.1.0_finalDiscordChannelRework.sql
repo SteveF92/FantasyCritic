@@ -58,7 +58,11 @@ UPDATE tbl_discord_leaguechannel l
 LEFT JOIN tbl_discord_gamenewschannel g ON l.DiscordServerID = g.DiscordServerID
 SET
     l.ShowPickedGameNews = l.SendLeagueMasterGameUpdates,
-    l.ShowEligibleGameNews = 1,
+    l.ShowEligibleGameNews =
+        CASE 
+            WHEN g.DiscordServerID IS NOT NULL THEN 1
+            ELSE 0
+        END,
     l.ShowIneligibleGameNews =
         CASE 
             WHEN g.GameNewsSetting = 'All' THEN 1
