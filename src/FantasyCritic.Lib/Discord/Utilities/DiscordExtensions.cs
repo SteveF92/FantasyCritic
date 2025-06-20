@@ -34,6 +34,7 @@ public static class DiscordExtensions
     {
         try
         {
+            Serilog.Log.Information("Sending message to channel {ChannelID} {ChannelName}", channel.Id, channel.Name);
             return await channel.SendMessageAsync(text, isTTS, embed, options, allowedMentions, messageReference, components, stickers, embeds, flags);
         }
         catch (Exception e)
