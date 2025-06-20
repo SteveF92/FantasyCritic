@@ -29,7 +29,7 @@ ALTER TABLE `tbl_discord_leaguechannel`
 -- Apply transformations
 
 UPDATE tbl_discord_gamenewschannel g
-LEFT JOIN tbl_discord_leaguechannel l ON g.GuildID = l.GuildID
+LEFT JOIN tbl_discord_leaguechannel l ON g.GuildID = l.GuildID AND l.ChannelID = g.ChannelID
 SET
     g.ShowJustReleasedAnnouncements = 1,
     g.ShowNewGameAnnouncements = 1,
@@ -55,7 +55,7 @@ SET
 
 
 UPDATE tbl_discord_leaguechannel l
-LEFT JOIN tbl_discord_gamenewschannel g ON l.GuildID = g.GuildID
+LEFT JOIN tbl_discord_gamenewschannel g ON l.GuildID = g.GuildID AND l.ChannelID = g.ChannelID
 SET
     l.ShowPickedGameNews = l.SendLeagueMasterGameUpdates,
     l.ShowEligibleGameNews =
