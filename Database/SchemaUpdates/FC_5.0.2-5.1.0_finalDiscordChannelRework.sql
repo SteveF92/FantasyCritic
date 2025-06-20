@@ -29,14 +29,14 @@ ALTER TABLE `tbl_discord_leaguechannel`
 -- Apply transformations
 
 UPDATE tbl_discord_gamenewschannel g
-LEFT JOIN tbl_discord_leaguechannel l ON g.DiscordServerID = l.DiscordServerID
+LEFT JOIN tbl_discord_leaguechannel l ON g.GuildID = l.GuildID
 SET
     g.ShowJustReleasedAnnouncements = 1,
     g.ShowNewGameAnnouncements = 1,
     g.ShowAlreadyReleasedNews = 
         CASE 
             WHEN g.GameNewsSetting = 'All' THEN 1
-            WHEN l.DiscordServerID IS NULL OR l.SendLeagueMasterGameUpdates = 0 THEN 1
+            WHEN l.GuildID IS NULL OR l.SendLeagueMasterGameUpdates = 0 THEN 1
             ELSE 0
         END,
     g.ShowWillReleaseInYearNews = 1,
@@ -55,12 +55,12 @@ SET
 
 
 UPDATE tbl_discord_leaguechannel l
-LEFT JOIN tbl_discord_gamenewschannel g ON l.DiscordServerID = g.DiscordServerID
+LEFT JOIN tbl_discord_gamenewschannel g ON l.GuildID = g.GuildID
 SET
     l.ShowPickedGameNews = l.SendLeagueMasterGameUpdates,
     l.ShowEligibleGameNews =
         CASE 
-            WHEN g.DiscordServerID IS NOT NULL THEN 1
+            WHEN g.GuildID IS NOT NULL THEN 1
             ELSE 0
         END,
     l.ShowIneligibleGameNews =
@@ -85,10 +85,16 @@ ALTER TABLE `tbl_discord_gamenewschannel`
 	MODIFY COLUMN `ShowEditedGameNews` BIT NOT NULL;
 
 ALTER TABLE `tbl_discord_leaguechannel`
+	DROP FOREIGN KEY `FK_tbl_discord_leaguechannel_tbl_discord_notablemissoptions`;
+
+ALTER TABLE `tbl_discord_leaguechannel`
 	MODIFY COLUMN `ShowPickedGameNews` BIT NOT NULL,
 	MODIFY COLUMN `ShowEligibleGameNews` BIT NOT NULL,
 	MODIFY COLUMN `ShowIneligibleGameNews` BIT NOT NULL,
 	MODIFY COLUMN `NotableMissSetting` VARCHAR(50) NOT NULL;
+
+ALTER TABLE `tbl_discord_leaguechannel`
+	ADD CONSTRAINT `FK_tbl_discord_leaguechannel_tbl_discord_notablemissoptions` FOREIGN KEY (`NotableMissSetting`) REFERENCES `tbl_discord_notablemissoptions` (`Name`) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE `tbl_discord_leaguechannel`
 	DROP COLUMN `SendLeagueMasterGameUpdates`,
