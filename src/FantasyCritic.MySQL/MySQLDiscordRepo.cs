@@ -29,10 +29,10 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, null);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, false, NotableMissSetting.ScoreUpdates, null);
         var existingChannel = await GetLeagueChannelEntity(guildID, channelID);
         var sql = existingChannel == null
-            ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,SendLeagueMasterGameUpdates,SendNotableMisses) VALUES (@GuildID, @ChannelID, @LeagueID, @SendLeagueMasterGameUpdates, @SendNotableMisses)"
+            ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,ShowPickedGameNews,ShowEligibleGameNews,ShowIneligibleGameNews,NotableMissSetting) VALUES (@GuildID, @ChannelID, @LeagueID, @ShowPickedGameNews, @ShowEligibleGameNews, @ShowIneligibleGameNews, @NotableMissSetting)"
             : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
@@ -48,20 +48,43 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, conferenceChannelEntity);
     }
 
-    public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool sendLeagueMasterGameUpdates, bool sendNotableMisses)
+    public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, sendLeagueMasterGameUpdates, sendNotableMisses, null);
-        var sql = "UPDATE tbl_discord_leaguechannel SET SendLeagueMasterGameUpdates=@SendLeagueMasterGameUpdates, SendNotableMisses=@SendNotableMisses WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, showPickedGameNews, showEligibleGameNews, showIneligibleGameNews, notableMissSetting, null);
+        var sql = """
+                  UPDATE tbl_discord_leaguechannel SET
+                  ShowPickedGameNews=@ShowPickedGameNews,
+                  ShowEligibleGameNews=@ShowEligibleGameNews,
+                  ShowIneligibleGameNews=@ShowIneligibleGameNews,
+                  NotableMissSetting=@NotableMissSetting
+                  WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID;
+                  """;
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
     public async Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting)
     {
-        bool deleting = gameNewsSetting.Equals(GameNewsSetting.Off);
+        bool deleting = gameNewsSetting.IsOff();
         var deleteSQL = "DELETE FROM tbl_discord_gamenewschannel where GuildID=@GuildID AND ChannelID=@ChannelID;";
-        var insertSQL = "INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,GameNewsSetting) VALUES (@GuildID,@ChannelID,@GameNewsSetting);";
-        var updateSQL = "UPDATE tbl_discord_gamenewschannel SET GameNewsSetting = @GameNewsSetting where GuildID=@GuildID AND ChannelID=@ChannelID;";
+
+        var insertSQL = """
+                        INSERT IGNORE INTO tbl_discord_gamenewschannel(GuildID,ChannelID,ShowAlreadyReleasedNews,ShowWillReleaseInYearNews,ShowMightReleaseInYearNews,ShowWillNotReleaseInYearNews,ShowScoreGameNews,ShowJustReleasedAnnouncements,ShowNewGameAnnouncements,ShowEditedGameNews) 
+                        VALUES (@GuildID,@ChannelID,@ShowAlreadyReleasedNews,@ShowWillReleaseInYearNews,@ShowMightReleaseInYearNews,@ShowWillNotReleaseInYearNews,@ShowScoreGameNews,@ShowJustReleasedAnnouncements,@ShowNewGameAnnouncements,@ShowEditedGameNews);
+                        """;
+        var updateSQL = """
+                        UPDATE tbl_discord_gamenewschannel SET
+                        ShowAlreadyReleasedNews = @ShowAlreadyReleasedNews,
+                        ShowWillReleaseInYearNews = @ShowWillReleaseInYearNews,
+                        ShowMightReleaseInYearNews = @ShowMightReleaseInYearNews,
+                        ShowWillNotReleaseInYearNews = @ShowWillNotReleaseInYearNews,
+                        ShowScoreGameNews = @ShowScoreGameNews,
+                        ShowJustReleasedAnnouncements = @ShowJustReleasedAnnouncements,
+                        ShowNewGameAnnouncements = @ShowNewGameAnnouncements,
+                        ShowEditedGameNews = @ShowEditedGameNews
+                        where GuildID=@GuildID AND ChannelID=@ChannelID;
+                        """;
+
         var selectTagsSQL = "SELECT * from tbl_discord_gamenewschannelskiptag where GuildID=@guildID AND ChannelID=@channelID;";
         var deleteTagsSQL = "DELETE from tbl_discord_gamenewschannelskiptag where GuildID=@guildID AND ChannelID=@channelID;";
         var gameNewsChannelEntity = new GameNewsChannelEntity(guildID, channelID, gameNewsSetting);
@@ -115,9 +138,15 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetBidAlertRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? bidAlertRoleID)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, bidAlertRoleID);
+        var param = new
+        {
+            LeagueID = leagueID,
+            GuildID = guildID,
+            ChannelID = channelID,
+            BidAlertRoleID = bidAlertRoleID
+        };
         var sql = "UPDATE tbl_discord_leaguechannel SET BidAlertRoleID=@BidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
-        await connection.ExecuteAsync(sql, leagueChannelEntity);
+        await connection.ExecuteAsync(sql, param);
     }
 
     public async Task<bool> DeleteLeagueChannel(ulong guildID, ulong channelID)

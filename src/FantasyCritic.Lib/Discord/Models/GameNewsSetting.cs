@@ -1,53 +1,72 @@
 namespace FantasyCritic.Lib.Discord.Models;
-
-public class GameNewsSetting : TypeSafeEnum<GameNewsSetting>
+public record GameNewsSetting
 {
-    // Define values here.
-    public static readonly GameNewsSetting All = new GameNewsSetting("All");
-    public static readonly GameNewsSetting WillReleaseInYear = new GameNewsSetting("WillReleaseInYear");
-    public static readonly GameNewsSetting MightReleaseInYear = new GameNewsSetting("MightReleaseInYear");
-    public static readonly GameNewsSetting Off = new GameNewsSetting("Off");
+    public required bool ShowJustReleasedAnnouncements { get; init; }
+    public required bool ShowNewGameAnnouncements { get; init; }
+    public required bool ShowAlreadyReleasedNews { get; init; }
+    public required bool ShowWillReleaseInYearNews { get; init; }
+    public required bool ShowMightReleaseInYearNews { get; init; }
+    public required bool ShowWillNotReleaseInYearNews { get; init; }
+    public required bool ShowScoreGameNews { get; init; }
+    public required bool ShowEditedGameNews { get; init; }
 
-    // Constructor is private: values are defined within this class only!
-    private GameNewsSetting(string value)
-        : base(value)
+    public bool IsOff()
     {
-
+        return Equals(GetOffSetting());
     }
 
-    public override string ToString() => Value;
-}
-
-//This is different from the setting above because some of these settings aren't "real", they can't be persisted to the DB.
-public class RequestedGameNewsSetting  : TypeSafeEnum<RequestedGameNewsSetting>
-{
-    // Define values here.
-    public static readonly RequestedGameNewsSetting All = new RequestedGameNewsSetting ("All", GameNewsSetting.All);
-    public static readonly RequestedGameNewsSetting WillReleaseInYear = new RequestedGameNewsSetting ("WillReleaseInYear", GameNewsSetting.WillReleaseInYear);
-    public static readonly RequestedGameNewsSetting MightReleaseInYear = new RequestedGameNewsSetting ("MightReleaseInYear", GameNewsSetting.MightReleaseInYear);
-    public static readonly RequestedGameNewsSetting Recommended = new RequestedGameNewsSetting ("Recommended");
-    public static readonly RequestedGameNewsSetting LeagueGamesOnly = new RequestedGameNewsSetting ("LeagueGamesOnly");
-    public static readonly RequestedGameNewsSetting Off = new RequestedGameNewsSetting ("Off", GameNewsSetting.Off);
-
-    // Constructor is private: values are defined within this class only!
-    private RequestedGameNewsSetting (string value, GameNewsSetting? normalSetting = null)
-        : base(value)
+    public bool IsAllOn()
     {
-        NormalSetting = normalSetting;
+        return Equals(GetAllOnSetting());
     }
 
-    public GameNewsSetting? NormalSetting { get; }
-
-    public override string ToString() => Value;
-
-    public GameNewsSetting ToNormalSetting()
+    public bool IsRecommended()
     {
-        if (NormalSetting == null)
+        return Equals(GetRecommendedSetting());
+    }
+
+    public static GameNewsSetting GetRecommendedSetting()
+    {
+        return new GameNewsSetting()
         {
-            throw new Exception($"{Value} cannot be converted to a normal setting");
-        }
+            ShowAlreadyReleasedNews = false,
+            ShowWillReleaseInYearNews = true,
+            ShowMightReleaseInYearNews = true,
+            ShowWillNotReleaseInYearNews = false,
+            ShowScoreGameNews = true,
+            ShowJustReleasedAnnouncements = true,
+            ShowNewGameAnnouncements = true,
+            ShowEditedGameNews = true,
+        };
+    }
 
-        return NormalSetting;
+    public static GameNewsSetting GetAllOnSetting()
+    {
+        return new GameNewsSetting()
+        {
+            ShowAlreadyReleasedNews = true,
+            ShowWillReleaseInYearNews = true,
+            ShowMightReleaseInYearNews = true,
+            ShowWillNotReleaseInYearNews = true,
+            ShowScoreGameNews = true,
+            ShowJustReleasedAnnouncements = true,
+            ShowNewGameAnnouncements = true,
+            ShowEditedGameNews = true,
+        };
+    }
+
+    public static GameNewsSetting GetOffSetting()
+    {
+        return new GameNewsSetting()
+        {
+            ShowAlreadyReleasedNews = false,
+            ShowWillReleaseInYearNews = false,
+            ShowMightReleaseInYearNews = false,
+            ShowWillNotReleaseInYearNews = false,
+            ShowScoreGameNews = false,
+            ShowJustReleasedAnnouncements = false,
+            ShowNewGameAnnouncements = false,
+            ShowEditedGameNews = false,
+        };
     }
 }
-

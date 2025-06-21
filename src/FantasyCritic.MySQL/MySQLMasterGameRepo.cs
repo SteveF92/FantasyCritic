@@ -17,16 +17,18 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     private readonly string _connectionString;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
+    private readonly IClock _clock;
 
     private IReadOnlyList<MasterGameTag>? _tagCache;
     private Dictionary<Guid, MasterGame>? _masterGamesCache;
     private Dictionary<int, Dictionary<Guid, MasterGameYear>> _masterGameYearsCache;
 
-    public MySQLMasterGameRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore)
+    public MySQLMasterGameRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IClock clock)
     {
         _connectionString = configuration.ConnectionString;
         _userStore = userStore;
         _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
+        _clock = clock;
     }
 
     public void ClearMasterGameCache()
@@ -680,5 +682,24 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await using var connection = new MySqlConnection(_connectionString);
         var leagueYearsWithMasterGameEntities = await connection.QueryAsync<LeagueYearsWithMasterGameEntity>(sql, new { userID = userID, masterGameID = masterGameID });
         return leagueYearsWithMasterGameEntities.Select(l => l.ToDomain()).ToList();
+    }
+
+    public async Task<MasterGame> GetTestMasterGame(int year)
+    {
+        var masterGameYear = await GetTestMasterGameYear(year);
+
+        return masterGameYear.MasterGame;
+    }
+
+    public async Task<MasterGameYear> GetTestMasterGameYear(int year)
+    {
+        var allMasterGameYears = await GetMasterGameYears(year);
+
+        var mostPopularUnreleasedGame = allMasterGameYears
+            .Where(x => !x.MasterGame.IsReleased(_clock.GetToday()))
+            .Where(x => x.MasterGame.ReleaseDate.HasValue)
+            .MaxBy(x => x.DateAdjustedHypeFactor);
+
+        return mostPopularUnreleasedGame ?? throw new Exception("No unreleased games found for the test master game year.");
     }
 }

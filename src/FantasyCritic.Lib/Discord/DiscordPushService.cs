@@ -150,14 +150,14 @@ public class DiscordPushService
             }
 
             var newMasterGamesToSend = _newMasterGameMessages
-                .Where(x => combinedChannel.CombinedSetting.NewGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
+                .Where(x => combinedChannel.GetRelevanceHandler().NewGameIsRelevant(x.MasterGame, today))
                 .ToList();
             var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
-                .Where(x => combinedChannel.CombinedSetting.ScoredGameIsRelevant(x.Game, combinedChannel.ActiveLeagueYears, x.NewCriticScore, today))
+                .Where(x => combinedChannel.GetRelevanceHandler().ScoredGameIsRelevant(x.Game, x.OldCriticScore, x.NewCriticScore, today))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => combinedChannel.CombinedSetting.ExistingGameIsRelevant(x.ExistingGame.MasterGame,
-                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus(), combinedChannel.ActiveLeagueYears, combinedChannel.ChannelKey, today))
+                .Where(x => combinedChannel.GetRelevanceHandler().ExistingGameIsRelevant(x.ExistingGame.MasterGame,
+                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus() ? x.ExistingGame.GetWillReleaseStatus() : null, today))
                 .ToList();
 
             if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())
@@ -336,7 +336,7 @@ public class DiscordPushService
             }
 
             IReadOnlyList<MasterGameYear> relevantGamesForLeague = masterGamesReleasingToday
-                .Where(x => combinedChannel.CombinedSetting.ReleasedGameIsRelevant(x.MasterGame, combinedChannel.ActiveLeagueYears))
+                .Where(x => combinedChannel.GetRelevanceHandler().JustReleasedGameIsRelevant(x.MasterGame, _clock.GetToday()))
                 .ToList();
             if (!relevantGamesForLeague.Any())
             {

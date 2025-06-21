@@ -2,7 +2,6 @@ using Discord.WebSocket;
 using Discord;
 using Discord.Interactions;
 using FantasyCritic.Lib.DependencyInjection;
-using System.Threading.Channels;
 
 namespace FantasyCritic.Lib.Discord;
 public class DiscordBotService

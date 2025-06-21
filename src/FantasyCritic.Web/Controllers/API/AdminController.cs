@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Utilities;
@@ -25,10 +26,11 @@ public class AdminController : FantasyCriticController
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly EmailSendingService _emailSendingService;
     private readonly DiscordPushService _discordPushService;
+    private readonly IMasterGameRepo _masterGameRepo;
 
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
-        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService)
+        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo)
         : base(userManager)
     {
         _adminService = adminService;
@@ -40,6 +42,7 @@ public class AdminController : FantasyCriticController
         _webHostEnvironment = webHostEnvironment;
         _emailSendingService = emailSendingService;
         _discordPushService = discordPushService;
+        _masterGameRepo = masterGameRepo;
     }
 
     [HttpPost]
@@ -110,6 +113,83 @@ public class AdminController : FantasyCriticController
         }
 
         await _emailSendingService.SendPublicBidEmails(publicBiddingSets);
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendSpoofScoreUpdate()
+    {
+        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
+        if (isProduction)
+        {
+            return BadRequest("This is a test endpoint. Do not use in production.");
+        }
+        var currentSupportedYear = (await _interLeagueService.GetSupportedYears())
+            .Where(x => x.OpenForPlay && !x.Finished)
+            .MaxBy(x => x.Year);
+
+        var masterGame = await _masterGameRepo.GetTestMasterGame(currentSupportedYear!.Year);
+
+        _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, 80m, 85m);
+        await _discordPushService.SendBatchedMasterGameUpdates();
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendSpoofEditUpdate()
+    {
+        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
+        if (isProduction)
+        {
+            return BadRequest("This is a test endpoint. Do not use in production.");
+        }
+        var currentSupportedYear = (await _interLeagueService.GetSupportedYears())
+            .Where(x => x.OpenForPlay && !x.Finished)
+            .MaxBy(x => x.Year);
+
+        var masterGameYear = await _masterGameRepo.GetTestMasterGameYear(currentSupportedYear!.Year);
+
+        _discordPushService.QueueMasterGameEditMessage(masterGameYear, masterGameYear, new List<string>() { "The Test Game Was Changed" });
+        await _discordPushService.SendBatchedMasterGameUpdates();
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendSpoofNewUpdate()
+    {
+        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
+        if (isProduction)
+        {
+            return BadRequest("This is a test endpoint. Do not use in production.");
+        }
+
+        var currentSupportedYear = (await _interLeagueService.GetSupportedYears())
+            .Where(x => x.OpenForPlay && !x.Finished)
+            .MaxBy(x => x.Year);
+
+        var masterGame = await _masterGameRepo.GetTestMasterGame(currentSupportedYear!.Year);
+        _discordPushService.QueueNewMasterGameMessage(masterGame);
+        await _discordPushService.SendBatchedMasterGameUpdates();
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendSpoofReleasedUpdate()
+    {
+        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
+        if (isProduction)
+        {
+            return BadRequest("This is a test endpoint. Do not use in production.");
+        }
+        var currentSupportedYear = (await _interLeagueService.GetSupportedYears())
+            .Where(x => x.OpenForPlay && !x.Finished)
+            .MaxBy(x => x.Year);
+
+        var masterGameYear = await _masterGameRepo.GetTestMasterGameYear(currentSupportedYear!.Year);
+        var masterGameList = new List<MasterGameYear>() { masterGameYear };
+        await _discordPushService.SendGameReleaseUpdates(masterGameList);
         return Ok();
     }
 

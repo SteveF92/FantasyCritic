@@ -137,6 +137,11 @@ public class MasterGame : IEquatable<MasterGame>
         return GetWillReleaseStatus(year).Equals(WillReleaseStatus.WillRelease);
     }
 
+    public bool MightReleaseInYear(int year)
+    {
+        return GetWillReleaseStatus(year).Equals(WillReleaseStatus.MightRelease);
+    }
+
     public bool WillOrMightReleaseInYear(int year)
     {
         return GetWillReleaseStatus(year).Equals(WillReleaseStatus.WillRelease) ||

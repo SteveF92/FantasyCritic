@@ -13,6 +13,9 @@ let basicMixin = {
         return;
       }
       return this.$store.getters.userInfo.displayName;
+    },
+    isDevelopment() {
+      return process.env.NODE_ENV === 'development';
     }
   },
   data() {
