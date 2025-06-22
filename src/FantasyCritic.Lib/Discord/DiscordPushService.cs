@@ -414,7 +414,7 @@ public class DiscordPushService
                 continue;
             }
 
-            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## {action.ActionType}\n{action.Description}\n_(at {action.Timestamp.ToEasternDate()})_"));
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## {action.ActionType}\n{action.Description}\n_(on {action.Timestamp.ToEasternDate()})_"));
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
