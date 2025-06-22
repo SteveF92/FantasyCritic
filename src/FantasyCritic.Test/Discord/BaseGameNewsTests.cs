@@ -3,10 +3,10 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Test.TestUtilities;
 using NodaTime;
 using System;
 using System.Collections.Generic;
+using FantasyCritic.FakeRepo.TestUtilities;
 
 namespace FantasyCritic.Test.Discord;
 internal abstract class BaseGameNewsTests

@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 
-namespace FantasyCritic.Test.TestUtilities;
+namespace FantasyCritic.FakeRepo.TestUtilities;
 public class TestPublisherEntity
 {
     public Guid PublisherID { get; set; }

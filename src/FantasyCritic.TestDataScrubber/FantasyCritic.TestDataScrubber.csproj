@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FantasyCritic.Test\FantasyCritic.Test.csproj" />
+    <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyCritic.FakeRepo.TestUtilities;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Test.TestUtilities;
 using NodaTime;
 using NodaTime.Text;
 using NUnit.Framework;

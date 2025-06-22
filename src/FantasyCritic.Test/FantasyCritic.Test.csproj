@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
-    <ProjectReference Include="..\FantasyCritic.Lib\FantasyCritic.Lib.csproj" />
   </ItemGroup>
 
 </Project>

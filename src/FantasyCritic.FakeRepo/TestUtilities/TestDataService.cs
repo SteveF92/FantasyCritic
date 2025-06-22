@@ -11,7 +11,7 @@ using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
-namespace FantasyCritic.Test.TestUtilities;
+namespace FantasyCritic.FakeRepo.TestUtilities;
 public class TestDataService
 {
     private readonly string _basePath;

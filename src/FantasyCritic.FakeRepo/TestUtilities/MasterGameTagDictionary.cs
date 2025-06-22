@@ -1,9 +1,9 @@
-using FantasyCritic.Lib.Domain;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyCritic.Lib.Domain;
 
-namespace FantasyCritic.Test.TestUtilities;
-internal static class MasterGameTagDictionary
+namespace FantasyCritic.FakeRepo.TestUtilities;
+public static class MasterGameTagDictionary
 {
     private static readonly MasterGameTagType RemakeLevelType = new MasterGameTagType("RemakeLevel");
     private static readonly MasterGameTagType OtherType = new MasterGameTagType("Other");

@@ -1,7 +1,7 @@
 using System.Globalization;
 using CsvHelper;
+using FantasyCritic.FakeRepo.TestUtilities;
 using FantasyCritic.Lib.SharedSerialization.Database;
-using FantasyCritic.Test.TestUtilities;
 
 namespace FantasyCritic.TestDataScrubber;
 

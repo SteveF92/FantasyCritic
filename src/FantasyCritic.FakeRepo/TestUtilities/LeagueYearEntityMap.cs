@@ -2,7 +2,7 @@ using System.Globalization;
 using CsvHelper.Configuration;
 using FantasyCritic.Lib.SharedSerialization.Database;
 
-namespace FantasyCritic.Test.TestUtilities;
+namespace FantasyCritic.FakeRepo.TestUtilities;
 public sealed class LeagueYearEntityMap : ClassMap<LeagueYearEntity>
 {
     public LeagueYearEntityMap()
