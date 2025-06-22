@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests">
+  <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests" @hidden="clearData">
     <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
@@ -11,11 +11,18 @@
         <tr v-for="drop in currentDrops" :key="drop.dropRequestID">
           <td>{{ drop.masterGame.gameName }}</td>
           <td class="select-cell">
-            <b-button variant="danger" size="sm" @click="cancelDrop(drop)">Cancel</b-button>
+            <b-button variant="danger" size="sm" @click="confirmCancelDrop(drop)">Cancel</b-button>
           </td>
         </tr>
       </tbody>
     </table>
+    <b-modal id="confirm-cancel-drop-modal" @ok="cancelDrop">
+      <!-- prettier-ignore -->
+      <p>
+        Are you sure you want to cancel your drop for
+        <strong>{{ dropToCancel?.masterGame.gameName }}</strong>?
+      </p>
+    </b-modal>
   </b-modal>
 </template>
 
@@ -25,18 +32,34 @@ import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   mixins: [LeagueMixin],
+  data() {
+    return {
+      dropToCancel: null
+    };
+  },
+  created() {
+    this.clearData();
+  },
   methods: {
-    cancelDrop(dropRequest) {
+    confirmCancelDrop(drop) {
+      this.dropToCancel = drop;
+      this.$bvModal.show('confirm-cancel-drop-modal');
+    },
+    cancelDrop() {
       const model = {
         publisherID: this.userPublisher.publisherID,
-        dropRequestID: dropRequest.dropRequestID
+        dropRequestID: this.dropToCancel.dropRequestID
       };
       axios
         .post('/api/league/DeleteDropRequest', model)
         .then(() => {
-          this.notifyAction('Drop Request for ' + dropRequest.masterGame.gameName + ' was cancelled.');
+          this.notifyAction('Drop Request for ' + this.dropToCancel.masterGame.gameName + ' was cancelled.');
+          this.clearData();
         })
         .catch(() => {});
+    },
+    clearData() {
+      this.dropToCancel = null;
     }
   }
 };

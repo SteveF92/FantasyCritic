@@ -48,7 +48,7 @@
             <b-button variant="info" size="sm" @click="startEditingBid(bid)">Edit</b-button>
           </b-td>
           <b-td class="select-cell">
-            <b-button variant="danger" size="sm" @click="cancelBid(bid)">Cancel</b-button>
+            <b-button variant="danger" size="sm" @click="confirmCancelBid(bid)">Cancel</b-button>
           </b-td>
         </b-tr>
       </b-tbody>
@@ -88,6 +88,13 @@
         </ul>
       </div>
     </div>
+    <b-modal id="confirm-cancel-bid-modal" @ok="cancelBid">
+      <!-- prettier-ignore -->
+      <p>
+        Are you sure you want to cancel your bid for
+        <strong>{{ bidToCancel?.masterGame.gameName }}</strong>?
+      </p>
+    </b-modal>
   </b-modal>
 </template>
 
@@ -118,7 +125,8 @@ export default {
         value: null,
         gameName: '<No condtional drop>'
       },
-      allowIneligibleSlot: false
+      allowIneligibleSlot: false,
+      bidToCancel: null
     };
   },
   computed: {
@@ -195,15 +203,19 @@ export default {
           this.errorInfo = response.response.data;
         });
     },
-    cancelBid(bid) {
+    confirmCancelBid(bid) {
+      this.bidToCancel = bid;
+      this.$bvModal.show('confirm-cancel-bid-modal');
+    },
+    cancelBid() {
       const model = {
-        bidID: bid.bidID,
+        bidID: this.bidToCancel.bidID,
         publisherID: this.userPublisher.publisherID
       };
       axios
         .post('/api/league/DeletePickupBid', model)
         .then(() => {
-          this.notifyAction('Bid for ' + bid.masterGame.gameName + ' for $' + bid.bidAmount + ' was canceled.');
+          this.notifyAction('Bid for ' + this.bidToCancel.masterGame.gameName + ' for $' + this.bidToCancel.bidAmount + ' was canceled.');
         })
         .catch((response) => {
           this.errorInfo = response.response.data;
@@ -215,6 +227,7 @@ export default {
       this.conditionalDrop = null;
       this.bidAmount = null;
       this.errorInfo = null;
+      this.bidToCancel = null;
     }
   }
 };
