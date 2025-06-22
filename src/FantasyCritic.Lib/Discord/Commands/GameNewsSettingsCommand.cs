@@ -106,7 +106,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         }
 
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
-        var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
         bool isLeagueChannel = leagueChannel != null;
 
         var components = new ComponentBuilder()
@@ -264,7 +263,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     private string GetSettingState(MinimalLeagueChannel? leagueChannel, GameNewsSetting? gameNewsSettings)
     {
-        if (gameNewsSettings?.IsAllOn() ?? false
+        if ((gameNewsSettings?.IsAllOn() ?? false)
             && (leagueChannel?.ShowEligibleGameNews ?? true)
             && (leagueChannel?.ShowPickedGameNews ?? true)
             && leagueChannel?.NotableMissSetting == NotableMissSetting.ScoreUpdates)
@@ -436,7 +435,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         }
 
         //Get Command message ID for any buttons that will update Command
-        _channelCommandDict.TryGetValue(Context.Channel.Id, out var CommandMessageID);
+        _channelCommandDict.TryGetValue(Context.Channel.Id, out var commandMessageID);
 
         // Toggle the specified setting
         switch (button)
@@ -444,7 +443,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             case "disable_game_news":
                 try
                 {
-                    await Context.Channel.DeleteMessageAsync(CommandMessageID);
+                    await Context.Channel.DeleteMessageAsync(commandMessageID);
                 }
                 catch (Exception ex)
                 {
@@ -601,9 +600,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             return;
         }
 
-        //Get Command message ID for any buttons that will update Command
-        _channelCommandDict.TryGetValue(Context.Channel.Id, out var CommandMessageID);
-
         if (_masterGameTags == null)
         {
             _masterGameTags = await _masterGameRepo.GetMasterGameTags();
@@ -617,7 +613,6 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             return;
         }
 
-        var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
         var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
 
         switch (selection)
