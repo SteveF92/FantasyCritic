@@ -314,13 +314,22 @@ export default {
           return;
         }
 
-        this.$refs[this.modalRef].hide();
         this.notifyAction('Bid for ' + this.bidMasterGame.gameName + ' for $' + this.bidAmount + ' was made.');
-        this.clearData();
+        this.clearDataAfterBid();
       } catch (error) {
         this.errorInfo = error.response.data;
         this.requestIsBusy = false;
       }
+    },
+    clearDataAfterBid() {
+      if (!this.specialAuction) {
+        this.bidMasterGame = null;
+      }
+      this.bidResult = null;
+      this.bidAmount = 0;
+      this.isBusy = false;
+      this.requestIsBusy = false;
+      this.conditionalDrop = null;
     },
     clearDataExceptSearch() {
       if (!this.specialAuction) {
