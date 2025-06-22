@@ -101,7 +101,7 @@ public class DraftService
             return Result.Failure("Some of the positions are not valid.");
         }
 
-        string draftOrderDescription = string.Join("\n", draftPositions.Select(x => $"• {x.Value}: {x.Key.PublisherName}"));
+        string draftOrderDescription = string.Join("\n", draftPositions.Select(x => $"• {x.Value}: {x.Key.GetPublisherAndUserDisplayName()}"));
         string actionDescription = $"{draftOrderType.ActionDescription} \n {draftOrderDescription}";
         LeagueManagerAction draftSetAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription);
         await _discordPushService.SendLeagueActionMessage(draftSetAction);

@@ -382,7 +382,7 @@ public class DiscordPushService
                 continue;
             }
 
-            preparedMessages.Add(new PreparedDiscordMessage(channel, $"**{action.Publisher.GetPublisherAndUserDisplayName()}** {action.Description} (at {action.Timestamp.ToEasternDate()})"));
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"**{action.Publisher.GetPublisherAndUserDisplayName()}** {action.Description} (on {action.Timestamp.ToEasternDate()})"));
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
