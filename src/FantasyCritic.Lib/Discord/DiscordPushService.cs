@@ -872,11 +872,11 @@ public class DiscordPushService
             return;
         }
 
-        SocketUser? user = null;
+        IUser? user = null;
         var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(conferenceYear.Conference.ConferenceManager, userStore);
         if (leagueManagerDiscordUser != null)
         {
-            user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
+            user = await _client.GetUserAsync(leagueManagerDiscordUser.Value);
         }
 
         IEnumerable<Task<RestUserMessage?>> messageTasks;
@@ -1272,11 +1272,11 @@ public class DiscordPushService
         var sendRepeatDraftPublisherMessage = ShouldSendRepeatDraftPublisherMessage(updatedDraftStatus);
         if (!sendRepeatDraftPublisherMessage)
         {
-            SocketUser? discordUser = null;
+            IUser? discordUser = null;
             var publisherDiscordUser = await GetDiscordUserIdForFantasyCriticUser(nextPublisherUp.User.ToMinimal(), userStore);
             if (publisherDiscordUser != null)
             {
-                discordUser = await _client.GetUserAsync(publisherDiscordUser.Value) as SocketUser;
+                discordUser = await _client.GetUserAsync(publisherDiscordUser.Value);
                 if (discordUser is null)
                 {
                     Logger.Warning("Could not find discord user for next draft message: {leagueId} {userId} {attemptedDiscordId}", leagueYear.League.LeagueID, nextPublisherUp.User.UserID, publisherDiscordUser);
