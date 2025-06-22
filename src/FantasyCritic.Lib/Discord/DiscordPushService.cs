@@ -1277,13 +1277,9 @@ public class DiscordPushService
             if (publisherDiscordUser != null)
             {
                 discordUser = await _client.GetUserAsync(publisherDiscordUser.Value) as SocketUser;
-                if (discordUser is not null)
+                if (discordUser is null)
                 {
-                    Logger.Debug("Found discord user for next draft message: {leagueId} {userId} {discordUserId}", leagueYear.League.LeagueID, nextPublisherUp.User, discordUser.Id);
-                }
-                else
-                {
-                    Logger.Warning("Could not find discord user for next draft message: {leagueId} {userId}", leagueYear.League.LeagueID, nextPublisherUp.User);
+                    Logger.Warning("Could not find discord user for next draft message: {leagueId} {userId} {attemptedDiscordId}", leagueYear.League.LeagueID, nextPublisherUp.User.UserID, publisherDiscordUser);
                 }
             }
 
