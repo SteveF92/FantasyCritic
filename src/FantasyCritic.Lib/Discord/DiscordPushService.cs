@@ -827,11 +827,11 @@ public class DiscordPushService
             return;
         }
 
-        SocketUser? user = null;
+        IUser? user = null;
         var leagueManagerDiscordUser = await GetDiscordUserIdForFantasyCriticUser(leagueYear.League.LeagueManager, userStore);
         if (leagueManagerDiscordUser != null)
         {
-            user = await _client.GetUserAsync(leagueManagerDiscordUser.Value) as SocketUser;
+            user = await _client.GetUserAsync(leagueManagerDiscordUser.Value);
         }
 
         List<PreparedDiscordMessage> preparedMessages;
