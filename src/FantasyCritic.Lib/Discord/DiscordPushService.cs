@@ -251,7 +251,8 @@ public class DiscordPushService
                         publisherOfGameNoteFinalString = $" [{publisherOfGameNote}]";
                     }
 
-                    var gameAndPublisherMessage = $"**[{gameUpdateMessage.Key.GameName}](https://www.fantasycritic.games/mastergame/{gameUpdateMessage.Key.MasterGameID})**{publisherOfGameNoteFinalString}";
+                    var gameUrl = new GameUrlBuilder(_baseAddress, gameUpdateMessage.Key.MasterGameID).BuildUrl(gameUpdateMessage.Key.GameName);
+                    var gameAndPublisherMessage = $"**{gameUrl}**{publisherOfGameNoteFinalString}";
 
                     return $"{gameAndPublisherMessage}\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
                 }).ToList();
@@ -343,7 +344,11 @@ public class DiscordPushService
                 continue;
             }
 
-            var releaseMessages = relevantGamesForLeague.Select(x => $"**[{x.MasterGame.GameName}](https://www.fantasycritic.games/mastergame/{x.MasterGame.MasterGameID})** has released!");
+            var releaseMessages = relevantGamesForLeague.Select(x =>
+            {
+                var gameUrl = new GameUrlBuilder(_baseAddress, x.MasterGame.MasterGameID).BuildUrl(x.MasterGame.GameName);
+                return $"**{gameUrl})** has released!";
+            });
             var releaseMessage = string.Join("\n", releaseMessages);
             preparedMessages.Add(new PreparedDiscordMessage(textChannel, releaseMessage));
         }
