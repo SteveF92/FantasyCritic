@@ -1277,6 +1277,14 @@ public class DiscordPushService
             if (publisherDiscordUser != null)
             {
                 discordUser = await _client.GetUserAsync(publisherDiscordUser.Value) as SocketUser;
+                if (discordUser is not null)
+                {
+                    Logger.Debug("Found discord user for next draft message: {leagueId} {userId} {discordUserId}", leagueYear.League.LeagueID, nextPublisherUp.User, discordUser.Id);
+                }
+                else
+                {
+                    Logger.Warning("Could not find discord user for next draft message: {leagueId} {userId}", leagueYear.League.LeagueID, nextPublisherUp.User);
+                }
             }
 
             var message = $"Next up to draft a {(isDraftingCounterPick ? "counter " : "")}pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
