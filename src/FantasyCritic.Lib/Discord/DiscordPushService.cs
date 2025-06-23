@@ -604,7 +604,8 @@ public class DiscordPushService
 
             string finalMessage;
 
-            if (publicBiddingSet.MasterGames.Any())
+            var anyBids = publicBiddingSet.MasterGames.Any();
+            if (anyBids)
             {
                 var gameMessages = publicBiddingSet.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
                 finalMessage = string.Join("\n", gameMessages);
@@ -630,7 +631,7 @@ public class DiscordPushService
                 }
 
                 SocketRole? roleToMention = null;
-                if (leagueChannel.BidAlertRoleID != null)
+                if (anyBids && leagueChannel.BidAlertRoleID != null)
                 {
                     roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
                 }
