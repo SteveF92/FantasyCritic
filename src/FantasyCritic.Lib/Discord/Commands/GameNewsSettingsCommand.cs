@@ -3,8 +3,8 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Interfaces;
-using System.Collections.Concurrent;
 using DiscordDotNetUtilities.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 
@@ -22,7 +22,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     /// <summary>
     /// First ulong - ChannelID, Second ulong - CommandMessageID
     /// </summary>
-    private static readonly ConcurrentDictionary<ulong, ulong> _channelCommandDict = new();
+    private static readonly MemoryCache _channelCommandCache = new(new MemoryCacheOptions());
 
     public GameNewsSettingsCommand(IDiscordRepo discordRepo, IMasterGameRepo masterGameRepo, IDiscordFormatter discordFormatter)
     {
@@ -93,12 +93,15 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .Build();
 
         var message = await FollowupAsync(embed: await CreateCommandMessageEmbed(), components: commandMessageComponents);
-        _channelCommandDict[Context.Channel.Id] = message.Id;
+        _channelCommandCache.Set(Context.Channel.Id, message.Id, new MemoryCacheEntryOptions
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(5)
+        });
     }
 
     private async Task UpdateCommandMessage()
     {
-        _channelCommandDict.TryGetValue(Context.Channel.Id, out ulong commandMessageID);
+        _channelCommandCache.TryGetValue(Context.Channel.Id, out ulong commandMessageID);
         if (commandMessageID == default)
         {
             Serilog.Log.Error("Could not find the GameNews Command message for given channel {ChannelId}", Context.Channel.Id);
@@ -435,7 +438,11 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         }
 
         //Get Command message ID for any buttons that will update Command
-        _channelCommandDict.TryGetValue(Context.Channel.Id, out var commandMessageID);
+        if (!_channelCommandCache.TryGetValue(Context.Channel.Id, out var commandMessageID) || commandMessageID is null)
+        {
+            await FollowupAsync("Failed to process the button interaction.", ephemeral: true);
+            return;
+        }
 
         // Toggle the specified setting
         switch (button)
@@ -443,7 +450,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             case "disable_game_news":
                 try
                 {
-                    await Context.Channel.DeleteMessageAsync(commandMessageID);
+                    await Context.Channel.DeleteMessageAsync((uint) commandMessageID);
                 }
                 catch (Exception ex)
                 {
