@@ -277,13 +277,6 @@ public class LeagueMemberService
             return Result.Failure("That player is not in the league.");
         }
 
-        var mostRecentYear = league.Years.Max();
-        var activePlayersInYear = await GetActivePlayersForLeagueYear(league, mostRecentYear);
-        if (!activePlayersInYear.Contains(newManager))
-        {
-            return Result.Failure("You can't promote an inactive player to manager.");
-        }
-
         await _fantasyCriticRepo.TransferLeagueManager(league, newManager);
         return Result.Success();
     }
