@@ -136,14 +136,20 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
     public async Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year)
     {
+        await using var connection = new MySqlConnection(_connectionString);
+        return await GetLeagueYear(leagueID, year, connection, null);
+    }
+
+    public async Task<LeagueYear?> GetLeagueYear(Guid leagueID, int year, MySqlConnection connection, MySqlTransaction? transaction)
+    {
         var param = new
         {
             P_LeagueID = leagueID,
             P_Year = year
         };
 
-        await using var connection = new MySqlConnection(_connectionString);
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyear", param, commandType: CommandType.StoredProcedure);
+
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyear", param, commandType: CommandType.StoredProcedure, transaction: transaction);
 
         var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
 
@@ -177,7 +183,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
 
         await resultSets.DisposeAsync();
-        await connection.DisposeAsync();
 
         var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);

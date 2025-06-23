@@ -22,6 +22,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     private static readonly ILogger _logger = Log.ForContext<MySQLFantasyCriticRepo>();
 
     private readonly string _connectionString;
+    private readonly IClock _clock;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly ICombinedDataRepo _combinedDataRepo;
@@ -31,6 +32,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public MySQLFantasyCriticRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore, IMasterGameRepo masterGameRepo, ICombinedDataRepo combinedDataRepo)
     {
         _connectionString = configuration.ConnectionString;
+        _clock = configuration.Clock;
         _userStore = userStore;
         _masterGameRepo = masterGameRepo;
         _combinedDataRepo = combinedDataRepo;
@@ -2265,15 +2267,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    private static Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, IEnumerable<Publisher> publishersToUpdate, MySqlConnection connection, MySqlTransaction transaction)
+    private async Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, IEnumerable<Publisher> publishersToUpdate, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var pairs = publishersToUpdate.Select(x => new LeagueYearPublisherPair(leagueYear, x));
-        return MakePublisherGameSlotsConsistent(pairs, connection, transaction);
+        var combinedDataRepo = new MySQLCombinedDataRepo(new RepositoryConfiguration(_connectionString, _clock));
+        var updatedLeagueYear = await combinedDataRepo.GetLeagueYear(leagueYear.League.LeagueID, leagueYear.Year, connection, transaction);
+        var updatedPublishers = updatedLeagueYear!.Publishers.Where(x => publishersToUpdate.Select(x => x.PublisherID).Contains(x.PublisherID)).ToList();
+        var pairs = updatedPublishers.Select(x => new LeagueYearPublisherPair(updatedLeagueYear, x));
+        await MakePublisherGameSlotsConsistent(pairs, connection, transaction);
     }
 
-    private static Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, Publisher publisher, MySqlConnection connection, MySqlTransaction transaction)
+    private async Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, Publisher publisher, MySqlConnection connection, MySqlTransaction transaction)
     {
-        return MakePublisherGameSlotsConsistent(new List<LeagueYearPublisherPair>() { new LeagueYearPublisherPair(leagueYear, publisher) }, connection, transaction);
+        var combinedDataRepo = new MySQLCombinedDataRepo(new RepositoryConfiguration(_connectionString, _clock));
+        var updatedLeagueYear = await combinedDataRepo.GetLeagueYear(leagueYear.League.LeagueID, leagueYear.Year, connection, transaction);
+        var updatedPublisher = updatedLeagueYear!.Publishers.Single(x => x.PublisherID == publisher.PublisherID);
+        await MakePublisherGameSlotsConsistent(new List<LeagueYearPublisherPair>() { new LeagueYearPublisherPair(updatedLeagueYear, updatedPublisher) }, connection, transaction);
     }
 
     private static async Task MakePublisherGameSlotsConsistent(IEnumerable<LeagueYearPublisherPair> publisherPairs, MySqlConnection connection, MySqlTransaction transaction)
