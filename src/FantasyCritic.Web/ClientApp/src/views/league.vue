@@ -92,7 +92,7 @@
         Someone has proposed a trade with you.
         <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
       </b-alert>
-      <b-alert v-if="leagueYear.userIsActive && hasActiveTrade" show>
+      <b-alert v-if="(leagueYear.userIsActive || league.isManager) && hasActiveTrade" show>
         There are active trades under consideration.
         <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
       </b-alert>
@@ -265,10 +265,20 @@ export default {
       return revealIsNext;
     },
     hasActiveTrade() {
-      return this.leagueYear.activeTrades.some((x) => x.counterPartyPublisherID !== this.userPublisher.publisherID);
+      if (this.leagueYear.userIsActive) {
+        return this.leagueYear.activeTrades.some((x) => x.counterPartyPublisherID !== this.userPublisher.publisherID);
+      } else if (this.league.isManager) {
+        return this.leagueYear.activeTrades.length > 0;
+      }
+      return false;
     },
     hasProposedTrade() {
-      return this.leagueYear.activeTrades.some((x) => x.counterPartyPublisherID === this.userPublisher.publisherID);
+      if (this.leagueYear.userIsActive) {
+        return this.leagueYear.activeTrades.some((x) => x.counterPartyPublisherID === this.userPublisher.publisherID);
+      } else if (this.league.isManager) {
+        return this.leagueYear.activeTrades.length > 0;
+      }
+      return false;
     },
     mustSetDraftOrder() {
       return this.leagueYear.playStatus.readyToSetDraftOrder && this.leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.');

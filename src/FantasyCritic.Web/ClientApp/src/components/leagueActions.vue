@@ -124,7 +124,6 @@
         <currentBidsForm></currentBidsForm>
 
         <proposeTradeForm></proposeTradeForm>
-        <activeTradesModal></activeTradesModal>
 
         <dropGameForm></dropGameForm>
         <superDropGameForm></superDropGameForm>
@@ -137,6 +136,7 @@
         <editAutoDraftForm></editAutoDraftForm>
       </template>
 
+      <activeTradesModal></activeTradesModal>
       <addNewLeagueYearForm></addNewLeagueYearForm>
       <invitePlayerForm></invitePlayerForm>
       <manageActivePlayersForm></manageActivePlayersForm>

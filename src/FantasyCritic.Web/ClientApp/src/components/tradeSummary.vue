@@ -193,10 +193,10 @@ export default {
       return 'Would have Received';
     },
     isProposer() {
-      return this.trade.proposerPublisherID === this.userPublisher.publisherID;
+      return this.trade.proposerPublisherID === this.userPublisher?.publisherID;
     },
     isCounterParty() {
-      return this.trade.counterPartyPublisherID === this.userPublisher.publisherID;
+      return this.trade.counterPartyPublisherID === this.userPublisher?.publisherID;
     },
     tradeIsActive() {
       return this.trade.status === 'Proposed' || this.trade.status === 'Accepted';
