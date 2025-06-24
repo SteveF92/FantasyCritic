@@ -7,9 +7,13 @@ public abstract class UrlBuilder : IUrlBuilder
     protected Dictionary<string, string> UrlTemplateKeywordMapping { get; init; } = new();
     private string _url = "";
 
-    public string BuildUrl(string displayText = "")
+    public string BuildUrl(string displayText = "", bool hidePreview = false)
     {
         BuildUrlWithTemplate();
+        if (hidePreview)
+        {
+            _url = $"<{_url}>";
+        }
         return !string.IsNullOrEmpty(displayText) ? $"[{displayText}]({_url})" : _url;
     }
 

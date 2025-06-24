@@ -251,7 +251,7 @@ public class DiscordPushService
                         publisherOfGameNoteFinalString = $" [{publisherOfGameNote}]";
                     }
 
-                    var gameUrl = new GameUrlBuilder(_baseAddress, gameUpdateMessage.Key.MasterGameID).BuildUrl(gameUpdateMessage.Key.GameName);
+                    var gameUrl = new GameUrlBuilder(_baseAddress, gameUpdateMessage.Key.MasterGameID).BuildUrl(gameUpdateMessage.Key.GameName, true);
                     var gameAndPublisherMessage = $"**{gameUrl}**{publisherOfGameNoteFinalString}";
 
                     return $"{gameAndPublisherMessage}\n{string.Join("\n", gameUpdateMessage.Value.Select(c => $"> {c}"))}";
@@ -346,7 +346,7 @@ public class DiscordPushService
 
             var releaseMessages = relevantGamesForLeague.Select(x =>
             {
-                var gameUrl = new GameUrlBuilder(_baseAddress, x.MasterGame.MasterGameID).BuildUrl(x.MasterGame.GameName);
+                var gameUrl = new GameUrlBuilder(_baseAddress, x.MasterGame.MasterGameID).BuildUrl(x.MasterGame.GameName, true);
                 return $"**{gameUrl}** has released!";
             });
             var releaseMessage = string.Join("\n", releaseMessages);
