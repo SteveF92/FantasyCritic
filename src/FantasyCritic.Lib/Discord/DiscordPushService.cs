@@ -347,7 +347,7 @@ public class DiscordPushService
             var releaseMessages = relevantGamesForLeague.Select(x =>
             {
                 var gameUrl = new GameUrlBuilder(_baseAddress, x.MasterGame.MasterGameID).BuildUrl(x.MasterGame.GameName);
-                return $"**{gameUrl})** has released!";
+                return $"**{gameUrl}** has released!";
             });
             var releaseMessage = string.Join("\n", releaseMessages);
             preparedMessages.Add(new PreparedDiscordMessage(textChannel, releaseMessage));
