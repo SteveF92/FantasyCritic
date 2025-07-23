@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord.Models;
 using Serilog;
 
@@ -131,7 +132,8 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
     private bool CheckSingleYearLeagueCommonRelevance(LeagueYear leagueYear, MasterGame masterGame, LocalDate currentDate, WillReleaseStatus? prevReleaseStatus)
     {
-        bool eligibleInYear = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
+        bool eligibleInASlot = leagueYear.GameIsEligibleInAnySlot(masterGame, currentDate);
+        bool eligibleInYear = eligibleInASlot && !masterGame.CriticScore.HasValue;
         bool ineligibleInYear = !eligibleInYear;
 
         //If the game has any skipped tags don't show it!
@@ -162,7 +164,6 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
         //If something is still showing up that we don't want to see we are missing a filter condition above
         return true;
     }
-
 
     private bool CheckNotableMissRelevance(bool initialScore)
     {

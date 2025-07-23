@@ -10,7 +10,7 @@ public class MasterGame : IEquatable<MasterGame>
         LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID,
         string? ggToken, string? ggSlug, decimal? criticScore, bool hasAnyReviews, string? openCriticSlug,
         string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
-        bool doNotRefreshAnything, bool eligibilityChanged, bool delayContention, bool showNote, Instant addedTimestamp, VeryMinimalFantasyCriticUser addedByUser,
+        bool doNotRefreshAnything, bool useSimpleEligibility, bool delayContention, bool showNote, Instant addedTimestamp, VeryMinimalFantasyCriticUser addedByUser,
         IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
         MasterGameID = masterGameID;
@@ -35,7 +35,7 @@ public class MasterGame : IEquatable<MasterGame>
         DoNotRefreshDate = doNotRefreshDate;
         DelayContention = delayContention;
         DoNotRefreshAnything = doNotRefreshAnything;
-        UseSimpleEligibility = eligibilityChanged;
+        UseSimpleEligibility = useSimpleEligibility;
         ShowNote = showNote;
         AddedTimestamp = addedTimestamp;
         AddedByUser = addedByUser;
