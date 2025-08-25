@@ -200,7 +200,12 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
         foreach (var entity in publisherGameEntities)
         {
-            var masterGameYear = masterGameYearDictionary[entity.MasterGameID];
+            var masterGameYear = masterGameYearDictionary.GetValueOrDefault(entity.MasterGameID);
+            if (masterGameYear is null)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGame(entity.MasterGameID);
+                masterGameYear = new MasterGameYear(masterGame!, publisherEntity.Year);
+            }
             var domain = entity.ToDomain(quarterForPublisher.YearQuarter, masterGameYear);
             domainPublisherGames.Add(domain);
         }
