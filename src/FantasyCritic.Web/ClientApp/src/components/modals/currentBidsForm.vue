@@ -123,7 +123,7 @@ export default {
       isBusy: false,
       defaultCondtionalDrop: {
         value: null,
-        gameName: '<No condtional drop>'
+        gameName: '<No conditional drop>'
       },
       allowIneligibleSlot: false,
       bidToCancel: null
