@@ -330,7 +330,7 @@ public static class GameEligibilityFunctions
         bool couldRelease = masterGame.CouldReleaseInYear(year) && !counterPickedGameIsManualWillNotRelease;
         bool couldGetEarlyAccessPoints = leagueYear.Options.ReleaseSystem.Equals(ReleaseSystem.OnlyNeedsScore) &&
             masterGame.EarlyAccessReleaseDate.HasValue || masterGame.Tags.Any(x => x.Name.Contains("EarlyAccess", StringComparison.InvariantCultureIgnoreCase));
-        if (!dropping && !released && !couldRelease && !manuallyEligible && !couldGetEarlyAccessPoints)
+        if ((!dropping && !released && !couldRelease && !manuallyEligible && !couldGetEarlyAccessPoints) || (counterPick && !couldRelease))
         {
             claimErrors.Add(new ClaimError($"That game is not scheduled to be released in {year}.", true));
         }
