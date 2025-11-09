@@ -3288,13 +3288,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return null;
         }
 
-        var currentPublisherGames = publisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
+        var currentPublisherGames = publisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].Where(x => x.CounterPick == bidEntity.CounterPick).ToList();
         if (currentPublisherGames.Any())
         {
             return currentPublisherGames.WhereMax(x => x.Timestamp).First();
         }
 
-        var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
+        var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].Where(x => x.PublisherGame.CounterPick == bidEntity.CounterPick).ToList();
         if (formerPublisherGames.Any())
         {
             return formerPublisherGames.WhereMax(x => x.PublisherGame.Timestamp).First().PublisherGame;
