@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace FantasyCritic.Lib.Extensions;
@@ -42,5 +43,27 @@ public static class StringExtensions
         }
 
         return source;
+    }
+
+    public static string EscapeForCsv(this string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "";
+        }
+
+        if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
+        {
+            return $"\"{value.Replace("\"", "\"\"")}\"";
+        }
+
+        return value;
+    }
+
+    public static string SanitizeForFileName(this string fileName)
+    {
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+        return string.IsNullOrWhiteSpace(sanitized) ? "League" : sanitized;
     }
 }

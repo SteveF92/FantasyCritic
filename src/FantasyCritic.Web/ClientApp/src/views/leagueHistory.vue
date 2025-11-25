@@ -20,7 +20,13 @@
       </div>
 
       <div v-if="leagueActionSets && leagueActionSets.length > 0">
-        <h2>Detailed Bid/Drop Results</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Detailed Bid/Drop Results</h2>
+          <b-button variant="primary" @click="exportToCSV">
+            <font-awesome-icon icon="download" />
+            Export to CSV
+          </b-button>
+        </div>
         <div v-for="leagueActionSet in leagueActionSets" :key="leagueActionSet.processSetID" class="history-table">
           <collapseCard>
             <template #header>
@@ -119,6 +125,10 @@ export default {
       };
       await axios.post('/api/leagueManager/DeleteManagerMessage', model);
       this.fetchLeagueYear();
+    },
+    exportToCSV() {
+      const url = `/api/league/ExportLeagueActionSetsToCSV?leagueID=${this.leagueid}&year=${this.year}`;
+      window.location.href = url;
     }
   }
 };

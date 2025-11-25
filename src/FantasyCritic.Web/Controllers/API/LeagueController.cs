@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
@@ -367,7 +368,72 @@ public class LeagueController : BaseLeagueController
     }
 
     [AllowAnonymous]
-    [HttpGet("{id}")]
+    public async Task<IActionResult> ExportLeagueActionSetsToCsv(Guid leagueID, int year)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var league = leagueYear.League;
+        var relationship = validResult.Relationship;
+
+        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
+        {
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
+        }
+
+        var leagueActionSets = await _fantasyCriticService.GetLeagueActionProcessingSets(leagueYear);
+
+        var currentDate = _clock.GetToday();
+        var masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        var csv = new StringBuilder();
+
+        csv.AppendLine("Process Date,Process Name,Publisher Name,Action Type,Game Name,Bid Amount,Priority,Successful,Outcome,Projected Points,Counter Pick,Conditional Drop Game");
+
+        foreach (var actionSet in leagueActionSets.Where(x => x.HasActions).OrderByDescending(x => x.ProcessTime))
+        {
+            var viewModel = new LeagueActionProcessingSetViewModel(actionSet, currentDate, masterGameYearDictionary);
+            var processDate = viewModel.ProcessTime.ToDateTimeUtc().ToString("yyyy-MM-dd HH:mm:ss");
+            var processName = viewModel.ProcessName.EscapeForCsv();
+
+            foreach (var bid in viewModel.Bids)
+            {
+                var publisherName = bid.PublisherName.EscapeForCsv();
+                var gameName = bid.MasterGame.GameName.EscapeForCsv();
+                var outcome = bid.Outcome?.EscapeForCsv() ?? "";
+                var conditionalDrop = bid.ConditionalDropPublisherGame != null
+                    ? bid.ConditionalDropPublisherGame.GameName.EscapeForCsv()
+                    : "";
+                var successful = bid.Successful.HasValue ? bid.Successful.Value.ToString() : "";
+                var projectedPoints = bid.ProjectedPointsAtTimeOfBid.HasValue ? bid.ProjectedPointsAtTimeOfBid.Value.ToString("F2") : "";
+
+                csv.AppendLine($"{processDate},{processName},{publisherName},Bid,{gameName},{bid.BidAmount},{bid.Priority},{successful},{outcome},{projectedPoints},{bid.CounterPick},{conditionalDrop}");
+            }
+
+            foreach (var drop in viewModel.Drops)
+            {
+                var publisherName = drop.PublisherName.EscapeForCsv();
+                var gameName = drop.MasterGame.GameName.EscapeForCsv();
+                var successful = drop.Successful.HasValue ? drop.Successful.Value.ToString() : "";
+
+                csv.AppendLine($"{processDate},{processName},{publisherName},Drop,{gameName},,,{successful},,,False,");
+            }
+        }
+
+        var sanitizedLeagueName = league.LeagueName.SanitizeForFileName();
+        var fileName = $"LeagueBidDropResults_{sanitizedLeagueName}_{year}.csv";
+        var bytes = Encoding.UTF8.GetBytes(csv.ToString());
+        return File(bytes, "text/csv", fileName);
+    }
+
+
+
+    [AllowAnonymous]
     public async Task<IActionResult> GetPublisher(Guid id)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(id, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
@@ -1264,7 +1330,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> RescindTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1296,7 +1362,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> AcceptTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1328,7 +1394,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1360,7 +1426,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> VoteOnTrade([FromBody] TradeVoteRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1395,7 +1461,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> DeleteTradeVote([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
