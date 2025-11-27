@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Postmark" Version="5.2.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.3" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
