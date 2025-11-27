@@ -1,5 +1,4 @@
-using System.IO;
-using System.Text;
+using CsvHelper;
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -24,6 +23,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Globalization;
+using System.IO;
+using System.Text;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -391,47 +393,32 @@ public class LeagueController : BaseLeagueController
         var masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        var csv = new StringBuilder();
-
-        csv.AppendLine("Process Date,Process Name,Publisher Name,Action Type,Game Name,Bid Amount,Priority,Successful,Outcome,Projected Points,Counter Pick,Conditional Drop Game");
+        var exportableActions = new List<LeagueActionForCsvExport>();
 
         foreach (var actionSet in leagueActionSets.Where(x => x.HasActions).OrderByDescending(x => x.ProcessTime))
         {
             var viewModel = new LeagueActionProcessingSetViewModel(actionSet, currentDate, masterGameYearDictionary);
-            var processDate = viewModel.ProcessTime.ToDateTimeUtc().ToString("yyyy-MM-dd HH:mm:ss");
-            var processName = viewModel.ProcessName.EscapeForCsv();
+            var processDate = DateOnly.FromDateTime(viewModel.ProcessTime.ToDateTimeUtc());
 
-            foreach (var bid in viewModel.Bids)
-            {
-                var publisherName = bid.PublisherName.EscapeForCsv();
-                var gameName = bid.MasterGame.GameName.EscapeForCsv();
-                var outcome = bid.Outcome?.EscapeForCsv() ?? "";
-                var conditionalDrop = bid.ConditionalDropPublisherGame != null
-                    ? bid.ConditionalDropPublisherGame.GameName.EscapeForCsv()
-                    : "";
-                var successful = bid.Successful.HasValue ? bid.Successful.Value.ToString() : "";
-                var projectedPoints = bid.ProjectedPointsAtTimeOfBid.HasValue ? bid.ProjectedPointsAtTimeOfBid.Value.ToString("F2") : "";
+            exportableActions.AddRange(viewModel.Bids
+                .Select(bid => new LeagueActionForCsvExport(processDate, viewModel.ProcessName, bid.PublisherName, "Bid", bid.MasterGame.GameName, bid.BidAmount,
+                bid.Priority, bid.Successful, bid.Outcome, bid.ProjectedPointsAtTimeOfBid, bid.CounterPick, bid.ConditionalDropPublisherGame?.GameName)));
 
-                csv.AppendLine($"{processDate},{processName},{publisherName},Bid,{gameName},{bid.BidAmount},{bid.Priority},{successful},{outcome},{projectedPoints},{bid.CounterPick},{conditionalDrop}");
-            }
-
-            foreach (var drop in viewModel.Drops)
-            {
-                var publisherName = drop.PublisherName.EscapeForCsv();
-                var gameName = drop.MasterGame.GameName.EscapeForCsv();
-                var successful = drop.Successful.HasValue ? drop.Successful.Value.ToString() : "";
-
-                csv.AppendLine($"{processDate},{processName},{publisherName},Drop,{gameName},,,{successful},,,False,");
-            }
+            exportableActions.AddRange(viewModel.Drops
+                .Select(drop => new LeagueActionForCsvExport(processDate, viewModel.ProcessName, drop.PublisherName, "Drop", drop.MasterGame.GameName, 0, 0, drop.Successful, "", null, false, null)));
         }
 
         var sanitizedLeagueName = league.LeagueName.SanitizeForFileName();
+
+        using var writer = new StringWriter();
+        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+        csv.WriteRecords(exportableActions);
+
+        var finalString = writer.ToString();
+        var bytes = Encoding.UTF8.GetBytes(finalString);
         var fileName = $"LeagueBidDropResults_{sanitizedLeagueName}_{year}.csv";
-        var bytes = Encoding.UTF8.GetBytes(csv.ToString());
         return File(bytes, "text/csv", fileName);
     }
-
-
 
     [AllowAnonymous]
     public async Task<IActionResult> GetPublisher(Guid id)
