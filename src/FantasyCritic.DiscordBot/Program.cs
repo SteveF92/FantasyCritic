@@ -1,23 +1,23 @@
-using System.Reflection;
-using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.MySQL;
-using Microsoft.Extensions.Configuration;
-using NodaTime;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.MySQL;
+using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 using Serilog;
 using Serilog.Events;
-using FantasyCritic.Lib.Discord.Models;
-using AdaskoTheBeAsT.Dapper.NodaTime;
+using System.Reflection;
 
 namespace FantasyCritic.DiscordBot;
 
@@ -76,7 +76,7 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
+        DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
         await new Program().RunAsync();
     }
 

@@ -1,19 +1,19 @@
-using System.Reflection;
-using System.Runtime.InteropServices;
 using Amazon;
-using Microsoft.AspNetCore.Hosting;
+using Amazon.CloudWatchLogs;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
-using System.IO;
-using Amazon.CloudWatchLogs;
 using Serilog.Sinks.AwsCloudWatch;
-using AdaskoTheBeAsT.Dapper.NodaTime;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace FantasyCritic.Web;
 
@@ -28,7 +28,7 @@ public class Program
 
         try
         {
-            DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
+            DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
             Log.Information("Starting web host");
             var builder = WebApplication.CreateBuilder(args);
             Log.Information($"Running in {builder.Environment.EnvironmentName} mode.");

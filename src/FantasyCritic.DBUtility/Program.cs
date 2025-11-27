@@ -1,14 +1,14 @@
-using System.Reflection;
-using AdaskoTheBeAsT.Dapper.NodaTime;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL;
+using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using NodaTime;
+using System.Reflection;
 
 namespace FantasyCritic.DBUtility;
 
@@ -28,7 +28,7 @@ class Program
 
         _connectionString = configuration["ConnectionString"]!;
 
-        DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
+        DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
         await BackfillTopBidsAndDrops();
     }
 

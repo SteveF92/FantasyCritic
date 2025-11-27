@@ -1,24 +1,24 @@
-using System.ComponentModel.Design;
-using System.Reflection;
 using DiscordDotNetUtilities;
+using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.GG;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Services;
-using FantasyCritic.MySQL;
-using NodaTime;
-using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Patreon;
-using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Serilog;
-using FantasyCritic.Lib.Domain;
-using Newtonsoft.Json;
-using NodaTime.Serialization.JsonNet;
-using FantasyCritic.MySQL.SyncingRepos;
-using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
-using AdaskoTheBeAsT.Dapper.NodaTime;
+using FantasyCritic.MySQL;
+using FantasyCritic.MySQL.DapperTypeMaps;
+using FantasyCritic.MySQL.SyncingRepos;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
+using Serilog;
+using System.ComponentModel.Design;
+using System.Reflection;
 
 namespace FantasyCritic.MasterGameUpdater;
 
@@ -47,7 +47,7 @@ public static class Program
         _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]!);
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-        DapperNodaTimeSetup.Register(DateTimeZoneProviders.Tzdb);
+        DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
         await UpdateMasterGames();
     }
