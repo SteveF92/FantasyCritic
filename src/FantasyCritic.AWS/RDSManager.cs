@@ -46,8 +46,8 @@ public class RDSManager : IRDSManager
         var domainObjects = orderedSnaps
             .Select(x =>
                 new DatabaseSnapshotInfo(x.DBSnapshotIdentifier,
-                    Instant.FromDateTimeUtc(x.SnapshotCreateTime.ToUniversalTime()),
-                    x.PercentProgress,
+                    Instant.FromDateTimeUtc(x.SnapshotCreateTime ?? DateTime.MinValue),
+                    x.PercentProgress ?? 0,
                     x.Status))
             .ToList();
         return domainObjects;
