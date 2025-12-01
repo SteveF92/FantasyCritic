@@ -1,3 +1,3 @@
 namespace FantasyCritic.Lib.Domain;
 
-public record MinimalLeagueYearInfo(int Year);
+public record MinimalLeagueYearInfo(int Year, bool Finished, bool DraftStarted);

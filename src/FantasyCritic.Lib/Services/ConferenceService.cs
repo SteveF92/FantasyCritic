@@ -46,7 +46,7 @@ public class ConferenceService
         }
 
         IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
-        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year) };
+        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
         League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, leagueYears, true, false, parameters.CustomRulesConference, false, 0);
         Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, years, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
@@ -74,7 +74,7 @@ public class ConferenceService
             return Result.Failure("Primary league is not active in that year.");
         }
 
-        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(year) };
+        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(year, false, false) };
         League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager.ToMinimal(), conference.ConferenceID, conference.ConferenceName,
             leagueYears, true, false, conference.CustomRulesConference, false, 0);
         await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague);
