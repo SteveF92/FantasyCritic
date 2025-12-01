@@ -297,7 +297,7 @@ public class MySQLDiscordRepo : IDiscordRepo
             }
             var supportedYear = supportedYears
                 .OrderBy(y => y.Year)
-                .FirstOrDefault(y => !y.Finished && conference.Years.Contains(y.Year));
+                .FirstOrDefault(y => !y.Finished && conference.Years.Any(x => x.Year == y.Year));
             if (supportedYear == null)
             {
                 return null;

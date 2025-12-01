@@ -9,6 +9,7 @@ using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.MySQL.Entities.Trades;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.Lib.Domain.Conferences;
+using FantasyCritic.Lib;
 
 namespace FantasyCritic.MySQL;
 
@@ -489,7 +490,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return null;
         }
 
-        IEnumerable<int> conferenceYears = resultSets.Read<int>();
+        IEnumerable<ConferenceYearKeyWithDetailsEntity> conferenceYears = resultSets.Read<ConferenceYearKeyWithDetailsEntity>();
         IEnumerable<LeagueWithManagerEntity> leagues = resultSets.Read<LeagueWithManagerEntity>().ToList();
         ConferenceYearEntity? conferenceYearEntity = resultSets.ReadSingleOrDefault<ConferenceYearEntity?>();
         if (conferenceYearEntity is null)
@@ -535,7 +536,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await connection.DisposeAsync();
 
         //Domain Conversion
-        Conference conference = conferenceEntity.ToDomain(conferenceYears, leagues.Select(x => x.LeagueID));
+        var conferenceYearInfos = conferenceYears.Select(x => new MinimalConferenceYearInfo(x.Year, x.SupportedYearIsFinished, x.AtLeastOneDraftIsStarted));
+        Conference conference = conferenceEntity.ToDomain(conferenceYearInfos, leagues.Select(x => x.LeagueID));
         var supportedYear = supportedYearEntity.ToDomain();
         ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
 

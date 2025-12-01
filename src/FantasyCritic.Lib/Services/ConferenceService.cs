@@ -45,11 +45,11 @@ public class ConferenceService
             return Result.Failure<Conference>("That scoring mode is no longer supported.");
         }
 
-        IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
+        IEnumerable<MinimalConferenceYearInfo> conferenceYears = new List<MinimalConferenceYearInfo>() { new MinimalConferenceYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
         League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, leagueYears, true, false, parameters.CustomRulesConference, false, 0);
-        Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, years, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
+        Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, conferenceYears, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
         await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newConference);
     }

@@ -138,7 +138,7 @@ public class ConferenceController : BaseLeagueController
 
         IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
         var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
-        var availableYears = openYears.Except(conference.Years);
+        var availableYears = openYears.Except(conference.Years.Select(x => x.Year));
 
         var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
         if (userIsBetaUser)
@@ -161,7 +161,7 @@ public class ConferenceController : BaseLeagueController
         }
         var validResult = conferenceRecord.ValidResult!;
 
-        if (validResult.Conference.Years.Contains(request.Year))
+        if (validResult.Conference.Years.Any(x => x.Year == request.Year))
         {
             return BadRequest();
         }
@@ -408,7 +408,7 @@ public class ConferenceController : BaseLeagueController
         var validResult = conferenceRecord.ValidResult!;
         var conference = validResult.Conference;
 
-        int currentYear = conference.Years.Max();
+        int currentYear = conference.Years.Max(x => x.Year);
         IReadOnlyList<ConferenceInviteLink> activeLinks = await _conferenceService.GetActiveInviteLinks(conference);
         var viewModels = activeLinks.Select(x => new ConferenceInviteLinkViewModel(x, currentYear, _environmentConfiguration.BaseAddress));
         return Ok(viewModels);
