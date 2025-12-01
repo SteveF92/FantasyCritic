@@ -16,7 +16,7 @@ public class LeagueWithStatusViewModel
         ConferenceName = league.ConferenceName;
         IsManager = league.LeagueManager.UserID == currentUser.UserID;
         Archived = league.Archived;
-        Years = league.Years;
+        Years = league.Years.Select(x => x.Year).ToList();
         ActiveYear = Years.Max();
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;

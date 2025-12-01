@@ -222,7 +222,7 @@ public class ConferenceController : BaseLeagueController
             return leagueRecord.FailedResult;
         }
 
-        if (leagueRecord.ValidResult!.League.Years.Contains(request.Year))
+        if (leagueRecord.ValidResult!.League.Years.Any(x => x.Year == request.Year))
         {
             return BadRequest($"That league has already been renewed for {request.Year}");
         }

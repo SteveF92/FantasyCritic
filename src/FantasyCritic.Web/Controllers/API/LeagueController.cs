@@ -73,7 +73,7 @@ public class LeagueController : BaseLeagueController
         var currentUser = await GetCurrentUserOrThrow();
 
         var myLeagues = await _leagueMemberService.GetLeaguesForUser(currentUser);
-        var viewModels = myLeagues.Where(league => !year.HasValue || league.League.Years.Contains(year.Value))
+        var viewModels = myLeagues.Where(league => !year.HasValue || league.League.Years.Any(x => x.Year == year.Value))
             .Select(league => new LeagueWithStatusViewModel(league, currentUser))
             .OrderBy(l => l.LeagueName)
             .ToList();
@@ -519,7 +519,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        var mostRecentYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, league.Years.Max());
+        var mostRecentYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, league.Years.Max(x => x.Year));
         if (mostRecentYear is null)
         {
             return BadRequest();

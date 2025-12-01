@@ -13,7 +13,7 @@ public class LeagueViewModel
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
         Archived = league.Archived;
-        Years = league.Years;
+        Years = league.Years.Select(x => x.Year).ToList();
         ActiveYear = Years.Max();
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
@@ -32,7 +32,7 @@ public class LeagueViewModel
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
         Archived = league.Archived;
-        Years = league.Years;
+        Years = league.Years.Select(x => x.Year).ToList();
         ActiveYear = Years.Max();
 
         if (outstandingInvite is not null && currentUser is not null)
