@@ -53,8 +53,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return null;
         }
 
-        var years = await resultSets.ReadAsync<int>();
-        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
+        var years = await resultSets.ReadAsync<LeagueYearKeyWithDetailsEntity>();
+        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.DraftStarted)));
         return league;
     }
 
@@ -80,8 +80,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueEntity.ManagerDisplayName = manager.UserName;
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
-            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
+            var leagueYears = leagueYearLookup[leagueEntity.LeagueID];
+            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, false, PlayStatus.FromValue(x.PlayStatus).PlayStarted)));
             leagues.Add(league);
         }
 
@@ -1297,14 +1297,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var resultSets = await connection.QueryMultipleAsync("sp_getleaguesforuser", queryObject, commandType: CommandType.StoredProcedure);
         var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
-        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
+        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyWithDetailsEntity>();
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
 
         var leaguesWithStatus = new List<LeagueWithMostRecentYearStatus>();
         foreach (var leagueEntity in leagueEntities)
         {
-            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
+            var years = leagueYearLookup[leagueEntity.LeagueID];
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.DraftStarted)));
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
                 leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
         }
