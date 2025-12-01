@@ -54,7 +54,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         var years = await resultSets.ReadAsync<int>();
-        League league = leagueEntity.ToDomain(years);
+        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
         return league;
     }
 
@@ -81,7 +81,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years);
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
             leagues.Add(league);
         }
 
@@ -1304,7 +1304,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var leagueEntity in leagueEntities)
         {
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years);
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
                 leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
         }
@@ -3104,7 +3104,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task AddPlayerToLeague(League league, FantasyCriticUser user)
     {
-        var mostRecentYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, league.Years.Max());
+        var mostRecentYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, league.Years.Max(x => x.Year));
         bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
 
         await using var connection = new MySqlConnection(_connectionString);

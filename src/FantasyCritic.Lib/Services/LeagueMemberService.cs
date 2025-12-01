@@ -182,7 +182,7 @@ public class LeagueMemberService
     {
         foreach (var year in league.Years)
         {
-            var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, year);
+            var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, year.Year);
             var allPublishers = leagueYear.Publishers;
             var deletePublisher = allPublishers.SingleOrDefault(x => x.User.Id == removeUser.Id);
             if (deletePublisher != null)

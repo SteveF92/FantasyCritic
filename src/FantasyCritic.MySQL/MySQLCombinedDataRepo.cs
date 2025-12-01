@@ -75,7 +75,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         foreach (var leagueEntity in leagueEntities)
         {
             IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years);
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
                 leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
         }
@@ -214,7 +214,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         leagueEntity.ManagerDisplayName = manager.UserName;
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
-        var league = leagueEntity.ToDomain(years);
+        var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
@@ -311,7 +311,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         leagueEntity.ManagerDisplayName = manager.UserName;
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
-        var league = leagueEntity.ToDomain(years);
+        var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
@@ -434,7 +434,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         leagueEntity.ManagerDisplayName = manager.UserName;
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
-        var league = leagueEntity.ToDomain(years);
+        var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
@@ -609,7 +609,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             var tagOverrideEntities = tagOverrideLookup[leagueYearEntity.LeagueID];
             var publisherEntities = publisherLookup[leagueYearEntity.LeagueID];
 
-            var league = leagueEntity.ToDomain(years);
+            var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x)));
             var leagueYearKey = new LeagueYearKey(league.LeagueID, year);
             var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
             var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);

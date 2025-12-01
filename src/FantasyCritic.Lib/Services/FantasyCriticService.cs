@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Domain.AllTimeStats;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -7,7 +6,6 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -103,7 +101,7 @@ public class FantasyCriticService
             return Result.Failure<League>("That scoring mode is no longer supported.");
         }
 
-        IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
+        IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year) };
         League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager.ToMinimal(), null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
         await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newLeague);
@@ -406,7 +404,7 @@ public class FantasyCriticService
 
         foreach (var year in league.Years)
         {
-            var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, year);
+            var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, year.Year);
             var publishers = leagueYear.Publishers;
             foreach (var publisher in publishers)
             {

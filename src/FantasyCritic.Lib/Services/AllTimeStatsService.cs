@@ -4,7 +4,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
-using NodaTime;
 
 namespace FantasyCritic.Lib.Services;
 public class AllTimeStatsService
@@ -27,7 +26,7 @@ public class AllTimeStatsService
         var oldLeagueActions = new List<LeagueAction>();
         foreach (var year in league.Years)
         {
-            var leagueYear = await _combinedDataRepo.GetLeagueYear(league.LeagueID, year);
+            var leagueYear = await _combinedDataRepo.GetLeagueYear(league.LeagueID, year.Year);
             if (leagueYear is null || !leagueYear.SupportedYear.Finished)
             {
                 continue;
@@ -37,7 +36,7 @@ public class AllTimeStatsService
             var pickupBidsForYear = await _fantasyCriticRepo.GetProcessedPickupBids(leagueYear);
             allPickupBids.AddRange(pickupBidsForYear);
 
-            if (year <= 2021)
+            if (year.Year <= 2021)
             {
                 //After 2021, we have the "outcome" column on bids.
                 var leagueActions = await _fantasyCriticRepo.GetLeagueActions(leagueYear);
