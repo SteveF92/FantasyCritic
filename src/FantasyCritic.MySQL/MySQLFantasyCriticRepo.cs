@@ -69,6 +69,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var leagueEntities = await connection.QueryAsync<LeagueEntity>(sql);
 
+        var supportedYears = await GetSupportedYears();
+        var supportedYearDictionary = supportedYears.ToDictionary(x => x.Year);
+
         IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
         var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
         List<League> leagues = new List<League>();
@@ -81,7 +84,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
             var leagueYears = leagueYearLookup[leagueEntity.LeagueID];
-            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, false, PlayStatus.FromValue(x.PlayStatus).PlayStarted)));
+            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished, PlayStatus.FromValue(x.PlayStatus).PlayStarted)));
             leagues.Add(league);
         }
 

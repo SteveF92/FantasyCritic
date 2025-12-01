@@ -240,7 +240,26 @@ public class MySQLConferenceRepo : IConferenceRepo
             return null;
         }
 
-        const string conferenceYearSQL = "select Year from tbl_conference_year where ConferenceID = @conferenceID;";
+        const string conferenceYearSQL = """
+                                         SELECT 
+                                             cy.Year,
+                                             sy.Finished AS SupportedYearIsFinished,
+                                             CASE 
+                                                 WHEN SUM(CASE WHEN ly.PlayStatus <> 'NotStartedDraft' THEN 1 ELSE 0 END) > 0
+                                                     THEN 1
+                                                     ELSE 0
+                                             END AS AtLeastOneDraftStarted
+                                         FROM tbl_conference_year cy
+                                         JOIN tbl_meta_supportedyear sy 
+                                             ON sy.Year = cy.Year
+                                         JOIN tbl_league l
+                                             ON l.ConferenceID = cy.ConferenceID
+                                         LEFT JOIN tbl_league_year ly
+                                             ON ly.LeagueID = l.LeagueID
+                                             AND ly.Year = cy.Year
+                                         WHERE cy.ConferenceID = @conferenceID
+                                         GROUP BY cy.Year, sy.Finished;
+                                         """;
         IEnumerable<ConferenceYearKeyWithDetailsEntity> years = await connection.QueryAsync<ConferenceYearKeyWithDetailsEntity>(conferenceYearSQL, queryObject);
         
         const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
