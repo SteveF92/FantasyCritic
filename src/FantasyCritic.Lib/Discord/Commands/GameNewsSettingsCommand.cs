@@ -451,6 +451,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 try
                 {
                     await Context.Channel.DeleteMessageAsync((ulong) commandMessageID);
+                    await FollowupAsync("Game news has been disabled for this channel.");
                 }
                 catch (Exception ex)
                 {
