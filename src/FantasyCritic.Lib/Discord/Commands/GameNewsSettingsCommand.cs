@@ -89,7 +89,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var commandMessageComponents = new ComponentBuilder()
             .AddRow(new ActionRowBuilder().WithSelectMenu(GetPresetSettingSelection(isLeagueChannel)))
             .AddRow(new ActionRowBuilder().WithButton(GetSetCustomFiltersButton()))
-            .AddRow(new ActionRowBuilder().WithButton(GetDisableGameNewsButtion()))
+            .AddRow(new ActionRowBuilder().WithButton(GetDisableGameNewsButton()))
             .Build();
 
         var message = await FollowupAsync(embed: await CreateCommandMessageEmbed(), components: commandMessageComponents);
@@ -114,7 +114,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var components = new ComponentBuilder()
             .AddRow(new ActionRowBuilder().WithSelectMenu(GetPresetSettingSelection(isLeagueChannel)))
             .AddRow(new ActionRowBuilder().WithButton(GetSetCustomFiltersButton()))
-            .AddRow(new ActionRowBuilder().WithButton(GetDisableGameNewsButtion()))
+            .AddRow(new ActionRowBuilder().WithButton(GetDisableGameNewsButton()))
             .Build();
 
         var msgEmbed = await CreateCommandMessageEmbed();
@@ -450,7 +450,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             case "disable_game_news":
                 try
                 {
-                    await Context.Channel.DeleteMessageAsync((uint) commandMessageID);
+                    await Context.Channel.DeleteMessageAsync((ulong) commandMessageID);
                 }
                 catch (Exception ex)
                 {
@@ -787,7 +787,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithStyle(ButtonStyle.Success);
     }
 
-    private static ButtonBuilder GetDisableGameNewsButtion()
+    private static ButtonBuilder GetDisableGameNewsButton()
     {
         return new ButtonBuilder()
             .WithCustomId("button_disable_game_news")
