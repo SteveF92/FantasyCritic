@@ -448,24 +448,22 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         switch (button)
         {
             case "disable_game_news":
+                await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.GetOffSetting());
+                if (leagueChannel != null)
+                {
+                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, false, false, false, NotableMissSetting.None);
+                }
                 try
                 {
-                    await Context.Channel.DeleteMessageAsync((ulong) commandMessageID);
-                    await FollowupAsync("Game news has been disabled for this channel.");
+                    await Context.Channel.DeleteMessageAsync((ulong)commandMessageID);
+                    await FollowupAsync("Game news has been disabled for this channel.", ephemeral: true);
+                    break;
                 }
                 catch (Exception ex)
                 {
                     await FollowupAsync($"There was an error trying to delete the original Command message Error:{ex.Message}", ephemeral: true);
                     break;
                 }
-                await _discordRepo.SetGameNewsSetting(Context.Guild.Id, Context.Channel.Id, GameNewsSetting.GetOffSetting());
-                if (leagueChannel != null)
-                {
-                    await _discordRepo.SetLeagueGameNewsSetting(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, false, false, false, NotableMissSetting.None);
-                }
-                await UpdateCommandMessage();
-                break;
-
             case "set_custom_filters":
                 await SendCustomSettingsMessage();
                 break;
