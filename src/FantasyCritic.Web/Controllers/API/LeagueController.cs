@@ -1317,7 +1317,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> RescindTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1349,7 +1349,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> AcceptTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1381,7 +1381,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1413,7 +1413,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> VoteOnTrade([FromBody] TradeVoteRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1448,7 +1448,7 @@ public class LeagueController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> DeleteTradeVote([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
