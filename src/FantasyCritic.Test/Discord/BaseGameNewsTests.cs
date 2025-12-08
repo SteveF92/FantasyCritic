@@ -48,7 +48,7 @@ internal abstract class BaseGameNewsTests
     {
         var league = new League(Guid.Empty, "Test League",
             new MinimalFantasyCriticUser(Guid.Empty, "Test USer", "email@email.com"),
-            null, null, new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(2025, false, true) }, true, false, false, false, 0);
+            null, null, new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(2025, false, PlayStatus.DraftFinal) }, true, false, false, false, 0);
         var supportedYear = new SupportedYear(2025, true, true, true, new LocalDate(2024, 12, 8), false);
 
         var leagueTags = new List<LeagueTagStatus>()

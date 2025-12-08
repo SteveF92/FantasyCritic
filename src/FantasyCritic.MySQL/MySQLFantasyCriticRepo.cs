@@ -54,7 +54,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         var years = await resultSets.ReadAsync<LeagueYearKeyWithDetailsEntity>();
-        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.DraftStarted)));
+        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
         return league;
     }
 
@@ -84,7 +84,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
             var leagueYears = leagueYearLookup[leagueEntity.LeagueID];
-            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished, PlayStatus.FromValue(x.PlayStatus).PlayStarted)));
+            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished, PlayStatus.FromValue(x.PlayStatus))));
             leagues.Add(league);
         }
 
@@ -1307,7 +1307,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var leagueEntity in leagueEntities)
         {
             var years = leagueYearLookup[leagueEntity.LeagueID];
-            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.DraftStarted)));
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
                 leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
         }
