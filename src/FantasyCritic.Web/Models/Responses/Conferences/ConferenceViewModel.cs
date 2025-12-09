@@ -13,7 +13,7 @@ public class ConferenceViewModel
         Years = domain.Years.Select(x => x.Year).ToList();
 
         var latestDraftStartedYear = domain.Years.Where(x => x.AtLeastOneDraftStarted).MaxBy(x => x.Year);
-        var highestNonFinishedYear = domain.Years.Where(x => !x.Finished).Max();
+        var highestNonFinishedYear = domain.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
 
         CustomRulesConference = domain.CustomRulesConference;
