@@ -395,6 +395,10 @@ public class LeagueController : BaseLeagueController
 
         var exportableActions = new List<LeagueActionForCsvExport>();
 
+        var standardPublisherGameDictionary = leagueYear.Publishers.SelectMany(x => x.PublisherGames)
+            .Where(x => x.MasterGame is not null && !x.CounterPick)
+            .ToDictionary(x => x.MasterGame!.MasterGame.MasterGameID);
+
         foreach (var actionSet in leagueActionSets.Where(x => x.HasActions).OrderByDescending(x => x.ProcessTime))
         {
             var viewModel = new LeagueActionProcessingSetViewModel(actionSet, currentDate, masterGameYearDictionary);
@@ -402,10 +406,12 @@ public class LeagueController : BaseLeagueController
 
             exportableActions.AddRange(viewModel.Bids
                 .Select(bid => new LeagueActionForCsvExport(processDate, viewModel.ProcessName, bid.PublisherName, "Bid", bid.MasterGame.GameName, bid.BidAmount,
-                bid.Priority, bid.Successful, bid.Outcome, bid.ProjectedPointsAtTimeOfBid, bid.CounterPick, bid.ConditionalDropPublisherGame?.GameName)));
+                bid.Priority, bid.Successful, bid.Outcome, bid.ProjectedPointsAtTimeOfBid, bid.CounterPick, bid.ConditionalDropPublisherGame?.GameName,
+                bid.MasterGame.CriticScore, standardPublisherGameDictionary.GetValueOrDefault(bid.MasterGame.MasterGameID)?.FantasyPoints)));
 
             exportableActions.AddRange(viewModel.Drops
-                .Select(drop => new LeagueActionForCsvExport(processDate, viewModel.ProcessName, drop.PublisherName, "Drop", drop.MasterGame.GameName, 0, 0, drop.Successful, "", null, false, null)));
+                .Select(drop => new LeagueActionForCsvExport(processDate, viewModel.ProcessName, drop.PublisherName, "Drop", drop.MasterGame.GameName, 0, 0, drop.Successful, "", null, false, null,
+                drop.MasterGame.CriticScore, standardPublisherGameDictionary.GetValueOrDefault(drop.MasterGame.MasterGameID)?.FantasyPoints)));
         }
 
         var sanitizedLeagueName = league.LeagueName.SanitizeForFileName();
