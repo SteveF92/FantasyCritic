@@ -6,6 +6,7 @@ using System.Linq;
 using CsvHelper;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.Lib.Utilities;
@@ -152,7 +153,8 @@ public class TestDataService
         foreach (var leagueYear in leagueYearEntities)
         {
             var leagueYearKey = new LeagueYearKey(leagueYear.LeagueID, leagueYear.Year);
-            var league = new League(leagueYear.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser().ToMinimal(), null, null, new List<int>() {leagueYear.Year}, false, false, false, false, 0);
+            var league = new League(leagueYear.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser().ToMinimal(), null, null, new List<MinimalLeagueYearInfo>() {new MinimalLeagueYearInfo(leagueYear.Year, false, PlayStatus.DraftFinal)},
+                false, false, false, false, 0);
             var supportedYear = new SupportedYear(leagueYear.Year, true, true, true, new LocalDate(leagueYear.Year, 1, 1), false);
 
             var publishersInLeague = publisherLookup[leagueYearKey].ToList();

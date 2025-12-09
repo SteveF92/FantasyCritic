@@ -1,3 +1,4 @@
+using FantasyCritic.Lib;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 
@@ -28,7 +29,7 @@ internal class ConferenceEntity
     public string ConferenceManagerDisplayName { get; set; } = null!;
     public string ConferenceManagerEmailAddress { get; set; } = null!;
 
-    public Conference ToDomain(IEnumerable<int> years, IEnumerable<Guid> leaguesInConference)
+    public Conference ToDomain(IEnumerable<MinimalConferenceYearInfo> years, IEnumerable<Guid> leaguesInConference)
     {
         var conferenceManager = new MinimalFantasyCriticUser(ConferenceManager, ConferenceManagerDisplayName, ConferenceManagerEmailAddress);
         return new Conference(ConferenceID, ConferenceName, conferenceManager, years, CustomRulesConference, PrimaryLeagueID, leaguesInConference);

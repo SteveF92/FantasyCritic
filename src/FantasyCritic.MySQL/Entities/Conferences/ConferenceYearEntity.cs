@@ -22,3 +22,11 @@ internal class ConferenceYearEntity
         return new ConferenceYear(conference, supportedYear);
     }
 }
+
+internal class ConferenceYearKeyWithDetailsEntity
+{
+    public Guid ConferenceID { get; set; }
+    public int Year { get; set; }
+    public bool SupportedYearIsFinished { get; set; }
+    public bool AtLeastOneDraftIsStarted { get; set; }
+}

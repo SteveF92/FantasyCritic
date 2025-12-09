@@ -100,7 +100,7 @@ public class LeagueManagerController : BaseLeagueController
 
         IReadOnlyList<SupportedYear> supportedYears = await _interLeagueService.GetSupportedYears();
         var openYears = supportedYears.Where(x => x.OpenForCreation).Select(x => x.Year);
-        var availableYears = openYears.Except(league.Years);
+        var availableYears = openYears.Except(league.Years.Select(x => x.Year));
 
         var userIsBetaUser = await _userManager.IsInRoleAsync(currentUser, "BetaTester");
         if (userIsBetaUser)
@@ -124,7 +124,7 @@ public class LeagueManagerController : BaseLeagueController
         var currentUser = validResult.CurrentUser!;
         var league = validResult.League;
 
-        if (league.Years.Contains(request.Year))
+        if (league.Years.Any(x => x.Year == request.Year))
         {
             return BadRequest();
         }
@@ -153,7 +153,7 @@ public class LeagueManagerController : BaseLeagueController
             throw new Exception("League has no initial year.");
         }
 
-        var mostRecentYear = league.Years.Max();
+        var mostRecentYear = league.Years.Max(x => x.Year);
         var mostRecentLeagueYear = await _fantasyCriticService.GetLeagueYear(league.LeagueID, mostRecentYear);
         if (mostRecentLeagueYear is null)
         {
@@ -333,7 +333,7 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueRecord.ValidResult!;
         var league = validResult.League;
 
-        int currentYear = league.Years.Max();
+        int currentYear = league.Years.Max(x => x.Year);
         IReadOnlyList<LeagueInviteLink> activeLinks = await _leagueMemberService.GetActiveInviteLinks(league);
         var viewModels = activeLinks.Select(x => new LeagueInviteLinkViewModel(x, currentYear, _environmentConfiguration.BaseAddress));
         return Ok(viewModels);
@@ -393,7 +393,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest("That user is not in that league.");
         }
 
-        var mostRecentLeagueYear = league.Years.Max();
+        var mostRecentLeagueYear = league.Years.Max(x => x.Year);
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, mostRecentLeagueYear, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
         {

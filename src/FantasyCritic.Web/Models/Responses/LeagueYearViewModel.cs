@@ -69,7 +69,7 @@ public class LeagueYearViewModel
             }
         }
 
-        if (Year == leagueYear.League.Years.Max())
+        if (Year == leagueYear.League.Years.Max(x => x.Year))
         {
             foreach (var invitedPlayer in invitedPlayers)
             {

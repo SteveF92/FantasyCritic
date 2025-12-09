@@ -215,7 +215,7 @@ public class FactCheckerController : FantasyCriticController
 
             foreach (var activeYear in activeYears)
             {
-                if (!league.League.Years.Contains(activeYear.Year))
+                if (!league.League.Years.Any(x => x.Year == activeYear.Year))
                 {
                     continue;
                 }

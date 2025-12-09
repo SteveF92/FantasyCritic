@@ -9,6 +9,7 @@ using FantasyCritic.MySQL.Entities.Conferences;
 using FantasyCritic.MySQL.Entities.Trades;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.Lib.Domain.Conferences;
+using FantasyCritic.Lib;
 
 namespace FantasyCritic.MySQL;
 
@@ -53,7 +54,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await using var resultSets = await connection.QueryMultipleAsync("sp_gethomepagedata", queryObject, commandType: CommandType.StoredProcedure);
 
         var leagueEntities = resultSets.Read<LeagueEntity>();
-        var leagueYearEntities = resultSets.Read<LeagueYearKeyEntity>();
+        var leagueYearEntities = resultSets.Read<LeagueYearKeyWithDetailsEntity>();
         var inviteEntities = resultSets.Read<CompleteLeagueInviteEntity>();
         var conferenceEntities = resultSets.Read<MyConferenceEntity>();
         var yearEntities = resultSets.Read<ConferenceIDYearEntity>();
@@ -74,8 +75,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var leaguesWithStatus = new List<LeagueWithMostRecentYearStatus>();
         foreach (var leagueEntity in leagueEntities)
         {
-            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years);
+            var years = leagueYearLookup[leagueEntity.LeagueID];
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
                 leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
         }
@@ -159,7 +160,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return null;
         }
 
-        var years = resultSets.Read<int>();
+        var years = resultSets.Read<LeagueYearKeyWithDetailsEntity>();
         var leagueYearEntity = resultSets.ReadSingleOrDefault<LeagueYearEntity>();
         if (leagueYearEntity is null)
         {
@@ -214,7 +215,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         leagueEntity.ManagerDisplayName = manager.UserName;
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
-        var league = leagueEntity.ToDomain(years);
+        var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
@@ -247,7 +248,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return null;
         }
 
-        var years = resultSets.Read<int>();
+        var years = resultSets.Read<LeagueYearKeyWithDetailsEntity>();
         var leagueYearEntity = resultSets.ReadSingleOrDefault<LeagueYearEntity>();
         if (leagueYearEntity is null)
         {
@@ -311,7 +312,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         leagueEntity.ManagerDisplayName = manager.UserName;
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
-        var league = leagueEntity.ToDomain(years);
+        var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
@@ -353,7 +354,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return null;
         }
 
-        var years = resultSets.Read<int>();
+        var years = resultSets.Read<LeagueYearKeyWithDetailsEntity>();
         var leagueYearEntity = resultSets.ReadSingleOrDefault<LeagueYearEntity>();
         if (leagueYearEntity is null)
         {
@@ -434,7 +435,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         leagueEntity.ManagerDisplayName = manager.UserName;
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
-        var league = leagueEntity.ToDomain(years);
+        var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
         var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
         var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);
@@ -489,7 +490,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             return null;
         }
 
-        IEnumerable<int> conferenceYears = resultSets.Read<int>();
+        IEnumerable<ConferenceYearKeyWithDetailsEntity> conferenceYears = resultSets.Read<ConferenceYearKeyWithDetailsEntity>();
         IEnumerable<LeagueWithManagerEntity> leagues = resultSets.Read<LeagueWithManagerEntity>().ToList();
         ConferenceYearEntity? conferenceYearEntity = resultSets.ReadSingleOrDefault<ConferenceYearEntity?>();
         if (conferenceYearEntity is null)
@@ -513,7 +514,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPointsList, bidAmountsList);
 
         var leagueEntities = resultSets.Read<LeagueEntity>();
-        var allYearsForLeagues = resultSets.Read<LeagueYearKeyEntity>();
+        var allYearsForLeagues = resultSets.Read<LeagueYearKeyWithDetailsEntity>();
         var leagueYearEntities = resultSets.Read<LeagueYearEntity>();
         var allLeagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
         var allSpecialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
@@ -535,7 +536,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await connection.DisposeAsync();
 
         //Domain Conversion
-        Conference conference = conferenceEntity.ToDomain(conferenceYears, leagues.Select(x => x.LeagueID));
+        var conferenceYearInfos = conferenceYears.Select(x => new MinimalConferenceYearInfo(x.Year, x.SupportedYearIsFinished, x.AtLeastOneDraftIsStarted));
+        Conference conference = conferenceEntity.ToDomain(conferenceYearInfos, leagues.Select(x => x.LeagueID));
         var supportedYear = supportedYearEntity.ToDomain();
         ConferenceYear conferenceYear = conferenceYearEntity.ToDomain(conference, supportedYear);
 
@@ -602,14 +604,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             leagueEntity.ManagerDisplayName = manager.UserName;
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
-            var years = yearsLookup[leagueYearEntity.LeagueID].Select(x => x.Year);
+            var years = yearsLookup[leagueYearEntity.LeagueID];
             var leagueTagEntities = leagueTagLookup[leagueYearEntity.LeagueID];
             var specialGameSlotEntities = specialGameSlotLookup[leagueYearEntity.LeagueID];
             var eligibilityOverrideEntities = eligibilityOverrideLookup[leagueYearEntity.LeagueID];
             var tagOverrideEntities = tagOverrideLookup[leagueYearEntity.LeagueID];
             var publisherEntities = publisherLookup[leagueYearEntity.LeagueID];
 
-            var league = leagueEntity.ToDomain(years);
+            var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
             var leagueYearKey = new LeagueYearKey(league.LeagueID, year);
             var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
             var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, possibleTags);

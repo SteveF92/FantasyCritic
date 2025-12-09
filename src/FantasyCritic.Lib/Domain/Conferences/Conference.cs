@@ -3,7 +3,7 @@ using FantasyCritic.Lib.Identity;
 namespace FantasyCritic.Lib.Domain.Conferences;
 public class Conference : IEquatable<Conference>
 {
-    public Conference(Guid conferenceID, string conferenceName, MinimalFantasyCriticUser conferenceManager, IEnumerable<int> years, bool customRulesConference, Guid primaryLeagueID, IEnumerable<Guid> leaguesInConference)
+    public Conference(Guid conferenceID, string conferenceName, MinimalFantasyCriticUser conferenceManager, IEnumerable<MinimalConferenceYearInfo> years, bool customRulesConference, Guid primaryLeagueID, IEnumerable<Guid> leaguesInConference)
     {
         ConferenceID = conferenceID;
         ConferenceName = conferenceName;
@@ -17,7 +17,7 @@ public class Conference : IEquatable<Conference>
     public Guid ConferenceID { get; }
     public string ConferenceName { get; }
     public MinimalFantasyCriticUser ConferenceManager { get; }
-    public IReadOnlyList<int> Years { get; }
+    public IReadOnlyList<MinimalConferenceYearInfo> Years { get; }
     public bool CustomRulesConference { get; }
     public Guid PrimaryLeagueID { get; }
     public IReadOnlyList<Guid> LeaguesInConference { get; }

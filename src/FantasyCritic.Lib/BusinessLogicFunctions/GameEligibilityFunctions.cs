@@ -283,7 +283,7 @@ public static class GameEligibilityFunctions
             claimErrors.Add(new ClaimError("User is not in that league.", false));
         }
 
-        if (!league.Years.Contains(publisher.LeagueYearKey.Year))
+        if (!league.Years.Any(x => x.Year == publisher.LeagueYearKey.Year))
         {
             claimErrors.Add(new ClaimError("League is not active for that year.", false));
         }

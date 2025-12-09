@@ -53,8 +53,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return null;
         }
 
-        var years = await resultSets.ReadAsync<int>();
-        League league = leagueEntity.ToDomain(years);
+        var years = await resultSets.ReadAsync<LeagueYearKeyWithDetailsEntity>();
+        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
         return league;
     }
 
@@ -69,6 +69,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var leagueEntities = await connection.QueryAsync<LeagueEntity>(sql);
 
+        var supportedYears = await GetSupportedYears();
+        var supportedYearDictionary = supportedYears.ToDictionary(x => x.Year);
+
         IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
         var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
         List<League> leagues = new List<League>();
@@ -80,8 +83,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueEntity.ManagerDisplayName = manager.UserName;
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
-            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years);
+            var leagueYears = leagueYearLookup[leagueEntity.LeagueID];
+            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished, PlayStatus.FromValue(x.PlayStatus))));
             leagues.Add(league);
         }
 
@@ -1297,14 +1300,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var resultSets = await connection.QueryMultipleAsync("sp_getleaguesforuser", queryObject, commandType: CommandType.StoredProcedure);
         var leagueEntities = await resultSets.ReadAsync<LeagueEntity>();
-        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyEntity>();
+        var leagueYearEntities = await resultSets.ReadAsync<LeagueYearKeyWithDetailsEntity>();
         var leagueYearLookup = leagueYearEntities.ToLookup(x => x.LeagueID);
 
         var leaguesWithStatus = new List<LeagueWithMostRecentYearStatus>();
         foreach (var leagueEntity in leagueEntities)
         {
-            IEnumerable<int> years = leagueYearLookup[leagueEntity.LeagueID].Select(x => x.Year);
-            League league = leagueEntity.ToDomain(years);
+            var years = leagueYearLookup[leagueEntity.LeagueID];
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
                 leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
         }
@@ -3104,7 +3107,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task AddPlayerToLeague(League league, FantasyCriticUser user)
     {
-        var mostRecentYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, league.Years.Max());
+        var mostRecentYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, league.Years.Max(x => x.Year));
         bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
 
         await using var connection = new MySqlConnection(_connectionString);

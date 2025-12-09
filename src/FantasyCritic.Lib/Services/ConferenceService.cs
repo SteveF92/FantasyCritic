@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
@@ -46,10 +45,11 @@ public class ConferenceService
             return Result.Failure<Conference>("That scoring mode is no longer supported.");
         }
 
-        IEnumerable<int> years = new List<int>() { parameters.LeagueYearParameters.Year };
+        IEnumerable<MinimalConferenceYearInfo> conferenceYears = new List<MinimalConferenceYearInfo>() { new MinimalConferenceYearInfo(parameters.LeagueYearParameters.Year, false, false) };
+        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, PlayStatus.NotStartedDraft) };
         //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
-        League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, years, true, false, parameters.CustomRulesConference, false, 0);
-        Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, years, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
+        League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, leagueYears, true, false, parameters.CustomRulesConference, false, 0);
+        Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, conferenceYears, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
         await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options);
         return Result.Success(newConference);
     }
@@ -74,8 +74,9 @@ public class ConferenceService
             return Result.Failure("Primary league is not active in that year.");
         }
 
-        IEnumerable<int> years = new List<int>() { year };
-        League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager.ToMinimal(), conference.ConferenceID, conference.ConferenceName, years, true, false, conference.CustomRulesConference, false, 0);
+        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(year, false, PlayStatus.NotStartedDraft) };
+        League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager.ToMinimal(), conference.ConferenceID, conference.ConferenceName,
+            leagueYears, true, false, conference.CustomRulesConference, false, 0);
         await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague);
         return Result.Success();
     }

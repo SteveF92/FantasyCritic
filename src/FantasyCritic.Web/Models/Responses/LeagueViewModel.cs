@@ -13,8 +13,12 @@ public class LeagueViewModel
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
         Archived = league.Archived;
-        Years = league.Years;
-        ActiveYear = Years.Max();
+        Years = league.Years.Select(x => x.Year).ToList();
+
+        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).Max();
+        var highestNonFinishedYear = league.Years.Where(x => !x.Finished).Max();
+        ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
+
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         UserIsInLeague = userIsInLeague;
@@ -32,8 +36,11 @@ public class LeagueViewModel
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
         Archived = league.Archived;
-        Years = league.Years;
-        ActiveYear = Years.Max();
+        Years = league.Years.Select(x => x.Year).ToList();
+
+        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).Max();
+        var highestNonFinishedYear = league.Years.Where(x => !x.Finished).Max();
+        ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
 
         if (outstandingInvite is not null && currentUser is not null)
         {

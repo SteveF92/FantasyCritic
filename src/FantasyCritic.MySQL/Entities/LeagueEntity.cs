@@ -46,7 +46,7 @@ internal class LeagueEntity
 
     public bool MostRecentYearOneShot { get; set; }
     
-    public League ToDomain(IEnumerable<int> years)
+    public League ToDomain(IEnumerable<MinimalLeagueYearInfo> years)
     {
         var minimalManager = new MinimalFantasyCriticUser(LeagueManager, ManagerDisplayName, ManagerEmailAddress);
         League parameters = new League(LeagueID, LeagueName, minimalManager, ConferenceID, ConferenceName, years, PublicLeague, TestLeague, CustomRulesLeague, Archived, NumberOfFollowers);

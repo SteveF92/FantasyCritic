@@ -10,8 +10,12 @@ public class ConferenceViewModel
         ConferenceName = domain.ConferenceName;
         ConferenceManager = new ConferencePlayerViewModel(domain, players.Single(x => x.User.UserID == domain.ConferenceManager.UserID));
         IsManager = isManager;
-        Years = domain.Years;
-        ActiveYear = domain.Years.Max();
+        Years = domain.Years.Select(x => x.Year).ToList();
+
+        var latestDraftStartedYear = domain.Years.Where(x => x.AtLeastOneDraftStarted).Max();
+        var highestNonFinishedYear = domain.Years.Where(x => !x.Finished).Max();
+        ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
+
         CustomRulesConference = domain.CustomRulesConference;
         UserIsInConference = userIsInConference;
 
