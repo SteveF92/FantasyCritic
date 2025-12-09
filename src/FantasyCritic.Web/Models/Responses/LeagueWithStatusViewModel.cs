@@ -16,8 +16,12 @@ public class LeagueWithStatusViewModel
         ConferenceName = league.ConferenceName;
         IsManager = league.LeagueManager.UserID == currentUser.UserID;
         Archived = league.Archived;
+
+        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         Years = league.Years.Select(x => x.Year).ToList();
-        ActiveYear = Years.Max();
+        ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
+
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         CustomRulesLeague = league.CustomRulesLeague;
