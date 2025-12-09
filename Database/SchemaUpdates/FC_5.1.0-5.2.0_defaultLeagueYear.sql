@@ -227,7 +227,7 @@ BEGIN
 	FROM tbl_league_year
 	JOIN tbl_league_hasuser ON tbl_league_year.LeagueID = tbl_league_hasuser.LeagueID
 	JOIN tbl_meta_supportedyear ON tbl_league_year.Year = tbl_meta_supportedyear.`Year`
-	WHERE tbl_league_hasuser.UserID = 'fcee3889-957c-4fd2-80b3-4bbd593b1a65'
+	WHERE tbl_league_hasuser.UserID = P_UserID
 	UNION
 	SELECT tbl_league_year.LeagueID,
 	       tbl_league_year.Year,
@@ -236,7 +236,7 @@ BEGIN
 	FROM tbl_league_year
 	JOIN tbl_user_followingleague ON tbl_league_year.LeagueID = tbl_user_followingleague.LeagueID
 	JOIN tbl_meta_supportedyear ON tbl_league_year.Year = tbl_meta_supportedyear.`Year`
-	WHERE tbl_user_followingleague.UserID = 'fcee3889-957c-4fd2-80b3-4bbd593b1a65';
+	WHERE tbl_user_followingleague.UserID = P_UserID;
 END//
 DELIMITER ;
 
