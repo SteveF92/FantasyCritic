@@ -34,6 +34,11 @@ public class MasterGameYearViewModel
         ReadableTags = masterGame.MasterGame.Tags.Select(x => x.ReadableName).ToList();
         BoxartFileName = masterGame.MasterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.MasterGame.GGCoverArtFileName;
+
+        DoNotRefreshDate = masterGame.MasterGame.DoNotRefreshDate;
+        DoNotRefreshAnything = masterGame.MasterGame.DoNotRefreshAnything;
+        UseSimpleEligibility = masterGame.MasterGame.UseSimpleEligibility;
+
         PercentStandardGame = masterGame.PercentStandardGame;
         PercentCounterPick = masterGame.PercentCounterPick;
         AdjustedPercentCounterPick = masterGame.AdjustedPercentCounterPick;
@@ -75,6 +80,10 @@ public class MasterGameYearViewModel
         SubGames = null;
         Tags = new List<string>();
         ReadableTags = new List<string>();
+
+        DoNotRefreshDate = masterGame.MasterGame.DoNotRefreshDate;
+        DoNotRefreshAnything = masterGame.MasterGame.DoNotRefreshAnything;
+        UseSimpleEligibility = masterGame.MasterGame.UseSimpleEligibility;
 
         PercentStandardGame = masterGame.PercentStandardGame;
         PercentCounterPick = masterGame.PercentCounterPick;
@@ -127,6 +136,10 @@ public class MasterGameYearViewModel
     public string? BoxartFileName { get; }
     public string? GGCoverArtFileName { get; }
     public Instant AddedTimestamp { get; }
+
+    public bool DoNotRefreshDate { get; }
+    public bool DoNotRefreshAnything { get; }
+    public bool UseSimpleEligibility { get; }
 
     public double PercentStandardGame { get; }
     public double PercentCounterPick { get; }

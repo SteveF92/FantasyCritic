@@ -59,9 +59,11 @@ public class MasterGameViewModel
     public LocalDate? ReleaseDate { get; init; }
     public bool IsReleased { get; init; }
     public bool ReleasingToday { get; init; }
+
     public bool DoNotRefreshDate { get; init; }
     public bool DoNotRefreshAnything { get; init; }
     public bool UseSimpleEligibility { get; init; }
+
     public bool DelayContention { get; init; }
     public bool ShowNote { get; init; }
     public decimal? CriticScore { get; init; }
