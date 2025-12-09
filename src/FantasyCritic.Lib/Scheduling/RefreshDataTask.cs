@@ -36,8 +36,8 @@ public class RefreshDataTask : IScheduledTask
     {
         var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
         var timeOfDay = nycNow.TimeOfDay;
-        var earliestTimeToCache = new LocalTime(22, 59, 00);
-        var latestTimeToCache = new LocalTime(23, 20, 00);
+        var earliestTimeToCache = new LocalTime(21, 30, 00);
+        var latestTimeToCache = new LocalTime(23, 30, 00);
         bool isTimeToNotify = timeOfDay > earliestTimeToCache && timeOfDay < latestTimeToCache;
         return isTimeToNotify;
     }
