@@ -12,7 +12,7 @@ public class ConferenceViewModel
         IsManager = isManager;
         Years = domain.Years.Select(x => x.Year).ToList();
 
-        var latestDraftStartedYear = domain.Years.Where(x => x.AtLeastOneDraftStarted).Max();
+        var latestDraftStartedYear = domain.Years.Where(x => x.AtLeastOneDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = domain.Years.Where(x => !x.Finished).Max();
         ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
 
