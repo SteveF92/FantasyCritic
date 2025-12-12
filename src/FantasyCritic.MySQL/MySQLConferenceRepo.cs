@@ -205,7 +205,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     private static async Task AddPlayerToConferenceInternal(Conference conference, IMinimalFantasyCriticUser user, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var mostRecentYear = conference.Years.Max();
+        var mostRecentYear = conference.Years.MaxBy(x => x.Year)!.Year;
         var userAddObject = new
         {
             conferenceID = conference.ConferenceID,
