@@ -587,11 +587,6 @@ public class AdminService
         var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
         var automatedGrantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop");
         var manualGrantActions = new List<LeagueAction>();
-        if (currentYear.Is2022)
-        {
-            manualGrantActions = allSuperDropActions.Where(x => x.ActionType == "Publisher Edited" && x.Description.Contains("Changed 'super drops available' to") && x.Timestamp > _clock.GetSuperDropsGrantTime()).ToList();
-        }
-
         var publishersAlreadyGranted = automatedGrantActions.Concat(manualGrantActions).Select(x => x.Publisher.PublisherID).ToHashSet();
 
         List<Publisher> publishersToGrantSuperDrop = new List<Publisher>();
