@@ -37,6 +37,30 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
         }
     }
 
+    public List<string> GetBannedTags()
+    {
+        List<string> bannedTags = [
+            "CurrentlyInEarlyAccess",
+            "DirectorsCut",
+            "Remaster",
+            "Port",
+            "ReleasedInternationally",
+            "YearlyInstallment"
+        ];
+
+        if (SupportedYear.Year2026FeatureSupported(YearQuarter.Year))
+        {
+            bannedTags.AddRange(
+            [
+                "PlannedForEarlyAccess",
+                "Remake",
+                "PartialRemake",
+            ]);
+        }
+
+        return bannedTags;
+    }
+
     public override string ToString()
     {
         return YearQuarter.ToString();

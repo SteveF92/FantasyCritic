@@ -68,16 +68,7 @@ public static class LeagueTagExtensions
 
     public static IReadOnlyList<LeagueTagStatus> GetRoyaleEligibilitySettings(IEnumerable<MasterGameTag> allMasterGameTags, RoyaleYearQuarter quarter)
     {
-        var bannedTagNames = new List<string>()
-        {
-            "CurrentlyInEarlyAccess",
-            "DirectorsCut",
-            "Port",
-            "ReleasedInternationally",
-            "Remaster",
-            "YearlyInstallment"
-        };
-
+        var bannedTagNames = quarter.GetBannedTags();
         var bannedTags = allMasterGameTags.Where(x => bannedTagNames.Contains(x.Name));
         return bannedTags.Select(x => new LeagueTagStatus(x, TagStatus.Banned)).ToList();
     }
