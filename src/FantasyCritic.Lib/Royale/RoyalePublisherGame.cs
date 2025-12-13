@@ -39,6 +39,14 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
         if (MasterGame.MasterGame.IsReleased(currentDate))
         {
+            if (SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
+            {
+                if (!MasterGame.MasterGame.CriticScore.HasValue && MasterGame.MasterGame.ReleaseDate!.Value == currentDate)
+                {
+                    return false;
+                }
+            }
+
             return false;
         }
 
