@@ -198,9 +198,22 @@ public class AdminService
         var supportedQuarters = await _royaleService.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
         {
-            if (supportedQuarter.Finished || !supportedQuarter.OpenForPlay)
+            if (!supportedQuarter.OpenForPlay)
             {
                 continue;
+            }
+
+            if (supportedQuarter.Finished)
+            {
+                if (SupportedYear.Year2026FeatureSupported(supportedQuarter.YearQuarter.Year))
+                {
+                    var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(7));
+                    var today = _clock.GetToday();
+                    if (today > gracePeriodDate)
+                    {
+                        continue;
+                    }
+                }
             }
 
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
