@@ -159,7 +159,12 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return null;
         }
 
-        var extraPoints = basePoints * AdvertisingMoney * 0.05m;
+        var advertisingBudgetMultiplier = 0.1m;
+        if (!SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
+        {
+            advertisingBudgetMultiplier = 0.05m;
+        }
+        var extraPoints = basePoints * AdvertisingMoney * advertisingBudgetMultiplier;
         var modifiedPoints = basePoints + extraPoints;
 
         return modifiedPoints;
