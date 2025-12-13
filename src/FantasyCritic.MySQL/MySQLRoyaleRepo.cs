@@ -370,14 +370,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return domains;
     }
 
-    public async Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund)
+    public async Task SellGame(RoyalePublisherGame publisherGame, decimal refund)
     {
-        var refund = publisherGame.AmountSpent;
-        if (!fullRefund)
-        {
-            refund /= 2;
-        }
-
         const string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
         const string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
         var amountGained = refund + publisherGame.AdvertisingMoney;

@@ -194,8 +194,20 @@ public class RoyaleService
                 return Result.Failure("You don't have that game.");
             }
         }
-        
-        await _royaleRepo.SellGame(publisherGame, currentlyInEligible);
+
+        var refund = publisherGame.AmountSpent;
+        if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+        {
+            refund = publisherGame.MasterGame.GetRoyaleGameCost();
+        }
+
+        var getsFullRefund = currentlyInEligible;
+        if (!getsFullRefund)
+        {
+            refund /= 2;
+        }
+
+        await _royaleRepo.SellGame(publisherGame, refund);
         return Result.Success();
     }
 

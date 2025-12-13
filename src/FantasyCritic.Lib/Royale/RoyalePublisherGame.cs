@@ -27,11 +27,6 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public bool IsHidden(LocalDate currentDate)
     {
-        if (!YearQuarter.HideUnreleasedGames)
-        {
-            return false;
-        }
-
         if (YearQuarter.Finished)
         {
             return false;
