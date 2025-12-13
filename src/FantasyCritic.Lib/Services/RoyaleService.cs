@@ -201,11 +201,21 @@ public class RoyaleService
             refund = publisherGame.MasterGame.GetRoyaleGameCost();
         }
 
-        var getsFullRefund = currentlyInEligible;
-        if (!getsFullRefund)
+        decimal refundMultiplier = 0.5m;
+        if (currentlyInEligible)
         {
-            refund /= 2;
+            refundMultiplier = 1;
         }
+        else if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+        {
+            var willReleaseStatus = publisherGame.MasterGame.GetWillReleaseStatus(publisher.YearQuarter.YearQuarter);
+            if (!willReleaseStatus.CountAsWillRelease)
+            {
+                refundMultiplier = 0.75m;
+            }
+        }
+
+        refund *= refundMultiplier;
 
         await _royaleRepo.SellGame(publisherGame, refund);
         return Result.Success();
