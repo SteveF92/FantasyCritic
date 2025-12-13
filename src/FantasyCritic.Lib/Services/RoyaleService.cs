@@ -1,7 +1,8 @@
-using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.Lib.Services;
@@ -126,13 +127,10 @@ public class RoyaleService
             return new ClaimResult("Game has been released.");
         }
 
-        if (publisher.YearQuarter.HasReleaseDateLimit)
+        var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+        if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
         {
-            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
-            if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
-            {
-                return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
-            }
+            return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
         }
 
         if (masterGame.MasterGame.CriticScore.HasValue)
@@ -176,6 +174,16 @@ public class RoyaleService
             {
                 return Result.Failure("That game has already been released.");
             }
+
+            if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+            {
+                var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+                if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
+                {
+                    return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+                }
+            }
+
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
             {
                 return Result.Failure("That game already has a score.");
@@ -197,6 +205,15 @@ public class RoyaleService
         if (publisherGame.MasterGame.MasterGame.IsReleased(currentDate))
         {
             return Result.Failure("That game has already been released.");
+        }
+
+        if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+        {
+            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+            if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
+            {
+                return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+            }
         }
 
         if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)

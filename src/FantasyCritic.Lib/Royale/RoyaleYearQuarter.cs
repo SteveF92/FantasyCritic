@@ -17,26 +17,6 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
     public bool Finished { get; }
     public VeryMinimalFantasyCriticUser? WinningUser { get; }
 
-    public bool HasReleaseDateLimit
-    {
-        get
-        {
-            var compare = YearQuarter.CompareTo(new YearQuarter(2022, 3));
-            var laterOrEqual = compare >= 0;
-            return laterOrEqual;
-        }
-    }
-
-    public bool HideUnreleasedGames
-    {
-        get
-        {
-            var compare = YearQuarter.CompareTo(new YearQuarter(2022, 4));
-            var laterOrEqual = compare >= 0;
-            return laterOrEqual;
-        }
-    }
-
     public List<string> GetBannedTags()
     {
         List<string> bannedTags = [
