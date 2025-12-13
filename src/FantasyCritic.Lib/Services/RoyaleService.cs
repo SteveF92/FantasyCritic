@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -13,7 +12,6 @@ public class RoyaleService
     private readonly IClock _clock;
     private readonly IMasterGameRepo _masterGameRepo;
 
-    public const int MAX_GAMES = 25;
     public const int FUTURE_RELEASE_LIMIT_DAYS = 5;
 
     public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
@@ -107,7 +105,7 @@ public class RoyaleService
 
     public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
     {
-        if (publisher.PublisherGames.Count >= MAX_GAMES)
+        if (publisher.PublisherGames.Count >= GetMaxGames(publisher.YearQuarter))
         {
             return new ClaimResult("Roster is full.");
         }
@@ -306,5 +304,15 @@ public class RoyaleService
     public Task CalculateRoyaleWinnerForQuarter(RoyaleYearQuarter supportedQuarter)
     {
         return _royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
+    }
+
+    public int GetMaxGames(RoyaleYearQuarter yearQuarter)
+    {
+        if (!SupportedYear.Year2026FeatureSupported(yearQuarter.YearQuarter.Year))
+        {
+            return 25;
+        }
+
+        return 15;
     }
 }
