@@ -146,7 +146,7 @@ public class RoyaleService
         }
 
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
-        var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate);
+        var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, publisher.YearQuarter);
         if (eligibilityErrors.Any())
         {
             return new ClaimResult("Game is not eligible under Royale rules.");
@@ -159,7 +159,7 @@ public class RoyaleService
             return new ClaimResult("Not enough budget.");
         }
 
-        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter.YearQuarter, masterGame, now, gameCost, 0m, null);
+        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
         await _royaleRepo.PurchaseGame(game);
         var nextSlot = publisher.PublisherGames.Count;
         return new ClaimResult(nextSlot);

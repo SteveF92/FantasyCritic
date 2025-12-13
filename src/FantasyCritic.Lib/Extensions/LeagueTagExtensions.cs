@@ -1,12 +1,13 @@
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.Lib.Extensions;
 
 public static class LeagueTagExtensions
 {
-    public static IReadOnlyList<ClaimError> GetRoyaleClaimErrors(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame, LocalDate dateOfAcquisition)
+    public static IReadOnlyList<ClaimError> GetRoyaleClaimErrors(IEnumerable<MasterGameTag> allMasterGameTags, MasterGame masterGame, LocalDate dateOfAcquisition, RoyaleYearQuarter quarter)
     {
-        var royaleSettings = GetRoyaleEligibilitySettings(allMasterGameTags);
+        var royaleSettings = GetRoyaleEligibilitySettings(allMasterGameTags, quarter);
         var claimErrors = GameHasValidTags(royaleSettings, new List<LeagueTagStatus>(), masterGame, masterGame.Tags, dateOfAcquisition);
         return claimErrors;
     }
@@ -65,7 +66,7 @@ public static class LeagueTagExtensions
         return combinedLeagueTags.Values.ToList();
     }
 
-    public static IReadOnlyList<LeagueTagStatus> GetRoyaleEligibilitySettings(IEnumerable<MasterGameTag> allMasterGameTags)
+    public static IReadOnlyList<LeagueTagStatus> GetRoyaleEligibilitySettings(IEnumerable<MasterGameTag> allMasterGameTags, RoyaleYearQuarter quarter)
     {
         var bannedTagNames = new List<string>()
         {
