@@ -17,24 +17,28 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
     public bool Finished { get; }
     public VeryMinimalFantasyCriticUser? WinningUser { get; }
 
-    public bool HasReleaseDateLimit
+    public List<string> GetBannedTags()
     {
-        get
-        {
-            var compare = YearQuarter.CompareTo(new YearQuarter(2022, 3));
-            var laterOrEqual = compare >= 0;
-            return laterOrEqual;
-        }
-    }
+        List<string> bannedTags = [
+            "CurrentlyInEarlyAccess",
+            "DirectorsCut",
+            "Remaster",
+            "Port",
+            "ReleasedInternationally",
+            "YearlyInstallment"
+        ];
 
-    public bool HideUnreleasedGames
-    {
-        get
+        if (SupportedYear.Year2026FeatureSupported(YearQuarter.Year))
         {
-            var compare = YearQuarter.CompareTo(new YearQuarter(2022, 4));
-            var laterOrEqual = compare >= 0;
-            return laterOrEqual;
+            bannedTags.AddRange(
+            [
+                "PlannedForEarlyAccess",
+                "Remake",
+                "PartialRemake",
+            ]);
         }
+
+        return bannedTags;
     }
 
     public override string ToString()

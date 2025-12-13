@@ -11,7 +11,7 @@ public interface IRoyaleRepo
     Task<RoyaleYearQuarterData?> GetRoyaleYearQuarterData(int year, int quarter);
     Task<RoyalePublisherData?> GetPublisherData(Guid publisherID);
     Task PurchaseGame(RoyalePublisherGame game);
-    Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund);
+    Task SellGame(RoyalePublisherGame publisherGame, decimal refund);
     Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney);
     Task<IReadOnlyList<RoyalePublisher>> GetAllPublishers(int year, int quarter);
     Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores);

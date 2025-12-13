@@ -435,7 +435,7 @@ public class RoyaleController : FantasyCriticController
             masterGameYears = masterGameYears
                 .Where(x => x.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter))
                 .Where(x => !x.MasterGame.IsReleased(currentDate))
-                .Where(x => !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, x.MasterGame, currentDate).Any())
+                .Where(x => !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, x.MasterGame, currentDate, publisherData.RoyalePublisher.YearQuarter).Any())
                 .Take(1000)
                 .ToList();
         }

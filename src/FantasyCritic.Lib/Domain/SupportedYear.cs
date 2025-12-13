@@ -19,9 +19,8 @@ public class SupportedYear : IComparable<SupportedYear>, IEquatable<SupportedYea
     public LocalDate StartDate { get; }
     public bool Finished { get; }
 
-    public bool Is2022 => Year == 2022;
-
     public static bool Year2022FeatureSupported(int year) => year >= 2022;
+    public static bool Year2026FeatureSupported(int year) => year >= 2026;
 
     public override string ToString()
     {

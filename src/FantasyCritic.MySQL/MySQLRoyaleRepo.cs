@@ -141,7 +141,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 var masterGame = await _masterGameRepo.GetMasterGame(entity.MasterGameID);
                 masterGameYear = new MasterGameYear(masterGame!, activeRoyaleQuarter.YearQuarter.Year);
             }
-            var domain = entity.ToDomain(activeRoyaleQuarter.YearQuarter, masterGameYear);
+            var domain = entity.ToDomain(activeRoyaleQuarter, masterGameYear);
             domainPublisherGames.Add(domain);
         }
 
@@ -211,7 +211,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 var masterGame = await _masterGameRepo.GetMasterGame(entity.MasterGameID);
                 masterGameYear = new MasterGameYear(masterGame!, publisherEntity.Year);
             }
-            var domain = entity.ToDomain(quarterForPublisher.YearQuarter, masterGameYear);
+            var domain = entity.ToDomain(quarterForPublisher, masterGameYear);
             domainPublisherGames.Add(domain);
         }
 
@@ -296,7 +296,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
                 masterGameYear = new MasterGameYear(masterGame, yearQuarter.YearQuarter.Year);
             }
-            var domain = entity.ToDomain(yearQuarter.YearQuarter, masterGameYear);
+            var domain = entity.ToDomain(yearQuarter, masterGameYear);
             domains.Add(domain);
         }
         return domains;
@@ -364,20 +364,14 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 var masterGame = await _masterGameRepo.GetMasterGameOrThrow(entity.MasterGameID);
                 masterGameYear = new MasterGameYear(masterGame, yearQuarter.YearQuarter.Year);
             }
-            var domain = entity.ToDomain(yearQuarter.YearQuarter, masterGameYear);
+            var domain = entity.ToDomain(yearQuarter, masterGameYear);
             domains.Add(domain);
         }
         return domains;
     }
 
-    public async Task SellGame(RoyalePublisherGame publisherGame, bool fullRefund)
+    public async Task SellGame(RoyalePublisherGame publisherGame, decimal refund)
     {
-        var refund = publisherGame.AmountSpent;
-        if (!fullRefund)
-        {
-            refund /= 2;
-        }
-
         const string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
         const string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
         var amountGained = refund + publisherGame.AdvertisingMoney;

@@ -84,10 +84,14 @@
     <h3>How's it work?</h3>
     <div class="text-well">
       <p>
-        You'll be given a $100 "budget" with which to "buy" games to add them to your roster. Each game's price is set based upon how popular it is on the site. When the game releases, you get points
-        using the same system as the regular Fantasy Critic leagues. You can also boost your points by setting an "advertising budget" for a game before it comes out. More on that below.
+        You'll be given a $100 "budget" with which to "buy" games to add them to your roster. There is a roster limit of 15 games per quarter. Each game's price is set based upon how popular it is on
+        the site. When the game releases, you get points using the same system as the regular Fantasy Critic leagues. You can also boost your points by setting an "advertising budget" for a game
+        before it comes out. More on that below.
       </p>
-      <p>If you lose confidence in a game, you can choose to "sell" it, and get back half the money you spent on it. You can't sell a game that has come out, or one that has reviews already.</p>
+      <p>
+        If you lose confidence in a game, you can choose to "sell" it, and get back half of the current sell price of the game. If a game is confirmed to not release in the quarter, you get back 75%
+        of the current value. You can't sell a game that has come out, or one that has reviews already.
+      </p>
     </div>
 
     <h3>Secret Roster Rule</h3>
@@ -108,7 +112,7 @@
         You can choose to assign some of your budget (the same one you use to buy games) to boost the score you get for a game. Every
         <strong>$1</strong>
         assigned to a game will increase it's points received by
-        <strong>5%</strong>
+        <strong>10%</strong>
         .
       </p>
       <p>
@@ -119,9 +123,9 @@
         points. But, with an advertising budget of
         <strong>$5</strong>
         , it will be boosted by
-        <strong>25%</strong>
+        <strong>50%</strong>
         , giving you
-        <strong>12.5</strong>
+        <strong>15</strong>
         points. You don't need to spend even dollars to get a bonus, every cent counts.
       </p>
       <p>
@@ -134,17 +138,20 @@
     <div class="text-well">
       <label>The following tags are banned:</label>
       <p>
+        <masterGameTagBadge tag-name="Remake"></masterGameTagBadge>
+        <masterGameTagBadge tag-name="PartialRemake"></masterGameTagBadge>
         <masterGameTagBadge tag-name="DirectorsCut"></masterGameTagBadge>
         <masterGameTagBadge tag-name="Remaster"></masterGameTagBadge>
         <masterGameTagBadge tag-name="YearlyInstallment"></masterGameTagBadge>
+        <masterGameTagBadge tag-name="PlannedForEarlyAccess"></masterGameTagBadge>
         <masterGameTagBadge tag-name="CurrentlyInEarlyAccess"></masterGameTagBadge>
         <masterGameTagBadge tag-name="ReleasedInternationally"></masterGameTagBadge>
         <masterGameTagBadge tag-name="Port"></masterGameTagBadge>
       </p>
       <p>
-        Additionally, you cannot purchase a game that will release in 5 days or less. This is to prevent people from taking games that are about to come out that may have reviews starting to come in.
-        In the case of "Shadow Drops", if you purchased the game the day before the game was revealed, you can keep it, but if you purchase it the same day as the reveal + release, then it will be
-        marked as ineligible once the release date is set correctly in the system.
+        Additionally, you cannot purchase, sell, or change advertising budget on a game that will release in 5 days or less. This is to prevent people from taking games that are about to come out that
+        may have reviews starting to come in. In the case of "Shadow Drops", if you purchased the game the day before the game was revealed, you can keep it, but if you purchase it the same day as the
+        reveal + release, then it will be marked as ineligible once the release date is set correctly in the system.
       </p>
     </div>
   </div>

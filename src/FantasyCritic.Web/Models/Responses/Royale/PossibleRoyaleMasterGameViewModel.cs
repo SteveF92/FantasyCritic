@@ -10,7 +10,7 @@ public class PossibleRoyaleMasterGameViewModel
         MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
         WillReleaseInQuarter = masterGame.CouldReleaseInQuarter(yearQuarter.YearQuarter);
         AlreadyOwned = alreadyOwned;
-        IsEligible = !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate).Any();
+        IsEligible = !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, yearQuarter).Any();
         IsReleased = masterGame.MasterGame.IsReleased(currentDate);
         HasScore = masterGame.MasterGame.CriticScore.HasValue;
         Cost = masterGame.GetRoyaleGameCost();

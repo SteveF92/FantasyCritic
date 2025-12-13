@@ -1,7 +1,7 @@
-using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.Lib.Services;
@@ -12,7 +12,6 @@ public class RoyaleService
     private readonly IClock _clock;
     private readonly IMasterGameRepo _masterGameRepo;
 
-    public const int MAX_GAMES = 25;
     public const int FUTURE_RELEASE_LIMIT_DAYS = 5;
 
     public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
@@ -106,7 +105,7 @@ public class RoyaleService
 
     public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
     {
-        if (publisher.PublisherGames.Count >= MAX_GAMES)
+        if (publisher.PublisherGames.Count >= GetMaxGames(publisher.YearQuarter))
         {
             return new ClaimResult("Roster is full.");
         }
@@ -126,13 +125,10 @@ public class RoyaleService
             return new ClaimResult("Game has been released.");
         }
 
-        if (publisher.YearQuarter.HasReleaseDateLimit)
+        var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+        if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
         {
-            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
-            if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
-            {
-                return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
-            }
+            return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
         }
 
         if (masterGame.MasterGame.CriticScore.HasValue)
@@ -146,7 +142,7 @@ public class RoyaleService
         }
 
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
-        var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate);
+        var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, publisher.YearQuarter);
         if (eligibilityErrors.Any())
         {
             return new ClaimResult("Game is not eligible under Royale rules.");
@@ -159,7 +155,7 @@ public class RoyaleService
             return new ClaimResult("Not enough budget.");
         }
 
-        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter.YearQuarter, masterGame, now, gameCost, 0m, null);
+        RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
         await _royaleRepo.PurchaseGame(game);
         var nextSlot = publisher.PublisherGames.Count;
         return new ClaimResult(nextSlot);
@@ -176,6 +172,16 @@ public class RoyaleService
             {
                 return Result.Failure("That game has already been released.");
             }
+
+            if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+            {
+                var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+                if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
+                {
+                    return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+                }
+            }
+
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
             {
                 return Result.Failure("That game already has a score.");
@@ -186,8 +192,30 @@ public class RoyaleService
                 return Result.Failure("You don't have that game.");
             }
         }
-        
-        await _royaleRepo.SellGame(publisherGame, currentlyInEligible);
+
+        var refund = publisherGame.AmountSpent;
+        if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+        {
+            refund = publisherGame.MasterGame.GetRoyaleGameCost();
+        }
+
+        decimal refundMultiplier = 0.5m;
+        if (currentlyInEligible)
+        {
+            refundMultiplier = 1;
+        }
+        else if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+        {
+            var willReleaseStatus = publisherGame.MasterGame.GetWillReleaseStatus(publisher.YearQuarter.YearQuarter);
+            if (!willReleaseStatus.CountAsWillRelease)
+            {
+                refundMultiplier = 0.75m;
+            }
+        }
+
+        refund *= refundMultiplier;
+
+        await _royaleRepo.SellGame(publisherGame, refund);
         return Result.Success();
     }
 
@@ -197,6 +225,15 @@ public class RoyaleService
         if (publisherGame.MasterGame.MasterGame.IsReleased(currentDate))
         {
             return Result.Failure("That game has already been released.");
+        }
+
+        if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+        {
+            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+            if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
+            {
+                return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+            }
         }
 
         if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
@@ -267,5 +304,15 @@ public class RoyaleService
     public Task CalculateRoyaleWinnerForQuarter(RoyaleYearQuarter supportedQuarter)
     {
         return _royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
+    }
+
+    public int GetMaxGames(RoyaleYearQuarter yearQuarter)
+    {
+        if (!SupportedYear.Year2026FeatureSupported(yearQuarter.YearQuarter.Year))
+        {
+            return 25;
+        }
+
+        return 15;
     }
 }

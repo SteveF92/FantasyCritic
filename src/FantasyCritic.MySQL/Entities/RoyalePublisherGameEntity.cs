@@ -26,7 +26,7 @@ internal class RoyalePublisherGameEntity
     public decimal AdvertisingMoney { get; set; }
     public decimal? FantasyPoints { get; set; }
 
-    public RoyalePublisherGame ToDomain(YearQuarter yearQuarter, MasterGameYear masterGameYear)
+    public RoyalePublisherGame ToDomain(RoyaleYearQuarter yearQuarter, MasterGameYear masterGameYear)
     {
         return new RoyalePublisherGame(PublisherID, yearQuarter, masterGameYear, Timestamp, AmountSpent, AdvertisingMoney, FantasyPoints);
     }

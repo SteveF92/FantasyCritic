@@ -198,9 +198,22 @@ public class AdminService
         var supportedQuarters = await _royaleService.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
         {
-            if (supportedQuarter.Finished || !supportedQuarter.OpenForPlay)
+            if (!supportedQuarter.OpenForPlay)
             {
                 continue;
+            }
+
+            if (supportedQuarter.Finished)
+            {
+                if (SupportedYear.Year2026FeatureSupported(supportedQuarter.YearQuarter.Year))
+                {
+                    var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(7));
+                    var today = _clock.GetToday();
+                    if (today > gracePeriodDate)
+                    {
+                        continue;
+                    }
+                }
             }
 
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
@@ -587,11 +600,6 @@ public class AdminService
         var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
         var automatedGrantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop");
         var manualGrantActions = new List<LeagueAction>();
-        if (currentYear.Is2022)
-        {
-            manualGrantActions = allSuperDropActions.Where(x => x.ActionType == "Publisher Edited" && x.Description.Contains("Changed 'super drops available' to") && x.Timestamp > _clock.GetSuperDropsGrantTime()).ToList();
-        }
-
         var publishersAlreadyGranted = automatedGrantActions.Concat(manualGrantActions).Select(x => x.Publisher.PublisherID).ToHashSet();
 
         List<Publisher> publishersToGrantSuperDrop = new List<Publisher>();

@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Royale;
 
 public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 {
-    public RoyalePublisherGame(Guid publisherID, YearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp,
+    public RoyalePublisherGame(Guid publisherID, RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, Instant timestamp,
         decimal amountSpent, decimal advertisingMoney, decimal? fantasyPoints)
     {
         PublisherID = publisherID;
@@ -18,21 +18,16 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     }
 
     public Guid PublisherID { get; }
-    public YearQuarter YearQuarter { get; }
+    public RoyaleYearQuarter YearQuarter { get; }
     public MasterGameYear MasterGame { get; }
     public Instant Timestamp { get; }
     public decimal AmountSpent { get; }
     public decimal AdvertisingMoney { get; }
     public decimal? FantasyPoints { get; }
 
-    public bool IsHidden(RoyaleYearQuarter royaleYearQuarter, LocalDate currentDate)
+    public bool IsHidden(LocalDate currentDate)
     {
-        if (!royaleYearQuarter.HideUnreleasedGames)
-        {
-            return false;
-        }
-
-        if (royaleYearQuarter.Finished)
+        if (YearQuarter.Finished)
         {
             return false;
         }
@@ -44,10 +39,18 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
         if (MasterGame.MasterGame.IsReleased(currentDate))
         {
+            if (SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
+            {
+                if (!MasterGame.MasterGame.CriticScore.HasValue && MasterGame.MasterGame.ReleaseDate!.Value == currentDate)
+                {
+                    return false;
+                }
+            }
+
             return false;
         }
 
-        if (!MasterGame.CouldReleaseInQuarter(YearQuarter))
+        if (!MasterGame.CouldReleaseInQuarter(YearQuarter.YearQuarter))
         {
             return false;
         }
@@ -64,7 +67,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return true;
         }
 
-        var royaleTags = LeagueTagExtensions.GetRoyaleEligibilitySettings(allMasterGameTags);
+        var royaleTags = LeagueTagExtensions.GetRoyaleEligibilitySettings(allMasterGameTags, YearQuarter);
         var customCodeTags = royaleTags.Where(x => x.Tag.HasCustomCode).ToList();
         var nonCustomCodeTags = royaleTags.Except(customCodeTags).ToList();
 
@@ -142,7 +145,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public decimal? CalculateFantasyPoints(LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
     {
-        if (MasterGame.MasterGame.ReleaseDate.HasValue && !YearQuarter.ToDateInterval()
+        if (MasterGame.MasterGame.ReleaseDate.HasValue && !YearQuarter.YearQuarter.ToDateInterval()
                 .Contains(MasterGame.MasterGame.ReleaseDate.Value))
         {
             return 0m;
@@ -158,13 +161,18 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return 0m;
         }
 
-        var basePoints = MasterGame.GetFantasyPoints(ReleaseSystem.MustBeReleased, ScoringSystem.GetDefaultScoringSystem(YearQuarter.Year), false, currentDate);
+        var basePoints = MasterGame.GetFantasyPoints(ReleaseSystem.MustBeReleased, ScoringSystem.GetDefaultScoringSystem(YearQuarter.YearQuarter.Year), false, currentDate);
         if (!basePoints.HasValue)
         {
             return null;
         }
 
-        var extraPoints = basePoints * AdvertisingMoney * 0.05m;
+        var advertisingBudgetMultiplier = 0.1m;
+        if (!SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
+        {
+            advertisingBudgetMultiplier = 0.05m;
+        }
+        var extraPoints = basePoints * AdvertisingMoney * advertisingBudgetMultiplier;
         var modifiedPoints = basePoints + extraPoints;
 
         return modifiedPoints;

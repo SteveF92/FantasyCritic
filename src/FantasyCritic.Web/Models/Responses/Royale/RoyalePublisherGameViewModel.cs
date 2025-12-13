@@ -12,8 +12,8 @@ public class RoyalePublisherGameViewModel
         FantasyPoints = domain.FantasyPoints;
         CurrentlyIneligible = domain.CalculateIsCurrentlyIneligible(allMasterGameTags);
         Timestamp = domain.Timestamp;
-        GameHidden = domain.IsHidden(yearQuarter, currentDate);
-        if (!domain.IsHidden(yearQuarter, currentDate) || thisPlayerIsViewing)
+        GameHidden = domain.IsHidden(currentDate);
+        if (!GameHidden || thisPlayerIsViewing)
         {
             MasterGame = new MasterGameYearViewModel(domain.MasterGame, currentDate);
             AmountSpent = domain.AmountSpent;
