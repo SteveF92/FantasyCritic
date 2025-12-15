@@ -1,7 +1,7 @@
 <template>
   <b-modal id="royalePurchaseGameForm" ref="royalePurchaseGameFormRef" size="lg" title="Purchase Game" hide-footer @hidden="clearData">
     <p class="text-black">
-      You can purchase up to 25 games, provided you have the money.
+      You can purchase up to 15 games, provided you have the money.
       <br />
       You currently have
       <strong>{{ ownedGamesCount }}</strong>
@@ -58,23 +58,10 @@ import axios from 'axios';
 import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable.vue';
 
 export default {
-  components: {
-    PossibleRoyaleMasterGamesTable
-  },
-  props: {
-    yearQuarter: { type: Object, required: true },
-    userRoyalePublisher: { type: Object, required: true }
-  },
+  components: { PossibleRoyaleMasterGamesTable },
+  props: { yearQuarter: { type: Object, required: true }, userRoyalePublisher: { type: Object, required: true } },
   data() {
-    return {
-      searchGameName: null,
-      purchaseRoyaleGame: null,
-      purchaseResult: null,
-      possibleMasterGames: [],
-      searched: false,
-      searchedTop: false,
-      isBusy: false
-    };
+    return { searchGameName: null, purchaseRoyaleGame: null, purchaseResult: null, possibleMasterGames: [], searched: false, searchedTop: false, isBusy: false };
   },
   computed: {
     formIsValid() {
@@ -118,10 +105,7 @@ export default {
         masterGameID = this.purchaseRoyaleGame.masterGame.masterGameID;
       }
 
-      let request = {
-        publisherID: this.userRoyalePublisher.publisherID,
-        masterGameID: masterGameID
-      };
+      let request = { publisherID: this.userRoyalePublisher.publisherID, masterGameID: masterGameID };
 
       const response = await axios.post('/api/royale/PurchaseGame', request);
       this.purchaseResult = response.data;
@@ -132,10 +116,7 @@ export default {
 
       let gameName = this.purchaseRoyaleGame.masterGame.gameName;
       let purchaseCost = this.purchaseRoyaleGame.cost;
-      const purchaseInfo = {
-        gameName,
-        purchaseCost
-      };
+      const purchaseInfo = { gameName, purchaseCost };
       this.$emit('gamePurchased', purchaseInfo);
       await this.clearData();
       this.$refs.royalePurchaseGameFormRef.hide();

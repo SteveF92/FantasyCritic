@@ -81,6 +81,21 @@
         you can.
       </p>
     </div>
+    <h3>Changes for 2026!</h3>
+    <div class="text-well">
+      <p>
+        There have been several changes for the 2026 seasons. All of the information here is also elsewhere on this page, but here's a short summary of what's changed this year:
+        <ul>
+          <li>Maximum roster size is now 15 games, down from 25.</li>
+          <li>The following tags are now banned, in addition to previously banned tags: Remake, Partial Remake, and Planned for Early Access.</li>
+          <li>The 5 day lockout for both buying games now also applies to selling games and changing advertising budget.</li>
+          <li>When you sell a game, you get back 50% of it's current market value, instead of 50% of what you bought it for.</li>
+          <li>If a game won't release in the quarter, you get back 75% of market value when you sell.</li>
+          <li>Marketing budget bonus is now 10% per dollar, up from 5% per dollar.</li>
+          <li>There is a one week grace period after quarter ends where scores can still change.</li>
+        </ul>
+      </p>
+    </div>
     <h3>How's it work?</h3>
     <div class="text-well">
       <p>
