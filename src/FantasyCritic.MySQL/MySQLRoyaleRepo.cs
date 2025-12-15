@@ -302,7 +302,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return domains;
     }
 
-    public async Task PurchaseGame(RoyalePublisherGame game)
+    public async Task PurchaseGame(RoyalePublisherGame game, RoyaleAction action)
     {
         const string gameAddSQL = "INSERT INTO tbl_royale_publishergame(PublisherID,MasterGameID,Timestamp,AmountSpent,AdvertisingMoney,FantasyPoints) VALUES " +
                                   "(@PublisherID,@MasterGameID,@Timestamp,@AmountSpent,@AdvertisingMoney,@FantasyPoints)";
@@ -314,6 +314,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(gameAddSQL, entity, transaction);
         await connection.ExecuteAsync(budgetDecreaseSQL, new { amountSpent = game.AmountSpent, publisherID = game.PublisherID }, transaction);
+        await InsertRoyaleAction(action, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -370,7 +371,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return domains;
     }
 
-    public async Task SellGame(RoyalePublisherGame publisherGame, decimal refund)
+    public async Task SellGame(RoyalePublisherGame publisherGame, decimal refund, RoyaleAction action)
     {
         const string gameRemoveSQL = "DELETE FROM tbl_royale_publishergame WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
         const string budgetIncreaseSQL = "UPDATE tbl_royale_publisher SET Budget = Budget + @amountGained WHERE PublisherID = @publisherID";
@@ -380,10 +381,11 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(gameRemoveSQL, new { masterGameID = publisherGame.MasterGame.MasterGame.MasterGameID, publisherID = publisherGame.PublisherID }, transaction);
         await connection.ExecuteAsync(budgetIncreaseSQL, new { amountGained, publisherID = publisherGame.PublisherID }, transaction);
+        await InsertRoyaleAction(action, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    public async Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney)
+    public async Task SetAdvertisingMoney(RoyalePublisherGame publisherGame, decimal advertisingMoney, RoyaleAction action)
     {
         decimal amountToSpend = advertisingMoney - publisherGame.AdvertisingMoney;
         const string advertisingMoneySetSQL = "UPDATE tbl_royale_publishergame SET AdvertisingMoney = @advertisingMoney WHERE PublisherID = @publisherID AND MasterGameID = @masterGameID";
@@ -395,6 +397,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(advertisingMoneySetSQL, new { advertisingMoney, publisherID = publisherGame.PublisherID, masterGameID }, transaction);
         await connection.ExecuteAsync(budgetDecreaseSQL, new { amountToSpend, publisherID = publisherGame.PublisherID }, transaction);
+        await InsertRoyaleAction(action, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -471,5 +474,22 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await connection.ExecuteAsync(sql, finishObject);
+    }
+
+    private async Task InsertRoyaleAction(RoyaleAction action, MySqlConnection connection, MySqlTransaction transaction)
+    {
+        if (!SupportedYear.Year2026FeatureSupported(action.Publisher.YearQuarter.YearQuarter.Year))
+        {
+            return;
+        }
+
+        var entity = new RoyaleActionEntity(action);
+        const string sql =
+            """
+            INSERT INTO tbl_royale_action (PublisherID, Timestamp, MasterGameID, ActionType, Description)
+            VALUES
+            (@PublisherID, @Timestamp, @MasterGameID, @ActionType, @Description);
+            """;
+        await connection.ExecuteAsync(sql, entity, transaction);
     }
 }

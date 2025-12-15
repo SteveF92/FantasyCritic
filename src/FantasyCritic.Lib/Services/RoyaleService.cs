@@ -156,7 +156,8 @@ public class RoyaleService
         }
 
         RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
-        await _royaleRepo.PurchaseGame(game);
+        RoyaleAction action = new RoyaleAction(publisher, game, "Purchased Game", $"Purchased '{masterGame.MasterGame.GameName}' at a cost of ${gameCost:F2}.", now);
+        await _royaleRepo.PurchaseGame(game, action);
         var nextSlot = publisher.PublisherGames.Count;
         return new ClaimResult(nextSlot);
     }
@@ -193,10 +194,10 @@ public class RoyaleService
             }
         }
 
-        var refund = publisherGame.AmountSpent;
+        var baseRefund = publisherGame.AmountSpent;
         if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
         {
-            refund = publisherGame.MasterGame.GetRoyaleGameCost();
+            baseRefund = publisherGame.MasterGame.GetRoyaleGameCost();
         }
 
         decimal refundMultiplier = 0.5m;
@@ -213,9 +214,12 @@ public class RoyaleService
             }
         }
 
-        refund *= refundMultiplier;
+        var finalRefund = baseRefund * refundMultiplier;
 
-        await _royaleRepo.SellGame(publisherGame, refund);
+        var now = _clock.GetCurrentInstant();
+        RoyaleAction action = new RoyaleAction(publisher, publisherGame,
+            "Sold Game", $"Sold '{publisherGame.MasterGame.MasterGame.GameName}' for ${finalRefund:F2} (Market Cost: ${baseRefund:F2}).", now);
+        await _royaleRepo.SellGame(publisherGame, finalRefund, action);
         return Result.Success();
     }
 
@@ -262,7 +266,10 @@ public class RoyaleService
             return Result.Failure("You can't allocate more than 10 dollars in advertising money.");
         }
 
-        await _royaleRepo.SetAdvertisingMoney(publisherGame, advertisingMoney);
+        var now = _clock.GetCurrentInstant();
+        RoyaleAction action = new RoyaleAction(publisher, publisherGame,
+            "Changed Advertising Budget", $"Assigned ${advertisingMoney:F2} of advertising budget to '{publisherGame.MasterGame.MasterGame.GameName}' (Was ${publisherGame.AdvertisingMoney:F2}).", now);
+        await _royaleRepo.SetAdvertisingMoney(publisherGame, advertisingMoney, action);
         return Result.Success();
     }
 
