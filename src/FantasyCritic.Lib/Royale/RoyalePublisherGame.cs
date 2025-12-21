@@ -27,35 +27,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public bool IsHidden(LocalDate currentDate)
     {
-        if (YearQuarter.Finished)
-        {
-            return false;
-        }
-
-        if (MasterGame.MasterGame.CriticScore.HasValue)
-        {
-            return false;
-        }
-
-        if (MasterGame.MasterGame.IsReleased(currentDate))
-        {
-            if (SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
-            {
-                if (!MasterGame.MasterGame.CriticScore.HasValue && MasterGame.MasterGame.ReleaseDate!.Value == currentDate)
-                {
-                    return false;
-                }
-            }
-
-            return false;
-        }
-
-        if (!MasterGame.CouldReleaseInQuarter(YearQuarter.YearQuarter))
-        {
-            return false;
-        }
-
-        return true;
+        return RoyaleFunctions.GameOrActionIsHidden(YearQuarter, MasterGame, currentDate);
     }
 
     public bool CalculateIsCurrentlyIneligible(IEnumerable<MasterGameTag> allMasterGameTags)

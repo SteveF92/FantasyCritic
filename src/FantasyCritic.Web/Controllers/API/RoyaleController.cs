@@ -154,30 +154,6 @@ public class RoyaleController : FantasyCriticController
         return Ok();
     }
 
-    [HttpGet("{year}/{quarter}")]
-    public async Task<IActionResult> GetUserRoyalePublisher(int year, int quarter)
-    {
-        var currentUser = await GetCurrentUserOrThrow();
-
-        var yearQuarter = await _royaleService.GetYearQuarter(year, quarter);
-        if (yearQuarter is null)
-        {
-            return BadRequest();
-        }
-
-        RoyalePublisher? publisher = await _royaleService.GetPublisher(yearQuarter, currentUser);
-        if (publisher is null)
-        {
-            return NotFound();
-        }
-
-        IReadOnlyList<RoyaleYearQuarter> quartersWon = await _royaleService.GetQuartersWonByUser(publisher.User);
-        var currentDate = _clock.GetToday();
-        var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, true);
-        return Ok(viewModel);
-    }
-
     [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRoyalePublisher(Guid id)
@@ -200,7 +176,7 @@ public class RoyaleController : FantasyCriticController
             thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
         }
 
-        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, masterGameTags, thisPlayerIsViewing);
+        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, publisherData.RoyaleActions, masterGameTags, thisPlayerIsViewing);
         return Ok(viewModel);
     }
 
@@ -259,43 +235,6 @@ public class RoyaleController : FantasyCriticController
 
         return Ok(vm);
     }
-
-    [AllowAnonymous]
-    [HttpGet("{year}/{quarter}")]
-    public async Task<IActionResult> RoyaleStandings(int year, int quarter)
-    {
-        IReadOnlyList<RoyalePublisher> publishers = await _royaleService.GetAllPublishers(year, quarter);
-        var publishersToShow = publishers.Where(x => x.PublisherGames.Any()).OrderByDescending(x => x.GetTotalFantasyPoints());
-        int ranking = 1;
-        List<RoyalePublisherViewModel> viewModels = new List<RoyalePublisherViewModel>();
-        var masterGameTags = await _interLeagueService.GetMasterGameTags();
-        var previousQuarters = await _royaleService.GetYearQuarters();
-        var previousWinnersByUser = previousQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
-        var currentUserResult = await GetCurrentUser();
-        foreach (var publisher in publishersToShow)
-        {
-            int? thisRanking = null;
-            if (publisher.GetTotalFantasyPoints() > 0)
-            {
-                thisRanking = ranking;
-                ranking++;
-            }
-
-            var winningQuarters = previousWinnersByUser[publisher.User];
-            bool thisPlayerIsViewing = false;
-            if (currentUserResult.IsSuccess)
-            {
-                thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
-            }
-
-            var currentDate = _clock.GetToday();
-            var vm = new RoyalePublisherViewModel(publisher, currentDate, thisRanking, winningQuarters, masterGameTags, thisPlayerIsViewing);
-            viewModels.Add(vm);
-        }
-
-        return Ok(viewModels);
-    }
-
 
     [HttpPost]
     public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)

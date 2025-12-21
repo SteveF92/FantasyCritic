@@ -156,7 +156,7 @@ public class RoyaleService
         }
 
         RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
-        RoyaleAction action = new RoyaleAction(publisher, game, "Purchased Game", $"Purchased '{masterGame.MasterGame.GameName}' at a cost of ${gameCost:F2}.", now);
+        RoyaleAction action = new RoyaleAction(publisher, masterGame, "Purchased Game", $"Purchased '{masterGame.MasterGame.GameName}' at a cost of ${gameCost:F2}.", now);
         await _royaleRepo.PurchaseGame(game, action);
         var nextSlot = publisher.PublisherGames.Count;
         return new ClaimResult(nextSlot);
@@ -217,7 +217,7 @@ public class RoyaleService
         var finalRefund = baseRefund * refundMultiplier;
 
         var now = _clock.GetCurrentInstant();
-        RoyaleAction action = new RoyaleAction(publisher, publisherGame,
+        RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
             "Sold Game", $"Sold '{publisherGame.MasterGame.MasterGame.GameName}' for ${finalRefund:F2} (Market Cost: ${baseRefund:F2}).", now);
         await _royaleRepo.SellGame(publisherGame, finalRefund, action);
         return Result.Success();
@@ -267,7 +267,7 @@ public class RoyaleService
         }
 
         var now = _clock.GetCurrentInstant();
-        RoyaleAction action = new RoyaleAction(publisher, publisherGame,
+        RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
             "Changed Advertising Budget", $"Assigned ${advertisingMoney:F2} of advertising budget to '{publisherGame.MasterGame.MasterGame.GameName}' (Was ${publisherGame.AdvertisingMoney:F2}).", now);
         await _royaleRepo.SetAdvertisingMoney(publisherGame, advertisingMoney, action);
         return Result.Success();

@@ -182,6 +182,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
         var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
         var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
+        var actionEntities = resultSets.Read<RoyaleActionEntity>();
 
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
@@ -218,7 +219,22 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var quartersWonByUser = supportedQuarters.Where(x => x.WinningUser is not null && x.WinningUser.UserID == publisherEntity.UserID).ToList();
 
         var domainPublisher = publisherEntity.ToDomain(quarterForPublisher, domainPublisherGames);
-        var domainPublisherData = new RoyalePublisherData(domainPublisher, quartersWonByUser, masterGameYearDictionary.Values.ToList(), possibleTags.Values.ToList());
+
+        var domainActions = new List<RoyaleAction>();
+        foreach (var actionEntity in actionEntities)
+        {
+            var masterGameYear = masterGameYearDictionary.GetValueOrDefault(actionEntity.MasterGameID);
+            if (masterGameYear is null)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGame(actionEntity.MasterGameID);
+                masterGameYear = new MasterGameYear(masterGame!, publisherEntity.Year);
+            }
+
+            var domainAction = actionEntity.ToDomain(domainPublisher, masterGameYear);
+            domainActions.Add(domainAction);
+        }
+
+        var domainPublisherData = new RoyalePublisherData(domainPublisher, domainActions, quartersWonByUser, masterGameYearDictionary.Values.ToList(), possibleTags.Values.ToList());
         return domainPublisherData;
     }
 
