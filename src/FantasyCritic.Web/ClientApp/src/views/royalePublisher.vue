@@ -47,8 +47,8 @@
       <hr />
       <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
 
-      <h1>Games</h1>
-      <b-table v-if="publisher.publisherGames.length !== 0" striped bordered small responsive :items="publisher.publisherGames" :fields="allFields" :tbody-tr-class="publisherGameRowClass">
+      <h2>Games</h2>
+      <b-table v-if="publisher.publisherGames.length !== 0" striped bordered small responsive :items="publisher.publisherGames" :fields="gameFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(masterGame.gameName)="data">
           <template v-if="data.item.masterGame">
             <span class="master-game-popover">
@@ -62,7 +62,7 @@
 
             <span v-if="data.item.gameHidden" class="game-ineligible">
               Hidden
-              <font-awesome-icon v-b-popover.hover.focus="hiddenText" color="white" size="lg" icon="eye-slash" />
+              <font-awesome-icon v-b-popover.hover.focus="getHiddenText('game')" color="white" size="lg" icon="eye-slash" />
             </span>
           </template>
           <span v-else class="hidden-text">Hidden Until Release</span>
@@ -120,6 +120,33 @@
         </div>
       </div>
     </b-modal>
+
+    <div v-if="publisher.publisherActions.length > 0">
+      <h2>Action History</h2>
+      <b-table striped bordered small responsive :items="publisher.publisherActions" :fields="actionFields" :tbody-tr-class="publisherGameRowClass">
+        <template #cell(timestamp)="data">
+          {{ data.item.timestamp | dateTime }}
+        </template>
+        <template #cell(masterGame.gameName)="data">
+          <template v-if="data.item.masterGame">
+            <span class="master-game-popover">
+              <masterGamePopover :master-game="data.item.masterGame" :currently-ineligible="data.item.currentlyIneligible"></masterGamePopover>
+            </span>
+            <span v-if="data.item.gameHidden" class="game-ineligible">
+              Hidden
+              <font-awesome-icon v-b-popover.hover.focus="getHiddenText('action')" color="white" size="lg" icon="eye-slash" />
+            </span>
+          </template>
+          <span v-else class="hidden-text">Hidden Until Release</span>
+        </template>
+        <template #cell(description)="data">
+          <span v-if="data.item.description" class="preserve-whitespace">
+            {{ data.item.description }}
+          </span>
+          <span v-else class="hidden-text">Hidden Until Release</span>
+        </template>
+      </b-table>
+    </div>
   </div>
 </template>
 
@@ -163,6 +190,12 @@ export default {
         { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
         { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
       ],
+      actionFields: [
+        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+        { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
+        { key: 'description', label: 'Description', thClass: 'bg-primary' }
+      ],
       userPublisherFields: [{ key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }]
     };
   },
@@ -170,7 +203,7 @@ export default {
     userIsPublisher() {
       return this.isAuth && this.publisher.userID === this.$store.getters.userInfo.userID;
     },
-    allFields() {
+    gameFields() {
       let conditionalFields = [];
       if (this.userIsPublisher) {
         conditionalFields = conditionalFields.concat(this.userPublisherFields);
@@ -189,17 +222,6 @@ export default {
             'Alternatively, this can happen if the game was purchased the same day as it released, but before the site was updated with the correct release date. <br/> <br/>' +
             'The game can be dropped for a full refund.'
           );
-        }
-      };
-    },
-    hiddenText() {
-      return {
-        html: true,
-        title: () => {
-          return 'What does this mean?';
-        },
-        content: () => {
-          return 'This game is hidden from other players. See the Royale home page for more details.';
         }
       };
     },
@@ -300,6 +322,17 @@ export default {
       if (item.currentlyIneligible) {
         return 'table-warning';
       }
+    },
+    getHiddenText(gameOrAction) {
+      return {
+        html: true,
+        title: () => {
+          return 'What does this mean?';
+        },
+        content: () => {
+          return `This ${gameOrAction} is hidden from other players. See the Royale home page for more details.`;
+        }
+      };
     }
   }
 };
