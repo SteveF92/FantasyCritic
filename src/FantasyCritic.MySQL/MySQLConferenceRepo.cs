@@ -130,13 +130,19 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task<Result> AddNewConferenceYear(Conference conference, int year)
     {
-        var previousConferenceYear = await _combinedDataRepo.GetConferenceYearData(conference.ConferenceID, year - 1);
+        var previousYear = conference.Years.Where(x => x.Year < year).MaxBy(x => x.Year)?.Year;
+        if (!previousYear.HasValue)
+        {
+            return Result.Failure("Conference has no previous years.");
+        }
+
+        var previousConferenceYear = await _combinedDataRepo.GetConferenceYearData(conference.ConferenceID, previousYear.Value);
         if (previousConferenceYear is null)
         {
             return Result.Failure("Cannot find previous conference year.");
         }
 
-        var primaryLeaguePreviousLeagueYear = await _combinedDataRepo.GetLeagueYear(conference.PrimaryLeagueID, year - 1);
+        var primaryLeaguePreviousLeagueYear = await _combinedDataRepo.GetLeagueYear(conference.PrimaryLeagueID, previousYear.Value);
         if (primaryLeaguePreviousLeagueYear is null)
         {
             return Result.Failure("Cannot find previous league year for primary league.");
