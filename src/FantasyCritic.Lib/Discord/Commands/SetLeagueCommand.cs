@@ -40,7 +40,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     [UsedImplicitly]
     [SlashCommand("set-league", "Sets the league to be associated with the current channel.")]
     public async Task SetLeague(
-        [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam,
+        [Summary("league_url_id", "The League ID OR URL for your league.")] string leagueIdParam,
         [Summary("year", "The year of the league to track. If not specified, the current year will be used.")] int? year = null
         )
     {

@@ -361,10 +361,10 @@
                   <span class="discord-param-text">
                     <span class="param-label">Parameters:</span>
                     <p class="parameter-explanation">
-                      <code>league_id:</code>
-                      The ID for your league. You can get it by clicking the
+                      <code>league_url_id:</code>
+                      The URL or ID for your league. You can get the ID by clicking the
                       <font-awesome-icon :icon="['far', 'copy']" />
-                      icon next to your league name. You can also find it in the URL for your league.
+                      icon next to your league name. You can also find it in the URL for your league. Alternatively, you can just give the full URL here.
                       <br />
                       <strong>Example:</strong>
                       https://www.fantasycritic.games/league/LEAGUE_ID_HERE/YEAR
@@ -483,11 +483,11 @@
                       <ul>
                         <li>
                           <strong>Show New Game Announcements</strong>
-                          - If Enabled, the channel will recieve a one time announcement about games Fantasy Critic just learned about and added to the site, will only show games not affected by other filters. 
+                          - If Enabled, the channel will recieve a one time announcement about games Fantasy Critic just learned about and added to the site, will only show games not affected by other filters.
                         </li>
                         <li>
                           <strong>Show Just Released Announcements</strong>
-                          - If Enabled, the channel will recieve a one time announcement about a game that just hit its release date! Will only show games not affected by other filters. 
+                          - If Enabled, the channel will recieve a one time announcement about a game that just hit its release date! Will only show games not affected by other filters.
                         </li>
                       </ul>
                     </li>
@@ -596,43 +596,46 @@
 </template>
 
 <script>
-import CollapseCard from '@/components/collapseCard.vue';
+  import CollapseCard from '@/components/collapseCard.vue';
 
-export default {
-  components: {
-    CollapseCard
-  },
-  data() {
-    return {};
-  },
-  mounted() {
-    if (this.$route.hash) {
-      this.showCollapse(this.$route.hash);
+  export default {
+    components: {
+      CollapseCard
+    },
+    data() {
+      return {};
+    },
+    mounted() {
+      if (this.$route.hash) {
+        this.showCollapse(this.$route.hash);
+      }
+    },
+    methods: {
+      showCollapse(hash) {
+        this.$refs.discordBotInfoCollapseRef.show();
+        setTimeout(() => {
+          this.$router.push({ hash: hash });
+        }, 250);
+      }
     }
-  },
-  methods: {
-    showCollapse(hash) {
-      this.$refs.discordBotInfoCollapseRef.show();
-      setTimeout(() => {
-        this.$router.push({ hash: hash });
-      }, 250);
-    }
-  }
-};
+  };
 </script>
 <style scoped>
-.command-label {
-  margin-right: 3px;
-  font-weight: bold;
-}
-.param-label {
-  font-weight: bold;
-}
-.discord-command-explanation {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-.parameter-explanation {
-  margin-top: 10px;
-}
+  .command-label {
+    margin-right: 3px;
+    font-weight: bold;
+  }
+
+  .param-label {
+    font-weight: bold;
+  }
+
+  .discord-command-explanation {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .parameter-explanation {
+    margin-top: 10px;
+  }
 </style>

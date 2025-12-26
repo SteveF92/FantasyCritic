@@ -37,9 +37,9 @@ public class DiscordPushService
     private readonly bool _enabled;
     private readonly string _baseAddress;
 
-    private readonly ConcurrentBag<NewMasterGameMessage> _newMasterGameMessages = new();
-    private readonly ConcurrentBag<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = new();
-    private readonly ConcurrentBag<MasterGameEditMessage> _masterGameEditMessages = new();
+    private readonly ConcurrentBag<NewMasterGameMessage> _newMasterGameMessages = [];
+    private readonly ConcurrentBag<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = [];
+    private readonly ConcurrentBag<MasterGameEditMessage> _masterGameEditMessages = [];
 
     public DiscordPushService(
         FantasyCriticDiscordConfiguration configuration,
@@ -173,7 +173,7 @@ public class DiscordPushService
             {
                 if (!gameUpdateMessages.ContainsKey(newMasterGameMessage.MasterGame))
                 {
-                    gameUpdateMessages.Add(newMasterGameMessage.MasterGame, new List<string>());
+                    gameUpdateMessages.Add(newMasterGameMessage.MasterGame, []);
                 }
                 gameUpdateMessages[newMasterGameMessage.MasterGame].Add("Just added!");
                 var tagNames = newMasterGameMessage.MasterGame.Tags.Select(t => t.ReadableName);
@@ -227,7 +227,7 @@ public class DiscordPushService
                 {
                     if (!gameUpdateMessages.ContainsKey(existingGame))
                     {
-                        gameUpdateMessages.Add(existingGame, new List<string>());
+                        gameUpdateMessages.Add(existingGame, []);
                     }
                     foreach (var changeMessage in changeMessages)
                     {
@@ -1143,33 +1143,34 @@ public class DiscordPushService
             {
                 case "create":
                     title = "Special Auction Created";
-                    embedFieldBuilders = new List<EmbedFieldBuilder>
-                    {
+                    embedFieldBuilders =
+                    [
                         new()
                         {
                             Name = "Game To Bid On",
                             Value = specialAuction.MasterGameYear.MasterGame.GameName,
                             IsInline = false
                         },
+
                         new()
                         {
                             Name = "Time Until Auction Ends",
                             Value = DiscordSharedMessageUtilities.BuildRemainingTimeMessage(duration),
                             IsInline = false
                         }
-                    };
+                    ];
                     break;
                 case "cancel":
                     title = "Special Auction Cancelled";
-                    embedFieldBuilders = new List<EmbedFieldBuilder>
-                    {
+                    embedFieldBuilders =
+                    [
                         new()
                         {
                             Name = "Game That Was Being Bid On",
                             Value = specialAuction.MasterGameYear.MasterGame.GameName,
                             IsInline = false
                         }
-                    };
+                    ];
                     break;
             }
 
@@ -1242,7 +1243,7 @@ public class DiscordPushService
         var channelKeys = leagueChannels.Select(x => x.ChannelKey)
             .Concat(gameNewsChannels.Select(x => x.ChannelKey)).Distinct().ToList();
 
-        List<CombinedChannel> combinedChannels = new List<CombinedChannel>();
+        List<CombinedChannel> combinedChannels = [];
         foreach (var channelKey in channelKeys)
         {
             var leagueChannel = leagueChannelDictionary.GetValueOrDefault(channelKey);
