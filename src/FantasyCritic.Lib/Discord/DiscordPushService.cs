@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace FantasyCritic.Lib.Discord;
+
 public class DiscordPushService
 {
     private static readonly ILogger Logger = Log.ForContext<DiscordPushService>();
@@ -415,6 +416,38 @@ public class DiscordPushService
             }
 
             preparedMessages.Add(new PreparedDiscordMessage(channel, $"## {action.ActionType}\n{action.Description}\n_(on {action.Timestamp.ToEasternDate()})_"));
+        }
+
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+    }
+
+    public async Task SendSuperDropUsedMessage(PublisherGame publisherGame, LeagueYear leagueYear, Publisher publisher)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var leagueId = leagueYear.League.LeagueID;
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+
+        var leagueChannels = await discordRepo.GetLeagueChannels(leagueId);
+
+        var preparedMessages = new List<PreparedDiscordMessage>();
+        foreach (var leagueChannel in leagueChannels)
+        {
+            var guild = _client.GetGuild(leagueChannel.GuildID);
+            SocketTextChannel? channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+            if (channel is null)
+            {
+                continue;
+            }
+
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## Super Drop Used\n**{publisher.GetPublisherAndUserDisplayName()}** used a Super Drop to drop **{publisherGame.GameName}**."));
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);

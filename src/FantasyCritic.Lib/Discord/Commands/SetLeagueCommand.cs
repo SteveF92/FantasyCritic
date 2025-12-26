@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
@@ -9,6 +10,7 @@ using JetBrains.Annotations;
 using Serilog;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private static readonly ILogger Logger = Log.ForContext<SetLeagueCommand>();
@@ -38,7 +40,8 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     [UsedImplicitly]
     [SlashCommand("set-league", "Sets the league to be associated with the current channel.")]
     public async Task SetLeague(
-        [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam
+        [Summary("league_ID", "The ID for your league from the URL - https://www.fantasycritic.games/league/LEAGUE_ID_HERE/2022.")] string leagueIdParam,
+        [Summary("year", "The year of the league to track. If not specified, the current year will be used.")] int? year = null
         )
     {
         await DeferAsync();
@@ -46,7 +49,27 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         var dateToCheck = _clock.GetGameEffectiveDate();
 
-        var leagueId = leagueIdParam.ToLower().Trim();
+        string leagueId;
+
+        // Regex pattern to match the league URL and capture GUID and year
+        const string pattern = @"(?:https?://)?(?:www\.)?fantasycritic\.games/league/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(\d{4})";
+
+        var match = Regex.Match(leagueIdParam, pattern);
+
+        if (match.Success)
+        {
+            leagueId = match.Groups[1].Value.ToLower().Trim();
+            var yearValue = match.Groups[2].Value.ToLower().Trim();
+            if (year == null)
+            {
+                int.TryParse(yearValue, out var yearInt);
+                year = yearInt;
+            }
+        }
+        else
+        {
+            leagueId = leagueIdParam.ToLower().Trim();
+        }
 
         if (string.IsNullOrEmpty(leagueId))
         {

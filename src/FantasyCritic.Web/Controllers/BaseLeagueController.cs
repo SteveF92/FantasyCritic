@@ -1,5 +1,4 @@
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -15,7 +14,7 @@ public abstract class BaseLeagueController : FantasyCriticController
     protected readonly InterLeagueService _interLeagueService;
     protected readonly LeagueMemberService _leagueMemberService;
     protected readonly ConferenceService _conferenceService;
-    private readonly DiscordPushService _discordPushService;
+    protected readonly DiscordPushService _discordPushService;
     private readonly IHubContext<UpdateHub> _hubContext;
 
     protected BaseLeagueController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,

@@ -1078,6 +1078,12 @@ public class LeagueController : BaseLeagueController
         var publisherGame = validResult.PublisherGame;
 
         DropResult dropResult = await _gameAcquisitionService.UseSuperDrop(leagueYear, publisher, publisherGame);
+
+        if (dropResult.Result.IsSuccess)
+        {
+            await _discordPushService.SendSuperDropUsedMessage(publisherGame, leagueYear, publisher);
+        }
+
         var viewModel = new DropGameResultViewModel(dropResult);
 
         return Ok(viewModel);

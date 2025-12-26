@@ -30,7 +30,6 @@ public class LeagueManagerController : BaseLeagueController
     private readonly EmailSendingService _emailSendingService;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly TradeService _tradeService;
-    private readonly DiscordPushService _discordPushService;
     private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public LeagueManagerController(FantasyCriticUserManager userManager, FantasyCriticService fantasyCriticService, InterLeagueService interLeagueService,
@@ -46,7 +45,6 @@ public class LeagueManagerController : BaseLeagueController
         _emailSendingService = emailSendingService;
         _gameAcquisitionService = gameAcquisitionService;
         _tradeService = tradeService;
-        _discordPushService = discordPushService;
         _environmentConfiguration = environmentConfiguration;
     }
 
