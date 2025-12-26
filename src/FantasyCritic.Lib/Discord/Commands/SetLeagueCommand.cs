@@ -51,15 +51,16 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         string leagueId;
 
-        // Regex pattern to match the league URL and capture GUID and year
-        const string pattern = @"(?:https?://)?(?:www\.)?fantasycritic\.games/league/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(\d{4})";
+        const string pattern = @"(?:https?://)?(?:www\.)?(fantasycritic\.games|localhost:\d+)/league/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(\d{4})";
 
         var match = Regex.Match(leagueIdParam, pattern);
 
         if (match.Success)
         {
-            leagueId = match.Groups[1].Value.ToLower().Trim();
-            var yearValue = match.Groups[2].Value.ToLower().Trim();
+            leagueId = match.Groups[2].Value.ToLower().Trim();
+            var yearValue = match.Groups[3].Value.ToLower().Trim();
+
+            // if they've specified a year, use that year instead. otherwise, pull it from the URL.
             if (year == null)
             {
                 int.TryParse(yearValue, out var yearInt);
