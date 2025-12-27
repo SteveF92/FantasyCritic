@@ -26,14 +26,17 @@ public class MySQLDiscordRepo : IDiscordRepo
         _connectionString = configuration.ConnectionString;
     }
 
-    public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID)
+    public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int? year)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, false, NotableMissSetting.ScoreUpdates, null);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, false, NotableMissSetting.ScoreUpdates, null, year);
         var existingChannel = await GetLeagueChannelEntity(guildID, channelID);
         var sql = existingChannel == null
-            ? "INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,ShowPickedGameNews,ShowEligibleGameNews,ShowIneligibleGameNews,NotableMissSetting) VALUES (@GuildID, @ChannelID, @LeagueID, @ShowPickedGameNews, @ShowEligibleGameNews, @ShowIneligibleGameNews, @NotableMissSetting)"
-            : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
+            ? """
+            INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,ShowPickedGameNews,ShowEligibleGameNews,ShowIneligibleGameNews,NotableMissSetting,Year)
+            VALUES (@GuildID, @ChannelID, @LeagueID, @ShowPickedGameNews, @ShowEligibleGameNews, @ShowIneligibleGameNews, @NotableMissSetting, @Year)
+            """
+            : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID, Year=@Year WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
@@ -51,7 +54,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, showPickedGameNews, showEligibleGameNews, showIneligibleGameNews, notableMissSetting, null);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, showPickedGameNews, showEligibleGameNews, showIneligibleGameNews, notableMissSetting, null, null);
         var sql = """
                   UPDATE tbl_discord_leaguechannel SET
                   ShowPickedGameNews=@ShowPickedGameNews,

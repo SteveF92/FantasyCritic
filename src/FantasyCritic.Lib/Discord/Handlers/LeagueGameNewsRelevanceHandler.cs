@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord.Models;
 using Serilog;
 

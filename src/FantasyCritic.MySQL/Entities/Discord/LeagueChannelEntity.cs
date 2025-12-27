@@ -8,7 +8,7 @@ internal class LeagueChannelEntity
 
     }
 
-    public LeagueChannelEntity(ulong guildID, ulong channelID, Guid leagueID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting, ulong? bidAlertRoleID)
+    public LeagueChannelEntity(ulong guildID, ulong channelID, Guid leagueID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting, ulong? bidAlertRoleID, int? year)
     {
         GuildID = guildID;
         ChannelID = channelID;
@@ -18,6 +18,7 @@ internal class LeagueChannelEntity
         ShowIneligibleGameNews = showIneligibleGameNews;
         NotableMissSetting = notableMissSetting.Value;
         BidAlertRoleID = bidAlertRoleID;
+        Year = year;
     }
 
     public ulong ChannelID { get; set; }
@@ -28,14 +29,15 @@ internal class LeagueChannelEntity
     public bool ShowIneligibleGameNews { get; set; }
     public string NotableMissSetting { get; set; } = null!;
     public ulong? BidAlertRoleID { get; set; }
+    public int? Year { get; set; }
 
     public LeagueChannel ToDomain(LeagueYear leagueYear)
     {
-        return new LeagueChannel(leagueYear, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting), BidAlertRoleID);
+        return new LeagueChannel(leagueYear, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting), BidAlertRoleID, Year);
     }
 
     public MinimalLeagueChannel ToMinimalDomain()
     {
-        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting), BidAlertRoleID);
+        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting), BidAlertRoleID, Year);
     }
 }
