@@ -135,7 +135,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         try
         {
-            await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id);
+            await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id, year);
         }
         catch (Exception ex)
         {
