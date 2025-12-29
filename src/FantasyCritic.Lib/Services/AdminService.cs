@@ -214,6 +214,10 @@ public class AdminService
                         continue;
                     }
                 }
+                else
+                {
+                    continue;
+                }
             }
 
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
