@@ -34,6 +34,7 @@ using NodaTime.Serialization.JsonNet;
 using Microsoft.Extensions.Configuration;
 using FantasyCritic.Postmark;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Handlers;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Web.Authorization;
 
@@ -75,6 +76,7 @@ public static class HostingExtensions
         services.AddSingleton<EnvironmentConfiguration>(_ => emailSendingConfig);
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
         services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
+        services.AddSingleton<RoleHandler>();
         services.AddSingleton<DiscordPushService>();
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();

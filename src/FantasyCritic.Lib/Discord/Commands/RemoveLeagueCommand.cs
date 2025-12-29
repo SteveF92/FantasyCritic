@@ -1,19 +1,24 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.Discord.Handlers;
 using FantasyCritic.Lib.Interfaces;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IDiscordFormatter _discordFormatter;
+    private readonly RoleHandler _roleHandler;
 
     public RemoveLeagueCommand(IDiscordRepo discordRepo,
-        IDiscordFormatter discordFormatter)
+        IDiscordFormatter discordFormatter,
+        RoleHandler roleHandler)
     {
         _discordRepo = discordRepo;
         _discordFormatter = discordFormatter;
+        _roleHandler = roleHandler;
     }
 
     [UsedImplicitly]
@@ -21,6 +26,17 @@ public class RemoveLeagueCommand : InteractionModuleBase<SocketInteractionContex
     public async Task RemoveLeague()
     {
         await DeferAsync();
+
+        var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
+        if (!_roleHandler.CanAdministrate(Context.Guild, Context.User, leagueChannel))
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+                "Cannot Manage The Bot",
+                "You do not have permission to adjust bot configurations.",
+                Context.User));
+            return;
+        }
+
         var wasDeleted = await _discordRepo.DeleteLeagueChannel(Context.Guild.Id, Context.Channel.Id);
         if (!wasDeleted)
         {

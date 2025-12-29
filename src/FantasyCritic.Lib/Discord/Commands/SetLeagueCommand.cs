@@ -1,6 +1,8 @@
 using System.Text.RegularExpressions;
+using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.Discord.Handlers;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
@@ -21,13 +23,15 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly FantasyCriticSettings _fantasyCriticSettings;
+    private readonly RoleHandler _roleHandler;
 
     public SetLeagueCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         IFantasyCriticRepo fantasyCriticRepo,
         IReadOnlyFantasyCriticUserStore userStore,
-        FantasyCriticSettings fantasyCriticSettings)
+        FantasyCriticSettings fantasyCriticSettings,
+        RoleHandler roleHandler)
     {
         _discordRepo = discordRepo;
         _clock = clock;
@@ -35,17 +39,30 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         _fantasyCriticRepo = fantasyCriticRepo;
         _userStore = userStore;
         _fantasyCriticSettings = fantasyCriticSettings;
+        _roleHandler = roleHandler;
     }
 
     [UsedImplicitly]
     [SlashCommand("set-league", "Sets the league to be associated with the current channel.")]
     public async Task SetLeague(
         [Summary("league_url_id", "The League ID OR URL for your league.")] string leagueIdParam,
-        [Summary("year", "The year of the league to track. If not specified, the current year will be used.")] int? year = null
+        [Summary("year", "The year of the league to track. If not specified, the current year will be used.")] int? year = null,
+        [Summary("bot_admin_role", "The role that is permitted to administer the bot.")] IRole? botAdminRole = null
         )
     {
         await DeferAsync();
         Logger.Information("Attempting to set up channel {ChannelID} to track league {LeagueID}", Context.Channel.Id, leagueIdParam);
+
+        var existingLeagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
+        if (existingLeagueChannel != null &&
+            !_roleHandler.CanAdministrate(Context.Guild, Context.User, existingLeagueChannel))
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+                "Cannot Manage The Bot",
+                "You do not have permission to adjust bot configurations.",
+                Context.User));
+            return;
+        }
 
         var dateToCheck = _clock.GetGameEffectiveDate();
 
@@ -135,7 +152,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
 
         try
         {
-            await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id, year);
+            await _discordRepo.SetLeagueChannel(new Guid(leagueId), Context.Guild.Id, Context.Channel.Id, year, botAdminRole?.Id);
         }
         catch (Exception ex)
         {

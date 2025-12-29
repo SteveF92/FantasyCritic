@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities.Discord;
 
 namespace FantasyCritic.MySQL;
+
 public class MySQLDiscordRepo : IDiscordRepo
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
@@ -26,17 +27,17 @@ public class MySQLDiscordRepo : IDiscordRepo
         _connectionString = configuration.ConnectionString;
     }
 
-    public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int? year)
+    public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int? year, ulong? botAdminRoleId)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, false, NotableMissSetting.ScoreUpdates, null, year);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, false, NotableMissSetting.ScoreUpdates, null, year, botAdminRoleId);
         var existingChannel = await GetLeagueChannelEntity(guildID, channelID);
         var sql = existingChannel == null
             ? """
-            INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,ShowPickedGameNews,ShowEligibleGameNews,ShowIneligibleGameNews,NotableMissSetting,Year)
-            VALUES (@GuildID, @ChannelID, @LeagueID, @ShowPickedGameNews, @ShowEligibleGameNews, @ShowIneligibleGameNews, @NotableMissSetting, @Year)
+            INSERT INTO tbl_discord_leaguechannel (GuildID,ChannelID,LeagueID,ShowPickedGameNews,ShowEligibleGameNews,ShowIneligibleGameNews,NotableMissSetting,Year, BotAdminRoleID)
+            VALUES (@GuildID, @ChannelID, @LeagueID, @ShowPickedGameNews, @ShowEligibleGameNews, @ShowIneligibleGameNews, @NotableMissSetting, @Year, @BotAdminRoleID)
             """
-            : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID, Year=@Year WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
+            : "UPDATE tbl_discord_leaguechannel SET LeagueID=@LeagueID, Year=@Year, BotAdminRoleID=@BotAdminRoleID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
@@ -54,7 +55,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, showPickedGameNews, showEligibleGameNews, showIneligibleGameNews, notableMissSetting, null, null);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, showPickedGameNews, showEligibleGameNews, showIneligibleGameNews, notableMissSetting, null, null, null);
         var sql = """
                   UPDATE tbl_discord_leaguechannel SET
                   ShowPickedGameNews=@ShowPickedGameNews,
@@ -149,6 +150,20 @@ public class MySQLDiscordRepo : IDiscordRepo
             BidAlertRoleID = bidAlertRoleID
         };
         var sql = "UPDATE tbl_discord_leaguechannel SET BidAlertRoleID=@BidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+        await connection.ExecuteAsync(sql, param);
+    }
+
+    public async Task SetBotAdminRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? roleId)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var param = new
+        {
+            LeagueID = leagueID,
+            GuildID = guildID,
+            ChannelID = channelID,
+            BotAdminRoleID = roleId
+        };
+        var sql = "UPDATE tbl_discord_leaguechannel SET BotAdminRoleID=@BotAdminRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, param);
     }
 

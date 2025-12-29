@@ -1,9 +1,10 @@
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Lib.Interfaces;
+
 public interface IDiscordRepo
 {
-    Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int? year);
+    Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int? year, ulong? botAdminRoleID);
     Task SetConferenceChannel(Guid conferenceID, ulong guildID, ulong channelID);
     Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting);
     Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting);
@@ -20,4 +21,5 @@ public interface IDiscordRepo
     Task<ConferenceChannel?> GetConferenceChannel(ulong guildID, ulong channelID, IReadOnlyList<SupportedYear> supportedYears, int? year = null);
     Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID);
     Task RemoveAllLeagueChannelsForLeague(Guid leagueID);
+    Task SetBotAdminRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? roleId);
 }

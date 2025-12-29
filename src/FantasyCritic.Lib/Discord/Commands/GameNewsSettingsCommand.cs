@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Interfaces;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.Discord.Handlers;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -15,6 +16,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IDiscordFormatter _discordFormatter;
+    private readonly RoleHandler _roleHandler;
 
     //State
     private static IReadOnlyList<MasterGameTag>? _masterGameTags;
@@ -24,11 +26,12 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
     /// </summary>
     private static readonly MemoryCache _channelCommandCache = new(new MemoryCacheOptions());
 
-    public GameNewsSettingsCommand(IDiscordRepo discordRepo, IMasterGameRepo masterGameRepo, IDiscordFormatter discordFormatter)
+    public GameNewsSettingsCommand(IDiscordRepo discordRepo, IMasterGameRepo masterGameRepo, IDiscordFormatter discordFormatter, RoleHandler roleHandler)
     {
         _discordRepo = discordRepo;
         _masterGameRepo = masterGameRepo;
         _discordFormatter = discordFormatter;
+        _roleHandler = roleHandler;
     }
 
     [SlashCommand("game-news-settings", "View and Change Game News Settings For This Channel.")]
@@ -44,20 +47,24 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             }
 
             //Update Master Game Tags Dictionary
-            if (_masterGameTags == null)
-            {
-                _masterGameTags = await _masterGameRepo.GetMasterGameTags();
-            }
+            _masterGameTags ??= await _masterGameRepo.GetMasterGameTags();
 
             // Check to see if game news is enabled for this channel
             var gameNewsChannel = await _discordRepo.GetGameNewsChannel(Context.Guild.Id, Context.Channel.Id);
             var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
 
+            if (!_roleHandler.CanAdministrate(Context.Guild, Context.User, leagueChannel))
+            {
+                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
+                    "Cannot Manage The Bot",
+                    "You do not have permission to adjust bot configurations.",
+                    Context.User));
+                return;
+            }
+
             if (leagueChannel != null)
             {
-                if (!leagueChannel.ShowPickedGameNews
-                    && !leagueChannel.ShowEligibleGameNews
-                    && !leagueChannel.ShowIneligibleGameNews
+                if (leagueChannel is { ShowPickedGameNews: false, ShowEligibleGameNews: false, ShowIneligibleGameNews: false }
                     && gameNewsChannel == null)
                 {
                     await SendDisabledGameNewsMessage();
@@ -962,10 +969,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     #endregion Select Menu Builders
 
-    private bool CheckIsPickedOnly(MinimalLeagueChannel leagueChannel)
+    private static bool CheckIsPickedOnly(MinimalLeagueChannel leagueChannel)
     {
-        return leagueChannel.ShowPickedGameNews == true
-            && leagueChannel.ShowEligibleGameNews == false
-            && leagueChannel.ShowIneligibleGameNews == false;
+        return leagueChannel is { ShowPickedGameNews: true, ShowEligibleGameNews: false, ShowIneligibleGameNews: false };
     }
 }

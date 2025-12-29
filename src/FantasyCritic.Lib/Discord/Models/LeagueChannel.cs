@@ -3,18 +3,18 @@ using FantasyCritic.Lib.Discord.Handlers;
 namespace FantasyCritic.Lib.Discord.Models;
 
 public record MinimalLeagueChannel(Guid LeagueID, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews,
-    NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID, int? Year) : IDiscordChannel
+    NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID, int? Year, ulong? BotAdminRoleID) : ILeagueChannel
 {
     public DiscordChannelKey ChannelKey => new DiscordChannelKey(GuildID, ChannelID);
 
     public MultiYearLeagueChannel ToMultiYearLeagueChannel(IReadOnlyList<LeagueYear> activeLeagueYears)
-        => new MultiYearLeagueChannel(LeagueID, activeLeagueYears, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, NotableMissSetting, BidAlertRoleID, Year);
+        => new MultiYearLeagueChannel(LeagueID, activeLeagueYears, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, NotableMissSetting, BidAlertRoleID, Year, BotAdminRoleID);
 }
 
-public record LeagueChannel(LeagueYear LeagueYear, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID, int? Year);
+public record LeagueChannel(LeagueYear LeagueYear, ulong GuildID, ulong ChannelID, bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID, int? Year, ulong? BotAdminRoleID);
 
 public record MultiYearLeagueChannel(Guid LeagueID, IReadOnlyList<LeagueYear> ActiveLeagueYears, ulong GuildID, ulong ChannelID,
-    bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID, int? Year);
+    bool ShowPickedGameNews, bool ShowEligibleGameNews, bool ShowIneligibleGameNews, NotableMissSetting NotableMissSetting, ulong? BidAlertRoleID, int? Year, ulong? BotAdminRoleID);
 
 public record GameNewsChannel(ulong GuildID, ulong ChannelID, GameNewsSetting GameNewsSetting, IReadOnlyList<MasterGameTag> SkippedTags)
 {

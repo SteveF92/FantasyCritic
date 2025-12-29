@@ -7,13 +7,13 @@ using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
 
-public class SetBidAlertRoleCommand : InteractionModuleBase<SocketInteractionContext>
+public class SetBotAdminRoleCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly RoleHandler _roleHandler;
 
-    public SetBidAlertRoleCommand(IDiscordRepo discordRepo,
+    public SetBotAdminRoleCommand(IDiscordRepo discordRepo,
         IDiscordFormatter discordFormatter,
         RoleHandler roleHandler)
     {
@@ -23,9 +23,9 @@ public class SetBidAlertRoleCommand : InteractionModuleBase<SocketInteractionCon
     }
 
     [UsedImplicitly]
-    [SlashCommand("set-bid-alert-role", "Set a role to mention when bid information is posted.")]
-    public async Task SetBidAlertRole(
-        [Summary("role", "The role to mention when bid information is posted")] IRole? role = null
+    [SlashCommand("set-bot-admin-role", "Choose a role that is permitted to administer the bot.")]
+    public async Task SetBotAdminRole(
+        [Summary("role", "The role to that is permitted to administer the bot")] IRole? role = null
         )
     {
         await DeferAsync();
@@ -50,11 +50,11 @@ public class SetBidAlertRoleCommand : InteractionModuleBase<SocketInteractionCon
 
         if (role == null)
         {
-            await _discordRepo.SetBidAlertRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, null);
+            await _discordRepo.SetBotAdminRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, null);
 
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
-                "Bid Information Alert Role Configuration Removed",
-                "Bid information updates will no longer mention any role.",
+                "Bot Admin Role Configuration Removed",
+                "The bot admin role restriction has been removed.",
                 Context.User));
             return;
         }
@@ -71,29 +71,19 @@ public class SetBidAlertRoleCommand : InteractionModuleBase<SocketInteractionCon
 
         if (roleInGuild == Context.Guild.EveryoneRole)
         {
-            if (!(Context.User as IGuildUser)?.GuildPermissions.MentionEveryone == true)
-            {
-                await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
-                    "The @everyone role is not Mentionable",
-                    "You do not have permission to use the @everyone role. Please ask someone with the appropriate permissions to make this role mentionable and try again, or try a different role.",
-                    Context.User));
-                return;
-            }
-        }
-        else if (!roleInGuild.IsMentionable)
-        {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
-                "Role is not Mentionable",
-                "The chosen role is not mentionable. Please ask someone with the appropriate permissions to make this role mentionable and try again.",
+                "The @everyone role can not be set as bot admin",
+                "You cannot use the @everyone role as the bot admin. Please choose a valid role.",
                 Context.User));
             return;
+
         }
 
-        await _discordRepo.SetBidAlertRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, roleInGuild.Id);
+        await _discordRepo.SetBotAdminRoleId(leagueChannel.LeagueID, Context.Guild.Id, Context.Channel.Id, roleInGuild.Id);
 
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
-            "Bid Information Alert Role Configuration Saved",
-            $"Bid information updates will now mention {roleInGuild.Mention}.",
+            "Bot Admin Role Configuration Saved",
+            $"Bot administration is now restricted to users with the {roleInGuild.Mention} role (as well as the server administrator/owner).",
             Context.User));
     }
 }

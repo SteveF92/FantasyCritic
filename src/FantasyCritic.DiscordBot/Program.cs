@@ -18,6 +18,7 @@ using NodaTime;
 using Serilog;
 using Serilog.Events;
 using System.Reflection;
+using FantasyCritic.Lib.Discord.Handlers;
 
 namespace FantasyCritic.DiscordBot;
 
@@ -71,6 +72,7 @@ public class Program
             .AddScoped<GameSearchingService>()
             .AddScoped<GameAcquisitionService>()
             .AddScoped<IDiscordFormatter, DiscordFormatter>()
+            .AddScoped<RoleHandler>()
             .BuildServiceProvider();
     }
 
