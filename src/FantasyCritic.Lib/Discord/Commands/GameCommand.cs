@@ -13,7 +13,7 @@ namespace FantasyCritic.Lib.Discord.Commands;
 
 public class GameCommand : InteractionModuleBase<SocketInteractionContext>
 {
-    private const int _maxNumberOfConferenceSearchButtons = 3;
+    private const int MaxNumberOfConferenceSearchButtons = 3;
     private readonly IDiscordRepo _discordRepo;
     private readonly IClock _clock;
     private readonly GameSearchingService _gameSearchingService;
@@ -51,7 +51,6 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             string gameName,
             [Summary("year", "The year for the league (if not entered, defaults to the current year).")]
             int? year = null)
-    //[Summary("include_conference", "Whether or not this search should include full conference results")] bool? includeConference = null)
     {
         await DeferAsync();
         var dateToCheck = _clock.GetGameEffectiveDate(year);
@@ -134,9 +133,9 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
 
             if (conferenceId != null)
             {
-                var numberOfButtons = matchingGames.Count < _maxNumberOfConferenceSearchButtons
+                var numberOfButtons = matchingGames.Count < MaxNumberOfConferenceSearchButtons
                     ? matchingGames.Count
-                    : _maxNumberOfConferenceSearchButtons;
+                    : MaxNumberOfConferenceSearchButtons;
                 for (var i = 0; i < numberOfButtons; i++)
                 {
                     var gameToFind = matchingGames[i];
