@@ -36,6 +36,20 @@
           <masterGameDetails :master-game="masterGame"></masterGameDetails>
         </div>
 
+        <div v-if="Object.keys(leaguesWithGameByYear).length > 0" class="text-well league-game-section">
+          <h2>Your Leagues with this Game</h2>
+
+          <div v-for="year in sortedYears" :key="year">
+            <h3>{{ year }}</h3>
+            <ul>
+              <li v-for="league in leaguesWithGameByYear[year]" :key="league.leagueID">
+                <a :href="leagueLink(league.leagueID, league.year)">{{ league.leagueName }}</a>
+                <span v-if="league.isCounterPick" class="counter-pick-label">(Counter Picked)</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <div v-if="changeLog && changeLog.length > 0" class="text-well master-game-section">
           <h2>Change Log</h2>
           <b-table :items="changeLog" :fields="changeLogFields" bordered striped responsive small>
@@ -46,17 +60,6 @@
               {{ data.item.changedByUser.displayName }}
             </template>
           </b-table>
-        </div>
-
-        <div v-if="leaguesWithGame.length > 0" class="text-well league-game-section">
-          <h2>Your Leagues with this Game</h2>
-
-          <ul>
-            <li v-for="league in leaguesWithGame" :key="league.leagueID">
-              <a :href="leagueLink(league.leagueID, league.year)">{{ league.leagueName }} ({{ league.year }})</a>
-              <span v-if="league.isCounterPick" class="counter-pick-label">(Counter Picked)</span>
-            </li>
-          </ul>
         </div>
 
         <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-section">
@@ -126,7 +129,7 @@ export default {
     return {
       masterGame: null,
       masterGameYears: [],
-      leaguesWithGame: [],
+      leaguesWithGameByYear: [],
       changeLog: [],
       error: '',
       baseChangeLogFields: [
@@ -168,6 +171,9 @@ export default {
           );
         }
       };
+    },
+    sortedYears() {
+      return Object.keys(this.leaguesWithGameByYear).sort((a, b) => b - a);
     }
   },
   watch: {
@@ -211,25 +217,21 @@ export default {
     async fetchLeaguesWithMasterGame() {
       try {
         const response = await axios.get('/api/game/LeagueYearsWithMasterGame/' + this.mastergameid);
-        this.leaguesWithGame = response.data.sort((l1, l2) => {
-          if (l1.year > l2.year) {
-            return -1;
-          }
-          if (l1.year < l2.year) {
-            return 1;
-          }
 
-          const leagueName1 = l1.leagueName.toLowerCase();
-          const leagueName2 = l2.leagueName.toLowerCase();
+        this.leaguesWithGameByYear = response.data.reduce((acc, league) => {
+          const key = league.year;
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(league);
+          return acc;
+        }, {});
 
-          if (leagueName1 < leagueName2) {
-            return -1;
-          }
-          if (leagueName1 > leagueName2) {
-            return 1;
-          }
-          return 0;
-        });
+        for (const year in this.leaguesWithGameByYear) {
+          this.leaguesWithGameByYear[year].sort((l1, l2) => {
+            return l1.leagueName.toLowerCase().localeCompare(l2.leagueName.toLowerCase());
+          });
+        }
       } catch (error) {
         this.error = error.response.data;
       }
