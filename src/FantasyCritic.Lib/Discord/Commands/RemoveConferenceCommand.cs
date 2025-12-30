@@ -27,16 +27,6 @@ public class RemoveConferenceCommand : InteractionModuleBase<SocketInteractionCo
     {
         await DeferAsync();
 
-        var leagueChannel = await _discordRepo.GetMinimalLeagueChannel(Context.Guild.Id, Context.Channel.Id);
-        if (!_roleHandler.CanAdministrate(Context.Guild, Context.User, leagueChannel))
-        {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
-                "Cannot Manage The Bot",
-                "You do not have permission to adjust bot configurations.",
-                Context.User));
-            return;
-        }
-
         var wasDeleted = await _discordRepo.DeleteConferenceChannel(Context.Guild.Id, Context.Channel.Id);
         if (!wasDeleted)
         {
