@@ -10,4 +10,5 @@ public class MatchedGameDisplay
     public Publisher? PublisherWhoPicked { get; init; }
     public Publisher? PublisherWhoCounterPicked { get; init; }
     public MasterGameYear GameFound { get; }
+    public LeagueYear? LeagueYear { get; set; }
 }

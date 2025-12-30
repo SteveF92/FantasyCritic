@@ -117,6 +117,7 @@
                 <li><router-link :to="{ hash: '#set-conference' }">Set Up a Conference in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#remove-conference' }">Remove the Conference in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#set-bid-alert-role' }">Set a Role to Alert for Bid Information</router-link></li>
+                <li><router-link :to="{ hash: '#set-bot-admin-role' }">Set a Bot Admin Role</router-link></li>
                 <li><router-link :to="{ hash: '#game-news-settings' }">Configure Game News Announcements</router-link></li>
                 <li><router-link :to="{ hash: '#view-settings' }">View Bot Settings</router-link></li>
               </ul>
@@ -267,7 +268,7 @@
                 </p>
                 <span>
                   Allows you to search for a game by its name. It will prioritize a game if it's in the league on someone's roster, but if it's not, it'll still return that game's details as it exists
-                  on the Fantasy Critic site.
+                  on the Fantasy Critic site. If the channel is configured with either a conference or a league that is within a conference, there will also be a button that allows you to search within the leagues in your conference for the returned games as well.
                 </span>
               </div>
               <hr />
@@ -399,7 +400,7 @@
                     <span class="param-label">Parameters:</span>
                     <p class="parameter-explanation">
                       <code>conference_id:</code>
-                      The ID for your conference. You can get it by clicking the
+                      The URL or ID for your conference. You can get it by clicking the
                       <font-awesome-icon :icon="['far', 'copy']" />
                       icon next to your conference name. You can also find it in the URL for your conference.
                       <br />
@@ -438,6 +439,27 @@
                 <span>
                   Allows you to set a role to tag when bid updates are posted. This includes the Saturday night bid results, as well as the Thursday night public bid updates (if your league using
                   Public Bidding). You'll need to create a role in your Discord with the relevant channel members assigned to it.
+                </span>
+              </div>
+              <hr />
+              <div class="discord-command-explanation">
+                <h5 id="set-bot-admin-role">Set a Bot Admin Role</h5>
+                <p>
+                  <span class="command-label">Command:</span>
+                  <code>/set-bot-admin-role</code>
+                </p>
+                <p>
+                  <span class="discord-param-text">
+                    <span class="param-label">Parameters:</span>
+                    <p class="parameter-explanation">
+                      <code>role:</code>
+                      The role to assign bot admin permissions to.
+                    </p>
+                  </span>
+                </p>
+                <span>
+                  Allows you to set a role that has permission to manage bot settings in the channel. Users with this role will be able to configure the bot, including managing game news settings for a league channel. By default, any user can manage the bot, since we are not able to determine who should or should not be able to do so within Discord.
+                  Note: this currently has no impact on managing conferences in Discord channels as there are no administrative functions besides setting and removing the conference from the channel.
                 </span>
               </div>
               <hr />

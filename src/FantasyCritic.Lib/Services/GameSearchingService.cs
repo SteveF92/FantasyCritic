@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
@@ -8,12 +9,14 @@ public class GameSearchingService
 {
     private readonly InterLeagueService _interLeagueService;
     private readonly GameAcquisitionService _gameAcquisitionService;
+    private readonly FantasyCriticService _fantasyCriticService;
     private readonly IClock _clock;
 
-    public GameSearchingService(InterLeagueService interLeagueService, GameAcquisitionService gameAcquisitionService, IClock clock)
+    public GameSearchingService(InterLeagueService interLeagueService, GameAcquisitionService gameAcquisitionService, FantasyCriticService fantasyCriticService, IClock clock)
     {
         _interLeagueService = interLeagueService;
         _gameAcquisitionService = gameAcquisitionService;
+        _fantasyCriticService = fantasyCriticService;
         _clock = clock;
     }
 
@@ -61,6 +64,29 @@ public class GameSearchingService
             gamesToReturn = matchingMasterGames.Take(maxNonIdealMatches).ToList();
         }
 
+        return gamesToReturn;
+    }
+
+    public async Task<List<MasterGameYearWithLeagueYear>> SearchGameInConferenceYear(MasterGameYear game, ConferenceYear conferenceYear)
+    {
+        var leagueIds = conferenceYear.Conference.LeaguesInConference;
+
+        var gamesToReturn = new List<MasterGameYearWithLeagueYear>();
+
+        foreach (var leagueId in leagueIds)
+        {
+            var leagueYear = await _fantasyCriticService.GetLeagueYear(leagueId, game.Year);
+            if (leagueYear == null)
+            {
+                continue;
+            }
+
+            var gamesInLeague = leagueYear.GetGamesInLeague();
+            if (gamesInLeague.Contains(game))
+            {
+                gamesToReturn.Add(new MasterGameYearWithLeagueYear(game, leagueYear));
+            }
+        }
         return gamesToReturn;
     }
 

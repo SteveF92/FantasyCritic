@@ -45,7 +45,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     [UsedImplicitly]
     [SlashCommand("set-league", "Sets the league to be associated with the current channel.")]
     public async Task SetLeague(
-        [Summary("league_url_id", "The League ID OR URL for your league.")] string leagueIdParam,
+        [Summary("league_url_id", "The League ID or the URL for your league.")] string leagueIdParam,
         [Summary("year", "The year of the league to track. If not specified, the current year will be used.")] int? year = null,
         [Summary("bot_admin_role", "The role that is permitted to administer the bot.")] IRole? botAdminRole = null
         )

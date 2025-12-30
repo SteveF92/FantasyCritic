@@ -1,13 +1,16 @@
+using System.Text.RegularExpressions;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
+using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using JetBrains.Annotations;
 using Serilog;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class SetConferenceCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private static readonly ILogger Logger = Log.ForContext<SetConferenceCommand>();
@@ -34,7 +37,7 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
     [UsedImplicitly]
     [SlashCommand("set-conference", "Sets the conference to be associated with the current channel.")]
     public async Task SetConference(
-        [Summary("conference_ID", $"The ID for your conference from the URL.")] string conferenceIdParam
+        [Summary("conference_url_id", $"The Conference ID or the URL for your conference.")] string conferenceIdParam
         )
     {
         await DeferAsync();
@@ -42,7 +45,11 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
 
         var dateToCheck = _clock.GetGameEffectiveDate();
 
-        var conferenceId = conferenceIdParam.ToLower().Trim();
+        const string pattern = @"(?:https?://)?(?:www\.)?(fantasycritic\.games|localhost:\d+)/conference/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(\d{4})";
+
+        var match = Regex.Match(conferenceIdParam, pattern);
+
+        var conferenceId = match.Success ? match.Groups[2].Value.ToLower().Trim() : conferenceIdParam.ToLower().Trim();
 
         if (string.IsNullOrEmpty(conferenceId))
         {
@@ -97,9 +104,17 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
             new ConferenceUrlBuilder(_fantasyCriticSettings.BaseAddress, conference.ConferenceID, dateToCheck.Year);
         var conferenceLinkWithName = conferenceUrlBuilder.BuildUrl(conference.ConferenceName);
 
+        var hasPermissionToSendMessages = Context.Channel.HasPermissionToSendMessagesInChannel(Context.Client.CurrentUser.Id);
+        var permissionToSendMessagesText = hasPermissionToSendMessages
+            ? "✅ The bot permissions are set up correctly to send conference updates in this channel."
+            : "❌ **WARNING:** The bot does NOT have permissions to send messages in this channel and you will not be able to receive conference updates." +
+              "\nPlease give the bot the **Send Messages** permission in this channel to receive conference updates (Note: you won't need to run this command again).";
+
+        var messageText = $"Channel configured for Conference {conferenceLinkWithName}.\n{permissionToSendMessagesText}";
+
         await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
             "Channel Conference Configuration Saved",
-            $"Channel configured for Conference {conferenceLinkWithName}.",
+            messageText,
             Context.User,
             null,
             conferenceUrlBuilder.GetOnlyUrl()));
