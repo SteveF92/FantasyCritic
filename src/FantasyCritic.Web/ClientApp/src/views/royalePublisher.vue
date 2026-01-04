@@ -48,7 +48,7 @@
       <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
 
       <h2>Games</h2>
-      <b-table v-if="publisher.publisherGames.length !== 0" striped bordered small responsive :items="publisher.publisherGames" :fields="gameFields" :tbody-tr-class="publisherGameRowClass">
+      <b-table v-if="publisher.publisherGames.length !== 0" striped bordered small responsive :items="publisher.publisherGames" :fields="allGameFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(masterGame.gameName)="data">
           <template v-if="data.item.masterGame">
             <span class="master-game-popover">
@@ -196,19 +196,19 @@ export default {
         { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
         { key: 'description', label: 'Description', thClass: 'bg-primary' }
       ],
-      userPublisherFields: [{ key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }]
+      sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }
     };
   },
   computed: {
     userIsPublisher() {
       return this.isAuth && this.publisher.userID === this.$store.getters.userInfo.userID;
     },
-    gameFields() {
-      let conditionalFields = [];
-      if (this.userIsPublisher) {
-        conditionalFields = conditionalFields.concat(this.userPublisherFields);
+    allGameFields() {
+      let allFields = this.gameFields.slice();
+      if (this.userIsPublisher && this.publisher.publisherGames.some((x) => !x.locked)) {
+        allFields.push(this.sellGameField);
       }
-      return this.gameFields.concat(conditionalFields);
+      return allFields;
     },
     inEligibleText() {
       return {
