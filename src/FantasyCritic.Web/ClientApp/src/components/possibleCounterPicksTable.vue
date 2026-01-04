@@ -70,7 +70,7 @@ export default {
       if (!gameRows) {
         return [];
       }
-      console.log('game rows', gameRows);
+      
       return gameRows;
     },
     gameFields() {

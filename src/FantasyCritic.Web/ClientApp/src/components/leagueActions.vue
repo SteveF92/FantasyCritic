@@ -38,7 +38,7 @@
               Draft Game
             </li>
             <li v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftCounterPickForm'" class="fake-link action">
-              Draft Counterpick
+              Draft Counter Pick
             </li>
             <template v-if="!oneShotMode">
               <li v-if="draftFinished" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
