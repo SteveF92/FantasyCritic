@@ -1034,7 +1034,16 @@ public class LeagueController : BaseLeagueController
         var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher);
         var currentDate = _clock.GetToday();
         var viewModels = availableCounterPicks
-            .Select(x => new PublisherGameViewModel(x, currentDate, null, false))
+            .Select(x =>
+                {
+                    var publisherOfGame = leagueYear.GetPublisherByID(x.PublisherID);
+                    var publisherGameViewModel = new PublisherGameViewModel(x, currentDate, null, false);
+                    if (publisherOfGame != null)
+                    {
+                        publisherGameViewModel.PublisherName = publisherOfGame.PublisherName;
+                    }
+                    return publisherGameViewModel;
+                })
             .OrderBy(x => x.GameName).ToList();
 
         return Ok(viewModels);
@@ -1524,4 +1533,3 @@ public class LeagueController : BaseLeagueController
         return publisherLists.Select(l => new SingleGameNewsViewModel(l.Key, l.Value, false, currentDate)).ToList();
     }
 }
-

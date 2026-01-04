@@ -1,13 +1,27 @@
 <template>
-  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" title="Select Counter-Pick" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
+  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" size="lg" title="Select Counter Pick" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
     <form class="form-horizontal" hide-footer @submit.prevent="selectCounterPick">
-      <div class="form-group">
-        <label for="selectedCounterPick" class="control-label">Game</label>
-        <b-form-select v-model="selectedCounterPick">
-          <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
-            {{ publisherGame.gameName }}
-          </option>
-        </b-form-select>
+      <div v-if="isBusy" class="game-list-spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
+      </div>
+
+      <div v-if="possibleCounterPicks.length > 0">
+        <h3 class="text-black">Available Counter Picks</h3>
+        <possibleCounterPicksTable v-model="selectedCounterPick" :possible-games="possibleCounterPicks" @input="newGameSelected"></possibleCounterPicksTable>
+      </div>
+
+      <div v-if="possibleCounterPicks.length === 0 && !isBusy" class="alert alert-info">
+        No games are available for counter picks.
+      </div>
+
+      <div v-if="selectedCounterPick">
+        <h3 v-show="selectedCounterPick.masterGame" for="selectedCounterPick" class="selected-game text-black">Selected Game:</h3>
+        <masterGameSummary v-if="selectedCounterPick.masterGame" :master-game="selectedCounterPick.masterGame"></masterGameSummary>
+        <div v-if="!selectedCounterPick.masterGame" class="selected-game-info">
+          <h4>{{ selectedCounterPick.gameName }}</h4>
+          <div v-if="selectedCounterPick.publisherName">Currently owned by {{ selectedCounterPick.publisherName }}</div>
+        </div>
+        <b-button variant="primary" class="full-width-button" :disabled="isBusy" @click="selectCounterPick">Select Game as Counter Pick</b-button>
       </div>
 
       <div v-if="draftResult && !draftResult.success" class="alert alert-danger bid-error">
@@ -16,19 +30,21 @@
           <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
         </ul>
       </div>
-
-      <div v-if="selectedCounterPick">
-        <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter-Pick" :disabled="isBusy" />
-      </div>
     </form>
   </b-modal>
 </template>
 
 <script>
 import axios from 'axios';
+import PossibleCounterPicksTable from '@/components/possibleCounterPicksTable.vue';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
+  components: {
+    PossibleCounterPicksTable,
+    MasterGameSummary
+  },
   mixins: [LeagueMixin],
   data() {
     return {
@@ -70,6 +86,7 @@ export default {
         });
     },
     getPossibleCounterPicks() {
+      this.isBusy = true;
       axios
         .get('/api/league/PossibleCounterPicks?publisherID=' + this.userPublisher.publisherID)
         .then((response) => {
@@ -85,7 +102,37 @@ export default {
       this.isBusy = false;
       this.possibleCounterPicks = [];
       this.selectedCounterPick = null;
+    },
+    newGameSelected() {
+      this.draftResult = null;
     }
   }
 };
 </script>
+<style scoped>
+.game-list-spinner {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.selected-game-info {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+
+.selected-game {
+  margin-top: 15px;
+}
+
+.full-width-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.bid-error {
+  margin-top: 15px;
+}
+</style>

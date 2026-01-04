@@ -90,6 +90,7 @@ public class PublisherGameViewModel
     }
 
     public Guid PublisherGameID { get; }
+    public string? PublisherName { get; set; }
     public string GameName { get; }
     public DateTime Timestamp { get; }
     public bool CounterPick { get; }
