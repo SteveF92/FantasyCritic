@@ -174,13 +174,10 @@ public class RoyaleService
                 return Result.Failure("That game has already been released.");
             }
 
-            if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+            if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
             {
-                var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
-                if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
-                {
-                    return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
-                }
+                return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
             }
 
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
@@ -212,13 +209,10 @@ public class RoyaleService
             return Result.Failure("That game has already been released.");
         }
 
-        if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
+        var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+        if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
         {
-            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
-            if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
-            {
-                return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
-            }
+            return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
         }
 
         if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)

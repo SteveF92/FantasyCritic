@@ -15,14 +15,11 @@ public static class RoyaleFunctions
 
         if (masterGame.MasterGame.IsReleased(currentDate))
         {
-            if (SupportedYear.Year2026FeatureSupported(yearQuarter.YearQuarter.Year))
-            {
-                if (!masterGame.MasterGame.CriticScore.HasValue && masterGame.MasterGame.ReleaseDate!.Value == currentDate)
-                {
-                    return false;
-                }
-            }
+            return false;
+        }
 
+        if (!masterGame.MasterGame.CriticScore.HasValue && masterGame.MasterGame.ReleaseDate!.Value == currentDate)
+        {
             return false;
         }
 

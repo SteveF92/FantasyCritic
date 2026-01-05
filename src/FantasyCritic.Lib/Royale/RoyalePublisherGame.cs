@@ -33,18 +33,14 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags)
     {
         var currentlyIneligible = CalculateIsCurrentlyIneligible(masterGameTags);
-        var baseRefund = AmountSpent;
-        if (SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
-        {
-            baseRefund = MasterGame.GetRoyaleGameCost();
-        }
+        var baseRefund = MasterGame.GetRoyaleGameCost();
 
         decimal refundMultiplier = 0.5m;
         if (currentlyIneligible)
         {
             refundMultiplier = 1;
         }
-        else if (SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
+        else
         {
             var willReleaseStatus = MasterGame.GetWillReleaseStatus(YearQuarter.YearQuarter);
             if (!willReleaseStatus.CountAsWillRelease)

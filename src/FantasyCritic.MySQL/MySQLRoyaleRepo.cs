@@ -494,11 +494,6 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     private async Task InsertRoyaleAction(RoyaleAction action, MySqlConnection connection, MySqlTransaction transaction)
     {
-        if (!SupportedYear.Year2026FeatureSupported(action.Publisher.YearQuarter.YearQuarter.Year))
-        {
-            return;
-        }
-
         var entity = new RoyaleActionEntity(action);
         const string sql =
             """
