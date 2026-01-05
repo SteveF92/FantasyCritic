@@ -1037,11 +1037,7 @@ public class LeagueController : BaseLeagueController
             .Select(x =>
                 {
                     var publisherOfGame = leagueYear.GetPublisherByID(x.PublisherID);
-                    var publisherGameViewModel = new PublisherGameViewModel(x, currentDate, null, false);
-                    if (publisherOfGame != null)
-                    {
-                        publisherGameViewModel.PublisherName = publisherOfGame.PublisherName;
-                    }
+                    var publisherGameViewModel = new PublisherGameViewModel(x, currentDate, publisherOfGame!, null, false);
                     return publisherGameViewModel;
                 })
             .OrderBy(x => x.GameName).ToList();

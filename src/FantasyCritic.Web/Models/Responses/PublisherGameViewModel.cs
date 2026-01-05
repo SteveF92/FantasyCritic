@@ -2,7 +2,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PublisherGameViewModel
 {
-    public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, Publisher? counterPickedBy, bool counterPicksBlockDrops)
+    public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, Publisher publishedBy, Publisher? counterPickedBy, bool counterPicksBlockDrops)
     {
         PublisherGameID = publisherGame.PublisherGameID;
         GameName = publisherGame.GameName;
@@ -35,6 +35,7 @@ public class PublisherGameViewModel
             ManualCriticScore = true;
         }
 
+        PublisherName = publishedBy.PublisherName;
         WillRelease = publisherGame.CouldRelease();
         ManualWillNotRelease = publisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.OverallDraftPosition;
@@ -46,7 +47,7 @@ public class PublisherGameViewModel
         DropBlocked = CounterPicked && counterPicksBlockDrops;
     }
 
-    public PublisherGameViewModel(FormerPublisherGame publisherGame, LocalDate currentDate)
+    public PublisherGameViewModel(FormerPublisherGame publisherGame, Publisher publishedBy, LocalDate currentDate)
     {
         PublisherGameID = publisherGame.PublisherGame.PublisherGameID;
         GameName = publisherGame.PublisherGame.GameName;
@@ -79,6 +80,7 @@ public class PublisherGameViewModel
             ManualCriticScore = true;
         }
 
+        PublisherName = publishedBy.PublisherName;
         WillRelease = publisherGame.PublisherGame.CouldRelease();
         ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
@@ -90,7 +92,7 @@ public class PublisherGameViewModel
     }
 
     public Guid PublisherGameID { get; }
-    public string? PublisherName { get; set; }
+    public string? PublisherName { get; }
     public string GameName { get; }
     public DateTime Timestamp { get; }
     public bool CounterPick { get; }

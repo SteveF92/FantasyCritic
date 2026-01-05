@@ -26,14 +26,14 @@ public class PublisherViewModel
 
         Games = publisher.PublisherGames
             .OrderBy(x => x.Timestamp)
-            .Select(x => new PublisherGameViewModel(x, currentDate, counterPickedByDictionary.GetValueOrDefault(x), leagueYear.Options.CounterPicksBlockDrops))
+            .Select(x => new PublisherGameViewModel(x, currentDate, publisher, counterPickedByDictionary.GetValueOrDefault(x), leagueYear.Options.CounterPicksBlockDrops))
             .ToList();
         FormerGames = publisher.FormerPublisherGames
             .OrderBy(x => x.PublisherGame.Timestamp)
-            .Select(x => new PublisherGameViewModel(x, currentDate))
+            .Select(x => new PublisherGameViewModel(x, publisher, currentDate))
             .ToList();
         GameSlots = publisher.GetPublisherSlots(leagueYear)
-            .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, systemWideValues, counterPickedByDictionary))
+            .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, publisher, systemWideValues, counterPickedByDictionary))
             .ToList();
 
         AverageCriticScore = publisher.AverageCriticScore;
