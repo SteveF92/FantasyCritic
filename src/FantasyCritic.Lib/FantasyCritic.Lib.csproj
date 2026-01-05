@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="CSharpFunctionalExtensions" Version="3.6.0" />
-    <PackageReference Include="DiscordDotNetUtilities" Version="2.0.0" />
+    <PackageReference Include="DiscordDotNetUtilities" Version="1.7.0" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
@@ -24,9 +24,9 @@
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.0" />
     <PackageReference Include="Patreon.Net" Version="1.0.3" />
     <PackageReference Include="Razor.Templating.Core" Version="2.1.0" />
-    <PackageReference Include="Discord.Net" Version="3.18.0" />
-    <PackageReference Include="Discord.Net.Core" Version="3.18.0" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="3.18.0" />
+    <PackageReference Include="Discord.Net" Version="3.17.2" />
+    <PackageReference Include="Discord.Net.Core" Version="3.17.2" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="3.17.2" />
     <PackageReference Include="Serilog" Version="4.3.0" />
   </ItemGroup>
 </Project>
