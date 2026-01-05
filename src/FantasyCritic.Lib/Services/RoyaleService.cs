@@ -194,31 +194,12 @@ public class RoyaleService
             }
         }
 
-        var baseRefund = publisherGame.AmountSpent;
-        if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
-        {
-            baseRefund = publisherGame.MasterGame.GetRoyaleGameCost();
-        }
-
-        decimal refundMultiplier = 0.5m;
-        if (currentlyInEligible)
-        {
-            refundMultiplier = 1;
-        }
-        else if (SupportedYear.Year2026FeatureSupported(publisher.YearQuarter.YearQuarter.Year))
-        {
-            var willReleaseStatus = publisherGame.MasterGame.GetWillReleaseStatus(publisher.YearQuarter.YearQuarter);
-            if (!willReleaseStatus.CountAsWillRelease)
-            {
-                refundMultiplier = 0.75m;
-            }
-        }
-
-        var finalRefund = baseRefund * refundMultiplier;
+        var marketCost = publisherGame.MasterGame.GetRoyaleGameCost();
+        var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags);
 
         var now = _clock.GetCurrentInstant();
         RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
-            "Sold Game", $"Sold '{publisherGame.MasterGame.MasterGame.GameName}' for ${finalRefund:F2} (Market Cost: ${baseRefund:F2}).", now);
+            "Sold Game", $"Sold '{publisherGame.MasterGame.MasterGame.GameName}' for ${finalRefund:F2} (Market Cost: ${marketCost:F2}).", now);
         await _royaleRepo.SellGame(publisherGame, finalRefund, action);
         return Result.Success();
     }

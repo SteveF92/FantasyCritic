@@ -6,7 +6,8 @@
         <strong>{{ publisherGame.masterGame.gameName }}</strong>
         ?
       </p>
-      <p>You will get back half of the money you bought it for, and any advertising money currently assigned to it.</p>
+      <p>You will get back half of the current market value of the game, plus any advertising money currently assigned to it.</p>
+      <p>If the games is confirmed to not release in the quarter, you get back 75% of market value instead.</p>
       <p>
         Money to recieve:
         <strong>{{ (publisherGame.refundAmount + publisherGame.advertisingMoney) | money }}</strong>

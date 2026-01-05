@@ -17,11 +17,7 @@ public class RoyalePublisherGameViewModel
         {
             MasterGame = new MasterGameYearViewModel(domain.MasterGame, currentDate);
             AmountSpent = domain.AmountSpent;
-            RefundAmount = AmountSpent;
-            if (!CurrentlyIneligible)
-            {
-                RefundAmount /= 2;
-            }
+            RefundAmount = domain.CalculateRefundAmount(allMasterGameTags);
         }
     }
 
