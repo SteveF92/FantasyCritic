@@ -9,7 +9,7 @@
         </span>
         <span v-else>{{ data.item.gameName }}</span>
       </template>
-      <template #cell(releaseDate)="data">
+      <template #cell(masterGame.maximumReleaseDate)="data">
         <div v-if="data.item.masterGame" :class="{ 'text-danger': data.item.released }" class="release-date">
           <span>{{ data.item.masterGame.estimatedReleaseDate }}</span>
           <span v-if="data.item.released" class="release-date-qualifier">(Released)</span>
@@ -19,7 +19,7 @@
           <span v-else>TBD</span>
         </div>
       </template>
-      <template #cell(hypeFactor)="data">
+      <template #cell(masterGame.dateAdjustedHypeFactor)="data">
         <span v-if="data.item.masterGame">
           {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
         </span>
@@ -52,8 +52,8 @@ export default {
       currentPage: 1,
       gameFieldsInternal: [
         { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'releaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'hypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'publisherName', label: 'Owned By', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ],
@@ -70,7 +70,7 @@ export default {
       if (!gameRows) {
         return [];
       }
-      
+
       return gameRows;
     },
     gameFields() {
