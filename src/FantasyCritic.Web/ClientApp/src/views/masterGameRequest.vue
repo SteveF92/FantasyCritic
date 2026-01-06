@@ -13,22 +13,7 @@
         </strong>
       </p>
 
-      <br />
-
-      <label>Please describe why you are requesting this game:</label>
-      <b-form-checkbox v-model="wantToPickup">
-        <span class="checkbox-label">I want to draft or bid on this game.</span>
-      </b-form-checkbox>
-      <b-form-checkbox v-model="nearCertainInterested">
-        <span class="checkbox-label">I'm certain someone else wants to draft or bid on this game.</span>
-      </b-form-checkbox>
-      <br />
-      <div class="alert alert-info">
-        The reason I ask this question is because having an obscure game on the list that is not drafted by anyone doesn't do much for the site, other than requiring effort to make sure the game's
-        info is up to date (for example, release date changes). Please don't request a game "just for the sake of having it on the site".
-      </div>
-
-      <ValidationObserver v-if="validReason" v-slot="{ invalid }">
+      <ValidationObserver v-slot="{ invalid }">
         <hr />
         <form @submit.prevent="sendMasterGameRequestRequest">
           <div class="form-group">
@@ -48,6 +33,9 @@
               <b-form-datepicker v-model="releaseDate" class="form-control"></b-form-datepicker>
             </div>
             <div v-if="!hasReleaseDate">
+              <div class="alert alert-info">
+                Please note that when we ask for "Estimated Release Date", we are looking for something with a source we can cite, not just your own personal estimate of when the game will release.
+              </div>
               <label for="estimatedReleaseDate" class="control-label">Estimated Release Date</label>
               <input id="estimatedReleaseDate" v-model="estimatedReleaseDate" name="estimatedReleaseDate" class="form-control input" />
             </div>
@@ -75,7 +63,15 @@
                 <li>Is this game a remake, remaster, or something like that?</li>
               </ul>
             </div>
-            <input id="requestNote" v-model="requestNote" name="requestNote" class="form-control input" />
+            <div class="alert alert-info">
+              Please also include at least a brief description of why you would like to see this game added. The reason I ask this question is because having an obscure game on the list that is not
+              drafted by anyone doesn't do much for the site, other than requiring effort to make sure the game's info is up to date (for example, release date changes). Please don't request a game
+              "just for the sake of having it on the site".
+            </div>
+            <ValidationProvider v-slot="{ errors }" rules="required|min:30">
+              <input id="requestNote" v-model="requestNote" name="Request Note" class="form-control input" />
+              <span class="text-danger">{{ errors[0] }}</span>
+            </ValidationProvider>
           </div>
 
           <div v-if="showUnannouncedWarning" class="alert alert-warning">
@@ -95,7 +91,7 @@
 
           <div class="form-group">
             <div class="right-button">
-              <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validDate || !validUnannounced || isBusy" />
+              <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validRequest || isBusy" />
             </div>
           </div>
         </form>
@@ -174,11 +170,16 @@ export default {
     };
   },
   computed: {
-    validReason() {
-      return this.wantToPickup || this.nearCertainInterested;
-    },
-    validDate() {
-      return !!this.estimatedReleaseDate || !!this.releaseDate;
+    validRequest() {
+      if (!this.estimatedReleaseDate && !this.releaseDate) {
+        return false;
+      }
+
+      if (this.showUnannouncedWarning && !this.unannouncedCheckbox) {
+        return false;
+      }
+
+      return true;
     },
     showUnannouncedWarning() {
       const fieldsToCheck = [this.gameName, this.estimatedReleaseDate, this.requestNote];
@@ -193,15 +194,7 @@ export default {
       }
       return false;
     },
-    validUnannounced() {
-      if (!this.showUnannouncedWarning) {
-        return true;
-      }
-      if (!this.requestNote || this.requestNote.length < 20) {
-        return false;
-      }
-      return this.unannouncedCheckbox;
-    }
+    validUnannounced() {}
   },
   async created() {
     await this.fetchMyRequests();
