@@ -18,7 +18,7 @@ public static class RoyaleFunctions
             return false;
         }
 
-        if (!masterGame.MasterGame.CriticScore.HasValue && masterGame.MasterGame.ReleaseDate!.Value == currentDate)
+        if (!masterGame.MasterGame.CriticScore.HasValue && masterGame.MasterGame.ReleaseDate == currentDate)
         {
             return false;
         }
