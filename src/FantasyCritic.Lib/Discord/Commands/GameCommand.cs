@@ -162,8 +162,6 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
     {
         await DeferAsync();
 
-        var dateToCheck = _clock.GetGameEffectiveDate(year);
-
         var gameToSearch = await _masterGameRepo.GetMasterGameYear(new Guid(masterGameId), year);
         var conferenceYear = await _conferenceService.GetConferenceYear(new Guid(conferenceId), year);
         if (gameToSearch != null && conferenceYear != null)
@@ -171,7 +169,6 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             var matchingGames = await _gameSearchingService.SearchGameInConferenceYear(gameToSearch, conferenceYear);
             if (matchingGames.Count > 0)
             {
-
                 var gamesToDisplay = matchingGames
                     .Select(matchedGameAndLeagueYear => new MatchedGameDisplay(gameToSearch)
                     {
@@ -186,20 +183,21 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
                     .Select(matchedGameDisplay => new EmbedFieldBuilder
                     {
                         Name = matchedGameDisplay.LeagueYear!.League.LeagueName,
-                        Value = BuildConferenceGameDisplayText(matchedGameDisplay, dateToCheck),
+                        Value = BuildConferenceGameDisplayText(matchedGameDisplay),
                         IsInline = false
                     }).ToList();
 
-
                 var title = $"Conference Leagues with {gameToSearch.MasterGame.GameName}";
+                var gameUrlBuilder = new GameUrlBuilder(_baseAddress, gameToSearch.MasterGame.MasterGameID);
+                var messageText = $"\n{gameUrlBuilder.BuildUrl("View Game")}";
                 await Context.Interaction.FollowupAsync(
-                    embed: _discordFormatter.BuildRegularEmbedWithUserFooter(title, "", Context.User, gameEmbeds));
+                    embed: _discordFormatter.BuildRegularEmbedWithUserFooter(title, messageText, Context.User, gameEmbeds), ephemeral: true);
             }
             else
             {
                 await Context.Interaction.FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "No Game(s) Found", "Could not find that game in the conference.",
-                    Context.User));
+                    Context.User), ephemeral: true);
             }
         }
         else
@@ -208,22 +206,20 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             {
                 await Context.Interaction.FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "No Game found", $"Could not find that game in the year {year}.",
-                    Context.User));
+                    Context.User), ephemeral:true);
             }
             else if (conferenceYear == null)
             {
                 await Context.Interaction.FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "No Conference found", $"Could not find that conference in the year {year}.",
-                    Context.User));
+                    Context.User), ephemeral:true);
             }
         }
     }
 
-    private string BuildConferenceGameDisplayText(MatchedGameDisplay matchedGameDisplay, LocalDate dateToCheck)
+    private string BuildConferenceGameDisplayText(MatchedGameDisplay matchedGameDisplay)
     {
         var gameFound = matchedGameDisplay.GameFound;
-
-        var releaseDateDisplayText = GetReleaseDateText(gameFound, dateToCheck);
 
         var gameDisplayText = "";
 
@@ -240,16 +236,6 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             gameDisplayText +=
                 $"\n**Counter Picked by:** {publisherWhoCounterPicked.GetPublisherAndUserDisplayName()}\n";
         }
-
-        gameDisplayText += $"\n**Release Date:** {releaseDateDisplayText}";
-        gameDisplayText += $"\n**Release Status (for {dateToCheck.Year}):** {(gameFound.MasterGame.IsReleased(dateToCheck) ? "Released" : gameFound.GetWillReleaseStatus().ReadableName)}";
-
-        gameDisplayText += $"\n**Hype Factor:** {Math.Round(gameFound.HypeFactor, 1)}";
-        gameDisplayText += $"\n**% Drafted:** {(gameFound.PercentStandardGame == 0 ? "N/A" : $"{Math.Round(gameFound.PercentStandardGame * 100, 0)}%")}";
-        gameDisplayText += $"\n**% Counter Picked:** {(gameFound.PercentCounterPick == 0 ? "N/A" : $"{Math.Round(gameFound.PercentCounterPick * 100, 0)}%")}";
-
-        var gameUrlBuilder = new GameUrlBuilder(_baseAddress, gameFound.MasterGame.MasterGameID);
-        gameDisplayText += $"\n{gameUrlBuilder.BuildUrl("View Game")}";
 
         return gameDisplayText;
     }
