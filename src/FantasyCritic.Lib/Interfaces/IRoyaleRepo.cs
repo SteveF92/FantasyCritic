@@ -21,4 +21,5 @@ public interface IRoyaleRepo
     Task FinishQuarter(RoyaleYearQuarter supportedQuarter);
     Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon);
     Task ChangePublisherSlogan(RoyalePublisher publisher, string? publisherSlogan);
+    Task UpdateDailyPublisherStatistics(RoyaleYearQuarter supportedQuarter, LocalDate currentDate);
 }

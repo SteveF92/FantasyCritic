@@ -28,7 +28,7 @@ public class RefreshDataTask : IScheduledTask
         var isTimeToGetStatistics = IsTimeToGetStatistics(now);
         if (isTimeToGetStatistics)
         {
-            await adminService.UpdateDailyPublisherStatistics();
+            await adminService.UpdateDailyStats();
         }
     }
 

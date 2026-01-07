@@ -702,4 +702,72 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         return mostPopularUnreleasedGame ?? throw new Exception("No unreleased games found for the test master game year.");
     }
+
+    public async Task UpdateDailyStatistics(int year, LocalDate currentDate)
+    {
+        const string sql =
+        """
+        INSERT INTO tbl_caching_mastergameyearstatistics
+        (
+            `Year`,
+            `MasterGameID`,
+            `Date`,
+            `PercentStandardGame`,
+            `PercentCounterPick`,
+            `EligiblePercentStandardGame`,
+            `AdjustedPercentCounterPick`,
+            `NumberOfBids`,
+            `TotalBidAmount`,
+            `BidPercentile`,
+            `AverageDraftPosition`,
+            `AverageWinningBid`,
+            `HypeFactor`,
+            `DateAdjustedHypeFactor`,
+            `PeakHypeFactor`,
+            `LinearRegressionHypeFactor`
+        )
+        SELECT
+            mg.`Year`,
+            mg.`MasterGameID`,
+            @currentDate AS `Date`,
+            mg.`PercentStandardGame`,
+            mg.`PercentCounterPick`,
+            mg.`EligiblePercentStandardGame`,
+            mg.`AdjustedPercentCounterPick`,
+            mg.`NumberOfBids`,
+            mg.`TotalBidAmount`,
+            mg.`BidPercentile`,
+            mg.`AverageDraftPosition`,
+            mg.`AverageWinningBid`,
+            mg.`HypeFactor`,
+            mg.`DateAdjustedHypeFactor`,
+            mg.`PeakHypeFactor`,
+            mg.`LinearRegressionHypeFactor`
+        FROM tbl_caching_mastergameyear mg
+        WHERE mg.`Year` = @year
+        ON DUPLICATE KEY UPDATE
+            `PercentStandardGame` = VALUES(`PercentStandardGame`),
+            `PercentCounterPick` = VALUES(`PercentCounterPick`),
+            `EligiblePercentStandardGame` = VALUES(`EligiblePercentStandardGame`),
+            `AdjustedPercentCounterPick` = VALUES(`AdjustedPercentCounterPick`),
+            `NumberOfBids` = VALUES(`NumberOfBids`),
+            `TotalBidAmount` = VALUES(`TotalBidAmount`),
+            `BidPercentile` = VALUES(`BidPercentile`),
+            `AverageDraftPosition` = VALUES(`AverageDraftPosition`),
+            `AverageWinningBid` = VALUES(`AverageWinningBid`),
+            `HypeFactor` = VALUES(`HypeFactor`),
+            `DateAdjustedHypeFactor` = VALUES(`DateAdjustedHypeFactor`),
+            `PeakHypeFactor` = VALUES(`PeakHypeFactor`),
+            `LinearRegressionHypeFactor` = VALUES(`LinearRegressionHypeFactor`);
+        """;
+
+        var param = new
+        {
+            year,
+            currentDate
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, param);
+    }
 }

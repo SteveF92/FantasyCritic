@@ -678,9 +678,9 @@ public class AdminService
         return _fantasyCriticRepo.MergeMasterGame(removeMasterGame, mergeIntoMasterGame);
     }
 
-    public async Task UpdateDailyPublisherStatistics()
+    public async Task UpdateDailyStats()
     {
-        _logger.Information("Updating daily publisher statistics.");
+        _logger.Information("Updating daily statistics.");
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         var today = _clock.GetToday();
         
@@ -690,6 +690,18 @@ public class AdminService
         foreach (var activeYear in activeYears)
         {
             await _fantasyCriticRepo.UpdateDailyPublisherStatistics(activeYear.Year, today, systemWideValues);
+            await _masterGameRepo.UpdateDailyStatistics(activeYear.Year, today);
+        }
+
+        var supportedQuarters = await _royaleService.GetYearQuarters();
+        foreach (var supportedQuarter in supportedQuarters)
+        {
+            if (!supportedQuarter.OpenForPlay && supportedQuarter.YearQuarter.LastDateOfQuarter.PlusDays(1) < today)
+            {
+                continue;
+            }
+
+            await _royaleService.UpdateDailyPublisherStatistics(supportedQuarter, today);
         }
     }
 

@@ -297,4 +297,9 @@ public class RoyaleService
 
         return 15;
     }
+
+    public Task UpdateDailyPublisherStatistics(RoyaleYearQuarter supportedQuarter, LocalDate currentDate)
+    {
+        return _royaleRepo.UpdateDailyPublisherStatistics(supportedQuarter, currentDate);
+    }
 }

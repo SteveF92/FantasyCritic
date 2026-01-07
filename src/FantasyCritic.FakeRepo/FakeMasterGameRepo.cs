@@ -1,14 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Royale;
 using NodaTime;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FantasyCritic.FakeRepo;
 
@@ -233,6 +234,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
     }
 
     public Task<MasterGameYear> GetTestMasterGameYear(int year)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateDailyStatistics(int year, LocalDate currentDate)
     {
         throw new NotImplementedException();
     }

@@ -53,7 +53,8 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate);
     Task<IReadOnlyList<LeagueYearWithMasterGame>> GetLeagueYearsWithMasterGameForUser(Guid userID, Guid masterGameID);
 
+    Task UpdateDailyStatistics(int year, LocalDate currentDate);
+
     Task<MasterGame> GetTestMasterGame(int year);
     Task<MasterGameYear> GetTestMasterGameYear(int year);
-
 }

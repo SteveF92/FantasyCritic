@@ -226,7 +226,7 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> UpdateDailyPublisherStatistics()
     {
-        await _adminService.UpdateDailyPublisherStatistics();
+        await _adminService.UpdateDailyStats();
         return Ok();
     }
 

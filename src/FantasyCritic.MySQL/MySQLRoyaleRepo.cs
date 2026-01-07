@@ -503,4 +503,20 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             """;
         await connection.ExecuteAsync(sql, entity, transaction);
     }
+
+    public async Task UpdateDailyPublisherStatistics(RoyaleYearQuarter supportedQuarter, LocalDate currentDate)
+    {
+        var publishers = await GetAllPublishers(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
+
+        var statisticsEntities = publishers
+            .Select(x => new RoyalePublisherStatisticsEntity() { PublisherID = x.PublisherID, Date = currentDate, FantasyPoints = x.GetTotalFantasyPoints()})
+            .ToList();
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.BulkInsertAsync(statisticsEntities, "tbl_royale_publisherstatistics", 500, transaction, insertIgnore: true);
+        await transaction.CommitAsync();
+    }
 }
