@@ -247,8 +247,8 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             if (pickedPublisherGame.DraftPosition != null)
             {
                 pickDisplayText += $"\nDrafted on: {pickedPublisherGame.Timestamp.ToEasternDateTime()}";
-                pickDisplayText += $"\nDraft Position: {pickedPublisherGame.DraftPosition}";
-                pickDisplayText += $"\nOverall Draft Position: {pickedPublisherGame.OverallDraftPosition}";
+                pickDisplayText += $"\n{(isCounterPick ? "Counter Pick " : "")}Draft Position: {pickedPublisherGame.DraftPosition}";
+                pickDisplayText += $"\nOverall {(isCounterPick ? "Counter Pick " : "")}Draft Position: {pickedPublisherGame.OverallDraftPosition}";
             }
             else
             {
