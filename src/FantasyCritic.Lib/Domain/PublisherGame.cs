@@ -42,7 +42,7 @@ public class PublisherGame : IEquatable<PublisherGame>
 
     public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
-    public WillReleaseStatus WillRelease()
+    public WillReleaseStatus WillRelease(LeagueYear leagueYear)
     {
         if (ManualWillNotRelease)
         {
@@ -54,10 +54,21 @@ public class PublisherGame : IEquatable<PublisherGame>
             return WillReleaseStatus.WillRelease;
         }
 
-        return MasterGame.GetWillReleaseStatus();
+        var willReleaseStatus = MasterGame.GetWillReleaseStatus();
+
+        var countsAsWillRelease = willReleaseStatus.CountAsWillRelease;
+        var plannedForEarlyAccess = (MasterGame?.MasterGame.Tags ?? []).Any(x => x.Name == "PlannedForEarlyAccess");
+        var leagueUsesOnlyNeedsScore = leagueYear.Options.ReleaseSystem.Equals(ReleaseSystem.OnlyNeedsScore);
+
+        if (!countsAsWillRelease && plannedForEarlyAccess && leagueUsesOnlyNeedsScore)
+        {
+            return WillReleaseStatus.WillReleaseEarlyAccessOnly;
+        }
+
+        return willReleaseStatus;
     }
 
-    public bool CouldRelease() => WillRelease().CountAsWillRelease;
+    public bool CouldRelease(LeagueYear leagueYear) => WillRelease(leagueYear).CountAsWillRelease;
 
     public PublisherGame GetUpdatedPublisherGameWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {

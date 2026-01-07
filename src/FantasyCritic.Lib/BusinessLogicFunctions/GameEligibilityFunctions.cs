@@ -141,7 +141,7 @@ public static class GameEligibilityFunctions
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        var releaseStatus = publisherGame.WillRelease();
+        var releaseStatus = publisherGame.WillRelease(leagueYear);
         bool gameCouldRelease = releaseStatus.CountAsWillRelease;
         if (releaseStatus == WillReleaseStatus.MightRelease)
         {
@@ -204,7 +204,7 @@ public static class GameEligibilityFunctions
             return new DropResult(Result.Failure("You cannot drop that game because it was counter picked."));
         }
 
-        var releaseStatus = publisherGame.WillRelease();
+        var releaseStatus = publisherGame.WillRelease(leagueYear);
         bool gameCouldRelease = releaseStatus.CountAsWillRelease;
         if (releaseStatus == WillReleaseStatus.MightRelease)
         {

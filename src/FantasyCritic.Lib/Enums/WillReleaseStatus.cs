@@ -5,6 +5,7 @@ public class WillReleaseStatus : TypeSafeEnum<WillReleaseStatus>
     // Define values here.
     public static readonly WillReleaseStatus WillNotRelease = new WillReleaseStatus("WillNotRelease", "Will Not Release", "will NOT release", false);
     public static readonly WillReleaseStatus MightRelease = new WillReleaseStatus("MightRelease", "Might Release", "MIGHT release", true);
+    public static readonly WillReleaseStatus WillReleaseEarlyAccessOnly = new WillReleaseStatus("WillReleaseEarlyAccessOnly", "Will Release in Early Access", "will release IN EARLY ACCESS", true);
     public static readonly WillReleaseStatus WillRelease = new WillReleaseStatus("WillRelease", "Will Release", "WILL release", true);
 
     // Constructor is private: values are defined within this class only!

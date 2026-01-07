@@ -37,7 +37,7 @@ public class PlayerPublisherViewModel
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)
-            .Count(x => x.CouldRelease());
+            .Count(x => x.CouldRelease(leagueYear));
         GamesWillRelease = allWillRelease - GamesReleased;
 
         FreeGamesDropped = publisher.FreeGamesDropped;

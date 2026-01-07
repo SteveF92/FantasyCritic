@@ -13,6 +13,7 @@
     <span v-if="game" class="game-info-side">
       <font-awesome-icon v-if="!game.linked" v-b-popover.hover.focus="unlinkedText" color="white" size="lg" icon="question-circle" />
       <font-awesome-icon v-if="game.linked && !game.willRelease" v-b-popover.hover.focus="willNotReleaseText" color="white" size="lg" icon="calendar-times" />
+      <font-awesome-icon v-if="game.linked && game.willReleaseEarlyAccessOnly" v-b-popover.hover.focus="willReleaseEarlyAccessOnlyText" color="white" size="lg" icon="calendar-days" />
       <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" v-b-popover.hover.focus="delayContentionText" color="white" size="lg" icon="balance-scale" />
       <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" v-b-popover.hover.focus="counterPickedText" color="white" size="lg" icon="crosshairs" />
       <font-awesome-icon v-if="game.dropBlocked" v-b-popover.hover.focus="gameDropBlockedText" color="white" size="lg" icon="lock" />
@@ -218,6 +219,20 @@ export default {
             return 'This game has been marked as "Will Not Release" manually by the league manager.';
           }
           return 'This game will not release this year.';
+        }
+      };
+    },
+    willReleaseEarlyAccessOnlyText() {
+      return {
+        html: true,
+        title: () => {
+          return 'Planned for Early Access';
+        },
+        content: () => {
+          return (
+            'This game is planned for early access, and will not see a full release this year. ' +
+            'However, as your league uses "Only Needs Score" mode, you will still receive points if the game receives a score on OpenCritic this year.'
+          );
         }
       };
     },

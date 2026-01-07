@@ -2,7 +2,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PublisherGameViewModel
 {
-    public PublisherGameViewModel(PublisherGame publisherGame, LocalDate currentDate, Publisher publishedBy, Publisher? counterPickedBy, bool counterPicksBlockDrops)
+    public PublisherGameViewModel(PublisherGame publisherGame, LeagueYear leagueYear, LocalDate currentDate, Publisher publishedBy, Publisher? counterPickedBy, bool counterPicksBlockDrops)
     {
         PublisherGameID = publisherGame.PublisherGameID;
         GameName = publisherGame.GameName;
@@ -36,7 +36,8 @@ public class PublisherGameViewModel
         }
 
         PublisherName = publishedBy.PublisherName;
-        WillRelease = publisherGame.CouldRelease();
+        WillRelease = publisherGame.CouldRelease(leagueYear);
+        WillReleaseEarlyAccessOnly = publisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.OverallDraftPosition;
         BidAmount = publisherGame.BidAmount;
@@ -47,7 +48,7 @@ public class PublisherGameViewModel
         DropBlocked = CounterPicked && counterPicksBlockDrops;
     }
 
-    public PublisherGameViewModel(FormerPublisherGame publisherGame, Publisher publishedBy, LocalDate currentDate)
+    public PublisherGameViewModel(FormerPublisherGame publisherGame, LeagueYear leagueYear, Publisher publishedBy, LocalDate currentDate)
     {
         PublisherGameID = publisherGame.PublisherGame.PublisherGameID;
         GameName = publisherGame.PublisherGame.GameName;
@@ -81,7 +82,8 @@ public class PublisherGameViewModel
         }
 
         PublisherName = publishedBy.PublisherName;
-        WillRelease = publisherGame.PublisherGame.CouldRelease();
+        WillRelease = publisherGame.PublisherGame.CouldRelease(leagueYear);
+        WillReleaseEarlyAccessOnly = publisherGame.PublisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
         BidAmount = publisherGame.PublisherGame.BidAmount;
@@ -110,6 +112,7 @@ public class PublisherGameViewModel
     public bool Linked { get; }
     public bool Released { get; }
     public bool WillRelease { get; }
+    public bool WillReleaseEarlyAccessOnly { get; }
     public bool ManualCriticScore { get; }
     public bool ManualWillNotRelease { get; }
     public bool CounterPicked { get; }

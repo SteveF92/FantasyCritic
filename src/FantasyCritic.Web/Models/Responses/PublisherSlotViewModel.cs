@@ -19,7 +19,7 @@ public class PublisherSlotViewModel
         if (slot.PublisherGame is not null)
         {
             var counterPickedBy = counterPickedByDictionary.GetValueOrDefault(slot.PublisherGame);
-            PublisherGame = new PublisherGameViewModel(slot.PublisherGame, currentDate, publisher, counterPickedBy, leagueYear.Options.CounterPicksBlockDrops);
+            PublisherGame = new PublisherGameViewModel(slot.PublisherGame, leagueYear, currentDate, publisher, counterPickedBy, leagueYear.Options.CounterPicksBlockDrops);
         }
 
         EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();

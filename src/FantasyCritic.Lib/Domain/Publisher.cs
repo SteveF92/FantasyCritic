@@ -309,12 +309,12 @@ public class Publisher : IEquatable<Publisher>
                     numberOfStandardGamesReleased++;
                 }
 
-                if (game.WillRelease().CountAsWillRelease)
+                if (game.WillRelease(leagueYear).CountAsWillRelease)
                 {
                     numberOfStandardGamesExpectedToRelease++;
                 }
 
-                if (!game.WillRelease().CountAsWillRelease)
+                if (!game.WillRelease(leagueYear).CountAsWillRelease)
                 {
                     numberOfStandardGamesNotExpectedToRelease++;
                 }
@@ -328,12 +328,12 @@ public class Publisher : IEquatable<Publisher>
                     numberOfCounterPicksReleased++;
                 }
 
-                if (game.WillRelease().CountAsWillRelease)
+                if (game.WillRelease(leagueYear).CountAsWillRelease)
                 {
                     numberOfCounterPicksExpectedToRelease++;
                 }
 
-                if (!game.WillRelease().CountAsWillRelease)
+                if (!game.WillRelease(leagueYear).CountAsWillRelease)
                 {
                     numberOfCounterPicksNotExpectedToRelease++;
                 }

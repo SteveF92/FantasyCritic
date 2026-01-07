@@ -45,7 +45,7 @@ public class PublisherStateSet
         UpdatePublisher(publisherToEdit, null, null, (int)budget, null);
     }
 
-    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueOptions leagueOptions, bool superDrop, LocalDate dateOfDrop)
+    public void DropGameForPublisher(Publisher publisherToEdit, PublisherGame publisherGame, LeagueYear leagueYear, bool superDrop, LocalDate dateOfDrop)
     {
         publisherToEdit = GetPublisher(publisherToEdit.PublisherID);
         if (superDrop)
@@ -58,7 +58,8 @@ public class PublisherStateSet
             throw new Exception("Publisher does not have any super drops.");
         }
 
-        var releaseStatus = publisherGame.WillRelease();
+        var leagueOptions = leagueYear.Options;
+        var releaseStatus = publisherGame.WillRelease(leagueYear);
         bool gameCouldRelease = releaseStatus.CountAsWillRelease;
         if (releaseStatus == WillReleaseStatus.MightRelease)
         {

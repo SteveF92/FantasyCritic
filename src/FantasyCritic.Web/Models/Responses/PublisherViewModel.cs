@@ -26,11 +26,11 @@ public class PublisherViewModel
 
         Games = publisher.PublisherGames
             .OrderBy(x => x.Timestamp)
-            .Select(x => new PublisherGameViewModel(x, currentDate, publisher, counterPickedByDictionary.GetValueOrDefault(x), leagueYear.Options.CounterPicksBlockDrops))
+            .Select(x => new PublisherGameViewModel(x, leagueYear, currentDate, publisher, counterPickedByDictionary.GetValueOrDefault(x), leagueYear.Options.CounterPicksBlockDrops))
             .ToList();
         FormerGames = publisher.FormerPublisherGames
             .OrderBy(x => x.PublisherGame.Timestamp)
-            .Select(x => new PublisherGameViewModel(x, publisher, currentDate))
+            .Select(x => new PublisherGameViewModel(x, leagueYear, publisher, currentDate))
             .ToList();
         GameSlots = publisher.GetPublisherSlots(leagueYear)
             .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, publisher, systemWideValues, counterPickedByDictionary))
@@ -63,7 +63,7 @@ public class PublisherViewModel
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)
-            .Count(x => x.CouldRelease());
+            .Count(x => x.CouldRelease(leagueYear));
         GamesWillRelease = allWillRelease - GamesReleased;
 
         FreeGamesDropped = publisher.FreeGamesDropped;

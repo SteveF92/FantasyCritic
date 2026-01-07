@@ -113,7 +113,7 @@ public class ActionProcessor
                     var formerPublisherGame = publisherGame.GetFormerPublisherGame(_processingTime, "Dropped by player");
                     gamesToDelete.Add(formerPublisherGame);
                     LeagueAction leagueAction = new LeagueAction(dropRequest, dropResult, _processingTime);
-                    publisherStateSet.DropGameForPublisher(affectedPublisher, publisherGame, leagueYearGroup.Key.Options, false, _currentDate);
+                    publisherStateSet.DropGameForPublisher(affectedPublisher, publisherGame, leagueYearGroup.Key, false, _currentDate);
 
                     leagueActions.Add(leagueAction);
                 }
@@ -514,7 +514,7 @@ public class ActionProcessor
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {
             var affectedPublisher = publisherStateSet.GetPublisher(successfulConditionalDrop.PickupBid.Publisher.PublisherID);
-            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!, successfulConditionalDrop.PickupBid.LeagueYear.Options, false, _currentDate);
+            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!, successfulConditionalDrop.PickupBid.LeagueYear, false, _currentDate);
             var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!.GetFormerPublisherGame(_processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
             conditionalDroppedGames.Add(formerPublisherGame);
         }

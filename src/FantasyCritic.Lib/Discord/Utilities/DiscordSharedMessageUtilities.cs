@@ -54,7 +54,7 @@ public static class DiscordSharedMessageUtilities
                         .GetProjectedFantasyPoints(leagueYear,
                             systemWideValues);
 
-                    return BuildPublisherLine(index + 1, publisher, totalPoints, projectedPoints, dateToCheck,
+                    return BuildPublisherLine(index + 1, publisher, leagueYear, totalPoints, projectedPoints, dateToCheck,
                         previousYearWinner, isFinal);
                 });
         return publisherLines.ToList();
@@ -93,6 +93,7 @@ public static class DiscordSharedMessageUtilities
 
     private static string BuildPublisherLine(int rank,
         Publisher publisher,
+        LeagueYear leagueYear,
         decimal totalPoints,
         decimal projectedPoints,
         LocalDate currentDate,
@@ -104,7 +105,7 @@ public static class DiscordSharedMessageUtilities
         var allWillRelease = publisher.PublisherGames
             .Where(x => !x.CounterPick)
             .Where(x => x.MasterGame is not null)
-            .Count(x => x.CouldRelease());
+            .Count(x => x.CouldRelease(leagueYear));
 
         var gamesReleased = publisher.PublisherGames
             .Where(x => !x.CounterPick)
