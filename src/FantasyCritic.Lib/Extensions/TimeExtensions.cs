@@ -38,6 +38,13 @@ public static class TimeExtensions
             .LocalDateTime.Date;
     }
 
+    public static LocalDateTime ToEasternDateTime(this Instant instant)
+    {
+        return instant
+            .InZone(EasternTimeZone)
+            .LocalDateTime;
+    }
+
     public static string ToISOString(this LocalDate date, string? wrapWith = null)
     {
         var value = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);

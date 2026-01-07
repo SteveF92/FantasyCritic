@@ -206,38 +206,57 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             {
                 await Context.Interaction.FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "No Game found", $"Could not find that game in the year {year}.",
-                    Context.User), ephemeral:true);
+                    Context.User), ephemeral: true);
             }
             else if (conferenceYear == null)
             {
                 await Context.Interaction.FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "No Conference found", $"Could not find that conference in the year {year}.",
-                    Context.User), ephemeral:true);
+                    Context.User), ephemeral: true);
             }
         }
     }
 
-    private string BuildConferenceGameDisplayText(MatchedGameDisplay matchedGameDisplay)
+    private static string BuildConferenceGameDisplayText(MatchedGameDisplay matchedGameDisplay)
     {
-        var gameFound = matchedGameDisplay.GameFound;
-
         var gameDisplayText = "";
 
         var publisherWhoPicked = matchedGameDisplay.PublisherWhoPicked;
         if (publisherWhoPicked != null)
         {
-            gameDisplayText +=
-                $"\n**Picked by:** {publisherWhoPicked.GetPublisherAndUserDisplayName()}";
+            gameDisplayText += BuildPickDisplayText(matchedGameDisplay, publisherWhoPicked, false);
         }
 
         var publisherWhoCounterPicked = matchedGameDisplay.PublisherWhoCounterPicked;
         if (publisherWhoCounterPicked != null)
         {
-            gameDisplayText +=
-                $"\n**Counter Picked by:** {publisherWhoCounterPicked.GetPublisherAndUserDisplayName()}\n";
+            gameDisplayText += BuildPickDisplayText(matchedGameDisplay, publisherWhoCounterPicked, true);
         }
 
         return gameDisplayText;
+    }
+
+    private static string BuildPickDisplayText(MatchedGameDisplay matchedGameDisplay, Publisher publisherWhoPicked, bool isCounterPick)
+    {
+        var pickDisplayText =
+            $"\n**{(isCounterPick ? "Counter " : "")}Picked by:** {publisherWhoPicked.GetPublisherAndUserDisplayName()}";
+        var pickedPublisherGame = publisherWhoPicked.PublisherGames.FirstOrDefault(g =>
+            g.MasterGame?.MasterGame.MasterGameID == matchedGameDisplay.GameFound.MasterGame.MasterGameID);
+        if (pickedPublisherGame != null)
+        {
+            if (pickedPublisherGame.DraftPosition != null)
+            {
+                pickDisplayText += $"\nDrafted on: {pickedPublisherGame.Timestamp.ToEasternDateTime()}";
+                pickDisplayText += $"\nDraft Position: {pickedPublisherGame.DraftPosition}";
+                pickDisplayText += $"\nOverall Draft Position: {pickedPublisherGame.OverallDraftPosition}";
+            }
+            else
+            {
+                pickDisplayText += $"\n**Acquired on:** {pickedPublisherGame.Timestamp.ToEasternDateTime()}";
+            }
+        }
+
+        return pickDisplayText;
     }
 
     private string BuildGameDisplayText(MatchedGameDisplay matchedGameDisplay, LeagueYear? leagueYear, LocalDate dateToCheck)
