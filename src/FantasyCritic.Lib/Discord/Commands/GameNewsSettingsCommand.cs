@@ -706,7 +706,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         var updatedComponentBuilder = new ComponentBuilder();
 
         // Iterate through the existing components
-        foreach (var actionRow in originalMessage.Components)
+        foreach (var actionRow in originalMessage.Components.OfType<ActionRowComponent>())
         {
             var actionRowBuilder = new ActionRowBuilder();
 
@@ -726,7 +726,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
                 else
                 {
                     // Add the existing button or other components as-is
-                    actionRowBuilder.AddComponent(component);
+                    actionRowBuilder.AddComponent(component.ToBuilder());
                 }
             }
 

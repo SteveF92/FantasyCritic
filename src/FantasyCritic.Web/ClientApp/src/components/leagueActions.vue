@@ -42,7 +42,7 @@
             </ul>
           </li>
           <template v-if="!leagueYear.supportedYear.finished">
-            <li>
+            <li v-if="!draftFinished">
               <strong>Draft Actions</strong>
               <ul class="actions-list">
                 <li v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">

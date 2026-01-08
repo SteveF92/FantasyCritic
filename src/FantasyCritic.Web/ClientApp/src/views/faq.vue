@@ -300,7 +300,7 @@
         <ul>
           <li>Bidding $0 on a game that you expect to be bad, with the intention of baiting another player into bidding on and winning the game.</li>
           <li>
-            Bidding on more game than you have spots remaining, to disguise your true intentions. For example, you have one slot left, and you bid on 20 games, with the game you actually want at
+            Bidding on more games than you have spots remaining, to disguise your true intentions. For example, you have one slot left, and you bid on 20 games, with the game you actually want at
             priority 1 with the highest dollar value.
           </li>
         </ul>
