@@ -109,8 +109,8 @@
           <strong>{{ gameToModify.masterGame.gameName }}</strong>
           ?
         </p>
-        <p>Each dollar allocated will increase your fantasy points received by 5%</p>
-        <p>You can spend up to $10 for a bonus of 50%.</p>
+        <p>Each dollar allocated will increase your fantasy points received by 10%</p>
+        <p>You can spend up to $10 for a bonus of 100% (thereby doubling the points you get from the game).</p>
         <p>You can adjust this up until the game (or reviews) come out.</p>
         <div class="form-group row">
           <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
