@@ -69,6 +69,11 @@ public static class GameEligibilityFunctions
             {
                 claimErrors.Add(new ClaimError("Cannot counter pick a game that no other player is publishing.", false));
             }
+
+            if (gameSet.ThisPlayerCounterPicks.Count == request.LeagueYear.Options.CounterPicks)
+            {
+                claimErrors.Add(new ClaimError("You do not have any available counter pick slots.", false));
+            }
         }
 
         MasterGameWithEligibilityFactors? eligibilityFactors = null;
