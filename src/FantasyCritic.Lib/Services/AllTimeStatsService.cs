@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.AllTimeStats;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -44,7 +45,7 @@ public class AllTimeStatsService
             }
         }
 
-        var pickupBidsByGame = allPickupBids.GroupBy(x => x.MasterGame);
+        var pickupBidsByGame = allPickupBids.Where(x => x.ProcessSetID.HasValue).GroupBy(x => new MasterGameWithCounterPickAndActionProcessingSet(x.MasterGame, x.CounterPick, x.ProcessSetID!.Value));
         var oldLeagueActionsByPublisher = oldLeagueActions.ToLookup(x => x.Publisher);
 
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
@@ -92,7 +93,7 @@ public class AllTimeStatsService
         return new LeagueAllTimeStats(leagueYears, playerAllTimeStats, hallOfFameGameLists);
     }
 
-    private async Task<IReadOnlyList<BidOverspend>> GetBidOverspends(IEnumerable<IGrouping<MasterGame, PickupBid>> pickupBidsByGame, ILookup<Publisher, LeagueAction> oldLeagueActionsByPublisher)
+    private async Task<IReadOnlyList<BidOverspend>> GetBidOverspends(IEnumerable<IGrouping<MasterGameWithCounterPickAndActionProcessingSet, PickupBid>> pickupBidsByGame, ILookup<Publisher, LeagueAction> oldLeagueActionsByPublisher)
     {
         var result = new List<BidOverspend>();
 
