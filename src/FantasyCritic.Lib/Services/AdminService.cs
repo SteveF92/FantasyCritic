@@ -24,6 +24,7 @@ public class AdminService
     private readonly IHypeFactorService _hypeFactorService;
     private readonly DiscordPushService _discordPushService;
     private readonly IDiscordRepo _discordRepo;
+    private readonly IDailyStatsRepo _dailyStatsRepo;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly FantasyCriticUserManager _userManager;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
@@ -36,7 +37,7 @@ public class AdminService
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, DiscordPushService discordPushService, IDiscordRepo discordRepo)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService, DiscordPushService discordPushService, IDiscordRepo discordRepo, IDailyStatsRepo dailyStatsRepo)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -52,6 +53,7 @@ public class AdminService
         _hypeFactorService = hypeFactorService;
         _discordPushService = discordPushService;
         _discordRepo = discordRepo;
+        _dailyStatsRepo = dailyStatsRepo;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -207,7 +209,7 @@ public class AdminService
             {
                 if (SupportedYear.Year2026FeatureSupported(supportedQuarter.YearQuarter.Year))
                 {
-                    var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(7));
+                    var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(RoyaleService.POST_QUARTER_GRACE_DAYS));
                     var today = _clock.GetToday();
                     if (today > gracePeriodDate)
                     {
@@ -686,23 +688,9 @@ public class AdminService
         
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => !x.Finished && x.OpenForPlay).ToList();
-
-        foreach (var activeYear in activeYears)
-        {
-            await _fantasyCriticRepo.UpdateDailyPublisherStatistics(activeYear.Year, today, systemWideValues);
-            await _masterGameRepo.UpdateDailyStatistics(activeYear.Year, today);
-        }
-
         var supportedQuarters = await _royaleService.GetYearQuarters();
-        foreach (var supportedQuarter in supportedQuarters)
-        {
-            if (!supportedQuarter.OpenForPlay && supportedQuarter.YearQuarter.LastDateOfQuarter.PlusDays(1) < today)
-            {
-                continue;
-            }
 
-            await _royaleService.UpdateDailyPublisherStatistics(supportedQuarter, today);
-        }
+        await _dailyStatsRepo.UpdateDailyStats(activeYears, supportedQuarters, today, systemWideValues);
     }
 
     private async Task UpdateSystemWideValues(IReadOnlyList<LeagueYear> allLeagueYears)

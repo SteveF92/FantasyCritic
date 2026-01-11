@@ -13,6 +13,7 @@ public class RoyaleService
     private readonly IMasterGameRepo _masterGameRepo;
 
     public const int FUTURE_RELEASE_LIMIT_DAYS = 5;
+    public const int POST_QUARTER_GRACE_DAYS = 7;
 
     public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
     {
@@ -296,10 +297,5 @@ public class RoyaleService
         }
 
         return 15;
-    }
-
-    public Task UpdateDailyPublisherStatistics(RoyaleYearQuarter supportedQuarter, LocalDate currentDate)
-    {
-        return _royaleRepo.UpdateDailyPublisherStatistics(supportedQuarter, currentDate);
     }
 }

@@ -92,6 +92,7 @@ public static class HostingExtensions
         services.AddScoped<IConferenceRepo, MySQLConferenceRepo>();
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
+        services.AddScoped<IDailyStatsRepo, MySQLDailyStatsRepo>();
         services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
 
         services.AddScoped<PatreonService>();

@@ -155,7 +155,6 @@ public interface IFantasyCriticRepo
     Task GrantSuperDrops(IEnumerable<Publisher> publishersToGrantSuperDrop, IEnumerable<LeagueAction> superDropActions);
     Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears);
     Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year);
-    Task UpdateDailyPublisherStatistics(int year, LocalDate currentDate, SystemWideValues systemWideValues);
     Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user);
     Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year);
 }
