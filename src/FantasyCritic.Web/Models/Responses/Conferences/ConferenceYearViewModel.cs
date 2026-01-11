@@ -38,13 +38,33 @@ public class ConferenceYearViewModel
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 
+        var publisherLeagueRankings = standings
+            .Select(x => new
+            {
+                x.PublisherID,
+                Ranking = standings.Where(y => y.LeagueID == x.LeagueID).Count(y => y.TotalFantasyPoints > x.TotalFantasyPoints) + 1
+            }
+            )
+            .ToDictionary(x => x.PublisherID, x => x.Ranking);
+
+        var publisherProjectedLeagueRankings = standings
+            .Select(x => new
+            {
+                x.PublisherID,
+                Ranking = standings.Where(y => y.LeagueID == x.LeagueID).Count(y => y.ProjectedFantasyPoints > x.ProjectedFantasyPoints) + 1
+            }
+            )
+            .ToDictionary(x => x.PublisherID, x => x.Ranking);
+
         var standingVMs = new List<ConferenceYearStandingViewModel>();
 
         foreach (var standing in standings)
         {
             var ranking = publisherRankings[standing.PublisherID];
             var projectedRanking = publisherProjectedRankings[standing.PublisherID];
-            standingVMs.Add(new ConferenceYearStandingViewModel(standing, ranking, projectedRanking));
+            var leagueRanking = publisherLeagueRankings[standing.PublisherID];
+            var projectedLeagueRanking = publisherProjectedLeagueRankings[standing.PublisherID];
+            standingVMs.Add(new ConferenceYearStandingViewModel(standing, ranking, projectedRanking, leagueRanking, projectedLeagueRanking));
         }
 
         Standings = standingVMs;

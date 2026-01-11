@@ -22,6 +22,10 @@
         {{ data.item.totalFantasyPoints | score(2) }}
         <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
       </template>
+
+      <template #cell(projectedLeagueRanking)="data">
+        <span v-if="playStarted" class="standings-position">{{ ordinal_suffix_of(data.item.projectedLeagueRanking) }}</span>
+      </template>
     </b-table>
   </div>
 </template>
@@ -38,7 +42,8 @@ export default {
         { key: 'displayName', label: 'User', thClass: 'bg-primary' },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
         { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
-        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true }
+        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
+        { key: 'leagueRanking', label: 'League Rank', thClass: 'bg-primary', sortable: true }
       ],
       sortBy: 'totalFantasyPoints',
       sortDesc: true
