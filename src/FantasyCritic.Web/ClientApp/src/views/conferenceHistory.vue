@@ -1,6 +1,7 @@
 <template>
   <div v-if="conferenceYear && conference" class="col-md-10 offset-md-1 col-sm-12">
     <h1>Conference History: {{ conference.conferenceName }} (Year {{ year }})</h1>
+    <router-link :to="{ name: 'conference', params: { conferenceid, year } }">Back to Conference</router-link>
     <hr />
     <div v-if="conferenceYear.managerMessages && conferenceYear.managerMessages.length > 0">
       <h2>Manager's Messages</h2>

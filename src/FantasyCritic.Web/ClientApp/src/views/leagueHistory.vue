@@ -8,6 +8,7 @@
 
     <div v-if="league && leagueYear">
       <h1>{{ league.leagueName }} History ({{ year }})</h1>
+      <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: leagueYear.year } }">Back to League</router-link>
       <hr />
       <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
         <h2>Manager's Messages</h2>
