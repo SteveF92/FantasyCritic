@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
@@ -108,9 +109,13 @@ public class ConferenceService
     public async Task<Result> SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<Guid, bool> userActiveStatus)
     {
         var playersInConference = await GetPlayersInConference(conferenceYear.Conference);
+        var conferenceYearData = await GetConferenceYearData(conferenceYear.Conference.ConferenceID, conferenceYear.Year);
+
+        var publishersByUserLookup = conferenceYearData!.LeagueYears.SelectMany(x => x.Publishers).ToLookup(x => x.User.UserID);
 
         var playerDictionary = playersInConference.ToDictionary(x => x.User.UserID);
         var usersToChange = new Dictionary<MinimalFantasyCriticUser, bool>();
+        var usersThatCannotBeMadeInactive = new List<FantasyCriticUser>();
         foreach (var userToChange in userActiveStatus)
         {
             if (!playerDictionary.TryGetValue(userToChange.Key, out var playerRecord))
@@ -125,7 +130,23 @@ public class ConferenceService
                 continue;
             }
 
+            if (!userToChange.Value)
+            {
+                var publishersForUser = publishersByUserLookup[userToChange.Key];
+                if (publishersForUser.Any())
+                {
+                    usersThatCannotBeMadeInactive.Add(publishersForUser.First().User);
+                    continue;
+                }
+            }
+
             usersToChange.Add(playerRecord.User, userToChange.Value);
+        }
+
+        if (usersThatCannotBeMadeInactive.Any())
+        {
+            var playerNames = string.Join(",", usersThatCannotBeMadeInactive.Select(x => x.DisplayName));
+            return Result.Failure($"You must remove a player's publisher before you can set them as inactive. Player(s): {playerNames}");
         }
 
         if (usersToChange.Any())
@@ -281,7 +302,7 @@ public class ConferenceService
         return Result.Success();
     }
 
-    public static IReadOnlyList<ConferenceYearStanding> GetConferenceYearStandings(IReadOnlyList<LeagueYear> leagueYears, SystemWideValues systemWideValues)
+    private static IReadOnlyList<ConferenceYearStanding> GetConferenceYearStandings(IReadOnlyList<LeagueYear> leagueYears, SystemWideValues systemWideValues)
     {
         List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
         foreach (var leagueYear in leagueYears)

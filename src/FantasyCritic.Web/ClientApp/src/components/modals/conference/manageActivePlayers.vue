@@ -1,9 +1,7 @@
 <template>
   <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @show="setData">
     <h4 class="text-black">Active Players for {{ conferenceYear.year }}</h4>
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
+
     <table v-if="showTable" class="table table-bordered table-striped table-sm">
       <thead>
         <tr class="bg-primary">
@@ -20,6 +18,9 @@
         </tr>
       </tbody>
     </table>
+    <div v-show="errorInfo" class="alert alert-danger">
+      {{ errorInfo }}
+    </div>
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Set Active Players" @click="confirmActivePlayers" />
     </template>
