@@ -102,7 +102,7 @@
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
       </b-alert>
 
-      <b-table :items="conferenceYear.leagueYears" :fields="leagueYearFields" bordered small responsive striped>
+      <b-table :items="sortedLeagueYears" :fields="leagueYearFields" bordered small responsive striped>
         <template #cell(leagueName)="data">
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: year } }" class="league-link">
             {{ data.item.leagueName }}
@@ -160,6 +160,18 @@ export default {
     },
     numberOfLeaguesFinishedDrafting() {
       return this.conferenceYear.leagueYears.filter((x) => x.draftFinished).length;
+    },
+    sortedLeagueYears() {
+      if (!this.conferenceYear || !this.conferenceYear.leagueYears) {
+        return [];
+      }
+      
+      return [...this.conferenceYear.leagueYears].sort((a, b) => {
+        if (a.isPrimaryLeague) { return -1; }
+        if (b.isPrimaryLeague) { return 1; }
+        
+        return a.leagueName.localeCompare(b.leagueName);
+      });
     },
     mostRecentManagerMessage() {
       if (!this.conferenceYear || !this.conferenceYear.managerMessages || this.conferenceYear.managerMessages.length === 0) {
