@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
@@ -371,7 +370,7 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var leagueChannels = await discordRepo.GetLeagueChannels(leagueId);
+        var leagueChannels = await GetDiscordChannelsForLeague(leagueId);
 
         var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueChannel in leagueChannels)
@@ -383,10 +382,23 @@ public class DiscordPushService
                 continue;
             }
 
-            preparedMessages.Add(new PreparedDiscordMessage(channel, $"**{action.Publisher.GetPublisherAndUserDisplayName()}** {action.Description} (on {action.Timestamp.ToEasternDate()})"));
+            var leagueText = await GetLeagueText(leagueId, true, "League: ");
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"{leagueText}**{action.Publisher.GetPublisherAndUserDisplayName()}** {action.Description} (on {action.Timestamp.ToEasternDate()})"));
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+    }
+
+    private async Task<string> GetLeagueText(Guid leagueId, bool endWithNewLine, string? leagueTextPrefix = "")
+    {
+        var league = await GetLeague(leagueId);
+        if (league == null)
+        {
+            return "";
+        }
+
+        var leagueText = $"{leagueTextPrefix ?? ""}**{league.LeagueName}**{(endWithNewLine ? "\n" : "")}";
+        return leagueText;
     }
 
     public async Task SendLeagueActionMessage(LeagueManagerAction action)
@@ -399,11 +411,7 @@ public class DiscordPushService
 
         var leagueId = action.LeagueYearKey.LeagueID;
 
-        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
-        using var scope = serviceScopeFactory.CreateScope();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
-
-        var leagueChannels = await discordRepo.GetLeagueChannels(leagueId);
+        var leagueChannels = await GetDiscordChannelsForLeague(leagueId);
 
         var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueChannel in leagueChannels)
@@ -415,7 +423,8 @@ public class DiscordPushService
                 continue;
             }
 
-            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## {action.ActionType}\n{action.Description}\n_(on {action.Timestamp.ToEasternDate()})_"));
+            var leagueText = await GetLeagueText(leagueId, true, "League: ");
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## {action.ActionType}\n{leagueText}{action.Description}\n_(on {action.Timestamp.ToEasternDate()})_"));
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
@@ -431,11 +440,7 @@ public class DiscordPushService
 
         var leagueId = leagueYear.League.LeagueID;
 
-        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
-        using var scope = serviceScopeFactory.CreateScope();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
-
-        var leagueChannels = await discordRepo.GetLeagueChannels(leagueId);
+        var leagueChannels = await GetDiscordChannelsForLeague(leagueId);
 
         var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueChannel in leagueChannels)
@@ -447,7 +452,7 @@ public class DiscordPushService
                 continue;
             }
 
-            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## Super Drop Used\n**{publisher.GetPublisherAndUserDisplayName()}** used a Super Drop to drop **{publisherGame.GameName}**."));
+            preparedMessages.Add(new PreparedDiscordMessage(channel, $"## Super Drop Used\nLeague: **{leagueYear.League.LeagueName}**\n**{publisher.GetPublisherAndUserDisplayName()}** used a Super Drop to drop **{publisherGame.GameName}**."));
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
@@ -459,11 +464,18 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var leagueChannels = await discordRepo.GetLeagueChannels(scoreChanges.LeagueYear.League.LeagueID);
-        await SendLeagueYearScoreUpdateMessage(scoreChanges, leagueChannels);
+        var leagueChannels = await GetDiscordChannelsForLeague(scoreChanges.LeagueYear.League.LeagueID);
+
+        IReadOnlyList<MinimalConferenceChannel> conferenceChannels = new List<MinimalConferenceChannel>();
+        if (scoreChanges.LeagueYear.League.ConferenceID != null)
+        {
+            conferenceChannels = await discordRepo.GetConferenceChannels(scoreChanges.LeagueYear.League.ConferenceID.Value);
+        }
+        await SendLeagueYearScoreUpdateMessage(scoreChanges, leagueChannels, conferenceChannels);
     }
 
-    public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges, IEnumerable<MinimalLeagueChannel> leagueChannels)
+    public async Task SendLeagueYearScoreUpdateMessage(LeagueYearScoreChanges scoreChanges,
+        IEnumerable<IDiscordChannel> leagueChannels, IReadOnlyList<MinimalConferenceChannel> conferenceChannels)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -509,7 +521,12 @@ public class DiscordPushService
 
         if (embedFieldBuilders.Any())
         {
-            var embeds = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: _discordFormatter.BuildRegularEmbed("Publisher Score Updates", "", null, embedFieldBuilders)));
+            var embeds = channels.Select(channel => new PreparedDiscordMessage(channel,
+                Embed: _discordFormatter.BuildRegularEmbed(
+                    "Publisher Score Updates",
+                    $"League: **{scoreChanges.LeagueYear.League.LeagueName}**",
+                    null,
+                    embedFieldBuilders)));
             await DiscordRateLimitUtilities.RateLimitMessages(embeds);
         }
     }
@@ -526,13 +543,14 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var channels = await GetChannelsForLeague(publisher.LeagueYearKey.LeagueID, discordRepo);
+        var channels = await GetSocketChannelsForLeague(publisher.LeagueYearKey.LeagueID);
         if (!channels.Any())
         {
             return;
         }
 
-        var messageToSend = $"Publisher **{oldPublisherName}** ({publisher.User.UserName}) is now known as **{newPublisherName}**";
+        var leagueText = await GetLeagueText(publisher.LeagueYearKey.LeagueID, true, "League: ");
+        var messageToSend = $"## Publisher Update\n{leagueText}Publisher **{oldPublisherName}** ({publisher.User.UserName}) is now known as **{newPublisherName}**";
 
         var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, messageToSend));
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
@@ -540,7 +558,9 @@ public class DiscordPushService
 
     public async Task SendPublisherEditMessage(EditPublisherRequest editPublisherRequest)
     {
-        var messageToSend = $"Publisher **{editPublisherRequest.Publisher.GetPublisherAndUserDisplayName()}** edited by League Manager: {editPublisherRequest.GetActionString()}";
+        var actionString = editPublisherRequest.GetActionString();
+        actionString = actionString.Replace("• ", "\n• ");
+        var messageToSend = $"Publisher: **{editPublisherRequest.Publisher.GetPublisherAndUserDisplayName()}**\nAction: Publisher edited by League Manager: {actionString}";
         var leagueID = editPublisherRequest.Publisher.LeagueYearKey.LeagueID;
 
         await SendLeagueManagerActionMessage(leagueID, messageToSend);
@@ -558,29 +578,32 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var channels = await GetChannelsForLeague(leagueID, discordRepo);
+        var channels = await GetSocketChannelsForLeague(leagueID);
         if (!channels.Any())
         {
             return;
         }
 
-        var leagueManagerActionMessage = $"## League Manager Action\n{message}";
+        var leagueText = await GetLeagueText(leagueID, true, "League: ");
+        var leagueManagerActionMessage = $"## League Manager Action\n{leagueText}{message}";
 
         var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, leagueManagerActionMessage));
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
 
-    public async Task SendLeagueManagerAddPublisherGameMessage(Publisher publisher, string gameName)
+    private async Task<League?> GetLeague(Guid leagueID)
     {
-        var messageToSend = $"Publisher **{publisher.GetPublisherAndUserDisplayName()}** has had the game **{gameName}** manually **ADDED** by the League Manager.";
-        await SendLeagueManagerActionMessage(publisher.LeagueYearKey.LeagueID, messageToSend);
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var fantasyCriticRepo = scope.ServiceProvider.GetRequiredService<IFantasyCriticRepo>();
+
+        return await fantasyCriticRepo.GetLeague(leagueID);
     }
 
-    public async Task SendLeagueManagerRemovePublisherGameMessage(Publisher publisher, string gameName)
+    public async Task SendLeagueManagerManualPublisherGameMessage(Publisher publisher, string gameName, bool isAdd)
     {
-        var leagueID = publisher.LeagueYearKey.LeagueID;
-        var messageToSend = $"Publisher **{publisher.GetPublisherAndUserDisplayName()}** has had the game **{gameName}** manually **REMOVED** by the League Manager.";
-        await SendLeagueManagerActionMessage(leagueID, messageToSend);
+        var messageToSend = $"Publisher: **{publisher.GetPublisherAndUserDisplayName()}**\nAction: Game **{gameName}** has been manually **{(isAdd ? "ADDED" : "REMOVED")}** by the League Manager.";
+        await SendLeagueManagerActionMessage(publisher.LeagueYearKey.LeagueID, messageToSend);
     }
 
     public async Task SendNewPublisherMessage(Publisher publisher)
@@ -595,13 +618,14 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var channels = await GetChannelsForLeague(publisher.LeagueYearKey.LeagueID, discordRepo);
+        var channels = await GetSocketChannelsForLeague(publisher.LeagueYearKey.LeagueID);
         if (!channels.Any())
         {
             return;
         }
 
-        var messageToSend = $"Publisher **{publisher.GetPublisherAndUserDisplayName()}** has joined the league!";
+        var leagueText = GetLeagueText(publisher.LeagueYearKey.LeagueID, true, "League: ");
+        var messageToSend = $"## Publisher Joined\n{leagueText}Publisher **{publisher.GetPublisherAndUserDisplayName()}** has joined the league!";
 
         var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, messageToSend));
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
@@ -620,7 +644,7 @@ public class DiscordPushService
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
         var allChannels = await discordRepo.GetAllLeagueChannels();
-        var channelLookup = allChannels.ToLookup(c => c.LeagueID);
+        var channelLookup = await GetAllChannelsAsLookup(discordRepo);
 
         var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var publicBiddingSet in publicBiddingSets)
@@ -689,8 +713,7 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var allChannels = await discordRepo.GetAllLeagueChannels();
-        var channelLookup = allChannels.ToLookup(c => c.LeagueID);
+        var channelLookup = await GetAllChannelsAsLookup(discordRepo);
 
         var dropMessages = new List<PreparedDiscordMessage>();
         foreach (var leagueAction in leagueActionSets)
@@ -719,6 +742,50 @@ public class DiscordPushService
         }
 
         await DiscordRateLimitUtilities.RateLimitMessages(bidMessages);
+    }
+
+    private async Task<ILookup<Guid, MinimalLeagueChannel>> GetAllChannelsAsLookup(IDiscordRepo discordRepo)
+    {
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var conferenceRepo = scope.ServiceProvider.GetRequiredService<IConferenceRepo>();
+
+        var allLeagueChannels = await discordRepo.GetAllLeagueChannels();
+        var allConferenceChannels = await discordRepo.GetAllConferenceChannels();
+
+        var allChannels = new List<MinimalLeagueChannel>();
+        allChannels.AddRange(allLeagueChannels);
+
+        var conferenceChannelsWithLeagueNews = allConferenceChannels.Where(c => c.SendLeagueNews).ToList();
+        foreach (var conferenceChannel in conferenceChannelsWithLeagueNews)
+        {
+            var conference = await conferenceRepo.GetConference(conferenceChannel.ConferenceID);
+            if (conference == null)
+            {
+                continue;
+            }
+
+            foreach (var leagueID in conference.LeaguesInConference)
+            {
+                if (!allChannels.Any(c => c.LeagueID == leagueID && c.ChannelID == conferenceChannel.ChannelID))
+                {
+                    //making a fake league channel since it won't apply otherwise, this will have to change if this ever applies to game news
+                    allChannels.Add(new MinimalLeagueChannel(leagueID,
+                        conferenceChannel.GuildID,
+                        conferenceChannel.ChannelID,
+                        false,
+                        false,
+                        false,
+                        NotableMissSetting.None,
+                        null,
+                        null,
+                        null));
+                }
+            }
+        }
+
+        var channelLookup = allChannels.ToLookup(c => c.LeagueID);
+        return channelLookup;
     }
 
     private IReadOnlyList<PreparedDiscordMessage> GetAllBidMessages(LeagueActionProcessingSet leagueAction, IEnumerable<MinimalLeagueChannel> leagueChannels)
@@ -756,7 +823,7 @@ public class DiscordPushService
         }
 
         var messageListToSend = new MessageListBuilder(bidMessages, MaxMessageLength)
-            .WithTitle("Bids", [TextStyleOption.Bold, TextStyleOption.Underline], "\n", 1)
+            .WithTitle($"Bids in {leagueAction.LeagueYear.League.LeagueName}", [TextStyleOption.Bold, TextStyleOption.Underline], "\n", 1)
             .WithDivider("\n")
             .Build();
         return GetAllMessagesForAllLeagueChannels(leagueChannels, messageListToSend, true);
@@ -771,7 +838,7 @@ public class DiscordPushService
 
         var dropMessages = leagueAction.Drops.Select(DiscordSharedMessageUtilities.BuildDropResultMessage).ToList();
         var dropMessageListToSend = new MessageListBuilder(dropMessages, MaxMessageLength)
-            .WithTitle("Drops", [TextStyleOption.Bold, TextStyleOption.Underline], "\n", 1)
+            .WithTitle($"Drops in {leagueAction.LeagueYear.League.LeagueName}", [TextStyleOption.Bold, TextStyleOption.Underline], "\n", 1)
             .WithDivider("\n")
             .Build();
         return GetAllMessagesForAllLeagueChannels(leagueChannels, dropMessageListToSend);
@@ -814,7 +881,7 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var channels = await GetChannelsForLeague(trade.LeagueYear.League.LeagueID, discordRepo);
+        var channels = await GetSocketChannelsForLeague(trade.LeagueYear.League.LeagueID);
         if (!channels.Any())
         {
             return;
@@ -855,7 +922,7 @@ public class DiscordPushService
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
         var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
 
-        var channels = await GetChannelsForLeague(leagueYear.League.LeagueID, discordRepo);
+        var channels = await GetSocketChannelsForLeague(leagueYear.League.LeagueID);
         if (!channels.Any())
         {
             return;
@@ -868,21 +935,15 @@ public class DiscordPushService
             user = await _client.GetUserAsync(leagueManagerDiscordUser.Value);
         }
 
-        List<PreparedDiscordMessage> preparedMessages;
-        if (user != null)
-        {
-            var embed = _discordFormatter.BuildRegularEmbedWithUserFooter("New Message from the League Manager", message, user);
-            preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: embed)).ToList();
-        }
-        else
-        {
-            var embedFooter = new EmbedFooterBuilder
+        var title = "New Message from the League Manager";
+        var embed = user != null
+            ? _discordFormatter.BuildRegularEmbedWithUserFooter(title, $"League: **{leagueYear.League.LeagueName}**\n{message}", user)
+            : _discordFormatter.BuildRegularEmbed(title, message, new EmbedFooterBuilder
             {
                 Text = "Error finding Discord user for League Manager."
-            };
-            var embed = _discordFormatter.BuildRegularEmbed("New Message from the League Manager", message, embedFooter);
-            preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: embed)).ToList();
-        }
+            });
+
+        var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, Embed: embed)).ToList();
 
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
     }
@@ -900,7 +961,7 @@ public class DiscordPushService
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
         var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
 
-        var channels = await GetChannelsForConference(conferenceYear.Conference.ConferenceID, discordRepo);
+        var channels = await GetSocketChannelsForConference(conferenceYear.Conference.ConferenceID, discordRepo);
         if (!channels.Any())
         {
             return;
@@ -913,24 +974,22 @@ public class DiscordPushService
             user = await _client.GetUserAsync(leagueManagerDiscordUser.Value);
         }
 
-        IEnumerable<Task<RestUserMessage?>> messageTasks;
-        if (user != null)
-        {
-            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
-                "New Message from the League Manager",
-                message,
-                user)));
-        }
-        else
-        {
-            messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed: _discordFormatter.BuildRegularEmbed(
-                "New Message from the League Manager",
-                message,
-                new EmbedFooterBuilder
-                {
-                    Text = "Error finding Discord user for League Manager."
-                })));
-        }
+        var title = "New Message from the League Manager";
+
+        var messageTasks = channels.Select(channel => channel.TrySendMessageAsync(embed:
+            user != null
+                ? _discordFormatter.BuildRegularEmbedWithUserFooter(
+                    title,
+                    message,
+                    user)
+                : _discordFormatter.BuildRegularEmbed(
+                    title,
+                    message,
+                    new EmbedFooterBuilder
+                    {
+                        Text = "Error finding Discord user for League Manager."
+                    }
+                )));
         await Task.WhenAll(messageTasks);
     }
 
@@ -953,7 +1012,7 @@ public class DiscordPushService
         foreach (var leagueYear in leagueYears)
         {
             var previousYearWinner = await fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, leagueYear.Year - 1);
-            var leagueChannels = await discordRepo.GetLeagueChannels(leagueYear.League.LeagueID);
+            var leagueChannels = await GetDiscordChannelsForLeague(leagueYear.League.LeagueID);
             var publisherLines = DiscordSharedMessageUtilities.RankLeaguePublishers(leagueYear, previousYearWinner, systemWideValues, dateToCheck, true);
             if (publisherLines.Count == 0)
             {
@@ -1049,13 +1108,34 @@ public class DiscordPushService
         return message;
     }
 
-    private async Task<IReadOnlyList<SocketTextChannel>> GetChannelsForLeague(Guid leagueID, IDiscordRepo discordRepo)
+    private async Task<IReadOnlyList<SocketTextChannel>> GetSocketChannelsForLeague(Guid leagueID)
     {
-        var leagueChannels = await discordRepo.GetLeagueChannels(leagueID);
-        return GetSocketTextChannels(leagueChannels);
+        var allChannels = await GetDiscordChannelsForLeague(leagueID);
+        return GetSocketTextChannels(allChannels);
     }
 
-    private async Task<IReadOnlyList<SocketTextChannel>> GetChannelsForConference(Guid conferenceID, IDiscordRepo discordRepo)
+    private async Task<List<IDiscordChannel>> GetDiscordChannelsForLeague(Guid leagueID)
+    {
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+
+        var leagueChannels = await discordRepo.GetLeagueChannels(leagueID);
+        var conferenceChannels = await GetConferenceChannelsForLeague(leagueID);
+        var allChannels = new List<IDiscordChannel>();
+        allChannels.AddRange(leagueChannels);
+        foreach (var conferenceChannel in conferenceChannels)
+        {
+            if (allChannels.All(c => c.ChannelID != conferenceChannel.ChannelID))
+            {
+                allChannels.Add(conferenceChannel);
+            }
+        }
+
+        return allChannels;
+    }
+
+    private async Task<IReadOnlyList<SocketTextChannel>> GetSocketChannelsForConference(Guid conferenceID, IDiscordRepo discordRepo)
     {
         var conferenceChannels = await discordRepo.GetConferenceChannels(conferenceID);
         return GetSocketTextChannels(conferenceChannels);
@@ -1108,8 +1188,8 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var leagueChannels = await discordRepo.GetLeagueChannels(specialAuction.LeagueYearKey.LeagueID);
-        if (!leagueChannels.Any())
+        var discordChannels = await GetDiscordChannelsForLeague(specialAuction.LeagueYearKey.LeagueID);
+        if (!discordChannels.Any())
         {
             return;
         }
@@ -1117,17 +1197,19 @@ public class DiscordPushService
         var preparedMessages = new List<PreparedDiscordMessage>();
         var leagueLink = new LeagueUrlBuilder(_baseAddress, specialAuction.LeagueYearKey.LeagueID, specialAuction.LeagueYearKey.Year).BuildUrl();
 
-        foreach (var leagueChannel in leagueChannels)
+        foreach (var discordChannel in discordChannels)
         {
-            var guild = _client.GetGuild(leagueChannel.GuildID);
-            var channel = guild?.GetChannel(leagueChannel.ChannelID);
+            var guild = _client.GetGuild(discordChannel.GuildID);
+            var channel = guild?.GetChannel(discordChannel.ChannelID);
             if (channel is not SocketTextChannel textChannel)
             {
                 continue;
             }
 
             SocketRole? roleToMention = null;
-            if (leagueChannel.BidAlertRoleID != null)
+
+            var leagueChannel = await discordRepo.GetMinimalLeagueChannel(discordChannel.GuildID, discordChannel.ChannelID);
+            if (leagueChannel?.BidAlertRoleID != null)
             {
                 roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
             }
@@ -1203,7 +1285,7 @@ public class DiscordPushService
         foreach (var publisher in publishers)
         {
             var leagueID = publisher.LeagueYearKey.LeagueID;
-            var leagueChannels = await discordRepo.GetLeagueChannels(leagueID);
+            var leagueChannels = await GetDiscordChannelsForLeague(leagueID);
             if (!leagueChannels.Any())
             {
                 continue;
@@ -1273,7 +1355,7 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var channels = await GetChannelsForLeague(leagueYear.League.LeagueID, discordRepo);
+        var channels = await GetSocketChannelsForLeague(leagueYear.League.LeagueID);
         if (!channels.Any())
         {
             return;
@@ -1296,7 +1378,7 @@ public class DiscordPushService
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
         var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
 
-        var channels = await GetChannelsForLeague(leagueYear.League.LeagueID, discordRepo);
+        var channels = await GetSocketChannelsForLeague(leagueYear.League.LeagueID);
         if (!channels.Any())
         {
             return;
@@ -1367,5 +1449,22 @@ public class DiscordPushService
         }
 
         return true;
+    }
+
+    private async Task<IReadOnlyList<MinimalConferenceChannel>> GetConferenceChannelsForLeague(Guid leagueID)
+    {
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var fantasyCriticRepo = scope.ServiceProvider.GetRequiredService<IFantasyCriticRepo>();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+
+        var league = await fantasyCriticRepo.GetLeague(leagueID);
+        if (league?.ConferenceID == null)
+        {
+            return [];
+        }
+        var conferenceChannels = await discordRepo.GetConferenceChannels(league.ConferenceID.Value);
+        var conferenceChannelsToAlert = conferenceChannels.Where(c => c.SendLeagueNews).ToList();
+        return conferenceChannelsToAlert;
     }
 }

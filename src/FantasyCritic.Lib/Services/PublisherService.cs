@@ -64,7 +64,7 @@ public class PublisherService
         RemoveGameDomainRequest removeGameRequest = new RemoveGameDomainRequest(publisher, publisherGame);
         LeagueAction leagueAction = new LeagueAction(removeGameRequest, now);
         await _fantasyCriticRepo.ManagerRemovePublisherGame(leagueYear, publisher, publisherGame, formerPublisherGame, leagueAction);
-        await _discordPushService.SendLeagueManagerRemovePublisherGameMessage(publisher, publisherGame.GameName);
+        await _discordPushService.SendLeagueManagerManualPublisherGameMessage(publisher, publisherGame.GameName, false);
     }
 
     public async Task<Result> EditPublisher(EditPublisherRequest editValues)

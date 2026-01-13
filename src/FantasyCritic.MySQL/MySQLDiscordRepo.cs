@@ -41,14 +41,14 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, leagueChannelEntity);
     }
 
-    public async Task SetConferenceChannel(Guid conferenceID, ulong guildID, ulong channelID)
+    public async Task SetConferenceChannel(Guid conferenceID, ulong guildID, ulong channelID, bool sendLeagueNews)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var conferenceChannelEntity = new ConferenceChannelEntity(guildID, channelID, conferenceID);
+        var conferenceChannelEntity = new ConferenceChannelEntity(guildID, channelID, conferenceID, sendLeagueNews);
         var existingChannel = await GetConferenceChannelEntity(guildID, channelID);
         var sql = existingChannel == null
-            ? "INSERT INTO tbl_discord_conferencechannel (GuildID,ChannelID,ConferenceID) VALUES (@GuildID, @ChannelID, @ConferenceID)"
-            : "UPDATE tbl_discord_conferencechannel SET ConferenceID=@ConferenceID WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
+            ? "INSERT INTO tbl_discord_conferencechannel (GuildID,ChannelID,ConferenceID,SendLeagueNews) VALUES (@GuildID, @ChannelID, @ConferenceID,@SendLeagueNews)"
+            : "UPDATE tbl_discord_conferencechannel SET ConferenceID=@ConferenceID, SendLeagueNews=@SendLeagueNews WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
         await connection.ExecuteAsync(sql, conferenceChannelEntity);
     }
 
@@ -200,6 +200,15 @@ public class MySQLDiscordRepo : IDiscordRepo
 
         var leagueChannels = await connection.QueryAsync<LeagueChannelEntity>(sql);
         return leagueChannels.Select(l => l.ToMinimalDomain()).ToList();
+    }
+
+    public async Task<IReadOnlyList<MinimalConferenceChannel>> GetAllConferenceChannels()
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        const string sql = "select * from tbl_discord_conferencechannel";
+
+        var conferenceChannels = await connection.QueryAsync<ConferenceChannelEntity>(sql);
+        return conferenceChannels.Select(l => l.ToMinimalDomain()).ToList();
     }
 
     public async Task<IReadOnlyList<GameNewsChannel>> GetAllGameNewsChannels()

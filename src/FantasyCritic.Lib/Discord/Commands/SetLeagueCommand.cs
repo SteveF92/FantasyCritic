@@ -93,7 +93,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Setting League",
-                "A league ID is required.",
+                "A league ID or URL is required.",
                 Context.User));
             return;
         }
@@ -112,7 +112,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Setting League",
-                $"No league was found for the league ID `{leagueId}`.",
+                $"No league was found for the league with an ID of `{leagueId}`.",
                 Context.User));
             return;
         }

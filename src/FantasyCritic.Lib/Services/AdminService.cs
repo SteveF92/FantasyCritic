@@ -1010,7 +1010,12 @@ public class AdminService
             }
             var newLeagueYear = oldLeagueYear.GetUpdatedLeagueYearWithNewScores(calculatedStats);
             var scoreChanges = new LeagueYearScoreChanges(oldLeagueYear, newLeagueYear);
-            await _discordPushService.SendLeagueYearScoreUpdateMessage(scoreChanges, channels);
+            IReadOnlyList<MinimalConferenceChannel> conferenceChannels = new List<MinimalConferenceChannel>();
+            if (newLeagueYear.League.ConferenceID != null)
+            {
+                conferenceChannels = await _discordRepo.GetConferenceChannels(newLeagueYear.League.ConferenceID.Value);
+            }
+            await _discordPushService.SendLeagueYearScoreUpdateMessage(scoreChanges, channels, conferenceChannels);
         }
     }
 

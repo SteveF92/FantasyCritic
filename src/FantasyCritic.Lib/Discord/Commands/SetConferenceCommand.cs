@@ -37,8 +37,8 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
     [UsedImplicitly]
     [SlashCommand("set-conference", "Sets the conference to be associated with the current channel.")]
     public async Task SetConference(
-        [Summary("conference_url_id", $"The Conference ID or the URL for your conference.")] string conferenceIdParam
-        )
+        [Summary("conference_url_id", $"The Conference ID or the URL for your conference.")] string conferenceIdParam,
+        [Summary("send_league_news", "Whether or not to send league news updates for all conference leagues in this channel")] bool sendLeagueNews = false)
     {
         await DeferAsync();
         Logger.Information("Attempting to set up channel {ChannelID} to track conference {ConferenceID}", Context.Channel.Id, conferenceIdParam);
@@ -55,7 +55,7 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Setting Conference",
-                "A conference ID is required.",
+                "A conference ID or URL is required.",
                 Context.User));
             return;
         }
@@ -74,14 +74,14 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
         {
             await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                 "Error Setting Conference",
-                $"No conference was found for the conference ID `{conferenceId}`.",
+                $"No conference was found for the conference with an ID of `{conferenceId}`.",
                 Context.User));
             return;
         }
 
         try
         {
-            await _discordRepo.SetConferenceChannel(new Guid(conferenceId), Context.Guild.Id, Context.Channel.Id);
+            await _discordRepo.SetConferenceChannel(new Guid(conferenceId), Context.Guild.Id, Context.Channel.Id, sendLeagueNews);
         }
         catch (Exception ex)
         {

@@ -320,7 +320,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
             .WithButton(GetEnableGameNewsButton())
             .Build();
 
-        await FollowupAsync("Game News is currently off for this channel, Do you want to turn it on?:", components: enableGameNewsMessage, ephemeral: true);
+        await FollowupAsync("Game News is currently off for this channel, Do you want to turn it on?", components: enableGameNewsMessage, ephemeral: true);
     }
 
     private async Task SendCustomSettingsMessage()
