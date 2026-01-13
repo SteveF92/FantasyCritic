@@ -6,6 +6,7 @@ public interface IDiscordRepo
 {
     Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int? year, ulong? botAdminRoleID);
     Task SetConferenceChannel(Guid conferenceID, ulong guildID, ulong channelID, bool sendLeagueNews);
+    Task SetConferenceLeagueNewsSetting(ulong guildID, ulong channelID, bool sendLeagueNews);
     Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting);
     Task SetGameNewsSetting(ulong guildID, ulong channelID, GameNewsSetting gameNewsSetting);
     Task SetSkippedGameNewsTags(ulong guildID, ulong channelID, IEnumerable<MasterGameTag> skippedTags);

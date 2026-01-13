@@ -9,11 +9,11 @@ using FantasyCritic.Lib.Services;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
-    private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ConferenceService _conferenceService;
     private readonly string _baseAddress;
@@ -28,7 +28,6 @@ public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
     {
         _discordRepo = discordRepo;
         _interLeagueService = interLeagueService;
-        _clock = clock;
         _discordFormatter = discordFormatter;
         _conferenceService = conferenceService;
         _baseAddress = fantasyCriticSettings.BaseAddress;

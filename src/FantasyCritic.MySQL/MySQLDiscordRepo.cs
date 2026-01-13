@@ -52,6 +52,19 @@ public class MySQLDiscordRepo : IDiscordRepo
         await connection.ExecuteAsync(sql, conferenceChannelEntity);
     }
 
+    public async Task SetConferenceLeagueNewsSetting(ulong guildID, ulong channelID, bool sendLeagueNews)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var param = new
+        {
+            GuildID = guildID,
+            ChannelID = channelID,
+            SendLeagueNews = sendLeagueNews
+        };
+        var sql = "UPDATE tbl_discord_conferencechannel SET SendLeagueNews=@SendLeagueNews WHERE ChannelID=@ChannelID AND GuildID=@GuildID";
+        await connection.ExecuteAsync(sql, param);
+    }
+
     public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting)
     {
         await using var connection = new MySqlConnection(_connectionString);
