@@ -7,11 +7,34 @@
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
       <template #cell(masterGame.maximumReleaseDate)="data">
-        <div :class="{ 'text-danger': data.item.masterGame.isReleased && !data.item.masterGame.releasingToday }" class="release-date">
-          <span>{{ data.item.masterGame.estimatedReleaseDate }}</span>
-          <span v-if="data.item.masterGame.isReleased && !data.item.masterGame.releasingToday" class="release-date-qualifier">(Released)</span>
-          <span v-if="data.item.masterGame.releasingToday" class="release-date-qualifier">(Today)</span>
-        </div>
+          <div :class="{ 'text-danger': data.item.masterGame.isReleased && !data.item.masterGame.releasingToday }" class="release-date">
+            <span>
+              {{ data.item.masterGame.estimatedReleaseDate }}
+              <span
+                v-if="getBidEligibility(data.item.masterGame) === 'tooLate'"
+                class="release-date-qualifier"
+                tabindex="0"
+                aria-label="Game is likely to be ineligible by the time bids are processed."
+                title="Game is likely to be ineligible by the time bids are processed."
+                role="img"
+              >
+                ❌
+              </span>
+              <span
+                v-if="getBidEligibility(data.item.masterGame) === 'lastChance'"
+                class="release-date-qualifier"
+                tabindex="0"
+                aria-label="This might be your last chance to bid on this game."
+                title="This might be your last chance to bid on this game."
+                role="img"
+              >
+                ⚠️
+              </span>
+
+            </span>
+            <span v-if="data.item.masterGame.isReleased && !data.item.masterGame.releasingToday" class="release-date-qualifier">(Released)</span>
+            <span v-if="data.item.masterGame.releasingToday" class="release-date-qualifier">(Today)</span>
+          </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
         {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
@@ -74,6 +97,63 @@ export default {
     selectGame(masterGame) {
       this.selectedMasterGame = masterGame;
       this.$emit('input', this.selectedMasterGame);
+    },
+    /**
+     * Determines the bid eligibility status for a given master game based on its release date.
+     *
+     * @param {Object} masterGame - The master game object to check eligibility for.
+     * @param {string|Date} masterGame.releaseDate - The release date of the master game.
+     * @returns {string} - Returns one of the following statuses:
+     *   - 'tooLate': The game's release date is before the next open bidding time.
+     *   - 'lastChance': The game's release date is between the next and following open bidding times.
+     *   - '': The game is eligible for bidding beyond the following open bidding time.
+     */
+    getBidEligibility(masterGame) {
+      if (!masterGame.releaseDate) {
+        return 'notYetEligible';
+      }
+      const releaseTime = new Date(masterGame.releaseDate).getTime();
+      const nextBidTime = this.retrieveNextOpenBiddingTime().getTime();
+      const followingBidTime = this.retrieveFollowingOpenBiddingTime().getTime();
+
+      if (releaseTime < nextBidTime) {
+        return 'tooLate';
+      } else if (releaseTime < followingBidTime) {
+        return 'lastChance';
+      } else {
+        return '';
+      }
+    },
+    /**
+     * Retrieves the next open bidding time based on the league's pickup system.
+     * - If the pickup system is "SecretBidding", returns the next bid lock time.
+     * - For "SemiPublicBidding" and "SemiPublicBiddingSecretCounterPicks", returns the next public bidding time.
+     * Utilizes Vuex store getters and state to determine the appropriate time.
+     *
+     * @returns {Date} The next relevant bidding time as a Date object.
+     */
+    retrieveNextOpenBiddingTime() {
+      const bidTimes = this.$store.getters.bidTimes;
+      const pickupSystem = this.$store.state.leagueYear?.options?.pickupSystem;
+      if (pickupSystem === "SecretBidding") {
+        return new Date(bidTimes.nextBidLockTime);
+      }
+      return new Date(bidTimes.nextPublicBiddingTime);
+    },
+    /**
+     * Calculates the following open bidding time based on the league's pickup system.
+     * - Retrieves the next open bidding time using `retrieveNextOpenBiddingTime()`.
+     * - Determines the interval in days: 7 for "SecretBidding", 14 otherwise.
+     * - Returns a new Date object representing the next open bidding time plus the interval.
+     *
+     * @returns {Date} The Date of the following open bidding time.
+     */
+    retrieveFollowingOpenBiddingTime() {
+      const nextBidTime = this.retrieveNextOpenBiddingTime();
+      const pickupSystem = this.$store.state.leagueYear?.options?.pickupSystem;
+      const intervalDays = pickupSystem === "SecretBidding" ? 7 : 14;
+
+      return new Date(nextBidTime.getTime() + intervalDays * 24 * 60 * 60 * 1000);
     }
   }
 };
