@@ -12,7 +12,7 @@
               {{ data.item.masterGame.estimatedReleaseDate }}
               <span
                 v-if="getBidEligibility(data.item.masterGame) === 'tooLate'"
-                class="release-date-qualifier"
+                class="release-date-qualifier emoji-tooltip"
                 tabindex="0"
                 aria-label="Game is likely to be ineligible by the time bids are processed."
                 title="Game is likely to be ineligible by the time bids are processed."
@@ -22,7 +22,7 @@
               </span>
               <span
                 v-if="getBidEligibility(data.item.masterGame) === 'lastChance'"
-                class="release-date-qualifier"
+                class="release-date-qualifier emoji-tooltip"
                 tabindex="0"
                 aria-label="This might be your last chance to bid on this game."
                 title="This might be your last chance to bid on this game."
@@ -180,5 +180,8 @@ export default {
 
 .release-date-qualifier {
   margin-left: 5px;
+}
+.emoji-tooltip {
+  cursor: pointer;
 }
 </style>
