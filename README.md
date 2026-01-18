@@ -25,7 +25,7 @@ app can also be run via webpack dev server, instead of the ASP.NET core app. Not
 You'll need to install a few things:
 
 - .NET 10
-- A C# IDE (I use Visual Studio 2022)
+- A C# IDE (I use Visual Studio 2026)
 - MySQL
 
 Once you have everything installed, you'll need to run the MySQL scripts to get your database set up. You can find them in "Database" folder. Start with the folder in "SchemaCreates" with the highest version number. Run "FCTableCreate.sql" and then "FCDataInsert.sql" on your local MySQL server. Then check the "SchemaUpdates" folder. If there are any files with a version number higher than the SchemaCreate that you ran, you'll need to run those too. The naming scheme is:
