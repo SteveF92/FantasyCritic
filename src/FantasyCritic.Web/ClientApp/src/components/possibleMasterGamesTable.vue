@@ -7,34 +7,23 @@
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
       <template #cell(masterGame.maximumReleaseDate)="data">
-          <div :class="{ 'text-danger': data.item.masterGame.isReleased && !data.item.masterGame.releasingToday }" class="release-date">
-            <span>
-              {{ data.item.masterGame.estimatedReleaseDate }}
-              <span
-                v-if="getBidEligibility(data.item.masterGame) === 'tooLate'"
-                class="release-date-qualifier emoji-tooltip"
-                tabindex="0"
-                aria-label="Game is likely to be ineligible by the time bids are processed."
-                title="Game is likely to be ineligible by the time bids are processed."
-                role="img"
-              >
-                ❌
-              </span>
-              <span
-                v-if="getBidEligibility(data.item.masterGame) === 'lastChance'"
-                class="release-date-qualifier emoji-tooltip"
-                tabindex="0"
-                aria-label="This might be your last chance to bid on this game."
-                title="This might be your last chance to bid on this game."
-                role="img"
-              >
-                ⚠️
-              </span>
+        <div :class="{ 'text-danger': data.item.masterGame.isReleased && !data.item.masterGame.releasingToday }" class="release-date">
+          <span>
+            {{ data.item.masterGame.estimatedReleaseDate }}
+            <font-awesome-icon
+              v-if="getBidEligibility(data.item.masterGame) === 'tooLate'"
+              v-b-popover.hover.focus="'Game is likely to be ineligible by the time bids are processed.'"
+              icon="xmark"
+              size="xl" />
 
-            </span>
-            <span v-if="data.item.masterGame.isReleased && !data.item.masterGame.releasingToday" class="release-date-qualifier">(Released)</span>
-            <span v-if="data.item.masterGame.releasingToday" class="release-date-qualifier">(Today)</span>
-          </div>
+            <font-awesome-icon
+              v-if="getBidEligibility(data.item.masterGame) === 'lastChance'"
+              v-b-popover.hover.focus="'This might be your last chance to bid on this game.'"
+              icon="exclamation-triangle" />
+          </span>
+          <span v-if="data.item.masterGame.isReleased && !data.item.masterGame.releasingToday" class="release-date-qualifier">(Released)</span>
+          <span v-if="data.item.masterGame.releasingToday" class="release-date-qualifier">(Today)</span>
+        </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
         {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
@@ -135,7 +124,7 @@ export default {
     retrieveNextOpenBiddingTime() {
       const bidTimes = this.$store.getters.bidTimes;
       const pickupSystem = this.$store.state.leagueYear?.options?.pickupSystem;
-      if (pickupSystem === "SecretBidding") {
+      if (pickupSystem === 'SecretBidding') {
         return new Date(bidTimes.nextBidLockTime);
       }
       return new Date(bidTimes.nextPublicBiddingTime);
@@ -151,7 +140,7 @@ export default {
     retrieveFollowingOpenBiddingTime() {
       const nextBidTime = this.retrieveNextOpenBiddingTime();
       const pickupSystem = this.$store.state.leagueYear?.options?.pickupSystem;
-      const intervalDays = pickupSystem === "SecretBidding" ? 7 : 14;
+      const intervalDays = pickupSystem === 'SecretBidding' ? 7 : 14;
 
       return new Date(nextBidTime.getTime() + intervalDays * 24 * 60 * 60 * 1000);
     }
