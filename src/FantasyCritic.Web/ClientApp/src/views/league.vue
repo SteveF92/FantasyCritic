@@ -113,6 +113,7 @@
         <ul>
           <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
         </ul>
+        <p>Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.</p>
         <b-button v-if="mustSetDraftOrder" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
       </div>
 
@@ -131,7 +132,8 @@
       <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
         <div class="alert alert-success">
           <span v-if="league.isManager">
-            Things are all set to get started!
+            <p>Things are all set to get started!</p>
+            <p>Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.</p>
             <b-button v-b-modal="'startDraft'" variant="primary" class="mx-2">Start Drafting!</b-button>
           </span>
           <span v-if="!league.isManager">Things are all set to get started! Your league manager can choose when to begin the draft.</span>
