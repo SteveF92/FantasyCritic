@@ -22,37 +22,13 @@
       </ul>
     </div>
 
-    <h2>Community</h2>
+    <h2>General Questions</h2>
     <div class="text-well">
-      <h3>
-        <a href="https://discord.gg/dNa7DD3" target="_blank">
-          <font-awesome-icon :icon="['fab', 'discord']" size="lg" class="discord-icon" />
-          Join our Discord Server!
-        </a>
-      </h3>
-      <div>
-        <p>The Discord is the primary home for the Fantasy Critic community. We have channels for:</p>
-        <ul>
-          <li>Finding a league</li>
-          <li>Rating each other's game lineups</li>
-          <li>Debating what tags a game should have</li>
-          <li>Tech Support</li>
-          <li>Discussing new features</li>
-          <li>...and more</li>
-        </ul>
-      </div>
-      <h2>
-        <a href="https://www.reddit.com/r/fantasycritic/" target="_blank">
-          <font-awesome-icon :icon="['fab', 'reddit']" size="lg" class="reddit-icon" />
-          r/fantasycritic
-        </a>
-      </h2>
-      <div>
-        <p>
-          The subreddit admittedly doesn't see as much traffic as it used to, as it's been largely supplanted by our Discord. However, it may still be where you want to go if you want to post
-          something very detailed like a feature proposal. I do still check it, but you'll get a faster response from both myself and the community on our Discord.
-        </p>
-      </div>
+      If you have a question that is not answered by the
+      <router-link :to="{ name: 'faq' }">FAQ page</router-link>
+      , you can probably get a good answer from our
+      <router-link :to="{ name: 'community' }">community</router-link>
+      , particularly on Discord.
     </div>
 
     <h2>How to Reach Me Directly</h2>

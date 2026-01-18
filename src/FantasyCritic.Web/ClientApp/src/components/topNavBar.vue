@@ -50,6 +50,11 @@
           <span class="full-nav">Contact</span>
         </b-nav-item>
 
+        <b-nav-item :to="{ name: 'community' }">
+          <font-awesome-icon class="topnav-icon" icon="users" size="lg" fixed-width />
+          <span class="full-nav">Community</span>
+        </b-nav-item>
+
         <b-nav-item href="https://store.fantasycritic.games" target="_blank">
           <font-awesome-icon class="topnav-icon" icon="cart-shopping" size="lg" fixed-width />
           <span class="full-nav">Store</span>

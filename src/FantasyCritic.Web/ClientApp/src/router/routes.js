@@ -5,6 +5,7 @@ import DiscordBot from '@/views/discordBot.vue';
 import HowToPlay from '@/views/howToPlay.vue';
 import Faq from '@/views/faq.vue';
 import Contact from '@/views/contact.vue';
+import Community from '@/views/community.vue';
 import CreateLeague from '@/views/createLeague.vue';
 import CreateConference from '@/views/createConference.vue';
 import League from '@/views/league.vue';
@@ -104,6 +105,15 @@ export const routes = [
     name: 'contact',
     meta: {
       title: 'Contact',
+      isPublic: true
+    }
+  },
+  {
+    path: '/community',
+    component: Community,
+    name: 'community',
+    meta: {
+      title: 'Community',
       isPublic: true
     }
   },
