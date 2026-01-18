@@ -2,11 +2,13 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import Vuex from 'vuex';
+import BootstrapVue from 'bootstrap-vue';
 
 let store;
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
+localVue.use(BootstrapVue);
 
 describe('getBidEligibility method',()=>{
     // Helper to create a store with a given pickup system and bid times
