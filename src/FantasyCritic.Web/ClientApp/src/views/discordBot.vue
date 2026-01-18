@@ -115,6 +115,7 @@
                 <li><router-link :to="{ hash: '#set-league' }">Set Up a League in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#remove-league' }">Remove the League in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#set-conference' }">Set Up a Conference in your Channel</router-link></li>
+                <li><router-link :to="{ hash: '#set-conference-news' }">Enable/Disable Conference League News</router-link></li>
                 <li><router-link :to="{ hash: '#remove-conference' }">Remove the Conference in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#set-bid-alert-role' }">Set a Role to Alert for Bid Information</router-link></li>
                 <li><router-link :to="{ hash: '#set-bot-admin-role' }">Set a Bot Admin Role</router-link></li>
@@ -407,9 +408,43 @@
                       <strong>Example:</strong>
                       https://www.fantasycritic.games/conference/CONFERENCE_ID_HERE/YEAR
                     </p>
+                    <p class="parameter-explanation">
+                      <code>send_league_news:</code>
+                      [optional] Whether or not to send league news updates for all conference leagues in this channel. Defaults to false.
+                    </p>
                   </span>
                 </p>
                 <span>Allows you to connect your conference to a Discord channel.</span>
+              </div>
+              <hr />
+              <div class="discord-command-explanation">
+                <h5 id="set-conference-news">Enable/Disable Conference League News</h5>
+                <p>
+                  <span class="command-label">Command:</span>
+                  <code>/set-conference-news</code>
+                </p>
+                <p>
+                  <span class="discord-param-text">
+                    <span class="param-label">Parameters:</span>
+                    <p class="parameter-explanation">
+                      <code>send_league_news:</code>
+                      Whether or not to send league news updates for all conference leagues in this channel. Set to
+                      <code>true</code>
+                      to enable or
+                      <code>false</code>
+                      to disable.
+                    </p>
+                  </span>
+                </p>
+                <span>
+                  Allows you to toggle league news updates for the conference channel. When enabled, this channel will receive league-specific updates (such as bid results, drop results, publisher score updates, and league actions) for all leagues within the conference. This is useful if you want a central channel to monitor all league activity across your entire conference.
+                  <br />
+                  <br />
+                  <strong>Note:</strong>
+                  The channel must already be configured for a conference using
+                  <code>/set-conference</code>
+                  before you can use this command.
+                </span>
               </div>
               <hr />
               <div class="discord-command-explanation">
@@ -515,7 +550,7 @@
                     </li>
                     <li>
                       <strong>Game Release Status Filters</strong>
-                      - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release this year and other similiar filters. This one requires some
+                      - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release in the current year and other similiar filters. This one requires some
                       definitions.
                       <ul>
                         <li>
