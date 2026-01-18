@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using JetBrains.Annotations;
 using Serilog;
@@ -21,6 +22,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IConferenceRepo _conferenceRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly FantasyCriticSettings _fantasyCriticSettings;
     private readonly RoleHandler _roleHandler;
@@ -29,6 +31,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         IClock clock,
         IDiscordFormatter discordFormatter,
         IFantasyCriticRepo fantasyCriticRepo,
+        IConferenceRepo conferenceRepo,
         IReadOnlyFantasyCriticUserStore userStore,
         FantasyCriticSettings fantasyCriticSettings,
         RoleHandler roleHandler)
@@ -37,6 +40,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         _clock = clock;
         _discordFormatter = discordFormatter;
         _fantasyCriticRepo = fantasyCriticRepo;
+        _conferenceRepo = conferenceRepo;
         _userStore = userStore;
         _fantasyCriticSettings = fantasyCriticSettings;
         _roleHandler = roleHandler;
@@ -139,8 +143,20 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
                 return;
             }
 
-            var usersInLeague = await _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
-            if (!usersInLeague.Contains(fantasyCriticUser))
+            var usersInLeague = (await _fantasyCriticRepo.GetUsersInLeague(league.LeagueID)).ToList();
+
+            // if this is a conference, the manager may not be in the private league, so allow them to also set up the league
+            var isConferenceManager = false;
+            if (league.ConferenceID != null)
+            {
+                var conference = await _conferenceRepo.GetConference(league.ConferenceID.Value);
+                if (conference != null)
+                {
+                    isConferenceManager = conference.ConferenceManager.UserID == fantasyCriticUser.UserID;
+                }
+            }
+
+            if (!isConferenceManager && !usersInLeague.Contains(fantasyCriticUser))
             {
                 await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter(
                     "Error Setting League",
