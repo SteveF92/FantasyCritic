@@ -102,7 +102,7 @@ public class TradeService
         }
 
         await _fantasyCriticRepo.CreateTrade(trade);
-        await _discordPushService.SendTradeUpdateMessage(trade);
+        await _discordPushService.SendTradeMessage(trade);
 
         return Result.Success();
     }
@@ -127,7 +127,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var rescindedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Rescinded, null, now);
-        await _discordPushService.SendTradeUpdateMessage(rescindedTrade);
+        await _discordPushService.SendTradeMessage(rescindedTrade);
         return Result.Success();
     }
 
@@ -140,7 +140,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var updatedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Accepted, now, null);
-        await _discordPushService.SendTradeUpdateMessage(updatedTrade);
+        await _discordPushService.SendTradeMessage(updatedTrade);
         return Result.Success();
     }
 
@@ -153,7 +153,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var rejectedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByCounterParty, null, now);
-        await _discordPushService.SendTradeUpdateMessage(rejectedTrade);
+        await _discordPushService.SendTradeMessage(rejectedTrade);
         return Result.Success();
     }
 
@@ -166,7 +166,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var rejectedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByManager, null, now);
-        await _discordPushService.SendTradeUpdateMessage(rejectedTrade);
+        await _discordPushService.SendTradeMessage(rejectedTrade);
         return Result.Success();
     }
 
@@ -217,7 +217,7 @@ public class TradeService
 
         var executedTrade = new ExecutedTrade(trade, completionTime, newPublisherGamesResult.Value);
         var finalizedTrade = await _fantasyCriticRepo.ExecuteTrade(executedTrade);
-        await _discordPushService.SendTradeUpdateMessage(finalizedTrade);
+        await _discordPushService.SendTradeMessage(finalizedTrade);
         return Result.Success();
     }
 }

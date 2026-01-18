@@ -869,7 +869,7 @@ public class DiscordPushService
         return preparedMessages;
     }
 
-    public async Task SendTradeUpdateMessage(Trade trade)
+    public async Task SendTradeMessage(Trade trade)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -879,7 +879,6 @@ public class DiscordPushService
 
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
         var channels = await GetSocketChannelsForLeague(trade.LeagueYear.League.LeagueID);
         if (!channels.Any())
@@ -919,7 +918,6 @@ public class DiscordPushService
 
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
         var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
 
         var channels = await GetSocketChannelsForLeague(leagueYear.League.LeagueID);
@@ -1004,7 +1002,6 @@ public class DiscordPushService
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
         var fantasyCriticRepo = scope.ServiceProvider.GetRequiredService<IFantasyCriticRepo>();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
         var systemWideValues = await fantasyCriticRepo.GetSystemWideValues();
 
@@ -1062,47 +1059,38 @@ public class DiscordPushService
 
     private static string BuildTradeMessage(Trade trade, bool includeMessage)
     {
-        var message = $"**{trade.Proposer.GetPublisherAndUserDisplayName()}** will receive: ";
+        var message = $"**{trade.Proposer.GetPublisherAndUserDisplayName()}** will receive:";
 
         var counterPartySendGames = BuildGameListText(trade.CounterPartyMasterGames);
         var hasCounterPartySendGames = !string.IsNullOrEmpty(counterPartySendGames);
 
         if (hasCounterPartySendGames)
         {
-            message += counterPartySendGames;
+            message += $"\n{counterPartySendGames}";
         }
 
-        if (trade.CounterPartyBudgetSendAmount != default)
+        if (trade.CounterPartyBudgetSendAmount != 0)
         {
-            if (hasCounterPartySendGames)
-            {
-                message += " and ";
-            }
-            message += $"**${trade.CounterPartyBudgetSendAmount}** of budget";
+            message += $"\n- **${trade.CounterPartyBudgetSendAmount}** of budget";
         }
 
-        message += $"\n**{trade.CounterParty.GetPublisherAndUserDisplayName()}** will receive: ";
+        message += $"\n**{trade.CounterParty.GetPublisherAndUserDisplayName()}** will receive:";
 
         var proposerSendGames = BuildGameListText(trade.ProposerMasterGames);
         var hasProposerSendGames = !string.IsNullOrEmpty(proposerSendGames);
         if (hasProposerSendGames)
         {
-            message += proposerSendGames;
+            message += $"\n{proposerSendGames}";
         }
 
-        if (trade.ProposerBudgetSendAmount != default)
+        if (trade.ProposerBudgetSendAmount != 0)
         {
-            if (hasProposerSendGames)
-            {
-                message += " and ";
-            }
-
-            message += $"**${trade.ProposerBudgetSendAmount}** of budget";
+            message += $"\n- **${trade.ProposerBudgetSendAmount}** of budget";
         }
 
         if (includeMessage)
         {
-            message += $"\nMessage from **{trade.Proposer.GetPublisherAndUserDisplayName()}**: **{trade.Message}**";
+            message += $"\nMessage from **{trade.Proposer.GetPublisherAndUserDisplayName()}**:\n**\"{trade.Message}\"**";
         }
 
         return message;
@@ -1159,8 +1147,8 @@ public class DiscordPushService
 
     private static string BuildGameListText(IEnumerable<MasterGameYearWithCounterPick> games)
     {
-        var gameNames = games.Select(g => g.MasterGameYear.MasterGame.GameName);
-        var gameNameString = string.Join(" and ", gameNames);
+        var gameNames = games.Select(g => $"- {g.MasterGameYear.MasterGame.GameName + (g.CounterPick ? " (Counter Pick)" : "")}");
+        var gameNameString = string.Join("\n", gameNames);
         return gameNameString;
     }
 
@@ -1278,7 +1266,6 @@ public class DiscordPushService
 
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
         var preparedMessages = new List<PreparedDiscordMessage>();
 
@@ -1353,7 +1340,6 @@ public class DiscordPushService
 
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
         var channels = await GetSocketChannelsForLeague(leagueYear.League.LeagueID);
         if (!channels.Any())
@@ -1375,7 +1361,6 @@ public class DiscordPushService
 
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
-        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
         var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
 
         var channels = await GetSocketChannelsForLeague(leagueYear.League.LeagueID);
