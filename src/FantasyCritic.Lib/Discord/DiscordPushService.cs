@@ -624,7 +624,7 @@ public class DiscordPushService
             return;
         }
 
-        var leagueText = GetLeagueText(publisher.LeagueYearKey.LeagueID, true, "League: ");
+        var leagueText = await GetLeagueText(publisher.LeagueYearKey.LeagueID, true, "League: ");
         var messageToSend = $"## Publisher Joined\n{leagueText}Publisher **{publisher.GetPublisherAndUserDisplayName()}** has joined the league!";
 
         var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, messageToSend));
