@@ -32,44 +32,67 @@
           something very detailed like a feature proposal. I do still check it, but you'll get a faster response from both myself and the community on our Discord.
         </p>
       </div>
-    </div>
-    <h2>Hype Factor</h2>
-    <div class="text-well hype-factor-section">
-      <img src="@/assets/hype-factor-logo.png" />
-      <div>
-        <p>
-          Hype Factor is a monthly Fantasy Critic podcast hosted by
-          <a
-            href="https://bsky.app/profile/jon32.bsky.social
-">
-            Jon32
-          </a>
-          and
-          <a href="https://bsky.app/profile/marcusoneill79.bsky.social">Marcus O'Neill</a>
-          . In each episode, they breakdown the year's releases, discuss the news and predict review scores - all through a Fantasy Critic lens.
-        </p>
-        <p>
-          While Hype Factor is not an "official" Fantasy Critic podcast and I, Steve Fallon, have no editorial control over it, I can confidently say that these two have a great grasp on the gaming
-          world and Fantasy Critic strategy. If you are looking for a place to start when looking to get more engaged with Fantasy Critic throughout the year, this is where I would start.
-        </p>
 
-        <p>
-          Hype Factor can be found on most podcast platforms, including
-          <a href="https://open.spotify.com/show/1hMMij30x9CNbToeHm2q06">Spotify</a>
-          and
-          <a href="https://podcasts.apple.com/us/podcast/hype-factor-a-fantasy-critic-podcast/id1784246680">Apple Podcasts</a>
-          .
-        </p>
+      <hr />
+
+      <div class="row">
+        <div class="col-lg-12 col-xl-6">
+          <h2>Hype Factor</h2>
+          <p>
+            Hype Factor is a monthly Fantasy Critic podcast hosted by
+            <a href="https://bsky.app/profile/jon32.bsky.social">Jon32</a>
+            and
+            <a href="https://bsky.app/profile/marcusoneill79.bsky.social">Marcus O'Neill</a>
+            . In each episode, they breakdown the year's releases, discuss the news and predict review scores - all through a Fantasy Critic lens.
+          </p>
+          <p>
+            While Hype Factor is not an "official" Fantasy Critic podcast and I, Steve Fallon, have no editorial control over it, I can confidently say that these two have a great grasp on the gaming
+            world and Fantasy Critic strategy. If you are looking for a place to start when looking to get more engaged with Fantasy Critic throughout the year, this is where I would start.
+          </p>
+
+          <p>
+            Hype Factor can be found on most podcast platforms, including
+            <a href="https://open.spotify.com/show/1hMMij30x9CNbToeHm2q06">Spotify</a>
+            and
+            <a href="https://podcasts.apple.com/us/podcast/hype-factor-a-fantasy-critic-podcast/id1784246680">Apple Podcasts</a>
+            .
+          </p>
+        </div>
+        <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
+          <b-img src="/images/hype-factor-logo.png" fluid alt="Hype Factor Logo" class="fixed-image"></b-img>
+        </div>
       </div>
+
+      <hr />
+
+      <div class="row">
+        <div class="col-lg-12 col-xl-6">
+          <h2>2026 Draft Guide</h2>
+          <p>
+            Created by HikarW from the Fantasy Critic Discord, this is an
+            <em>extremely</em>
+            in depth drafting guide for the 2026 season. Again, I, Steve Fallon, cannot guarantee it's accuracy, but I wanted to feature it here as it is very clearly well researched. Click
+            <a href="/documents/HikarW's 2026 FantasyCritic Draft Guide.pdf" target="_blank" rel="noopener">here</a>
+            for the full guide.
+          </p>
+        </div>
+        <div class="col-lg-12 col-xl-6 d-flex justify-content-center">
+          <a href="/images/2026-draft-guide.jpg" target="_blank" rel="noopener">
+            <b-img src="/images/2026-draft-guide.jpg" fluid alt="Draft Guide Summary" class="fixed-image"></b-img>
+          </a>
+        </div>
+      </div>
+
+      <hr />
+
+      <h2>Your creations!</h2>
+      <p>Have you made something Fantasy Critic related that you think deserves a spot here? Send me a message and maybe I'll add it.</p>
     </div>
-    <h2>Your creations!</h2>
-    <div class="text-well">Have you made something Fantasy Critic related that you think deserves a spot here? Send me a message and maybe I'll add it.</div>
   </div>
 </template>
 <style scoped>
-.hype-factor-section {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+.fixed-image {
+  max-width: 300px;
+  max-height: 300px;
 }
 </style>
