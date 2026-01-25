@@ -15,18 +15,11 @@
         </div>
       </div>
       <hr />
-      <div class="row">
-        <div class="col-12 col-lg-3">
-          <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameRequest' }" class="nav-link request-button">Request new Master Game</b-button>
-        </div>
-        <div class="col-12 col-lg-3">
-          <b-button v-if="isAuth" variant="info" :to="{ name: 'masterGameChangeRequest' }" class="nav-link request-button">Suggest a Correction</b-button>
-        </div>
-        <div class="col-12 col-lg-3">
-          <b-button variant="info" :to="{ name: 'gameChanges' }" class="nav-link request-button">See Recent Game Changes</b-button>
-        </div>
-        <div class="col-12 col-lg-3">
-          <b-button variant="info" :to="{ name: 'topBidsAndDrops' }" class="nav-link request-button">See Top Bids/Drops</b-button>
+      <div class="row g-2">
+        <div v-for="item in navItems" :key="item.name" class="col-12 col-sm-6 col-lg-3">
+          <b-button variant="info" :to="{ name: item.name }" class="request-button w-100">
+            {{ item.label }}
+          </b-button>
         </div>
       </div>
 
@@ -94,6 +87,14 @@ export default {
   computed: {
     selectableYears() {
       return this.supportedYears.map((x) => x.year);
+    },
+    navItems() {
+      const items = [];
+      if (this.isAuth) {
+        items.push({ name: 'masterGameRequest', label: 'Request new Master Game' }, { name: 'masterGameChangeRequest', label: 'Suggest a Correction' });
+      }
+      items.push({ name: 'gameChanges', label: 'See Recent Game Changes' }, { name: 'topBidsAndDrops', label: 'See Top Bids/Drops' });
+      return items;
     },
     gamesToShow() {
       if (this.flatMasterGameYears) {
