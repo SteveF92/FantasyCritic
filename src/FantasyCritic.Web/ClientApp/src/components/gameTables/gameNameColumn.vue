@@ -5,7 +5,7 @@
       <b-button v-show="holdingGame && !gameSlot.counterPick" variant="success" class="move-button" @click="placeGame">Here</b-button>
       <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :game-slot="gameSlot"></slotTypeBadge>
       <span v-if="game" class="master-game-popover">
-        <masterGamePopover v-if="game.linked" :master-game="game.masterGame" :currently-ineligible="!gameSlot.gameMeetsSlotCriteria"></masterGamePopover>
+        <masterGamePopover v-if="game.linked" :master-game="game.masterGame" :currently-ineligible="!gameSlot.gameMeetsSlotCriteria && !gameSlot.gameIsCancelled"></masterGamePopover>
         <span v-if="!game.linked">{{ game.gameName }}</span>
       </span>
     </span>
@@ -24,7 +24,7 @@
       </template>
 
       <font-awesome-icon v-if="game.manualCriticScore" v-b-popover.hover.focus="manuallyScoredText" color="white" size="lg" icon="pen" />
-      <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria" v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="exclamation-triangle" />
+      <font-awesome-icon v-if="!gameSlot.gameMeetsSlotCriteria && !gameSlot.gameIsCancelled" v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="exclamation-triangle" />
       <font-awesome-icon v-if="gameSlot.counterPickedGameIsInvalid" v-b-popover.hover.focus="counterPickedGameIsInvalidText" color="white" size="lg" icon="exclamation-triangle" />
     </span>
 
