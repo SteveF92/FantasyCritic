@@ -285,9 +285,15 @@
           only the names of the games. From this point until bids process at 8PM on Saturday, players can edit the dollar amounts on the bids they have already made, or bid on a game that someone else
           has bid on that they haven't. However, players are
           <strong>not</strong>
-          allowed to bid for a game that no one is currently bidding on, and players
+          allowed to bid for a game that no one is currently bidding on. Additionally, any bids placed
+          <em>before</em>
+          the bids are revealed
           <strong>cannot</strong>
-          cancel a bid entirely in the 'public bidding window'.
+          be cancelled once they are revealed. However, a bid that was placed
+          <em>during</em>
+          the public bidding window
+          <strong>can</strong>
+          be cancelled.
         </p>
 
         <p>

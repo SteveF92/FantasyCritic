@@ -308,10 +308,10 @@ public class GameAcquisitionService
 
     public async Task<Result> RemovePickupBid(PickupBid bid)
     {
-        bool canCancelBid = CanCancelBid(bid.LeagueYear, bid.CounterPick);
+        bool canCancelBid = CanCancelBid(bid.LeagueYear, bid.CounterPick, bid.Timestamp);
         if (!canCancelBid)
         {
-            return Result.Failure("Can't cancel a bid when in the public bidding window.");
+            return Result.Failure("You can't cancel a bid after it has been made public.");
         }
 
         var now = _clock.GetCurrentInstant();
@@ -330,10 +330,16 @@ public class GameAcquisitionService
         return Result.Success();
     }
 
-    private bool CanCancelBid(LeagueYear leagueYear, bool counterPick)
+    private bool CanCancelBid(LeagueYear leagueYear, bool counterPick, Instant bidTimestamp)
     {
         bool inPublicBidWindow = IsInPublicBiddingWindow(leagueYear);
         if (!inPublicBidWindow)
+        {
+            return true;
+        }
+
+        bool bidWasPlacedDuringPublicBidWindow = WasBidPlacedDuringPublicBiddingWindow(leagueYear, bidTimestamp);
+        if (bidWasPlacedDuringPublicBidWindow)
         {
             return true;
         }
@@ -488,7 +494,23 @@ public class GameAcquisitionService
         var currentTime = _clock.GetCurrentInstant();
         var publicBidDateTime = GetCurrentWeekPublicBidTime();
 
-        return currentTime > publicBidDateTime;
+        return currentTime >= publicBidDateTime;
+    }
+
+    public bool WasBidPlacedDuringPublicBiddingWindow(LeagueYear leagueYear, Instant bidTimestamp)
+    {
+        if (!leagueYear.Options.PickupSystem.HasPublicBiddingWindow)
+        {
+            return false;
+        }
+
+        if (!leagueYear.PlayStatus.DraftFinished)
+        {
+            return false;
+        }
+
+        var publicBidDateTime = GetCurrentWeekPublicBidTime();
+        return bidTimestamp >= publicBidDateTime;
     }
 
     public Instant GetCurrentWeekPublicBidTime()
