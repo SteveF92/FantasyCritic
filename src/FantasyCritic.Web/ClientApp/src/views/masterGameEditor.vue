@@ -82,6 +82,14 @@
                 <input id="openCriticID" v-model="masterGame.openCriticID" name="openCriticID" class="form-control input" />
               </div>
 
+              <div class="form-group" v-if="masterGame.criticScore">
+                <label for="criticScore" class="control-label">Critic Score</label>
+                <input id="criticScore" v-model="masterGame.criticScore" name="criticScore" class="form-control input" disabled />
+                <b-form-checkbox v-model="clearCriticScore">
+                  <span class="checkbox-label">Clear Critic Score?</span>
+                </b-form-checkbox>
+              </div>
+
               <div class="form-group">
                 <label for="ggToken" class="control-label">GG Token</label>
                 <input id="ggToken" v-model="masterGame.ggToken" name="ggToken" class="form-control input" />
@@ -126,6 +134,10 @@
                 <input id="boxartFileName" v-model="masterGame.boxartFileName" name="boxartFileName" class="form-control input" />
               </div>
 
+              <div v-if="clearCriticScore && !masterGame.doNotRefreshAnything" class="alert alert-warning">
+                Are you sure you want to clear the critic score while leaving Open Critic Score Refreshing on?
+              </div>
+
               <div class="submit-button">
                 <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
                 <b-form-checkbox v-model="minorEdit">
@@ -159,7 +171,8 @@ export default {
       tags: [],
       responseInfo: null,
       generatedSQL: null,
-      minorEdit: false
+      minorEdit: false,
+      clearCriticScore: false
     };
   },
   watch: {
@@ -235,6 +248,7 @@ export default {
       let request = this.masterGame;
       request.minorEdit = this.minorEdit;
       request.tags = tagNames;
+      request.clearCriticScore = this.clearCriticScore;
 
       try {
         const response = await axios.post('/api/factChecker/EditMasterGame', request);

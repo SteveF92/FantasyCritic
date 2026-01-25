@@ -21,6 +21,7 @@ public class EditMasterGameRequest
     public bool UseSimpleEligibility { get; init; }
     public bool DelayContention { get; init; }
     public bool ShowNote { get; init; }
+    public bool ClearCriticScore { get; init; }
 
     public LocalDate? MaximumReleaseDate { get; init; }
     public LocalDate? EarlyAccessReleaseDate { get; init; }
@@ -34,8 +35,10 @@ public class EditMasterGameRequest
 
     public Lib.Domain.MasterGame ToDomain(Lib.Domain.MasterGame existingMasterGame, Instant timestamp, IEnumerable<MasterGameTag> tags)
     {
+        var criticScore = ClearCriticScore ? null : existingMasterGame.RawCriticScore;
         var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName.Trim(), EstimatedReleaseDate.Trim(), MinimumReleaseDate, MaximumReleaseDate,
-            EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.GGSlug, existingMasterGame.RawCriticScore, existingMasterGame.HasAnyReviews, existingMasterGame.OpenCriticSlug,
+            EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.GGSlug, criticScore,
+            existingMasterGame.HasAnyReviews, existingMasterGame.OpenCriticSlug,
             Notes, existingMasterGame.BoxartFileName, existingMasterGame.GGCoverArtFileName, existingMasterGame.FirstCriticScoreTimestamp,
             DoNotRefreshDate, DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote,
             timestamp, existingMasterGame.AddedByUser, existingMasterGame.SubGames, tags);
