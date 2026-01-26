@@ -99,6 +99,12 @@ let leagueMixin = {
     draftFinished() {
       return this.leagueYear.playStatus.draftFinished;
     },
+    postDraftPlayable() {
+      return this.leagueYear.playStatus.draftFinished && !this.leagueYear.supportedYear.finished;
+    },
+    postDraftEditable() {
+      return this.leagueYear.playStatus.draftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
+    },
     decimalsToShow() {
       if (this.userInfo?.showDecimalPoints) {
         return 1;

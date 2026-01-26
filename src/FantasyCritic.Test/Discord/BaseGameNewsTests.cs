@@ -74,7 +74,7 @@ internal abstract class BaseGameNewsTests
             new Publisher(Guid.Empty, new LeagueYearKey(Guid.Empty, 2025), FantasyCriticUser.GetFakeUser(), "Publisher", null, null, 1, games, new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, AutoDraftMode.Off)
         };
         return new LeagueYear(league, supportedYear, leagueOptions, PlayStatus.DraftFinal, true,
-            new List<EligibilityOverride>(), new List<TagOverride>(), Instant.MinValue, null, publishers, null);
+            new List<EligibilityOverride>(), new List<TagOverride>(), Instant.MinValue, null, publishers, null, false);
     }
 
     private static MasterGame CreateBasicMasterGame(LocalDate minimumReleaseDate, LocalDate maximumReleaseDate, MasterGameTag tag)

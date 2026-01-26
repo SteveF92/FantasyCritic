@@ -14,5 +14,6 @@ public sealed class LeagueYearEntityMap : ClassMap<LeagueYearEntity>
         Map(m => m.MightReleaseDroppableDay).Constant(null);
         Map(m => m.AllowMoveIntoIneligible).Constant(false);
         Map(m => m.ConferenceLocked).Constant(false);
+        Map(m => m.UnderReview).Constant(false);
     }
 }

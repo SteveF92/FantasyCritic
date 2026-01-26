@@ -98,6 +98,10 @@
       </b-alert>
       <specialAuctionInfo v-for="activeSpecialAuction in leagueYear.activeSpecialAuctions" :key="activeSpecialAuction.masterGameID" :special-auction="activeSpecialAuction"></specialAuctionInfo>
       <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
+        <div v-if="leagueYear.underReview" class="alert alert-danger" role="alert">
+          This league has been set to "under review", which allows the league manager to make changes after the year is over.
+        </div>
+
         <div class="alert alert-success" role="alert">
           This year is finished! The winner is
           <strong>{{ topPublisher.publisherName }}</strong>

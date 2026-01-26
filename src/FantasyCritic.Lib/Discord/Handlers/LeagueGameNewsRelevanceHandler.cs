@@ -166,7 +166,6 @@ public class LeagueGameNewsRelevanceHandler : BaseGameNewsRelevanceHandler
 
     private bool CheckNotableMissRelevance(bool initialScore)
     {
-        
         if (_notableMissSetting == NotableMissSetting.ScoreUpdates)
         {
             return true;

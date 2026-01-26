@@ -132,6 +132,8 @@ public class LeagueYearViewModel
 
             PrivatePublisherData = new PrivatePublisherDataViewModel(leagueYear, userPublisher, supplementalData.PrivatePublisherData, supplementalData.MasterGameYearDictionary, currentDate);
         }
+
+        UnderReview = leagueYear.UnderReview;
     }
 
     public LeagueViewModel League { get; }
@@ -154,4 +156,5 @@ public class LeagueYearViewModel
     public GameNewsViewModel GameNews { get; }
     public IReadOnlyList<LeaguePublisherViewModel> AllPublishersForUser { get; }
     public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
+    public bool UnderReview { get; }
 }

@@ -605,7 +605,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> ManagerClaimGame([FromBody] ClaimGameRequest request)
     {
-        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedOrUnderReviewDraftFinished);
         if (leagueYearPublisherRecord.FailedResult is not null)
         {
             return leagueYearPublisherRecord.FailedResult;
@@ -631,7 +631,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> ManagerAssociateGame([FromBody] AssociateGameRequest request)
     {
-        var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedOrUnderReviewDraftFinished);
         if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
             return leagueYearPublisherGameRecord.FailedResult;
@@ -660,7 +660,7 @@ public class LeagueManagerController : BaseLeagueController
     [HttpPost]
     public async Task<IActionResult> RemovePublisherGame([FromBody] GameRemoveRequest request)
     {
-        var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedOrUnderReviewDraftFinished);
         if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
             return leagueYearPublisherGameRecord.FailedResult;
@@ -690,7 +690,7 @@ public class LeagueManagerController : BaseLeagueController
 
     private async Task<IActionResult> UpdateManualCriticScore(Guid publisherID, Guid publisherGameID, decimal? manualCriticScore)
     {
-        var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(publisherID, publisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(publisherID, publisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedOrUnderReviewDraftFinished);
         if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
             return leagueYearPublisherGameRecord.FailedResult;
@@ -698,8 +698,9 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearPublisherGameRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
         var publisherGame = validResult.PublisherGame;
+        var publisher = leagueYear.GetPublisherByID(publisherID);
 
-        await _fantasyCriticService.ManuallyScoreGame(publisherGame, manualCriticScore);
+        await _fantasyCriticService.ManuallyScoreGame(publisher!, publisherGame, manualCriticScore);
         var updatedLeagueYear = await _fantasyCriticService.GetLeagueYear(leagueYear.League.LeagueID, leagueYear.Year);
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(updatedLeagueYear!);
 
@@ -1154,6 +1155,24 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         Result result = await _gameAcquisitionService.CancelSpecialAuction(leagueYearRecord.ValidResult!.LeagueYear, specialAuctionForGame);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SetUnderReviewStatus([FromBody] SetUnderReviewStatusRequest request)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearFinishedDraftFinished);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+
+        var result = await _fantasyCriticService.SetUnderReview(leagueYearRecord.ValidResult!.LeagueYear, request.UnderReview);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

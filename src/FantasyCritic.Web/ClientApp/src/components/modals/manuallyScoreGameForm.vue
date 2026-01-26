@@ -121,6 +121,7 @@ export default {
       this.manuallyScoreGame = null;
       this.manualScore = null;
       this.removeManualScore = false;
+      this.errorInfo = null;
     }
   }
 };

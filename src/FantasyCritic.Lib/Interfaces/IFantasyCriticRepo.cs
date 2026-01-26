@@ -69,7 +69,7 @@ public interface IFantasyCriticRepo
 
     Task ManagerRemovePublisherGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
     Task SuperDropGame(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame, FormerPublisherGame formerPublisherGame, LeagueAction leagueAction);
-    Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore);
+    Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore, LeagueAction action);
     Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease);
 
     Task CreatePickupBid(PickupBid currentBid);
@@ -157,4 +157,5 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year);
     Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user);
     Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year);
+    Task SetUnderReview(LeagueYear leagueYear, bool underReview, LeagueManagerAction action);
 }

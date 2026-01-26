@@ -72,6 +72,7 @@ public class LeagueYearEntity
     public Instant? DraftStartedTimestamp { get; set; }
     public Guid? WinningUserID { get; set; }
     public bool? ConferenceLocked { get; set; }
+    public bool UnderReview { get; set; }
 
     public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides,
         IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
@@ -97,6 +98,7 @@ public class LeagueYearEntity
             leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem,
             counterPickDeadline, mightReleaseDroppableDate);
 
-        return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides, DraftStartedTimestamp, winningUser, publishersInLeague, ConferenceLocked);
+        return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides,
+            DraftStartedTimestamp, winningUser, publishersInLeague, ConferenceLocked, UnderReview);
     }
 }

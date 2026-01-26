@@ -190,7 +190,7 @@ public class FantasyCriticService
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
-            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked);
+            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked, leagueYear.UnderReview);
 
         var differenceString = options.GetDifferenceString(leagueYear.Options);
         if (differenceString is not null)
@@ -333,9 +333,24 @@ public class FantasyCriticService
         await _discordPushService.SendLeagueYearScoreUpdateMessage(scoreChanges);
     }
 
-    public Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
+    public async Task ManuallyScoreGame(Publisher publisher, PublisherGame publisherGame, decimal? manualCriticScore)
     {
-        return _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore);
+        string actionType;
+        string actionDescription;
+
+        if (manualCriticScore.HasValue)
+        {
+            actionType = "Manually Scored Game";
+            actionDescription = $"Manually set critic score for {publisherGame.GameName} to {manualCriticScore.Value}.";
+        }
+        else
+        {
+            actionType = "Cleared Manual Game Score";
+            actionDescription = $"Cleared manual critic score for {publisherGame.GameName}.";
+        }
+
+        var action = new LeagueAction(publisher, _clock.GetCurrentInstant(), actionType, actionDescription, true);
+        await _fantasyCriticRepo.ManuallyScoreGame(publisherGame, manualCriticScore, action);
     }
 
     public async Task ManuallySetWillNotRelease(LeagueYear leagueYear, PublisherGame publisherGame, bool willNotRelease)
@@ -557,5 +572,26 @@ public class FantasyCriticService
         return _fantasyCriticRepo.DraftIsActiveOrPaused(leagueID, year);
     }
 
-    
+    public async Task<Result> SetUnderReview(LeagueYear leagueYear, bool underReview)
+    {
+        if (underReview)
+        {
+            var lastDateToSetReview = new LocalDate(leagueYear.Year + 1, 2, 1);
+            var today = _clock.GetToday();
+            if (today >= lastDateToSetReview)
+            {
+                return Result.Failure("Leagues cannot be set to under review after a month has passed.");
+            }
+        }
+
+        string actionDescription = "Set League to 'under review', which enables manual editing of a finished year.";
+        if (!underReview)
+        {
+            actionDescription = "Turned off 'under review' mode.";
+        }
+
+        var action = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Set Under Review Status", actionDescription);
+        await _fantasyCriticRepo.SetUnderReview(leagueYear, underReview, action);
+        return Result.Success();
+    }
 }

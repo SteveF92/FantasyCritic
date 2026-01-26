@@ -330,12 +330,18 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore)
+    public async Task ManuallyScoreGame(PublisherGame publisherGame, decimal? manualCriticScore, LeagueAction action)
     {
         const string sql = "update tbl_league_publishergame SET ManualCriticScore = @manualCriticScore where PublisherGameID = @publisherGameID;";
         var updateObject = new { publisherGameID = publisherGame.PublisherGameID, manualCriticScore };
+
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(sql, updateObject);
+        await connection.OpenAsync();
+        var transaction = await connection.BeginTransactionAsync();
+
+        await AddLeagueAction(action, connection, transaction);
+        await connection.ExecuteAsync(sql, updateObject, transaction);
+        await transaction.CommitAsync();
     }
 
     public async Task ManuallySetWillNotRelease(PublisherGame publisherGame, bool willNotRelease)
@@ -3371,5 +3377,23 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         return playStatus == "Drafting" || playStatus == "DraftPaused";
+    }
+
+    public async Task SetUnderReview(LeagueYear leagueYear, bool underReview, LeagueManagerAction action)
+    {
+        const string sql = "UPDATE tbl_league_year SET UnderReview = @UnderReview WHERE LeagueID = @LeagueID AND Year = @Year;";
+        var param = new
+        {
+            LeagueID = leagueYear.Key.LeagueID,
+            Year = leagueYear.Key.Year,
+            UnderReview = underReview
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await AddLeagueManagerAction(action, connection, transaction);
+        await connection.ExecuteAsync(sql, param, transaction);
+        await transaction.CommitAsync();
     }
 }

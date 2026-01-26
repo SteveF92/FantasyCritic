@@ -12,6 +12,8 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
     public static readonly RequiredYearStatus ActiveDraft = new RequiredYearStatus("ActiveDraft");
     public static readonly RequiredYearStatus YearNotFinishedDraftNotFinished = new RequiredYearStatus("YearNotFinishedDraftNotFinished");
     public static readonly RequiredYearStatus YearNotFinishedDraftFinished = new RequiredYearStatus("YearNotFinishedDraftFinished");
+    public static readonly RequiredYearStatus YearNotFinishedOrUnderReviewDraftFinished = new RequiredYearStatus("YearNotFinishedOrUnderReviewDraftFinished");
+    public static readonly RequiredYearStatus YearFinishedDraftFinished = new RequiredYearStatus("YearFinishedDraftFinished");
 
     // Constructor is private: values are defined within this class only!
     private RequiredYearStatus(string value)
@@ -102,6 +104,26 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
+                }
+                if (!leagueYear.PlayStatus.DraftFinished)
+                {
+                    return Result.Failure("That action can't be taken until the draft is finished.");
+                }
+                break;
+            case { } status when YearNotFinishedOrUnderReviewDraftFinished.Equals(status):
+                if (leagueYear.SupportedYear.Finished && !leagueYear.UnderReview)
+                {
+                    return Result.Failure("That year is finished.");
+                }
+                if (!leagueYear.PlayStatus.DraftFinished)
+                {
+                    return Result.Failure("That action can't be taken until the draft is finished.");
+                }
+                break;
+            case { } status when YearFinishedDraftFinished.Equals(status):
+                if (!leagueYear.SupportedYear.Finished)
+                {
+                    return Result.Failure("That year is not finished.");
                 }
                 if (!leagueYear.PlayStatus.DraftFinished)
                 {

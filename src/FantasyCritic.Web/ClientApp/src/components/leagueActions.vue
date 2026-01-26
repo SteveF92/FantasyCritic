@@ -102,12 +102,15 @@
             <ul class="actions-list">
               <li v-b-modal="'managerMessageForm'" class="fake-link action">Post new Message to League</li>
               <li v-b-modal="'changeLeagueOptionsForm'" class="fake-link action">Change General League Options</li>
-              <li class="fake-link action">
+              <li v-if="postDraftPlayable" class="fake-link action">
                 <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year } }">Change Year-Specific Options</router-link>
               </li>
               <li v-if="readyToSetDraftOrder && !playStarted" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
-              <li v-if="draftFinished" v-b-modal="'specialAuctionsModal'" class="fake-link action">Special Auctions</li>
+              <li v-if="postDraftPlayable" v-b-modal="'specialAuctionsModal'" class="fake-link action">Special Auctions</li>
               <li v-b-modal="'transferManagerForm'" class="fake-link action">Promote new League Manager</li>
+              <li v-if="draftFinished && leagueYear.supportedYear.finished" v-b-modal="'toggleUnderReview'" class="fake-link action">
+                {{ leagueYear.underReview ? 'Disable Editing Finished Year' : 'Enable Editing Finished Year' }}
+              </li>
               <li v-b-modal="'addNewLeagueYear'" class="fake-link action">Start New Year</li>
             </ul>
           </li>
@@ -119,21 +122,21 @@
               <li v-if="!playStarted" v-b-modal="'createPublisherForUserForm'" class="fake-link action">Create Publisher For User</li>
               <li v-if="!playStarted" v-b-modal="'removePublisherForm'" class="fake-link action">Delete A User's Publisher</li>
               <li v-if="!draftFinished" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
-              <li v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
-              <li v-if="draftFinished" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
-              <li v-if="draftFinished" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
+              <li v-if="postDraftPlayable" v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
+              <li v-if="postDraftEditable" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
+              <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
               <li v-if="!leagueYear.supportedYear.finished" v-b-modal="'removePlayerForm'" class="fake-link action">Remove a Player</li>
-              <li v-if="draftFinished && !leagueYear.supportedYear.finished" v-b-modal="'reassignPublisherModal'" class="fake-link action">Reassign a Publisher</li>
+              <li v-if="postDraftPlayable" v-b-modal="'reassignPublisherModal'" class="fake-link action">Reassign a Publisher</li>
             </ul>
           </li>
-          <li>
+          <li v-if="postDraftEditable || postDraftPlayable">
             <strong>Override Actions</strong>
             <ul class="actions-list">
-              <li v-if="draftFinished" v-b-modal="'associateGameForm'" class="fake-link action">Associate Unlinked Game</li>
-              <li v-if="draftFinished" v-b-modal="'manuallyScorePublisherGame'" class="fake-link action">Score a Game Manually</li>
-              <li v-if="draftFinished" v-b-modal="'manuallySetWillNotRelease'" class="fake-link action">Override "Will not Release"</li>
-              <li v-b-modal="'manageEligibilityOverridesModal'" class="fake-link action">Override Game Eligibility</li>
-              <li v-b-modal="'manageTagOverridesModal'" class="fake-link action">Override Game Tags</li>
+              <li v-if="postDraftEditable" v-b-modal="'associateGameForm'" class="fake-link action">Associate Unlinked Game</li>
+              <li v-if="postDraftEditable" v-b-modal="'manuallyScorePublisherGame'" class="fake-link action">Score a Game Manually</li>
+              <li v-if="postDraftPlayable" v-b-modal="'manuallySetWillNotRelease'" class="fake-link action">Override "Will not Release"</li>
+              <li v-if="postDraftPlayable" v-b-modal="'manageEligibilityOverridesModal'" class="fake-link action">Override Game Eligibility</li>
+              <li v-if="postDraftPlayable" v-b-modal="'manageTagOverridesModal'" class="fake-link action">Override Game Tags</li>
             </ul>
           </li>
         </ul>
@@ -192,6 +195,7 @@
       <transferManagerModal></transferManagerModal>
       <managerMessageModal></managerMessageModal>
       <specialAuctionsModal></specialAuctionsModal>
+      <underReviewModal></underReviewModal>
     </div>
   </div>
 </template>
@@ -244,6 +248,7 @@ import RemovePublisherModal from '@/components/modals/removePublisherModal.vue';
 import ManagerMessageModal from '@/components/modals/managerMessageModal.vue';
 import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal.vue';
+import UnderReviewModal from '@/components/modals/underReviewModal.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
 
@@ -292,7 +297,8 @@ export default {
     CreatePublisherForUserForm,
     ProposeTradeForm,
     ActiveTradesModal,
-    SpecialAuctionsModal
+    SpecialAuctionsModal,
+    UnderReviewModal
   },
   mixins: [LeagueMixin],
   computed: {
