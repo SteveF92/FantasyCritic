@@ -300,7 +300,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     CounterPick: false,
-    SlotNumber: 12,
+    SlotNumber: 10,
     BidAmount: 51
   },
   {
@@ -1404,7 +1404,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     CounterPick: false,
-    SlotNumber: 6,
+    SlotNumber: 7,
     BidAmount: 20
   },
   {
@@ -2268,7 +2268,7 @@
     MasterGameID: 47eb6cd3-4d61-4d6b-9486-833106c0cd8d,
     GameName: Mario & Luigi: Brothership,
     CounterPick: false,
-    SlotNumber: 4,
+    SlotNumber: 5,
     BidAmount: 30
   },
   {
@@ -2276,7 +2276,7 @@
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
     GameName: The Legend of Zelda: Echoes of Wisdom,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 4,
     BidAmount: 30
   },
   {
@@ -2284,7 +2284,7 @@
     MasterGameID: db8b344a-0a54-4cbf-a62d-1690118efa6e,
     GameName: Super Mario Party Jamboree,
     CounterPick: false,
-    SlotNumber: 5,
+    SlotNumber: 9,
     BidAmount: 30
   },
   {
@@ -2436,7 +2436,7 @@
     MasterGameID: d40a3b01-bf2e-49f6-bf11-cd8f1f78cd02,
     GameName: Dragon Quest III HD-2D Remake,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 8,
     BidAmount: 10
   },
   {
@@ -19244,7 +19244,7 @@
     MasterGameID: 1935af9c-7d97-4ac7-8e2e-6f126a06d1a8,
     GameName: Factorio: Space Age,
     CounterPick: false,
-    SlotNumber: 11,
+    SlotNumber: 10,
     BidAmount: 20
   },
   {
@@ -19252,7 +19252,7 @@
     MasterGameID: fcadfdc3-3bf0-4ed6-9641-7615fab21817,
     GameName: World of Warcraft: The War Within,
     CounterPick: false,
-    SlotNumber: 10,
+    SlotNumber: 11,
     BidAmount: 10
   },
   {
@@ -25420,7 +25420,7 @@
     MasterGameID: 163fe1f8-f758-4d7d-86ed-eddb03c68902,
     GameName: Pokemon Black & White Remake (Unannounced),
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 14,
     BidAmount: 0
   },
   {
@@ -25430,6 +25430,14 @@
     CounterPick: false,
     SlotNumber: 7,
     BidAmount: 52
+  },
+  {
+    PublisherID: b7054074-9eb0-499d-a060-5c84d955a668,
+    MasterGameID: f3984b23-3c92-4f29-8a60-a3d28a87c06e,
+    GameName: Marvel vs. Capcom Fighting Collection: Arcade Classics,
+    CounterPick: false,
+    SlotNumber: 13,
+    BidAmount: 11
   },
   {
     PublisherID: b70af094-0252-4620-823e-b344eec91e93,

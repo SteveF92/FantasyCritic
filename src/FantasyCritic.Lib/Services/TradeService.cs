@@ -9,12 +9,14 @@ public class TradeService
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
     private readonly DiscordPushService _discordPushService;
+    private readonly IMasterGameRepo _masterGameRepo;
 
-    public TradeService(IFantasyCriticRepo fantasyCriticRepo, IClock clock, DiscordPushService discordPushService)
+    public TradeService(IFantasyCriticRepo fantasyCriticRepo, IClock clock, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
         _discordPushService = discordPushService;
+        _masterGameRepo = masterGameRepo;
     }
 
     public async Task<Result> ProposeTrade(LeagueYear leagueYear, Publisher proposer, Guid counterPartyPublisherID, IReadOnlyList<Guid> proposerPublisherGameIDs,
@@ -209,7 +211,8 @@ public class TradeService
         }
 
         var completionTime = _clock.GetCurrentInstant();
-        var newPublisherGamesResult = trade.GetNewPublisherGamesFromTrade(completionTime);
+        var allTags = await _masterGameRepo.GetMasterGameTags();
+        var newPublisherGamesResult = trade.GetNewPublisherGamesFromTrade(completionTime, allTags);
         if (newPublisherGamesResult.IsFailure)
         {
             return Result.Failure(newPublisherGamesResult.Error);

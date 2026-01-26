@@ -235,7 +235,7 @@ public class Trade
         return formerGames;
     }
 
-    public Result<IReadOnlyList<PublisherGame>> GetNewPublisherGamesFromTrade(Instant completionTime)
+    public Result<IReadOnlyList<PublisherGame>> GetNewPublisherGamesFromTrade(Instant completionTime, IReadOnlyList<MasterGameTag> allTags)
     {
         var dateOfAcquisition = completionTime.ToEasternDate();
         var proposerGameDictionary = Proposer.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick()!);
@@ -265,7 +265,7 @@ public class Trade
             var existingPublisherGame = proposerGameDictionary[game];
             var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlotNumbers = allOpenCounterPartySlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(CounterParty, LeagueYear, game, eligibilityFactors, openSlotNumbers);
+            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(CounterParty, LeagueYear, game, eligibilityFactors, openSlotNumbers, allTags);
             if (!slotResult.HasValue)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
@@ -281,7 +281,7 @@ public class Trade
             var existingPublisherGame = counterPartyGameDictionary[game];
             var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlotNumbers = allOpenProposerSlotNumbers.Where(x => x.CounterPick == game.CounterPick).Select(x => x.SlotNumber);
-            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(Proposer, LeagueYear, game, eligibilityFactors, openSlotNumbers);
+            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(Proposer, LeagueYear, game, eligibilityFactors, openSlotNumbers, allTags);
             if (!slotResult.HasValue)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");

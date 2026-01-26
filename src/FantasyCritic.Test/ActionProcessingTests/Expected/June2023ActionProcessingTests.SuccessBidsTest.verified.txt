@@ -14778,7 +14778,7 @@
     Priority: 1,
     BidAmount: 53,
     ProjectedPointsAtTimeOfBid: 101.6952023889436,
-    SlotNumber: 9,
+    SlotNumber: 7,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -24718,7 +24718,7 @@
     Priority: 1,
     BidAmount: 6,
     ProjectedPointsAtTimeOfBid: 95.58752407161296666666666666,
-    SlotNumber: 13,
+    SlotNumber: 9,
     Outcome: This bid was placed earliest.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null

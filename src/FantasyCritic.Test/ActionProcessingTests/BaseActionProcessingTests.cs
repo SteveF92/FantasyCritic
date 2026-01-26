@@ -53,10 +53,8 @@ public abstract class BaseActionProcessingTests
                 .ToDictionary(x => x.Key, x => x.Value);
         }
 
-        var actionProcessor = new ActionProcessor(systemWideValues, ProcessingTime, currentDate, masterGameYearDictionary);
+        var actionProcessor = new ActionProcessor(systemWideValues, ProcessingTime, currentDate, masterGameYearDictionary, masterGameTags);
         _results[ActionProcessingSetName] = actionProcessor.ProcessActions(allActiveBids, allActiveDrops, publishers);
-
-        
     }
 
     [Test]

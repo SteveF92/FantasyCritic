@@ -14,13 +14,15 @@ public class ActionProcessor
     private readonly Instant _processingTime;
     private readonly LocalDate _currentDate;
     private readonly IReadOnlyDictionary<Guid, MasterGameYear> _masterGameYearDictionary;
+    private readonly IReadOnlyList<MasterGameTag> _allTags;
 
-    public ActionProcessor(SystemWideValues systemWideValues, Instant processingTime, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+    public ActionProcessor(SystemWideValues systemWideValues, Instant processingTime, LocalDate currentDate, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary, IReadOnlyList<MasterGameTag> allTags)
     {
         _systemWideValues = systemWideValues;
         _processingTime = processingTime;
         _currentDate = currentDate;
         _masterGameYearDictionary = masterGameYearDictionary;
+        _allTags = allTags;
     }
 
     public FinalizedActionProcessingResults ProcessActions(IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> allActiveBids,
@@ -246,7 +248,8 @@ public class ActionProcessor
             }
 
             bool counterPickWillBeConditionallyDropped = activeBid.CounterPick && conditionalDropsThatHaveSucceeded.ContainsGame(activeBid.MasterGame);
-            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped, _currentDate, activeBid.AllowIneligibleSlot);
+            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped,
+                _currentDate, activeBid.AllowIneligibleSlot, _allTags);
             if (claimResult.NoSpaceError)
             {
                 noSpaceLeftBids.Add(pickupBidWithConditionalDropResult);

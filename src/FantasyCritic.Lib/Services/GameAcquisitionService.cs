@@ -32,7 +32,8 @@ public class GameAcquisitionService
             masterGameYear = new MasterGameYear(request.MasterGame, request.LeagueYear.Year);
         }
 
-        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, drafting, false, false, _clock.GetToday(), allowIneligibleSlot);
+        var allTags = await _masterGameRepo.GetMasterGameTags();
+        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, drafting, false, false, _clock.GetToday(), allowIneligibleSlot, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -131,7 +132,8 @@ public class GameAcquisitionService
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday(), allowIneligibleSlot);
+        var allTags = await _masterGameRepo.GetMasterGameTags();
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday(), allowIneligibleSlot, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -155,7 +157,8 @@ public class GameAcquisitionService
         }
 
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, false, false, false, _clock.GetToday(), true);
+        var allTags = await _masterGameRepo.GetMasterGameTags();
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, false, false, false, _clock.GetToday(), true, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -294,8 +297,9 @@ public class GameAcquisitionService
         }
 
         var currentDate = _clock.GetToday();
+        var allTags = await _masterGameRepo.GetMasterGameTags();
         MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
-        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear, eligibilityFactors, bid.CounterPick, validDropSlot, false, false, allowIneligibleSlot);
+        var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear, eligibilityFactors, bid.CounterPick, validDropSlot, false, false, allowIneligibleSlot, allTags);
         if (!slotResult.SlotNumber.HasValue)
         {
             return new ClaimResult(slotResult.ClaimErrors, null);

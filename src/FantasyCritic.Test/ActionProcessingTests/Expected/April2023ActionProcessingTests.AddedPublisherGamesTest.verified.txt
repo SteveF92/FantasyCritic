@@ -5884,7 +5884,7 @@
     MasterGameID: 46b1c713-7c9e-484a-80ce-4320fea6a5a8,
     GameName: Persona 3 Remake,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 15,
     BidAmount: 0
   },
   {

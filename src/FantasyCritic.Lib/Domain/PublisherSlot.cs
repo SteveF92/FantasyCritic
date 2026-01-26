@@ -185,4 +185,19 @@ public class PublisherSlot
     {
         return new PublisherSlot(SlotNumber, OverallSlotNumber, CounterPick, SpecialGameSlot, newPublisherGame, CounterPickedGameIsValid);
     }
+
+    public IReadOnlyList<MasterGameTag> GetAllowedTags(LeagueOptions options, IReadOnlyList<MasterGameTag> allTags)
+    {
+        if (SpecialGameSlot is not null)
+        {
+            return SpecialGameSlot.Tags;
+        }
+
+        return allTags.Except(options.LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag)).ToList();
+    }
+
+    public string GetAllowedTagsKey(LeagueOptions options, IReadOnlyList<MasterGameTag> allTags)
+    {
+        return string.Join('|', GetAllowedTags(options, allTags));
+    }
 }

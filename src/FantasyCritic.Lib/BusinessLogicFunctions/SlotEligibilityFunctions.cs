@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Results;
+using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
 
@@ -26,7 +27,7 @@ public static class SlotEligibilityFunctions
     }
 
     public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueYear leagueYear, MasterGameWithEligibilityFactors? eligibilityFactors,
-        bool counterPick, int? validDropSlot, bool acquiringNow, bool managerOverride, bool allowIneligibleSlot)
+        bool counterPick, int? validDropSlot, bool acquiringNow, bool managerOverride, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags)
     {
         string filledSpacesText = "User's game spaces are filled.";
         if (counterPick)
@@ -78,18 +79,10 @@ public static class SlotEligibilityFunctions
             return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
         }
 
-        //At this point, the game is eligible in at least one currently open slot. Which one is best?
-        //We want to check the special slots first, then the regular slots.
-        var openSpotsToCheckOrder = openSlots
-            .OrderByDescending(x => x.SpecialGameSlot is not null)
-            .ThenBy(x => x.SlotNumber).ToList();
-        foreach (var openSlot in openSpotsToCheckOrder)
+        var bestEligibleSlot = GetBestEligibleSlot(openSlots, eligibilityFactors, allTags);
+        if (bestEligibleSlot is not null)
         {
-            var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors);
-            if (!claimErrorsForSlot.Any())
-            {
-                return new PublisherSlotAcquisitionResult(openSlot.SlotNumber);
-            }
+            return new PublisherSlotAcquisitionResult(bestEligibleSlot.SlotNumber);
         }
 
         if (allowIneligibleSlot)
@@ -102,7 +95,27 @@ public static class SlotEligibilityFunctions
         return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError("Game is not eligible in any open slots.", false, false, true) });
     }
 
-    public static int? GetTradeSlotResult(Publisher publisher, LeagueYear leagueYear, MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers)
+    private static PublisherSlot? GetBestEligibleSlot(IReadOnlyList<PublisherSlot> openSlots, MasterGameWithEligibilityFactors eligibilityFactors, IReadOnlyList<MasterGameTag> allTags)
+    {
+        //At this point, the game is eligible in at least one currently open slot. Which one is best?
+        //First, we want to find the least permissive slots that this game is eligible in
+        //If there is a tie, take the slot type that the publisher has more open of
+        //Then just take the first of those if that's a tie.
+
+        var eligibleSlots = openSlots.Where(x => !GetClaimErrorsForSlot(x, eligibilityFactors).Any()).ToList();
+        if (!eligibleSlots.Any())
+        {
+            return null;
+        }
+
+        var leastAmountOfAllowedTags = eligibleSlots.WhereMin(x => x.GetAllowedTags(eligibilityFactors.Options, allTags).Count).ToList();
+        var mostNumerousSlotType = leastAmountOfAllowedTags.GroupBy(x => x.GetAllowedTagsKey(eligibilityFactors.Options, allTags)).MaxBy(x => x.Count());
+        var bestSlot = mostNumerousSlotType?.FirstOrDefault();
+        return bestSlot;
+    }
+
+    public static int? GetTradeSlotResult(Publisher publisher, LeagueYear leagueYear, MasterGameYearWithCounterPick masterGameYearWithCounterPick,
+        MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers, IReadOnlyList<MasterGameTag> allTags)
     {
         var slots = publisher.GetPublisherSlots(leagueYear);
         var openSlots = slots.Where(x => x.CounterPick == masterGameYearWithCounterPick.CounterPick && openSlotNumbers.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
@@ -111,18 +124,10 @@ public static class SlotEligibilityFunctions
             return null;
         }
 
-        //At this point, there is an open slot. Which one is best?
-        //We want to check the special slots first, then the regular slots.
-        var openSpotsToCheckOrder = openSlots
-            .OrderByDescending(x => x.SpecialGameSlot is not null)
-            .ThenBy(x => x.SlotNumber).ToList();
-        foreach (var openSlot in openSpotsToCheckOrder)
+        var bestEligibleSlot = GetBestEligibleSlot(openSlots, eligibilityFactors, allTags);
+        if (bestEligibleSlot is not null)
         {
-            var claimErrorsForSlot = GetClaimErrorsForSlot(openSlot, eligibilityFactors);
-            if (!claimErrorsForSlot.Any())
-            {
-                return openSlot.SlotNumber;
-            }
+            return bestEligibleSlot.SlotNumber;
         }
 
         //This game isn't eligible in any slots, so we will just take the first open one.

@@ -13956,7 +13956,7 @@
     MasterGameID: f9d4bbb5-67d5-4966-9adc-d5d67a722e9e,
     GameName: Shadow Gambit: The Cursed Crew,
     CounterPick: false,
-    SlotNumber: 9,
+    SlotNumber: 7,
     BidAmount: 53
   },
   {
@@ -15700,7 +15700,7 @@
     MasterGameID: a855f41b-c585-4b87-9fee-2e403ba2d368,
     GameName: Viewfinder,
     CounterPick: false,
-    SlotNumber: 13,
+    SlotNumber: 9,
     BidAmount: 6
   },
   {

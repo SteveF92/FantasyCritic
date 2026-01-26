@@ -1226,7 +1226,7 @@
     Priority: 1,
     BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 125.4830476886481,
-    SlotNumber: 13,
+    SlotNumber: 15,
     Outcome: This bid was placed earliest.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null

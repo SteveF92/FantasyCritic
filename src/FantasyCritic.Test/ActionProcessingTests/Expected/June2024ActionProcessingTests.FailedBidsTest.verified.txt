@@ -27880,16 +27880,6 @@
     Outcome: Publisher was outbid.
   },
   {
-    BidID: f240920d-5751-4aa2-b23b-b6d0a2a2ff0f,
-    PublisherID: b7054074-9eb0-499d-a060-5c84d955a668,
-    MasterGameID: f3984b23-3c92-4f29-8a60-a3d28a87c06e,
-    GameName: Marvel vs. Capcom Fighting Collection: Arcade Classics,
-    BidAmount: 11,
-    ProjectedPointsAtTimeOfBid: 123.65303019822598205128205130,
-    FailureReason: No eligible roster spots available.,
-    Outcome: No eligible roster spots available.
-  },
-  {
     BidID: f2417de8-efee-425c-9ab4-aeb39957a2d9,
     PublisherID: 5d99f0ce-511b-4c85-9ccb-cea20188773f,
     MasterGameID: c2b3bcef-3554-474c-b27a-cd19d92d98f4,

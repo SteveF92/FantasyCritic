@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.BusinessLogicFunctions;
 public static class GameEligibilityFunctions
 {
     public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting,
-        bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate, bool allowIneligibleSlot)
+        bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags)
     {
         var dateOfPotentialAcquisition = currentDate;
         if (nextBidTime.HasValue)
@@ -83,7 +83,7 @@ public static class GameEligibilityFunctions
         }
 
         var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(request.Publisher, leagueYear, eligibilityFactors,
-            request.CounterPick, validDropSlot, acquiringNow, request.ManagerOverride, allowIneligibleSlot);
+            request.CounterPick, validDropSlot, acquiringNow, request.ManagerOverride, allowIneligibleSlot, allTags);
         if (!slotResult.SlotNumber.HasValue)
         {
             claimErrors.AddRange(slotResult.ClaimErrors);

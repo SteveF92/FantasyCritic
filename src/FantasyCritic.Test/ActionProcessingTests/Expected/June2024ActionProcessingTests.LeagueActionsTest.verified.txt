@@ -28940,8 +28940,8 @@
   {
     LeagueID: 9682bdc5-9de8-4dd6-9a58-2c24184ef3ba,
     PublisherID: b7054074-9eb0-499d-a060-5c84d955a668,
-    ActionType: Pickup Failed,
-    Description: Tried to acquire game 'Marvel vs. Capcom Fighting Collection: Arcade Classics' with a bid of $11. Failure reason: No eligible roster spots available.
+    ActionType: Pickup Successful,
+    Description: Acquired game 'Marvel vs. Capcom Fighting Collection: Arcade Classics' with a bid of $11
   },
   {
     LeagueID: 9682bdc5-9de8-4dd6-9a58-2c24184ef3ba,

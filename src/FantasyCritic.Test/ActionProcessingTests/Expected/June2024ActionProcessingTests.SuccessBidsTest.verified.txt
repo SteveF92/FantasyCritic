@@ -4908,7 +4908,7 @@
     Priority: 2,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 119.98321886075315128205128206,
-    SlotNumber: 11,
+    SlotNumber: 10,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -6504,7 +6504,7 @@
     Priority: 2,
     BidAmount: 20,
     ProjectedPointsAtTimeOfBid: 83.03713107417276956521739130,
-    SlotNumber: 6,
+    SlotNumber: 7,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -8450,7 +8450,7 @@
     Priority: 1,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 119.98321886075315128205128206,
-    SlotNumber: 10,
+    SlotNumber: 11,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -18936,7 +18936,7 @@
     Priority: 1,
     BidAmount: 30,
     ProjectedPointsAtTimeOfBid: 118.68095358309818823529411764,
-    SlotNumber: 9,
+    SlotNumber: 4,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -31900,7 +31900,7 @@
     Priority: 2,
     BidAmount: 10,
     ProjectedPointsAtTimeOfBid: 97.5305637949378,
-    SlotNumber: 9,
+    SlotNumber: 8,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -39418,7 +39418,7 @@
     Priority: 3,
     BidAmount: 0,
     ProjectedPointsAtTimeOfBid: 123.65303019822598205128205130,
-    SlotNumber: 13,
+    SlotNumber: 14,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -41798,7 +41798,7 @@
     Priority: 3,
     BidAmount: 30,
     ProjectedPointsAtTimeOfBid: 118.68095358309818823529411764,
-    SlotNumber: 5,
+    SlotNumber: 9,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -44192,7 +44192,7 @@
     Priority: 2,
     BidAmount: 30,
     ProjectedPointsAtTimeOfBid: 118.68095358309818823529411764,
-    SlotNumber: 4,
+    SlotNumber: 5,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
@@ -58758,6 +58758,20 @@
     ConditionalDropResult: null
   },
   {
+    BidID: f240920d-5751-4aa2-b23b-b6d0a2a2ff0f,
+    PublisherID: b7054074-9eb0-499d-a060-5c84d955a668,
+    MasterGameID: f3984b23-3c92-4f29-8a60-a3d28a87c06e,
+    GameName: Marvel vs. Capcom Fighting Collection: Arcade Classics,
+    CounterPick: false,
+    Priority: 4,
+    BidAmount: 11,
+    ProjectedPointsAtTimeOfBid: 123.65303019822598205128205130,
+    SlotNumber: 13,
+    Outcome: No competing bids for this game.,
+    ConditionalDropMasterGameID: null,
+    ConditionalDropResult: null
+  },
+  {
     BidID: f251f0f3-e950-4e15-a68a-c2cab5c32de0,
     PublisherID: 8ceddab6-f49e-467b-a98f-dc4b641463d6,
     MasterGameID: 9f7382a5-acf3-4798-a10b-e8e678d8d4f2,
@@ -61580,7 +61594,7 @@
     Priority: 1,
     BidAmount: 51,
     ProjectedPointsAtTimeOfBid: 134.58981550332872352941176471,
-    SlotNumber: 12,
+    SlotNumber: 10,
     Outcome: This bid was the highest bid.,
     ConditionalDropMasterGameID: null,
     ConditionalDropResult: null
