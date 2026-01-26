@@ -102,7 +102,7 @@
             <ul class="actions-list">
               <li v-b-modal="'managerMessageForm'" class="fake-link action">Post new Message to League</li>
               <li v-b-modal="'changeLeagueOptionsForm'" class="fake-link action">Change General League Options</li>
-              <li v-if="postDraftPlayable" class="fake-link action">
+              <li v-if="!leagueYear.supportedYear.finished" class="fake-link action">
                 <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year } }">Change Year-Specific Options</router-link>
               </li>
               <li v-if="readyToSetDraftOrder && !playStarted" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
