@@ -116,7 +116,7 @@ internal static class DomainConversionUtilities
     }
 
     public static List<Trade> GetActiveTrades(LeagueYear leagueYear, IEnumerable<TradeComponentEntity> componentEntities, IEnumerable<TradeVoteEntity> voteEntities,
-    IEnumerable<TradeEntity> tradeEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
+        IEnumerable<TradeEntity> tradeEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary, IReadOnlyDictionary<Guid, FantasyCriticUser> userDictionary)
     {
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
@@ -157,7 +157,11 @@ internal static class DomainConversionUtilities
             List<TradeVote> tradeVotes = new List<TradeVote>();
             foreach (var vote in votes)
             {
-                var user = leagueYear.Publishers.Single(x => x.User.Id == vote.UserID).User;
+                var user = leagueYear.Publishers.SingleOrDefault(x => x.User.Id == vote.UserID)?.User;
+                if (user is null)
+                {
+                    user = userDictionary[vote.UserID];
+                }
                 var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
                 tradeVotes.Add(domainVote);
             }

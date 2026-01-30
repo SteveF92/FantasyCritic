@@ -452,7 +452,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var bidAmountsList = bidAmountPoints.Select(x => x.ToDomain());
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPointsList, bidAmountsList);
         var managersMessages = DomainConversionUtilities.GetManagersMessages(dismissalEntities, messageEntities);
-        var activeTrades = DomainConversionUtilities.GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary);
+        var activeTrades = DomainConversionUtilities.GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary, userDictionary);
         var activeSpecialAuctions = DomainConversionUtilities.GetActiveSpecialAuctions(specialAuctionEntities, masterGameYearDictionary);
         var activePickupBids = DomainConversionUtilities.GetActivePickupBids(leagueYear, bidEntities, masterGameDictionary, masterGameYearDictionary);
         var allPublishersForUser = minimalPublisherEntities.Select(p => p.ToDomain()).ToList();
