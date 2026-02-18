@@ -24,4 +24,5 @@ public interface IDiscordRepo
     Task<GameNewsChannel?> GetGameNewsChannel(ulong guildID, ulong channelID);
     Task RemoveAllLeagueChannelsForLeague(Guid leagueID);
     Task SetBotAdminRoleId(Guid leagueID, ulong guildID, ulong channelID, ulong? roleId);
+    Task SetSendWeeklyReleasesMessage(Guid leagueID, ulong guildID, ulong channelID, bool setEnabled);
 }

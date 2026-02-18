@@ -9,7 +9,7 @@ internal class LeagueChannelEntity
 
     }
 
-    public LeagueChannelEntity(ulong guildID, ulong channelID, Guid leagueID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting, ulong? bidAlertRoleID, int? year, ulong? botAdminRoleID)
+    public LeagueChannelEntity(ulong guildID, ulong channelID, Guid leagueID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting, ulong? bidAlertRoleID, int? year, ulong? botAdminRoleID, bool sendWeeklyReleasesMessage)
     {
         GuildID = guildID;
         ChannelID = channelID;
@@ -20,6 +20,7 @@ internal class LeagueChannelEntity
         NotableMissSetting = notableMissSetting.Value;
         BidAlertRoleID = bidAlertRoleID;
         BotAdminRoleID = botAdminRoleID;
+        SendWeeklyReleasesMessage = sendWeeklyReleasesMessage;
         Year = year;
     }
 
@@ -32,15 +33,36 @@ internal class LeagueChannelEntity
     public string NotableMissSetting { get; set; } = null!;
     public ulong? BidAlertRoleID { get; set; }
     public ulong? BotAdminRoleID { get; set; }
+    public bool? SendWeeklyReleasesMessage { get; set; }
     public int? Year { get; set; }
 
     public LeagueChannel ToDomain(LeagueYear leagueYear)
     {
-        return new LeagueChannel(leagueYear, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting), BidAlertRoleID, Year, BotAdminRoleID);
+        return new LeagueChannel(leagueYear,
+            GuildID,
+            ChannelID,
+            ShowPickedGameNews,
+            ShowEligibleGameNews,
+            ShowIneligibleGameNews,
+            Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting),
+            BidAlertRoleID,
+            Year,
+            BotAdminRoleID,
+            SendWeeklyReleasesMessage);
     }
 
     public MinimalLeagueChannel ToMinimalDomain()
     {
-        return new MinimalLeagueChannel(LeagueID, GuildID, ChannelID, ShowPickedGameNews, ShowEligibleGameNews, ShowIneligibleGameNews, Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting), BidAlertRoleID, Year, BotAdminRoleID);
+        return new MinimalLeagueChannel(LeagueID,
+            GuildID,
+            ChannelID,
+            ShowPickedGameNews,
+            ShowEligibleGameNews,
+            ShowIneligibleGameNews,
+            Lib.Discord.Models.NotableMissSetting.FromValue(NotableMissSetting),
+            BidAlertRoleID,
+            Year,
+            BotAdminRoleID,
+            SendWeeklyReleasesMessage);
     }
 }

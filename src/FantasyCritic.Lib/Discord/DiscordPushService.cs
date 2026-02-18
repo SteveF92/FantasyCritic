@@ -721,6 +721,7 @@ public class DiscordPushService
         foreach (var leagueYear in leagueYears)
         {
             var leagueChannels = channelLookup[leagueYear.League.LeagueID].ToList();
+            leagueChannels = leagueChannels.Where(l => l.SendWeeklyReleasesMessage == true).ToList();
             if (leagueChannels.Count == 0)
             {
                 continue;
@@ -787,13 +788,6 @@ public class DiscordPushService
                 {
                     continue;
                 }
-
-                //SocketRole? roleToMention = null;
-                // TODO: check if setting is enabled here
-                //if (anyBids && leagueChannel.BidAlertRoleID != null)
-                //{
-                //    roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
-                //}
 
                 var embed = _discordFormatter.BuildRegularEmbed(header, finalMessage, url: leagueLink);
                 preparedMessages.Add(new PreparedDiscordMessage(channel, "", embed));
@@ -881,7 +875,8 @@ public class DiscordPushService
                         NotableMissSetting.None,
                         null,
                         null,
-                        null));
+                        null,
+                        false));
                 }
             }
         }

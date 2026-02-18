@@ -30,7 +30,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueChannel(Guid leagueID, ulong guildID, ulong channelID, int? year, ulong? botAdminRoleId)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, false, NotableMissSetting.ScoreUpdates, null, year, botAdminRoleId);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, true, true, false, NotableMissSetting.ScoreUpdates, null, year, botAdminRoleId, false);
         var existingChannel = await GetLeagueChannelEntity(guildID, channelID);
         var sql = existingChannel == null
             ? """
@@ -68,7 +68,7 @@ public class MySQLDiscordRepo : IDiscordRepo
     public async Task SetLeagueGameNewsSetting(Guid leagueID, ulong guildID, ulong channelID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, showPickedGameNews, showEligibleGameNews, showIneligibleGameNews, notableMissSetting, null, null, null);
+        var leagueChannelEntity = new LeagueChannelEntity(guildID, channelID, leagueID, showPickedGameNews, showEligibleGameNews, showIneligibleGameNews, notableMissSetting, null, null, null, false);
         var sql = """
                   UPDATE tbl_discord_leaguechannel SET
                   ShowPickedGameNews=@ShowPickedGameNews,
@@ -163,6 +163,20 @@ public class MySQLDiscordRepo : IDiscordRepo
             BidAlertRoleID = bidAlertRoleID
         };
         var sql = "UPDATE tbl_discord_leaguechannel SET BidAlertRoleID=@BidAlertRoleID WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
+        await connection.ExecuteAsync(sql, param);
+    }
+
+    public async Task SetSendWeeklyReleasesMessage(Guid leagueID, ulong guildID, ulong channelID, bool setEnabled)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var param = new
+        {
+            LeagueID = leagueID,
+            GuildID = guildID,
+            ChannelID = channelID,
+            SendWeeklyReleasesMessage = setEnabled
+        };
+        var sql = "UPDATE tbl_discord_leaguechannel SET SendWeeklyReleasesMessage=@SendWeeklyReleasesMessage WHERE LeagueID=@LeagueID AND GuildID=@GuildID AND ChannelID=@ChannelID";
         await connection.ExecuteAsync(sql, param);
     }
 
