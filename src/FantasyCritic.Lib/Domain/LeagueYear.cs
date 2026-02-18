@@ -140,6 +140,14 @@ public class LeagueYear : IEquatable<LeagueYear>
         return publisher ?? Publisher.GetFakePublisher(Key);
     }
 
+    public Publisher? FindPublisherWithGame(MasterGameYear game, bool lookingForCounterPick)
+    {
+        return Publishers.FirstOrDefault(p =>
+            p.PublisherGames.Any(publisherGame =>
+                publisherGame.MasterGame?.MasterGame.MasterGameID == game.MasterGame.MasterGameID
+                && publisherGame.CounterPick == lookingForCounterPick));
+    }
+
     public LeagueYear GetUpdatedLeagueYearWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         var newPublishers = Publishers.Select(x => x.GetUpdatedPublisherWithNewScores(calculatedStats)).ToList();
@@ -160,7 +168,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((LeagueYear) obj);
+        return Equals((LeagueYear)obj);
     }
 
     public override int GetHashCode()

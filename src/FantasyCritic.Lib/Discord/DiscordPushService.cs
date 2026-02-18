@@ -643,14 +643,13 @@ public class DiscordPushService
         using var scope = serviceScopeFactory.CreateScope();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        var allChannels = await discordRepo.GetAllLeagueChannels();
         var channelLookup = await GetAllChannelsAsLookup(discordRepo);
 
         var preparedMessages = new List<PreparedDiscordMessage>();
         foreach (var publicBiddingSet in publicBiddingSets)
         {
             var leagueChannels = channelLookup[publicBiddingSet.LeagueYear.League.LeagueID].ToList();
-            if (!leagueChannels.Any())
+            if (leagueChannels.Count == 0)
             {
                 continue;
             }
@@ -695,6 +694,109 @@ public class DiscordPushService
 
                 var embed = _discordFormatter.BuildRegularEmbed(header, finalMessage, url: leagueLink);
                 preparedMessages.Add(new PreparedDiscordMessage(channel, roleToMention?.Mention ?? "", embed));
+            }
+        }
+
+        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+    }
+
+    public async Task SendReleasingThisWeekUpdate(IReadOnlyList<MasterGameYear> masterGameYears, int year)
+    {
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return;
+        }
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
+        var fantasyCriticRepo = scope.ServiceProvider.GetRequiredService<IFantasyCriticRepo>();
+
+        var leagueYears = await fantasyCriticRepo.GetLeagueYears(year);
+
+        var channelLookup = await GetAllChannelsAsLookup(discordRepo);
+
+        var preparedMessages = new List<PreparedDiscordMessage>();
+        foreach (var leagueYear in leagueYears)
+        {
+            var leagueChannels = channelLookup[leagueYear.League.LeagueID].ToList();
+            if (leagueChannels.Count == 0)
+            {
+                continue;
+            }
+
+            var leagueLink = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID, year).BuildUrl();
+            var header = "Games Releasing This Week";
+
+            var gamesInLeague = masterGameYears
+                .Where(m => leagueYear.Publishers.Any(p => p.PublisherGames.ContainsGame(m.MasterGame)))
+                .Select(m => new MatchedGameDisplay(m)
+                {
+                    PublisherWhoPicked = leagueYear.FindPublisherWithGame(m, false),
+                    PublisherWhoCounterPicked = leagueYear.FindPublisherWithGame(m, true),
+                    LeagueYear = leagueYear
+                })
+                .Where(p => p.GameFound.MasterGame.ReleaseDate != null)
+                .OrderBy(g => g.GameFound.MasterGame.ReleaseDate)
+                .ToList();
+
+            if (gamesInLeague.Count == 0)
+            {
+                continue;
+            }
+
+            var gamesByDate = new Dictionary<LocalDate, List<MatchedGameDisplay>>();
+            foreach (var games in gamesInLeague)
+            {
+                var releaseDate = games.GameFound.MasterGame.ReleaseDate!.Value;
+                if (gamesByDate.ContainsKey(releaseDate))
+                {
+                    gamesByDate[games.GameFound.MasterGame.ReleaseDate.Value].Add(games);
+                }
+                else
+                {
+                    gamesByDate.Add(games.GameFound.MasterGame.ReleaseDate.Value, [games]);
+                }
+            }
+
+            var orderedGamesByDate = gamesByDate.OrderBy(t => t.Key);
+            var gameDateMessages = orderedGamesByDate
+                .Select(t =>
+                    $"## {t.Key}\n" +
+                    string.Join("\n",
+                        t.Value.Select(g =>
+                            $"**{g.GameFound.MasterGame.GameName}**"
+                            + (g.PublisherWhoPicked != null ? $"\nPicked: {g.PublisherWhoPicked.GetPublisherAndUserDisplayName()}" : "")
+                            + (g.PublisherWhoCounterPicked != null ? $"\nCounter Picked: {g.PublisherWhoCounterPicked.GetPublisherAndUserDisplayName()}" : "")
+                            + $"\nHype Factor: {g.GameFound.HypeFactor}")));
+
+            var finalMessage = string.Join("\n-----------", gameDateMessages);
+
+            if (finalMessage.Length > 4096)
+            {
+                Logger.Warning("Too many games releasing this week for league: {leagueId}", leagueYear.League.LeagueID);
+                finalMessage = "There are too many games to list in a Discord Message.";
+            }
+
+            foreach (var leagueChannel in leagueChannels)
+            {
+                var guild = _client.GetGuild(leagueChannel.GuildID);
+                var channel = guild?.GetTextChannel(leagueChannel.ChannelID);
+                if (channel is null)
+                {
+                    continue;
+                }
+
+                //SocketRole? roleToMention = null;
+                // TODO: check if setting is enabled here
+                //if (anyBids && leagueChannel.BidAlertRoleID != null)
+                //{
+                //    roleToMention = channel.Guild.Roles.FirstOrDefault(r => r.Id == leagueChannel.BidAlertRoleID);
+                //}
+
+                var embed = _discordFormatter.BuildRegularEmbed(header, finalMessage, url: leagueLink);
+                preparedMessages.Add(new PreparedDiscordMessage(channel, "", embed));
             }
         }
 

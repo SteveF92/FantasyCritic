@@ -33,6 +33,7 @@
             <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofEditUpdate')">Send Spoof Edit Update</b-button>
             <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofNewUpdate')">Send Spoof NewGame Update</b-button>
             <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofReleasedUpdate')">Send Spoof Released Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendReleasingThisWeekUpdate')">Send Releasing This Week Update</b-button>
           </div>
         </template>
       </div>

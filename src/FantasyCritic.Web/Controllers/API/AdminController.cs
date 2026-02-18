@@ -194,6 +194,50 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
+    public async Task<IActionResult> SendReleasingThisWeekUpdate()
+    {
+        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
+        if (isProduction)
+        {
+            return BadRequest("This is a test endpoint. Do not use in production.");
+        }
+
+        var now = _clock.GetCurrentInstant();
+        var year = now.InZone(TimeExtensions.EasternTimeZone).Year;
+        var currentDate = now.ToEasternDate();
+
+        var allGames = await _interLeagueService.GetMasterGameYears(year);
+
+        var spoofGameId = Guid.Parse("04355d4f-4d11-4e87-b1fe-b9df6cbcc8a2");
+        var spoofReleaseDate = currentDate.PlusDays(3);
+        allGames = allGames.Select(g =>
+        {
+            if (g.MasterGame.MasterGameID != spoofGameId) return g;
+            var og = g.MasterGame;
+            var spoofMasterGame = new MasterGame(
+                og.MasterGameID, og.GameName, spoofReleaseDate.ToString(),
+                og.MinimumReleaseDate, spoofReleaseDate,
+                og.EarlyAccessReleaseDate, og.InternationalReleaseDate, og.AnnouncementDate,
+                spoofReleaseDate,
+                og.OpenCriticID, og.GGToken, og.GGSlug, og.RawCriticScore, og.HasAnyReviews, og.OpenCriticSlug,
+                og.Notes, og.BoxartFileName, og.GGCoverArtFileName, og.FirstCriticScoreTimestamp,
+                og.DoNotRefreshDate, og.DoNotRefreshAnything, og.UseSimpleEligibility, og.DelayContention, og.ShowNote,
+                og.AddedTimestamp, og.AddedByUser,
+                og.SubGames, og.Tags);
+            return g.WithNewMasterGame(spoofMasterGame);
+        }).ToList();
+
+        var relevantGames = allGames.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate.Value.Year >= year);
+        var thisWeekGames = relevantGames.Where(g =>
+            g.MasterGame.ReleaseDate.HasValue && g.MasterGame.ReleaseDate.Value < currentDate.PlusWeeks(1));
+
+        var mostHypedGames = thisWeekGames.OrderByDescending(g => g.HypeFactor).Take(10).ToList();
+
+        await _discordPushService.SendReleasingThisWeekUpdate(mostHypedGames, year);
+        return Ok();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> GrantSuperDrops()
     {
         await _adminService.GrantSuperDrops();

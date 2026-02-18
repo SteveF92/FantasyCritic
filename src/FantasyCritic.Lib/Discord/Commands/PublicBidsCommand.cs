@@ -19,7 +19,6 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly string _baseAddress;
 
     public PublicBidsCommand(IDiscordRepo discordRepo,
-        IFantasyCriticRepo fantasyCriticRepo,
         InterLeagueService interLeagueService,
         GameAcquisitionService gameAcquisitionService,
         IClock clock,

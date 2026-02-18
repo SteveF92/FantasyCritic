@@ -172,4 +172,6 @@ public static class TimeExtensions
     public static readonly IsoDayOfWeek ActionProcessingDay = IsoDayOfWeek.Saturday;
     public static readonly LocalTime ActionProcessingTime = new LocalTime(20, 0);
     public static readonly AnnualDate SuperDropsDate = new AnnualDate(9, 1);
+    public static readonly IsoDayOfWeek ReleasingThisWeekNewsDay = IsoDayOfWeek.Sunday;
+    public static readonly LocalTime ReleasingThisWeekNewsTime = new LocalTime(20, 0);
 }
