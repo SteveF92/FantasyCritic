@@ -112,6 +112,7 @@
                 <li><router-link :to="{ hash: '#public-bids' }">View Public Bids for the Current Week</router-link></li>
                 <li><router-link :to="{ hash: '#special-auctions' }">View Current Special Auctions</router-link></li>
                 <li><router-link :to="{ hash: '#trending' }">View Trending Bids and Drops</router-link></li>
+                <li><router-link :to="{ hash: '#top-available-games' }">View Top Available Games for Your Publisher</router-link></li>
                 <li><router-link :to="{ hash: '#set-league' }">Set Up a League in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#remove-league' }">Remove the League in your Channel</router-link></li>
                 <li><router-link :to="{ hash: '#set-conference' }">Set Up a Conference in your Channel</router-link></li>
@@ -120,6 +121,7 @@
                 <li><router-link :to="{ hash: '#set-bid-alert-role' }">Set a Role to Alert for Bid Information</router-link></li>
                 <li><router-link :to="{ hash: '#set-bot-admin-role' }">Set a Bot Admin Role</router-link></li>
                 <li><router-link :to="{ hash: '#game-news-settings' }">Configure Game News Announcements</router-link></li>
+                <li><router-link :to="{ hash: '#set-weekly-releases-message' }">Set Up Weekly Releases Message</router-link></li>
                 <li><router-link :to="{ hash: '#view-settings' }">View Bot Settings</router-link></li>
               </ul>
               <hr />
@@ -351,6 +353,21 @@
                   </span>
                 </p>
                 <span>Displays trending bids, drops, and counter picks for the most recent bid/drop processing day.</span>
+              </div>
+              <hr />
+              <div class="discord-command-explanation">
+                <h5 id="top-available-games">View Top Available Games for Your Publisher</h5>
+                <p>
+                  <span class="command-label">Command:</span>
+                  <code>/top-available-games</code>
+                </p>
+                <span>
+                  Shows the top available games for your publisher in the league. This displays games that are eligible for the league but haven't been picked yet.
+                  <br />
+                  <br />
+                  <strong>Note:</strong>
+                  You must have your Discord account linked to your Fantasy Critic account to use this command.
+                </span>
               </div>
               <hr />
               <div class="discord-command-explanation">
@@ -593,6 +610,36 @@
                       database, for example.
                     </li>
                   </ul>
+                </span>
+              </div>
+              <hr />
+              <div class="discord-command-explanation">
+                <h5 id="set-weekly-releases-message">Set Up Weekly Releases Message</h5>
+                <p>
+                  <span class="command-label">Command:</span>
+                  <code>/set-weekly-releases-message</code>
+                </p>
+                <p>
+                  <span class="discord-param-text">
+                    <span class="param-label">Parameters:</span>
+                    <p class="parameter-explanation">
+                      <code>enabled:</code>
+                      Set to
+                      <code>true</code>
+                      to enable weekly releases messages or
+                      <code>false</code>
+                      to disable them.
+                    </p>
+                  </span>
+                </p>
+                <span>
+                  Enable or disable an automatic weekly message to notify your channel about games releasing in the upcoming week. When enabled, the bot will post a summary of upcoming game releases every Sunday at 8:00 PM Eastern time.
+                  <br />
+                  <br />
+                  <strong>Note:</strong>
+                  The channel must already be configured for a league using
+                  <code>/set-league</code>
+                  before you can use this command.
                 </span>
               </div>
               <hr />

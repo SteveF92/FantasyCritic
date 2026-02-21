@@ -13,6 +13,7 @@ public class PossibleMasterGameYearViewModel
         WillRelease = masterGame.WillReleaseStatus.CountAsWillRelease;
         HasScore = masterGame.HasScore;
         IsAvailable = masterGame.IsAvailable;
+        Status = masterGame.GetStatus(currentDate);
     }
 
     public MasterGameYearViewModel MasterGame { get; }
@@ -24,41 +25,5 @@ public class PossibleMasterGameYearViewModel
     public bool WillRelease { get; }
     public bool HasScore { get; }
     public bool IsAvailable { get; }
-
-    public string Status
-    {
-        get
-        {
-            if (Taken)
-            {
-                return "Taken";
-            }
-            if (AlreadyOwned)
-            {
-                return "Already Owned";
-            }
-            if (MasterGame.ReleasingToday)
-            {
-                return "Releasing Today";
-            }
-            if (IsReleased)
-            {
-                return "Released";
-            }
-            if (HasScore)
-            {
-                return "Has Score";
-            }
-            if (!IsEligible)
-            {
-                return "Ineligible";
-            }
-            if (!WillRelease)
-            {
-                return "Will Not Release";
-            }
-
-            return "Available";
-        }
-    }
+    public string Status { get; }
 }

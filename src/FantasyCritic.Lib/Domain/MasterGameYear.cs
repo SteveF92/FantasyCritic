@@ -60,6 +60,11 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public bool IsRelevantInYear(bool strict) => IsRelevantInYear(Year, strict);
 
+    public bool IsReleasingToday(LocalDate currentDate)
+    {
+        return MasterGame.ReleaseDate == currentDate;
+    }
+
     public bool IsReleasedAndReleasedInYear(LocalDate currentDate)
     {
         if (!MasterGame.IsReleased(currentDate))
@@ -69,7 +74,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
         return MasterGame.ReleaseDate!.Value.Year == Year;
     }
-    
+
     public bool IsRelevantInYear(int year, bool strict)
     {
         if (MasterGame.AddedTimestamp.InUtc().Year > year)
@@ -183,7 +188,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((MasterGameYear) obj);
+        return Equals((MasterGameYear)obj);
     }
 
     public override int GetHashCode()

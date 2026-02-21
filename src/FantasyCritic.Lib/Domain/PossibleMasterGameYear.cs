@@ -25,4 +25,38 @@ public class PossibleMasterGameYear
     public bool HasScore { get; }
 
     public bool IsAvailable => !Taken && !AlreadyOwned && IsEligible && !IsReleased && WillReleaseStatus.CountAsWillRelease && !HasScore;
+
+    public string GetStatus(LocalDate currentDate)
+    {
+        if (Taken)
+        {
+            return "Taken";
+        }
+        if (AlreadyOwned)
+        {
+            return "Already Owned";
+        }
+        if (MasterGame.IsReleasingToday(currentDate))
+        {
+            return "Releasing Today";
+        }
+        if (IsReleased)
+        {
+            return "Released";
+        }
+        if (HasScore)
+        {
+            return "Has Score";
+        }
+        if (!IsEligible)
+        {
+            return "Ineligible";
+        }
+        if (!WillReleaseStatus.CountAsWillRelease)
+        {
+            return "Will Not Release";
+        }
+
+        return "Available";
+    }
 }

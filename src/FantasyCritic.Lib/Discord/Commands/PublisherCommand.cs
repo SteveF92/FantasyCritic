@@ -15,8 +15,6 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
     private readonly InterLeagueService _interLeagueService;
-    private readonly PublisherService _publisherService;
-    private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly string _baseAddress;
@@ -24,16 +22,12 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
     public PublisherCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
-        PublisherService publisherService,
-        IClock clock,
         IDiscordFormatter discordFormatter,
         IReadOnlyFantasyCriticUserStore userStore,
         FantasyCriticSettings fantasyCriticSettings)
     {
         _discordRepo = discordRepo;
         _interLeagueService = interLeagueService;
-        _publisherService = publisherService;
-        _clock = clock;
         _discordFormatter = discordFormatter;
         _userStore = userStore;
         _baseAddress = fantasyCriticSettings.BaseAddress;
