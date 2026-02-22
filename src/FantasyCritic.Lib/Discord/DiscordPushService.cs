@@ -336,18 +336,24 @@ public class DiscordPushService
                 continue;
             }
 
+            var today = _clock.GetToday();
             IReadOnlyList<MasterGameYear> relevantGamesForLeague = masterGamesReleasingToday
-                .Where(x => combinedChannel.GetRelevanceHandler().JustReleasedGameIsRelevant(x.MasterGame, _clock.GetToday()))
+                .Where(x => combinedChannel.GetRelevanceHandler().JustReleasedGameIsRelevant(x.MasterGame, today))
                 .ToList();
             if (!relevantGamesForLeague.Any())
             {
                 continue;
             }
 
+            var allPublishers = combinedChannel.ActiveLeagueYears?.SelectMany(x => x.Publishers).ToList();
+
             var releaseMessages = relevantGamesForLeague.Select(x =>
             {
                 var gameUrl = new GameUrlBuilder(_baseAddress, x.MasterGame.MasterGameID).BuildUrl(x.MasterGame.GameName, true);
-                return $"**{gameUrl}** has released!";
+                var publisherNote = allPublishers is not null
+                    ? $" [{GetPublisherOfGameNote(allPublishers, x.MasterGame, today)}]"
+                    : "";
+                return $"**{gameUrl}** has released!{publisherNote}";
             });
             var releaseMessage = string.Join("\n", releaseMessages);
             preparedMessages.Add(new PreparedDiscordMessage(textChannel, releaseMessage));
