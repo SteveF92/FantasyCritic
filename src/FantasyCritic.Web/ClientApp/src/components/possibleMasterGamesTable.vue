@@ -11,13 +11,13 @@
           <span>
             {{ data.item.masterGame.estimatedReleaseDate }}
             <font-awesome-icon
-              v-if="getBidEligibility(data.item.masterGame) === 'tooLate'"
+              v-if="bidMode && getBidEligibility(data.item.masterGame) === 'tooLate'"
               v-b-popover.hover.focus="'Game is likely to be ineligible by the time bids are processed.'"
               icon="xmark"
               size="xl" />
 
             <font-awesome-icon
-              v-if="getBidEligibility(data.item.masterGame) === 'lastChance'"
+              v-if="bidMode && getBidEligibility(data.item.masterGame) === 'lastChance'"
               v-b-popover.hover.focus="'This might be your last chance to bid on this game.'"
               icon="exclamation-triangle" />
           </span>
@@ -48,7 +48,8 @@ export default {
   },
   props: {
     value: { type: Object, default: null },
-    possibleGames: { type: Array, required: true }
+    possibleGames: { type: Array, required: true },
+    bidMode: { type: Boolean, required: false, default: false }
   },
   data() {
     return {

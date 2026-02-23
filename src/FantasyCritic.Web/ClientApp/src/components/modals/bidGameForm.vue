@@ -62,7 +62,7 @@
           <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
           <h3 v-show="showingPublicBids" class="text-black">This Week's Public Bids</h3>
           <h3 v-show="!showingTopAvailable && !showingQueuedGames && !showingPublicBids && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
-          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
+          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected" bid-mode></possibleMasterGamesTable>
         </div>
       </div>
 
