@@ -196,12 +196,6 @@ public class AdminController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> SendReleasingThisWeekUpdate()
     {
-        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
-        if (isProduction)
-        {
-            return BadRequest("This is a test endpoint. Do not use in production.");
-        }
-
         var now = _clock.GetCurrentInstant();
         var year = now.InZone(TimeExtensions.EasternTimeZone).Year;
         var currentDate = now.ToEasternDate();
