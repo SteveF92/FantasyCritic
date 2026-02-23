@@ -776,9 +776,9 @@ public class DiscordPushService
                             $"**{g.GameFound.MasterGame.GameName}**"
                             + (g.PublisherWhoPicked != null ? $"\nPicked: {g.PublisherWhoPicked.GetPublisherAndUserDisplayName()}" : "")
                             + (g.PublisherWhoCounterPicked != null ? $"\nCounter Picked: {g.PublisherWhoCounterPicked.GetPublisherAndUserDisplayName()}" : "")
-                            + $"\nHype Factor: {g.GameFound.HypeFactor}")));
+                            + $"\nHype Factor: {g.GameFound.HypeFactor:F2}")));
 
-            var finalMessage = string.Join("\n-----------", gameDateMessages);
+            var finalMessage = string.Join("\n-----------\n", gameDateMessages);
 
             if (finalMessage.Length > 4096)
             {
