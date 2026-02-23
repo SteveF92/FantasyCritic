@@ -57,15 +57,11 @@ public class ReleasingThisWeekNotificationTask : IScheduledTask
         IServiceProvider serviceProvider, Instant now)
     {
         var year = now.InZone(TimeExtensions.EasternTimeZone).Year;
-
         var interLeagueService = serviceProvider.GetRequiredService<InterLeagueService>();
 
         var allGames = await interLeagueService.GetMasterGameYears(year);
-        
-        var relevantGames = allGames.Where(x => !x.MasterGame.ReleaseDate.HasValue || x.MasterGame.ReleaseDate.Value.Year >= year);
-        var thisWeekGames = relevantGames.Where(g =>
+        var thisWeekGames = allGames.Where(g =>
             g.MasterGame.ReleaseDate.HasValue && g.MasterGame.ReleaseDate.Value < now.ToEasternDate().PlusWeeks(1));
-
         var mostHypedGames = thisWeekGames.OrderByDescending(g => g.HypeFactor).Take(10).ToList();
 
         return mostHypedGames;
