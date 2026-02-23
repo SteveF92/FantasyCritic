@@ -202,7 +202,9 @@ public class AdminController : FantasyCriticController
 
         var allGames = await _interLeagueService.GetMasterGameYears(year);
         var thisWeekGames = allGames.Where(g =>
-            g.MasterGame.ReleaseDate.HasValue && g.MasterGame.ReleaseDate.Value < now.ToEasternDate().PlusWeeks(1));
+            g.MasterGame.ReleaseDate.HasValue &&
+            g.MasterGame.ReleaseDate.Value > now.ToEasternDate() &&
+            g.MasterGame.ReleaseDate.Value <= now.ToEasternDate().PlusWeeks(1));
         var mostHypedGames = thisWeekGames.OrderByDescending(g => g.HypeFactor).Take(10).ToList();
 
         await _discordPushService.SendReleasingThisWeekUpdate(mostHypedGames, year);
