@@ -9,7 +9,8 @@ internal class LeagueChannelEntity
 
     }
 
-    public LeagueChannelEntity(ulong guildID, ulong channelID, Guid leagueID, bool showPickedGameNews, bool showEligibleGameNews, bool showIneligibleGameNews, NotableMissSetting notableMissSetting, ulong? bidAlertRoleID, int? year, ulong? botAdminRoleID, bool sendWeeklyReleasesMessage)
+    public LeagueChannelEntity(ulong guildID, ulong channelID, Guid leagueID, bool showPickedGameNews, bool showEligibleGameNews,
+        bool showIneligibleGameNews, NotableMissSetting notableMissSetting, ulong? bidAlertRoleID, int? year, ulong? botAdminRoleID, bool sendWeeklyReleasesMessage)
     {
         GuildID = guildID;
         ChannelID = channelID;
@@ -33,7 +34,7 @@ internal class LeagueChannelEntity
     public string NotableMissSetting { get; set; } = null!;
     public ulong? BidAlertRoleID { get; set; }
     public ulong? BotAdminRoleID { get; set; }
-    public bool? SendWeeklyReleasesMessage { get; set; }
+    public bool SendWeeklyReleasesMessage { get; set; }
     public int? Year { get; set; }
 
     public LeagueChannel ToDomain(LeagueYear leagueYear)
