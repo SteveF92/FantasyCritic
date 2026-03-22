@@ -57,7 +57,7 @@ public class PublisherGame : IEquatable<PublisherGame>
         var willReleaseStatus = MasterGame.GetWillReleaseStatus();
 
         var countsAsWillRelease = willReleaseStatus.CountAsWillRelease;
-        var plannedForEarlyAccess = (MasterGame?.MasterGame.Tags ?? []).Any(x => x.Name == "PlannedForEarlyAccess");
+        var plannedForEarlyAccess = (MasterGame?.MasterGame.Tags ?? []).Any(x => x.Name == "PlannedForEarlyAccess" || x.Name == "CurrentlyInEarlyAccess");
         var leagueUsesOnlyNeedsScore = leagueYear.Options.ReleaseSystem.Equals(ReleaseSystem.OnlyNeedsScore);
 
         if (!countsAsWillRelease && plannedForEarlyAccess && leagueUsesOnlyNeedsScore)
