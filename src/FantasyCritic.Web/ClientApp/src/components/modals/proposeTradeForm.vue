@@ -168,8 +168,8 @@ export default {
         counterPartyPublisherID: this.counterParty.publisherID,
         proposerPublisherGameIDs: this.proposerPublisherGames.map((x) => x.game.publisherGameID),
         counterPartyPublisherGameIDs: this.counterPartyPublisherGames.map((x) => x.game.publisherGameID),
-        proposerBudgetSendAmount: this.proposerBudgetSendAmount,
-        counterPartyBudgetSendAmount: this.counterPartyBudgetSendAmount,
+        proposerBudgetSendAmount: this.proposerBudgetSendAmount || 0,
+        counterPartyBudgetSendAmount: this.counterPartyBudgetSendAmount || 0,
         message: this.message
       };
 
