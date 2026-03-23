@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Web", "FantasyCritic.Web\FantasyCritic.Web.csproj", "{D1A4B196-FA92-4822-8C25-07D53A2903EF}"
 EndProject
@@ -39,6 +39,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.Postmark", "FantasyCritic.Postmark\FantasyCritic.Postmark.csproj", "{54834C18-ABEE-48FB-AF9C-CFA36007BC2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantasyCritic.EmailTemplates", "FantasyCritic.EmailTemplates\FantasyCritic.EmailTemplates.csproj", "{D7D67A8B-21D0-421D-8264-1D347E5862A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyCritic.DatabaseUpdater", "FantasyCritic.DatabaseUpdater\FantasyCritic.DatabaseUpdater.csproj", "{AAFC5370-732A-4683-A36C-665F0740C5B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +100,10 @@ Global
 		{D7D67A8B-21D0-421D-8264-1D347E5862A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7D67A8B-21D0-421D-8264-1D347E5862A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7D67A8B-21D0-421D-8264-1D347E5862A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAFC5370-732A-4683-A36C-665F0740C5B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAFC5370-732A-4683-A36C-665F0740C5B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAFC5370-732A-4683-A36C-665F0740C5B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAFC5370-732A-4683-A36C-665F0740C5B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
