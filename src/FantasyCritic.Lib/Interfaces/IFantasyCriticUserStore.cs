@@ -18,4 +18,7 @@ public interface IFantasyCriticUserStore : IReadOnlyFantasyCriticUserStore, IUse
     Task SetEmailSettings(FantasyCriticUser user, bool sendPublicBidEmails);
     Task<IReadOnlyList<EmailType>> GetEmailSettings(FantasyCriticUser user);
     Task SetGeneralSettings(FantasyCriticUser user, GeneralUserSettings generalSettings);
+    Task<SupportTicket> OpenSupportTicket(FantasyCriticUser user, string issueDescription, bool openedByUser);
+    Task<SupportTicket> UpdateSupportTicketIssue(SupportTicket supportTicket, string issueDescription);
+    Task<SupportTicket> CloseSupportTicket(SupportTicket supportTicket, string? resolutionNotes);
 }

@@ -12,6 +12,7 @@ using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.SharedSerialization.Database;
 
@@ -1319,6 +1320,27 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         return leaguesWithStatus;
+    }
+
+    public async Task<IReadOnlyList<LeaguePublisherRowForUser>> GetLeaguePublisherRowsForUsers(IEnumerable<Guid> userIDs)
+    {
+        List<Guid> idList = userIDs.Distinct().ToList();
+        if (idList.Count == 0)
+        {
+            return new List<LeaguePublisherRowForUser>();
+        }
+
+        const string sql = """
+            SELECT p.UserID, p.LeagueID, l.LeagueName, p.`Year`, p.PublisherName
+            FROM tbl_league_publisher p
+            INNER JOIN tbl_league l ON l.LeagueID = p.LeagueID
+            WHERE p.UserID IN @userIDs
+            ORDER BY l.LeagueName, p.`Year`;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var rows = await connection.QueryAsync<LeaguePublisherRowForUserEntity>(sql, new { userIDs = idList });
+        return rows.Select(x => new LeaguePublisherRowForUser(x.UserID, x.LeagueID, x.LeagueName, x.Year, x.PublisherName)).ToList();
     }
 
     public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()

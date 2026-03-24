@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models.Requests.Admin;
+using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -27,10 +28,12 @@ public class AdminController : FantasyCriticController
     private readonly EmailSendingService _emailSendingService;
     private readonly DiscordPushService _discordPushService;
     private readonly IMasterGameRepo _masterGameRepo;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
 
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
-        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo)
+        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
+        IFantasyCriticRepo fantasyCriticRepo)
         : base(userManager)
     {
         _adminService = adminService;
@@ -43,6 +46,7 @@ public class AdminController : FantasyCriticController
         _emailSendingService = emailSendingService;
         _discordPushService = discordPushService;
         _masterGameRepo = masterGameRepo;
+        _fantasyCriticRepo = fantasyCriticRepo;
     }
 
     [HttpPost]
@@ -97,6 +101,79 @@ public class AdminController : FantasyCriticController
         await _emailSendingService.SendConfirmationEmail(user, confirmLink);
 
         return Ok();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SearchSupportUsers([FromBody] SupportUserSearchRequest request)
+    {
+        string searchValue = request.SearchValue ?? "";
+        if (request.SearchKind == SupportUserSearchKind.Email)
+        {
+            searchValue = _userManager.NormalizeEmail(searchValue) ?? "";
+        }
+
+        IReadOnlyList<FantasyCriticUser> users = await _userManager.SearchUsersForSupport(request.SearchKind, searchValue);
+        if (users.Count == 0)
+        {
+            return Ok(Array.Empty<SupportUserSearchMatchViewModel>());
+        }
+
+        IReadOnlyList<LeaguePublisherRowForUser> leagueRows = await _fantasyCriticRepo.GetLeaguePublisherRowsForUsers(users.Select(u => u.Id));
+        ILookup<Guid, LeaguePublisherRowForUser> rowsByUser = leagueRows.ToLookup(x => x.UserID);
+
+        List<SupportUserSearchMatchViewModel> viewModels = new List<SupportUserSearchMatchViewModel>(users.Count);
+        foreach (FantasyCriticUser user in users)
+        {
+            viewModels.Add(new SupportUserSearchMatchViewModel(user, rowsByUser[user.Id].ToList()));
+        }
+
+        return Ok(viewModels);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> OpenSupportTicket([FromBody] OpenSupportTicketRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (user is null)
+        {
+            return BadRequest("Cannot open support ticket for a non-existent user.");
+        }
+
+        try
+        {
+            SupportTicket supportTicket = await _userManager.OpenSupportTicket(user, request.IssueDescription, openedByUser: false);
+            return Ok(new SupportTicketViewModel(supportTicket));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CloseSupportTicket([FromBody] CloseSupportTicketRequest request)
+    {
+        var existingTicket = await _userManager.GetSupportTicket(request.SupportTicketID);
+        if (existingTicket is null)
+        {
+            return BadRequest("Support ticket does not exist.");
+        }
+
+        if (!existingTicket.Active)
+        {
+            return BadRequest("Support ticket is already closed.");
+        }
+
+        var closedTicket = await _userManager.CloseSupportTicket(existingTicket, request.ResolutionNotes);
+        return Ok(new SupportTicketViewModel(closedTicket));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetActiveSupportTickets()
+    {
+        var tickets = await _userManager.GetAllActiveSupportTickets();
+        var viewModels = tickets.Select(t => new SupportTicketAdminListEntryViewModel(t)).ToList();
+        return Ok(viewModels);
     }
 
     [HttpPost]

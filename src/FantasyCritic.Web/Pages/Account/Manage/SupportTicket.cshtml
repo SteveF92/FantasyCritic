@@ -1,0 +1,75 @@
+@page
+@using FantasyCritic.Web.Pages.Account.Manage
+@model SupportTicketModel
+@{
+    ViewData["Title"] = "Support Ticket";
+    ViewData["ActivePage"] = ManageNavPages.SupportTicket;
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+@if (!string.IsNullOrWhiteSpace(Model.SupportVerificationCode))
+{
+    <div class="alert alert-info">
+        <h3>
+            <strong>Support verification code: <span class="font-monospace">@Model.SupportVerificationCode</span> </strong>
+        </h3>
+        <p>
+            Most of the time, I (Steve Fallon/elitefusion) help users over email or Discord. When you reach out there, you can give me this code to prove that you are the owner of the account.
+        </p>
+        <p>The only person with the power to do anything with your account is me, Steve Fallon, so you should only share this code with <strong>steve.fallon@fantasycritic.games</strong> or <strong>Elitefusion</strong> on Discord.</p>
+    </div>
+
+    @if (Model.CanUserEditOrCloseTicket)
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Your issue</h5>
+                <form id="edit-support-ticket-form" method="post" asp-page-handler="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Input.IssueDescription"></label>
+                        <textarea asp-for="Input.IssueDescription" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Input.IssueDescription" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update issue</button>
+                </form>
+                <form id="close-support-ticket-form" method="post" asp-page-handler="Close" class="mt-3">
+                    <button type="submit" class="btn btn-warning">Close support ticket</button>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-secondary">
+            This ticket was opened by support staff, so issue edits and closing are handled by support.
+        </div>
+    }
+}
+else
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Open a support ticket</h5>
+            <p class="card-text">
+                Describe what you need help with. Note that you can only have one open ticket at
+                a time.
+            </p>
+            <form id="support-ticket-form" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.IssueDescription"></label>
+                    <textarea asp-for="Input.IssueDescription" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Input.IssueDescription" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Open support ticket</button>
+            </form>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

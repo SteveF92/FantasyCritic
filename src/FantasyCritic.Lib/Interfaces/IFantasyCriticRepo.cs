@@ -3,6 +3,7 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Interfaces;
@@ -23,6 +24,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league);
     Task<bool> UserIsFollowingLeague(FantasyCriticUser currentUser, League league);
     Task<IReadOnlyList<LeagueWithMostRecentYearStatus>> GetLeaguesForUser(FantasyCriticUser user);
+    Task<IReadOnlyList<LeaguePublisherRowForUser>> GetLeaguePublisherRowsForUsers(IEnumerable<Guid> userIDs);
     Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher();
 
     Task FollowLeague(League league, FantasyCriticUser user);

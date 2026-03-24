@@ -35,8 +35,7 @@
     <collapseCard>
       <template #header>Something goes wrong when I try to confirm my email address.</template>
       <template #body>
-        I've heard this from a few people now, and I haven't been able to identify the cause. It seems to be inconsistent as most people have no problems. I do have a list of potential solutions,
-        though.
+        This is a lot rarer than it used to be, but it does happen. Here are a few things to try:
         <ol>
           <li>
             First, make sure that your email isn't already confirmed. Sometimes it works without showing the right message. Check your account page by clicking on your user name in the top right
@@ -50,6 +49,16 @@
           <li>Try a combination of these things.</li>
           <li>If all else fails, contact me.</li>
         </ol>
+      </template>
+    </collapseCard>
+    <collapseCard>
+      <template #header>How do support tickets work?</template>
+      <template #body>
+        <p>
+          This is a new feature I've added to simplify the process of helping users with their account/league issues. To open a support ticket, click on "Manage Account" in the dropdown that comes up
+          when you click your username in the top right, and then click on "Support Ticket". You will be given a "verification code". This code is used to verify that you are the owner of the account
+          when you contact me via email or Discord, which I still recommend you do for extended back and forth communication.
+        </p>
       </template>
     </collapseCard>
     <collapseCard>

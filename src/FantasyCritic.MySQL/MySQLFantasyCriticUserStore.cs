@@ -682,6 +682,130 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return UpdateAsync(modifiedUser, CancellationToken.None);
     }
 
+    public async Task<SupportTicket> OpenSupportTicket(FantasyCriticUser user, string issueDescription, bool openedByUser)
+    {
+        SupportTicket? existingActive = await GetActiveSupportTicket(user.Id);
+        if (existingActive is not null)
+        {
+            throw new InvalidOperationException("This user already has an active support ticket.");
+        }
+
+        var supportTicket = SupportTicket.Create(user, issueDescription, _clock.GetCurrentInstant(), openedByUser);
+        var entity = new SupportTicketEntity(supportTicket);
+        const string insertSql = @"insert into tbl_user_supportticket(SupportTicketID, UserID, VerificationCode, OpenedAt, IssueDescription, OpenedByUser, ClosedAt, ResolutionNotes)
+                                   values (@SupportTicketID, @UserID, @VerificationCode, @OpenedAt, @IssueDescription, @OpenedByUser, @ClosedAt, @ResolutionNotes);";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await connection.ExecuteAsync(insertSql, entity);
+        return supportTicket;
+    }
+
+    public async Task<SupportTicket> UpdateSupportTicketIssue(SupportTicket supportTicket, string issueDescription)
+    {
+        var updatedTicket = supportTicket.UpdateIssueDescription(issueDescription);
+        var entity = new SupportTicketEntity(updatedTicket);
+        const string sql = @"update tbl_user_supportticket
+                             set IssueDescription = @IssueDescription
+                             where SupportTicketID = @SupportTicketID;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await connection.ExecuteAsync(sql, entity);
+        return updatedTicket;
+    }
+
+    public async Task<SupportTicket?> GetSupportTicket(Guid supportTicketID)
+    {
+        const string sql = "select * from tbl_user_supportticket where SupportTicketID = @supportTicketID;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var entity = await connection.QuerySingleOrDefaultAsync<SupportTicketEntity>(sql, new { supportTicketID });
+        if (entity is null)
+        {
+            return null;
+        }
+
+        var users = await GetUsers(new[] { entity.UserID });
+        var user = users.SingleOrDefault();
+        if (user is null)
+        {
+            return null;
+        }
+
+        return entity.ToDomain(user);
+    }
+
+    public async Task<SupportTicket?> GetActiveSupportTicket(Guid userID)
+    {
+        const string sql = @"select * from tbl_user_supportticket 
+                             where UserID = @userID and ClosedAt is null
+                             order by OpenedAt desc
+                             limit 1;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var entity = await connection.QuerySingleOrDefaultAsync<SupportTicketEntity>(sql, new { userID });
+        if (entity is null)
+        {
+            return null;
+        }
+
+        var users = await GetUsers(new[] { entity.UserID });
+        var user = users.SingleOrDefault();
+        if (user is null)
+        {
+            return null;
+        }
+
+        return entity.ToDomain(user);
+    }
+
+    public async Task<IReadOnlyList<SupportTicket>> GetAllActiveSupportTickets()
+    {
+        const string sql = @"select * from tbl_user_supportticket 
+                             where ClosedAt is null
+                             order by OpenedAt desc;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var entities = (await connection.QueryAsync<SupportTicketEntity>(sql)).ToList();
+        if (entities.Count == 0)
+        {
+            return new List<SupportTicket>();
+        }
+
+        var userIds = entities.Select(e => e.UserID).Distinct().ToList();
+        var users = await GetUsers(userIds);
+        var userById = users.ToDictionary(u => u.Id);
+
+        List<SupportTicket> results = new List<SupportTicket>(entities.Count);
+        foreach (var entity in entities)
+        {
+            if (!userById.TryGetValue(entity.UserID, out var user))
+            {
+                continue;
+            }
+
+            results.Add(entity.ToDomain(user));
+        }
+
+        return results;
+    }
+
+    public async Task<SupportTicket> CloseSupportTicket(SupportTicket supportTicket, string? resolutionNotes)
+    {
+        var closedTicket = supportTicket.Close(_clock.GetCurrentInstant(), resolutionNotes);
+        var entity = new SupportTicketEntity(closedTicket);
+        const string sql = @"update tbl_user_supportticket
+                             set ClosedAt = @ClosedAt,
+                                 ResolutionNotes = @ResolutionNotes
+                             where SupportTicketID = @SupportTicketID;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await connection.ExecuteAsync(sql, entity);
+        return closedTicket;
+    }
+
     public async Task UpdatePatronInfo(IReadOnlyList<PatronInfo> patronInfo)
     {
         List<FantasyCriticUserHasRoleEntity> roleEntities = patronInfo
@@ -735,6 +859,47 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
     public Task SetPhoneNumberConfirmedAsync(FantasyCriticUser user, bool confirmed, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+
+    public async Task<IReadOnlyList<FantasyCriticUser>> SearchUsersForSupport(SupportUserSearchKind searchKind, string searchValue)
+    {
+        switch (searchKind)
+        {
+            case SupportUserSearchKind.UserId:
+                if (!Guid.TryParse(searchValue.Trim(), out var userId))
+                {
+                    return new List<FantasyCriticUser>();
+                }
+
+                var byId = await FindByIdAsync(userId.ToString(), CancellationToken.None);
+                return byId is null ? new List<FantasyCriticUser>() : new List<FantasyCriticUser>() { byId };
+            case SupportUserSearchKind.DisplayName:
+            {
+                string normalizedDisplayName = searchValue.Trim().ToUpperInvariant();
+                if (normalizedDisplayName.Length == 0)
+                {
+                    return new List<FantasyCriticUser>();
+                }
+
+                await using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync();
+                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
+                    "select * from tbl_user where IsDeleted = 0 and UPPER(DisplayName) = @normalizedDisplayName;",
+                    new { normalizedDisplayName });
+                return userResult.Select(x => x.ToDomain()).ToList();
+            }
+            case SupportUserSearchKind.Email:
+            {
+                await using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync();
+                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
+                    "select * from tbl_user where IsDeleted = 0 and NormalizedEmailAddress = @normalizedEmail;",
+                    new { normalizedEmail = searchValue });
+                return userResult.Select(x => x.ToDomain()).ToList();
+            }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(searchKind), searchKind, null);
+        }
     }
 
     public void Dispose()

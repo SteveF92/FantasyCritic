@@ -26,6 +26,14 @@
           <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Refresh Caches</b-button>
           <b-button variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Game Discord Queue</b-button>
         </div>
+        <div v-if="isAdmin">
+          <h2>User Support Actions</h2>
+          <div>
+            <b-button variant="info" :to="{ name: 'adminSupportTickets' }">Support tickets</b-button>
+            <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
+            <b-button variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
+          </div>
+        </div>
         <template v-if="isDevelopment">
           <h2>Discord Push Service</h2>
           <div>
@@ -54,13 +62,11 @@
       <div v-if="isAdmin">
         <h2>Other</h2>
         <div>
-          <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
           <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'ExpireTrades')">Expire Trades</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
-          <b-button variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateRoyaleWinners')">Recalculate Royale Winners</b-button>
           <b-button variant="info" @click="takePostAction('Admin', 'UpdateDailyPublisherStatistics')">Update Daily Publisher Statistics</b-button>

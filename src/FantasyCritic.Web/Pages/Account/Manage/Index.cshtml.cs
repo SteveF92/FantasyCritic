@@ -24,7 +24,6 @@ public class IndexModel : PageModel
     public string DisplayName { get; set; }
     [Display(Name = "Display Number")]
     public int DisplayNumber { get; set; }
-
     [TempData]
     public string StatusMessage { get; set; }
 
@@ -37,7 +36,6 @@ public class IndexModel : PageModel
         public string DisplayName { get; set; }
     }
 
-
     public async Task<IActionResult> OnGetAsync()
     {
         var user = await _userManager.GetUserAsync(User);
@@ -46,8 +44,7 @@ public class IndexModel : PageModel
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        DisplayName = user.UserName;
-        DisplayNumber = user.DisplayNumber;
+        LoadProfilePage(user);
         return Page();
     }
 
@@ -61,12 +58,11 @@ public class IndexModel : PageModel
 
         if (!ModelState.IsValid)
         {
-            DisplayName = user.UserName;
-            DisplayNumber = user.DisplayNumber;
+            LoadProfilePage(user);
             return Page();
         }
 
-        if (Input.DisplayName != user.UserName)
+        if (Input?.DisplayName != user.UserName)
         {
             var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.DisplayName);
             if (!setUserNameResult.Succeeded)
@@ -79,5 +75,13 @@ public class IndexModel : PageModel
         await _signInManager.RefreshSignInAsync(user);
         StatusMessage = "Your profile has been updated";
         return RedirectToPage();
+    }
+
+    private void LoadProfilePage(FantasyCriticUser user)
+    {
+        DisplayName = user.UserName;
+        DisplayNumber = user.DisplayNumber;
+        Input ??= new InputModel();
+        Input.DisplayName = user.UserName;
     }
 }

@@ -127,4 +127,39 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
     {
         return _userStore.SetGeneralSettings(user, generalSettings);
     }
+
+    public Task<SupportTicket> OpenSupportTicket(FantasyCriticUser user, string issueDescription, bool openedByUser)
+    {
+        return _userStore.OpenSupportTicket(user, issueDescription, openedByUser);
+    }
+
+    public Task<SupportTicket?> GetSupportTicket(Guid supportTicketID)
+    {
+        return _userStore.GetSupportTicket(supportTicketID);
+    }
+
+    public Task<SupportTicket?> GetActiveSupportTicket(Guid userID)
+    {
+        return _userStore.GetActiveSupportTicket(userID);
+    }
+
+    public Task<SupportTicket> UpdateSupportTicketIssue(SupportTicket supportTicket, string issueDescription)
+    {
+        return _userStore.UpdateSupportTicketIssue(supportTicket, issueDescription);
+    }
+
+    public Task<IReadOnlyList<SupportTicket>> GetAllActiveSupportTickets()
+    {
+        return _userStore.GetAllActiveSupportTickets();
+    }
+
+    public Task<IReadOnlyList<FantasyCriticUser>> SearchUsersForSupport(SupportUserSearchKind searchKind, string searchValue)
+    {
+        return _userStore.SearchUsersForSupport(searchKind, searchValue);
+    }
+
+    public Task<SupportTicket> CloseSupportTicket(SupportTicket supportTicket, string? resolutionNotes)
+    {
+        return _userStore.CloseSupportTicket(supportTicket, resolutionNotes);
+    }
 }

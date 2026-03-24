@@ -13,4 +13,8 @@ public interface IReadOnlyFantasyCriticUserStore
 
     Task<FantasyCriticUser?> FindByLoginAsync(string loginProvider, string providerKey,
         CancellationToken cancellationToken);
+    Task<SupportTicket?> GetSupportTicket(Guid supportTicketID);
+    Task<SupportTicket?> GetActiveSupportTicket(Guid userID);
+    Task<IReadOnlyList<SupportTicket>> GetAllActiveSupportTickets();
+    Task<IReadOnlyList<FantasyCriticUser>> SearchUsersForSupport(SupportUserSearchKind searchKind, string searchValue);
 }

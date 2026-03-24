@@ -16,6 +16,7 @@ public static class ManageNavPages
     public static string PersonalData => "PersonalData";
 
     public static string TwoFactorAuthentication => "TwoFactorAuthentication";
+    public static string SupportTicket => "SupportTicket";
 
     public static string? IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
@@ -29,6 +30,7 @@ public static class ManageNavPages
     public static string? PersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, PersonalData);
 
     public static string? TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
+    public static string? SupportTicketNavClass(ViewContext viewContext) => PageNavClass(viewContext, SupportTicket);
 
     private static string? PageNavClass(ViewContext viewContext, string page)
     {
