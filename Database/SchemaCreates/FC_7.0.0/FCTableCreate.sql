@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               8.0.28 - MySQL Community Server - GPL
--- Server OS:                    Win64
+-- Host:                         fantasy-critic-rds.cldutembgs4w.us-east-1.rds.amazonaws.com
+-- Server version:               8.4.7 - Source distribution
+-- Server OS:                    Linux
 -- HeidiSQL Version:             12.3.0.6589
 -- --------------------------------------------------------
 
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `tbl_caching_averagepositionpoints` (
   `PickPosition` int unsigned NOT NULL,
   `DataPoints` int unsigned NOT NULL,
   `AveragePoints` decimal(12,9) NOT NULL,
-  PRIMARY KEY (`PickPosition`)
+  PRIMARY KEY (`PickPosition`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -60,9 +60,9 @@ CREATE TABLE IF NOT EXISTS `tbl_caching_leagueyear` (
 -- Dumping structure for table fantasycritic.tbl_caching_mastergameyear
 CREATE TABLE IF NOT EXISTS `tbl_caching_mastergameyear` (
   `Year` year NOT NULL,
-  `MasterGameID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `GameName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `EstimatedReleaseDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `MasterGameID` char(36) NOT NULL,
+  `GameName` varchar(255) NOT NULL,
+  `EstimatedReleaseDate` varchar(255) NOT NULL,
   `MinimumReleaseDate` date NOT NULL,
   `MaximumReleaseDate` date DEFAULT NULL,
   `EarlyAccessReleaseDate` date DEFAULT NULL,
@@ -70,20 +70,20 @@ CREATE TABLE IF NOT EXISTS `tbl_caching_mastergameyear` (
   `AnnouncementDate` date DEFAULT NULL,
   `ReleaseDate` date DEFAULT NULL,
   `OpenCriticID` int DEFAULT NULL,
-  `GGToken` char(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `GGSlug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `GGToken` char(6) DEFAULT NULL,
+  `GGSlug` varchar(255) DEFAULT NULL,
   `CriticScore` decimal(7,4) DEFAULT NULL,
   `HasAnyReviews` bit(1) NOT NULL,
-  `OpenCriticSlug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `BoxartFileName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `GGCoverArtFileName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `OpenCriticSlug` varchar(255) DEFAULT NULL,
+  `Notes` mediumtext NOT NULL,
+  `BoxartFileName` varchar(255) DEFAULT NULL,
+  `GGCoverArtFileName` varchar(255) DEFAULT NULL,
   `UseSimpleEligibility` bit(1) NOT NULL,
   `DelayContention` bit(1) NOT NULL,
   `ShowNote` bit(1) NOT NULL,
   `FirstCriticScoreTimestamp` timestamp NULL DEFAULT NULL,
   `AddedTimestamp` timestamp NOT NULL,
-  `AddedByUserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `AddedByUserID` char(36) NOT NULL,
   `PercentStandardGame` double NOT NULL,
   `PercentCounterPick` double NOT NULL,
   `EligiblePercentStandardGame` double NOT NULL,
@@ -97,16 +97,17 @@ CREATE TABLE IF NOT EXISTS `tbl_caching_mastergameyear` (
   `DateAdjustedHypeFactor` double NOT NULL,
   `PeakHypeFactor` double NOT NULL,
   `LinearRegressionHypeFactor` double NOT NULL,
-  PRIMARY KEY (`Year`,`MasterGameID`) USING BTREE,
-  KEY `FK_tbl_caching_mastergameyear_tbl_user` (`AddedByUserID`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+  PRIMARY KEY (`Year`,`MasterGameID`),
+  KEY `FK_tbl_caching_mastergameyear_tbl_user` (`AddedByUserID`),
+  CONSTRAINT `FK_tbl_caching_mastergameyear_tbl_user` FOREIGN KEY (`AddedByUserID`) REFERENCES `tbl_user` (`UserID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table fantasycritic.tbl_caching_mastergameyearstatistics
 CREATE TABLE IF NOT EXISTS `tbl_caching_mastergameyearstatistics` (
   `Year` year NOT NULL,
-  `MasterGameID` char(36) NOT NULL,
+  `MasterGameID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Date` date NOT NULL,
   `PercentStandardGame` double NOT NULL,
   `PercentCounterPick` double NOT NULL,
@@ -164,14 +165,14 @@ CREATE TABLE IF NOT EXISTS `tbl_caching_topbidsanddrops` (
 CREATE TABLE IF NOT EXISTS `tbl_conference` (
   `ConferenceID` char(36) NOT NULL,
   `ConferenceName` varchar(150) NOT NULL,
-  `ConferenceManager` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `PrimaryLeagueID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `ConferenceManager` char(36) NOT NULL,
+  `PrimaryLeagueID` char(36) NOT NULL,
   `CustomRulesConference` bit(1) NOT NULL,
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `IsDeleted` bit(1) NOT NULL DEFAULT b'0',
-  PRIMARY KEY (`ConferenceID`),
-  KEY `FK_tbl_conference_tbl_user` (`ConferenceManager`),
-  KEY `FK_tbl_conference_tbl_league` (`PrimaryLeagueID`),
+  PRIMARY KEY (`ConferenceID`) USING BTREE,
+  KEY `FK_tbl_conference_tbl_user` (`ConferenceManager`) USING BTREE,
+  KEY `FK_tbl_conference_tbl_league` (`PrimaryLeagueID`) USING BTREE,
   CONSTRAINT `FK_tbl_conference_tbl_league` FOREIGN KEY (`PrimaryLeagueID`) REFERENCES `tbl_league` (`LeagueID`),
   CONSTRAINT `FK_tbl_conference_tbl_user` FOREIGN KEY (`ConferenceManager`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -183,10 +184,10 @@ CREATE TABLE IF NOT EXISTS `tbl_conference_activeplayer` (
   `ConferenceID` char(36) NOT NULL,
   `Year` year NOT NULL,
   `UserID` char(36) NOT NULL,
-  PRIMARY KEY (`ConferenceID`,`Year`,`UserID`),
-  KEY `tbl_` (`ConferenceID`,`UserID`),
+  PRIMARY KEY (`ConferenceID`,`Year`,`UserID`) USING BTREE,
+  KEY `tbl_` (`ConferenceID`,`UserID`) USING BTREE,
   CONSTRAINT `FK__tbl_conference_year` FOREIGN KEY (`ConferenceID`, `Year`) REFERENCES `tbl_conference_year` (`ConferenceID`, `Year`),
-  CONSTRAINT `tbl_` FOREIGN KEY (`ConferenceID`, `UserID`) REFERENCES `tbl_conference_hasuser` (`ConferenceID`, `UserID`)
+  CONSTRAINT `FK_tbl_conference_activeplayer_tbl_conference_hasuser` FOREIGN KEY (`ConferenceID`, `UserID`) REFERENCES `tbl_conference_hasuser` (`ConferenceID`, `UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -196,8 +197,8 @@ CREATE TABLE IF NOT EXISTS `tbl_conference_hasuser` (
   `ConferenceID` char(36) NOT NULL,
   `UserID` char(36) NOT NULL,
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ConferenceID`,`UserID`),
-  KEY `FK_tbl_conference_hasuser_tbl_user` (`UserID`),
+  PRIMARY KEY (`ConferenceID`,`UserID`) USING BTREE,
+  KEY `FK_tbl_conference_hasuser_tbl_user` (`UserID`) USING BTREE,
   CONSTRAINT `FK_tbl_conference_hasuser_tbl_conference` FOREIGN KEY (`ConferenceID`) REFERENCES `tbl_conference` (`ConferenceID`),
   CONSTRAINT `FK_tbl_conference_hasuser_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -206,9 +207,9 @@ CREATE TABLE IF NOT EXISTS `tbl_conference_hasuser` (
 
 -- Dumping structure for table fantasycritic.tbl_conference_invitelink
 CREATE TABLE IF NOT EXISTS `tbl_conference_invitelink` (
-  `InviteID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ConferenceID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `InviteCode` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `InviteID` char(36) NOT NULL,
+  `ConferenceID` char(36) NOT NULL,
+  `InviteCode` char(36) NOT NULL,
   `Active` bit(1) NOT NULL,
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`InviteID`) USING BTREE,
@@ -220,15 +221,15 @@ CREATE TABLE IF NOT EXISTS `tbl_conference_invitelink` (
 
 -- Dumping structure for table fantasycritic.tbl_conference_managermessage
 CREATE TABLE IF NOT EXISTS `tbl_conference_managermessage` (
-  `MessageID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ConferenceID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `MessageID` char(36) NOT NULL,
+  `ConferenceID` char(36) NOT NULL,
   `Year` year NOT NULL,
-  `MessageText` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `MessageText` text NOT NULL,
   `IsPublic` bit(1) NOT NULL,
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Deleted` bit(1) NOT NULL,
   PRIMARY KEY (`MessageID`) USING BTREE,
-  KEY `FK_tbl_conference_managermessage_tbl_conference_year` (`ConferenceID`,`Year`),
+  KEY `FK_tbl_conference_managermessage_tbl_conference_year` (`ConferenceID`,`Year`) USING BTREE,
   CONSTRAINT `FK_tbl_conference_managermessage_tbl_conference_year` FOREIGN KEY (`ConferenceID`, `Year`) REFERENCES `tbl_conference_year` (`ConferenceID`, `Year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
@@ -236,10 +237,10 @@ CREATE TABLE IF NOT EXISTS `tbl_conference_managermessage` (
 
 -- Dumping structure for table fantasycritic.tbl_conference_managermessagedismissal
 CREATE TABLE IF NOT EXISTS `tbl_conference_managermessagedismissal` (
-  `MessageID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `UserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `MessageID` char(36) NOT NULL,
+  `UserID` char(36) NOT NULL,
   PRIMARY KEY (`MessageID`,`UserID`) USING BTREE,
-  KEY `FK_tbl_conference_managermessagedismissal_tbl_user` (`UserID`),
+  KEY `FK_tbl_conference_managermessagedismissal_tbl_user` (`UserID`) USING BTREE,
   CONSTRAINT `FK_tbl_conference_managermessagedismissal` FOREIGN KEY (`MessageID`) REFERENCES `tbl_conference_managermessage` (`MessageID`),
   CONSTRAINT `FK_tbl_conference_managermessagedismissal_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
@@ -251,8 +252,8 @@ CREATE TABLE IF NOT EXISTS `tbl_conference_year` (
   `ConferenceID` char(36) NOT NULL,
   `Year` year NOT NULL,
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ConferenceID`,`Year`),
-  KEY `FK_tbl_conference_year_tbl_meta_supportedyear` (`Year`),
+  PRIMARY KEY (`ConferenceID`,`Year`) USING BTREE,
+  KEY `FK_tbl_conference_year_tbl_meta_supportedyear` (`Year`) USING BTREE,
   CONSTRAINT `FK_tbl_conference_year_tbl_conference` FOREIGN KEY (`ConferenceID`) REFERENCES `tbl_conference` (`ConferenceID`),
   CONSTRAINT `FK_tbl_conference_year_tbl_meta_supportedyear` FOREIGN KEY (`Year`) REFERENCES `tbl_meta_supportedyear` (`Year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -264,6 +265,7 @@ CREATE TABLE IF NOT EXISTS `tbl_discord_conferencechannel` (
   `GuildID` bigint unsigned NOT NULL DEFAULT '0',
   `ChannelID` bigint unsigned NOT NULL DEFAULT '0',
   `ConferenceID` char(36) NOT NULL,
+  `SendLeagueNews` bit(1) NOT NULL,
   PRIMARY KEY (`GuildID`,`ChannelID`) USING BTREE,
   KEY `FK_ConferenceID` (`ConferenceID`) USING BTREE,
   CONSTRAINT `tbl_discord_conferencechannel_ibfk_1` FOREIGN KEY (`ConferenceID`) REFERENCES `tbl_conference` (`ConferenceID`)
@@ -275,12 +277,13 @@ CREATE TABLE IF NOT EXISTS `tbl_discord_conferencechannel` (
 CREATE TABLE IF NOT EXISTS `tbl_discord_gamenewschannel` (
   `GuildID` bigint unsigned NOT NULL DEFAULT '0',
   `ChannelID` bigint unsigned NOT NULL DEFAULT '0',
+  `ShowAlreadyReleasedNews` bit(1) NOT NULL,
   `ShowWillReleaseInYearNews` bit(1) NOT NULL,
   `ShowMightReleaseInYearNews` bit(1) NOT NULL,
   `ShowWillNotReleaseInYearNews` bit(1) NOT NULL,
+  `ShowJustReleasedAnnouncements` bit(1) NOT NULL,
+  `ShowNewGameAnnouncements` bit(1) NOT NULL,
   `ShowScoreGameNews` bit(1) NOT NULL,
-  `ShowReleasedGameNews` bit(1) NOT NULL,
-  `ShowNewGameNews` bit(1) NOT NULL,
   `ShowEditedGameNews` bit(1) NOT NULL,
   PRIMARY KEY (`GuildID`,`ChannelID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
@@ -291,12 +294,20 @@ CREATE TABLE IF NOT EXISTS `tbl_discord_gamenewschannel` (
 CREATE TABLE IF NOT EXISTS `tbl_discord_gamenewschannelskiptag` (
   `GuildID` bigint unsigned NOT NULL DEFAULT '0',
   `ChannelID` bigint unsigned NOT NULL DEFAULT '0',
-  `TagName` varchar(255) NOT NULL,
+  `TagName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`GuildID`,`ChannelID`,`TagName`) USING BTREE,
-  KEY `FK_tbl_discord_gamenewschannelskiptag_tbl_mastergame_tag` (`TagName`),
+  KEY `FK_tbl_discord_gamenewschannelskiptag_tbl_mastergame_tag` (`TagName`) USING BTREE,
   CONSTRAINT `FK_tbl_discord_gamenewschannel` FOREIGN KEY (`GuildID`, `ChannelID`) REFERENCES `tbl_discord_gamenewschannel` (`GuildID`, `ChannelID`),
   CONSTRAINT `FK_tbl_discord_gamenewschannelskiptag_tbl_mastergame_tag` FOREIGN KEY (`TagName`) REFERENCES `tbl_mastergame_tag` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table fantasycritic.tbl_discord_gamenewsoptions
+CREATE TABLE IF NOT EXISTS `tbl_discord_gamenewsoptions` (
+  `Name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  PRIMARY KEY (`Name`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -304,21 +315,22 @@ CREATE TABLE IF NOT EXISTS `tbl_discord_gamenewschannelskiptag` (
 CREATE TABLE IF NOT EXISTS `tbl_discord_leaguechannel` (
   `GuildID` bigint unsigned NOT NULL DEFAULT '0',
   `ChannelID` bigint unsigned NOT NULL DEFAULT '0',
-  `LeagueID` char(36) NOT NULL,
+  `LeagueID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `BotAdminRoleID` bigint DEFAULT NULL,
   `BidAlertRoleID` bigint DEFAULT NULL,
   `ShowPickedGameNews` bit(1) NOT NULL,
   `ShowEligibleGameNews` bit(1) NOT NULL,
   `ShowIneligibleGameNews` bit(1) NOT NULL,
   `SendWeeklyReleasesMessage` bit(1) NOT NULL DEFAULT b'0',
-  `NotableMissSetting` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `NotableMissSetting` varchar(50) NOT NULL,
   `Year` year DEFAULT NULL,
   PRIMARY KEY (`GuildID`,`ChannelID`) USING BTREE,
-  KEY `FK_LeagueID` (`LeagueID`),
+  KEY `FK_LeagueID` (`LeagueID`) USING BTREE,
   KEY `FK_tbl_discord_leaguechannel_tbl_discord_notablemissoptions` (`NotableMissSetting`),
-  KEY `FK_tbl_discord_leaguechannel_tbl_caching_leagueyear` (`LeagueID`,`Year`),
-  CONSTRAINT `FK_tbl_discord_leaguechannel_tbl_caching_leagueyear` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_caching_leagueyear` (`LeagueID`, `Year`),
+  KEY `FK_tbl_discord_leaguechannel_tbl_league_year` (`LeagueID`,`Year`),
   CONSTRAINT `FK_tbl_discord_leaguechannel_tbl_discord_notablemissoptions` FOREIGN KEY (`NotableMissSetting`) REFERENCES `tbl_discord_notablemissoptions` (`Name`),
-  CONSTRAINT `FK_tbl_discord_leaguechannel_tbl_league` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`)
+  CONSTRAINT `FK_tbl_discord_leaguechannel_tbl_league` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`),
+  CONSTRAINT `FK_tbl_discord_leaguechannel_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -346,7 +358,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league` (
   KEY `FK_tblleague_tbluser` (`LeagueManager`),
   KEY `FK_tbl_league_tbl_conference` (`ConferenceID`),
   CONSTRAINT `FK_tbl_league_tbl_conference` FOREIGN KEY (`ConferenceID`) REFERENCES `tbl_conference` (`ConferenceID`),
-  CONSTRAINT `FK_tblleague_tbluser` FOREIGN KEY (`LeagueManager`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `FK_tblleague_tbluser` FOREIGN KEY (`LeagueManager`) REFERENCES `tbl_user` (`UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -361,8 +373,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_action` (
   `ManagerAction` bit(1) NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `FK_tblactionhistory_tblpublisher` (`PublisherID`),
-  CONSTRAINT `FK_tblactionhistory_tblpublisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`)
-) ENGINE=InnoDB AUTO_INCREMENT=106620 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `FK_tblactionhistory_tblpublisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -373,7 +385,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league_activeplayer` (
   `UserID` char(36) NOT NULL DEFAULT '',
   PRIMARY KEY (`LeagueID`,`Year`,`UserID`),
   KEY `FK_tbl_league_activeplayer_tbl_league_hasuser` (`LeagueID`,`UserID`),
-  CONSTRAINT `FK_tbl_league_activeplayer_tbl_league_hasuser` FOREIGN KEY (`LeagueID`, `UserID`) REFERENCES `tbl_league_hasuser` (`LeagueID`, `UserID`),
+  CONSTRAINT `FK_tbl_league_activeplayer_tbl_league_hasuser` FOREIGN KEY (`LeagueID`, `UserID`) REFERENCES `tbl_league_hasuser` (`LeagueID`, `UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_tbl_league_activeplayer_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
@@ -386,29 +398,29 @@ CREATE TABLE IF NOT EXISTS `tbl_league_droprequest` (
   `MasterGameID` char(36) NOT NULL,
   `Timestamp` datetime NOT NULL,
   `Successful` bit(1) DEFAULT NULL,
-  `ProcessSetID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `ProcessSetID` char(36) DEFAULT NULL,
   PRIMARY KEY (`DropRequestID`),
   KEY `FK_tblacquisitionbid_tblpublisher` (`PublisherID`),
   KEY `FK_tblacquisitionbid_tblmastergame` (`MasterGameID`),
   KEY `FK_tbl_league_droprequest_tbl_meta_actionprocessingset` (`ProcessSetID`),
   CONSTRAINT `FK_tbl_league_droprequest_tbl_meta_actionprocessingset` FOREIGN KEY (`ProcessSetID`) REFERENCES `tbl_meta_actionprocessingset` (`ProcessSetID`),
-  CONSTRAINT `tbl_league_droprequest_ibfk_1` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
-  CONSTRAINT `tbl_league_droprequest_ibfk_2` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`)
+  CONSTRAINT `tbl_league_droprequest_ibfk_1` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `tbl_league_droprequest_ibfk_2` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table fantasycritic.tbl_league_eligibilityoverride
 CREATE TABLE IF NOT EXISTS `tbl_league_eligibilityoverride` (
-  `LeagueID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `LeagueID` char(36) NOT NULL,
   `Year` year NOT NULL,
-  `MasterGameID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `MasterGameID` char(36) NOT NULL,
   `Eligible` bit(1) NOT NULL,
-  PRIMARY KEY (`LeagueID`,`Year`,`MasterGameID`) USING BTREE,
-  KEY `FK_tbl_league_eligibilityoverride_tbl_mastergame` (`MasterGameID`) USING BTREE,
-  CONSTRAINT `tbl_league_eligibilityoverride_ibfk_1` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`),
-  CONSTRAINT `tbl_league_eligibilityoverride_ibfk_2` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+  PRIMARY KEY (`LeagueID`,`Year`,`MasterGameID`),
+  KEY `FK_tbl_league_eligibilityoverride_tbl_mastergame` (`MasterGameID`),
+  CONSTRAINT `FK_tbl_league_eligibilityoverride_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`),
+  CONSTRAINT `FK_tbl_league_eligibilityoverride_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -430,8 +442,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_formerpublishergame` (
   `RemovedTimestamp` datetime NOT NULL,
   `RemovedNote` text NOT NULL,
   PRIMARY KEY (`PublisherGameID`) USING BTREE,
-  KEY `FK_tbl_league_formerpublishergame_tbl_league_publisher` (`PublisherID`),
-  KEY `FK_tbl_league_formerpublishergame_tbl_mastergame` (`MasterGameID`),
+  KEY `FK_tbl_league_formerpublishergame_tbl_league_publisher` (`PublisherID`) USING BTREE,
+  KEY `FK_tbl_league_formerpublishergame_tbl_mastergame` (`MasterGameID`) USING BTREE,
   KEY `FK_tbl_league_formerpublishergame_tbl_league_trade` (`AcquiredInTradeID`),
   CONSTRAINT `FK_tbl_league_formerpublishergame_tbl_league_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`),
   CONSTRAINT `FK_tbl_league_formerpublishergame_tbl_league_trade` FOREIGN KEY (`AcquiredInTradeID`) REFERENCES `tbl_league_trade` (`TradeID`),
@@ -448,8 +460,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_hasuser` (
   `Archived` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`LeagueID`,`UserID`),
   KEY `FK_tblleaguehasuser_tbluser` (`UserID`),
-  CONSTRAINT `FK_tblleaguehasuser_tblleague` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`),
-  CONSTRAINT `FK_tblleaguehasuser_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `FK_tblleaguehasuser_tblleague` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tblleaguehasuser_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -464,7 +476,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league_invite` (
   PRIMARY KEY (`InviteID`),
   UNIQUE KEY `unique_league_email` (`LeagueID`,`EmailAddress`),
   UNIQUE KEY `unique_league_user` (`LeagueID`,`UserID`),
-  CONSTRAINT `FK_tblleagueinvite_tblleague` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`)
+  CONSTRAINT `FK_tblleagueinvite_tblleague` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -478,7 +490,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league_invitelink` (
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`InviteID`),
   UNIQUE KEY `Unique_League_Code` (`LeagueID`,`InviteCode`),
-  CONSTRAINT `FK_tbl_league_invitelink_tbl_league` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`)
+  CONSTRAINT `FK_tbl_league_invitelink_tbl_league` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 -- Data exporting was unselected.
@@ -492,9 +504,9 @@ CREATE TABLE IF NOT EXISTS `tbl_league_manageraction` (
   `ActionType` varchar(255) NOT NULL,
   `Description` text NOT NULL,
   PRIMARY KEY (`ID`) USING BTREE,
-  KEY `FK_tbl_league_manageraction_tbl_league_year` (`LeagueID`,`Year`),
+  KEY `FK_tbl_league_manageraction_tbl_league_year` (`LeagueID`,`Year`) USING BTREE,
   CONSTRAINT `FK_tbl_league_manageraction_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -504,12 +516,12 @@ CREATE TABLE IF NOT EXISTS `tbl_league_managermessage` (
   `LeagueID` char(36) NOT NULL,
   `Year` year NOT NULL,
   `MessageText` text NOT NULL,
-  `IsPublic` bit(1) NOT NULL,
+  `IsPublic` bit(1) NOT NULL DEFAULT b'0',
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Deleted` bit(1) NOT NULL,
-  PRIMARY KEY (`MessageID`),
-  KEY `FK__tbl_league_year` (`LeagueID`,`Year`),
-  CONSTRAINT `FK__tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`)
+  PRIMARY KEY (`MessageID`) USING BTREE,
+  KEY `FK__tbl_league_year` (`LeagueID`,`Year`) USING BTREE,
+  CONSTRAINT `FK_tbl_league_managermessage_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -518,8 +530,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_managermessage` (
 CREATE TABLE IF NOT EXISTS `tbl_league_managermessagedismissal` (
   `MessageID` char(36) NOT NULL,
   `UserID` char(36) NOT NULL,
-  PRIMARY KEY (`MessageID`,`UserID`),
-  KEY `FK_tbl_league_managermessagedismissal_tbl_user` (`UserID`),
+  PRIMARY KEY (`MessageID`,`UserID`) USING BTREE,
+  KEY `FK_tbl_league_managermessagedismissal_tbl_user` (`UserID`) USING BTREE,
   CONSTRAINT `FK_tbl_league_managermessagedismissal_tbl_league_managermessage` FOREIGN KEY (`MessageID`) REFERENCES `tbl_league_managermessage` (`MessageID`),
   CONSTRAINT `FK_tbl_league_managermessagedismissal_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -538,13 +550,13 @@ CREATE TABLE IF NOT EXISTS `tbl_league_pickupbid` (
   `BidAmount` int unsigned NOT NULL,
   `AllowIneligibleSlot` bit(1) NOT NULL DEFAULT b'0',
   `Successful` bit(1) DEFAULT NULL,
-  `ProcessSetID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Outcome` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `ProcessSetID` char(36) DEFAULT NULL,
+  `Outcome` text,
   `ProjectedPointsAtTimeOfBid` decimal(12,4) DEFAULT NULL,
-  PRIMARY KEY (`BidID`) USING BTREE,
-  KEY `FK_tblacquisitionbid_tblpublisher` (`PublisherID`) USING BTREE,
-  KEY `FK_tblacquisitionbid_tblmastergame` (`MasterGameID`) USING BTREE,
-  KEY `FK_tbl_league_pickupbid_tbl_mastergame` (`ConditionalDropMasterGameID`) USING BTREE,
+  PRIMARY KEY (`BidID`),
+  KEY `FK_tblacquisitionbid_tblpublisher` (`PublisherID`),
+  KEY `FK_tblacquisitionbid_tblmastergame` (`MasterGameID`),
+  KEY `FK_tbl_league_pickupbid_tbl_mastergame` (`ConditionalDropMasterGameID`),
   KEY `FK_tbl_league_pickupbid_tbl_meta_actionprocessingset` (`ProcessSetID`),
   CONSTRAINT `FK_tbl_league_pickupbid_tbl_mastergame` FOREIGN KEY (`ConditionalDropMasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
   CONSTRAINT `FK_tbl_league_pickupbid_tbl_meta_actionprocessingset` FOREIGN KEY (`ProcessSetID`) REFERENCES `tbl_meta_actionprocessingset` (`ProcessSetID`),
@@ -558,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league_pickupbid` (
 CREATE TABLE IF NOT EXISTS `tbl_league_publisher` (
   `PublisherID` char(36) NOT NULL,
   `PublisherName` varchar(100) DEFAULT NULL,
-  `PublisherIcon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `PublisherIcon` varchar(255) DEFAULT NULL,
   `PublisherSlogan` varchar(255) DEFAULT NULL,
   `LeagueID` char(36) NOT NULL,
   `Year` year NOT NULL,
@@ -568,17 +580,16 @@ CREATE TABLE IF NOT EXISTS `tbl_league_publisher` (
   `FreeGamesDropped` int DEFAULT NULL,
   `WillNotReleaseGamesDropped` int DEFAULT NULL,
   `WillReleaseGamesDropped` int DEFAULT NULL,
-  `SuperDropsAvailable` int NOT NULL,
+  `SuperDropsAvailable` int NOT NULL DEFAULT '0',
   `AutoDraftMode` varchar(50) NOT NULL DEFAULT 'Off',
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`PublisherID`),
   UNIQUE KEY `Unique_League_Year_User` (`LeagueID`,`Year`,`UserID`),
   UNIQUE KEY `Unique_League_Year_DraftPosition` (`Year`,`LeagueID`,`DraftPosition`),
   KEY `FK_tblpublisher_tblleaguehasuser` (`LeagueID`,`UserID`),
-  KEY `FK_tbl_league_publisher_tbl_user` (`UserID`),
   KEY `FK_tbl_league_publisher_tbl_meta_autodraftmode` (`AutoDraftMode`),
-  CONSTRAINT `FK_tbl_league_publisher_tbl_league_hasuser` FOREIGN KEY (`LeagueID`, `UserID`) REFERENCES `tbl_league_hasuser` (`LeagueID`, `UserID`),
   CONSTRAINT `FK_tbl_league_publisher_tbl_meta_autodraftmode` FOREIGN KEY (`AutoDraftMode`) REFERENCES `tbl_meta_autodraftmode` (`Mode`),
+  CONSTRAINT `FK_tblpublisher_tblleaguehasuser` FOREIGN KEY (`LeagueID`, `UserID`) REFERENCES `tbl_league_hasuser` (`LeagueID`, `UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_tblpublisher_tblleagueyear` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -603,11 +614,10 @@ CREATE TABLE IF NOT EXISTS `tbl_league_publishergame` (
   PRIMARY KEY (`PublisherGameID`),
   UNIQUE KEY `UNQ_Slot` (`PublisherID`,`CounterPick`,`SlotNumber`),
   KEY `FK_tblpublishergame_tblmastergame` (`MasterGameID`),
-  KEY `FK_tblpublishergame_tblpublisher` (`PublisherID`),
   KEY `FK_tbl_league_publishergame_tbl_league_trade` (`AcquiredInTradeID`),
-  CONSTRAINT `FK_tbl_league_publishergame_tbl_league_trade` FOREIGN KEY (`AcquiredInTradeID`) REFERENCES `tbl_league_trade` (`TradeID`),
-  CONSTRAINT `FK_tblpublishergame_tblmastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
-  CONSTRAINT `FK_tblpublishergame_tblpublisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`)
+  CONSTRAINT `FK_tbl_league_publishergame_tbl_league_trade` FOREIGN KEY (`AcquiredInTradeID`) REFERENCES `tbl_league_trade` (`TradeID`) ON DELETE SET NULL,
+  CONSTRAINT `FK_tblpublishergame_tblmastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tblpublishergame_tblpublisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -619,8 +629,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_publisherqueue` (
   `Ranking` int unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`PublisherID`,`MasterGameID`),
   KEY `FK_tbl_league_publisherqueue_tbl_mastergame` (`MasterGameID`),
-  CONSTRAINT `FK_tbl_league_publisherqueue_tbl_league_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`),
-  CONSTRAINT `FK_tbl_league_publisherqueue_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`)
+  CONSTRAINT `FK_tbl_league_publisherqueue_tbl_league_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tbl_league_publisherqueue_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -640,7 +650,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league_publisherstatistics` (
   `NumberOfCounterPicksReleased` tinyint unsigned NOT NULL,
   `NumberOfCounterPicksExpectedToRelease` tinyint unsigned NOT NULL,
   `NumberOfCounterPicksNotExpectedToRelease` tinyint unsigned NOT NULL,
-  PRIMARY KEY (`PublisherID`,`Date`),
+  PRIMARY KEY (`PublisherID`,`Date`) USING BTREE,
   CONSTRAINT `FK_tbl_league_publisherstatistics_tbl_league_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_league_publisher` (`PublisherID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -656,8 +666,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_specialauction` (
   `ScheduledEndTime` datetime NOT NULL,
   `Processed` bit(1) NOT NULL,
   PRIMARY KEY (`SpecialAuctionID`) USING BTREE,
-  KEY `FK_tbl_league_specialauction_tbl_mastergame` (`MasterGameID`),
-  KEY `FK_tbl_league_specialauction_tbl_league_year` (`LeagueID`,`Year`),
+  KEY `FK_tbl_league_specialauction_tbl_league_year` (`LeagueID`,`Year`) USING BTREE,
+  KEY `FK_tbl_league_specialauction_tbl_mastergame` (`MasterGameID`) USING BTREE,
   CONSTRAINT `FK_tbl_league_specialauction_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`),
   CONSTRAINT `FK_tbl_league_specialauction_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -667,13 +677,13 @@ CREATE TABLE IF NOT EXISTS `tbl_league_specialauction` (
 -- Dumping structure for table fantasycritic.tbl_league_specialgameslot
 CREATE TABLE IF NOT EXISTS `tbl_league_specialgameslot` (
   `SpecialSlotID` char(36) NOT NULL,
-  `LeagueID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `LeagueID` char(36) NOT NULL,
   `Year` year NOT NULL,
   `SpecialSlotPosition` int NOT NULL,
   `Tag` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`SpecialSlotID`),
-  KEY `FK_tbl_league_gameslotusestag_tbl_mastergame_tag` (`Tag`),
-  KEY `FK_tbl_league_specialgameslot_tbl_league_year` (`LeagueID`,`Year`),
+  PRIMARY KEY (`SpecialSlotID`) USING BTREE,
+  KEY `FK_tbl_league_gameslotusestag_tbl_mastergame_tag` (`Tag`) USING BTREE,
+  KEY `FK_tbl_league_specialgameslot_tbl_league_year` (`LeagueID`,`Year`) USING BTREE,
   CONSTRAINT `FK_tbl_league_gameslotusestag_tbl_mastergame_tag` FOREIGN KEY (`Tag`) REFERENCES `tbl_mastergame_tag` (`Name`),
   CONSTRAINT `FK_tbl_league_specialgameslot_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
@@ -687,8 +697,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_tagoverride` (
   `MasterGameID` char(36) NOT NULL,
   `TagName` varchar(255) NOT NULL,
   PRIMARY KEY (`LeagueID`,`Year`,`MasterGameID`,`TagName`) USING BTREE,
-  KEY `FK_tbl_league_tagoverride_tbl_mastergame` (`MasterGameID`),
-  KEY `FK_tbl_league_tagoverride_tbl_mastergame_tag` (`TagName`),
+  KEY `FK_tbl_league_tagoverride_tbl_mastergame` (`MasterGameID`) USING BTREE,
+  KEY `FK_tbl_league_tagoverride_tbl_mastergame_tag` (`TagName`) USING BTREE,
   CONSTRAINT `FK_tbl_league_tagoverride_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`),
   CONSTRAINT `FK_tbl_league_tagoverride_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
   CONSTRAINT `FK_tbl_league_tagoverride_tbl_mastergame_tag` FOREIGN KEY (`TagName`) REFERENCES `tbl_mastergame_tag` (`Name`)
@@ -701,8 +711,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_trade` (
   `TradeID` char(36) NOT NULL,
   `LeagueID` char(36) NOT NULL,
   `Year` year NOT NULL,
-  `ProposerPublisherID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `CounterPartyPublisherID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `ProposerPublisherID` char(36) DEFAULT NULL,
+  `CounterPartyPublisherID` char(36) DEFAULT NULL,
   `ProposerBudgetSendAmount` int unsigned NOT NULL,
   `CounterPartyBudgetSendAmount` int unsigned NOT NULL,
   `Message` text NOT NULL,
@@ -725,13 +735,13 @@ CREATE TABLE IF NOT EXISTS `tbl_league_trade` (
 
 -- Dumping structure for table fantasycritic.tbl_league_tradecomponent
 CREATE TABLE IF NOT EXISTS `tbl_league_tradecomponent` (
-  `TradeID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `CurrentParty` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `MasterGameID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `TradeID` char(36) NOT NULL,
+  `CurrentParty` varchar(255) NOT NULL,
+  `MasterGameID` char(36) NOT NULL,
   `CounterPick` bit(1) NOT NULL,
   PRIMARY KEY (`TradeID`,`CurrentParty`,`MasterGameID`,`CounterPick`) USING BTREE,
-  KEY `FK_tbl_league_tradecomponent_tbl_meta_tradingparty` (`CurrentParty`),
-  KEY `FK_tbl_league_tradecomponent_tbl_mastergame` (`MasterGameID`),
+  KEY `FK_tbl_league_tradecomponent_tbl_meta_tradingparty` (`CurrentParty`) USING BTREE,
+  KEY `FK_tbl_league_tradecomponent_tbl_mastergame` (`MasterGameID`) USING BTREE,
   CONSTRAINT `FK_tbl_league_tradecomponent_tbl_league_trade` FOREIGN KEY (`TradeID`) REFERENCES `tbl_league_trade` (`TradeID`),
   CONSTRAINT `FK_tbl_league_tradecomponent_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
   CONSTRAINT `FK_tbl_league_tradecomponent_tbl_meta_tradingparty` FOREIGN KEY (`CurrentParty`) REFERENCES `tbl_meta_tradingparty` (`Name`)
@@ -744,10 +754,10 @@ CREATE TABLE IF NOT EXISTS `tbl_league_tradevote` (
   `TradeID` char(36) NOT NULL,
   `UserID` char(36) NOT NULL,
   `Approved` bit(1) NOT NULL,
-  `Comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `Comment` text,
   `Timestamp` datetime NOT NULL,
-  PRIMARY KEY (`TradeID`,`UserID`),
-  KEY `FK_tbl_league_tradevote_tbl_user` (`UserID`),
+  PRIMARY KEY (`TradeID`,`UserID`) USING BTREE,
+  KEY `FK_tbl_league_tradevote_tbl_user` (`UserID`) USING BTREE,
   CONSTRAINT `FK_tbl_league_tradevote_tbl_league_trade` FOREIGN KEY (`TradeID`) REFERENCES `tbl_league_trade` (`TradeID`),
   CONSTRAINT `FK_tbl_league_tradevote_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -772,10 +782,10 @@ CREATE TABLE IF NOT EXISTS `tbl_league_year` (
   `MinimumBidAmount` tinyint NOT NULL DEFAULT '0',
   `DraftSystem` varchar(50) NOT NULL,
   `PickupSystem` varchar(50) NOT NULL,
-  `TiebreakSystem` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `TiebreakSystem` varchar(50) NOT NULL,
   `ScoringSystem` varchar(50) NOT NULL,
-  `TradingSystem` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ReleaseSystem` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `TradingSystem` varchar(50) NOT NULL,
+  `ReleaseSystem` varchar(50) NOT NULL,
   `PlayStatus` varchar(50) NOT NULL,
   `DraftOrderSet` bit(1) NOT NULL,
   `CounterPickDeadlineMonth` tinyint NOT NULL,
@@ -793,10 +803,10 @@ CREATE TABLE IF NOT EXISTS `tbl_league_year` (
   KEY `FK_tblleagueyear_tblwaiversystem` (`PickupSystem`),
   KEY `FK_tblleagueyear_tblscoringsystem` (`ScoringSystem`),
   KEY `FK_tblleagueyear_tblplaystatus` (`PlayStatus`),
-  KEY `FK_tbl_league_year_tbl_settings_tradingsystem` (`TradingSystem`),
-  KEY `FK_tbl_league_year_tbl_user` (`WinningUserID`),
   KEY `FK_tbl_league_year_tbl_settings_releasesystem` (`ReleaseSystem`),
   KEY `FK_tbl_league_year_tbl_settings_tiebreaksystem` (`TiebreakSystem`),
+  KEY `FK_tbl_league_year_tbl_settings_tradingsystem` (`TradingSystem`),
+  KEY `FK_tbl_league_year_tbl_user` (`WinningUserID`),
   KEY `tbl_league_year_ibfk_6` (`Year`),
   CONSTRAINT `FK_tbl_league_year_tbl_settings_releasesystem` FOREIGN KEY (`ReleaseSystem`) REFERENCES `tbl_settings_releasesystem` (`ReleaseSystem`),
   CONSTRAINT `FK_tbl_league_year_tbl_settings_tiebreaksystem` FOREIGN KEY (`TiebreakSystem`) REFERENCES `tbl_settings_tiebreaksystem` (`TiebreakSystem`),
@@ -817,13 +827,13 @@ CREATE TABLE IF NOT EXISTS `tbl_league_yearusestag` (
   `LeagueID` char(36) NOT NULL DEFAULT '',
   `Year` year NOT NULL,
   `Tag` varchar(255) NOT NULL DEFAULT '',
-  `Status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`LeagueID`,`Year`,`Tag`),
-  KEY `FK_tbl_league_yearusestag_tbl_mastergame_tag` (`Tag`),
+  `Status` varchar(50) NOT NULL,
+  PRIMARY KEY (`LeagueID`,`Year`,`Tag`) USING BTREE,
+  KEY `FK_tbl_league_yearusestag_tbl_mastergame_tag` (`Tag`) USING BTREE,
   KEY `FK_tbl_league_yearusestag_tbl_settings_tagoption` (`Status`) USING BTREE,
   CONSTRAINT `FK_tbl_league_yearusestag_tbl_league_year` FOREIGN KEY (`LeagueID`, `Year`) REFERENCES `tbl_league_year` (`LeagueID`, `Year`),
   CONSTRAINT `FK_tbl_league_yearusestag_tbl_mastergame_tag` FOREIGN KEY (`Tag`) REFERENCES `tbl_mastergame_tag` (`Name`),
-  CONSTRAINT `FK_tbl_league_yearusestag_tbl_settings_tagoption` FOREIGN KEY (`Status`) REFERENCES `tbl_settings_tagstatus` (`Status`)
+  CONSTRAINT `FK_tbl_league_yearusestag_tbl_settings_tagoption` FOREIGN KEY (`Status`) REFERENCES `tbl_settings_tagstatus` (`Status`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -845,7 +855,7 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame` (
   `CriticScore` decimal(7,4) DEFAULT NULL,
   `HasAnyReviews` bit(1) NOT NULL,
   `OpenCriticSlug` varchar(255) DEFAULT NULL,
-  `Notes` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `Notes` mediumtext,
   `BoxartFileName` varchar(255) DEFAULT NULL,
   `GGCoverArtFileName` varchar(255) DEFAULT NULL,
   `FirstCriticScoreTimestamp` timestamp NULL DEFAULT NULL,
@@ -854,8 +864,8 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame` (
   `UseSimpleEligibility` bit(1) NOT NULL DEFAULT b'0',
   `DelayContention` bit(1) NOT NULL DEFAULT b'0',
   `ShowNote` bit(1) NOT NULL,
-  `AddedTimestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `AddedByUserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `AddedTimestamp` timestamp NOT NULL,
+  `AddedByUserID` char(36) NOT NULL,
   PRIMARY KEY (`MasterGameID`),
   UNIQUE KEY `UniqueName` (`GameName`),
   KEY `FK_tbl_mastergame_tbl_user` (`AddedByUserID`),
@@ -866,14 +876,14 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame` (
 
 -- Dumping structure for table fantasycritic.tbl_mastergame_changelog
 CREATE TABLE IF NOT EXISTS `tbl_mastergame_changelog` (
-  `MasterGameChangeID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `MasterGameID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ChangedByUserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `MasterGameChangeID` char(36) NOT NULL,
+  `MasterGameID` char(36) NOT NULL,
+  `ChangedByUserID` char(36) NOT NULL,
   `Timestamp` datetime NOT NULL,
-  `Description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`MasterGameChangeID`),
-  KEY `FK__tbl_mastergame` (`MasterGameID`),
-  KEY `FK__tbl_user` (`ChangedByUserID`),
+  `Description` text NOT NULL,
+  PRIMARY KEY (`MasterGameChangeID`) USING BTREE,
+  KEY `FK__tbl_mastergame` (`MasterGameID`) USING BTREE,
+  KEY `FK__tbl_user` (`ChangedByUserID`) USING BTREE,
   CONSTRAINT `FK__tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
   CONSTRAINT `FK__tbl_user` FOREIGN KEY (`ChangedByUserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -892,13 +902,13 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame_changerequest` (
   `Answered` bit(1) NOT NULL,
   `ResponseTimestamp` datetime DEFAULT NULL,
   `ResponseNote` text,
-  `ResponseUserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `ResponseUserID` char(36) DEFAULT NULL,
   `Hidden` bit(1) NOT NULL,
   PRIMARY KEY (`RequestID`),
   KEY `FK_tblmastergamerequest_tbluser` (`UserID`),
   KEY `FK_tblmastergamerequest_tblmastergame` (`MasterGameID`),
-  CONSTRAINT `tbl_mastergame_changerequest_ibfk_2` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
-  CONSTRAINT `tbl_mastergame_changerequest_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `tbl_mastergame_changerequest_ibfk_2` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `tbl_mastergame_changerequest_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 -- Data exporting was unselected.
@@ -906,10 +916,10 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame_changerequest` (
 -- Dumping structure for table fantasycritic.tbl_mastergame_hastag
 CREATE TABLE IF NOT EXISTS `tbl_mastergame_hastag` (
   `MasterGameID` char(36) NOT NULL,
-  `TagName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `TagName` varchar(255) NOT NULL,
   `TimeAdded` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`MasterGameID`,`TagName`),
-  KEY `FK_tbl_mastergame_hastag_tbl_mastergame_tag` (`TagName`),
+  PRIMARY KEY (`MasterGameID`,`TagName`) USING BTREE,
+  KEY `FK_tbl_mastergame_hastag_tbl_mastergame_tag` (`TagName`) USING BTREE,
   CONSTRAINT `FK_tbl_mastergame_hastag_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
   CONSTRAINT `FK_tbl_mastergame_hastag_tbl_mastergame_tag` FOREIGN KEY (`TagName`) REFERENCES `tbl_mastergame_tag` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -931,14 +941,14 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame_request` (
   `Answered` bit(1) NOT NULL,
   `ResponseTimestamp` datetime DEFAULT NULL,
   `ResponseNote` text,
-  `ResponseUserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `ResponseUserID` char(36) DEFAULT NULL,
   `MasterGameID` char(36) DEFAULT NULL,
   `Hidden` bit(1) NOT NULL,
   PRIMARY KEY (`RequestID`),
   KEY `FK_tblmastergamerequest_tbluser` (`UserID`),
   KEY `FK_tblmastergamerequest_tblmastergame` (`MasterGameID`),
-  CONSTRAINT `FK_tblmastergamerequest_tblmastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
-  CONSTRAINT `FK_tblmastergamerequest_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `FK_tblmastergamerequest_tblmastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tblmastergamerequest_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -956,14 +966,14 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame_subgame` (
   `CriticScore` decimal(7,4) DEFAULT NULL,
   PRIMARY KEY (`MasterSubGameID`),
   KEY `FK_tblmastersubgame_tblmastergame` (`MasterGameID`),
-  CONSTRAINT `FK_tblmastersubgame_tblmastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`)
+  CONSTRAINT `FK_tblmastersubgame_tblmastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table fantasycritic.tbl_mastergame_tag
 CREATE TABLE IF NOT EXISTS `tbl_mastergame_tag` (
-  `Name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `Name` varchar(255) NOT NULL,
   `ReadableName` varchar(255) NOT NULL,
   `ShortName` varchar(255) NOT NULL,
   `TagType` varchar(255) NOT NULL,
@@ -972,8 +982,8 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame_tag` (
   `Description` text NOT NULL,
   `Examples` json NOT NULL,
   `BadgeColor` char(6) NOT NULL,
-  PRIMARY KEY (`Name`),
-  KEY `FK_tbl_mastergame_tag_tbl_mastergame_tagtype` (`TagType`),
+  PRIMARY KEY (`Name`) USING BTREE,
+  KEY `FK_tbl_mastergame_tag_tbl_mastergame_tagtype` (`TagType`) USING BTREE,
   CONSTRAINT `FK_tbl_mastergame_tag_tbl_mastergame_tagtype` FOREIGN KEY (`TagType`) REFERENCES `tbl_mastergame_tagtype` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
@@ -982,7 +992,7 @@ CREATE TABLE IF NOT EXISTS `tbl_mastergame_tag` (
 -- Dumping structure for table fantasycritic.tbl_mastergame_tagtype
 CREATE TABLE IF NOT EXISTS `tbl_mastergame_tagtype` (
   `Name` varchar(255) NOT NULL,
-  PRIMARY KEY (`Name`)
+  PRIMARY KEY (`Name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -992,7 +1002,7 @@ CREATE TABLE IF NOT EXISTS `tbl_meta_actionprocessingset` (
   `ProcessSetID` char(36) NOT NULL,
   `ProcessTime` datetime NOT NULL,
   `ProcessName` varchar(255) NOT NULL,
-  PRIMARY KEY (`ProcessSetID`)
+  PRIMARY KEY (`ProcessSetID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -1036,7 +1046,7 @@ CREATE TABLE IF NOT EXISTS `tbl_meta_systemwidesettings` (
 
 -- Dumping structure for table fantasycritic.tbl_meta_tradestatus
 CREATE TABLE IF NOT EXISTS `tbl_meta_tradestatus` (
-  `Status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `Status` varchar(255) NOT NULL,
   PRIMARY KEY (`Status`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -1044,26 +1054,26 @@ CREATE TABLE IF NOT EXISTS `tbl_meta_tradestatus` (
 
 -- Dumping structure for table fantasycritic.tbl_meta_tradingparty
 CREATE TABLE IF NOT EXISTS `tbl_meta_tradingparty` (
-  `Name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `Name` varchar(255) NOT NULL,
   PRIMARY KEY (`Name`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table fantasycritic.tbl_royale_action
 CREATE TABLE IF NOT EXISTS `tbl_royale_action` (
   `ID` int unsigned NOT NULL AUTO_INCREMENT,
-  `PublisherID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `PublisherID` char(36) NOT NULL,
   `Timestamp` datetime(6) NOT NULL,
   `MasterGameID` char(36) NOT NULL,
   `ActionType` varchar(255) NOT NULL,
-  `Description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `FK__tbl_royale_publisher` (`PublisherID`),
-  KEY `FK_tbl_royale_action_tbl_mastergame` (`MasterGameID`),
+  `Description` text NOT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  KEY `FK__tbl_royale_publisher` (`PublisherID`) USING BTREE,
+  KEY `FK_tbl_royale_action_tbl_mastergame` (`MasterGameID`) USING BTREE,
   CONSTRAINT `FK__tbl_royale_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_royale_publisher` (`PublisherID`),
   CONSTRAINT `FK_tbl_royale_action_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -1076,13 +1086,13 @@ CREATE TABLE IF NOT EXISTS `tbl_royale_publisher` (
   `PublisherName` varchar(255) NOT NULL DEFAULT '0',
   `PublisherIcon` varchar(255) DEFAULT NULL,
   `PublisherSlogan` varchar(255) DEFAULT NULL,
-  `Budget` decimal(11,1) unsigned NOT NULL DEFAULT '0.0',
+  `Budget` decimal(11,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`PublisherID`),
   UNIQUE KEY `UNQ_Publisher` (`UserID`,`Year`,`Quarter`),
   KEY `FK_tbl_royale_publisher_tbl_user` (`UserID`),
   KEY `FK_tbl_royale_publisher_tbl_royale_supportedquarter` (`Year`,`Quarter`),
-  CONSTRAINT `FK_tbl_royale_publisher_tbl_royale_supportedquarter` FOREIGN KEY (`Year`, `Quarter`) REFERENCES `tbl_royale_supportedquarter` (`Year`, `Quarter`),
-  CONSTRAINT `FK_tbl_royale_publisher_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `FK_tbl_royale_publisher_tbl_royale_supportedquarter` FOREIGN KEY (`Year`, `Quarter`) REFERENCES `tbl_royale_supportedquarter` (`Year`, `Quarter`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tbl_royale_publisher_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -1097,8 +1107,8 @@ CREATE TABLE IF NOT EXISTS `tbl_royale_publishergame` (
   `FantasyPoints` decimal(12,4) DEFAULT '0.0000',
   PRIMARY KEY (`PublisherID`,`MasterGameID`),
   KEY `FK_tbl_royale_publishergame_tbl_mastergame` (`MasterGameID`),
-  CONSTRAINT `FK_tbl_royale_publishergame_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`),
-  CONSTRAINT `FK_tbl_royale_publishergame_tbl_royale_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_royale_publisher` (`PublisherID`)
+  CONSTRAINT `FK_tbl_royale_publishergame_tbl_mastergame` FOREIGN KEY (`MasterGameID`) REFERENCES `tbl_mastergame` (`MasterGameID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tbl_royale_publishergame_tbl_royale_publisher` FOREIGN KEY (`PublisherID`) REFERENCES `tbl_royale_publisher` (`PublisherID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -1124,8 +1134,8 @@ CREATE TABLE IF NOT EXISTS `tbl_royale_supportedquarter` (
   PRIMARY KEY (`Year`,`Quarter`),
   KEY `FK_tbl_royale_supportedquarter_tbl_meta_quarters` (`Quarter`),
   KEY `FK_tbl_royale_supportedquarter_tbl_user` (`WinningUser`),
-  CONSTRAINT `FK_tbl_royale_supportedquarter_tbl_meta_quarters` FOREIGN KEY (`Quarter`) REFERENCES `tbl_meta_quarters` (`Quarter`),
-  CONSTRAINT `FK_tbl_royale_supportedquarter_tbl_meta_supportedyear` FOREIGN KEY (`Year`) REFERENCES `tbl_meta_supportedyear` (`Year`),
+  CONSTRAINT `FK_tbl_royale_supportedquarter_tbl_meta_quarters` FOREIGN KEY (`Quarter`) REFERENCES `tbl_meta_quarters` (`Quarter`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tbl_royale_supportedquarter_tbl_meta_supportedyear` FOREIGN KEY (`Year`) REFERENCES `tbl_meta_supportedyear` (`Year`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_tbl_royale_supportedquarter_tbl_user` FOREIGN KEY (`WinningUser`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -1141,8 +1151,8 @@ CREATE TABLE IF NOT EXISTS `tbl_settings_draftsystem` (
 
 -- Dumping structure for table fantasycritic.tbl_settings_pickupsystem
 CREATE TABLE IF NOT EXISTS `tbl_settings_pickupsystem` (
-  `PickupSystem` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`PickupSystem`) USING BTREE
+  `PickupSystem` varchar(50) NOT NULL,
+  PRIMARY KEY (`PickupSystem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -1157,7 +1167,7 @@ CREATE TABLE IF NOT EXISTS `tbl_settings_playstatus` (
 
 -- Dumping structure for table fantasycritic.tbl_settings_releasesystem
 CREATE TABLE IF NOT EXISTS `tbl_settings_releasesystem` (
-  `ReleaseSystem` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `ReleaseSystem` varchar(50) NOT NULL,
   PRIMARY KEY (`ReleaseSystem`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
@@ -1173,7 +1183,7 @@ CREATE TABLE IF NOT EXISTS `tbl_settings_scoringsystem` (
 
 -- Dumping structure for table fantasycritic.tbl_settings_tagstatus
 CREATE TABLE IF NOT EXISTS `tbl_settings_tagstatus` (
-  `Status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `Status` varchar(50) NOT NULL,
   PRIMARY KEY (`Status`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -1181,7 +1191,7 @@ CREATE TABLE IF NOT EXISTS `tbl_settings_tagstatus` (
 
 -- Dumping structure for table fantasycritic.tbl_settings_tiebreaksystem
 CREATE TABLE IF NOT EXISTS `tbl_settings_tiebreaksystem` (
-  `TiebreakSystem` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `TiebreakSystem` varchar(50) NOT NULL,
   PRIMARY KEY (`TiebreakSystem`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
@@ -1189,7 +1199,7 @@ CREATE TABLE IF NOT EXISTS `tbl_settings_tiebreaksystem` (
 
 -- Dumping structure for table fantasycritic.tbl_settings_tradingsystem
 CREATE TABLE IF NOT EXISTS `tbl_settings_tradingsystem` (
-  `TradingSystem` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `TradingSystem` varchar(50) NOT NULL,
   PRIMARY KEY (`TradingSystem`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
@@ -1202,7 +1212,7 @@ CREATE TABLE IF NOT EXISTS `tbl_system_patreonkeys` (
   `RefreshToken` varchar(255) NOT NULL,
   `CreatedTimestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -1223,8 +1233,8 @@ CREATE TABLE IF NOT EXISTS `tbl_user` (
   `DisplayNumber` smallint DEFAULT NULL,
   `EmailAddress` varchar(255) NOT NULL,
   `NormalizedEmailAddress` varchar(255) NOT NULL,
-  `PasswordHash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `SecurityStamp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `PasswordHash` varchar(255) DEFAULT NULL,
+  `SecurityStamp` varchar(255) NOT NULL,
   `TwoFactorEnabled` bit(1) NOT NULL,
   `AuthenticatorKey` varchar(255) DEFAULT NULL,
   `LastChangedCredentials` datetime NOT NULL,
@@ -1240,20 +1250,20 @@ CREATE TABLE IF NOT EXISTS `tbl_user` (
 
 -- Dumping structure for table fantasycritic.tbl_user_donorname
 CREATE TABLE IF NOT EXISTS `tbl_user_donorname` (
-  `UserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `UserID` char(36) NOT NULL,
   `DonorName` varchar(255) NOT NULL,
   PRIMARY KEY (`UserID`) USING BTREE,
   CONSTRAINT `tbl_user_donorname_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table fantasycritic.tbl_user_emailsettings
 CREATE TABLE IF NOT EXISTS `tbl_user_emailsettings` (
-  `UserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `EmailType` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `UserID` char(36) NOT NULL,
+  `EmailType` varchar(255) NOT NULL,
   PRIMARY KEY (`UserID`,`EmailType`) USING BTREE,
-  KEY `FK_tbl_user_emailsettings_tbl_user_emailtype` (`EmailType`),
+  KEY `FK_tbl_user_emailsettings_tbl_user_emailtype` (`EmailType`) USING BTREE,
   CONSTRAINT `FK_tbl_user_emailsettings_tbl_user_emailtype` FOREIGN KEY (`EmailType`) REFERENCES `tbl_user_emailtype` (`EmailType`),
   CONSTRAINT `tbl_user_emailsettings_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
@@ -1262,9 +1272,9 @@ CREATE TABLE IF NOT EXISTS `tbl_user_emailsettings` (
 
 -- Dumping structure for table fantasycritic.tbl_user_emailtype
 CREATE TABLE IF NOT EXISTS `tbl_user_emailtype` (
-  `EmailType` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `EmailType` varchar(255) NOT NULL,
   `ReadableName` varchar(255) NOT NULL,
-  PRIMARY KEY (`EmailType`)
+  PRIMARY KEY (`EmailType`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 -- Data exporting was unselected.
@@ -1273,12 +1283,12 @@ CREATE TABLE IF NOT EXISTS `tbl_user_emailtype` (
 CREATE TABLE IF NOT EXISTS `tbl_user_externallogin` (
   `LoginProvider` varchar(255) NOT NULL,
   `ProviderKey` varchar(255) NOT NULL,
-  `UserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `UserID` char(36) NOT NULL,
   `ProviderDisplayName` varchar(255) NOT NULL,
   `TimeAdded` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`LoginProvider`,`ProviderKey`) USING BTREE,
-  UNIQUE KEY `UNQ_Login` (`LoginProvider`,`ProviderKey`,`UserID`),
-  KEY `FK_tbl_user_externallogin_tbl_user` (`UserID`),
+  UNIQUE KEY `UNQ_Login` (`LoginProvider`,`ProviderKey`,`UserID`) USING BTREE,
+  KEY `FK_tbl_user_externallogin_tbl_user` (`UserID`) USING BTREE,
   CONSTRAINT `FK_tbl_user_externallogin_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -1291,8 +1301,8 @@ CREATE TABLE IF NOT EXISTS `tbl_user_followingleague` (
   `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`UserID`,`LeagueID`),
   KEY `FK_tbluserfollowingleague_tblleague` (`LeagueID`),
-  CONSTRAINT `FK_tbluserfollowingleague_tblleague` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`),
-  CONSTRAINT `FK_tbluserfollowingleague_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `FK_tbluserfollowingleague_tblleague` FOREIGN KEY (`LeagueID`) REFERENCES `tbl_league` (`LeagueID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tbluserfollowingleague_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
@@ -1304,33 +1314,33 @@ CREATE TABLE IF NOT EXISTS `tbl_user_hasrole` (
   `ProgrammaticallyAssigned` bit(1) NOT NULL,
   PRIMARY KEY (`UserID`,`RoleID`),
   KEY `FK_tbluserhasrole_tblrole` (`RoleID`),
-  CONSTRAINT `FK_tbluserhasrole_tblrole` FOREIGN KEY (`RoleID`) REFERENCES `tbl_user_role` (`RoleID`),
-  CONSTRAINT `FK_tbluserhasrole_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `FK_tbluserhasrole_tblrole` FOREIGN KEY (`RoleID`) REFERENCES `tbl_user_role` (`RoleID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_tbluserhasrole_tbluser` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table fantasycritic.tbl_user_persistedgrant
 CREATE TABLE IF NOT EXISTS `tbl_user_persistedgrant` (
-  `Key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `Type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `SubjectId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ClientId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `Key` varchar(255) NOT NULL,
+  `Type` varchar(255) NOT NULL,
+  `SubjectId` varchar(255) NOT NULL,
+  `ClientId` varchar(255) NOT NULL,
   `CreationTime` datetime NOT NULL,
   `ConsumedTime` datetime DEFAULT NULL,
   `Expiration` datetime DEFAULT NULL,
-  `Data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `Description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `SessionId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`Key`)
+  `Data` text NOT NULL,
+  `Description` text,
+  `SessionId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`Key`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table fantasycritic.tbl_user_recoverycode
 CREATE TABLE IF NOT EXISTS `tbl_user_recoverycode` (
-  `UserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `RecoveryCode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `UserID` char(36) NOT NULL,
+  `RecoveryCode` varchar(255) NOT NULL,
   `CreatedTimestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`UserID`,`RecoveryCode`) USING BTREE,
   CONSTRAINT `tbl_user_recoverycode_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
@@ -1364,93 +1374,81 @@ CREATE TABLE IF NOT EXISTS `tbl_user_supportticket` (
   CONSTRAINT `FK_tbl_user_supportticket_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Data exporting was unselected.
-
--- Dumping structure for view fantasycritic.vw_discord_leaguechannel
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `vw_discord_leaguechannel` 
-) ENGINE=MyISAM;
-
--- Dumping structure for view fantasycritic.vw_league
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `vw_league` (
-  `LeagueID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `LeagueName` VARCHAR(150) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `LeagueManager` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `ConferenceID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `ConferenceName` VARCHAR(150) NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `PublicLeague` BIT(1) NOT NULL,
-  `TestLeague` BIT(1) NOT NULL,
-  `CustomRulesLeague` BIT(1) NOT NULL,
-  `Timestamp` TIMESTAMP NOT NULL,
-  `NumberOfFollowers` BIGINT(19) NOT NULL,
-  `IsDeleted` BIT(1) NOT NULL
-) ENGINE=MyISAM;
-
--- Dumping structure for view fantasycritic.vw_league_droprequest
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `vw_league_droprequest` (
-  `DropRequestID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `PublisherID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `LeagueID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `Year` YEAR NOT NULL,
-  `PublisherName` VARCHAR(100) NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `LeagueName` VARCHAR(150) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `MasterGameID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `GameName` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `Successful` BIT(1) NULL,
-  `Timestamp` DATETIME NOT NULL,
-  `ProcessSetID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `IsDeleted` BIT(1) NOT NULL
-) ENGINE=MyISAM;
-
--- Dumping structure for view fantasycritic.vw_league_pickupbid
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `vw_league_pickupbid` (
-  `BidID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `PublisherID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `LeagueID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `Year` YEAR NOT NULL,
-  `PublisherName` VARCHAR(100) NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `LeagueName` VARCHAR(150) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `MasterGameID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `GameName` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `ConditionalDropMasterGameID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `CounterPick` BIT(1) NOT NULL,
-  `Priority` INT(10) NOT NULL,
-  `BidAmount` INT(10) UNSIGNED NOT NULL,
-  `AllowIneligibleSlot` BIT(1) NOT NULL,
-  `Successful` BIT(1) NULL,
-  `Timestamp` DATETIME NOT NULL,
-  `ProcessSetID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `Outcome` TEXT NULL COLLATE 'utf8mb4_0900_ai_ci',
-  `ProjectedPointsAtTimeOfBid` DECIMAL(12,4) NULL,
-  `IsDeleted` BIT(1) NOT NULL
-) ENGINE=MyISAM;
-
--- Dumping structure for view fantasycritic.vw_meta_sitecounts
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `vw_meta_sitecounts` (
-  `UserCount` BIGINT(19) NOT NULL,
-  `LeagueCount` BIGINT(19) NOT NULL,
-  `MasterGameCount` BIGINT(19) NOT NULL,
-  `PublisherGameCount` BIGINT(19) NOT NULL
-) ENGINE=MyISAM;
-
 -- Dumping structure for table fantasycritic._schemaversion
 CREATE TABLE IF NOT EXISTS `_schemaversion` (
   `schemaversionid` int NOT NULL AUTO_INCREMENT,
   `scriptname` varchar(255) NOT NULL,
   `applied` timestamp NOT NULL,
   PRIMARY KEY (`schemaversionid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
--- Dumping structure for view fantasycritic.vw_discord_leaguechannel
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `vw_discord_leaguechannel`;
-CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_discord_leaguechannel` AS select `tbl_discord_leaguechannel`.`LeagueID` AS `LeagueID`,`tbl_discord_leaguechannel`.`GuildID` AS `GuildID`,`tbl_discord_leaguechannel`.`ChannelID` AS `ChannelID`,`tbl_discord_leaguechannel`.`SendLeagueMasterGameUpdates` AS `SendLeagueMasterGameUpdates`,`tbl_discord_leaguechannel`.`SendNotableMisses` AS `SendNotableMisses`,`tbl_discord_leaguechannel`.`BidAlertRoleID` AS `BidAlertRoleID`,min(`tbl_league_year`.`Year`) AS `MinimumLeagueYear` from (`tbl_discord_leaguechannel` join `tbl_league_year` on((`tbl_discord_leaguechannel`.`LeagueID` = `tbl_league_year`.`LeagueID`))) group by `tbl_discord_leaguechannel`.`LeagueID`,`tbl_discord_leaguechannel`.`GuildID`,`tbl_discord_leaguechannel`.`ChannelID`;
+-- Dumping structure for view fantasycritic.vw_league
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vw_league` (
+	`LeagueID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`LeagueName` VARCHAR(150) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`LeagueManager` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`ConferenceID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`ConferenceName` VARCHAR(150) NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`PublicLeague` BIT(1) NOT NULL,
+	`TestLeague` BIT(1) NOT NULL,
+	`CustomRulesLeague` BIT(1) NOT NULL,
+	`Timestamp` TIMESTAMP NOT NULL,
+	`NumberOfFollowers` BIGINT(19) NOT NULL,
+	`IsDeleted` BIT(1) NOT NULL
+) ENGINE=MyISAM;
+
+-- Dumping structure for view fantasycritic.vw_league_droprequest
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vw_league_droprequest` (
+	`DropRequestID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`PublisherID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`LeagueID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Year` YEAR NOT NULL,
+	`PublisherName` VARCHAR(100) NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`LeagueName` VARCHAR(150) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`MasterGameID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`GameName` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Successful` BIT(1) NULL,
+	`Timestamp` DATETIME NOT NULL,
+	`ProcessSetID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`IsDeleted` BIT(1) NOT NULL
+) ENGINE=MyISAM;
+
+-- Dumping structure for view fantasycritic.vw_league_pickupbid
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vw_league_pickupbid` (
+	`BidID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`PublisherID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`LeagueID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Year` YEAR NOT NULL,
+	`PublisherName` VARCHAR(100) NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`LeagueName` VARCHAR(150) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`MasterGameID` CHAR(36) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`GameName` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`ConditionalDropMasterGameID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`CounterPick` BIT(1) NOT NULL,
+	`Priority` INT(10) NOT NULL,
+	`BidAmount` INT(10) UNSIGNED NOT NULL,
+	`AllowIneligibleSlot` BIT(1) NOT NULL,
+	`Successful` BIT(1) NULL,
+	`Timestamp` DATETIME NOT NULL,
+	`ProcessSetID` CHAR(36) NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Outcome` TEXT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`ProjectedPointsAtTimeOfBid` DECIMAL(12,4) NULL,
+	`IsDeleted` BIT(1) NOT NULL
+) ENGINE=MyISAM;
+
+-- Dumping structure for view fantasycritic.vw_meta_sitecounts
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vw_meta_sitecounts` (
+	`usercount` BIGINT(19) NOT NULL,
+	`leaguecount` BIGINT(19) NOT NULL,
+	`mastergamecount` BIGINT(19) NOT NULL,
+	`publishergamecount` BIGINT(19) NOT NULL
+) ENGINE=MyISAM;
 
 -- Dumping structure for view fantasycritic.vw_league
 -- Removing temporary table and create final VIEW structure
@@ -1470,7 +1468,7 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_league_pickupbid` AS se
 -- Dumping structure for view fantasycritic.vw_meta_sitecounts
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vw_meta_sitecounts`;
-CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_meta_sitecounts` AS select `usertable`.`UserCount` AS `UserCount`,`leaguetable`.`LeagueCount` AS `LeagueCount`,`mastergametable`.`MasterGameCount` AS `MasterGameCount`,`publishergametable`.`PublisherGameCount` AS `PublisherGameCount` from ((((select count(0) AS `UserCount` from `tbl_user` where (`tbl_user`.`IsDeleted` = 0)) `usertable` join (select count(0) AS `LeagueCount` from `tbl_league`) `leaguetable`) join (select count(0) AS `MasterGameCount` from `tbl_mastergame`) `mastergametable`) join (select count(0) AS `PublisherGameCount` from `tbl_league_publishergame`) `publishergametable`);
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_meta_sitecounts` AS select `usertable`.`usercount` AS `usercount`,`leaguetable`.`leaguecount` AS `leaguecount`,`mastergametable`.`mastergamecount` AS `mastergamecount`,`publishergametable`.`publishergamecount` AS `publishergamecount` from ((((select count(0) AS `usercount` from `tbl_user` where (`tbl_user`.`IsDeleted` = 0)) `usertable` join (select count(0) AS `leaguecount` from `tbl_league`) `leaguetable`) join (select count(0) AS `mastergamecount` from `tbl_mastergame`) `mastergametable`) join (select count(0) AS `publishergamecount` from `tbl_league_publishergame`) `publishergametable`);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
