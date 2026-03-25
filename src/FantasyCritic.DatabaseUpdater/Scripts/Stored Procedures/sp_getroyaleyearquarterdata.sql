@@ -1,0 +1,72 @@
+-- --------------------------------------------------------
+-- Host:                         fantasy-critic-rds.cldutembgs4w.us-east-1.rds.amazonaws.com
+-- Server version:               8.4.7 - Source distribution
+-- Server OS:                    Linux
+-- HeidiSQL Version:             12.3.0.6589
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+-- Dumping structure for procedure fantasycritic.sp_getroyaleyearquarterdata
+DROP PROCEDURE IF EXISTS `sp_getroyaleyearquarterdata`;
+DELIMITER //
+CREATE PROCEDURE `sp_getroyaleyearquarterdata`(
+  IN `P_Year` INT,
+  IN `P_Quarter` INT
+)
+BEGIN
+  SELECT tbl_royale_supportedquarter.*,
+         tbl_user.DisplayName AS WinningUserDisplayName
+  FROM tbl_royale_supportedquarter
+  LEFT JOIN tbl_user ON tbl_royale_supportedquarter.WinningUser = tbl_user.UserID
+  ORDER BY YEAR,
+           QUARTER;
+  
+  SELECT tbl_royale_publisher.*,
+         tbl_user.DisplayName AS PublisherDisplayName
+  FROM tbl_royale_publisher
+  JOIN tbl_user ON tbl_user.UserID = tbl_royale_publisher.UserID
+  WHERE YEAR = P_Year
+    AND QUARTER = P_Quarter;
+    
+  SELECT *
+  FROM tbl_royale_publishergame
+  JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
+  WHERE tbl_royale_publisher.Year = P_Year
+    AND tbl_royale_publisher.Quarter = P_Quarter;
+  
+  
+  -- Master Game Data
+  
+  SELECT *
+  FROM tbl_mastergame_tag;
+  
+  
+  SELECT *
+  FROM tbl_mastergame_subgame;
+  
+  
+  SELECT *
+  FROM tbl_mastergame_hastag;
+  
+  
+  SELECT tbl_caching_mastergameyear.*,
+         tbl_user.DisplayName AS AddedByUserDisplayName
+  FROM tbl_caching_mastergameyear
+  JOIN tbl_user ON tbl_user.UserID = tbl_caching_mastergameyear.AddedByUserID
+  WHERE tbl_caching_mastergameyear.`Year` = P_Year;
+END//
+DELIMITER ;
+
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
