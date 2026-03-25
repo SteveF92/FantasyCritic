@@ -1359,21 +1359,6 @@ CREATE TABLE IF NOT EXISTS `tbl_user_role` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table fantasycritic.tbl_user_supportticket
-CREATE TABLE IF NOT EXISTS `tbl_user_supportticket` (
-  `SupportTicketID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `UserID` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `VerificationCode` char(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `OpenedAt` timestamp NOT NULL,
-  `IssueDescription` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `OpenedByUser` bit(1) NOT NULL DEFAULT b'0',
-  `ClosedAt` timestamp NULL DEFAULT NULL,
-  `ResolutionNotes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`SupportTicketID`) USING BTREE,
-  KEY `FK_tbl_user_supportticket_tbl_user` (`UserID`) USING BTREE,
-  CONSTRAINT `FK_tbl_user_supportticket_tbl_user` FOREIGN KEY (`UserID`) REFERENCES `tbl_user` (`UserID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 -- Dumping structure for table fantasycritic._schemaversion
 CREATE TABLE IF NOT EXISTS `_schemaversion` (
   `schemaversionid` int NOT NULL AUTO_INCREMENT,
