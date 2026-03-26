@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `_schemaversion` (
   `scriptname` varchar(255) NOT NULL,
   `applied` timestamp NOT NULL,
   PRIMARY KEY (`schemaversionid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -29,3 +29,6 @@ CREATE TABLE IF NOT EXISTS `_schemaversion` (
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+
+INSERT INTO `_schemaversion` (`schemaversionid`, `scriptname`, `applied`) VALUES (1, '2026-03-24_000_initialSchema.sql', CURRENT_TIMESTAMP);
+INSERT INTO `_schemaversion` (`schemaversionid`, `scriptname`, `applied`) VALUES (2, '2026-03-24_001_initialData.sql', CURRENT_TIMESTAMP);
