@@ -1,0 +1,29 @@
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: fantasycritic-mysql
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: fantasycritic
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init-multiple-users.sql:/docker-entrypoint-initdb.d/01-multiple-users.sql:ro
+    # Keep auth + charset compatible with typical MySQL client expectations.
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_0900_ai_ci"
+      - "--require_secure_transport=ON"
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} --ssl-mode=REQUIRED"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:
