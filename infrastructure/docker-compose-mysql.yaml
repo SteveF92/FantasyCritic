@@ -25,5 +25,17 @@ services:
       timeout: 5s
       retries: 20
 
+  database-updater:
+    container_name: fantasycritic-database-updater
+    build:
+      context: ../src
+      dockerfile: FantasyCritic.DatabaseUpdater/Dockerfile
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=anotherfantasticpassword;SslMode=required;charset=utf8;"
+
 volumes:
   mysql_data:

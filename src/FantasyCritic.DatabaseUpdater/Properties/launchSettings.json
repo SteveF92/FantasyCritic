@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FantasyCritic.DatabaseUpdater": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
