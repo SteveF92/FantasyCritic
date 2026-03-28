@@ -245,7 +245,9 @@ public static class HostingExtensions
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration =
                     true; // the cookie would be re-issued on any request half way through the ExpireTimeSpan
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = environment.IsDevelopment()
+                    ? CookieSecurePolicy.SameAsRequest
+                    : CookieSecurePolicy.Always;
                 options.Cookie.HttpOnly = true;
             });
 
@@ -347,7 +349,11 @@ public static class HostingExtensions
             app.UseHsts();
         }
 
-        app.UseHttpsRedirection();
+        if (!env.IsDevelopment())
+        {
+            app.UseHttpsRedirection();
+        }
+
         app.UseRewriter(new RewriteOptions()
             .AddRedirectToWww()
         );

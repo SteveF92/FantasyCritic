@@ -1,0 +1,89 @@
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: fantasycritic-mysql
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: fantasycritic
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init-multiple-users.sql:/docker-entrypoint-initdb.d/01-multiple-users.sql:ro
+    # Keep auth + charset compatible with typical MySQL client expectations.
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_0900_ai_ci"
+      - "--require_secure_transport=ON"
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} --ssl-mode=REQUIRED"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  database-updater:
+    container_name: fantasycritic-database-updater
+    build:
+      context: ../src
+      dockerfile: FantasyCritic.DatabaseUpdater/Dockerfile
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=anotherfantasticpassword;SslMode=required;charset=utf8;"
+
+  web:
+    container_name: fantasycritic-web
+    build:
+      context: ../src
+      dockerfile: FantasyCritic.Web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      database-updater:
+        condition: service_completed_successfully
+    environment:
+      # Mirrors src/FantasyCritic.Web/appsettings.json (ASP.NET Core: nested keys use __).
+      # Development avoids loading AWS Secrets Manager inside the container.
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      AllowedHosts: "*"
+      # appsettings uses localhost:3307 for the host; in Compose the DB service is `mysql`.
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      Logging__LogLevel__Default: Trace
+      Logging__LogLevel__Microsoft: Warning
+      Logging__LogLevel__Microsoft.Hosting.Lifetime: Information
+      AWS__rdsInstanceName: secret
+      AWS__region: us-east-1
+      Mailgun__apiKey: secret
+      Postmark__apiKey: secret
+      OpenCritic__apiKey: key
+      Authentication__Google__ClientId: secret
+      Authentication__Google__ClientSecret: secret
+      Authentication__Microsoft__ClientId: secret
+      Authentication__Microsoft__ClientSecret: secret
+      Authentication__Twitch__ClientId: secret
+      Authentication__Twitch__ClientSecret: secret
+      Authentication__Patreon__ClientId: secret
+      Authentication__Patreon__ClientSecret: secret
+      Authentication__Discord__ClientId: secret
+      Authentication__Discord__ClientSecret: secret
+      PatreonService__AccessToken: secret
+      PatreonService__RefreshToken: secret
+      PatreonService__CampaignID: secret
+      BotToken: secret
+      # Public URL when using published port 8080 (VS dev uses https://localhost:44477 in appsettings).
+      BaseAddress: http://localhost:8080
+      RootFolder: "C:\\FantasyCritic"
+      LinuxRootFolder: /var/lib/fantasy-critic
+
+volumes:
+  mysql_data:

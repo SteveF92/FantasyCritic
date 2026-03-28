@@ -83,6 +83,9 @@ public class Program
             nativeConfig.AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(awsString)));
         }
 
+        // Override JSON / AWS secrets (last wins) — required for Docker Compose and hosting env vars.
+        nativeConfig.AddEnvironmentVariables();
+
         return nativeConfig.Build();
     }
 
