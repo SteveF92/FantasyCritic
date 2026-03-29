@@ -574,9 +574,9 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
-        var parsedEnums = request.PublisherAutoDraft.ToDictionary(x => x.Key, y => AutoDraftMode.TryFromValue(y.Value));
+        var parsedModes = request.PublisherAutoDraft.ToDictionary(x => x.Key, y => AutoDraftMode.TryFromValue(y.Value.Mode));
 
-        if (parsedEnums.Any(x => x.Value is null))
+        if (parsedModes.Any(x => x.Value is null))
         {
             return BadRequest();
         }
@@ -589,8 +589,9 @@ public class LeagueManagerController : BaseLeagueController
                 return StatusCode(403);
             }
 
-            var mode = parsedEnums[requestPublisher.Key];
-            await _publisherService.SetAutoDraft(publisher, mode!);
+            var mode = parsedModes[requestPublisher.Key]!;
+            var autoDraftSettings = new AutoDraftSettings(mode, requestPublisher.Value.OnlyDraftFromWatchlist);
+            await _publisherService.SetAutoDraft(publisher, autoDraftSettings);
         }
 
         var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear);

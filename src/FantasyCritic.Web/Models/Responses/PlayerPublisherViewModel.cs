@@ -14,6 +14,7 @@ public class PlayerPublisherViewModel
         Year = leagueYear.Year;
         DraftPosition = publisher.DraftPosition;
         AutoDraftMode = publisher.AutoDraftMode.Value;
+        OnlyAutoDraftFromWatchlist = publisher.AutoDraftSettings.OnlyDraftFromWatchlist;
 
         AverageCriticScore = publisher.AverageCriticScore;
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
@@ -58,6 +59,7 @@ public class PlayerPublisherViewModel
     public int Year { get; }
     public int DraftPosition { get; }
     public string AutoDraftMode { get; }
+    public bool OnlyAutoDraftFromWatchlist { get; }
     public decimal? AverageCriticScore { get; }
     public decimal TotalFantasyPoints { get; }
     public decimal TotalProjectedPoints { get; }

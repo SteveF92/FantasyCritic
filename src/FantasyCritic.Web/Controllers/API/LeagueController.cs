@@ -646,7 +646,8 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        await _publisherService.SetAutoDraft(publisher, parsedMode);
+        var autoDraftSettings = new AutoDraftSettings(parsedMode, request.OnlyDraftFromWatchlist);
+        await _publisherService.SetAutoDraft(publisher, autoDraftSettings);
 
         var draftComplete = await _draftService.RunAutoDraftAndCheckIfComplete(leagueYear);
         if (draftComplete)

@@ -7,8 +7,13 @@
       <p class="text-white">
         If you turn on the 'Standard Games Only' mode, then the site will not autodraft counter picks for you. You will need to make those selections yourself, as if auto draft was off.
       </p>
+      <p class="text-white">
+        If you check 'Only Auto Draft from Watchlist', the site will only consider games on your watchlist when auto drafting. If no watchlist games are available, the auto draft will stop and you
+        will need to make the pick manually.
+      </p>
     </div>
-    <b-form-select v-model="autoDraftMode" :options="autoDraftOptions"></b-form-select>
+    <b-form-select v-model="autoDraftMode" :options="autoDraftOptions" class="mb-3" @change="onModeChange"></b-form-select>
+    <b-form-checkbox v-model="onlyDraftFromWatchlist" :disabled="autoDraftMode === 'Off'">Only Auto Draft from Watchlist</b-form-checkbox>
 
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
@@ -24,6 +29,7 @@ export default {
   data() {
     return {
       autoDraftMode: null,
+      onlyDraftFromWatchlist: false,
       autoDraftOptions: [
         { text: 'Off', value: 'Off' },
         { text: "Standard Games Only (Don't Auto Draft Counter Picks)", value: 'StandardGamesOnly' },
@@ -33,12 +39,19 @@ export default {
   },
   created() {
     this.autoDraftMode = this.userPublisher.autoDraftMode;
+    this.onlyDraftFromWatchlist = this.userPublisher.onlyAutoDraftFromWatchlist;
   },
   methods: {
+    onModeChange(newMode) {
+      if (newMode === 'Off') {
+        this.onlyDraftFromWatchlist = false;
+      }
+    },
     setAutoDraft() {
       const model = {
         publisherID: this.userPublisher.publisherID,
-        mode: this.autoDraftMode
+        mode: this.autoDraftMode,
+        onlyDraftFromWatchlist: this.onlyDraftFromWatchlist
       };
       axios
         .post('/api/league/setAutoDraft', model)

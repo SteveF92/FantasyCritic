@@ -941,11 +941,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             });
     }
 
-    public async Task SetAutoDraft(Publisher publisher, AutoDraftMode mode)
+    public async Task SetAutoDraft(Publisher publisher, AutoDraftSettings settings)
     {
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync("update tbl_league_publisher SET AutoDraftMode = @autoDraftMode where PublisherID = @publisherID;",
-            new { publisherID = publisher.PublisherID, autoDraftMode = mode.Value });
+        await connection.ExecuteAsync("update tbl_league_publisher SET AutoDraftMode = @autoDraftMode, OnlyAutoDraftFromWatchlist = @onlyAutoDraftFromWatchlist where PublisherID = @publisherID;",
+            new { publisherID = publisher.PublisherID, autoDraftMode = settings.Mode.Value, onlyAutoDraftFromWatchlist = settings.OnlyDraftFromWatchlist });
     }
 
     public async Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague)
@@ -1655,8 +1655,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task CreatePublisher(Publisher publisher)
     {
         const string publisherCreateSQL =
-            "insert into tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,PublisherSlogan,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped,SuperDropsAvailable) VALUES " +
-            "(@PublisherID,@PublisherName,@PublisherIcon,@PublisherSlogan,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped,@SuperDropsAvailable);";
+            "insert into tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,PublisherSlogan,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped,SuperDropsAvailable,AutoDraftMode,OnlyAutoDraftFromWatchlist) VALUES " +
+            "(@PublisherID,@PublisherName,@PublisherIcon,@PublisherSlogan,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped,@SuperDropsAvailable,@AutoDraftMode,@OnlyAutoDraftFromWatchlist);";
         const string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 0 WHERE LeagueID = @LeagueID AND Year = @Year;";
 
         var entity = new PublisherEntity(publisher);

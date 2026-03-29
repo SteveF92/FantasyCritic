@@ -186,9 +186,10 @@ public class DraftService
                     }
                 }
 
-                var gamesToTake = publisherWatchList.OrderBy(x => x.Rank)
-                    .Select(x => x.MasterGame)
-                    .Concat(availableGamesEligibleInRemainingSlots.Select(x => x.MasterGame.MasterGame));
+                var watchlistGames = publisherWatchList.OrderBy(x => x.Rank).Select(x => x.MasterGame);
+                var gamesToTake = (nextPublisher.AutoDraftSettings.OnlyDraftFromWatchlist
+                    ? watchlistGames
+                    : watchlistGames.Concat(availableGamesEligibleInRemainingSlots.Select(x => x.MasterGame.MasterGame))).ToList();
 
                 bool addedAGame = false;
                 foreach (var possibleGame in gamesToTake)

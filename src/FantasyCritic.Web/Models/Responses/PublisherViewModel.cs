@@ -23,6 +23,7 @@ public class PublisherViewModel
         Year = leagueYear.Year;
         DraftPosition = publisher.DraftPosition;
         AutoDraftMode = publisher.AutoDraftMode.Value;
+        OnlyAutoDraftFromWatchlist = publisher.AutoDraftSettings.OnlyDraftFromWatchlist;
 
         Games = publisher.PublisherGames
             .OrderBy(x => x.Timestamp)
@@ -86,6 +87,7 @@ public class PublisherViewModel
     public int Year { get; }
     public int DraftPosition { get; }
     public string AutoDraftMode { get; }
+    public bool OnlyAutoDraftFromWatchlist { get; }
     public IReadOnlyList<PublisherGameViewModel> Games { get; }
     public IReadOnlyList<PublisherGameViewModel> FormerGames { get; }
     public IReadOnlyList<PublisherSlotViewModel> GameSlots { get; }

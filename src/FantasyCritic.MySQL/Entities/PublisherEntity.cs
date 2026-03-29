@@ -25,7 +25,8 @@ public class PublisherEntity
         WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
         SuperDropsAvailable = publisher.SuperDropsAvailable;
         Budget = publisher.Budget;
-        AutoDraftMode = publisher.AutoDraftMode.Value;
+        AutoDraftMode = publisher.AutoDraftSettings.Mode.Value;
+        OnlyAutoDraftFromWatchlist = publisher.AutoDraftSettings.OnlyDraftFromWatchlist;
     }
 
     public Guid PublisherID { get; set; }
@@ -42,10 +43,12 @@ public class PublisherEntity
     public int SuperDropsAvailable { get; set; }
     public uint Budget { get; set; }
     public string AutoDraftMode { get; set; } = null!;
+    public bool OnlyAutoDraftFromWatchlist { get; set; }
 
     public Publisher ToDomain(FantasyCriticUser user, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
     {
+        var autoDraftSettings = new Lib.Enums.AutoDraftSettings(Lib.Enums.AutoDraftMode.FromValue(AutoDraftMode), OnlyAutoDraftFromWatchlist);
         return new Publisher(PublisherID, new LeagueYearKey(LeagueID, Year), user, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition,
-            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, Lib.Enums.AutoDraftMode.FromValue(AutoDraftMode));
+            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, autoDraftSettings);
     }
 }

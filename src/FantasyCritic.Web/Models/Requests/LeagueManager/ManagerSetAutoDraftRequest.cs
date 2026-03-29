@@ -1,3 +1,3 @@
 namespace FantasyCritic.Web.Models.Requests.LeagueManager;
 
-public record ManagerSetAutoDraftRequest(Guid LeagueID, int Year, Dictionary<Guid, string> PublisherAutoDraft);
+public record ManagerSetAutoDraftRequest(Guid LeagueID, int Year, Dictionary<Guid, PublisherAutoDraftSettingsRequest> PublisherAutoDraft);

@@ -20,6 +20,6 @@ public class TestPublisherEntity
     public Publisher ToDomain(IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
     {
         return new Publisher(PublisherID, new LeagueYearKey(LeagueID, Year), FantasyCriticUser.GetFakeUser(), PublisherID.ToString(), null, null, DraftPosition,
-            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftMode.Off);
+            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, new AutoDraftSettings(AutoDraftMode.Off, false));
     }
 }
