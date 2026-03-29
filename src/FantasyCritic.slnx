@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/ExternalServices/">
+    <Project Path="FantasyCritic.AWS/FantasyCritic.AWS.csproj" />
+    <Project Path="FantasyCritic.Postmark/FantasyCritic.Postmark.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="FantasyCritic.FakeRepo/FantasyCritic.FakeRepo.csproj" />
+    <Project Path="FantasyCritic.Test/FantasyCritic.Test.csproj" />
+  </Folder>
+  <Folder Name="/Utilities/">
+    <Project Path="FantasyCritic.BetaSync/FantasyCritic.BetaSync.csproj" />
+    <Project Path="FantasyCritic.DBUtility/FantasyCritic.DBUtility.csproj" />
+    <Project Path="FantasyCritic.MasterGameUpdater/FantasyCritic.MasterGameUpdater.csproj" />
+    <Project Path="FantasyCritic.TestDataScrubber/FantasyCritic.TestDataScrubber.csproj" />
+  </Folder>
+  <Project Path="FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" />
+  <Project Path="FantasyCritic.DiscordBot/FantasyCritic.DiscordBot.csproj" />
+  <Project Path="FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj" />
+  <Project Path="FantasyCritic.Lib/FantasyCritic.Lib.csproj" />
+  <Project Path="FantasyCritic.MySQL/FantasyCritic.MySQL.csproj" />
+  <Project Path="FantasyCritic.Web/FantasyCritic.Web.csproj" />
+</Solution>
