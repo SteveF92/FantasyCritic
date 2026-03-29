@@ -53,8 +53,6 @@ public class SupportTicketModel : PageModel
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        await LoadAsync(user);
-
         string description = Input?.IssueDescription?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(description))
         {
@@ -71,6 +69,7 @@ public class SupportTicketModel : PageModel
 
         if (!ModelState.IsValid)
         {
+            await LoadAsync(user);
             return Page();
         }
 
