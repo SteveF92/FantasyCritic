@@ -28,7 +28,7 @@ public class Program
 
         var configuration = await GetConfiguration(environmentName, awsRegion);
 
-        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
+        _connectionString = configuration.GetConnectionString("AdminConnection")!;
 
         EnsureDatabase.For.MySqlDatabase(_connectionString);
 
