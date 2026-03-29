@@ -11,6 +11,8 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj", "FantasyCritic.DatabaseUpdater/"]
+COPY ["FantasyCritic.AWS/FantasyCritic.AWS.csproj", "FantasyCritic.AWS/"]
+COPY ["FantasyCritic.Lib/FantasyCritic.Lib.csproj", "FantasyCritic.Lib/"]
 RUN dotnet restore "./FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj"
 COPY . .
 WORKDIR "/src/FantasyCritic.DatabaseUpdater"

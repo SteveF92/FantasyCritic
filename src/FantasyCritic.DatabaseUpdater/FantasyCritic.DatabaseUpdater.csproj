@@ -42,4 +42,8 @@
   <ItemGroup>
     <Folder Include="Scripts\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.AWS\FantasyCritic.AWS.csproj" />
+  </ItemGroup>
 </Project>

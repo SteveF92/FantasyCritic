@@ -1,6 +1,7 @@
 using DbUp;
 using DbUp.Engine;
 using DbUp.Support;
+using FantasyCritic.AWS;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using System.Text;
@@ -11,14 +12,21 @@ public class Program
 {
     private static string _connectionString = null!;
 
-    public static int Main()
+    public static async Task<int> Main()
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+        var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                              ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                              ?? "Production";
+
+        var preliminaryConfig = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
+
+        var awsRegion = preliminaryConfig["AWS:region"] ?? "";
+
+        var configuration = await GetConfiguration(environmentName, awsRegion);
 
         _connectionString = configuration["ConnectionString"]!;
 
@@ -56,6 +64,35 @@ public class Program
         Console.WriteLine("Success!");
         Console.ResetColor();
         return 0;
+    }
+
+    private static async Task<IConfigurationRoot> GetConfiguration(string environmentName, string awsRegion)
+    {
+        var isDevelopment = environmentName.Equals("Development", StringComparison.OrdinalIgnoreCase);
+        var isStaging = environmentName.Equals("Staging", StringComparison.OrdinalIgnoreCase);
+
+        var nativeConfig = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
+
+        if (!isDevelopment)
+        {
+            string fixedEnvironmentName = environmentName;
+            if (isStaging)
+            {
+                fixedEnvironmentName = "beta";
+            }
+            var awsStore = new SecretsManagerConfigurationStore(awsRegion, "fantasyCritic", fixedEnvironmentName);
+            var awsString = await awsStore.GetConfiguration();
+
+            nativeConfig.AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(awsString)));
+        }
+
+        // Override JSON / AWS secrets (last wins) — required for Docker Compose and hosting env vars.
+        nativeConfig.AddEnvironmentVariables();
+
+        return nativeConfig.Build();
     }
 
     private static string GetScriptsRoot()
