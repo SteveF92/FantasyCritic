@@ -10,14 +10,14 @@ public static class GameUtilities
             .ToList();
         var counterPicks = gamesWithMasterGame
             .Where(x => x.CounterPick)
-            .ToDictionary(x => x.MasterGame!.MasterGame);
+            .ToLookup(x => x.MasterGame!.MasterGame);
 
         Dictionary<PublisherGame, Publisher> dictionary = new Dictionary<PublisherGame, Publisher>();
         var nonCounterPicks = gamesWithMasterGame.Where(x => !x.CounterPick).ToList();
 
         foreach (var nonCounterPick in nonCounterPicks)
         {
-            var counterPick = counterPicks.GetValueOrDefault(nonCounterPick.MasterGame!.MasterGame);
+            var counterPick = counterPicks[nonCounterPick.MasterGame!.MasterGame].FirstOrDefault();
             if (counterPick is null)
             {
                 continue;
