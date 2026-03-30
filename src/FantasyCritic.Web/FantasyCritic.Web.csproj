@@ -32,6 +32,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.5" />
+    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="8.3.2" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -11,6 +11,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.AwsCloudWatch;
+using Serilog.Sinks.Grafana.Loki;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -46,10 +47,11 @@ public class Program
                 .ConfigureServices(configuration)
                 .ConfigurePipeline();
 
-            if (!app.Environment.IsDevelopment())
-            {
-                ConfigureCloudLogging(loggingPaths, app.Environment, awsRegion);
-            }
+            //if (!app.Environment.IsDevelopment())
+            //{
+            //    ConfigureCloudWatchLogging(loggingPaths, app.Environment, awsRegion);
+            //}
+            ConfigureGrafanaLogging(loggingPaths, app.Environment, configuration);
 
             await app.RunAsync();
         }
@@ -111,7 +113,7 @@ public class Program
             .CreateLogger();
     }
 
-    private static void ConfigureCloudLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, string awsRegion)
+    private static void ConfigureCloudWatchLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, string awsRegion)
     {
         var region = RegionEndpoint.GetBySystemName(awsRegion);
         var client = new AmazonCloudWatchLogsClient(region);
@@ -149,7 +151,7 @@ public class Program
             RetryAttempts = 5
         };
 
-        Log.Logger = new LoggerConfiguration()
+        var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
             .WriteTo.Console()
@@ -166,7 +168,56 @@ public class Program
                     })
                     .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
             })
-            .WriteTo.AmazonCloudWatch(options, client)
-            .CreateLogger();
+            .WriteTo.AmazonCloudWatch(options, client);
+
+        Log.Logger = loggerConfig.CreateLogger();
+    }
+
+    private static void ConfigureGrafanaLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, IConfiguration configuration)
+    {
+        string environmentName = "dev";
+        if (env.IsStaging())
+        {
+            environmentName = "beta";
+        }
+
+        if (env.IsProduction())
+        {
+            environmentName = "production";
+        }
+
+        var loggerConfig = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
+            .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate);
+
+        var lokiUri = configuration["Grafana:Loki:Uri"];
+        var lokiUserId = configuration["Grafana:Loki:UserId"];
+        var lokiApiToken = configuration["Grafana:Loki:ApiToken"];
+        if (!string.IsNullOrWhiteSpace(lokiUri) &&
+            !string.IsNullOrWhiteSpace(lokiUserId) &&
+            !string.IsNullOrWhiteSpace(lokiApiToken))
+        {
+            var labelSection = configuration.GetSection("Grafana:Loki:Labels");
+            var lokiLabels = labelSection.GetChildren()
+                .Where(c => !string.IsNullOrWhiteSpace(c.Key) && !string.IsNullOrWhiteSpace(c.Value))
+                .Where(c => !string.Equals(c.Key, "env", StringComparison.OrdinalIgnoreCase))
+                .Select(c => new LokiLabel { Key = c.Key, Value = c.Value! })
+                .Append(new LokiLabel { Key = "env", Value = environmentName })
+                .ToArray();
+
+            loggerConfig = loggerConfig.WriteTo.GrafanaLoki(
+                uri: lokiUri,
+                credentials: new LokiCredentials
+                {
+                    Login = lokiUserId,
+                    Password = lokiApiToken
+                },
+                labels: lokiLabels);
+        }
+
+        Log.Logger = loggerConfig.CreateLogger();
     }
 }
