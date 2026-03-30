@@ -191,8 +191,7 @@ export default {
         { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
         { key: 'masterGame.criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
         { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
-        { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true },
-        { key: 'lockDateTime', label: 'Locks In', thClass: 'bg-primary', sortable: true }
+        { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
       ],
       actionFields: [
         { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
@@ -200,6 +199,7 @@ export default {
         { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
         { key: 'description', label: 'Description', thClass: 'bg-primary' }
       ],
+      lockDateTimeField: { key: 'lockDateTime', label: 'Locks In', thClass: 'bg-primary', sortable: true },
       sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }
     };
   },
@@ -209,8 +209,11 @@ export default {
     },
     allGameFields() {
       let allFields = this.gameFields.slice();
-      if (this.userIsPublisher && this.publisher.publisherGames.some((x) => !x.locked)) {
-        allFields.push(this.sellGameField);
+      if (this.userIsPublisher) {
+        allFields.push(this.lockDateTimeField);
+        if (this.publisher.publisherGames.some((x) => !x.locked)) {
+          allFields.push(this.sellGameField);
+        }
       }
       return allFields;
     },

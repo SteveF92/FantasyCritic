@@ -12,13 +12,13 @@ public class RoyalePublisherGameViewModel
         FantasyPoints = domain.FantasyPoints;
         CurrentlyIneligible = domain.CalculateIsCurrentlyIneligible(allMasterGameTags);
         Timestamp = domain.Timestamp;
-        LockDateTime = domain.GetLockDateTime();
         GameHidden = domain.IsHidden(currentDate);
         if (!GameHidden || thisPlayerIsViewing)
         {
             MasterGame = new MasterGameYearViewModel(domain.MasterGame, currentDate);
             AmountSpent = domain.AmountSpent;
             RefundAmount = domain.CalculateRefundAmount(allMasterGameTags);
+            LockDateTime = domain.GetLockDateTime();
         }
     }
 
