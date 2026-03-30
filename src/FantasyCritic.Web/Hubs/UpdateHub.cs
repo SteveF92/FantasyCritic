@@ -24,7 +24,7 @@ public class UpdateHub : Hub
     {
         if (ex is not null)
         {
-            _logger.Error(ex, $"SignalR disconnected with error: {Context.ConnectionId}");
+            _logger.Debug(ex, $"SignalR disconnected with error: {Context.ConnectionId}");
         }
 
         await base.OnDisconnectedAsync(ex);

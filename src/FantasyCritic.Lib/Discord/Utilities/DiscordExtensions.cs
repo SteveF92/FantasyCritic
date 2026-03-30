@@ -13,7 +13,7 @@ public static class DiscordExtensions
         }
         catch (Exception e)
         {
-            Serilog.Log.Error(e, "Error sending message to channel {ChannelID} {ChannelName}", channel.Id, channel.Name);
+            Serilog.Log.Warning(e, "Error sending message to channel {ChannelID} {ChannelName}", channel.Id, channel.Name);
         }
 
         return null;
@@ -39,7 +39,7 @@ public static class DiscordExtensions
         }
         catch (Exception e)
         {
-            Serilog.Log.Error(e, "Error sending message to channel {ChannelID} {ChannelName}", channel.Id, channel.Name);
+            Serilog.Log.Warning(e, "Error sending message to channel {ChannelID} {ChannelName}", channel.Id, channel.Name);
         }
 
         return null;
