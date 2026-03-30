@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using Discord;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
@@ -18,6 +17,8 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Events;
+using System.Collections.Concurrent;
 
 namespace FantasyCritic.Lib.Discord;
 
@@ -1236,9 +1237,20 @@ public class DiscordPushService
         return Task.CompletedTask;
     }
 
-    private static Task LogMessage(LogMessage msg)
+    private static Task LogMessage(LogMessage message)
     {
-        Logger.Information(msg.ToString());
+        var severity = message.Severity switch
+        {
+            LogSeverity.Critical => LogEventLevel.Fatal,
+            LogSeverity.Error => LogEventLevel.Error,
+            LogSeverity.Warning => LogEventLevel.Warning,
+            LogSeverity.Info => LogEventLevel.Information,
+            LogSeverity.Verbose => LogEventLevel.Verbose,
+            LogSeverity.Debug => LogEventLevel.Debug,
+            _ => LogEventLevel.Information
+        };
+
+        Serilog.Log.Write(severity, message.Exception, "[{Source}] {Message}", message.Source, message.Message);
         return Task.CompletedTask;
     }
 

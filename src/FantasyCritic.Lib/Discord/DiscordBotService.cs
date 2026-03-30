@@ -1,7 +1,8 @@
-using Discord.WebSocket;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using FantasyCritic.Lib.DependencyInjection;
+using Serilog.Events;
 
 namespace FantasyCritic.Lib.Discord;
 public class DiscordBotService
@@ -25,17 +26,28 @@ public class DiscordBotService
     public async Task InitializeBotAsync()
     {
         _client.Ready += Client_Ready;
-        _interactionService.Log += Log;
-        _client.Log += Log;
+        _interactionService.Log += LogMessage;
+        _client.Log += LogMessage;
         await _interactionService.AddModulesAsync(typeof(DiscordBotService).Assembly, _serviceProvider);
         _client.InteractionCreated += HandleInteraction;
         await _client.LoginAsync(TokenType.Bot, _botConfiguration.BotToken);
         await _client.StartAsync();
     }
 
-    private static Task Log(LogMessage msg)
+    private static Task LogMessage(LogMessage message)
     {
-        Serilog.Log.Information(msg.ToString());
+        var severity = message.Severity switch
+        {
+            LogSeverity.Critical => LogEventLevel.Fatal,
+            LogSeverity.Error => LogEventLevel.Error,
+            LogSeverity.Warning => LogEventLevel.Warning,
+            LogSeverity.Info => LogEventLevel.Information,
+            LogSeverity.Verbose => LogEventLevel.Verbose,
+            LogSeverity.Debug => LogEventLevel.Debug,
+            _ => LogEventLevel.Information
+        };
+
+        Serilog.Log.Write(severity, message.Exception, "[{Source}] {Message}", message.Source, message.Message);
         return Task.CompletedTask;
     }
 
