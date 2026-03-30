@@ -12,6 +12,7 @@ public class RoyalePublisherGameViewModel
         FantasyPoints = domain.FantasyPoints;
         CurrentlyIneligible = domain.CalculateIsCurrentlyIneligible(allMasterGameTags);
         Timestamp = domain.Timestamp;
+        LockDateTime = domain.GetLockDateTime();
         GameHidden = domain.IsHidden(currentDate);
         if (!GameHidden || thisPlayerIsViewing)
         {
@@ -26,6 +27,7 @@ public class RoyalePublisherGameViewModel
     public MasterGameYearViewModel? MasterGame { get; }
     public bool Locked { get; }
     public Instant Timestamp { get; }
+    public Instant? LockDateTime { get; }
     public decimal? AmountSpent { get; }
     public decimal AdvertisingMoney { get; }
     public decimal? FantasyPoints { get; }

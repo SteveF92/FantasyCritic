@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Royale;
 
@@ -28,6 +29,18 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     public bool IsHidden(LocalDate currentDate)
     {
         return RoyaleFunctions.GameOrActionIsHidden(YearQuarter, MasterGame, currentDate);
+    }
+
+    public Instant? GetLockDateTime()
+    {
+        if (!MasterGame.MasterGame.ReleaseDate.HasValue)
+        {
+            return null;
+        }
+
+        var fiveDaysFromReleaseDate = MasterGame.MasterGame.ReleaseDate.Value.Minus(Period.FromDays(RoyaleService.FUTURE_RELEASE_LIMIT_DAYS));
+        var lockDateTime = fiveDaysFromReleaseDate.AtStartOfDayInZone(TimeExtensions.EasternTimeZone);
+        return lockDateTime.ToInstant();
     }
 
     public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags)

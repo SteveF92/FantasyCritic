@@ -90,6 +90,9 @@
         <template #cell(timestamp)="data">
           {{ data.item.timestamp | date }}
         </template>
+        <template #cell(lockDateTime)="data">
+          {{ getLockCountdown(data.item.lockDateTime) }}
+        </template>
         <template #cell(sellGame)="data">
           <b-button v-if="!data.item.locked" v-b-modal="'sellRoyaleGameModal'" block variant="danger" @click="setGameToSell(data.item)">Sell</b-button>
         </template>
@@ -188,7 +191,8 @@ export default {
         { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
         { key: 'masterGame.criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
         { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
-        { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
+        { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true },
+        { key: 'lockDateTime', label: 'Locks In', thClass: 'bg-primary', sortable: true }
       ],
       actionFields: [
         { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
@@ -322,6 +326,27 @@ export default {
       if (item.currentlyIneligible) {
         return 'table-warning';
       }
+    },
+    getLockCountdown(lockDateTime) {
+      if (!lockDateTime) {
+        return '--';
+      }
+      const now = DateTime.now();
+      const lock = DateTime.fromISO(lockDateTime);
+      const totalHours = lock.diff(now, 'hours').hours;
+      if (totalHours <= 0) {
+        return 'Locked';
+      }
+      const diff = lock.diff(now, ['days', 'hours']);
+      const days = Math.floor(diff.days);
+      const hours = Math.floor(diff.hours);
+      if (days < 5) {
+        if (days === 0) {
+          return `${hours}h`;
+        }
+        return `${days}d ${hours}h`;
+      }
+      return `${days} days`;
     },
     getHiddenText(gameOrAction) {
       return {
