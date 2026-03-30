@@ -1116,7 +1116,7 @@ public class LeagueController : BaseLeagueController
             GameName = publisherGame.MasterGame?.MasterGame.GameName ?? publisherGame.GameName,
             LeagueYearKey = leagueYear.Key,
             DropPlacedSuccessfully = dropResult.Result.IsSuccess,
-            DropError = dropResult.Result.Error
+            DropError = dropResult.Result.IsFailure ? dropResult.Result.Error : null
         });
 
         var viewModel = new DropGameResultViewModel(dropResult);
@@ -1181,7 +1181,7 @@ public class LeagueController : BaseLeagueController
             GameName = dropRequest.MasterGame.GameName,
             LeagueYearKey = publisher.LeagueYearKey,
             DropDeletedSuccessfully = result.IsSuccess,
-            DropError = result.Error
+            DropError = result.IsFailure ? result.Error : null
         });
 
         if (result.IsFailure)
