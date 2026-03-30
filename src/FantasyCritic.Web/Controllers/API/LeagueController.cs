@@ -716,6 +716,21 @@ public class LeagueController : BaseLeagueController
         }
 
         ClaimResult bidResult = await _gameAcquisitionService.MakePickupBid(leagueYear, publisher, masterGame, conditionalDropPublisherGame, request.CounterPick, request.BidAmount, request.AllowIneligibleSlot);
+
+        _logger.LogInfoWithContext("Publisher {PublisherName} attempted to place a bid for {GameName} for {BidAmount}", new
+        {
+            UserId = publisher.User.UserID,
+            DisplayName = publisher.User.DisplayName,
+            PublisherName = publisher.PublisherName,
+            BidAmount = request.BidAmount,
+            GameName = masterGame.GameName,
+            LeagueYearKey = leagueYear.Key,
+            CounterPick = request.CounterPick,
+            ConditionalDrop = conditionalDropPublisherGame?.GameName,
+            BidPlacedSuccessfully = bidResult.Success,
+            BidErrors = bidResult.Errors.Select(x => x.Error)
+        });
+
         var viewModel = new PickupBidResultViewModel(bidResult);
 
         return Ok(viewModel);
@@ -750,6 +765,21 @@ public class LeagueController : BaseLeagueController
         }
 
         ClaimResult bidResult = await _gameAcquisitionService.EditPickupBid(maybeBid, conditionalDropPublisherGame, request.BidAmount, request.AllowIneligibleSlot);
+
+        _logger.LogInfoWithContext("Publisher {PublisherName} attempted to edit their bid for {GameName} for {BidAmount}", new
+        {
+            UserId = publisher.User.UserID,
+            DisplayName = publisher.User.DisplayName,
+            PublisherName = publisher.PublisherName,
+            BidAmount = request.BidAmount,
+            GameName = maybeBid.MasterGame.GameName,
+            LeagueYearKey = publisher.LeagueYearKey,
+            CounterPick = maybeBid.CounterPick,
+            ConditionalDrop = conditionalDropPublisherGame?.GameName,
+            BidEditedSuccessfully = bidResult.Success,
+            BidErrors = bidResult.Errors.Select(x => x.Error)
+        });
+
         var viewModel = new PickupBidResultViewModel(bidResult);
 
         return Ok(viewModel);
@@ -782,6 +812,18 @@ public class LeagueController : BaseLeagueController
         {
             return BadRequest(result.Error);
         }
+
+        _logger.LogInfoWithContext("Publisher {PublisherName} attempted to delete their bid for {GameName}", new
+        {
+            UserId = publisher.User.UserID,
+            DisplayName = publisher.User.DisplayName,
+            PublisherName = publisher.PublisherName,
+            GameName = bid.MasterGame.GameName,
+            LeagueYearKey = publisher.LeagueYearKey,
+            CounterPick = bid.CounterPick,
+            ConditionalDrop = bid?.MasterGame.GameName,
+            BidDeletedSuccessfully = result.IsSuccess,
+        });
 
         return Ok();
     }
@@ -1065,6 +1107,18 @@ public class LeagueController : BaseLeagueController
         }
 
         DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(leagueYear, publisher, publisherGame, false);
+
+        _logger.LogInfoWithContext("Publisher {PublisherName} attempted to place a drop for {GameName}", new
+        {
+            UserId = publisher.User.UserID,
+            DisplayName = publisher.User.DisplayName,
+            PublisherName = publisher.PublisherName,
+            GameName = publisherGame.MasterGame?.MasterGame.GameName ?? publisherGame.GameName,
+            LeagueYearKey = leagueYear.Key,
+            DropPlacedSuccessfully = dropResult.Result.IsSuccess,
+            DropError = dropResult.Result.Error
+        });
+
         var viewModel = new DropGameResultViewModel(dropResult);
 
         return Ok(viewModel);
@@ -1118,6 +1172,18 @@ public class LeagueController : BaseLeagueController
         }
 
         Result result = await _gameAcquisitionService.RemoveDropRequest(dropRequest);
+
+        _logger.LogInfoWithContext("Publisher {PublisherName} attempted to delete a drop for {GameName}", new
+        {
+            UserId = publisher.User.UserID,
+            DisplayName = publisher.User.DisplayName,
+            PublisherName = publisher.PublisherName,
+            GameName = dropRequest.MasterGame.GameName,
+            LeagueYearKey = publisher.LeagueYearKey,
+            DropDeletedSuccessfully = result.IsSuccess,
+            DropError = result.Error
+        });
+
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
