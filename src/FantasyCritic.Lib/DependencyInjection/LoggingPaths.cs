@@ -4,8 +4,8 @@ namespace FantasyCritic.Lib.DependencyInjection;
 
 public class LoggingPaths
 {
-    private const string _windowsBase = @"C:\FantasyCritic\Logs\";
-    private const string _linuxBase = @"/var/log/fantasy-critic/";
+    private const string _windowsBase = @"C:\FantasyCritic\Logs-DatabaseUpdater\";
+    private const string _linuxBase = @"/var/log/fantasy-critic-databaseupdater/";
 
     public string AllLogPath => $"{GetBase()}log-all.txt";
     public string MyLogPath => $"{GetBase()}log-my.txt";

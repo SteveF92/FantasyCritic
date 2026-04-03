@@ -1,5 +1,3 @@
-using Amazon;
-using Amazon.CloudWatchLogs;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.DapperTypeMaps;
@@ -9,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Json;
-using Serilog.Sinks.AwsCloudWatch;
 using Serilog.Sinks.Grafana.Loki;
 using System.IO;
 using System.Reflection;
@@ -47,11 +43,10 @@ public class Program
                 .ConfigureServices(configuration)
                 .ConfigurePipeline();
 
-            //if (!app.Environment.IsDevelopment())
-            //{
-            //    ConfigureCloudWatchLogging(loggingPaths, app.Environment, awsRegion);
-            //}
-            ConfigureGrafanaLogging(loggingPaths, app.Environment, configuration);
+            if (!app.Environment.IsDevelopment())
+            {
+                ConfigureGrafanaLogging(loggingPaths, app.Environment, configuration);
+            }
 
             await app.RunAsync();
         }
@@ -113,79 +108,8 @@ public class Program
             .CreateLogger();
     }
 
-    private static void ConfigureCloudWatchLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, string awsRegion)
-    {
-        var region = RegionEndpoint.GetBySystemName(awsRegion);
-        var client = new AmazonCloudWatchLogsClient(region);
-
-        string environmentName = "dev";
-        if (env.IsStaging())
-        {
-            environmentName = "beta";
-        }
-
-        if (env.IsProduction())
-        {
-            environmentName = "production";
-        }
-
-        var logGroupName = "/fantasyCritic/" + environmentName;
-        Log.Information($"Using cloudwatch: {logGroupName}");
-
-        // options for the sink defaults in https://github.com/Cimpress-MCP/serilog-sinks-awscloudwatch/blob/master/src/Serilog.Sinks.AwsCloudWatch/CloudWatchSinkOptions.cs
-        var options = new CloudWatchSinkOptions
-        {
-            // the name of the CloudWatch Log group for logging
-            LogGroupName = logGroupName,
-
-            // the main formatter of the log event
-            TextFormatter = new JsonFormatter(),
-
-            // other defaults defaults
-            MinimumLogEventLevel = LogEventLevel.Information,
-            BatchSizeLimit = 100,
-            QueueSizeLimit = 10000,
-            Period = TimeSpan.FromSeconds(10),
-            CreateLogGroup = true,
-            LogStreamNameProvider = new DefaultLogStreamProvider(),
-            RetryAttempts = 5
-        };
-
-        var loggerConfig = new LoggerConfiguration()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
-            .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
-            .WriteTo.Logger(config =>
-            {
-                config.Filter
-                    .ByIncludingOnly(logEvent =>
-                    {
-                        var sourceContext = logEvent.Properties.GetValueOrDefault("SourceContext");
-                        var sourceContextString = sourceContext?.ToString();
-                        return sourceContextString != null && sourceContextString.StartsWith("\"FantasyCritic");
-                    })
-                    .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
-            })
-            .WriteTo.AmazonCloudWatch(options, client);
-
-        Log.Logger = loggerConfig.CreateLogger();
-    }
-
     private static void ConfigureGrafanaLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, IConfiguration configuration)
     {
-        string environmentName = "dev";
-        if (env.IsStaging())
-        {
-            environmentName = "beta";
-        }
-
-        if (env.IsProduction())
-        {
-            environmentName = "production";
-        }
-
         var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
@@ -205,7 +129,7 @@ public class Program
                 .Where(c => !string.IsNullOrWhiteSpace(c.Key) && !string.IsNullOrWhiteSpace(c.Value))
                 .Where(c => !string.Equals(c.Key, "env", StringComparison.OrdinalIgnoreCase))
                 .Select(c => new LokiLabel { Key = c.Key, Value = c.Value! })
-                .Append(new LokiLabel { Key = "env", Value = environmentName })
+                .Append(new LokiLabel { Key = "env", Value = env.EnvironmentName })
                 .ToArray();
 
             loggerConfig = loggerConfig.WriteTo.GrafanaLoki(
