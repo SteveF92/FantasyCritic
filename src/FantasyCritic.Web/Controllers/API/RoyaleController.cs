@@ -110,6 +110,11 @@ public class RoyaleController : FantasyCriticController
             return StatusCode(403);
         }
 
+        if (!publisher.YearQuarter.OpenForPlay || publisher.YearQuarter.Finished)
+        {
+            return BadRequest();
+        }
+
         await _royaleService.ChangePublisherName(publisher, request.PublisherName);
         return Ok();
     }
@@ -130,6 +135,11 @@ public class RoyaleController : FantasyCriticController
             return StatusCode(403);
         }
 
+        if (!publisher.YearQuarter.OpenForPlay || publisher.YearQuarter.Finished)
+        {
+            return BadRequest();
+        }
+
         await _royaleService.ChangePublisherIcon(publisher, request.PublisherIcon);
         return Ok();
     }
@@ -148,6 +158,11 @@ public class RoyaleController : FantasyCriticController
         if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
+        }
+
+        if (!publisher.YearQuarter.OpenForPlay || publisher.YearQuarter.Finished)
+        {
+            return BadRequest();
         }
 
         await _royaleService.ChangePublisherSlogan(publisher, request.PublisherSlogan);
@@ -252,6 +267,11 @@ public class RoyaleController : FantasyCriticController
             return StatusCode(403);
         }
 
+        if (!publisher.YearQuarter.OpenForPlay || publisher.YearQuarter.Finished)
+        {
+            return BadRequest();
+        }
+
         var masterGame = await _interLeagueService.GetMasterGameYear(request.MasterGameID, publisher.YearQuarter.YearQuarter.Year);
         if (masterGame is null)
         {
@@ -285,6 +305,11 @@ public class RoyaleController : FantasyCriticController
         if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
+        }
+
+        if (!publisher.YearQuarter.OpenForPlay || publisher.YearQuarter.Finished)
+        {
+            return BadRequest();
         }
 
         await _royaleSemaphore.WaitAsync();
@@ -324,6 +349,11 @@ public class RoyaleController : FantasyCriticController
         if (publisher.User.UserID != currentUser.UserID)
         {
             return StatusCode(403);
+        }
+
+        if (!publisher.YearQuarter.OpenForPlay || publisher.YearQuarter.Finished)
+        {
+            return BadRequest();
         }
 
         await _royaleSemaphore.WaitAsync();
