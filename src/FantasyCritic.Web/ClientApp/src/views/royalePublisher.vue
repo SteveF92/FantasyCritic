@@ -30,7 +30,7 @@
         </div>
 
         <div class="col-md-12 col-lg-4">
-          <div v-if="userIsPublisher" class="user-actions">
+          <div v-if="userIsPublisher && !quarterIsFinished" class="user-actions">
             <b-button v-b-modal="'royalePurchaseGameForm'" block variant="primary" class="action-button">Purchase a Game</b-button>
             <b-button v-b-modal="'royaleChangePublisherNameForm'" block variant="secondary" class="action-button">Change Publisher Name</b-button>
             <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherIconForm'" block variant="secondary" class="action-button">Change Publisher Icon</b-button>
@@ -77,7 +77,7 @@
         </template>
         <template #cell(advertisingMoney)="data">
           {{ data.item.advertisingMoney | money }}
-          <b-button v-if="userIsPublisher && !data.item.locked" variant="info" size="sm" @click="setGameToSetBudget(data.item)">Set Budget</b-button>
+          <b-button v-if="userIsPublisher && !data.item.locked && !quarterIsFinished" variant="info" size="sm" @click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template #cell(masterGame.criticScore)="data">
           <template v-if="data.item.masterGame">
@@ -94,7 +94,7 @@
           {{ getLockCountdown(data.item.lockDateTime) }}
         </template>
         <template #cell(sellGame)="data">
-          <b-button v-if="!data.item.locked" v-b-modal="'sellRoyaleGameModal'" block variant="danger" @click="setGameToSell(data.item)">Sell</b-button>
+          <b-button v-if="!data.item.locked && !quarterIsFinished" v-b-modal="'sellRoyaleGameModal'" block variant="danger" @click="setGameToSell(data.item)">Sell</b-button>
         </template>
       </b-table>
       <div v-else class="alert alert-info">
@@ -234,6 +234,9 @@ export default {
     },
     iconIsValid() {
       return publisherIconIsValid(this.publisher.publisherIcon);
+    },
+    quarterIsFinished() {
+      return this.publisher.yearQuarter.finished;
     }
   },
   watch: {
