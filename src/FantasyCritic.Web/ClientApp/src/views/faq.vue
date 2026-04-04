@@ -411,7 +411,7 @@
             Wait for a game to get delayed, and then counter pick that.
           </li>
           <li>
-            Sometimes, a game will have extremely credible reports of a delay, but the developer/publisher will not confirm the delay. In that case, we will markt the game as "Delay in Contention",
+            Sometimes, a game will have extremely credible reports of a delay, but the developer/publisher will not confirm the delay. In that case, we will mark the game as "Delay in Contention",
             and then the game will not be counter pickable.
           </li>
         </ul>
