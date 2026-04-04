@@ -372,6 +372,8 @@ public static class HostingExtensions
             }
         });
 
+        app.UseSerilogRequestLogging();
+
         app.UseRouting();
 
         app.UseSession();
