@@ -212,7 +212,8 @@ public class Program
                     Login = lokiUserId,
                     Password = lokiApiToken
                 },
-                labels: lokiLabels);
+                labels: lokiLabels,
+                propertiesAsLabels: new[] { "SourceContext" });
         }
 
         var logger = loggerConfig.CreateLogger();
