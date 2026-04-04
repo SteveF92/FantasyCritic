@@ -20,7 +20,7 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        var loggingPaths = new LoggingPaths();
+        var loggingPaths = LoggingPaths.WebApplication;
         ConfigureLogging(loggingPaths);
 
         try

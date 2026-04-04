@@ -21,7 +21,7 @@ public class Program
 
     public static async Task<int> Main()
     {
-        var loggingPaths = new LoggingPaths();
+        var loggingPaths = LoggingPaths.DatabaseUpdater;
         (ILoggerFactory loggerFactory, Logger logger) = ConfigureLogging(loggingPaths);
 
         var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
@@ -43,33 +43,42 @@ public class Program
             (loggerFactory, logger) = ConfigureGrafanaLogging(loggingPaths, environmentName, configuration);
         }
 
-        EnsureDatabase.For.MySqlDatabase(_connectionString);
-
-        var scriptsRoot = GetScriptsRoot();
-        var sequentialScriptsPath = Path.Combine(scriptsRoot, "Sequential");
-        var idempotentScriptsPath = Path.Combine(scriptsRoot, "Idempotent");
-
-        var upgrader =
-            DeployChanges.To
-                .MySqlDatabase(_connectionString)
-                .JournalToMySqlTable("fantasycritic", "_schemaversion")
-                // Run-once, journaled scripts
-                .WithScriptsFromFileSystem(sequentialScriptsPath)
-                // Run-always scripts (e.g., views / stored procedures)
-                .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
-                .LogTo(loggerFactory)
-                .Build();
-
-        var result = upgrader.PerformUpgrade();
-
-        if (!result.Successful)
+        try
         {
-            logger.Error($"Database update could not be completed.", result.Error);
-            return -1;
-        }
+            EnsureDatabase.For.MySqlDatabase(_connectionString);
 
-        logger.Information("Database update was completed.");
-        return 0;
+            var scriptsRoot = GetScriptsRoot();
+            var sequentialScriptsPath = Path.Combine(scriptsRoot, "Sequential");
+            var idempotentScriptsPath = Path.Combine(scriptsRoot, "Idempotent");
+
+            var upgrader =
+                DeployChanges.To
+                    .MySqlDatabase(_connectionString)
+                    .JournalToMySqlTable("fantasycritic", "_schemaversion")
+                    // Run-once, journaled scripts
+                    .WithScriptsFromFileSystem(sequentialScriptsPath)
+                    // Run-always scripts (e.g., views / stored procedures)
+                    .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
+                    .LogTo(loggerFactory)
+                    .Build();
+
+            var result = upgrader.PerformUpgrade();
+
+            if (!result.Successful)
+            {
+                logger.Error($"Database update could not be completed.", result.Error);
+                return -1;
+            }
+
+            logger.Information("Database update was completed.");
+            return 0;
+        }
+        finally
+        {
+            logger.Dispose();
+            loggerFactory.Dispose();
+        }
+        
     }
 
     private static async Task<IConfigurationRoot> GetConfiguration(string environmentName, string awsRegion)

@@ -13,7 +13,7 @@ internal class Startup
     [OneTimeSetUp]
     public void Setup()
     {
-        var loggingPaths = new LoggingPaths();
+        var loggingPaths = LoggingPaths.UnitTests;
         ConfigureLogging(loggingPaths);
     }
 
