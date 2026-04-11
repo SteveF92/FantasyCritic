@@ -150,6 +150,10 @@ public class PublisherService
 
     public async Task<Result> SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks)
     {
+        if (!queueRanks.Any())
+        {
+            return Result.Failure("No positions were specified.");
+        }
         var requiredNumbers = Enumerable.Range(1, queueRanks.Count).ToList();
         var requestedQueueNumbers = queueRanks.Select(x => x.Value);
         bool allRequiredPresent = new HashSet<int>(requiredNumbers).SetEquals(requestedQueueNumbers);

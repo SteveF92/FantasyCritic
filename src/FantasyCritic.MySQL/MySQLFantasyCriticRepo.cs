@@ -2977,7 +2977,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
     {
-        int tempPosition = bidPriorities.Select(x => x.Value).Max() + 1;
+        if (!bidPriorities.Any())
+        {
+            return;
+        }
+        int tempPosition = bidPriorities.Max(x => x.Value) + 1;
         var tempEntities = bidPriorities.Select(x => new PickupBidPriorityUpdateEntity(x.Key.BidID, tempPosition++)).ToList();
         var finalEntities = bidPriorities.Select(x => new PickupBidPriorityUpdateEntity(x.Key.BidID, x.Value)).ToList();
         const string sql = "update tbl_league_pickupbid set Priority = @Priority where BidID = @BidID";
