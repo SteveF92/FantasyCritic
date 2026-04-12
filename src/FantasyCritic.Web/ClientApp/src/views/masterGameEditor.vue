@@ -105,13 +105,8 @@
 
               <h3>Other</h3>
               <div class="form-group">
-                <b-form-checkbox v-model="masterGame.doNotRefreshDate">
-                  <span class="checkbox-label">Do Not Refresh Date</span>
-                </b-form-checkbox>
-              </div>
-              <div class="form-group">
                 <b-form-checkbox v-model="masterGame.syncWithExternalAPIs">
-                  <span class="checkbox-label">Do Not Refresh Anything</span>
+                  <span class="checkbox-label">Sync with OpenCritic and GG|</span>
                 </b-form-checkbox>
               </div>
               <div class="form-group">
