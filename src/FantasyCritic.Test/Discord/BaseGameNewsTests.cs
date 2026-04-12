@@ -81,7 +81,7 @@ internal abstract class BaseGameNewsTests
     {
         LocalDate? confirmedReleaseDate = minimumReleaseDate == maximumReleaseDate ? minimumReleaseDate : null;
         return new MasterGame(Guid.Empty, "Test Master Game", "Release Date String", minimumReleaseDate, maximumReleaseDate, null, null, null,
-            confirmedReleaseDate, null, null, null, null, false, null, "", null, null, null, false, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(),
+            confirmedReleaseDate, null, null, null, null, false, null, "", null, null, null, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(),
             new List<MasterSubGame>(), new List<MasterGameTag>() { tag });
     }
 }

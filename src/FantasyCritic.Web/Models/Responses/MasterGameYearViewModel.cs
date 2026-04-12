@@ -35,7 +35,6 @@ public class MasterGameYearViewModel
         BoxartFileName = masterGame.MasterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.MasterGame.GGCoverArtFileName;
 
-        DoNotRefreshDate = masterGame.MasterGame.DoNotRefreshDate;
         DoNotRefreshAnything = masterGame.MasterGame.DoNotRefreshAnything;
         UseSimpleEligibility = masterGame.MasterGame.UseSimpleEligibility;
 
@@ -81,7 +80,6 @@ public class MasterGameYearViewModel
         Tags = new List<string>();
         ReadableTags = new List<string>();
 
-        DoNotRefreshDate = masterGame.MasterGame.DoNotRefreshDate;
         DoNotRefreshAnything = masterGame.MasterGame.DoNotRefreshAnything;
         UseSimpleEligibility = masterGame.MasterGame.UseSimpleEligibility;
 
@@ -137,7 +135,6 @@ public class MasterGameYearViewModel
     public string? GGCoverArtFileName { get; }
     public Instant AddedTimestamp { get; }
 
-    public bool DoNotRefreshDate { get; }
     public bool DoNotRefreshAnything { get; }
     public bool UseSimpleEligibility { get; }
 

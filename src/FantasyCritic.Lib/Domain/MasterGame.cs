@@ -9,8 +9,8 @@ public class MasterGame : IEquatable<MasterGame>
     public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
         LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID,
         string? ggToken, string? ggSlug, decimal? criticScore, bool hasAnyReviews, string? openCriticSlug,
-        string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshDate,
-        bool doNotRefreshAnything, bool useSimpleEligibility, bool delayContention, bool showNote, Instant addedTimestamp, VeryMinimalFantasyCriticUser addedByUser,
+        string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshAnything,
+        bool useSimpleEligibility, bool delayContention, bool showNote, Instant addedTimestamp, VeryMinimalFantasyCriticUser addedByUser,
         IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
         MasterGameID = masterGameID;
@@ -32,7 +32,6 @@ public class MasterGame : IEquatable<MasterGame>
         BoxartFileName = boxartFileName;
         GGCoverArtFileName = ggCoverArtFileName;
         FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
-        DoNotRefreshDate = doNotRefreshDate;
         DelayContention = delayContention;
         DoNotRefreshAnything = doNotRefreshAnything;
         UseSimpleEligibility = useSimpleEligibility;
@@ -59,7 +58,6 @@ public class MasterGame : IEquatable<MasterGame>
     public string? BoxartFileName { get; }
     public string? GGCoverArtFileName { get; }
     public Instant? FirstCriticScoreTimestamp { get; }
-    public bool DoNotRefreshDate { get; }
     public bool DelayContention { get; }
     public bool DoNotRefreshAnything { get; }
     public bool UseSimpleEligibility { get; }

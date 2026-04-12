@@ -30,7 +30,6 @@ public class MasterGameEntity
         GGCoverArtFileName = masterGame.GGCoverArtFileName;
 
         FirstCriticScoreTimestamp = masterGame.FirstCriticScoreTimestamp;
-        DoNotRefreshDate = masterGame.DoNotRefreshDate;
         DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
         DelayContention = masterGame.DelayContention;
         UseSimpleEligibility = masterGame.UseSimpleEligibility;
@@ -64,7 +63,6 @@ public class MasterGameEntity
     public string? BoxartFileName { get; set; }
     public string? GGCoverArtFileName { get; set; }
     public Instant? FirstCriticScoreTimestamp { get; set; }
-    public bool DoNotRefreshDate { get; set; }
     public bool DoNotRefreshAnything { get; set; }
     public bool UseSimpleEligibility { get; set; }
     public bool DelayContention { get; set; }
@@ -77,6 +75,6 @@ public class MasterGameEntity
     {
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, FirstCriticScoreTimestamp,
-            DoNotRefreshDate, DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, subGames, tags);
+            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, subGames, tags);
     }
 }

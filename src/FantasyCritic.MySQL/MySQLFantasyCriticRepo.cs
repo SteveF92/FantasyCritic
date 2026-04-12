@@ -12,7 +12,6 @@ using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.SharedSerialization.Database;
 

@@ -136,7 +136,7 @@ public class MasterGameYearEntity
         var masterGame = new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, LocalDate.FromDateTime(MinimumReleaseDate),
             maximumReleaseDate, earlyAccessReleaseDate, internationalReleaseDate, announcementDate,
             releaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, HasAnyReviews, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,
-            firstCriticScoreTimestamp, false, false, UseSimpleEligibility, DelayContention, ShowNote, addedTimestamp, addedByUser, subGames, tags);
+            firstCriticScoreTimestamp, false, UseSimpleEligibility, DelayContention, ShowNote, addedTimestamp, addedByUser, subGames, tags);
 
         return new MasterGameYear(masterGame, Year, PercentStandardGame, PercentCounterPick, EligiblePercentStandardGame, AdjustedPercentCounterPick,
             NumberOfBids, TotalBidAmount, BidPercentile, AverageDraftPosition, AverageWinningBid, HypeFactor, DateAdjustedHypeFactor, PeakHypeFactor, LinearRegressionHypeFactor);
