@@ -11,6 +11,7 @@ using Serilog.Sinks.Grafana.Loki;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 
 namespace FantasyCritic.Web;
 
@@ -115,6 +116,9 @@ public class Program
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
             .Enrich.FromLogContext()
+            .Enrich.WithClientIp()
+            .Enrich.WithCorrelationId()
+            .Enrich.WithUserClaims(ClaimTypes.NameIdentifier, ClaimTypes.Email)
             .WriteTo.Console()
             .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
             .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate);
