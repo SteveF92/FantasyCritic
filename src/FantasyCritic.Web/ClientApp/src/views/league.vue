@@ -13,7 +13,7 @@
           <div class="league-header-flex">
             <div class="league-name">
               <h1>
-                {{ league.leagueName }}
+                {{ leagueYear.settings.leagueYearName || league.leagueName }}
                 <font-awesome-layers v-if="oneShotMode" v-b-popover.hover.focus.rightbottom="oneShotText">
                   <font-awesome-icon icon="square" :style="{ color: '#d6993a' }" />
                   <font-awesome-icon icon="1" size="xs" :style="{ color: 'white' }" />
@@ -22,6 +22,7 @@
                   <font-awesome-icon v-b-popover.hover.focus="'Copy League ID to Clipboard'" :icon="['far', 'copy']" size="xs" class="fake-link" />
                 </span>
               </h1>
+              <h4 v-if="leagueYear.settings.leagueYearName" class="league-year-name">{{ league.leagueName }}</h4>
               <router-link v-if="league.years.length > 2" :to="{ name: 'leagueAllTimeStats', params: { leagueid: league.leagueID } }" class="all-time-stats-link">All-Time League Stats</router-link>
             </div>
 
@@ -472,6 +473,11 @@ export default {
   display: block;
   max-width: 100%;
   word-wrap: break-word;
+}
+
+.league-year-name {
+  margin-top: -5px;
+  margin-bottom: 5px;
 }
 
 .draft-header {

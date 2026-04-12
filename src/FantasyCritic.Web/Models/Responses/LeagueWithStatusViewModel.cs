@@ -30,6 +30,7 @@ public class LeagueWithStatusViewModel
         UserIsActiveInMostRecentYearForLeague = leagueStatus.UserIsActiveInMostRecentYearForLeague;
         LeagueIsActiveInActiveYear = leagueStatus.LeagueIsActiveInActiveYear;
         OneShotMode = leagueStatus.MostRecentYearOneShot;
+        ActiveYearLeagueYearName = leagueStatus.ActiveYearLeagueYearName;
     }
 
     public Guid LeagueID { get; }
@@ -49,6 +50,7 @@ public class LeagueWithStatusViewModel
     public bool UserIsActiveInMostRecentYearForLeague { get; }
     public bool LeagueIsActiveInActiveYear { get; }
     public bool OneShotMode { get; }
+    public string? ActiveYearLeagueYearName { get; }
 
     public override string ToString() => $"{LeagueName}|{ActiveYear}";
 }

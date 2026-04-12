@@ -14,7 +14,10 @@
           </router-link>
         </div>
         <div>
-          <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-link">{{ data.item.leagueName }}</router-link>
+          <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-link">
+            {{ data.item.activeYearLeagueYearName || data.item.leagueName }}
+          </router-link>
+          <div v-if="data.item.activeYearLeagueYearName" class="league-detail">{{ data.item.leagueName }}</div>
           <div v-if="data.item.conferenceID" class="league-detail">
             Conference:
             <router-link :to="{ name: 'conference', params: { conferenceid: data.item.conferenceID, year: data.item.activeYear } }" class="conference-link">{{ data.item.conferenceName }}</router-link>

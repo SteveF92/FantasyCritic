@@ -4,7 +4,7 @@ namespace FantasyCritic.Lib.Domain.Requests;
 
 public class LeagueYearParameters
 {
-    public LeagueYearParameters(Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
+    public LeagueYearParameters(Guid leagueID, int year, string? leagueYearName, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
         int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops,
         bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
         DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
@@ -12,6 +12,7 @@ public class LeagueYearParameters
     {
         LeagueID = leagueID;
         Year = year;
+        LeagueYearName = leagueYearName;
         StandardGames = standardGames;
         GamesToDraft = gamesToDraft;
         CounterPicks = counterPicks;
@@ -38,6 +39,7 @@ public class LeagueYearParameters
 
     public Guid LeagueID { get; }
     public int Year { get; }
+    public string? LeagueYearName { get; }
     public int StandardGames { get; }
     public int GamesToDraft { get; }
     public int CounterPicks { get; }

@@ -23,4 +23,5 @@ internal class LeagueYearKeyWithDetailsEntity
     public int Year { get; set; }
     public bool SupportedYearIsFinished { get; set; }
     public string PlayStatus { get; set; } = null!;
+    public string? LeagueYearName { get; set; }
 }

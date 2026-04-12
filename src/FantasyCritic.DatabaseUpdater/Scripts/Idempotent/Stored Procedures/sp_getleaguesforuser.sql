@@ -81,7 +81,8 @@ BEGIN
     SELECT tbl_league_year.LeagueID,
          tbl_league_year.Year,
          tbl_meta_supportedyear.Finished AS 'SupportedYearIsFinished',
-         tbl_league_year.PlayStatus
+         tbl_league_year.PlayStatus,
+         tbl_league_year.LeagueYearName
   FROM tbl_league_year
   JOIN tbl_league_hasuser ON tbl_league_year.LeagueID = tbl_league_hasuser.LeagueID
   JOIN tbl_meta_supportedyear ON tbl_league_year.Year = tbl_meta_supportedyear.`Year`
@@ -90,7 +91,8 @@ BEGIN
   SELECT tbl_league_year.LeagueID,
          tbl_league_year.Year,
          tbl_meta_supportedyear.Finished AS 'SupportedYearIsFinished',
-         tbl_league_year.PlayStatus
+         tbl_league_year.PlayStatus,
+         tbl_league_year.LeagueYearName
   FROM tbl_league_year
   JOIN tbl_user_followingleague ON tbl_league_year.LeagueID = tbl_user_followingleague.LeagueID
   JOIN tbl_meta_supportedyear ON tbl_league_year.Year = tbl_meta_supportedyear.`Year`

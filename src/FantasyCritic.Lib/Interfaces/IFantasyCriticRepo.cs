@@ -3,7 +3,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Interfaces;
@@ -160,4 +159,5 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user);
     Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year);
     Task SetUnderReview(LeagueYear leagueYear, bool underReview, LeagueManagerAction action);
+    Task ChangeLeagueYearName(LeagueYearKey key, string? leagueYearName);
 }

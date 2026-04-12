@@ -9,6 +9,11 @@
 
     <div v-if="leagueYearSettings && leagueYear">
       <div class="text-well league-options">
+        <div class="form-group">
+          <label for="leagueYearName" class="control-label">League Year Name (Optional)</label>
+          <input id="leagueYearName" v-model="leagueYearName" name="League Year Name" type="text" class="form-control input" placeholder="Leave blank to use the league name" />
+          <p>If set, this name will be displayed instead of the league name for this specific year only.</p>
+        </div>
         <leagueYearSettings v-model="leagueYearSettings" :year="year" edit-mode :current-number-of-players="activePlayersInLeague" :fresh-settings="freshSettings"></leagueYearSettings>
       </div>
 
@@ -36,6 +41,7 @@ export default {
     return {
       errorInfo: '',
       leagueYearSettings: null,
+      leagueYearName: null,
       leagueYear: null,
       freshSettings: false
     };
@@ -83,11 +89,13 @@ export default {
         .get('/api/League/GetLeagueYearOptions?leagueID=' + this.leagueid + '&year=' + this.year)
         .then((response) => {
           this.leagueYearSettings = response.data;
+          this.leagueYearName = response.data.leagueYearName ?? null;
         })
         .catch((returnedError) => (this.error = returnedError));
     },
     postRequest() {
-      axios.post('/api/leagueManager/EditLeagueYearSettings', this.leagueYearSettings).then(this.responseHandler).catch(this.catchHandler);
+      const payload = { ...this.leagueYearSettings, leagueYearName: this.leagueYearName || null };
+      axios.post('/api/leagueManager/EditLeagueYearSettings', payload).then(this.responseHandler).catch(this.catchHandler);
     },
     responseHandler() {
       this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });

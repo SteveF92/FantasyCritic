@@ -8,7 +8,7 @@ namespace FantasyCritic.Web.Models.RoundTrip;
 public class LeagueYearSettingsViewModel
 {
     [JsonConstructor]
-    public LeagueYearSettingsViewModel(Guid leagueID, int year, int standardGames, int gamesToDraft, int counterPicks,
+    public LeagueYearSettingsViewModel(Guid leagueID, int year, string? leagueYearName, int standardGames, int gamesToDraft, int counterPicks,
         int counterPicksToDraft, int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedFreeDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible,
         int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
@@ -16,6 +16,8 @@ public class LeagueYearSettingsViewModel
     {
         LeagueID = leagueID;
         Year = year;
+        LeagueYearName = leagueYearName;
+
         StandardGames = standardGames;
         GamesToDraft = gamesToDraft;
         CounterPicks = counterPicks;
@@ -48,6 +50,8 @@ public class LeagueYearSettingsViewModel
     {
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
+        LeagueYearName = leagueYear.LeagueYearName;
+
         StandardGames = leagueYear.Options.StandardGames;
         GamesToDraft = leagueYear.Options.GamesToDraft;
         CounterPicks = leagueYear.Options.CounterPicks;
@@ -103,6 +107,8 @@ public class LeagueYearSettingsViewModel
 
     public Guid LeagueID { get; }
     public int Year { get; }
+    public string? LeagueYearName { get; }
+
     [Range(1, 50)]
     public int StandardGames { get; }
     [Range(1, 50)]
@@ -195,7 +201,7 @@ public class LeagueYearSettingsViewModel
         var leagueTags = Tags.ToDomain(tagDictionary);
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
-        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
+        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
             freeDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
             leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, counterPickDeadline, mightReleaseDroppableDate);
         return parameters;

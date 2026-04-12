@@ -190,7 +190,8 @@ public class FantasyCriticService
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
             leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
-            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked, leagueYear.UnderReview);
+            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
+            leagueYear.UnderReview, parameters.LeagueYearName);
 
         var differenceString = options.GetDifferenceString(leagueYear.Options);
         if (differenceString is not null)
@@ -198,6 +199,10 @@ public class FantasyCriticService
             LeagueManagerAction settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString);
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
             await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
+        }
+        else if (leagueYear.LeagueYearName != newLeagueYear.LeagueYearName)
+        {
+            await _fantasyCriticRepo.ChangeLeagueYearName(newLeagueYear.Key, newLeagueYear.LeagueYearName);
         }
 
         return Result.Success();

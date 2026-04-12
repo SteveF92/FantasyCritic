@@ -10,7 +10,7 @@ public class LeagueYearEntity
 
     }
 
-    public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus, bool draftOrderSet, bool? conferenceLocked)
+    public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus, bool draftOrderSet, bool? conferenceLocked, bool underReview, string? leagueYearName)
     {
         LeagueID = league.LeagueID;
         Year = year;
@@ -41,10 +41,14 @@ public class LeagueYearEntity
         PlayStatus = playStatus.Value;
         DraftOrderSet = draftOrderSet;
         ConferenceLocked = conferenceLocked;
+
+        UnderReview = underReview;
+        LeagueYearName = leagueYearName;
     }
 
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
+    public string? LeagueYearName { get; set; }
     public int StandardGames { get; set; }
     public int GamesToDraft { get; set; }
     public int CounterPicks { get; set; }
@@ -99,6 +103,6 @@ public class LeagueYearEntity
             counterPickDeadline, mightReleaseDroppableDate);
 
         return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides,
-            DraftStartedTimestamp, winningUser, publishersInLeague, ConferenceLocked, UnderReview);
+            DraftStartedTimestamp, winningUser, publishersInLeague, ConferenceLocked, UnderReview, LeagueYearName);
     }
 }

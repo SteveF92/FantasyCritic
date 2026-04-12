@@ -13,7 +13,8 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
         bool draftOrderSet, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
-        Instant? draftStartedTimestamp, FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers, bool? conferenceLocked, bool underReview)
+        Instant? draftStartedTimestamp, FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers,
+        bool? conferenceLocked, bool underReview, string? leagueYearName)
     {
         League = league;
         SupportedYear = year;
@@ -28,6 +29,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         WinningUser = winningUser;
         ConferenceLocked = conferenceLocked;
         UnderReview = underReview;
+        LeagueYearName = leagueYearName;
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
 
@@ -46,6 +48,8 @@ public class LeagueYear : IEquatable<LeagueYear>
     public FantasyCriticUser? WinningUser { get; }
     public bool? ConferenceLocked { get; }
     public bool UnderReview { get; }
+    public string? LeagueYearName { get; }
+
     public IReadOnlyList<Publisher> Publishers => _publisherDictionary.Values.ToList();
     public int StandardGamesTaken { get; }
     public int TotalNumberOfStandardGames => Options.StandardGames * Publishers.Count;
@@ -151,7 +155,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public LeagueYear GetUpdatedLeagueYearWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         var newPublishers = Publishers.Select(x => x.GetUpdatedPublisherWithNewScores(calculatedStats)).ToList();
-        return new LeagueYear(League, SupportedYear, Options, PlayStatus, DraftOrderSet, EligibilityOverrides, TagOverrides, DraftStartedTimestamp, WinningUser, newPublishers, ConferenceLocked, UnderReview);
+        return new LeagueYear(League, SupportedYear, Options, PlayStatus, DraftOrderSet, EligibilityOverrides, TagOverrides, DraftStartedTimestamp, WinningUser, newPublishers, ConferenceLocked, UnderReview, LeagueYearName);
     }
 
     public override string ToString() => $"{League}|{Year}";

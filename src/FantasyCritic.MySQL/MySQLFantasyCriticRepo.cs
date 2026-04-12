@@ -1067,7 +1067,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         LeagueEntity entity = new LeagueEntity(league);
-        LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options, PlayStatus.NotStartedDraft, false, conferenceLocked);
+        LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options, PlayStatus.NotStartedDraft, false, conferenceLocked, false, null);
         var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, initialYear, x));
         List<SpecialGameSlotEntity> slotEntities = options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
             new SpecialGameSlotEntity(Guid.NewGuid(), league, initialYear, slot.SpecialSlotPosition, tag)).ToList();
@@ -1083,10 +1083,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             insert into tbl_league_year
             (LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
             GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,PlayStatus,DraftOrderSet,
-            CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview) VALUES
+            CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview,LeagueYearName) VALUES
             (@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
             @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
-            @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0);
+            @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0,@LeagueYearName);
             """;
 
         await connection.ExecuteAsync(createLeagueSQL, entity, transaction);
@@ -1098,7 +1098,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction)
     {
-        LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus, leagueYear.DraftOrderSet, leagueYear.ConferenceLocked);
+        LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.PlayStatus, leagueYear.DraftOrderSet, leagueYear.ConferenceLocked, leagueYear.UnderReview, leagueYear.LeagueYearName);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
 
         List<SpecialGameSlotEntity> slotEntities = leagueYear.Options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
@@ -1108,7 +1108,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """
             UPDATE tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, CounterPicksToDraft = @CounterPicksToDraft,
             FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
-            DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops, AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem,
+            DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops,
+            AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem,
             PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem, ReleaseSystem = @ReleaseSystem,
             CounterPickDeadlineMonth = @CounterPickDeadlineMonth, CounterPickDeadlineDay = @CounterPickDeadlineDay, MightReleaseDroppableMonth = @MightReleaseDroppableMonth, MightReleaseDroppableDay = @MightReleaseDroppableDay
             WHERE LeagueID = @LeagueID and Year = @Year;
@@ -1146,7 +1147,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             conferenceLocked = false;
         }
-        LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, PlayStatus.NotStartedDraft, false, conferenceLocked);
+        LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, PlayStatus.NotStartedDraft, false, conferenceLocked, false, null);
         var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, year, x));
 
         List<SpecialGameSlotEntity> slotEntities = options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
@@ -1312,13 +1313,22 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var leaguesWithStatus = new List<LeagueWithMostRecentYearStatus>();
         foreach (var leagueEntity in leagueEntities)
         {
-            var years = leagueYearLookup[leagueEntity.LeagueID];
+            var years = leagueYearLookup[leagueEntity.LeagueID].ToList();
             League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
+            var activeYearLeagueYearName = GetActiveYearLeagueYearName(years, league);
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
-                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot));
+                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot, activeYearLeagueYearName));
         }
 
         return leaguesWithStatus;
+    }
+
+    private static string? GetActiveYearLeagueYearName(IReadOnlyList<LeagueYearKeyWithDetailsEntity> years, League league)
+    {
+        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
+        var activeYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? league.Years.Max(x => x.Year);
+        return years.FirstOrDefault(x => x.Year == activeYear)?.LeagueYearName;
     }
 
     public async Task<IReadOnlyList<LeaguePublisherRowForUser>> GetLeaguePublisherRowsForUsers(IEnumerable<Guid> userIDs)
@@ -3423,5 +3433,19 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await AddLeagueManagerAction(action, connection, transaction);
         await connection.ExecuteAsync(sql, param, transaction);
         await transaction.CommitAsync();
+    }
+
+    public async Task ChangeLeagueYearName(LeagueYearKey key, string? leagueYearName)
+    {
+        const string sql = "UPDATE tbl_league_year SET LeagueYearName = @LeagueYearName WHERE LeagueID = @LeagueID AND Year = @Year;";
+        var param = new
+        {
+            LeagueID = key.LeagueID,
+            Year = key.Year,
+            LeagueYearName = leagueYearName
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, param);
     }
 }
