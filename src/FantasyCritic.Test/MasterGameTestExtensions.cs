@@ -10,7 +10,7 @@ public static class MasterGameTestExtensions
             game.InternationalReleaseDate, game.AnnouncementDate, game.ReleaseDate, game.OpenCriticID, game.GGToken,
             game.GGSlug, score, game.HasAnyReviews, game.OpenCriticSlug,
             game.Notes, game.BoxartFileName, game.GGCoverArtFileName, game.FirstCriticScoreTimestamp,
-            game.DoNotRefreshAnything, game.UseSimpleEligibility,
+            game.SyncWithExternalAPIs, game.UseSimpleEligibility,
             game.DelayContention, game.ShowNote, game.AddedTimestamp, game.AddedByUser, game.SubGames, game.Tags);
     }
 }

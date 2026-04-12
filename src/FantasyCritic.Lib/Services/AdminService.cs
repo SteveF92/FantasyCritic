@@ -83,7 +83,7 @@ public class AdminService
         var masterGames = await _interLeagueService.GetMasterGames();
 
         var currentDate = _clock.GetToday();
-        var masterGamesToUpdate = masterGames.Where(x => x.OpenCriticID.HasValue && !x.DoNotRefreshAnything).ToList();
+        var masterGamesToUpdate = masterGames.Where(x => x.OpenCriticID.HasValue && x.SyncWithExternalAPIs).ToList();
         int gamesFetched = 0;
         foreach (var masterGame in masterGamesToUpdate)
         {
@@ -150,7 +150,7 @@ public class AdminService
         _logger.Information("Refreshing GG Info. Deep:{deepRefresh}", deepRefresh);
         var masterGames = await _interLeagueService.GetMasterGames();
 
-        var masterGamesToUpdate = masterGames.Where(x => x.GGToken is not null && !x.DoNotRefreshAnything).ToList();
+        var masterGamesToUpdate = masterGames.Where(x => x.GGToken is not null && x.SyncWithExternalAPIs).ToList();
         foreach (var masterGame in masterGamesToUpdate)
         {
             if (!string.IsNullOrWhiteSpace(masterGame.GGCoverArtFileName) && !deepRefresh)

@@ -24,7 +24,7 @@ public class MasterGameViewModel
         IsReleased = masterGame.IsReleased(currentDate);
         ReleasingToday = masterGame.ReleaseDate == currentDate;
 
-        DoNotRefreshAnything = masterGame.DoNotRefreshAnything;
+        SyncWithExternalAPIs = masterGame.SyncWithExternalAPIs;
         UseSimpleEligibility = masterGame.UseSimpleEligibility;
         DelayContention = masterGame.DelayContention;
         ShowNote = masterGame.ShowNote;
@@ -59,7 +59,7 @@ public class MasterGameViewModel
     public bool IsReleased { get; init; }
     public bool ReleasingToday { get; init; }
 
-    public bool DoNotRefreshAnything { get; init; }
+    public bool SyncWithExternalAPIs { get; init; }
     public bool UseSimpleEligibility { get; init; }
 
     public bool DelayContention { get; init; }
@@ -95,6 +95,6 @@ public class MasterGameViewModel
 
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
             AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,  AddedTimestamp,
-            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, new List<MasterSubGame>(), tags);
+            SyncWithExternalAPIs, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, new List<MasterSubGame>(), tags);
     }
 }

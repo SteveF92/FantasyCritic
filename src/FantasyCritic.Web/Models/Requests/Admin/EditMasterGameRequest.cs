@@ -16,7 +16,7 @@ public class EditMasterGameRequest
     public LocalDate MinimumReleaseDate { get; }
 
     public required List<string> Tags { get; init; }
-    public bool DoNotRefreshAnything { get; init; }
+    public bool SyncWithExternalAPIs { get; init; }
     public bool UseSimpleEligibility { get; init; }
     public bool DelayContention { get; init; }
     public bool ShowNote { get; init; }
@@ -39,7 +39,7 @@ public class EditMasterGameRequest
             EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.GGSlug, criticScore,
             existingMasterGame.HasAnyReviews, existingMasterGame.OpenCriticSlug,
             Notes, existingMasterGame.BoxartFileName, existingMasterGame.GGCoverArtFileName, existingMasterGame.FirstCriticScoreTimestamp,
-            DoNotRefreshAnything, UseSimpleEligibility, DelayContention, ShowNote,
+            SyncWithExternalAPIs, UseSimpleEligibility, DelayContention, ShowNote,
             timestamp, existingMasterGame.AddedByUser, existingMasterGame.SubGames, tags);
         return masterGame;
     }

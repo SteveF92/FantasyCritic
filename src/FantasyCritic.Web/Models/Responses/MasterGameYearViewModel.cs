@@ -35,7 +35,7 @@ public class MasterGameYearViewModel
         BoxartFileName = masterGame.MasterGame.BoxartFileName;
         GGCoverArtFileName = masterGame.MasterGame.GGCoverArtFileName;
 
-        DoNotRefreshAnything = masterGame.MasterGame.DoNotRefreshAnything;
+        SyncWithExternalAPIs = masterGame.MasterGame.SyncWithExternalAPIs;
         UseSimpleEligibility = masterGame.MasterGame.UseSimpleEligibility;
 
         PercentStandardGame = masterGame.PercentStandardGame;
@@ -80,7 +80,7 @@ public class MasterGameYearViewModel
         Tags = new List<string>();
         ReadableTags = new List<string>();
 
-        DoNotRefreshAnything = masterGame.MasterGame.DoNotRefreshAnything;
+        SyncWithExternalAPIs = masterGame.MasterGame.SyncWithExternalAPIs;
         UseSimpleEligibility = masterGame.MasterGame.UseSimpleEligibility;
 
         PercentStandardGame = masterGame.PercentStandardGame;
@@ -135,7 +135,7 @@ public class MasterGameYearViewModel
     public string? GGCoverArtFileName { get; }
     public Instant AddedTimestamp { get; }
 
-    public bool DoNotRefreshAnything { get; }
+    public bool SyncWithExternalAPIs { get; }
     public bool UseSimpleEligibility { get; }
 
     public double PercentStandardGame { get; }

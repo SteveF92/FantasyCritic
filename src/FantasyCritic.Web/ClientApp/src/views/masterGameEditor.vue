@@ -110,7 +110,7 @@
                 </b-form-checkbox>
               </div>
               <div class="form-group">
-                <b-form-checkbox v-model="masterGame.doNotRefreshAnything">
+                <b-form-checkbox v-model="masterGame.syncWithExternalAPIs">
                   <span class="checkbox-label">Do Not Refresh Anything</span>
                 </b-form-checkbox>
               </div>
@@ -134,7 +134,7 @@
                 <input id="boxartFileName" v-model="masterGame.boxartFileName" name="boxartFileName" class="form-control input" />
               </div>
 
-              <div v-if="clearCriticScore && !masterGame.doNotRefreshAnything" class="alert alert-warning">
+              <div v-if="clearCriticScore && !masterGame.syncWithExternalAPIs" class="alert alert-warning">
                 Are you sure you want to clear the critic score while leaving Open Critic Score Refreshing on?
               </div>
 

@@ -9,7 +9,7 @@ public class MasterGame : IEquatable<MasterGame>
     public MasterGame(Guid masterGameID, string gameName, string estimatedReleaseDate, LocalDate minimumReleaseDate, LocalDate? maximumReleaseDate,
         LocalDate? earlyAccessReleaseDate, LocalDate? internationalReleaseDate, LocalDate? announcementDate, LocalDate? releaseDate, int? openCriticID,
         string? ggToken, string? ggSlug, decimal? criticScore, bool hasAnyReviews, string? openCriticSlug,
-        string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool doNotRefreshAnything,
+        string? notes, string? boxartFileName, string? ggCoverArtFileName, Instant? firstCriticScoreTimestamp, bool syncWithExternalAPIs,
         bool useSimpleEligibility, bool delayContention, bool showNote, Instant addedTimestamp, VeryMinimalFantasyCriticUser addedByUser,
         IEnumerable<MasterSubGame> subGames, IEnumerable<MasterGameTag> tags)
     {
@@ -33,7 +33,7 @@ public class MasterGame : IEquatable<MasterGame>
         GGCoverArtFileName = ggCoverArtFileName;
         FirstCriticScoreTimestamp = firstCriticScoreTimestamp;
         DelayContention = delayContention;
-        DoNotRefreshAnything = doNotRefreshAnything;
+        SyncWithExternalAPIs = syncWithExternalAPIs;
         UseSimpleEligibility = useSimpleEligibility;
         ShowNote = showNote;
         AddedTimestamp = addedTimestamp;
@@ -59,7 +59,7 @@ public class MasterGame : IEquatable<MasterGame>
     public string? GGCoverArtFileName { get; }
     public Instant? FirstCriticScoreTimestamp { get; }
     public bool DelayContention { get; }
-    public bool DoNotRefreshAnything { get; }
+    public bool SyncWithExternalAPIs { get; }
     public bool UseSimpleEligibility { get; }
     public bool ShowNote { get; }
     public Instant AddedTimestamp { get; }

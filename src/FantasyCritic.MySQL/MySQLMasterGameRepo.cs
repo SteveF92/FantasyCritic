@@ -185,10 +185,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         const string masterGameCreateSQL = "insert into tbl_mastergame" +
                                            "(MasterGameID,GameName,EstimatedReleaseDate,MinimumReleaseDate,MaximumReleaseDate,EarlyAccessReleaseDate,InternationalReleaseDate,AnnouncementDate," +
                                            "ReleaseDate,OpenCriticID,GGToken,CriticScore,HasAnyReviews,Notes,BoxartFileName,GGCoverArtFileName," +
-                                           "FirstCriticScoreTimestamp,DoNotRefreshAnything,UseSimpleEligibility,DelayContention,ShowNote,AddedTimestamp,AddedByUserID) VALUES " +
+                                           "FirstCriticScoreTimestamp,SyncWithExternalAPIs,UseSimpleEligibility,DelayContention,ShowNote,AddedTimestamp,AddedByUserID) VALUES " +
                                            "(@MasterGameID,@GameName,@EstimatedReleaseDate,@MinimumReleaseDate,@MaximumReleaseDate,@EarlyAccessReleaseDate,@InternationalReleaseDate,@AnnouncementDate," +
                                            "@ReleaseDate,@OpenCriticID,@GGToken,@CriticScore,@HasAnyReviews,@Notes,@BoxartFileName,@GGCoverArtFileName," +
-                                           "@FirstCriticScoreTimestamp,@DoNotRefreshAnything,@UseSimpleEligibility,@DelayContention,@ShowNote,@AddedTimestamp,@AddedByUserID);";
+                                           "@FirstCriticScoreTimestamp,@SyncWithExternalAPIs,@UseSimpleEligibility,@DelayContention,@ShowNote,@AddedTimestamp,@AddedByUserID);";
 
         var entity = new MasterGameEntity(masterGame);
         var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
@@ -219,7 +219,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                                "BoxartFileName = @BoxartFileName, " +
                                "GGCoverArtFileName = @GGCoverArtFileName, " +
                                "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
-                               "DoNotRefreshAnything = @DoNotRefreshAnything, " +
+                               "SyncWithExternalAPIs = @SyncWithExternalAPIs, " +
                                "UseSimpleEligibility = @UseSimpleEligibility, " +
                                "DelayContention = @DelayContention, " +
                                "ShowNote = @ShowNote " +
@@ -581,7 +581,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         List<MasterGameYearEntity> masterGameYearEntities = calculatedStats.Select(x => new MasterGameYearEntity(x)).ToList();
 
-        var excludeFields = new List<string>() { "DoNotRefreshAnything", "AddedByUserDisplayName" };
+        var excludeFields = new List<string>() { "SyncWithExternalAPIs", "AddedByUserDisplayName" };
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
