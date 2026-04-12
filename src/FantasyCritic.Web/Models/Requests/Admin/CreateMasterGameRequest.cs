@@ -15,7 +15,7 @@ public class CreateMasterGameRequest
     public string EstimatedReleaseDate { get; }
 
     public List<string> Tags { get; init; } = new List<string>();
-    public bool SyncWithExternalAPIs { get; init; } = false;
+    public bool SyncWithExternalAPIs { get; init; } = true;
     public bool UseSimpleEligibility { get; init; } = false;
     public bool DelayContention { get; init; } = false;
     public bool ShowNote { get; init; } = false;
