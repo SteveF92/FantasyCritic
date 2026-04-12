@@ -19,10 +19,12 @@ namespace FantasyCritic.MySQL;
 public class MySQLCombinedDataRepo : ICombinedDataRepo
 {
     private readonly string _connectionString;
+    private readonly IReadOnlyFantasyCriticUserStore _userStore;
 
-    public MySQLCombinedDataRepo(RepositoryConfiguration configuration)
+    public MySQLCombinedDataRepo(RepositoryConfiguration configuration, IReadOnlyFantasyCriticUserStore userStore)
     {
         _connectionString = configuration.ConnectionString;
+        _userStore = userStore;
     }
 
     public async Task<BasicData> GetBasicData()
@@ -452,6 +454,16 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var bidAmountsList = bidAmountPoints.Select(x => x.ToDomain());
         var systemWideValues = systemWideValuesEntity.ToDomain(positionPointsList, bidAmountsList);
         var managersMessages = DomainConversionUtilities.GetManagersMessages(dismissalEntities, messageEntities);
+        var tradeVoteUserIds = voteEntities.Select(v => v.UserID).Distinct().ToList();
+        var missingTradeVoteUserIds = tradeVoteUserIds.Where(id => !userDictionary.ContainsKey(id)).ToList();
+        if (missingTradeVoteUserIds.Count > 0)
+        {
+            foreach (var user in await _userStore.GetUsers(missingTradeVoteUserIds))
+            {
+                userDictionary[user.Id] = user;
+            }
+        }
+
         var activeTrades = DomainConversionUtilities.GetActiveTrades(leagueYear, componentEntities, voteEntities, tradeEntities, masterGameYearDictionary, userDictionary);
         var activeSpecialAuctions = DomainConversionUtilities.GetActiveSpecialAuctions(specialAuctionEntities, masterGameYearDictionary);
         var activePickupBids = DomainConversionUtilities.GetActivePickupBids(leagueYear, bidEntities, masterGameDictionary, masterGameYearDictionary);

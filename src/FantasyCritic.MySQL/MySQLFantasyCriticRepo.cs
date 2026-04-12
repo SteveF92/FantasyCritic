@@ -1919,6 +1919,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
+        var voteUserLookup = (await _userStore.GetUsers(voteEntities.Select(x => x.UserID).Distinct())).ToDictionary(x => x.Id);
 
         List<Trade> domainTrades = new List<Trade>();
         foreach (var tradeEntity in tradeEntities)
@@ -1956,7 +1957,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             List<TradeVote> tradeVotes = new List<TradeVote>();
             foreach (var vote in votes)
             {
-                var user = leagueYear.Publishers.Single(x => x.User.Id == vote.UserID).User;
+                var user = DomainConversionUtilities.ResolveTradeVoteUser(vote.UserID, leagueYear, voteUserLookup);
                 var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
                 tradeVotes.Add(domainVote);
             }
@@ -1992,6 +1993,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
+        var voteUserLookup = (await _userStore.GetUsers(voteEntities.Select(x => x.UserID).Distinct())).ToDictionary(x => x.Id);
 
         List<Trade> domainTrades = new List<Trade>();
         foreach (var tradeEntity in tradeEntities)
@@ -2035,7 +2037,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             List<TradeVote> tradeVotes = new List<TradeVote>();
             foreach (var vote in votes)
             {
-                var user = await _userStore.FindByIdOrThrowAsync(vote.UserID, CancellationToken.None);
+                var user = DomainConversionUtilities.ResolveTradeVoteUser(vote.UserID, leagueYear, voteUserLookup);
                 var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
                 tradeVotes.Add(domainVote);
             }
@@ -2073,6 +2075,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
+        var voteUserLookup = (await _userStore.GetUsers(voteEntities.Select(x => x.UserID).Distinct())).ToDictionary(x => x.Id);
 
         var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(tradeEntity.LeagueID, tradeEntity.Year);
         Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
@@ -2108,7 +2111,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<TradeVote> tradeVotes = new List<TradeVote>();
         foreach (var vote in votes)
         {
-            var user = await _userStore.FindByIdOrThrowAsync(vote.UserID, CancellationToken.None);
+            var user = DomainConversionUtilities.ResolveTradeVoteUser(vote.UserID, leagueYear, voteUserLookup);
             var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
             tradeVotes.Add(domainVote);
         }
@@ -2300,7 +2303,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private async Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, IEnumerable<Publisher> publishersToUpdate, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var combinedDataRepo = new MySQLCombinedDataRepo(new RepositoryConfiguration(_connectionString, _clock));
+        var combinedDataRepo = new MySQLCombinedDataRepo(new RepositoryConfiguration(_connectionString, _clock), _userStore);
         var updatedLeagueYear = await combinedDataRepo.GetLeagueYear(leagueYear.League.LeagueID, leagueYear.Year, connection, transaction);
         var updatedPublishers = updatedLeagueYear!.Publishers.Where(x => publishersToUpdate.Select(x => x.PublisherID).Contains(x.PublisherID)).ToList();
         var pairs = updatedPublishers.Select(x => new LeagueYearPublisherPair(updatedLeagueYear, x));
@@ -2309,7 +2312,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private async Task MakePublisherGameSlotsConsistent(LeagueYear leagueYear, Publisher publisher, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var combinedDataRepo = new MySQLCombinedDataRepo(new RepositoryConfiguration(_connectionString, _clock));
+        var combinedDataRepo = new MySQLCombinedDataRepo(new RepositoryConfiguration(_connectionString, _clock), _userStore);
         var updatedLeagueYear = await combinedDataRepo.GetLeagueYear(leagueYear.League.LeagueID, leagueYear.Year, connection, transaction);
         var updatedPublisher = updatedLeagueYear!.Publishers.Single(x => x.PublisherID == publisher.PublisherID);
         await MakePublisherGameSlotsConsistent(new List<LeagueYearPublisherPair>() { new LeagueYearPublisherPair(updatedLeagueYear, updatedPublisher) }, connection, transaction);

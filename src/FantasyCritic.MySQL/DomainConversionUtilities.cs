@@ -115,6 +115,25 @@ internal static class DomainConversionUtilities
         return managersMessages;
     }
 
+    /// <summary>
+    /// Prefer the user attached to a publisher in this league year; otherwise use a user loaded for trade votes (e.g. former members who still exist in tbl_user).
+    /// </summary>
+    public static FantasyCriticUser ResolveTradeVoteUser(Guid voteUserId, LeagueYear leagueYear, IReadOnlyDictionary<Guid, FantasyCriticUser> usersById)
+    {
+        var fromPublisher = leagueYear.Publishers.FirstOrDefault(x => x.User.Id == voteUserId)?.User;
+        if (fromPublisher is not null)
+        {
+            return fromPublisher;
+        }
+
+        if (usersById.TryGetValue(voteUserId, out var user))
+        {
+            return user;
+        }
+
+        throw new Exception($"Trade vote references user that could not be loaded: {voteUserId}");
+    }
+
     public static List<Trade> GetActiveTrades(LeagueYear leagueYear, IEnumerable<TradeComponentEntity> componentEntities, IEnumerable<TradeVoteEntity> voteEntities,
         IEnumerable<TradeEntity> tradeEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary, IReadOnlyDictionary<Guid, FantasyCriticUser> userDictionary)
     {
@@ -157,11 +176,7 @@ internal static class DomainConversionUtilities
             List<TradeVote> tradeVotes = new List<TradeVote>();
             foreach (var vote in votes)
             {
-                var user = leagueYear.Publishers.SingleOrDefault(x => x.User.Id == vote.UserID)?.User;
-                if (user is null)
-                {
-                    user = userDictionary[vote.UserID];
-                }
+                var user = ResolveTradeVoteUser(vote.UserID, leagueYear, userDictionary);
                 var domainVote = new TradeVote(tradeEntity.TradeID, user, vote.Approved, vote.Comment, vote.Timestamp);
                 tradeVotes.Add(domainVote);
             }
