@@ -64,9 +64,9 @@
         <masterGameTagBadge :tag-name="tag"></masterGameTagBadge>
       </span>
     </div>
-    <div v-if="masterGame.notes">
-      <h3>Special Notes</h3>
-      {{ masterGame.notes }}
+    <div v-if="masterGame.notes && !hideNotes" class="notes-section">
+      <h4>Special Notes</h4>
+      <p>{{ masterGame.notes }}</p>
     </div>
   </div>
 </template>
@@ -80,7 +80,8 @@ export default {
     MasterGameTagBadge
   },
   props: {
-    masterGame: { type: Object, required: true }
+    masterGame: { type: Object, required: true },
+    hideNotes: { type: Boolean, default: false }
   },
   methods: {
     formatDate(releaseDate) {
@@ -103,5 +104,9 @@ export default {
 
 .date-info {
   margin-left: 5px;
+}
+
+.notes-section {
+  margin-top: 1rem;
 }
 </style>

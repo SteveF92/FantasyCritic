@@ -27,8 +27,32 @@
       </p>
       <div v-if="masterGame" class="row">
         <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0 text-well">
-          <h2 v-if="masterGame">{{ masterGame.gameName }}</h2>
-          <masterGameDetails :master-game="masterGame"></masterGameDetails>
+          <div class="game-header">
+            <img v-if="coverArtLink" :src="coverArtLink" alt="Cover Art" class="cover-art" />
+            <div class="game-info-section">
+              <h2>{{ masterGame.gameName }}</h2>
+              <div class="game-external-links">
+                <a v-if="masterGame.openCriticID" :href="gameOpenCriticLink" target="_blank" class="game-link btn btn-sm btn-outline-info">
+                  <font-awesome-icon icon="external-link-alt" size="xs" />
+                  OpenCritic
+                </a>
+                <span v-else class="badge badge-secondary link-missing-badge">No OpenCritic link</span>
+                <a v-if="gameGGLink" :href="gameGGLink" target="_blank" class="game-link btn btn-sm btn-outline-info">
+                  <font-awesome-icon icon="external-link-alt" size="xs" />
+                  GG|
+                </a>
+                <span v-else class="badge badge-secondary link-missing-badge">No GG| link</span>
+              </div>
+              <masterGameDetails :master-game="masterGame" :hide-notes="true"></masterGameDetails>
+            </div>
+          </div>
+
+          <b-alert v-if="masterGame.notes" show variant="info" class="mt-3">
+            <strong><font-awesome-icon icon="info-circle" /> Special Notes:</strong>
+            {{ masterGame.notes }}
+          </b-alert>
+
+          <hr />
 
           <ValidationObserver v-slot="{ invalid }">
             <form @submit.prevent="sendMasterGameChangeRequestRequest">
@@ -116,12 +140,14 @@
 import axios from 'axios';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
+import GGMixin from '@/mixins/ggMixin.js';
 
 export default {
   components: {
     MasterGamePopover,
     MasterGameDetails
   },
+  mixins: [GGMixin],
   data() {
     return {
       myRequests: [],
@@ -150,6 +176,18 @@ export default {
     await this.fetchMyRequests();
   },
   computed: {
+    coverArtLink() {
+      if (!this.masterGame) return null;
+      return this.getGGCoverArtLinkForGame(this.masterGame, 150);
+    },
+    gameGGLink() {
+      if (!this.masterGame) return null;
+      return this.getGGLinkForGame(this.masterGame);
+    },
+    gameOpenCriticLink() {
+      if (!this.masterGame || !this.masterGame.openCriticID) return null;
+      return `https://opencritic.com/game/${this.masterGame.openCriticID}/${this.masterGame.openCriticSlug ?? 'b'}`;
+    },
     invalidOpenCriticRequest() {
       if (!this.requestNote) {
         return false;
@@ -232,24 +270,47 @@ export default {
 .select-cell {
   text-align: center;
 }
-.eligibility-explanation {
-  margin-bottom: 50px;
-  max-width: 1300px;
-}
-
-.eligibility-section {
-  margin-bottom: 10px;
-}
-
-.eligibility-description {
-  margin-top: 25px;
-}
-
-.checkbox-label {
-  padding-left: 25px;
-}
 
 label {
   font-size: 18px;
+}
+
+.game-header {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cover-art {
+  border-radius: 6px;
+  flex-shrink: 0;
+  width: 150px;
+  align-self: flex-start;
+}
+
+.game-info-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.game-external-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.game-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.link-missing-badge {
+  font-size: 0.85em;
+  padding: 4px 8px;
 }
 </style>
