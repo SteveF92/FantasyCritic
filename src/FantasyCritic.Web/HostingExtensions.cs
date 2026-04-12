@@ -384,22 +384,19 @@ public static class HostingExtensions
                     return;
                 }
 
-                if (request.QueryString.HasValue)
+                foreach (var (key, value) in request.Query)
                 {
-                    diagnosticContext.Set("QueryString", request.QueryString.Value);
+                    diagnosticContext.Set($"Param_{key}", value.ToString());
                 }
 
-                var routeValues = httpContext.GetRouteData().Values;
-                if (routeValues.Count > 0)
+                foreach (var (key, value) in httpContext.GetRouteData().Values)
                 {
-                    var meaningful = routeValues
-                        .Where(kvp => kvp.Key is not ("controller" or "action" or "page"))
-                        .Where(kvp => kvp.Value is not null)
-                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value!.ToString());
-                    if (meaningful.Count > 0)
+                    if (key is "controller" or "action" or "page" || value is null)
                     {
-                        diagnosticContext.Set("RouteParams", meaningful, destructureObjects: true);
+                        continue;
                     }
+
+                    diagnosticContext.Set($"Route_{key}", value.ToString());
                 }
             };
         });
