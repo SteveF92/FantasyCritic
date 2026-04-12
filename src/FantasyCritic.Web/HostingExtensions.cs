@@ -20,6 +20,7 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -372,7 +373,36 @@ public static class HostingExtensions
             }
         });
 
-        app.UseSerilogRequestLogging();
+        app.UseSerilogRequestLogging(options =>
+        {
+            options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+            {
+                var request = httpContext.Request;
+
+                if (request.Path.StartsWithSegments("/Account"))
+                {
+                    return;
+                }
+
+                if (request.QueryString.HasValue)
+                {
+                    diagnosticContext.Set("QueryString", request.QueryString.Value);
+                }
+
+                var routeValues = httpContext.GetRouteData().Values;
+                if (routeValues.Count > 0)
+                {
+                    var meaningful = routeValues
+                        .Where(kvp => kvp.Key is not ("controller" or "action" or "page"))
+                        .Where(kvp => kvp.Value is not null)
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value!.ToString());
+                    if (meaningful.Count > 0)
+                    {
+                        diagnosticContext.Set("RouteParams", meaningful, destructureObjects: true);
+                    }
+                }
+            };
+        });
 
         app.UseRouting();
 
