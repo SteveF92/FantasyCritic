@@ -23,7 +23,11 @@
                 </span>
               </h1>
               <h4 v-if="leagueYear.settings.leagueYearName" class="league-year-name">{{ league.leagueName }}</h4>
-              <router-link v-if="league.years.length > 2" :to="{ name: 'leagueAllTimeStats', params: { leagueid: league.leagueID } }" class="all-time-stats-link">All-Time League Stats</router-link>
+              <div class="league-extra-links">
+                <router-link v-if="league.years.length > 2" :to="{ name: 'leagueAllTimeStats', params: { leagueid: league.leagueID } }">All-Time League Stats</router-link>
+                <router-link v-if="royaleGroupData && royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink">View Royale Group</router-link>
+                <a v-else-if="royaleGroupData && !royaleGroupData.hasRoyaleGroup && league.isManager" href="#" @click.prevent="enableRoyale">Enable Royale</a>
+              </div>
             </div>
 
             <div class="selector-area">
@@ -50,13 +54,6 @@
       <div>
         <label>Followers:</label>
         {{ league.numberOfFollowers }}
-      </div>
-
-      <div v-if="royaleGroupData" class="royale-group-area">
-        <router-link v-if="royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink" class="btn btn-info btn-sm">
-          View Royale Group: {{ royaleGroupData.royaleGroup.groupName }}
-        </router-link>
-        <b-button v-else-if="league.isManager" size="sm" variant="primary" @click="enableRoyale">Enable Royale</b-button>
       </div>
 
       <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
@@ -526,11 +523,9 @@ export default {
   gap: 20px;
 }
 
-.all-time-stats-link {
-  margin-left: 15px;
-}
-
-.royale-group-area {
-  margin: 8px 0;
+.league-extra-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 2px;
 }
 </style>

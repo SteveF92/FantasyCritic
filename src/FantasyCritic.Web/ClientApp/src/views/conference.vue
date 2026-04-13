@@ -20,8 +20,10 @@
                   <font-awesome-icon v-b-popover.hover.focus="'Copy Conference ID to Clipboard'" :icon="['far', 'copy']" size="xs" class="fake-link" />
                 </span>
               </h1>
-              <div v-if="conferenceYear.managerMessages.length > 0" class="conference-manager-message-section">
-                <router-link :to="{ name: 'conferenceHistory', params: { conferenceid: conference.conferenceID, year: conferenceYear.year } }">Conference History</router-link>
+              <div class="conference-extra-links">
+                <router-link v-if="conferenceYear.managerMessages.length > 0" :to="{ name: 'conferenceHistory', params: { conferenceid: conference.conferenceID, year: conferenceYear.year } }">Conference History</router-link>
+                <router-link v-if="royaleGroupData && royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink">View Royale Group</router-link>
+                <a v-else-if="royaleGroupData && !royaleGroupData.hasRoyaleGroup && isConferenceManager" href="#" @click.prevent="enableRoyale">Enable Royale</a>
               </div>
             </div>
 
@@ -115,13 +117,6 @@
       </b-table>
 
       <conferenceYearStandings></conferenceYearStandings>
-
-      <div v-if="royaleGroupData" class="royale-group-area">
-        <router-link v-if="royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink" class="btn btn-info btn-sm">
-          View Royale Group: {{ royaleGroupData.royaleGroup.groupName }}
-        </router-link>
-        <b-button v-else-if="isConferenceManager" size="sm" variant="primary" @click="enableRoyale">Enable Royale</b-button>
-      </div>
     </div>
   </div>
 </template>
@@ -296,7 +291,10 @@ export default {
   padding-top: 3px;
 }
 
-.conference-manager-message-section {
+.conference-extra-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 2px;
   margin-bottom: 10px;
 }
 
@@ -325,7 +323,4 @@ export default {
   word-wrap: break-word;
 }
 
-.royale-group-area {
-  margin-top: 15px;
-}
 </style>
