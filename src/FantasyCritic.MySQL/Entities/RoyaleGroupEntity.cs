@@ -16,6 +16,7 @@ internal class RoyaleGroupEntity
         ManagerUserID = domain.Manager?.UserID;
         GroupType = (byte)domain.GroupType;
         LeagueID = domain.LeagueID;
+        ConferenceID = domain.ConferenceID;
         RuleSetType = domain.RuleSetType;
         CreatedTimestamp = domain.CreatedTimestamp.ToDateTimeUtc();
     }
@@ -25,6 +26,7 @@ internal class RoyaleGroupEntity
     public Guid? ManagerUserID { get; set; }
     public byte GroupType { get; set; }
     public Guid? LeagueID { get; set; }
+    public Guid? ConferenceID { get; set; }
     public string? RuleSetType { get; set; }
     public DateTime CreatedTimestamp { get; set; }
 
@@ -36,6 +38,6 @@ internal class RoyaleGroupEntity
             ? new VeryMinimalFantasyCriticUser(ManagerUserID.Value, ManagerDisplayName ?? "System")
             : null;
         var instant = Instant.FromDateTimeUtc(DateTime.SpecifyKind(CreatedTimestamp, DateTimeKind.Utc));
-        return new RoyaleGroup(GroupID, GroupName, manager, (RoyaleGroupType)GroupType, LeagueID, RuleSetType, instant);
+        return new RoyaleGroup(GroupID, GroupName, manager, (RoyaleGroupType)GroupType, LeagueID, ConferenceID, RuleSetType, instant);
     }
 }

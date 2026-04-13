@@ -14,12 +14,14 @@ public class RoyaleGroupController : FantasyCriticController
 {
     private readonly RoyaleService _royaleService;
     private readonly FantasyCriticService _fantasyCriticService;
+    private readonly ConferenceService _conferenceService;
 
     public RoyaleGroupController(FantasyCriticUserManager userManager, RoyaleService royaleService,
-        FantasyCriticService fantasyCriticService) : base(userManager)
+        FantasyCriticService fantasyCriticService, ConferenceService conferenceService) : base(userManager)
     {
         _royaleService = royaleService;
         _fantasyCriticService = fantasyCriticService;
+        _conferenceService = conferenceService;
     }
 
     [AllowAnonymous]
@@ -88,6 +90,36 @@ public class RoyaleGroupController : FantasyCriticController
         }
 
         var result = await _royaleService.CreateLeagueTiedRoyaleGroup(currentUser.ToVeryMinimal(), request.GroupName, request.LeagueID);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok(new { result.Value.GroupID });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateConferenceTiedRoyaleGroup([FromBody] CreateConferenceTiedRoyaleGroupRequest request)
+    {
+        var currentUser = await GetCurrentUserOrThrow();
+
+        if (string.IsNullOrWhiteSpace(request.GroupName))
+        {
+            return BadRequest("You cannot have a blank group name.");
+        }
+
+        var conference = await _conferenceService.GetConference(request.ConferenceID);
+        if (conference is null)
+        {
+            return BadRequest("Conference does not exist.");
+        }
+
+        if (conference.ConferenceManager.UserID != currentUser.Id)
+        {
+            return StatusCode(403);
+        }
+
+        var result = await _royaleService.CreateConferenceTiedRoyaleGroup(currentUser.ToVeryMinimal(), request.GroupName, request.ConferenceID);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -249,6 +281,21 @@ public class RoyaleGroupController : FantasyCriticController
     public async Task<IActionResult> GetRoyaleGroupForLeague(Guid leagueID)
     {
         var group = await _royaleService.GetRoyaleGroupForLeague(leagueID);
+        if (group is null)
+        {
+            return Ok(new { HasRoyaleGroup = false });
+        }
+
+        var members = await _royaleService.GetRoyaleGroupMembers(group);
+        var vm = new RoyaleGroupViewModel(group, members.Count);
+        return Ok(new { HasRoyaleGroup = true, RoyaleGroup = vm });
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{conferenceID}")]
+    public async Task<IActionResult> GetRoyaleGroupForConference(Guid conferenceID)
+    {
+        var group = await _royaleService.GetRoyaleGroupForConference(conferenceID);
         if (group is null)
         {
             return Ok(new { HasRoyaleGroup = false });

@@ -307,7 +307,7 @@ public class RoyaleService
     public async Task<RoyaleGroup> CreateManualRoyaleGroup(VeryMinimalFantasyCriticUser manager, string groupName)
     {
         var now = _clock.GetCurrentInstant();
-        var group = new RoyaleGroup(Guid.NewGuid(), groupName, manager, RoyaleGroupType.Manual, null, null, now);
+        var group = new RoyaleGroup(Guid.NewGuid(), groupName, manager, RoyaleGroupType.Manual, null, null, null, now);
         await _royaleRepo.CreateRoyaleGroup(group);
         await _royaleRepo.AddMemberToRoyaleGroup(group.GroupID, manager.UserID);
         return group;
@@ -322,7 +322,21 @@ public class RoyaleService
         }
 
         var now = _clock.GetCurrentInstant();
-        var group = new RoyaleGroup(Guid.NewGuid(), groupName, manager, RoyaleGroupType.LeagueTied, leagueID, null, now);
+        var group = new RoyaleGroup(Guid.NewGuid(), groupName, manager, RoyaleGroupType.LeagueTied, leagueID, null, null, now);
+        await _royaleRepo.CreateRoyaleGroup(group);
+        return group;
+    }
+
+    public async Task<Result<RoyaleGroup>> CreateConferenceTiedRoyaleGroup(VeryMinimalFantasyCriticUser manager, string groupName, Guid conferenceID)
+    {
+        var existing = await _royaleRepo.GetRoyaleGroupForConference(conferenceID);
+        if (existing is not null)
+        {
+            return Result.Failure<RoyaleGroup>("This conference already has a Royale group.");
+        }
+
+        var now = _clock.GetCurrentInstant();
+        var group = new RoyaleGroup(Guid.NewGuid(), groupName, manager, RoyaleGroupType.ConferenceTied, null, conferenceID, null, now);
         await _royaleRepo.CreateRoyaleGroup(group);
         return group;
     }
@@ -330,6 +344,8 @@ public class RoyaleService
     public Task<RoyaleGroup?> GetRoyaleGroup(Guid groupID) => _royaleRepo.GetRoyaleGroup(groupID);
 
     public Task<RoyaleGroup?> GetRoyaleGroupForLeague(Guid leagueID) => _royaleRepo.GetRoyaleGroupForLeague(leagueID);
+
+    public Task<RoyaleGroup?> GetRoyaleGroupForConference(Guid conferenceID) => _royaleRepo.GetRoyaleGroupForConference(conferenceID);
 
     public Task<IReadOnlyList<RoyaleGroup>> GetRoyaleGroupsForUser(Guid userID) => _royaleRepo.GetRoyaleGroupsForUser(userID);
 
@@ -340,6 +356,11 @@ public class RoyaleService
         if (group.GroupType == RoyaleGroupType.LeagueTied && group.LeagueID.HasValue)
         {
             return await _royaleRepo.GetLeagueActivePlayersForMostRecentYear(group.LeagueID.Value);
+        }
+
+        if (group.GroupType == RoyaleGroupType.ConferenceTied && group.ConferenceID.HasValue)
+        {
+            return await _royaleRepo.GetConferenceActivePlayersForMostRecentYear(group.ConferenceID.Value);
         }
 
         return await _royaleRepo.GetRoyaleGroupMembers(group.GroupID);

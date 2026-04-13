@@ -115,6 +115,13 @@
       </b-table>
 
       <conferenceYearStandings></conferenceYearStandings>
+
+      <div v-if="royaleGroupData" class="royale-group-area">
+        <router-link v-if="royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink" class="btn btn-info btn-sm">
+          View Royale Group: {{ royaleGroupData.royaleGroup.groupName }}
+        </router-link>
+        <b-button v-else-if="isConferenceManager" size="sm" variant="primary" @click="enableRoyale">Enable Royale</b-button>
+      </div>
     </div>
   </div>
 </template>
@@ -139,6 +146,8 @@ export default {
     return {
       selectedYear: null,
       errorInfo: null,
+      royaleGroupData: null,
+      activeRoyaleQuarter: null,
       leagueYearFields: [
         { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
         { key: 'leagueManager', label: 'League Manager', thClass: 'bg-primary' }
@@ -173,6 +182,14 @@ export default {
         return a.leagueName.localeCompare(b.leagueName);
       });
     },
+    royaleGroupLink() {
+      if (!this.royaleGroupData?.hasRoyaleGroup) return null;
+      const group = this.royaleGroupData.royaleGroup;
+      if (this.activeRoyaleQuarter) {
+        return { name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: this.activeRoyaleQuarter.year, quarter: this.activeRoyaleQuarter.quarter } };
+      }
+      return { name: 'royaleGroup', params: { groupid: group.groupID } };
+    },
     mostRecentManagerMessage() {
       if (!this.conferenceYear || !this.conferenceYear.managerMessages || this.conferenceYear.managerMessages.length === 0) {
         return null;
@@ -202,6 +219,7 @@ export default {
       const inviteCode = this.$route.query.inviteCode;
       const conferencePageParams = { conferenceID: this.conferenceid, year: this.year, inviteCode };
       await this.$store.dispatch('initializeConferencePage', conferencePageParams);
+      this.fetchRoyaleGroupForConference();
     },
     changeConferenceYear(newVal) {
       const parameters = {
@@ -232,6 +250,29 @@ export default {
       };
       await axios.post('/api/conference/DismissManagerMessage', model);
       this.refreshLeagueYear();
+    },
+    async fetchRoyaleGroupForConference() {
+      try {
+        const [groupResponse, quarterResponse] = await Promise.all([
+          axios.get(`/api/RoyaleGroup/GetRoyaleGroupForConference/${this.conferenceid}`),
+          axios.get('/api/Royale/ActiveRoyaleQuarter')
+        ]);
+        this.royaleGroupData = groupResponse.data;
+        this.activeRoyaleQuarter = quarterResponse.data;
+      } catch {
+        this.royaleGroupData = null;
+      }
+    },
+    async enableRoyale() {
+      try {
+        const response = await axios.post('/api/RoyaleGroup/CreateConferenceTiedRoyaleGroup', {
+          groupName: this.conference.conferenceName + ' Royale',
+          conferenceID: this.conferenceid
+        });
+        this.$router.push({ name: 'royaleGroup', params: { groupid: response.data.groupID } });
+      } catch (error) {
+        this.errorInfo = error.response?.data || 'Failed to enable Royale for this conference.';
+      }
     }
   }
 };
@@ -282,5 +323,9 @@ export default {
   display: block;
   max-width: 100%;
   word-wrap: break-word;
+}
+
+.royale-group-area {
+  margin-top: 15px;
 }
 </style>

@@ -36,6 +36,9 @@ public interface IRoyaleRepo
 
     Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetLeagueActivePlayersForMostRecentYear(Guid leagueID);
 
+    Task<RoyaleGroup?> GetRoyaleGroupForConference(Guid conferenceID);
+    Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetConferenceActivePlayersForMostRecentYear(Guid conferenceID);
+
     Task CreateRoyaleGroupInviteLink(RoyaleGroupInviteLink link);
     Task<RoyaleGroupInviteLink?> GetRoyaleGroupInviteLinkByID(Guid inviteID);
     Task<RoyaleGroupInviteLink?> GetRoyaleGroupInviteLinkByCode(Guid inviteCode);

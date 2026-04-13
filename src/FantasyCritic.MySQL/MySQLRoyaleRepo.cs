@@ -530,8 +530,8 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     {
         var entity = new RoyaleGroupEntity(group);
         const string sql = """
-                           INSERT INTO tbl_royale_group (GroupID, GroupName, ManagerUserID, GroupType, LeagueID, RuleSetType, CreatedTimestamp)
-                           VALUES (@GroupID, @GroupName, @ManagerUserID, @GroupType, @LeagueID, @RuleSetType, @CreatedTimestamp);
+                           INSERT INTO tbl_royale_group (GroupID, GroupName, ManagerUserID, GroupType, LeagueID, ConferenceID, RuleSetType, CreatedTimestamp)
+                           VALUES (@GroupID, @GroupName, @ManagerUserID, @GroupType, @LeagueID, @ConferenceID, @RuleSetType, @CreatedTimestamp);
                            """;
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
@@ -574,6 +574,16 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                                UNION
                                SELECT GroupID FROM tbl_royale_group WHERE ManagerUserID = @userID
                            )
+                           OR (g.LeagueID IS NOT NULL AND EXISTS (
+                               SELECT 1 FROM tbl_league_activeplayer lap
+                               WHERE lap.LeagueID = g.LeagueID AND lap.UserID = @userID
+                                 AND lap.Year = (SELECT MAX(Year) FROM tbl_league_activeplayer WHERE LeagueID = g.LeagueID)
+                           ))
+                           OR (g.ConferenceID IS NOT NULL AND EXISTS (
+                               SELECT 1 FROM tbl_conference_activeplayer cap
+                               WHERE cap.ConferenceID = g.ConferenceID AND cap.UserID = @userID
+                                 AND cap.Year = (SELECT MAX(Year) FROM tbl_conference_activeplayer WHERE ConferenceID = g.ConferenceID)
+                           ))
                            ORDER BY g.GroupName;
                            """;
         await using var connection = new MySqlConnection(_connectionString);
@@ -653,6 +663,34 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                            """;
         await using var connection = new MySqlConnection(_connectionString);
         var results = await connection.QueryAsync<VeryMinimalFantasyCriticUser>(sql, new { leagueID });
+        return results.ToList();
+    }
+
+    public async Task<RoyaleGroup?> GetRoyaleGroupForConference(Guid conferenceID)
+    {
+        const string sql = """
+                           SELECT g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group g
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE g.ConferenceID = @conferenceID;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var entity = await connection.QuerySingleOrDefaultAsync<RoyaleGroupEntity>(sql, new { conferenceID });
+        return entity?.ToDomain();
+    }
+
+    public async Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetConferenceActivePlayersForMostRecentYear(Guid conferenceID)
+    {
+        const string sql = """
+                           SELECT u.UserID, u.DisplayName
+                           FROM tbl_conference_activeplayer ap
+                           JOIN tbl_user u ON ap.UserID = u.UserID
+                           WHERE ap.ConferenceID = @conferenceID
+                             AND ap.Year = (SELECT MAX(Year) FROM tbl_conference_activeplayer WHERE ConferenceID = @conferenceID)
+                           ORDER BY u.DisplayName;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<VeryMinimalFantasyCriticUser>(sql, new { conferenceID });
         return results.ToList();
     }
 

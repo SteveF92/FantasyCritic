@@ -20,6 +20,10 @@
         <router-link :to="{ name: 'league', params: { leagueid: group.leagueID, year: currentYear } }">View Linked League</router-link>
       </div>
 
+      <div v-if="group.conferenceID" class="league-link-area">
+        <router-link :to="{ name: 'conference', params: { conferenceid: group.conferenceID, year: currentYear } }">View Linked Conference</router-link>
+      </div>
+
       <div v-if="activeQuarter" class="view-quarter-area">
         <b-button variant="primary" :to="{ name: 'royaleGroupQuarter', params: { groupid: groupid, year: activeQuarter.year, quarter: activeQuarter.quarter } }">
           View Current Quarter Standings ({{ activeQuarter.year }}-Q{{ activeQuarter.quarter }})

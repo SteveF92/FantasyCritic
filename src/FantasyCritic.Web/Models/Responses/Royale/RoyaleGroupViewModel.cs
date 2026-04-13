@@ -12,6 +12,7 @@ public class RoyaleGroupViewModel
         ManagerDisplayName = group.Manager?.DisplayName;
         GroupType = group.GroupType.ToString();
         LeagueID = group.LeagueID;
+        ConferenceID = group.ConferenceID;
         RuleSetType = group.RuleSetType;
         MemberCount = memberCount;
     }
@@ -22,6 +23,7 @@ public class RoyaleGroupViewModel
     public string? ManagerDisplayName { get; }
     public string GroupType { get; }
     public Guid? LeagueID { get; }
+    public Guid? ConferenceID { get; }
     public string? RuleSetType { get; }
     public int MemberCount { get; }
 }
