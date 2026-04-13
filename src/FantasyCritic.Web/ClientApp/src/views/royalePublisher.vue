@@ -7,16 +7,16 @@
         </div>
         <h1 class="publisher-name">{{ publisher.publisherName }}</h1>
         <h2 v-if="publisher.publisherSlogan" class="publisher-slogan">~"{{ publisher.publisherSlogan }}"</h2>
-        <h4>Player Name: {{ publisher.playerName }}</h4>
+        <h4>
+          Player Name:
+          <router-link :to="{ name: 'royaleHistory', params: { userid: publisher.userID } }" class="history-link">{{ publisher.playerName }}</router-link>
+        </h4>
         <h4>
           Year/Quarter:
           <router-link :to="{ name: 'criticsRoyale', params: { year: publisher.yearQuarter.year, quarter: publisher.yearQuarter.quarter } }">
             {{ publisher.yearQuarter.year }}-Q{{ publisher.yearQuarter.quarter }}
           </router-link>
         </h4>
-        <router-link :to="{ name: 'royaleHistory', params: { userid: publisher.userID } }" class="history-link">
-          View Full Royale History
-        </router-link>
       </div>
 
       <div v-if="publisher.quartersWon" class="won-quarters">

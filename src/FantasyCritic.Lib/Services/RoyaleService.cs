@@ -351,13 +351,39 @@ public class RoyaleService
         var yearQuarter = await GetYearQuarter(year, quarter);
         if (yearQuarter is null)
         {
-            return members.Select(u => new RoyaleGroupMemberDisplayRow(u, null)).ToList();
+            return new List<RoyaleGroupMemberDisplayRow>();
+        }
+
+        RoyaleYearQuarter? previousYearQuarter = null;
+        if (!yearQuarter.Finished)
+        {
+            previousYearQuarter = await GetYearQuarter(yearQuarter.YearQuarter.LastQuarter.Year, yearQuarter.YearQuarter.LastQuarter.Quarter);
         }
 
         List<RoyaleGroupMemberDisplayRow> rows = new();
         foreach (var member in members)
         {
             var publisher = await _royaleRepo.GetPublisher(yearQuarter, member);
+
+            if (yearQuarter.Finished)
+            {
+                if (publisher is null)
+                {
+                    continue;
+                }
+            }
+            else if (previousYearQuarter is not null)
+            {
+                if (publisher is null)
+                {
+                    var previousPublisher = await _royaleRepo.GetPublisher(previousYearQuarter, member);
+                    if (previousPublisher is null)
+                    {
+                        continue;
+                    }
+                }
+            }
+
             rows.Add(new RoyaleGroupMemberDisplayRow(member, publisher));
         }
 

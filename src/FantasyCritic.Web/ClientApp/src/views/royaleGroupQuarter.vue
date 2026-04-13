@@ -3,7 +3,9 @@
     <div v-if="groupQuarter">
       <div class="group-header bg-secondary">
         <h1>{{ groupQuarter.groupName }}</h1>
-        <h4>{{ groupQuarter.year }}-Q{{ groupQuarter.quarter }}</h4>
+        <h4>
+          <router-link :to="{ name: 'criticsRoyale', params: { year: groupQuarter.year, quarter: groupQuarter.quarter } }">{{ groupQuarter.year }}-Q{{ groupQuarter.quarter }}</router-link>
+        </h4>
       </div>
 
       <div class="nav-area">

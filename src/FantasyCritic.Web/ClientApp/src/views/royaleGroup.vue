@@ -12,7 +12,6 @@
         <h1>{{ group.groupName }}</h1>
         <h4>
           <template v-if="group.managerDisplayName">Managed by: {{ group.managerDisplayName }}</template>
-          <span class="badge badge-info">{{ group.groupType }}</span>
         </h4>
         <h5>{{ group.memberCount }} members</h5>
       </div>
