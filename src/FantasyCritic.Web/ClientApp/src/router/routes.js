@@ -29,6 +29,7 @@ import MasterGameCreator from '@/views/masterGameCreator.vue';
 import ActionProcessingDryRunResults from '@/views/actionProcessingDryRunResults.vue';
 import CriticsRoyale from '@/views/criticsRoyale.vue';
 import RoyalePublisher from '@/views/royalePublisher.vue';
+import RoyaleHistory from '@/views/royaleHistory.vue';
 import NotFound from '@/views/notFound.vue';
 import MasterGameEditor from '@/views/masterGameEditor.vue';
 import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
@@ -416,6 +417,16 @@ export const routes = [
     name: 'royalePublisher',
     meta: {
       title: 'Royale Publisher',
+      isPublic: true
+    },
+    props: true
+  },
+  {
+    path: '/royaleHistory/:userid',
+    component: RoyaleHistory,
+    name: 'royaleHistory',
+    meta: {
+      title: 'Royale History',
       isPublic: true
     },
     props: true

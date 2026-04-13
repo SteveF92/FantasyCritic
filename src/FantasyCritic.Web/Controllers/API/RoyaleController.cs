@@ -414,4 +414,31 @@ public class RoyaleController : FantasyCriticController
                 y.MasterGame.MasterGame.Equals(masterGame.MasterGame)), masterGameTags)).ToList();
         return viewModels;
     }
+
+    [AllowAnonymous]
+    [HttpGet("{userID}")]
+    public async Task<IActionResult> UserRoyaleHistory(Guid userID)
+    {
+        var user = await _userManager.FindByIdAsync(userID.ToString());
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        var historyEntries = await _royaleService.GetPublisherHistoryForUser(userID);
+        var quartersWon = await _royaleService.GetQuartersWonByUser(user);
+
+        var historyViewModels = historyEntries.Select(x => new RoyalePublisherHistoryViewModel(x)).ToList();
+        var quartersWonViewModels = quartersWon.Select(x => new RoyaleYearQuarterViewModel(x)).ToList();
+
+        var vm = new
+        {
+            UserID = userID,
+            PlayerName = user.DisplayName,
+            QuartersWon = quartersWonViewModels,
+            Publishers = historyViewModels
+        };
+
+        return Ok(vm);
+    }
 }

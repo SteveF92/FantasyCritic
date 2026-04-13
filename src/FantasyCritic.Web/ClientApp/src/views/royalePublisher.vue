@@ -14,6 +14,9 @@
             {{ publisher.yearQuarter.year }}-Q{{ publisher.yearQuarter.quarter }}
           </router-link>
         </h4>
+        <router-link :to="{ name: 'royaleHistory', params: { userid: publisher.userID } }" class="history-link">
+          View Full Royale History
+        </router-link>
       </div>
 
       <div v-if="publisher.quartersWon" class="won-quarters">
@@ -431,5 +434,11 @@ export default {
 
 .hidden-text {
   font-style: italic;
+}
+
+.history-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #d6993a;
 }
 </style>

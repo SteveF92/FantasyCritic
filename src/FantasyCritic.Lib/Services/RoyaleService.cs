@@ -289,6 +289,11 @@ public class RoyaleService
         return _royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
     }
 
+    public Task<IReadOnlyList<RoyalePublisherHistoryEntry>> GetPublisherHistoryForUser(Guid userID)
+    {
+        return _royaleRepo.GetPublisherHistoryForUser(userID);
+    }
+
     public int GetMaxGames(RoyaleYearQuarter yearQuarter)
     {
         if (!SupportedYear.Year2026FeatureSupported(yearQuarter.YearQuarter.Year))

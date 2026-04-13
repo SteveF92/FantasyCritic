@@ -492,6 +492,29 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await connection.ExecuteAsync(sql, finishObject);
     }
 
+    public async Task<IReadOnlyList<RoyalePublisherHistoryEntry>> GetPublisherHistoryForUser(Guid userID)
+    {
+        const string sql = """
+                           SELECT ranked.PublisherID, ranked.Year, ranked.Quarter, ranked.PublisherName, ranked.PublisherIcon,
+                                  ranked.TotalFantasyPoints, ranked.Ranking
+                           FROM (
+                               SELECT p.PublisherID, p.Year, p.Quarter, p.PublisherName, p.PublisherIcon,
+                                      COALESCE(SUM(pg.FantasyPoints), 0) AS TotalFantasyPoints,
+                                      RANK() OVER (PARTITION BY p.Year, p.Quarter ORDER BY COALESCE(SUM(pg.FantasyPoints), 0) DESC) AS Ranking
+                               FROM tbl_royale_publisher p
+                               LEFT JOIN tbl_royale_publishergame pg ON p.PublisherID = pg.PublisherID
+                               GROUP BY p.PublisherID, p.Year, p.Quarter, p.PublisherName, p.PublisherIcon
+                               HAVING TotalFantasyPoints > 0
+                           ) ranked
+                           WHERE ranked.PublisherID IN (SELECT PublisherID FROM tbl_royale_publisher WHERE UserID = @userID)
+                           ORDER BY ranked.Year DESC, ranked.Quarter DESC;
+                           """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<RoyalePublisherHistoryEntity>(sql, new { userID });
+        return entities.Select(x => x.ToDomain()).ToList();
+    }
+
     private async Task InsertRoyaleAction(RoyaleAction action, MySqlConnection connection, MySqlTransaction transaction)
     {
         var entity = new RoyaleActionEntity(action);
