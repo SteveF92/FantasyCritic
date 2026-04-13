@@ -769,7 +769,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                            ORDER BY g.GroupName;
                            """;
         await using var connection = new MySqlConnection(_connectionString);
-        var entities = await connection.QueryAsync<RoyaleGroupEntity>(sql, new { groupType = (byte)groupType });
+        var entities = await connection.QueryAsync<RoyaleGroupEntity>(sql, new { groupType = groupType.Value });
         return entities.Select(x => x.ToDomain()).ToList();
     }
 }
