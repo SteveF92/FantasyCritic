@@ -98,6 +98,12 @@ public class AdminService
             }
 
             var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID!.Value);
+            gamesFetched++;
+            if (gamesFetched % 100 == 0)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
             if (openCriticGame is not null)
             {
                 if (openCriticGame.Score.HasValue && !masterGame.CriticScore.HasValue)
@@ -106,16 +112,15 @@ public class AdminService
                 }
 
                 var currentCriticScore = masterGame.CriticScore;
-                var newRoundedCriticScore = openCriticGame.Score?.TruncateToPrecision(4);
-
-                if (!currentCriticScore.HasValue && !newRoundedCriticScore.HasValue)
+                var newCriticScore = openCriticGame.Score;
+                if (!currentCriticScore.HasValue && !newCriticScore.HasValue)
                 {
                     continue;
                 }
 
-                if (currentCriticScore.HasValue && newRoundedCriticScore.HasValue)
+                if (currentCriticScore.HasValue && newCriticScore.HasValue)
                 {
-                    bool scoreChangedOverThreshold = Math.Abs(newRoundedCriticScore.Value - currentCriticScore.Value) >= 0.0001m;
+                    bool scoreChangedOverThreshold = Math.Abs(newCriticScore.Value - currentCriticScore.Value) >= 0.0002m;
                     if (!scoreChangedOverThreshold)
                     {
                         continue;
@@ -124,11 +129,6 @@ public class AdminService
 
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
                 _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score);
-                gamesFetched++;
-                if (gamesFetched % 100 == 0)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1));
-                }
             }
             else
             {
