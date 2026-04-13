@@ -1,0 +1,72 @@
+using FantasyCritic.Lib.Royale;
+
+namespace FantasyCritic.Web.Models.Responses.Royale;
+
+public class RoyaleGroupQuarterViewModel
+{
+    public RoyaleGroupQuarterViewModel(RoyaleGroup group, int year, int quarter,
+        IReadOnlyList<RoyaleGroupMemberDisplayRow> memberRows)
+    {
+        GroupID = group.GroupID;
+        GroupName = group.GroupName;
+        ManagerUserID = group.Manager?.UserID;
+        ManagerDisplayName = group.Manager?.DisplayName;
+        GroupType = group.GroupType.ToString();
+        LeagueID = group.LeagueID;
+        RuleSetType = group.RuleSetType;
+        Year = year;
+        Quarter = quarter;
+
+        int ranking = 1;
+        var orderedRows = memberRows
+            .OrderByDescending(r => r.Publisher?.GetTotalFantasyPoints() ?? -1m)
+            .ToList();
+
+        var members = new List<RoyaleGroupMemberRankedViewModel>();
+        foreach (var row in orderedRows)
+        {
+            int? rank = null;
+            if (row.Publisher is not null && row.Publisher.GetTotalFantasyPoints() > 0)
+            {
+                rank = ranking;
+                ranking++;
+            }
+            members.Add(new RoyaleGroupMemberRankedViewModel(row, rank));
+        }
+
+        Members = members;
+    }
+
+    public Guid GroupID { get; }
+    public string GroupName { get; }
+    public Guid? ManagerUserID { get; }
+    public string? ManagerDisplayName { get; }
+    public string GroupType { get; }
+    public Guid? LeagueID { get; }
+    public string? RuleSetType { get; }
+    public int Year { get; }
+    public int Quarter { get; }
+    public IReadOnlyList<RoyaleGroupMemberRankedViewModel> Members { get; }
+}
+
+public class RoyaleGroupMemberRankedViewModel
+{
+    public RoyaleGroupMemberRankedViewModel(RoyaleGroupMemberDisplayRow row, int? ranking)
+    {
+        UserID = row.User.UserID;
+        DisplayName = row.User.DisplayName;
+        HasPublisher = row.Publisher is not null;
+        PublisherID = row.Publisher?.PublisherID;
+        PublisherName = row.Publisher?.PublisherName;
+        TotalFantasyPoints = row.Publisher?.GetTotalFantasyPoints();
+        Ranking = ranking;
+    }
+
+    public Guid UserID { get; }
+    public string DisplayName { get; }
+    public bool HasPublisher { get; }
+    public Guid? PublisherID { get; }
+    public string? PublisherName { get; }
+    public decimal? TotalFantasyPoints { get; }
+    public int? Ranking { get; }
+}

@@ -526,4 +526,213 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             """;
         await connection.ExecuteAsync(sql, entity, transaction);
     }
+
+    public async Task CreateRoyaleGroup(RoyaleGroup group)
+    {
+        var entity = new RoyaleGroupEntity(group);
+        const string sql = """
+                           INSERT INTO tbl_royale_group (GroupID, GroupName, ManagerUserID, GroupType, LeagueID, RuleSetType, CreatedTimestamp)
+                           VALUES (@GroupID, @GroupName, @ManagerUserID, @GroupType, @LeagueID, @RuleSetType, @CreatedTimestamp);
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, entity);
+    }
+
+    public async Task<RoyaleGroup?> GetRoyaleGroup(Guid groupID)
+    {
+        const string sql = """
+                           SELECT g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group g
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE g.GroupID = @groupID;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var entity = await connection.QuerySingleOrDefaultAsync<RoyaleGroupEntity>(sql, new { groupID });
+        return entity?.ToDomain();
+    }
+
+    public async Task<RoyaleGroup?> GetRoyaleGroupForLeague(Guid leagueID)
+    {
+        const string sql = """
+                           SELECT g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group g
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE g.LeagueID = @leagueID;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var entity = await connection.QuerySingleOrDefaultAsync<RoyaleGroupEntity>(sql, new { leagueID });
+        return entity?.ToDomain();
+    }
+
+    public async Task<IReadOnlyList<RoyaleGroup>> GetRoyaleGroupsForUser(Guid userID)
+    {
+        const string sql = """
+                           SELECT g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group g
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE g.GroupID IN (
+                               SELECT GroupID FROM tbl_royale_group_member WHERE UserID = @userID
+                               UNION
+                               SELECT GroupID FROM tbl_royale_group WHERE ManagerUserID = @userID
+                           )
+                           ORDER BY g.GroupName;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<RoyaleGroupEntity>(sql, new { userID });
+        return entities.Select(x => x.ToDomain()).ToList();
+    }
+
+    public async Task<IReadOnlyList<RoyaleGroup>> SearchRoyaleGroupsByName(string searchTerm)
+    {
+        const string sql = """
+                           SELECT g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group g
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE g.GroupName LIKE @searchTerm
+                           ORDER BY g.GroupName
+                           LIMIT 50;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<RoyaleGroupEntity>(sql, new { searchTerm = $"%{searchTerm}%" });
+        return entities.Select(x => x.ToDomain()).ToList();
+    }
+
+    public async Task AddMemberToRoyaleGroup(Guid groupID, Guid userID)
+    {
+        const string sql = "INSERT IGNORE INTO tbl_royale_group_member (GroupID, UserID) VALUES (@groupID, @userID);";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, new { groupID, userID });
+    }
+
+    public async Task RemoveMemberFromRoyaleGroup(Guid groupID, Guid userID)
+    {
+        const string sql = "DELETE FROM tbl_royale_group_member WHERE GroupID = @groupID AND UserID = @userID;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, new { groupID, userID });
+    }
+
+    public async Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetRoyaleGroupMembers(Guid groupID)
+    {
+        const string sql = """
+                           SELECT u.UserID, u.DisplayName
+                           FROM tbl_royale_group_member gm
+                           JOIN tbl_user u ON gm.UserID = u.UserID
+                           WHERE gm.GroupID = @groupID
+                           ORDER BY u.DisplayName;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<VeryMinimalFantasyCriticUser>(sql, new { groupID });
+        return results.ToList();
+    }
+
+    public async Task SetRoyaleGroupMembers(Guid groupID, IReadOnlyList<Guid> userIDs)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync("DELETE FROM tbl_royale_group_member WHERE GroupID = @groupID;", new { groupID }, transaction);
+
+        if (userIDs.Any())
+        {
+            var inserts = userIDs.Select(uid => new { groupID, userID = uid }).ToList();
+            await connection.ExecuteAsync("INSERT INTO tbl_royale_group_member (GroupID, UserID) VALUES (@groupID, @userID);", inserts, transaction);
+        }
+
+        await transaction.CommitAsync();
+    }
+
+    public async Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetLeagueActivePlayersForMostRecentYear(Guid leagueID)
+    {
+        const string sql = """
+                           SELECT u.UserID, u.DisplayName
+                           FROM tbl_league_activeplayer ap
+                           JOIN tbl_user u ON ap.UserID = u.UserID
+                           WHERE ap.LeagueID = @leagueID
+                             AND ap.Year = (SELECT MAX(Year) FROM tbl_league_activeplayer WHERE LeagueID = @leagueID)
+                           ORDER BY u.DisplayName;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<VeryMinimalFantasyCriticUser>(sql, new { leagueID });
+        return results.ToList();
+    }
+
+    public async Task CreateRoyaleGroupInviteLink(RoyaleGroupInviteLink link)
+    {
+        var entity = new RoyaleGroupInviteLinkEntity(link);
+        const string sql = "INSERT INTO tbl_royale_group_invitelink (InviteID, GroupID, InviteCode, Active) VALUES (@InviteID, @GroupID, @InviteCode, @Active);";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, entity);
+    }
+
+    public async Task<RoyaleGroupInviteLink?> GetRoyaleGroupInviteLinkByID(Guid inviteID)
+    {
+        const string sql = """
+                           SELECT il.*, g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group_invitelink il
+                           JOIN tbl_royale_group g ON il.GroupID = g.GroupID
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE il.InviteID = @inviteID;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var result = await connection.QueryAsync<RoyaleGroupInviteLinkEntity, RoyaleGroupEntity, RoyaleGroupInviteLink?>(
+            sql,
+            (linkEntity, groupEntity) => linkEntity.ToDomain(groupEntity.ToDomain()),
+            new { inviteID },
+            splitOn: "GroupID");
+        return result.SingleOrDefault();
+    }
+
+    public async Task<RoyaleGroupInviteLink?> GetRoyaleGroupInviteLinkByCode(Guid inviteCode)
+    {
+        const string sql = """
+                           SELECT il.*, g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group_invitelink il
+                           JOIN tbl_royale_group g ON il.GroupID = g.GroupID
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE il.InviteCode = @inviteCode AND il.Active = 1;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var result = await connection.QueryAsync<RoyaleGroupInviteLinkEntity, RoyaleGroupEntity, RoyaleGroupInviteLink?>(
+            sql,
+            (linkEntity, groupEntity) => linkEntity.ToDomain(groupEntity.ToDomain()),
+            new { inviteCode },
+            splitOn: "GroupID");
+        return result.SingleOrDefault();
+    }
+
+    public async Task<IReadOnlyList<RoyaleGroupInviteLink>> GetRoyaleGroupInviteLinks(Guid groupID)
+    {
+        var group = await GetRoyaleGroup(groupID);
+        if (group is null)
+        {
+            return new List<RoyaleGroupInviteLink>();
+        }
+
+        const string sql = "SELECT * FROM tbl_royale_group_invitelink WHERE GroupID = @groupID;";
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<RoyaleGroupInviteLinkEntity>(sql, new { groupID });
+        return entities.Select(x => x.ToDomain(group)).ToList();
+    }
+
+    public async Task DeactivateRoyaleGroupInviteLink(Guid inviteID)
+    {
+        const string sql = "UPDATE tbl_royale_group_invitelink SET Active = 0 WHERE InviteID = @inviteID;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, new { inviteID });
+    }
+
+    public async Task<IReadOnlyList<RoyaleGroup>> GetAllRoyaleGroupsByType(RoyaleGroupType groupType)
+    {
+        const string sql = """
+                           SELECT g.*, u.DisplayName AS ManagerDisplayName
+                           FROM tbl_royale_group g
+                           LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
+                           WHERE g.GroupType = @groupType
+                           ORDER BY g.GroupName;
+                           """;
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<RoyaleGroupEntity>(sql, new { groupType = (byte)groupType });
+        return entities.Select(x => x.ToDomain()).ToList();
+    }
 }

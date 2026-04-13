@@ -69,6 +69,7 @@
           <b-button variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
           <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateRoyaleWinners')">Recalculate Royale Winners</b-button>
+          <b-button variant="info" @click="takePostAction('Admin', 'RecomputeRulesBasedRoyaleGroups')">Recompute Rules Based Royale Groups</b-button>
           <b-button variant="info" @click="takePostAction('Admin', 'UpdateDailyPublisherStatistics')">Update Daily Publisher Statistics</b-button>
         </div>
       </div>

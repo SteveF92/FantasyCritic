@@ -303,4 +303,188 @@ public class RoyaleService
 
         return 15;
     }
+
+    public async Task<RoyaleGroup> CreateManualRoyaleGroup(VeryMinimalFantasyCriticUser manager, string groupName)
+    {
+        var now = _clock.GetCurrentInstant();
+        var group = new RoyaleGroup(Guid.NewGuid(), groupName, manager, RoyaleGroupType.Manual, null, null, now);
+        await _royaleRepo.CreateRoyaleGroup(group);
+        await _royaleRepo.AddMemberToRoyaleGroup(group.GroupID, manager.UserID);
+        return group;
+    }
+
+    public async Task<Result<RoyaleGroup>> CreateLeagueTiedRoyaleGroup(VeryMinimalFantasyCriticUser manager, string groupName, Guid leagueID)
+    {
+        var existing = await _royaleRepo.GetRoyaleGroupForLeague(leagueID);
+        if (existing is not null)
+        {
+            return Result.Failure<RoyaleGroup>("This league already has a Royale group.");
+        }
+
+        var now = _clock.GetCurrentInstant();
+        var group = new RoyaleGroup(Guid.NewGuid(), groupName, manager, RoyaleGroupType.LeagueTied, leagueID, null, now);
+        await _royaleRepo.CreateRoyaleGroup(group);
+        return group;
+    }
+
+    public Task<RoyaleGroup?> GetRoyaleGroup(Guid groupID) => _royaleRepo.GetRoyaleGroup(groupID);
+
+    public Task<RoyaleGroup?> GetRoyaleGroupForLeague(Guid leagueID) => _royaleRepo.GetRoyaleGroupForLeague(leagueID);
+
+    public Task<IReadOnlyList<RoyaleGroup>> GetRoyaleGroupsForUser(Guid userID) => _royaleRepo.GetRoyaleGroupsForUser(userID);
+
+    public Task<IReadOnlyList<RoyaleGroup>> SearchRoyaleGroups(string searchTerm) => _royaleRepo.SearchRoyaleGroupsByName(searchTerm);
+
+    public async Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetRoyaleGroupMembers(RoyaleGroup group)
+    {
+        if (group.GroupType == RoyaleGroupType.LeagueTied && group.LeagueID.HasValue)
+        {
+            return await _royaleRepo.GetLeagueActivePlayersForMostRecentYear(group.LeagueID.Value);
+        }
+
+        return await _royaleRepo.GetRoyaleGroupMembers(group.GroupID);
+    }
+
+    public async Task<IReadOnlyList<RoyaleGroupMemberDisplayRow>> GetRoyaleGroupMemberDisplayRows(RoyaleGroup group, int year, int quarter)
+    {
+        var members = await GetRoyaleGroupMembers(group);
+        var yearQuarter = await GetYearQuarter(year, quarter);
+        if (yearQuarter is null)
+        {
+            return members.Select(u => new RoyaleGroupMemberDisplayRow(u, null)).ToList();
+        }
+
+        List<RoyaleGroupMemberDisplayRow> rows = new();
+        foreach (var member in members)
+        {
+            var publisher = await _royaleRepo.GetPublisher(yearQuarter, member);
+            rows.Add(new RoyaleGroupMemberDisplayRow(member, publisher));
+        }
+
+        return rows;
+    }
+
+    public async Task<Result> JoinRoyaleGroupViaInviteLink(Guid inviteCode, FantasyCriticUser user)
+    {
+        var link = await _royaleRepo.GetRoyaleGroupInviteLinkByCode(inviteCode);
+        if (link is null)
+        {
+            return Result.Failure("Invalid invite link.");
+        }
+
+        if (link.Group.GroupType != RoyaleGroupType.Manual)
+        {
+            return Result.Failure("This group does not support invite links.");
+        }
+
+        var existingMembers = await _royaleRepo.GetRoyaleGroupMembers(link.Group.GroupID);
+        if (existingMembers.Any(m => m.UserID == user.Id))
+        {
+            return Result.Failure("You are already a member of this group.");
+        }
+
+        await _royaleRepo.AddMemberToRoyaleGroup(link.Group.GroupID, user.Id);
+        return Result.Success();
+    }
+
+    public async Task<Result> LeaveRoyaleGroup(Guid groupID, FantasyCriticUser user)
+    {
+        var group = await _royaleRepo.GetRoyaleGroup(groupID);
+        if (group is null)
+        {
+            return Result.Failure("Group not found.");
+        }
+
+        if (group.GroupType != RoyaleGroupType.Manual)
+        {
+            return Result.Failure("You can only leave manual groups.");
+        }
+
+        if (group.Manager is not null && group.Manager.UserID == user.Id)
+        {
+            return Result.Failure("The group manager cannot leave the group.");
+        }
+
+        await _royaleRepo.RemoveMemberFromRoyaleGroup(groupID, user.Id);
+        return Result.Success();
+    }
+
+    public async Task<Result> RemoveMemberFromRoyaleGroup(Guid groupID, Guid userIDToRemove, FantasyCriticUser manager)
+    {
+        var group = await _royaleRepo.GetRoyaleGroup(groupID);
+        if (group is null)
+        {
+            return Result.Failure("Group not found.");
+        }
+
+        if (group.Manager?.UserID != manager.Id)
+        {
+            return Result.Failure("Only the group manager can remove members.");
+        }
+
+        if (group.GroupType != RoyaleGroupType.Manual)
+        {
+            return Result.Failure("Members can only be removed from manual groups.");
+        }
+
+        if (userIDToRemove == manager.Id)
+        {
+            return Result.Failure("The manager cannot be removed from the group.");
+        }
+
+        await _royaleRepo.RemoveMemberFromRoyaleGroup(groupID, userIDToRemove);
+        return Result.Success();
+    }
+
+    public async Task<Result<RoyaleGroupInviteLink>> CreateGroupInviteLink(Guid groupID, FantasyCriticUser manager)
+    {
+        var group = await _royaleRepo.GetRoyaleGroup(groupID);
+        if (group is null)
+        {
+            return Result.Failure<RoyaleGroupInviteLink>("Group not found.");
+        }
+
+        if (group.Manager?.UserID != manager.Id)
+        {
+            return Result.Failure<RoyaleGroupInviteLink>("Only the group manager can create invite links.");
+        }
+
+        if (group.GroupType != RoyaleGroupType.Manual)
+        {
+            return Result.Failure<RoyaleGroupInviteLink>("Invite links are only for manual groups.");
+        }
+
+        var existingLinks = await _royaleRepo.GetRoyaleGroupInviteLinks(groupID);
+        if (existingLinks.Count(x => x.Active) >= 2)
+        {
+            return Result.Failure<RoyaleGroupInviteLink>("You can only have 2 active invite links at a time.");
+        }
+
+        var link = new RoyaleGroupInviteLink(Guid.NewGuid(), group, Guid.NewGuid(), true);
+        await _royaleRepo.CreateRoyaleGroupInviteLink(link);
+        return link;
+    }
+
+    public async Task<Result> DeactivateGroupInviteLink(Guid inviteID, FantasyCriticUser manager)
+    {
+        var link = await _royaleRepo.GetRoyaleGroupInviteLinkByID(inviteID);
+        if (link is null)
+        {
+            return Result.Failure("Invite link not found.");
+        }
+
+        if (link.Group.Manager?.UserID != manager.Id)
+        {
+            return Result.Failure("Only the group manager can deactivate invite links.");
+        }
+
+        await _royaleRepo.DeactivateRoyaleGroupInviteLink(inviteID);
+        return Result.Success();
+    }
+
+    public Task<IReadOnlyList<RoyaleGroupInviteLink>> GetGroupInviteLinks(Guid groupID) => _royaleRepo.GetRoyaleGroupInviteLinks(groupID);
+
+    public Task<IReadOnlyList<RoyaleGroup>> GetAllRoyaleGroupsByType(RoyaleGroupType groupType) => _royaleRepo.GetAllRoyaleGroupsByType(groupType);
+
+    public Task SetRoyaleGroupMembers(Guid groupID, IReadOnlyList<Guid> userIDs) => _royaleRepo.SetRoyaleGroupMembers(groupID, userIDs);
 }

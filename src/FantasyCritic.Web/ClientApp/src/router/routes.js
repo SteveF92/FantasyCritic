@@ -30,6 +30,8 @@ import ActionProcessingDryRunResults from '@/views/actionProcessingDryRunResults
 import CriticsRoyale from '@/views/criticsRoyale.vue';
 import RoyalePublisher from '@/views/royalePublisher.vue';
 import RoyaleHistory from '@/views/royaleHistory.vue';
+import RoyaleGroup from '@/views/royaleGroup.vue';
+import RoyaleGroupQuarter from '@/views/royaleGroupQuarter.vue';
 import NotFound from '@/views/notFound.vue';
 import MasterGameEditor from '@/views/masterGameEditor.vue';
 import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
@@ -427,6 +429,32 @@ export const routes = [
     name: 'royaleHistory',
     meta: {
       title: 'Royale History',
+      isPublic: true
+    },
+    props: true
+  },
+  {
+    path: '/royaleGroup/:groupid/:year/:quarter',
+    component: RoyaleGroupQuarter,
+    name: 'royaleGroupQuarter',
+    meta: {
+      title: 'Royale Group Quarter',
+      isPublic: true
+    },
+    props: (route) => {
+      const year = Number.parseInt(route.params.year);
+      const quarter = Number.parseInt(route.params.quarter);
+      if (Number.isInteger(year) && Number.isInteger(quarter)) {
+        return { groupid: route.params.groupid, year, quarter };
+      }
+    }
+  },
+  {
+    path: '/royaleGroup/:groupid',
+    component: RoyaleGroup,
+    name: 'royaleGroup',
+    meta: {
+      title: 'Royale Group',
       isPublic: true
     },
     props: true

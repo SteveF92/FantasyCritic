@@ -73,6 +73,58 @@
       <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
     </div>
 
+    <hr />
+
+    <div class="royale-groups-section">
+      <h2>Royale Groups</h2>
+
+      <div v-if="rulesBasedGroups && rulesBasedGroups.length > 0" class="rules-based-groups-section">
+        <h4>Featured Groups</h4>
+        <b-list-group>
+          <b-list-group-item v-for="group in rulesBasedGroups" :key="group.groupID" :to="{ name: 'royaleGroup', params: { groupid: group.groupID } }">
+            <strong>{{ group.groupName }}</strong>
+            <span class="text-muted"> - {{ group.memberCount }} members</span>
+          </b-list-group-item>
+        </b-list-group>
+      </div>
+
+      <div v-if="isAuth && myGroups && myGroups.length > 0" class="my-groups-section">
+        <h4>My Groups</h4>
+        <b-list-group>
+          <b-list-group-item v-for="group in myGroups" :key="group.groupID" :to="{ name: 'royaleGroup', params: { groupid: group.groupID } }">
+            <strong>{{ group.groupName }}</strong>
+            <span class="text-muted"> - {{ group.memberCount }} members - {{ group.groupType }}</span>
+          </b-list-group-item>
+        </b-list-group>
+      </div>
+
+      <div class="group-controls">
+        <b-input-group class="group-search">
+          <b-form-input v-model="groupSearchQuery" placeholder="Search groups by name..." @input="searchGroups"></b-form-input>
+        </b-input-group>
+        <b-button v-if="isAuth" v-b-modal="'createRoyaleGroupModal'" variant="primary">Create Group</b-button>
+      </div>
+
+      <div v-if="groupSearchResults && groupSearchResults.length > 0" class="group-search-results">
+        <b-list-group>
+          <b-list-group-item v-for="group in groupSearchResults" :key="group.groupID" :to="{ name: 'royaleGroup', params: { groupid: group.groupID } }">
+            <strong>{{ group.groupName }}</strong>
+            <span class="text-muted"> - {{ group.memberCount }} members - {{ group.groupType }}</span>
+          </b-list-group-item>
+        </b-list-group>
+      </div>
+      <div v-if="groupSearchQuery && groupSearchQuery.length >= 2 && groupSearchResults && groupSearchResults.length === 0" class="text-muted">
+        No groups found.
+      </div>
+    </div>
+
+    <b-modal id="createRoyaleGroupModal" ref="createRoyaleGroupModalRef" title="Create Royale Group" @ok="createGroup">
+      <div class="form-group">
+        <label for="newGroupName">Group Name</label>
+        <b-form-input id="newGroupName" v-model="newGroupName" placeholder="Enter a group name"></b-form-input>
+      </div>
+    </b-modal>
+
     <h3>What is Critics Royale?</h3>
     <div class="text-well">
       <p>
@@ -197,6 +249,12 @@ export default {
       royaleYearQuarterOptions: null,
       royaleStandings: null,
       userPublisherBusy: true,
+      groupSearchQuery: '',
+      groupSearchResults: null,
+      myGroups: null,
+      rulesBasedGroups: null,
+      newGroupName: '',
+      groupSearchTimeout: null,
       standingsFields: [
         { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
@@ -262,6 +320,54 @@ export default {
       this.royaleStandings = response.data.royaleStandings;
       this.userRoyalePublisherID = response.data.userRoyalePublisherID;
       this.userPublisherBusy = false;
+      await Promise.all([this.fetchMyGroups(), this.fetchRulesBasedGroups()]);
+    },
+    async fetchMyGroups() {
+      if (!this.isAuth) return;
+      try {
+        const response = await axios.get('/api/RoyaleGroup/GetGroupsForUser');
+        this.myGroups = response.data;
+      } catch {
+        this.myGroups = [];
+      }
+    },
+    async fetchRulesBasedGroups() {
+      try {
+        const response = await axios.get('/api/RoyaleGroup/GetRulesBasedGroups');
+        this.rulesBasedGroups = response.data;
+      } catch {
+        this.rulesBasedGroups = [];
+      }
+    },
+    searchGroups() {
+      if (this.groupSearchTimeout) {
+        clearTimeout(this.groupSearchTimeout);
+      }
+      if (!this.groupSearchQuery || this.groupSearchQuery.length < 2) {
+        this.groupSearchResults = null;
+        return;
+      }
+      this.groupSearchTimeout = setTimeout(async () => {
+        try {
+          const response = await axios.get('/api/RoyaleGroup/SearchRoyaleGroups', { params: { query: this.groupSearchQuery } });
+          this.groupSearchResults = response.data;
+        } catch {
+          this.groupSearchResults = [];
+        }
+      }, 300);
+    },
+    async createGroup(bvModalEvent) {
+      bvModalEvent.preventDefault();
+      if (!this.newGroupName || !this.newGroupName.trim()) return;
+      try {
+        const response = await axios.post('/api/RoyaleGroup/CreateManualRoyaleGroup', { groupName: this.newGroupName.trim() });
+        this.$refs.createRoyaleGroupModalRef.hide();
+        this.newGroupName = '';
+        this.$router.push({ name: 'royaleGroup', params: { groupid: response.data.groupID } });
+      } catch (error) {
+        const message = error.response?.data || 'Failed to create group.';
+        this.$bvToast.toast(message, { variant: 'danger', solid: true });
+      }
     }
   }
 };
@@ -304,6 +410,32 @@ export default {
   .critic-royale-header-area-simple {
     display: none;
   }
+}
+
+.royale-groups-section {
+  margin: 15px 0;
+}
+
+.group-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.group-search {
+  max-width: 400px;
+}
+
+.group-search-results {
+  margin-bottom: 10px;
+}
+
+.rules-based-groups-section {
+  margin-bottom: 15px;
+}
+
+.my-groups-section {
+  margin-bottom: 15px;
 }
 
 .login-button {

@@ -12,6 +12,7 @@ using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -267,6 +268,36 @@ public class AdminService
 
             await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
         }
+    }
+
+    public async Task RecomputeRulesBasedRoyaleGroups()
+    {
+        var rulesBasedGroups = await _royaleService.GetAllRoyaleGroupsByType(RoyaleGroupType.RulesBased);
+        foreach (var group in rulesBasedGroups)
+        {
+            var memberIDs = await ComputeRulesBasedMembers(group);
+            await _royaleService.SetRoyaleGroupMembers(group.GroupID, memberIDs);
+            _logger.Information("Recomputed rules-based Royale group {GroupName} with {Count} members.", group.GroupName, memberIDs.Count);
+        }
+    }
+
+    private async Task<IReadOnlyList<Guid>> ComputeRulesBasedMembers(RoyaleGroup group)
+    {
+        return group.RuleSetType switch
+        {
+            "PreviousWinners" => await ComputePreviousWinners(),
+            _ => new List<Guid>()
+        };
+    }
+
+    private async Task<IReadOnlyList<Guid>> ComputePreviousWinners()
+    {
+        var quarters = await _royaleService.GetYearQuarters();
+        return quarters
+            .Where(q => q.WinningUser is not null)
+            .Select(q => q.WinningUser!.UserID)
+            .Distinct()
+            .ToList();
     }
 
     public async Task RefreshCaches()

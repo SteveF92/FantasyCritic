@@ -71,6 +71,13 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
+    public async Task<IActionResult> RecomputeRulesBasedRoyaleGroups()
+    {
+        await _adminService.RecomputeRulesBasedRoyaleGroups();
+        return Ok();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
     {
         League? league = await _fantasyCriticService.GetLeagueByID(request.LeagueID);

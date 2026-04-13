@@ -52,6 +52,13 @@
         {{ league.numberOfFollowers }}
       </div>
 
+      <div v-if="royaleGroupData" class="royale-group-area">
+        <router-link v-if="royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink" class="btn btn-info btn-sm">
+          View Royale Group: {{ royaleGroupData.royaleGroup.groupName }}
+        </router-link>
+        <b-button v-else-if="league.isManager" size="sm" variant="primary" @click="enableRoyale">Enable Royale</b-button>
+      </div>
+
       <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
         <h5>Manager's Message ({{ mostRecentManagerMessage.timestamp | dateTime }})</h5>
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
@@ -247,7 +254,9 @@ export default {
     return {
       selectedYear: null,
       errorInfo: null,
-      oneShotText: "This is a 'one shot' league, meaning there are no bids or drops. The draft is final."
+      oneShotText: "This is a 'one shot' league, meaning there are no bids or drops. The draft is final.",
+      royaleGroupData: null,
+      activeRoyaleQuarter: null
     };
   },
   computed: {
@@ -289,6 +298,14 @@ export default {
     },
     mustSetDraftOrder() {
       return this.leagueYear.playStatus.readyToSetDraftOrder && this.leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.');
+    },
+    royaleGroupLink() {
+      if (!this.royaleGroupData?.hasRoyaleGroup) return null;
+      const group = this.royaleGroupData.royaleGroup;
+      if (this.activeRoyaleQuarter) {
+        return { name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: this.activeRoyaleQuarter.year, quarter: this.activeRoyaleQuarter.quarter } };
+      }
+      return { name: 'royaleGroup', params: { groupid: group.groupID } };
     }
   },
   watch: {
@@ -313,6 +330,7 @@ export default {
       const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
       await this.$store.dispatch('initializeLeaguePage', leaguePageParams);
       await this.startHubConnection();
+      this.fetchRoyaleGroupForLeague();
     },
     refreshLeagueYear() {
       return this.$store.dispatch('refreshLeagueYear');
@@ -436,6 +454,29 @@ export default {
     },
     leagueIDCopied() {
       this.makeToast('League ID copied to clipboard.');
+    },
+    async fetchRoyaleGroupForLeague() {
+      try {
+        const [groupResponse, quarterResponse] = await Promise.all([
+          axios.get(`/api/RoyaleGroup/GetRoyaleGroupForLeague/${this.leagueid}`),
+          axios.get('/api/Royale/ActiveRoyaleQuarter')
+        ]);
+        this.royaleGroupData = groupResponse.data;
+        this.activeRoyaleQuarter = quarterResponse.data;
+      } catch {
+        this.royaleGroupData = null;
+      }
+    },
+    async enableRoyale() {
+      try {
+        const response = await axios.post('/api/RoyaleGroup/CreateLeagueTiedRoyaleGroup', {
+          groupName: this.league.leagueName + ' Royale',
+          leagueID: this.leagueid
+        });
+        this.$router.push({ name: 'royaleGroup', params: { groupid: response.data.groupID } });
+      } catch (error) {
+        this.errorInfo = error.response?.data || 'Failed to enable Royale for this league.';
+      }
     }
   }
 };
@@ -487,5 +528,9 @@ export default {
 
 .all-time-stats-link {
   margin-left: 15px;
+}
+
+.royale-group-area {
+  margin: 8px 0;
 }
 </style>
