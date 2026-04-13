@@ -67,8 +67,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
     public async Task<RoyalePublisher?> GetPublisher(RoyaleYearQuarter yearQuarter, IVeryMinimalFantasyCriticUser user)
     {
         const string publisherGameSQL = """
-                                        SELECT * FROM tbl_royale_publishergame
-                                        JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
+                                        SELECT * FROM tbl_royale_publisher
                                         WHERE UserID = @userID and Year = @year and Quarter = @quarter;
                                         """;
         await using var connection = new MySqlConnection(_connectionString);
