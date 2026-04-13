@@ -105,6 +105,23 @@ public class AdminService
                     _logger.Information($"Game {masterGame.GameName} has just recieved an OpenCritic score of: {openCriticGame.Score})");
                 }
 
+                var currentCriticScore = masterGame.CriticScore;
+                var newRoundedCriticScore = openCriticGame.Score?.TruncateToPrecision(4);
+
+                if (!currentCriticScore.HasValue && !newRoundedCriticScore.HasValue)
+                {
+                    continue;
+                }
+
+                if (currentCriticScore.HasValue && newRoundedCriticScore.HasValue)
+                {
+                    bool scoreChangedOverThreshold = Math.Abs(newRoundedCriticScore.Value - currentCriticScore.Value) >= 0.0001m;
+                    if (!scoreChangedOverThreshold)
+                    {
+                        continue;
+                    }
+                }
+
                 await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
                 _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score);
                 gamesFetched++;
@@ -687,7 +704,7 @@ public class AdminService
         _logger.Information("Updating daily statistics.");
         SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
         var today = _clock.GetToday();
-        
+
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var activeYears = supportedYears.Where(x => !x.Finished && x.OpenForPlay).ToList();
         var supportedQuarters = await _royaleService.GetYearQuarters();
