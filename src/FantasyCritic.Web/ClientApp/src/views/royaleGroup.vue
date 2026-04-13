@@ -31,9 +31,7 @@
 
       <div v-if="isManager && group.groupType === 'Manual'" class="manager-actions">
         <h3>Manager Actions</h3>
-        <b-button variant="primary" @click="createInviteLink" :disabled="inviteLinks && inviteLinks.filter(l => l.active).length >= 2">
-          Create Invite Link
-        </b-button>
+        <b-button variant="primary" @click="createInviteLink" :disabled="inviteLinks && inviteLinks.filter((l) => l.active).length >= 2">Create Invite Link</b-button>
 
         <div v-if="inviteLinks && inviteLinks.length > 0" class="invite-links-section">
           <h5>Invite Links</h5>
@@ -44,7 +42,10 @@
               <b-button size="sm" variant="outline-danger" @click="deactivateLink(link.inviteID)">Deactivate</b-button>
             </template>
             <template v-else>
-              <span class="text-muted"><s>{{ inviteLinkUrl(link.inviteCode) }}</s> (Deactivated)</span>
+              <span class="text-muted">
+                <s>{{ inviteLinkUrl(link.inviteCode) }}</s>
+                (Deactivated)
+              </span>
             </template>
           </div>
         </div>
@@ -97,13 +98,17 @@ export default {
       notFound: false,
       joinMessage: null,
       joinSuccess: false,
-      memberFields: [
-        { key: 'displayName', label: 'Player Name', thClass: 'bg-primary' },
-        { key: 'actions', label: '', thClass: 'bg-primary' }
-      ]
+      displayNameField: { key: 'displayName', label: 'Player Name', thClass: 'bg-primary' },
+      actionField: { key: 'actions', label: '', thClass: 'bg-primary' }
     };
   },
   computed: {
+    memberFields() {
+      if (this.isManager) {
+        return [this.displayNameField, this.actionField];
+      }
+      return [this.displayNameField];
+    },
     isManager() {
       return this.isAuth && this.group && this.group.managerUserID && this.$store.getters.userInfo.userID === this.group.managerUserID;
     },

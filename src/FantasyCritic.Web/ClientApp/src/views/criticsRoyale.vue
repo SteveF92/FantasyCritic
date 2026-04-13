@@ -81,7 +81,7 @@
       <div v-if="rulesBasedGroups && rulesBasedGroups.length > 0" class="rules-based-groups-section">
         <h4>Featured Groups</h4>
         <b-list-group>
-          <b-list-group-item v-for="group in rulesBasedGroups" :key="group.groupID" :to="{ name: 'royaleGroup', params: { groupid: group.groupID } }">
+          <b-list-group-item v-for="group in rulesBasedGroups" :key="group.groupID" :to="{ name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: year, quarter: quarter } }">
             <strong>{{ group.groupName }}</strong>
             <span class="text-muted"> - {{ group.memberCount }} members</span>
           </b-list-group-item>
@@ -91,7 +91,7 @@
       <div v-if="isAuth && myGroups && myGroups.length > 0" class="my-groups-section">
         <h4>My Groups</h4>
         <b-list-group>
-          <b-list-group-item v-for="group in myGroups" :key="group.groupID" :to="{ name: 'royaleGroup', params: { groupid: group.groupID } }">
+          <b-list-group-item v-for="group in myGroups" :key="group.groupID" :to="{ name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: year, quarter: quarter } }">
             <strong>{{ group.groupName }}</strong>
             <span class="text-muted"> - {{ group.memberCount }} members - {{ group.groupType }}</span>
           </b-list-group-item>
@@ -107,7 +107,7 @@
 
       <div v-if="groupSearchResults && groupSearchResults.length > 0" class="group-search-results">
         <b-list-group>
-          <b-list-group-item v-for="group in groupSearchResults" :key="group.groupID" :to="{ name: 'royaleGroup', params: { groupid: group.groupID } }">
+          <b-list-group-item v-for="group in groupSearchResults" :key="group.groupID" :to="{ name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: year, quarter: quarter } }">
             <strong>{{ group.groupName }}</strong>
             <span class="text-muted"> - {{ group.memberCount }} members - {{ group.groupType }}</span>
           </b-list-group-item>
