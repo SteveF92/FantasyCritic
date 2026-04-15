@@ -16,9 +16,7 @@
       <div v-if="historyData.publishers.length > 0" class="history-table-area">
         <b-table striped bordered responsive small :items="historyData.publishers" :fields="historyFields">
           <template #cell(yearQuarter)="data">
-            <router-link :to="{ name: 'criticsRoyale', params: { year: data.item.year, quarter: data.item.quarter } }">
-              {{ data.item.year }}-Q{{ data.item.quarter }}
-            </router-link>
+            <router-link :to="{ name: 'criticsRoyale', params: { year: data.item.year, quarter: data.item.quarter } }">{{ data.item.year }}-Q{{ data.item.quarter }}</router-link>
           </template>
           <template #cell(publisherName)="data">
             <span v-if="data.item.publisherIcon" class="publisher-icon-small">{{ data.item.publisherIcon }}</span>
@@ -35,7 +33,7 @@
           </template>
         </b-table>
       </div>
-      <div v-else class="alert alert-info">This player has no Royale history yet.</div>
+      <div v-else class="alert alert-info history-table-area">This player has no Royale history yet.</div>
     </div>
     <div v-else class="spinner">
       <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />

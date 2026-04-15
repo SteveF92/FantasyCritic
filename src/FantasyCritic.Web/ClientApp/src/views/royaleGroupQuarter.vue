@@ -1,9 +1,10 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="groupQuarter">
-      <div class="group-header bg-secondary">
-        <h1>{{ groupQuarter.groupName }}</h1>
+      <div class="publisher-header bg-secondary">
+        <h1 class="publisher-name">{{ groupQuarter.groupName }}</h1>
         <h4>
+          Year/Quarter:
           <router-link :to="{ name: 'criticsRoyale', params: { year: groupQuarter.year, quarter: groupQuarter.quarter } }">{{ groupQuarter.year }}-Q{{ groupQuarter.quarter }}</router-link>
         </h4>
       </div>
@@ -131,10 +132,18 @@ export default {
 </script>
 
 <style scoped>
-.group-header {
-  padding: 15px;
-  border-radius: 5px;
-  margin-bottom: 15px;
+.publisher-header {
+  margin-top: 10px;
+  border: 2px;
+  border-color: #d6993a;
+  border-style: solid;
+  padding-left: 5px;
+}
+
+.publisher-name {
+  display: block;
+  max-width: 100%;
+  word-wrap: break-word;
 }
 
 .nav-area {

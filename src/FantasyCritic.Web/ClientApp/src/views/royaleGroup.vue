@@ -8,12 +8,10 @@
         <b-button variant="primary" class="ml-2" @click="joinViaInviteLink">Join Group</b-button>
       </div>
 
-      <div class="group-header bg-secondary">
-        <h1>{{ group.groupName }}</h1>
-        <h4>
-          <template v-if="group.managerDisplayName">Managed by: {{ group.managerDisplayName }}</template>
-        </h4>
-        <h5>{{ group.memberCount }} members</h5>
+      <div class="publisher-header bg-secondary">
+        <h1 class="publisher-name">{{ group.groupName }}</h1>
+        <h4 v-if="group.managerDisplayName">Managed by: {{ group.managerDisplayName }}</h4>
+        <h4>{{ group.memberCount }} members</h4>
       </div>
 
       <div v-if="group.leagueID" class="league-link-area">
@@ -34,24 +32,8 @@
 
       <div v-if="isManager && group.groupType === 'Manual'" class="manager-actions">
         <h3>Manager Actions</h3>
-        <b-button variant="primary" @click="createInviteLink" :disabled="inviteLinks && inviteLinks.filter((l) => l.active).length >= 2">Create Invite Link</b-button>
-
-        <div v-if="inviteLinks && inviteLinks.length > 0" class="invite-links-section">
-          <h5>Invite Links</h5>
-          <div v-for="link in inviteLinks" :key="link.inviteID" class="invite-link-row">
-            <template v-if="link.active">
-              <code>{{ inviteLinkUrl(link.inviteCode) }}</code>
-              <b-button size="sm" variant="outline-secondary" v-clipboard:copy="inviteLinkUrl(link.inviteCode)" v-clipboard:success="linkCopied">Copy</b-button>
-              <b-button size="sm" variant="outline-danger" @click="deactivateLink(link.inviteID)">Deactivate</b-button>
-            </template>
-            <template v-else>
-              <span class="text-muted">
-                <s>{{ inviteLinkUrl(link.inviteCode) }}</s>
-                (Deactivated)
-              </span>
-            </template>
-          </div>
-        </div>
+        <b-button variant="primary" v-b-modal.royaleGroupInviteLinksModal>Invite Links</b-button>
+        <royale-group-invite-links-modal :groupid="groupid" />
         <hr />
       </div>
 
@@ -62,9 +44,7 @@
             <router-link :to="{ name: 'royaleHistory', params: { userid: data.item.userID } }">{{ data.item.displayName }}</router-link>
           </template>
           <template #cell(actions)="data">
-            <b-button v-if="isManager && group.groupType === 'Manual' && data.item.userID !== group.managerUserID" size="sm" variant="outline-danger" @click="removeMember(data.item.userID)">
-              Remove
-            </b-button>
+            <b-button v-if="data.item.userID !== group.managerUserID" size="sm" variant="danger" @click="removeMember(data.item.userID)" class="remove-member-button">Remove</b-button>
           </template>
         </b-table>
       </div>
@@ -87,8 +67,10 @@
 
 <script>
 import axios from 'axios';
+import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
 
 export default {
+  components: { RoyaleGroupInviteLinksModal },
   props: {
     groupid: { type: String, required: true }
   },
@@ -96,24 +78,26 @@ export default {
     return {
       group: null,
       members: null,
-      inviteLinks: null,
       activeQuarter: null,
       notFound: false,
       joinMessage: null,
       joinSuccess: false,
       displayNameField: { key: 'displayName', label: 'Player Name', thClass: 'bg-primary' },
-      actionField: { key: 'actions', label: '', thClass: 'bg-primary' }
+      actionField: { key: 'actions', label: 'Actions', thClass: 'bg-primary', thStyle: 'width: 1%' }
     };
   },
   computed: {
     memberFields() {
-      if (this.isManager) {
+      if (this.isManager && this.showManagerActions) {
         return [this.displayNameField, this.actionField];
       }
       return [this.displayNameField];
     },
     isManager() {
       return this.isAuth && this.group && this.group.managerUserID && this.$store.getters.userInfo.userID === this.group.managerUserID;
+    },
+    showManagerActions() {
+      return this.group.groupType === 'Manual';
     },
     isMember() {
       if (!this.isAuth || !this.members) return false;
@@ -150,35 +134,9 @@ export default {
         this.group = groupResponse.data;
         this.members = membersResponse.data;
         this.activeQuarter = quarterResponse.data;
-
-        if (this.isManager && this.group.groupType === 'Manual') {
-          await this.fetchInviteLinks();
-        }
       } catch {
         this.notFound = true;
       }
-    },
-    async fetchInviteLinks() {
-      try {
-        const response = await axios.get(`/api/RoyaleGroup/GetGroupInviteLinks/${this.groupid}`);
-        this.inviteLinks = response.data;
-      } catch {
-        this.inviteLinks = [];
-      }
-    },
-    inviteLinkUrl(inviteCode) {
-      return `${window.location.origin}/royaleGroup/${this.groupid}?inviteCode=${inviteCode}`;
-    },
-    linkCopied() {
-      this.$bvToast.toast('Invite link copied to clipboard!', { variant: 'success', solid: true, noCloseButton: true });
-    },
-    async createInviteLink() {
-      await axios.post(`/api/RoyaleGroup/CreateGroupInviteLink/${this.groupid}`);
-      await this.fetchInviteLinks();
-    },
-    async deactivateLink(inviteID) {
-      await axios.post(`/api/RoyaleGroup/DeactivateGroupInviteLink/${inviteID}`);
-      await this.fetchInviteLinks();
     },
     async removeMember(userID) {
       const confirmed = await this.$bvModal.msgBoxConfirm('Are you sure you want to remove this member?');
@@ -209,10 +167,18 @@ export default {
 </script>
 
 <style scoped>
-.group-header {
-  padding: 15px;
-  border-radius: 5px;
-  margin-bottom: 15px;
+.publisher-header {
+  margin-top: 10px;
+  border: 2px;
+  border-color: #d6993a;
+  border-style: solid;
+  padding-left: 5px;
+}
+
+.publisher-name {
+  display: block;
+  max-width: 100%;
+  word-wrap: break-word;
 }
 
 .view-quarter-area {
@@ -227,18 +193,6 @@ export default {
   margin: 15px 0;
 }
 
-.invite-links-section {
-  margin-top: 10px;
-}
-
-.invite-link-row {
-  margin: 5px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 .leave-area {
   margin-top: 20px;
 }
@@ -246,5 +200,9 @@ export default {
 .spinner {
   display: flex;
   justify-content: space-around;
+}
+
+.remove-member-button {
+  width: 80px;
 }
 </style>
