@@ -251,7 +251,7 @@ export default {
       if (!this.publisher?.statistics?.length) {
         return [];
       }
-      return this.publisher.statistics.map((x) => this.normalizeLocalDateToLabel(x.date));
+      return this.publisher.statistics.map((x) => x.date);
     },
     releaseDateAnnotations() {
       if (!this.publisher?.publisherGames?.length || !this.statisticsDateLabels.length) {
@@ -516,29 +516,8 @@ export default {
         }
       };
     },
-    normalizeLocalDateToLabel(val) {
-      if (val == null || val === '') {
-        return '';
-      }
-      if (typeof val === 'string') {
-        return DateTime.fromISO(val).toFormat('yyyy-MM-dd');
-      }
-      if (typeof val === 'object' && val.year != null) {
-        return DateTime.fromObject({ year: val.year, month: val.month, day: val.day }).toFormat('yyyy-MM-dd');
-      }
-      return String(val);
-    },
     masterGameReleaseChartLabel(game) {
-      if (!game) {
-        return null;
-      }
-      if (game.releaseDate) {
-        return this.normalizeLocalDateToLabel(game.releaseDate);
-      }
-      if (game.maximumReleaseDate) {
-        return this.normalizeLocalDateToLabel(game.maximumReleaseDate);
-      }
-      return null;
+      return game?.releaseDate ?? null;
     }
   }
 };

@@ -263,3 +263,4 @@ src/FantasyCritic.Web/keys/
 src/FantasyCritic.Web/tempkey.jwk
 
 *.received.*
+src/FantasyCritic.Web/ClientApp/dist/

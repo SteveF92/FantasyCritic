@@ -57,6 +57,12 @@
       <div v-else>
         <p>No members in this group.</p>
       </div>
+
+      <template v-if="showGroupPointsChart">
+        <div class="royale-chart-container">
+          <LineChartGenerator chart-id="group-quarter-points-chart" dataset-id-key="label" :chart-options="groupChartOptions" :chart-data="groupChartData" />
+        </div>
+      </template>
     </div>
     <div v-else-if="notFound">
       <div class="alert alert-warning">Group or quarter not found.</div>
@@ -69,9 +75,15 @@
 
 <script>
 import axios from 'axios';
+import { DateTime } from 'luxon';
+import { Line as LineChartGenerator } from 'vue-chartjs/legacy';
+
 import { orderBy } from '@/globalFunctions';
 
+const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
+
 export default {
+  components: { LineChartGenerator },
   props: {
     groupid: { type: String, required: true },
     year: { type: Number, required: true },
@@ -100,6 +112,166 @@ export default {
     quartersInSelectedYear() {
       if (!this.allQuarters) return [];
       return this.allQuarters.filter((q) => q.year === this.selectedYear).sort((a, b) => a.quarter - b.quarter);
+    },
+    chartMembers() {
+      if (!this.groupQuarter?.members) {
+        return [];
+      }
+      return this.groupQuarter.members.filter((m) => m.hasPublisher && m.publisherID && m.statistics?.length > 0);
+    },
+    combinedStatisticsLabels() {
+      const set = new Set();
+      for (const m of this.chartMembers) {
+        for (const s of m.statistics) {
+          set.add(s.date);
+        }
+      }
+      return [...set].sort();
+    },
+    showGroupPointsChart() {
+      return this.chartMembers.length > 0 && this.combinedStatisticsLabels.length > 0;
+    },
+    groupReleaseAnnotations() {
+      if (!this.showGroupPointsChart) {
+        return {};
+      }
+      const labelSet = new Set(this.combinedStatisticsLabels);
+      const annotations = {};
+      let annIndex = 0;
+      this.chartMembers.forEach((member, memberIndex) => {
+        const color = SERIES_COLORS[memberIndex % SERIES_COLORS.length];
+        const lineColor = this.hexToRgba(color, 0.55);
+        const labelBorder = this.hexToRgba(color, 0.45);
+        for (const pg of member.publisherGames || []) {
+          if (!pg.masterGame) {
+            continue;
+          }
+          const dateLabel = this.masterGameReleaseChartLabel(pg.masterGame);
+          if (!dateLabel || !labelSet.has(dateLabel)) {
+            continue;
+          }
+          const key = `release-${member.publisherID}-${pg.masterGame.masterGameID}-${annIndex}`;
+          annotations[key] = {
+            type: 'line',
+            scaleID: 'x',
+            value: dateLabel,
+            borderColor: lineColor,
+            borderWidth: 2,
+            borderDash: [4, 4],
+            drawTime: 'beforeDatasetsDraw',
+            z: -1,
+            label: {
+              display: false,
+              content: `${member.publisherName}: ${pg.masterGame.gameName}`,
+              drawTime: 'afterDatasetsDraw',
+              backgroundColor: 'rgba(20, 20, 20, 0.95)',
+              borderColor: labelBorder,
+              borderWidth: 1,
+              color: '#ffffff',
+              font: { size: 12 },
+              padding: 8,
+              borderRadius: 4,
+              position: 'start',
+              yAdjust: -6
+            },
+            enter({ element }) {
+              if (element.label) {
+                element.label.options.display = true;
+              }
+              return true;
+            },
+            leave({ element }) {
+              if (element.label) {
+                element.label.options.display = false;
+              }
+              return true;
+            }
+          };
+          annIndex += 1;
+        }
+      });
+      return annotations;
+    },
+    groupChartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 4,
+            right: 8,
+            bottom: 52,
+            left: 4
+          }
+        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'rgba(255, 255, 255, 0.9)',
+              font: { size: 13 },
+              usePointStyle: true,
+              padding: 16
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(20, 20, 20, 0.95)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgba(214, 153, 58, 0.5)',
+            borderWidth: 1,
+            filter: (item) => item.parsed.y !== null && !Number.isNaN(item.parsed.y)
+          },
+          annotation: {
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            annotations: this.groupReleaseAnnotations
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.75)',
+              maxRotation: 45,
+              minRotation: 0,
+              padding: 6
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          },
+          y: {
+            min: 0,
+            ticks: { color: 'rgba(255, 255, 255, 0.75)' },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          }
+        }
+      };
+    },
+    groupChartData() {
+      if (!this.showGroupPointsChart) {
+        return { labels: [], datasets: [] };
+      }
+      const labels = this.combinedStatisticsLabels;
+      const datasets = this.chartMembers.map((member, i) => {
+        const color = SERIES_COLORS[i % SERIES_COLORS.length];
+        return {
+          label: member.publisherName,
+          borderColor: color,
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          fill: false,
+          stepped: true,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: color,
+          pointBorderColor: color,
+          pointBorderWidth: 1,
+          data: this.alignPublisherStatsToLabels(member, labels)
+        };
+      });
+      return { labels, datasets };
     }
   },
   watch: {
@@ -126,6 +298,33 @@ export default {
     },
     selectYear(year) {
       this.selectedYear = year;
+    },
+    masterGameReleaseChartLabel(game) {
+      return game?.releaseDate;
+    },
+    alignPublisherStatsToLabels(member, labels) {
+      const sorted = [...member.statistics]
+        .map((s) => ({
+          date: s.date,
+          fantasyPoints: Number(s.fantasyPoints)
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+      let j = 0;
+      let last = null;
+      return labels.map((label) => {
+        while (j < sorted.length && sorted[j].date <= label) {
+          last = sorted[j].fantasyPoints;
+          j++;
+        }
+        return last;
+      });
+    },
+    hexToRgba(hex, alpha) {
+      const h = hex.replace('#', '');
+      const r = parseInt(h.slice(0, 2), 16);
+      const g = parseInt(h.slice(2, 4), 16);
+      const b = parseInt(h.slice(4, 6), 16);
+      return `rgba(${r},${g},${b},${alpha})`;
     }
   }
 };
@@ -158,6 +357,23 @@ export default {
 .spinner {
   display: flex;
   justify-content: space-around;
+}
+
+.group-chart-heading {
+  margin-top: 1.5rem;
+}
+
+.royale-chart-container {
+  height: 380px;
+  max-width: 100%;
+  padding: 16px 12px 20px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  background: #252525;
+  border: 1px solid rgba(214, 153, 58, 0.35);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-sizing: border-box;
 }
 </style>
 
