@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
@@ -12,16 +13,20 @@ namespace FantasyCritic.Web.Controllers.API;
 [Authorize]
 public class RoyaleGroupController : FantasyCriticController
 {
+    private readonly IClock _clock;
     private readonly RoyaleService _royaleService;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly ConferenceService _conferenceService;
+    private readonly InterLeagueService _interLeagueService;
 
-    public RoyaleGroupController(FantasyCriticUserManager userManager, RoyaleService royaleService,
-        FantasyCriticService fantasyCriticService, ConferenceService conferenceService) : base(userManager)
+    public RoyaleGroupController(IClock clock, FantasyCriticUserManager userManager, RoyaleService royaleService,
+        FantasyCriticService fantasyCriticService, ConferenceService conferenceService, InterLeagueService interLeagueService) : base(userManager)
     {
+        _clock = clock;
         _royaleService = royaleService;
         _fantasyCriticService = fantasyCriticService;
         _conferenceService = conferenceService;
+        _interLeagueService = interLeagueService;
     }
 
     [AllowAnonymous]
@@ -50,7 +55,8 @@ public class RoyaleGroupController : FantasyCriticController
         }
 
         var memberRows = await _royaleService.GetRoyaleGroupMemberDisplayRows(group, year, quarter);
-        var vm = new RoyaleGroupQuarterViewModel(group, year, quarter, memberRows);
+        var allMasterGameTags = await _interLeagueService.GetMasterGameTags();
+        var vm = new RoyaleGroupQuarterViewModel(group, year, quarter, memberRows, _clock.GetToday(), allMasterGameTags);
         return Ok(vm);
     }
 

@@ -1,11 +1,11 @@
-using System.Data;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Royale;
-using FantasyCritic.MySQL.Entities;
 using FantasyCritic.Lib.SharedSerialization.Database;
+using FantasyCritic.MySQL.Entities;
+using System.Data;
 
 namespace FantasyCritic.MySQL;
 
@@ -514,6 +514,17 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         var entities = await connection.QueryAsync<RoyalePublisherHistoryEntity>(sql, new { userID });
+        return entities.Select(x => x.ToDomain()).ToList();
+    }
+
+    public async Task<IReadOnlyList<RoyalePublisherStatistics>> GetPublisherStatistics(Guid publisherID)
+    {
+        const string sql = """
+                           SELECT * FROM tbl_royale_publisherstatistics where PublisherID = @publisherID;
+                           """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<RoyalePublisherStatisticsEntity>(sql, new { publisherID });
         return entities.Select(x => x.ToDomain()).ToList();
     }
 

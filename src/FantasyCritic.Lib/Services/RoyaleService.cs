@@ -385,7 +385,6 @@ public class RoyaleService
         foreach (var member in members)
         {
             var publisher = await _royaleRepo.GetPublisher(yearQuarter, member);
-
             if (yearQuarter.Finished)
             {
                 if (publisher is null)
@@ -405,7 +404,12 @@ public class RoyaleService
                 }
             }
 
-            rows.Add(new RoyaleGroupMemberDisplayRow(member, publisher));
+            IReadOnlyList<RoyalePublisherStatistics> statistics = new List<RoyalePublisherStatistics>();
+            if (publisher is not null)
+            {
+                statistics = await _royaleRepo.GetPublisherStatistics(publisher.PublisherID);
+            }
+            rows.Add(new RoyaleGroupMemberDisplayRow(member, publisher, statistics));
         }
 
         return rows;

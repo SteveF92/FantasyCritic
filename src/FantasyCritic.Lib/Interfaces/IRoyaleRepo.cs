@@ -22,6 +22,7 @@ public interface IRoyaleRepo
     Task ChangePublisherIcon(RoyalePublisher publisher, string? publisherIcon);
     Task ChangePublisherSlogan(RoyalePublisher publisher, string? publisherSlogan);
     Task<IReadOnlyList<RoyalePublisherHistoryEntry>> GetPublisherHistoryForUser(Guid userID);
+    Task<IReadOnlyList<RoyalePublisherStatistics>> GetPublisherStatistics(Guid publisherID);
 
     Task CreateRoyaleGroup(RoyaleGroup group);
     Task<RoyaleGroup?> GetRoyaleGroup(Guid groupID);

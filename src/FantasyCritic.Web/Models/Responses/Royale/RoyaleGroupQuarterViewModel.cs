@@ -4,8 +4,8 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 
 public class RoyaleGroupQuarterViewModel
 {
-    public RoyaleGroupQuarterViewModel(RoyaleGroup group, int year, int quarter,
-        IReadOnlyList<RoyaleGroupMemberDisplayRow> memberRows)
+    public RoyaleGroupQuarterViewModel(RoyaleGroup group, int year, int quarter, IReadOnlyList<RoyaleGroupMemberDisplayRow> memberRows,
+        LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
     {
         GroupID = group.GroupID;
         GroupName = group.GroupName;
@@ -32,7 +32,7 @@ public class RoyaleGroupQuarterViewModel
                 rank = ranking;
                 ranking++;
             }
-            members.Add(new RoyaleGroupMemberRankedViewModel(row, rank));
+            members.Add(new RoyaleGroupMemberRankedViewModel(row, rank, currentDate, allMasterGameTags));
         }
 
         Members = members;
@@ -53,7 +53,7 @@ public class RoyaleGroupQuarterViewModel
 
 public class RoyaleGroupMemberRankedViewModel
 {
-    public RoyaleGroupMemberRankedViewModel(RoyaleGroupMemberDisplayRow row, int? ranking)
+    public RoyaleGroupMemberRankedViewModel(RoyaleGroupMemberDisplayRow row, int? ranking, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
     {
         UserID = row.User.UserID;
         DisplayName = row.User.DisplayName;
@@ -62,6 +62,9 @@ public class RoyaleGroupMemberRankedViewModel
         PublisherName = row.Publisher?.PublisherName;
         TotalFantasyPoints = row.Publisher?.GetTotalFantasyPoints();
         Ranking = ranking;
+
+        PublisherGames = (row.Publisher?.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, row.Publisher.YearQuarter, currentDate, allMasterGameTags, false)).ToList()) ?? new List<RoyalePublisherGameViewModel>();
+        Statistics = row.Statistics.Select(x => new RoyalePublisherStatisticsViewModel(x)).ToList();
     }
 
     public Guid UserID { get; }
@@ -71,4 +74,6 @@ public class RoyaleGroupMemberRankedViewModel
     public string? PublisherName { get; }
     public decimal? TotalFantasyPoints { get; }
     public int? Ranking { get; }
+    public IReadOnlyList<RoyalePublisherGameViewModel> PublisherGames { get; }
+    public IReadOnlyList<RoyalePublisherStatisticsViewModel> Statistics { get; }
 }
