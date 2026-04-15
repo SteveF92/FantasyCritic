@@ -129,7 +129,9 @@
 
     <div v-if="publisher?.statistics.length > 0">
       <h2>Publisher Statistics</h2>
-      <LineChartGenerator :chart-options="chartOptions" :chart-data="chartData" chart-id="line-chart" dataset-id-key="date" :width="400" :height="400" />
+      <div class="royale-chart-container">
+        <LineChartGenerator :chart-options="chartOptions" :chart-data="chartData" chart-id="line-chart" dataset-id-key="label" />
+      </div>
     </div>
 
     <div v-if="publisher?.publisherActions.length > 0">
@@ -213,7 +215,49 @@ export default {
       sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' },
       chartOptions: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 4,
+            right: 8,
+            bottom: 52,
+            left: 4
+          }
+        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'rgba(255, 255, 255, 0.9)',
+              font: { size: 13 },
+              usePointStyle: true,
+              padding: 16
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(20, 20, 20, 0.95)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgba(214, 153, 58, 0.5)',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.75)',
+              maxRotation: 45,
+              minRotation: 0,
+              padding: 6
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          },
+          y: {
+            min: 0,
+            ticks: { color: 'rgba(255, 255, 255, 0.75)' },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          }
+        }
       }
     };
   },
@@ -253,12 +297,21 @@ export default {
       return this.publisher.yearQuarter.finished;
     },
     chartData() {
+      const accent = '#d6993a';
       return {
         labels: this.publisher.statistics.map((x) => x.date),
         datasets: [
           {
             label: 'Fantasy Points',
-            backgroundColor: '#ffffff',
+            borderColor: accent,
+            backgroundColor: 'rgba(214, 153, 58, 0.18)',
+            borderWidth: 2,
+            stepped: true,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: accent,
+            pointBorderWidth: 2,
             data: this.publisher.statistics.map((x) => x.fantasyPoints)
           }
         ]
@@ -463,5 +516,18 @@ export default {
   display: inline-block;
   margin-bottom: 8px;
   color: #d6993a;
+}
+
+.royale-chart-container {
+  height: 380px;
+  max-width: 100%;
+  padding: 16px 12px 20px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  background: #252525;
+  border: 1px solid rgba(214, 153, 58, 0.35);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-sizing: border-box;
 }
 </style>
