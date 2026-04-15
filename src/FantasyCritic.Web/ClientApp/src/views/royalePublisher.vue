@@ -127,7 +127,12 @@
       </div>
     </b-modal>
 
-    <div v-if="publisher.publisherActions.length > 0">
+    <div v-if="publisher?.statistics.length > 0">
+      <h2>Publisher Statistics</h2>
+      <LineChartGenerator :chart-options="chartOptions" :chart-data="chartData" chart-id="line-chart" dataset-id-key="date" :width="400" :height="400" />
+    </div>
+
+    <div v-if="publisher?.publisherActions.length > 0">
       <h2>Action History</h2>
       <b-table striped bordered small responsive :items="publisher.publisherActions" :fields="actionFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(timestamp)="data">
@@ -159,6 +164,7 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'luxon';
+import { Line as LineChartGenerator } from 'vue-chartjs/legacy';
 
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm.vue';
@@ -176,7 +182,8 @@ export default {
     RoyalePurchaseGameForm,
     MasterGamePopover,
     SellRoyaleGameModal,
-    RoyaleChangePublisherSloganForm
+    RoyaleChangePublisherSloganForm,
+    LineChartGenerator
   },
   props: {
     publisherid: { type: String, required: true }
@@ -203,7 +210,11 @@ export default {
         { key: 'description', label: 'Description', thClass: 'bg-primary' }
       ],
       lockDateTimeField: { key: 'lockDateTime', label: 'Locks In', thClass: 'bg-primary', sortable: true },
-      sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }
+      sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' },
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
     };
   },
   computed: {
@@ -240,6 +251,18 @@ export default {
     },
     quarterIsFinished() {
       return this.publisher.yearQuarter.finished;
+    },
+    chartData() {
+      return {
+        labels: this.publisher.statistics.map((x) => x.date),
+        datasets: [
+          {
+            label: 'Fantasy Points',
+            backgroundColor: '#ffffff',
+            data: this.publisher.statistics.map((x) => x.fantasyPoints)
+          }
+        ]
+      };
     }
   },
   watch: {

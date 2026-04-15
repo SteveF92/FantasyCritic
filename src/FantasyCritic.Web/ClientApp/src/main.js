@@ -6,6 +6,8 @@ import en from 'vee-validate/dist/locale/en.json';
 import VueGtag from 'vue-gtag';
 import VueClipboard from 'vue-clipboard2';
 
+import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement } from 'chart.js';
+
 import App from './App.vue';
 import router from './router/index';
 import store from './store';
@@ -78,6 +80,9 @@ Vue.use(
 Vue.component('FontAwesomeIcon', FontAwesomeIcon);
 Vue.component('FontAwesomeLayers', FontAwesomeLayers);
 Vue.component('FontAwesomeLayersText', FontAwesomeLayersText);
+
+ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement);
+
 sync(store, router);
 
 Vue.config.productionTip = false;
