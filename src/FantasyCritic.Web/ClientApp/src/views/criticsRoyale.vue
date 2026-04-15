@@ -84,7 +84,6 @@
           :quarter="quarter"
           :group-search-query="groupSearchQuery"
           :group-search-results="groupSearchResults"
-          :is-auth="isAuth"
           @search-query-change="onGroupSearchQueryChange" />
       </div>
     </div>

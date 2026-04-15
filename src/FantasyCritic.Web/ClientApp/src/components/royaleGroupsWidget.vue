@@ -13,6 +13,7 @@
           </template>
         </b-table>
         <div v-else class="text-muted small">No groups yet.</div>
+        <b-button v-if="isAuth" v-b-modal="'createRoyaleGroupModal'" variant="primary" size="sm" class="mb-2 w-100">Create Group</b-button>
       </b-tab>
 
       <b-tab title="Featured" title-item-class="tab-header">
@@ -36,7 +37,6 @@
 
       <b-tab title="Search" title-item-class="tab-header">
         <b-form-input :value="groupSearchQuery" placeholder="Search groups by name..." class="mb-2" @input="onSearchInput"></b-form-input>
-        <b-button v-if="isAuth" v-b-modal="'createRoyaleGroupModal'" variant="primary" size="sm" class="mb-2">Create Group</b-button>
 
         <b-table
           v-if="groupSearchResults && groupSearchResults.length > 0"
@@ -67,8 +67,7 @@ export default {
     year: { type: Number, required: true },
     quarter: { type: Number, required: true },
     groupSearchQuery: { type: String, default: '' },
-    groupSearchResults: { type: Array, default: null },
-    isAuth: { type: Boolean, default: false }
+    groupSearchResults: { type: Array, default: null }
   },
   data() {
     return {
