@@ -379,11 +379,7 @@ export default {
             backgroundColor: 'rgba(214, 153, 58, 0.18)',
             borderWidth: 2,
             stepped: true,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: accent,
-            pointBorderWidth: 2,
+            pointRadius: 0,
             data: this.publisher.statistics.map((x) => x.fantasyPoints)
           }
         ]

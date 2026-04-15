@@ -60,7 +60,14 @@
 
       <template v-if="showGroupPointsChart">
         <div class="royale-chart-container">
-          <LineChartGenerator chart-id="group-quarter-points-chart" dataset-id-key="label" :chart-options="groupChartOptions" :chart-data="groupChartData" />
+          <LineChartGenerator
+            chart-id="group-quarter-points-chart"
+            dataset-id-key="label"
+            :width="groupChartCanvasWidth"
+            :height="groupChartCanvasHeight"
+            :styles="groupChartCanvasStyles"
+            :chart-options="groupChartOptions"
+            :chart-data="groupChartData" />
         </div>
       </template>
     </div>
@@ -95,6 +102,13 @@ export default {
       allQuarters: null,
       selectedYear: null,
       notFound: false,
+      groupChartCanvasWidth: 1200,
+      groupChartCanvasHeight: 600,
+      groupChartCanvasStyles: {
+        width: '100%',
+        height: '100%',
+        position: 'relative'
+      },
       standingsFields: [
         { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
         { key: 'displayName', label: 'Player', thClass: 'bg-primary' },
@@ -278,11 +292,7 @@ export default {
           borderWidth: 2,
           fill: false,
           stepped: true,
-          pointRadius: 3,
-          pointHoverRadius: 5,
-          pointBackgroundColor: color,
-          pointBorderColor: color,
-          pointBorderWidth: 1,
+          pointRadius: 0,
           data: this.alignPublisherStatsToLabels(member, labels)
         };
       });
@@ -389,7 +399,7 @@ export default {
 }
 
 .royale-chart-container {
-  height: 380px;
+  height: 625px;
   max-width: 100%;
   padding: 16px 12px 20px;
   margin-top: 8px;
@@ -399,6 +409,14 @@ export default {
   border-radius: 8px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.royale-chart-container > div {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 </style>
 
