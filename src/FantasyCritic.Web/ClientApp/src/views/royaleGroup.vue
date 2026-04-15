@@ -43,6 +43,10 @@
           <template #cell(displayName)="data">
             <router-link :to="{ name: 'royaleHistory', params: { userid: data.item.userID } }">{{ data.item.displayName }}</router-link>
           </template>
+          <template #cell(averageRankWithinGroup)="data">
+            <template v-if="data.item.averageRankWithinGroup != null">{{ formatAverageRank(data.item.averageRankWithinGroup) }}</template>
+            <template v-else>--</template>
+          </template>
           <template #cell(actions)="data">
             <b-button v-if="data.item.userID !== group.managerUserID" size="sm" variant="danger" @click="removeMember(data.item.userID)" class="remove-member-button">Remove</b-button>
           </template>
@@ -83,15 +87,29 @@ export default {
       joinMessage: null,
       joinSuccess: false,
       displayNameField: { key: 'displayName', label: 'Player Name', thClass: 'bg-primary' },
+      quartersParticipatedField: {
+        key: 'quartersParticipated',
+        label: 'Quarters played',
+        thClass: 'bg-primary',
+        tdClass: 'text-right'
+      },
+      averageRankField: {
+        key: 'averageRankWithinGroup',
+        label: 'Avg. rank',
+        thClass: 'bg-primary',
+        tdClass: 'text-right'
+      },
+      totalPointsField: { key: 'totalPoints', label: 'Total points', thClass: 'bg-primary', tdClass: 'text-right' },
       actionField: { key: 'actions', label: 'Actions', thClass: 'bg-primary', thStyle: 'width: 1%' }
     };
   },
   computed: {
     memberFields() {
+      const statsFields = [this.displayNameField, this.quartersParticipatedField, this.averageRankField, this.totalPointsField];
       if (this.isManager && this.showManagerActions) {
-        return [this.displayNameField, this.actionField];
+        return [...statsFields, this.actionField];
       }
-      return [this.displayNameField];
+      return statsFields;
     },
     isManager() {
       return this.isAuth && this.group && this.group.managerUserID && this.$store.getters.userInfo.userID === this.group.managerUserID;
@@ -124,6 +142,11 @@ export default {
     await this.fetchData();
   },
   methods: {
+    formatAverageRank(value) {
+      const n = Number(value);
+      if (Number.isNaN(n)) return '--';
+      return n.toFixed(2);
+    },
     async fetchData() {
       try {
         const [groupResponse, membersResponse, quarterResponse] = await Promise.all([

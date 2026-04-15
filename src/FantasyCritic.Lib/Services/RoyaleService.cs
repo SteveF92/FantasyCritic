@@ -411,6 +411,55 @@ public class RoyaleService
         return rows;
     }
 
+    public async Task<IReadOnlyList<RoyaleGroupMemberWithLifetimeStats>> GetRoyaleGroupMembersWithLifetimeStats(RoyaleGroup group)
+    {
+        var members = await GetRoyaleGroupMembers(group);
+        if (members.Count == 0)
+        {
+            return Array.Empty<RoyaleGroupMemberWithLifetimeStats>();
+        }
+
+        var quartersParticipated = members.ToDictionary(m => m.UserID, _ => 0);
+        var totalPoints = members.ToDictionary(m => m.UserID, _ => 0m);
+        var ranksForAverage = members.ToDictionary(m => m.UserID, _ => new List<int>());
+
+        var allQuarters = await GetYearQuarters();
+        foreach (var yearQuarter in allQuarters)
+        {
+            var rows = await GetRoyaleGroupMemberDisplayRows(group, yearQuarter.YearQuarter.Year, yearQuarter.YearQuarter.Quarter);
+            var orderedRows = rows.OrderByDescending(r => r.Publisher?.GetTotalFantasyPoints() ?? -1m).ToList();
+            var ranking = 1;
+            foreach (var row in orderedRows)
+            {
+                int? rank = null;
+                if (row.Publisher is not null && row.Publisher.GetTotalFantasyPoints() > 0)
+                {
+                    rank = ranking;
+                    ranking++;
+                }
+
+                if (row.Publisher is null || !quartersParticipated.ContainsKey(row.User.UserID))
+                {
+                    continue;
+                }
+
+                quartersParticipated[row.User.UserID]++;
+                totalPoints[row.User.UserID] += row.Publisher.GetTotalFantasyPoints();
+                if (rank.HasValue)
+                {
+                    ranksForAverage[row.User.UserID].Add(rank.Value);
+                }
+            }
+        }
+
+        return members.Select(m =>
+        {
+            var rankList = ranksForAverage[m.UserID];
+            double? averageRank = rankList.Count > 0 ? rankList.Average() : null;
+            return new RoyaleGroupMemberWithLifetimeStats(m, quartersParticipated[m.UserID], totalPoints[m.UserID], averageRank);
+        }).ToList();
+    }
+
     public async Task<Result> JoinRoyaleGroupViaInviteLink(Guid inviteCode, FantasyCriticUser user)
     {
         var link = await _royaleRepo.GetRoyaleGroupInviteLinkByCode(inviteCode);

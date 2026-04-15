@@ -271,8 +271,8 @@ public class RoyaleGroupController : FantasyCriticController
             return NotFound();
         }
 
-        var members = await _royaleService.GetRoyaleGroupMembers(group);
-        var viewModels = members.Select(m => new { m.UserID, m.DisplayName }).ToList();
+        var stats = await _royaleService.GetRoyaleGroupMembersWithLifetimeStats(group);
+        var viewModels = stats.Select(x => new RoyaleGroupMemberListItemViewModel(x)).ToList();
         return Ok(viewModels);
     }
 
