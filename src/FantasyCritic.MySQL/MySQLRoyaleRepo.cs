@@ -182,6 +182,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
         var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
         var actionEntities = resultSets.Read<RoyaleActionEntity>();
+        var statisticsEntities = resultSets.Read<RoyalePublisherStatisticsEntity>();
 
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
@@ -233,7 +234,9 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             domainActions.Add(domainAction);
         }
 
-        var domainPublisherData = new RoyalePublisherData(domainPublisher, domainActions, quartersWonByUser, masterGameYearDictionary.Values.ToList(), possibleTags.Values.ToList());
+        var domainStatistics = statisticsEntities.Select(x => x.ToDomain()).ToList();
+
+        var domainPublisherData = new RoyalePublisherData(domainPublisher, domainActions, quartersWonByUser, masterGameYearDictionary.Values.ToList(), possibleTags.Values.ToList(), domainStatistics);
         return domainPublisherData;
     }
 

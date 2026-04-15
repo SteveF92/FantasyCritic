@@ -191,7 +191,7 @@ public class RoyaleController : FantasyCriticController
             thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
         }
 
-        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, publisherData.RoyaleActions, masterGameTags, thisPlayerIsViewing);
+        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, null, quartersWon, publisherData.RoyaleActions, publisherData.Statistics, masterGameTags, thisPlayerIsViewing);
         return Ok(viewModel);
     }
 

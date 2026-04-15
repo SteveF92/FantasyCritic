@@ -61,6 +61,8 @@ BEGIN
   WHERE tbl_royale_publisher.PublisherID = P_PublisherID;
   
   SELECT * FROM tbl_royale_action WHERE tbl_royale_action.PublisherID = P_PublisherID;
+
+  SELECT * FROM tbl_royale_publisherstatistics WHERE tbl_royale_publisherstatistics.PublisherID = P_PublisherID order by Date asc;
 END//
 DELIMITER ;
 
