@@ -48,73 +48,44 @@
       <b-button v-if="royaleStandings && userRoyalePublisherID" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisherID } }">View My Publisher</b-button>
     </div>
 
-    <div v-if="royaleStandings">
-      <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
-        <template #cell(ranking)="data">
-          <template v-if="data.item.ranking">
-            {{ data.item.ranking }}
-          </template>
-          <template v-else>--</template>
-        </template>
-        <template #cell(publisherName)="data">
-          <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID } }">
-            {{ data.item.publisherName }}
-          </router-link>
-        </template>
-        <template #cell(playerName)="data">
-          {{ data.item.playerName }}
-          <font-awesome-icon v-if="data.item.previousQuarterWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-quarter-winner" />
-          <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
-        </template>
-      </b-table>
-      <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
-    </div>
-    <div v-else class="spinner">
-      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
-    </div>
-
-    <hr />
-
-    <div class="royale-groups-section">
-      <h2>Royale Groups</h2>
-
-      <div v-if="rulesBasedGroups && rulesBasedGroups.length > 0" class="rules-based-groups-section">
-        <h4>Featured Groups</h4>
-        <b-list-group>
-          <b-list-group-item v-for="group in rulesBasedGroups" :key="group.groupID" :to="{ name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: year, quarter: quarter } }">
-            <strong>{{ group.groupName }}</strong>
-            <span class="text-muted"> - {{ group.memberCount }} members</span>
-          </b-list-group-item>
-        </b-list-group>
+    <div class="row royale-leaderboard-row">
+      <div class="col-lg-8 col-md-12">
+        <div v-if="royaleStandings">
+          <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
+            <template #cell(ranking)="data">
+              <template v-if="data.item.ranking">
+                {{ data.item.ranking }}
+              </template>
+              <template v-else>--</template>
+            </template>
+            <template #cell(publisherName)="data">
+              <router-link :to="{ name: 'royalePublisher', params: { publisherid: data.item.publisherID } }">
+                {{ data.item.publisherName }}
+              </router-link>
+            </template>
+            <template #cell(playerName)="data">
+              {{ data.item.playerName }}
+              <font-awesome-icon v-if="data.item.previousQuarterWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-quarter-winner" />
+              <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
+            </template>
+          </b-table>
+          <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+        </div>
+        <div v-else class="spinner">
+          <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+        </div>
       </div>
-
-      <div v-if="isAuth && myGroups && myGroups.length > 0" class="my-groups-section">
-        <h4>My Groups</h4>
-        <b-list-group>
-          <b-list-group-item v-for="group in myGroups" :key="group.groupID" :to="{ name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: year, quarter: quarter } }">
-            <strong>{{ group.groupName }}</strong>
-            <span class="text-muted"> - {{ group.memberCount }} members - {{ group.groupType }}</span>
-          </b-list-group-item>
-        </b-list-group>
-      </div>
-
-      <div class="group-controls">
-        <b-input-group class="group-search">
-          <b-form-input v-model="groupSearchQuery" placeholder="Search groups by name..." @input="searchGroups"></b-form-input>
-        </b-input-group>
-        <b-button v-if="isAuth" v-b-modal="'createRoyaleGroupModal'" variant="primary">Create Group</b-button>
-      </div>
-
-      <div v-if="groupSearchResults && groupSearchResults.length > 0" class="group-search-results">
-        <b-list-group>
-          <b-list-group-item v-for="group in groupSearchResults" :key="group.groupID" :to="{ name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: year, quarter: quarter } }">
-            <strong>{{ group.groupName }}</strong>
-            <span class="text-muted"> - {{ group.memberCount }} members - {{ group.groupType }}</span>
-          </b-list-group-item>
-        </b-list-group>
-      </div>
-      <div v-if="groupSearchQuery && groupSearchQuery.length >= 2 && groupSearchResults && groupSearchResults.length === 0" class="text-muted">
-        No groups found.
+      <div class="col-lg-4 col-md-12">
+        <hr class="d-md-block d-lg-none" />
+        <RoyaleGroupsWidget
+          :my-groups="myGroups"
+          :rules-based-groups="rulesBasedGroups"
+          :year="year"
+          :quarter="quarter"
+          :group-search-query="groupSearchQuery"
+          :group-search-results="groupSearchResults"
+          :is-auth="isAuth"
+          @search-query-change="onGroupSearchQueryChange" />
       </div>
     </div>
 
@@ -228,12 +199,14 @@
 import axios from 'axios';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import RoyaleGroupsWidget from '@/components/royaleGroupsWidget.vue';
 import { orderBy } from '@/globalFunctions';
 
 export default {
   components: {
     CreateRoyalePublisherForm,
-    MasterGameTagBadge
+    MasterGameTagBadge,
+    RoyaleGroupsWidget
   },
   props: {
     year: { type: Number, default: null },
@@ -368,6 +341,10 @@ export default {
         const message = error.response?.data || 'Failed to create group.';
         this.$bvToast.toast(message, { variant: 'danger', solid: true });
       }
+    },
+    onGroupSearchQueryChange(value) {
+      this.groupSearchQuery = value;
+      this.searchGroups();
     }
   }
 };
@@ -397,7 +374,7 @@ export default {
 }
 
 .critic-royale-header {
-  height: 300px;
+  height: 220px;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -412,30 +389,22 @@ export default {
   }
 }
 
-.royale-groups-section {
-  margin: 15px 0;
+.royale-leaderboard-row {
+  margin-top: 5px;
 }
 
-.group-controls {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+div >>> div.card {
+  background: rgba(50, 50, 50, 0.8);
 }
 
-.group-search {
-  max-width: 400px;
+div >>> .tab-header {
+  margin-bottom: 5px;
 }
 
-.group-search-results {
-  margin-bottom: 10px;
-}
-
-.rules-based-groups-section {
-  margin-bottom: 15px;
-}
-
-.my-groups-section {
-  margin-bottom: 15px;
+div >>> .tab-header a {
+  border-radius: 0px;
+  font-weight: bolder;
+  color: white;
 }
 
 .login-button {
