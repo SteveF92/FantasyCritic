@@ -136,12 +136,8 @@ export default {
         return {};
       }
       const labelSet = new Set(this.combinedStatisticsLabels);
-      const annotations = {};
-      let annIndex = 0;
-      this.chartMembers.forEach((member, memberIndex) => {
-        const color = SERIES_COLORS[memberIndex % SERIES_COLORS.length];
-        const lineColor = this.hexToRgba(color, 0.55);
-        const labelBorder = this.hexToRgba(color, 0.45);
+      const byGameAndDate = new Map();
+      for (const member of this.chartMembers) {
         for (const pg of member.publisherGames || []) {
           if (!pg.masterGame) {
             continue;
@@ -150,46 +146,65 @@ export default {
           if (!dateLabel || !labelSet.has(dateLabel)) {
             continue;
           }
-          const key = `release-${member.publisherID}-${pg.masterGame.masterGameID}-${annIndex}`;
-          annotations[key] = {
-            type: 'line',
-            scaleID: 'x',
-            value: dateLabel,
-            borderColor: lineColor,
-            borderWidth: 2,
-            borderDash: [4, 4],
-            drawTime: 'beforeDatasetsDraw',
-            z: -1,
-            label: {
-              display: false,
-              content: `${member.publisherName}: ${pg.masterGame.gameName}`,
-              drawTime: 'afterDatasetsDraw',
-              backgroundColor: 'rgba(20, 20, 20, 0.95)',
-              borderColor: labelBorder,
-              borderWidth: 1,
-              color: '#ffffff',
-              font: { size: 12 },
-              padding: 8,
-              borderRadius: 4,
-              position: 'start',
-              yAdjust: -6
-            },
-            enter({ element }) {
-              if (element.label) {
-                element.label.options.display = true;
-              }
-              return true;
-            },
-            leave({ element }) {
-              if (element.label) {
-                element.label.options.display = false;
-              }
-              return true;
-            }
-          };
-          annIndex += 1;
+          const masterGameID = pg.masterGame.masterGameID;
+          const dedupeKey = `${dateLabel}\0${masterGameID}`;
+          let entry = byGameAndDate.get(dedupeKey);
+          if (!entry) {
+            entry = {
+              dateLabel,
+              masterGameID,
+              gameName: pg.masterGame.gameName,
+              publisherNames: []
+            };
+            byGameAndDate.set(dedupeKey, entry);
+          }
+          entry.publisherNames.push(member.publisherName);
         }
-      });
+      }
+      const lineColor = 'rgba(255, 255, 255, 0.42)';
+      const labelBorder = 'rgba(214, 153, 58, 0.5)';
+      const annotations = {};
+      let annIndex = 0;
+      for (const g of byGameAndDate.values()) {
+        const content = this.formatReleaseAnnotationLabel(g.gameName, g.publisherNames);
+        annotations[`release-${g.masterGameID}-${g.dateLabel}-${annIndex}`] = {
+          type: 'line',
+          scaleID: 'x',
+          value: g.dateLabel,
+          borderColor: lineColor,
+          borderWidth: 2,
+          borderDash: [4, 4],
+          drawTime: 'beforeDatasetsDraw',
+          z: -1,
+          label: {
+            display: false,
+            content,
+            drawTime: 'afterDatasetsDraw',
+            backgroundColor: 'rgba(20, 20, 20, 0.95)',
+            borderColor: labelBorder,
+            borderWidth: 1,
+            color: '#ffffff',
+            font: { size: 12 },
+            padding: 8,
+            borderRadius: 4,
+            position: 'start',
+            yAdjust: -6
+          },
+          enter({ element }) {
+            if (element.label) {
+              element.label.options.display = true;
+            }
+            return true;
+          },
+          leave({ element }) {
+            if (element.label) {
+              element.label.options.display = false;
+            }
+            return true;
+          }
+        };
+        annIndex += 1;
+      }
       return annotations;
     },
     groupChartOptions() {
@@ -299,6 +314,23 @@ export default {
     selectYear(year) {
       this.selectedYear = year;
     },
+    formatReleaseAnnotationLabel(gameName, publisherNames) {
+      const unique = [...new Set(publisherNames)].sort((a, b) => a.localeCompare(b));
+      const n = unique.length;
+      if (n === 0) {
+        return gameName;
+      }
+      if (n === 1) {
+        return `${gameName} — ${unique[0]}`;
+      }
+      const listStr = unique.join(', ');
+      const full = `${gameName} — ${listStr}`;
+      const maxLen = 72;
+      if (full.length <= maxLen && n <= 5) {
+        return full;
+      }
+      return `${gameName} (${n} publishers)`;
+    },
     masterGameReleaseChartLabel(game) {
       return game?.releaseDate;
     },
@@ -318,13 +350,6 @@ export default {
         }
         return last;
       });
-    },
-    hexToRgba(hex, alpha) {
-      const h = hex.replace('#', '');
-      const r = parseInt(h.slice(0, 2), 16);
-      const g = parseInt(h.slice(2, 4), 16);
-      const b = parseInt(h.slice(4, 6), 16);
-      return `rgba(${r},${g},${b},${alpha})`;
     }
   }
 };
