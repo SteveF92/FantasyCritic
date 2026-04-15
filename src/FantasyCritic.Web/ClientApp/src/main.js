@@ -7,6 +7,7 @@ import VueGtag from 'vue-gtag';
 import VueClipboard from 'vue-clipboard2';
 
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';
 
 import App from './App.vue';
 import router from './router/index';
@@ -81,7 +82,7 @@ Vue.component('FontAwesomeIcon', FontAwesomeIcon);
 Vue.component('FontAwesomeLayers', FontAwesomeLayers);
 Vue.component('FontAwesomeLayersText', FontAwesomeLayersText);
 
-ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler);
+ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler, annotationPlugin);
 
 sync(store, router);
 

@@ -127,11 +127,8 @@
       </div>
     </b-modal>
 
-    <div v-if="publisher?.statistics.length > 0">
-      <h2>Publisher Statistics</h2>
-      <div class="royale-chart-container">
-        <LineChartGenerator :chart-options="chartOptions" :chart-data="chartData" chart-id="line-chart" dataset-id-key="label" />
-      </div>
+    <div v-if="publisher?.statistics.length > 0" class="royale-chart-container">
+      <LineChartGenerator :chart-options="chartOptions" :chart-data="chartData" chart-id="line-chart" dataset-id-key="label" />
     </div>
 
     <div v-if="publisher?.publisherActions.length > 0">
@@ -212,53 +209,7 @@ export default {
         { key: 'description', label: 'Description', thClass: 'bg-primary' }
       ],
       lockDateTimeField: { key: 'lockDateTime', label: 'Locks In', thClass: 'bg-primary', sortable: true },
-      sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' },
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 4,
-            right: 8,
-            bottom: 52,
-            left: 4
-          }
-        },
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: {
-            labels: {
-              color: 'rgba(255, 255, 255, 0.9)',
-              font: { size: 13 },
-              usePointStyle: true,
-              padding: 16
-            }
-          },
-          tooltip: {
-            backgroundColor: 'rgba(20, 20, 20, 0.95)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: 'rgba(214, 153, 58, 0.5)',
-            borderWidth: 1
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: 'rgba(255, 255, 255, 0.75)',
-              maxRotation: 45,
-              minRotation: 0,
-              padding: 6
-            },
-            grid: { color: 'rgba(255, 255, 255, 0.08)' }
-          },
-          y: {
-            min: 0,
-            ticks: { color: 'rgba(255, 255, 255, 0.75)' },
-            grid: { color: 'rgba(255, 255, 255, 0.08)' }
-          }
-        }
-      }
+      sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }
     };
   },
   computed: {
@@ -296,10 +247,131 @@ export default {
     quarterIsFinished() {
       return this.publisher.yearQuarter.finished;
     },
+    statisticsDateLabels() {
+      if (!this.publisher?.statistics?.length) {
+        return [];
+      }
+      return this.publisher.statistics.map((x) => this.normalizeLocalDateToLabel(x.date));
+    },
+    releaseDateAnnotations() {
+      if (!this.publisher?.publisherGames?.length || !this.statisticsDateLabels.length) {
+        return {};
+      }
+      const labelSet = new Set(this.statisticsDateLabels);
+      const annotations = {};
+      let index = 0;
+      for (const pg of this.publisher.publisherGames) {
+        if (!pg.masterGame) {
+          continue;
+        }
+        const label = this.masterGameReleaseChartLabel(pg.masterGame);
+        if (!label || !labelSet.has(label)) {
+          continue;
+        }
+        const gameName = pg.masterGame.gameName;
+        annotations[`release-${pg.masterGame.masterGameID}-${index}`] = {
+          type: 'line',
+          scaleID: 'x',
+          value: label,
+          borderColor: 'rgba(255, 255, 255, 0.4)',
+          borderWidth: 2,
+          borderDash: [4, 4],
+          drawTime: 'beforeDatasetsDraw',
+          z: -1,
+          label: {
+            display: false,
+            content: gameName,
+            drawTime: 'afterDatasetsDraw',
+            backgroundColor: 'rgba(20, 20, 20, 0.95)',
+            borderColor: 'rgba(214, 153, 58, 0.5)',
+            borderWidth: 1,
+            color: '#ffffff',
+            font: { size: 12 },
+            padding: 8,
+            borderRadius: 4,
+            position: 'start',
+            yAdjust: -6
+          },
+          enter({ element }) {
+            if (element.label) {
+              element.label.options.display = true;
+            }
+            return true;
+          },
+          leave({ element }) {
+            if (element.label) {
+              element.label.options.display = false;
+            }
+            return true;
+          }
+        };
+        index += 1;
+      }
+      return annotations;
+    },
+    chartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 4,
+            right: 8,
+            bottom: 52,
+            left: 4
+          }
+        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'rgba(255, 255, 255, 0.9)',
+              font: { size: 13 },
+              usePointStyle: true,
+              padding: 16
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(20, 20, 20, 0.95)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgba(214, 153, 58, 0.5)',
+            borderWidth: 1
+          },
+          annotation: {
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            annotations: this.releaseDateAnnotations
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.75)',
+              maxRotation: 45,
+              minRotation: 0,
+              padding: 6
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          },
+          y: {
+            min: 0,
+            ticks: { color: 'rgba(255, 255, 255, 0.75)' },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          }
+        }
+      };
+    },
     chartData() {
+      if (!this.publisher?.statistics?.length) {
+        return { labels: [], datasets: [] };
+      }
       const accent = '#d6993a';
       return {
-        labels: this.publisher.statistics.map((x) => x.date),
+        labels: this.statisticsDateLabels,
         datasets: [
           {
             label: 'Fantasy Points',
@@ -443,6 +515,30 @@ export default {
           return `This ${gameOrAction} is hidden from other players. See the Royale home page for more details.`;
         }
       };
+    },
+    normalizeLocalDateToLabel(val) {
+      if (val == null || val === '') {
+        return '';
+      }
+      if (typeof val === 'string') {
+        return DateTime.fromISO(val).toFormat('yyyy-MM-dd');
+      }
+      if (typeof val === 'object' && val.year != null) {
+        return DateTime.fromObject({ year: val.year, month: val.month, day: val.day }).toFormat('yyyy-MM-dd');
+      }
+      return String(val);
+    },
+    masterGameReleaseChartLabel(game) {
+      if (!game) {
+        return null;
+      }
+      if (game.releaseDate) {
+        return this.normalizeLocalDateToLabel(game.releaseDate);
+      }
+      if (game.maximumReleaseDate) {
+        return this.normalizeLocalDateToLabel(game.maximumReleaseDate);
+      }
+      return null;
     }
   }
 };
