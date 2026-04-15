@@ -352,7 +352,11 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await using var connection = new MySqlConnection(_connectionString);
         await using var resultSets = await connection.QueryMultipleAsync("sp_getleagueyearwithsupplementaldata", param, commandType: CommandType.StoredProcedure);
 
-        var supportedYearEntity = resultSets.ReadSingle<SupportedYearEntity>();
+        var supportedYearEntity = resultSets.ReadSingleOrDefault<SupportedYearEntity>();
+        if (supportedYearEntity is null)
+        {
+            return null;
+        }    
 
         var leagueEntity = resultSets.ReadSingleOrDefault<LeagueEntity>();
         if (leagueEntity is null)
