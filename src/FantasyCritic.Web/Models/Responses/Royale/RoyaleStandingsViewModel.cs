@@ -4,18 +4,14 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 
 public class RoyaleStandingsViewModel
 {
-    public RoyaleStandingsViewModel(RoyalePublisher domain, int? ranking, IEnumerable<RoyaleYearQuarter> quartersWon)
+    public RoyaleStandingsViewModel(RoyalePublisher domain, IEnumerable<RoyaleYearQuarter> quartersWon)
     {
         PublisherID = domain.PublisherID;
         PlayerName = domain.User.DisplayName;
         UserID = domain.User.UserID;
         PublisherName = domain.PublisherName;
         TotalFantasyPoints = domain.GetTotalFantasyPoints();
-        if (TotalFantasyPoints > 0)
-        {
-            Ranking = ranking;
-        }
-
+        Ranking = domain.Ranking;
         PreviousQuarterWinner = quartersWon.Select(x => x.YearQuarter).Contains(domain.YearQuarter.YearQuarter.LastQuarter);
         OneTimeWinner = quartersWon.Any();
     }
@@ -28,4 +24,5 @@ public class RoyaleStandingsViewModel
     public int? Ranking { get; }
     public bool PreviousQuarterWinner { get; }
     public bool OneTimeWinner { get; }
+
 }

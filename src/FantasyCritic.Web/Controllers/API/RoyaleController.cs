@@ -213,7 +213,6 @@ public class RoyaleController : FantasyCriticController
 
         var previousWinnersByUser = royaleData.AllYearQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
         var publishersToShow = royaleData.RoyalePublishers.OrderByDescending(x => x.GetTotalFantasyPoints());
-        int ranking = 1;
 
         List<RoyaleStandingsViewModel> publisherViewModels = new List<RoyaleStandingsViewModel>();
         foreach (var publisher in publishersToShow)
@@ -229,14 +228,7 @@ public class RoyaleController : FantasyCriticController
                 continue;
             }
 
-            int? thisRanking = null;
-            if (publisher.GetTotalFantasyPoints() > 0)
-            {
-                thisRanking = ranking;
-                ranking++;
-            }
-
-            var publisherViewModel = new RoyaleStandingsViewModel(publisher, thisRanking, winningQuarters);
+            var publisherViewModel = new RoyaleStandingsViewModel(publisher, winningQuarters);
             publisherViewModels.Add(publisherViewModel);
         }
 
