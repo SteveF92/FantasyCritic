@@ -101,13 +101,13 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var supportedQuarterEntities = resultSets.Read<RoyaleYearQuarterEntity>();
         var publisherEntities = resultSets.Read<RoyalePublisherEntity>();
         var publisherGameEntities = resultSets.Read<RoyalePublisherGameEntity>();
+        var topPublisherStatistics = resultSets.Read<RoyalePublisherStatisticsEntity>();
 
         //MasterGame Results
         var tagResults = resultSets.Read<MasterGameTagEntity>();
         var masterSubGameResults = resultSets.Read<MasterSubGameEntity>();
         var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>();
         var masterGameYearResults = resultSets.Read<MasterGameYearEntity>();
-        var topPublisherStatistics = resultSets.Read<RoyalePublisherStatisticsEntity>();
 
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();

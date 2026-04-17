@@ -41,7 +41,11 @@ BEGIN
   JOIN tbl_royale_publisher ON tbl_royale_publishergame.PublisherID = tbl_royale_publisher.PublisherID
   WHERE tbl_royale_publisher.Year = P_Year
     AND tbl_royale_publisher.Quarter = P_Quarter;
-  
+
+  SELECT tbl_royale_publisherstatistics.* 
+  FROM tbl_royale_publisher
+  JOIN tbl_royale_publisherstatistics ON tbl_royale_publisher.PublisherID = tbl_royale_publisherstatistics.PublisherID
+  WHERE YEAR = P_Year AND QUARTER = P_Quarter AND Ranking <= 10;
   
   -- Master Game Data
   
