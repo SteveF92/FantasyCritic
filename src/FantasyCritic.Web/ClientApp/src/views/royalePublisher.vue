@@ -17,6 +17,7 @@
             {{ publisher.yearQuarter.year }}-Q{{ publisher.yearQuarter.quarter }}
           </router-link>
         </h4>
+        <h4>Rank: {{ publisher.ranking ?? '--' }}</h4>
       </div>
 
       <div v-if="publisher.quartersWon" class="won-quarters">

@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 
 public class RoyalePublisherViewModel
 {
-    public RoyalePublisherViewModel(RoyalePublisher domain, LocalDate currentDate, int? ranking, IEnumerable<RoyaleYearQuarter> quartersWon,
+    public RoyalePublisherViewModel(RoyalePublisher domain, LocalDate currentDate, IEnumerable<RoyaleYearQuarter> quartersWon,
         IEnumerable<RoyaleAction> royaleActions, IEnumerable<RoyalePublisherStatistics> statistics, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing)
     {
         PublisherID = domain.PublisherID;
@@ -21,7 +21,7 @@ public class RoyalePublisherViewModel
         TotalFantasyPoints = domain.GetTotalFantasyPoints();
         if (TotalFantasyPoints > 0)
         {
-            Ranking = ranking;
+            Ranking = domain.Ranking;
         }
 
         QuartersWon = quartersWon.Select(x => new RoyaleYearQuarterViewModel(x)).ToList();

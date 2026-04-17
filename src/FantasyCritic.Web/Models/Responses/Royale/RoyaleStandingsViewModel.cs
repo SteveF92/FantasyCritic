@@ -24,5 +24,4 @@ public class RoyaleStandingsViewModel
     public int? Ranking { get; }
     public bool PreviousQuarterWinner { get; }
     public bool OneTimeWinner { get; }
-
 }

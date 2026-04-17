@@ -24,7 +24,7 @@ LEFT JOIN (
         JOIN tbl_royale_supportedquarter rsq
             ON rp2.`Year` = rsq.`Year`
            AND rp2.`Quarter` = rsq.`Quarter`
-        WHERE rsq.Finished = 0
+        WHERE rsq.Finished = 1
         GROUP BY
             rp2.`Year`,
             rp2.`Quarter`,
