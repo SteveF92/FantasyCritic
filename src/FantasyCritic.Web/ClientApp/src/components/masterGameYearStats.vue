@@ -33,14 +33,59 @@
 
         <li>Counter Picked in {{ selectedMasterGameYear.adjustedPercentCounterPick | percent(1) }} of leagues where it is published.</li>
       </ul>
+
+      <div v-if="statisticsLoadError" class="alert alert-warning small mt-3" role="alert">{{ statisticsLoadError }}</div>
+
+      <div v-if="chartHasData" class="master-game-year-stats-chart">
+        <h3 class="chart-heading">Statistics over time</h3>
+        <div class="master-game-year-stats-chart-container">
+          <LineChartGenerator
+            :key="statisticsChartKey"
+            chart-id="master-game-year-statistics-chart"
+            dataset-id-key="label"
+            :height="chartHeight"
+            :styles="chartCanvasStyles"
+            :chart-options="chartOptions"
+            :chart-data="chartData" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { Line as LineChartGenerator } from 'vue-chartjs/legacy';
+
+const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
+
+/** Every numeric series returned on each statistics row; trim or split axes later as needed. */
+const STATISTICS_CHART_SERIES = [
+  { key: 'eligiblePercentStandardGame', label: '% Published', scaleZeroToOneAsPercent: true },
+  { key: 'adjustedPercentCounterPick', label: '% Counter Picked', scaleZeroToOneAsPercent: true },
+  { key: 'dateAdjustedHypeFactor', label: 'Hype Factor' },
+  { key: 'projectedFantasyPoints', label: 'Projected Points' },
+  { key: 'royaleCost', label: 'Royale cost' }
+];
+
+function coerceChartNumber(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function valueForChart(series, raw) {
+  const v = coerceChartNumber(raw);
+  if (v === null) {
+    return null;
+  }
+  return series.scaleZeroToOneAsPercent ? v * 100 : v;
+}
 
 export default {
+  components: { LineChartGenerator },
   props: {
     masterGameId: { type: String, required: true },
     masterGameYears: { type: Array, required: true }
@@ -49,7 +94,9 @@ export default {
     return {
       selectedYear: null,
       masterGameYearWithStatistics: null,
-      statisticsLoadError: null
+      statisticsLoadError: null,
+      chartHeight: 520,
+      chartCanvasStyles: {}
     };
   },
   computed: {
@@ -80,6 +127,97 @@ export default {
           );
         }
       };
+    },
+    statisticsRowsSorted() {
+      const stats = this.masterGameYearWithStatistics?.statistics;
+      if (!stats?.length) {
+        return [];
+      }
+      return [...stats].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    },
+    chartHasData() {
+      return this.statisticsRowsSorted.length > 0;
+    },
+    statisticsChartKey() {
+      return `${this.masterGameId}-${this.selectedYear}`;
+    },
+    chartLabels() {
+      return this.statisticsRowsSorted.map((row) => row.date);
+    },
+    chartData() {
+      if (!this.chartHasData) {
+        return { labels: [], datasets: [] };
+      }
+      const labels = this.chartLabels;
+      const rows = this.statisticsRowsSorted;
+      const datasets = STATISTICS_CHART_SERIES.map((series, i) => {
+        const color = SERIES_COLORS[i % SERIES_COLORS.length];
+        return {
+          label: series.label,
+          borderColor: color,
+          backgroundColor: color,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0,
+          percentageScale: Boolean(series.scaleZeroToOneAsPercent),
+          data: rows.map((row) => valueForChart(series, row[series.key]))
+        };
+      });
+      return { labels, datasets };
+    },
+    chartOptions() {
+      return {
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            bottom: 36
+          }
+        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'rgba(255, 255, 255, 0.9)',
+              usePointStyle: true
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(20, 20, 20, 0.95)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgba(214, 153, 58, 0.5)',
+            borderWidth: 1,
+            filter: (item) => item.parsed.y !== null && !Number.isNaN(item.parsed.y),
+            callbacks: {
+              label(context) {
+                const label = context.dataset.label || '';
+                const y = context.parsed.y;
+                if (y === null || Number.isNaN(y)) {
+                  return label;
+                }
+                if (context.dataset.percentageScale) {
+                  return `${label}: ${y.toFixed(1)}%`;
+                }
+                return `${label}: ${y}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.75)',
+              maxRotation: 45,
+              minRotation: 0
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          },
+          y: {
+            ticks: { color: 'rgba(255, 255, 255, 0.75)' },
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
+          }
+        }
+      };
     }
   },
   watch: {
@@ -105,7 +243,14 @@ export default {
         const response = await axios.get(`/api/game/MasterGameYearWithStatistics/${this.masterGameId}/${year}`);
         this.masterGameYearWithStatistics = response.data;
       } catch (error) {
-        this.statisticsLoadError = error.response?.data ?? error.message ?? 'Failed to load year statistics.';
+        const body = error.response?.data;
+        let message = error.message ?? 'Failed to load year statistics.';
+        if (typeof body === 'string') {
+          message = body;
+        } else if (body && typeof body === 'object') {
+          message = body.message || body.title || JSON.stringify(body);
+        }
+        this.statisticsLoadError = message;
         this.masterGameYearWithStatistics = null;
       }
     }
@@ -143,5 +288,17 @@ export default {
   font-weight: 500;
   line-height: 1.3;
   padding: 0.25rem 0.85rem;
+}
+
+.chart-heading {
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.master-game-year-stats-chart-container {
+  position: relative;
+  height: 520px;
 }
 </style>
