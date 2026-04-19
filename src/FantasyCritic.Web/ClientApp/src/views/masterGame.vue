@@ -36,6 +36,8 @@
           <masterGameDetails :master-game="masterGame"></masterGameDetails>
         </div>
 
+        <MasterGameYearStats :master-game-years="masterGameYears"></MasterGameYearStats>
+
         <div v-if="Object.keys(leaguesWithGameByYear).length > 0" class="text-well league-game-section">
           <h2>Your Leagues with this Game</h2>
 
@@ -60,34 +62,6 @@
               {{ data.item.changedByUser.displayName }}
             </template>
           </b-table>
-        </div>
-
-        <div v-for="masterGameYear in reversedMasterGameYears" :key="masterGameYear.year" class="text-well master-game-section">
-          <h2>Stats for {{ masterGameYear.year }}</h2>
-          <ul>
-            <li>Drafted or picked up in {{ masterGameYear.eligiblePercentStandardGame | percent(1) }} of leagues where it is eligible.</li>
-
-            <li v-if="masterGameYear.averageDraftPosition">Average Draft Position: {{ masterGameYear.averageDraftPosition | score(1) }}</li>
-            <li v-else>Average Draft Position: Undrafted</li>
-
-            <li v-if="masterGameYear.dateAdjustedHypeFactor">Hype Factor: {{ masterGameYear.dateAdjustedHypeFactor | score(1) }}</li>
-            <li v-else>Hype Factor: Unhyped...</li>
-
-            <template v-if="masterGameYear.year >= 2022 && masterGameYear.peakHypeFactor > masterGameYear.dateAdjustedHypeFactor">
-              <li v-if="masterGameYear.peakHypeFactor">
-                Peak Hype Factor: {{ masterGameYear.peakHypeFactor | score(1) }}
-                <font-awesome-icon v-b-popover.hover.top="peakHypeFactorText" color="white" size="lg" icon="info-circle" />
-              </li>
-              <li v-else>
-                Peak Hype Factor: Unhyped...
-                <font-awesome-icon v-b-popover.hover.top="peakHypeFactorText" color="white" icon="info-circle" />
-              </li>
-            </template>
-
-            <li v-if="masterGameYear.projectedFantasyPoints">Projected Points: ~{{ masterGameYear.projectedFantasyPoints | score(1) }}</li>
-
-            <li>Counter Picked in {{ masterGameYear.adjustedPercentCounterPick | percent(1) }} of leagues where it is published.</li>
-          </ul>
         </div>
       </div>
     </div>
@@ -115,11 +89,13 @@
 <script>
 import axios from 'axios';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
+import MasterGameYearStats from '@/components/masterGameYearStats.vue';
 import GGMixin from '@/mixins/ggMixin.js';
 
 export default {
   components: {
-    MasterGameDetails
+    MasterGameDetails,
+    MasterGameYearStats
   },
   mixins: [GGMixin],
   props: {
@@ -152,25 +128,6 @@ export default {
       }
 
       return this.baseChangeLogFields;
-    },
-    reversedMasterGameYears() {
-      let tempMasterGameYears = structuredClone(this.masterGameYears);
-      tempMasterGameYears.reverse();
-      return tempMasterGameYears;
-    },
-    peakHypeFactorText() {
-      return {
-        html: true,
-        title: () => {
-          return 'Peak Hype Factor';
-        },
-        content: () => {
-          return (
-            "Sometimes a game's hype factor will go down over the course of the year, particularly if it gets delayed and many players drop it. " +
-            "This number is the highest this game's hype factor ever was in the year."
-          );
-        }
-      };
     },
     sortedYears() {
       return Object.keys(this.leaguesWithGameByYear).sort((a, b) => b - a);
