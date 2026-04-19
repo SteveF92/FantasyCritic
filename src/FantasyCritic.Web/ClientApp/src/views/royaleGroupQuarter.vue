@@ -60,14 +60,7 @@
 
       <template v-if="showGroupPointsChart">
         <div class="royale-chart-container">
-          <LineChartGenerator
-            chart-id="group-quarter-points-chart"
-            dataset-id-key="label"
-            :width="groupChartCanvasWidth"
-            :height="groupChartCanvasHeight"
-            :styles="groupChartCanvasStyles"
-            :chart-options="groupChartOptions"
-            :chart-data="groupChartData" />
+          <RoyalePublisherGraph chart-id="group-quarter-points-chart" :chart-height="650" :royale-publishers="chartMembers" />
         </div>
       </template>
     </div>
@@ -82,15 +75,12 @@
 
 <script>
 import axios from 'axios';
-import { DateTime } from 'luxon';
-import { Line as LineChartGenerator } from 'vue-chartjs/legacy';
 
+import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 import { orderBy } from '@/globalFunctions';
 
-const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
-
 export default {
-  components: { LineChartGenerator },
+  components: { RoyalePublisherGraph },
   props: {
     groupid: { type: String, required: true },
     year: { type: Number, required: true },
@@ -102,13 +92,6 @@ export default {
       allQuarters: null,
       selectedYear: null,
       notFound: false,
-      groupChartCanvasWidth: 1200,
-      groupChartCanvasHeight: 600,
-      groupChartCanvasStyles: {
-        width: '100%',
-        height: '100%',
-        position: 'relative'
-      },
       standingsFields: [
         { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
         { key: 'displayName', label: 'Player', thClass: 'bg-primary' },
@@ -133,170 +116,8 @@ export default {
       }
       return this.groupQuarter.members.filter((m) => m.hasPublisher && m.publisherID && m.statistics?.length > 0);
     },
-    combinedStatisticsLabels() {
-      const set = new Set();
-      for (const m of this.chartMembers) {
-        for (const s of m.statistics) {
-          set.add(s.date);
-        }
-      }
-      return [...set].sort();
-    },
     showGroupPointsChart() {
-      return this.chartMembers.length > 0 && this.combinedStatisticsLabels.length > 0;
-    },
-    groupReleaseAnnotations() {
-      if (!this.showGroupPointsChart) {
-        return {};
-      }
-      const labelSet = new Set(this.combinedStatisticsLabels);
-      const byGameAndDate = new Map();
-      for (const member of this.chartMembers) {
-        for (const pg of member.publisherGames || []) {
-          if (!pg.masterGame) {
-            continue;
-          }
-          const dateLabel = this.masterGameReleaseChartLabel(pg.masterGame);
-          if (!dateLabel || !labelSet.has(dateLabel)) {
-            continue;
-          }
-          const masterGameID = pg.masterGame.masterGameID;
-          const dedupeKey = `${dateLabel}\0${masterGameID}`;
-          let entry = byGameAndDate.get(dedupeKey);
-          if (!entry) {
-            entry = {
-              dateLabel,
-              masterGameID,
-              gameName: pg.masterGame.gameName,
-              publisherNames: []
-            };
-            byGameAndDate.set(dedupeKey, entry);
-          }
-          entry.publisherNames.push(member.publisherName);
-        }
-      }
-      const lineColor = 'rgba(255, 255, 255, 0.42)';
-      const labelBorder = 'rgba(214, 153, 58, 0.5)';
-      const annotations = {};
-      let annIndex = 0;
-      for (const g of byGameAndDate.values()) {
-        const content = this.formatReleaseAnnotationLabel(g.gameName, g.publisherNames);
-        annotations[`release-${g.masterGameID}-${g.dateLabel}-${annIndex}`] = {
-          type: 'line',
-          scaleID: 'x',
-          value: g.dateLabel,
-          borderColor: lineColor,
-          borderWidth: 2,
-          borderDash: [4, 4],
-          drawTime: 'beforeDatasetsDraw',
-          z: -1,
-          label: {
-            display: false,
-            content,
-            drawTime: 'afterDatasetsDraw',
-            backgroundColor: 'rgba(20, 20, 20, 0.95)',
-            borderColor: labelBorder,
-            borderWidth: 1,
-            color: '#ffffff',
-            font: { size: 12 },
-            padding: 8,
-            borderRadius: 4,
-            position: 'start',
-            yAdjust: -6
-          },
-          enter({ element }) {
-            if (element.label) {
-              element.label.options.display = true;
-            }
-            return true;
-          },
-          leave({ element }) {
-            if (element.label) {
-              element.label.options.display = false;
-            }
-            return true;
-          }
-        };
-        annIndex += 1;
-      }
-      return annotations;
-    },
-    groupChartOptions() {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 4,
-            right: 8,
-            bottom: 52,
-            left: 4
-          }
-        },
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: {
-            labels: {
-              color: 'rgba(255, 255, 255, 0.9)',
-              font: { size: 13 },
-              usePointStyle: true,
-              padding: 16
-            }
-          },
-          tooltip: {
-            backgroundColor: 'rgba(20, 20, 20, 0.95)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: 'rgba(214, 153, 58, 0.5)',
-            borderWidth: 1,
-            filter: (item) => item.parsed.y !== null && !Number.isNaN(item.parsed.y)
-          },
-          annotation: {
-            interaction: {
-              mode: 'nearest',
-              axis: 'x',
-              intersect: false
-            },
-            annotations: this.groupReleaseAnnotations
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: 'rgba(255, 255, 255, 0.75)',
-              maxRotation: 45,
-              minRotation: 0,
-              padding: 6
-            },
-            grid: { color: 'rgba(255, 255, 255, 0.08)' }
-          },
-          y: {
-            min: 0,
-            ticks: { color: 'rgba(255, 255, 255, 0.75)' },
-            grid: { color: 'rgba(255, 255, 255, 0.08)' }
-          }
-        }
-      };
-    },
-    groupChartData() {
-      if (!this.showGroupPointsChart) {
-        return { labels: [], datasets: [] };
-      }
-      const labels = this.combinedStatisticsLabels;
-      const datasets = this.chartMembers.map((member, i) => {
-        const color = SERIES_COLORS[i % SERIES_COLORS.length];
-        return {
-          label: member.publisherName,
-          borderColor: color,
-          backgroundColor: 'transparent',
-          borderWidth: 2,
-          fill: false,
-          stepped: true,
-          pointRadius: 0,
-          data: this.alignPublisherStatsToLabels(member, labels)
-        };
-      });
-      return { labels, datasets };
+      return this.chartMembers.length > 0;
     }
   },
   watch: {
@@ -323,43 +144,6 @@ export default {
     },
     selectYear(year) {
       this.selectedYear = year;
-    },
-    formatReleaseAnnotationLabel(gameName, publisherNames) {
-      const unique = [...new Set(publisherNames)].sort((a, b) => a.localeCompare(b));
-      const n = unique.length;
-      if (n === 0) {
-        return gameName;
-      }
-      if (n === 1) {
-        return `${gameName} — ${unique[0]}`;
-      }
-      const listStr = unique.join(', ');
-      const full = `${gameName} — ${listStr}`;
-      const maxLen = 72;
-      if (full.length <= maxLen && n <= 5) {
-        return full;
-      }
-      return `${gameName} (${n} publishers)`;
-    },
-    masterGameReleaseChartLabel(game) {
-      return game?.releaseDate;
-    },
-    alignPublisherStatsToLabels(member, labels) {
-      const sorted = [...member.statistics]
-        .map((s) => ({
-          date: s.date,
-          fantasyPoints: Number(s.fantasyPoints)
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
-      let j = 0;
-      let last = null;
-      return labels.map((label) => {
-        while (j < sorted.length && sorted[j].date <= label) {
-          last = sorted[j].fantasyPoints;
-          j++;
-        }
-        return last;
-      });
     }
   }
 };
@@ -400,23 +184,9 @@ export default {
 
 .royale-chart-container {
   height: 625px;
-  max-width: 100%;
-  padding: 16px 12px 20px;
-  margin-top: 8px;
-  margin-bottom: 12px;
   background: #252525;
   border: 1px solid rgba(214, 153, 58, 0.35);
   border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.royale-chart-container > div {
-  flex: 1 1 auto;
-  min-height: 0;
 }
 </style>
 

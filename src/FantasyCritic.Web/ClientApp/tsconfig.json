@@ -8,6 +8,7 @@
     "esModuleInterop": true, // Enables better compatibility with CommonJS modules
     "skipLibCheck": true, // Speeds up compilation by skipping type checks of declaration files
     "allowSyntheticDefaultImports": true, // Enables default import syntax
+    "allowImportingTsExtensions": true, // Enables importing .ts files as modules
     "sourceMap": true, // Useful for debugging in Vite
     "baseUrl": ".", // Simplifies import paths
     "paths": {

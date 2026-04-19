@@ -129,7 +129,7 @@
     </b-modal>
 
     <div v-if="publisher?.statistics.length > 0" class="royale-chart-container">
-      <LineChartGenerator :chart-options="chartOptions" :chart-data="chartData" chart-id="line-chart" dataset-id-key="label" />
+      <RoyalePublisherGraph chart-id="publisher-stats" :chart-height="425" :royale-publishers="[publisher]"></RoyalePublisherGraph>
     </div>
 
     <div v-if="publisher?.publisherActions.length > 0">
@@ -164,7 +164,6 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'luxon';
-import { Line as LineChartGenerator } from 'vue-chartjs/legacy';
 
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm.vue';
@@ -172,6 +171,7 @@ import RoyaleChangePublisherNameForm from '@/components/modals/royaleChangePubli
 import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePublisherIconForm.vue';
 import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePublisherSloganForm.vue';
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
+import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
 
@@ -183,7 +183,7 @@ export default {
     MasterGamePopover,
     SellRoyaleGameModal,
     RoyaleChangePublisherSloganForm,
-    LineChartGenerator
+    RoyalePublisherGraph
   },
   props: {
     publisherid: { type: String, required: true }
@@ -219,11 +219,9 @@ export default {
     },
     allGameFields() {
       let allFields = this.gameFields.slice();
-      if (this.userIsPublisher) {
+      if (this.userIsPublisher && this.publisher.publisherGames.some((x) => !x.locked) && !this.quarterIsFinished) {
         allFields.push(this.lockDateTimeField);
-        if (this.publisher.publisherGames.some((x) => !x.locked)) {
-          allFields.push(this.sellGameField);
-        }
+        allFields.push(this.sellGameField);
       }
       return allFields;
     },
@@ -247,144 +245,6 @@ export default {
     },
     quarterIsFinished() {
       return this.publisher.yearQuarter.finished;
-    },
-    statisticsDateLabels() {
-      if (!this.publisher?.statistics?.length) {
-        return [];
-      }
-      return this.publisher.statistics.map((x) => x.date);
-    },
-    releaseDateAnnotations() {
-      if (!this.publisher?.publisherGames?.length || !this.statisticsDateLabels.length) {
-        return {};
-      }
-      const labelSet = new Set(this.statisticsDateLabels);
-      const annotations = {};
-      let index = 0;
-      for (const pg of this.publisher.publisherGames) {
-        if (!pg.masterGame) {
-          continue;
-        }
-        const label = this.masterGameReleaseChartLabel(pg.masterGame);
-        if (!label || !labelSet.has(label)) {
-          continue;
-        }
-        const gameName = pg.masterGame.gameName;
-        annotations[`release-${pg.masterGame.masterGameID}-${index}`] = {
-          type: 'line',
-          scaleID: 'x',
-          value: label,
-          borderColor: 'rgba(255, 255, 255, 0.4)',
-          borderWidth: 2,
-          borderDash: [4, 4],
-          drawTime: 'beforeDatasetsDraw',
-          z: -1,
-          label: {
-            display: false,
-            content: gameName,
-            drawTime: 'afterDatasetsDraw',
-            backgroundColor: 'rgba(20, 20, 20, 0.95)',
-            borderColor: 'rgba(214, 153, 58, 0.5)',
-            borderWidth: 1,
-            color: '#ffffff',
-            font: { size: 12 },
-            padding: 8,
-            borderRadius: 4,
-            position: 'start',
-            yAdjust: -6
-          },
-          enter({ element }) {
-            if (element.label) {
-              element.label.options.display = true;
-            }
-            return true;
-          },
-          leave({ element }) {
-            if (element.label) {
-              element.label.options.display = false;
-            }
-            return true;
-          }
-        };
-        index += 1;
-      }
-      return annotations;
-    },
-    chartOptions() {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 4,
-            right: 8,
-            bottom: 52,
-            left: 4
-          }
-        },
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: {
-            labels: {
-              color: 'rgba(255, 255, 255, 0.9)',
-              font: { size: 13 },
-              usePointStyle: true,
-              padding: 16
-            }
-          },
-          tooltip: {
-            backgroundColor: 'rgba(20, 20, 20, 0.95)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: 'rgba(214, 153, 58, 0.5)',
-            borderWidth: 1
-          },
-          annotation: {
-            interaction: {
-              mode: 'nearest',
-              axis: 'x',
-              intersect: false
-            },
-            annotations: this.releaseDateAnnotations
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: 'rgba(255, 255, 255, 0.75)',
-              maxRotation: 45,
-              minRotation: 0,
-              padding: 6
-            },
-            grid: { color: 'rgba(255, 255, 255, 0.08)' }
-          },
-          y: {
-            min: 0,
-            ticks: { color: 'rgba(255, 255, 255, 0.75)' },
-            grid: { color: 'rgba(255, 255, 255, 0.08)' }
-          }
-        }
-      };
-    },
-    chartData() {
-      if (!this.publisher?.statistics?.length) {
-        return { labels: [], datasets: [] };
-      }
-      const accent = '#d6993a';
-      return {
-        labels: this.statisticsDateLabels,
-        datasets: [
-          {
-            label: 'Fantasy Points',
-            borderColor: accent,
-            backgroundColor: 'rgba(214, 153, 58, 0.18)',
-            borderWidth: 2,
-            stepped: true,
-            pointRadius: 0,
-            data: this.publisher.statistics.map((x) => x.fantasyPoints)
-          }
-        ]
-      };
     }
   },
   watch: {
@@ -512,9 +372,6 @@ export default {
           return `This ${gameOrAction} is hidden from other players. See the Royale home page for more details.`;
         }
       };
-    },
-    masterGameReleaseChartLabel(game) {
-      return game?.releaseDate ?? null;
     }
   }
 };
@@ -592,14 +449,8 @@ export default {
 
 .royale-chart-container {
   height: 380px;
-  max-width: 100%;
-  padding: 16px 12px 20px;
-  margin-top: 8px;
-  margin-bottom: 12px;
   background: #252525;
   border: 1px solid rgba(214, 153, 58, 0.35);
   border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  box-sizing: border-box;
 }
 </style>

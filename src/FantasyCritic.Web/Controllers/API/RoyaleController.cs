@@ -206,6 +206,7 @@ public class RoyaleController : FantasyCriticController
         }
 
         var currentUser = await GetCurrentUser();
+        var currentDate = _clock.GetToday();
 
         var allRoyaleYearQuarters = royaleData.AllYearQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
         var royaleYearQuarterViewModel = new RoyaleYearQuarterViewModel(royaleData.ActiveYearQuarter);
@@ -215,6 +216,8 @@ public class RoyaleController : FantasyCriticController
         var publishersToShow = royaleData.RoyalePublishers.OrderByDescending(x => x.GetTotalFantasyPoints());
 
         List<RoyaleStandingsViewModel> publisherViewModels = new List<RoyaleStandingsViewModel>();
+        var topPublishers = new List<RoyalePublisherViewModel>();
+        bool validStatistics = true;
         foreach (var publisher in publishersToShow)
         {
             var winningQuarters = previousWinnersByUser[publisher.User];
@@ -230,6 +233,18 @@ public class RoyaleController : FantasyCriticController
 
             var publisherViewModel = new RoyaleStandingsViewModel(publisher, winningQuarters);
             publisherViewModels.Add(publisherViewModel);
+
+            if (topPublishers.Count < 10 && validStatistics)
+            {
+                var statistics = royaleData.TopPublisherStatistics.GetValueOrDefault(publisher.PublisherID);
+                if (statistics is null)
+                {
+                    validStatistics = false;
+                    continue;
+                }
+                var topPublisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, winningQuarters, [], statistics, [], false);
+                topPublishers.Add(topPublisherViewModel);
+            }
         }
 
         var vm = new
@@ -237,7 +252,8 @@ public class RoyaleController : FantasyCriticController
             RoyaleYearQuarters = allRoyaleYearQuarters,
             RoyaleYearQuarter = royaleYearQuarterViewModel,
             UserRoyalePublisherID = userRoyalePublisherID,
-            RoyaleStandings = publisherViewModels
+            RoyaleStandings = publisherViewModels,
+            TopPublishers = validStatistics ? topPublishers : []
         };
 
         return Ok(vm);
