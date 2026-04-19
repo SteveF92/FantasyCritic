@@ -1,10 +1,10 @@
 using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Royale;
 using NodaTime;
 using System;
 using System.Collections.Generic;
@@ -239,6 +239,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
     }
 
     public Task UpdateDailyStatistics(int year, LocalDate currentDate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<MasterGameYearWithStatistics?> GetMasterGameYearWithStatistics(Guid masterGameID, int year)
     {
         throw new NotImplementedException();
     }

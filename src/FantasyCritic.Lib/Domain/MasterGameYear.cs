@@ -108,7 +108,12 @@ public class MasterGameYear : IEquatable<MasterGameYear>
 
     public decimal GetRoyaleGameCost()
     {
-        decimal projectedPoints = ScoringSystem.GetDefaultScoringSystem(Year).GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), false);
+        return GetRoyaleGameCostFromValues(Year, LinearRegressionHypeFactor);
+    }
+
+    public static decimal GetRoyaleGameCostFromValues(int year, double linearRegressionHypeFactor)
+    {
+        decimal projectedPoints = ScoringSystem.GetDefaultScoringSystem(year).GetPointsForScore(Convert.ToDecimal(linearRegressionHypeFactor), false);
         projectedPoints *= 1.5m;
         if (projectedPoints < 2m)
         {

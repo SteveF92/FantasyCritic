@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.OpenCritic;
@@ -12,6 +13,7 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year);
     Task<MasterGame?> GetMasterGame(Guid masterGameID);
     Task<MasterGameYear?> GetMasterGameYear(Guid masterGameID, int year);
+    Task<MasterGameYearWithStatistics?> GetMasterGameYearWithStatistics(Guid masterGameID, int year);
     Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame);
     Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
 

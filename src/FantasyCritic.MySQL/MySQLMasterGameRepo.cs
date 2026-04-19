@@ -1,5 +1,6 @@
 using System.Data;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
@@ -122,6 +123,25 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         }
 
         return _masterGameYearsCache[year].GetValueOrDefault(masterGameID);
+    }
+
+    public async Task<MasterGameYearWithStatistics?> GetMasterGameYearWithStatistics(Guid masterGameID, int year)
+    {
+        var masterGameYear = await GetMasterGameYear(masterGameID, year);
+        if (masterGameYear is null)
+        {
+            return null;
+        }
+
+        const string statisticsSql =
+            """
+            SELECT * FROM tbl_caching_mastergameyearstatistics WHERE Year = @year AND MasterGameID = @masterGameID;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<MasterGameYearStatisticsEntity>(statisticsSql, new { masterGameID, year });
+        var statisticsDomains = results.Select(x => x.ToDomain()).ToList();
+        return new MasterGameYearWithStatistics(masterGameYear, statisticsDomains);
     }
 
     public async Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
@@ -480,8 +500,6 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         return entity.ToDomain(user, masterGame, responseUser);
     }
-
-
 
     public async Task DeleteMasterGameRequest(MasterGameRequest request)
     {

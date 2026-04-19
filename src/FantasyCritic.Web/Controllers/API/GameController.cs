@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
@@ -77,6 +78,20 @@ public class GameController : FantasyCriticController
 
         var currentDate = _clock.GetToday();
         var viewModel = new MasterGameYearViewModel(masterGame, currentDate);
+        return viewModel;
+    }
+
+    [HttpGet("{id}/{year}")]
+    public async Task<ActionResult<MasterGameYearWithStatisticsViewModel>> MasterGameYearWithStatistics(Guid id, int year)
+    {
+        MasterGameYearWithStatistics? masterGameYearWithStatistics = await _interLeagueService.GetMasterGameYearWithStatistics(id, year);
+        if (masterGameYearWithStatistics is null)
+        {
+            return NotFound();
+        }
+
+        var currentDate = _clock.GetToday();
+        var viewModel = new MasterGameYearWithStatisticsViewModel(masterGameYearWithStatistics.MasterGameYear, masterGameYearWithStatistics.Statistics, currentDate);
         return viewModel;
     }
 

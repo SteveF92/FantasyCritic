@@ -124,6 +124,11 @@ public class InterLeagueService
         return _masterGameRepo.GetMasterGameYear(masterGameID, year);
     }
 
+    public Task<MasterGameYearWithStatistics?> GetMasterGameYearWithStatistics(Guid masterGameID, int year)
+    {
+        return _masterGameRepo.GetMasterGameYearWithStatistics(masterGameID, year);
+    }
+
     public Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)
     {
         return _masterGameRepo.GetAllSelectedMasterGameIDsForYear(year);
