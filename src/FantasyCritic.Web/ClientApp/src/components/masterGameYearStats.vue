@@ -38,13 +38,18 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   props: {
+    masterGameId: { type: String, required: true },
     masterGameYears: { type: Array, required: true }
   },
   data() {
     return {
-      selectedYear: null
+      selectedYear: null,
+      masterGameYearWithStatistics: null,
+      statisticsLoadError: null
     };
   },
   computed: {
@@ -77,12 +82,32 @@ export default {
       };
     }
   },
+  watch: {
+    selectedYear(year) {
+      if (year == null) {
+        this.masterGameYearWithStatistics = null;
+        return;
+      }
+
+      this.fetchMasterGameYearWithStatistics(year);
+    }
+  },
   created() {
     this.selectedYear = Math.max(...this.masterGameYears.map((y) => y.year));
   },
   methods: {
     selectYear(year) {
       this.selectedYear = year;
+    },
+    async fetchMasterGameYearWithStatistics(year) {
+      this.statisticsLoadError = null;
+      try {
+        const response = await axios.get(`/api/game/MasterGameYearWithStatistics/${this.masterGameId}/${year}`);
+        this.masterGameYearWithStatistics = response.data;
+      } catch (error) {
+        this.statisticsLoadError = error.response?.data ?? error.message ?? 'Failed to load year statistics.';
+        this.masterGameYearWithStatistics = null;
+      }
     }
   }
 };
