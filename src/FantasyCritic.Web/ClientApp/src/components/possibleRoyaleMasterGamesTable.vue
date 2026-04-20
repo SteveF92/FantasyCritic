@@ -37,7 +37,7 @@ export default {
     MasterGamePopover
   },
   props: {
-    value: { type: Object, required: true },
+    value: { type: Object },
     possibleGames: { type: Array, required: true }
   },
   data() {
