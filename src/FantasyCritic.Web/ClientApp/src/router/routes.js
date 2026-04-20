@@ -36,6 +36,7 @@ import NotFound from '@/views/notFound.vue';
 import MasterGameEditor from '@/views/masterGameEditor.vue';
 import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
 import TopBidsAndDrops from '@/views/topBidsAndDrops.vue';
+import SiteUpdates from '@/views/siteUpdates.vue';
 
 export const routes = [
   { path: '/404', component: NotFound },
@@ -100,6 +101,15 @@ export const routes = [
     name: 'faq',
     meta: {
       title: 'Frequently Asked Questions',
+      isPublic: true
+    }
+  },
+  {
+    path: '/site-updates',
+    component: SiteUpdates,
+    name: 'siteUpdates',
+    meta: {
+      title: 'Site updates',
       isPublic: true
     }
   },

@@ -12,24 +12,33 @@
 
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div v-if="userInfo" class="text-well welcome-area">
-        <div class="row welcome-header">
-          <h1>Welcome {{ userInfo.displayName }}!</h1>
-        </div>
-        <div v-if="activeRoyaleYearQuarter" class="row main-buttons">
-          <b-button variant="primary" :to="{ name: 'createLeague' }" class="main-button">Create a League</b-button>
-          <b-button v-if="isPlusUser" variant="primary" :to="{ name: 'createConference' }" class="main-button">Create a Conference</b-button>
-          <b-button
-            v-if="!userRoyalePublisher"
-            variant="primary"
-            :to="{ name: 'criticsRoyale', params: { year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter } }"
-            class="main-button">
-            Play Critics Royale
-          </b-button>
-          <b-button v-if="userRoyalePublisher" variant="primary" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }" class="main-button">
-            Critics Royale
-          </b-button>
-          <b-button variant="info" :to="{ name: 'howtoplay' }" class="main-button">Learn to Play</b-button>
-          <b-button v-show="isFactChecker || isAdmin" variant="warning" :to="{ name: 'adminConsole' }" class="main-button">Admin Console</b-button>
+        <div class="row welcome-main">
+          <div class="col-12 welcome-actions-col" :class="sortedSiteAnnouncements.length ? 'col-lg-4 mb-3 mb-lg-0' : ''">
+            <div class="welcome-actions" role="toolbar" aria-label="Quick actions">
+              <b-button size="sm" variant="outline-primary" :to="{ name: 'createLeague' }" class="welcome-action-btn">Create a League</b-button>
+              <b-button v-if="isPlusUser" size="sm" variant="outline-primary" :to="{ name: 'createConference' }" class="welcome-action-btn">Create a Conference</b-button>
+              <b-button
+                v-if="activeRoyaleYearQuarter && !userRoyalePublisher"
+                size="sm"
+                variant="outline-primary"
+                :to="{ name: 'criticsRoyale', params: { year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter } }"
+                class="welcome-action-btn">
+                Play Critics Royale
+              </b-button>
+              <b-button
+                v-if="activeRoyaleYearQuarter && userRoyalePublisher"
+                size="sm"
+                variant="outline-primary"
+                :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }"
+                class="welcome-action-btn">
+                Critics Royale
+              </b-button>
+              <b-button v-show="isFactChecker || isAdmin" size="sm" variant="outline-warning" :to="{ name: 'adminConsole' }" class="welcome-action-btn">Admin Console</b-button>
+            </div>
+          </div>
+          <div v-if="sortedSiteAnnouncements.length" class="col-lg-8 col-12">
+            <SiteAnnouncementsWidget :announcements="homeAnnouncementPreview" />
+          </div>
         </div>
       </div>
 
@@ -114,12 +123,16 @@ import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 import LeagueTable from '@/components/leagueTable.vue';
 import ConferenceTable from '@/components/conferenceTable.vue';
 import GameNews from '@/components/gameNews.vue';
+import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
+import { SITE_ANNOUNCEMENTS } from '@/data/siteAnnouncements';
+import { sortSiteAnnouncementsNewestFirst } from '@/data/siteAnnouncementSort';
 
 export default {
   components: {
     LeagueTable,
     ConferenceTable,
     GameNews,
+    SiteAnnouncementsWidget,
     TopBidsAndDrops
   },
   data() {
@@ -153,6 +166,12 @@ export default {
     },
     myTestLeagues() {
       return this.myLeagues.filter((x) => x.testLeague);
+    },
+    sortedSiteAnnouncements() {
+      return sortSiteAnnouncementsNewestFirst(SITE_ANNOUNCEMENTS);
+    },
+    homeAnnouncementPreview() {
+      return this.sortedSiteAnnouncements.slice(0, 1);
     }
   },
   async created() {
@@ -208,20 +227,28 @@ export default {
   margin-top: 10px;
   margin-bottom: 20px;
 }
-.welcome-header {
-  justify-content: center;
-  text-align: center;
+
+.welcome-main {
+  margin-top: 0.5rem;
 }
 
-.main-buttons {
+.welcome-actions-col {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
 }
 
-.main-button {
-  margin-top: 5px;
-  min-width: 200px;
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.welcome-action-btn {
+  flex: 0 1 auto;
 }
 
 div >>> div.card {
@@ -236,5 +263,9 @@ div >>> .tab-header a {
   border-radius: 0px;
   font-weight: bolder;
   color: white;
+}
+
+div >>> .btn {
+  padding-top: 8px;
 }
 </style>
