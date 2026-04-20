@@ -146,6 +146,8 @@ public class MasterGame : IEquatable<MasterGame>
                GetWillReleaseStatus(year).Equals(WillReleaseStatus.MightRelease);
     }
 
+    public bool WillReleaseInQuarter(YearQuarter yearQuarter) => GetWillReleaseStatus(yearQuarter).Equals(WillReleaseStatus.WillRelease);
+
     public WillReleaseStatus GetWillReleaseStatus(YearQuarter yearQuarter)
     {
         if (ReleaseDate.HasValue && yearQuarter.FirstDateOfQuarter > ReleaseDate.Value)

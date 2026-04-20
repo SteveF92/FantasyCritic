@@ -388,7 +388,8 @@ public class RoyaleController : FantasyCriticController
         }
     }
 
-    public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string? gameName, Guid publisherID)
+    public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string? gameName, Guid publisherID,
+        [FromQuery] RoyalePossibleMasterGamesReleaseFilter releaseFilter = RoyalePossibleMasterGamesReleaseFilter.All)
     {
         RoyalePublisherData? publisherData = await _royaleService.GetPublisherData(publisherID);
         if (publisherData is null)
@@ -415,11 +416,21 @@ public class RoyaleController : FantasyCriticController
                 .Where(x => !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, x.MasterGame, currentDate, publisherData.RoyalePublisher.YearQuarter).Any())
                 .Take(1000)
                 .ToList();
+
+            masterGameYears = releaseFilter switch
+            {
+                RoyalePossibleMasterGamesReleaseFilter.All => masterGameYears,
+                RoyalePossibleMasterGamesReleaseFilter.ExpectedToReleaseInQuarter => masterGameYears
+                    .Where(x => x.MasterGame.WillReleaseInQuarter(publisher.YearQuarter.YearQuarter)).ToList(),
+                RoyalePossibleMasterGamesReleaseFilter.ConfirmedReleaseInQuarter => masterGameYears
+                    .Where(x => x.MasterGame.ReleaseDate.HasValue && x.MasterGame.ReleaseDate <= publisher.YearQuarter.YearQuarter.LastDateOfQuarter).ToList(),
+                _ => masterGameYears,
+            };
         }
 
+        
         var viewModels = masterGameYears.Select(masterGame =>
-            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher.YearQuarter, publisher.PublisherGames.Any(y =>
-                y.MasterGame.MasterGame.Equals(masterGame.MasterGame)), masterGameTags)).ToList();
+            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher, masterGameTags)).ToList();
         return viewModels;
     }
 

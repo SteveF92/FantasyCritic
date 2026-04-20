@@ -10,6 +10,12 @@
 
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
+        <label for="royale-release-filter" class="control-label">Games shown</label>
+        <div class="d-flex mb-3 royale-games-shown-row">
+          <b-form-select id="royale-release-filter" v-model="releaseFilter" :options="releaseFilterOptions" class="flex-fill mr-2"></b-form-select>
+          <b-button type="button" variant="secondary" @click="listGames">List Games</b-button>
+        </div>
+
         <label for="PurchaseGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
           <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
@@ -61,11 +67,25 @@ export default {
   components: { PossibleRoyaleMasterGamesTable },
   props: { yearQuarter: { type: Object, required: true }, userRoyalePublisher: { type: Object, required: true } },
   data() {
-    return { searchGameName: null, purchaseRoyaleGame: null, purchaseResult: null, possibleMasterGames: [], searched: false, searchedTop: false, isBusy: false };
+    return {
+      searchGameName: null,
+      purchaseRoyaleGame: null,
+      purchaseResult: null,
+      possibleMasterGames: [],
+      searched: false,
+      searchedTop: false,
+      isBusy: false,
+      releaseFilter: 'All',
+      releaseFilterOptions: [
+        { value: 'All', text: 'All Possible Releases' },
+        { value: 'ExpectedToReleaseInQuarter', text: 'Games Expected to Release in Quarter' },
+        { value: 'ConfirmedReleaseInQuarter', text: 'Games with Confirmed Release in Quarter' }
+      ]
+    };
   },
   computed: {
     formIsValid() {
-      return this.purchaseRoyaleGame;
+      return this.purchaseRoyaleGame && this.purchaseRoyaleGame.isAvailable;
     },
     ownedGamesCount() {
       return this.userRoyalePublisher.publisherGames.length;
@@ -75,20 +95,24 @@ export default {
     await this.searchGame();
   },
   methods: {
+    async listGames() {
+      this.searchGameName = null;
+      await this.searchGame();
+    },
     async searchGame() {
       this.searched = false;
       this.searchedTop = false;
       this.purchaseResult = null;
       this.possibleMasterGames = [];
 
-      let apiString = '';
+      const params = new URLSearchParams();
+      params.set('publisherID', this.userRoyalePublisher.publisherID);
       if (this.searchGameName) {
-        apiString = '/api/royale/PossibleMasterGames?gameName=' + this.searchGameName + '&publisherID=' + this.userRoyalePublisher.publisherID;
-      } else {
-        apiString = '/api/royale/PossibleMasterGames?publisherID=' + this.userRoyalePublisher.publisherID;
+        params.set('gameName', this.searchGameName);
       }
+      params.set('releaseFilter', this.releaseFilter);
 
-      const response = await axios.get(apiString);
+      const response = await axios.get('/api/royale/PossibleMasterGames?' + params.toString());
       this.possibleMasterGames = response.data;
       this.searched = true;
       this.showingUnlistedField = false;
@@ -139,6 +163,10 @@ export default {
 <style scoped>
 .purchase-error {
   margin-top: 10px;
+}
+.royale-games-shown-row .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .game-search-input {
   margin-bottom: 15px;

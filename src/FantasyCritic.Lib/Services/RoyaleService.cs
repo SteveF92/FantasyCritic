@@ -104,58 +104,73 @@ public class RoyaleService
         return _royaleRepo.GetRoyaleYearQuarterData(year, quarter);
     }
 
-    public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
+    public static RoyalePurchaseGameValidation ValidatePurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame,
+        IEnumerable<MasterGameTag> masterGameTags, LocalDate currentDate)
     {
         if (publisher.PublisherGames.Count >= GetMaxGames(publisher.YearQuarter))
         {
-            return new ClaimResult("Roster is full.");
-        }
-        if (publisher.PublisherGames.Select(x => x.MasterGame).Contains(masterGame))
-        {
-            return new ClaimResult("Publisher already has that game.");
-        }
-        if (!masterGame.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter))
-        {
-            return new ClaimResult("Game will not release this quarter.");
+            return RoyalePurchaseGameValidation.Invalid("Roster is full.");
         }
 
-        var now = _clock.GetCurrentInstant();
-        var currentDate = now.ToEasternDate();
+        if (publisher.PublisherGames.Select(x => x.MasterGame).Contains(masterGame))
+        {
+            return RoyalePurchaseGameValidation.Invalid("Publisher already has that game.");
+        }
+
+        if (!masterGame.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter))
+        {
+            return RoyalePurchaseGameValidation.Invalid("Game will not release this quarter.");
+        }
+
         if (masterGame.MasterGame.IsReleased(currentDate))
         {
-            return new ClaimResult("Game has been released.");
+            return RoyalePurchaseGameValidation.Invalid("Game has been released.");
         }
 
         var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
         if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
         {
-            return new ClaimResult($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+            return RoyalePurchaseGameValidation.Invalid($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
         }
 
         if (masterGame.MasterGame.CriticScore.HasValue)
         {
-            return new ClaimResult("Game has a score.");
+            return RoyalePurchaseGameValidation.Invalid("Game has a score.");
         }
 
         if (masterGame.MasterGame.HasAnyReviews)
         {
-            return new ClaimResult("That game already has reviews.");
+            return RoyalePurchaseGameValidation.Invalid("That game already has reviews.");
         }
 
-        var masterGameTags = await _masterGameRepo.GetMasterGameTags();
         var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, publisher.YearQuarter);
-        if (eligibilityErrors.Any())
+        if (eligibilityErrors.Count > 0)
         {
-            return new ClaimResult("Game is not eligible under Royale rules.");
+            return RoyalePurchaseGameValidation.Invalid(eligibilityErrors[0].Error);
         }
 
         var currentBudget = publisher.Budget;
         var gameCost = masterGame.GetRoyaleGameCost();
         if (currentBudget < gameCost)
         {
-            return new ClaimResult("Not enough budget.");
+            return RoyalePurchaseGameValidation.Invalid("Not enough budget.");
         }
 
+        return RoyalePurchaseGameValidation.Valid();
+    }
+
+    public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
+    {
+        var now = _clock.GetCurrentInstant();
+        var currentDate = now.ToEasternDate();
+        var masterGameTags = await _masterGameRepo.GetMasterGameTags();
+        var validation = ValidatePurchaseGame(publisher, masterGame, masterGameTags, currentDate);
+        if (!validation.CanPurchase)
+        {
+            return new ClaimResult(validation.BlockingReason!);
+        }
+
+        var gameCost = masterGame.GetRoyaleGameCost();
         RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
         RoyaleAction action = new RoyaleAction(publisher, masterGame, "Purchased Game", $"Purchased '{masterGame.MasterGame.GameName}' at a cost of ${gameCost:F2}.", now);
         await _royaleRepo.PurchaseGame(game, action);
@@ -294,7 +309,7 @@ public class RoyaleService
         return _royaleRepo.GetPublisherHistoryForUser(userID);
     }
 
-    public int GetMaxGames(RoyaleYearQuarter yearQuarter)
+    public static int GetMaxGames(RoyaleYearQuarter yearQuarter)
     {
         if (!SupportedYear.Year2026FeatureSupported(yearQuarter.YearQuarter.Year))
         {

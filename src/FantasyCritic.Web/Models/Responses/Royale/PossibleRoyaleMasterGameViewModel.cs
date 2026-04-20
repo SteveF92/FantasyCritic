@@ -1,16 +1,20 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Royale;
+using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Web.Models.Responses.Royale;
 
 public class PossibleRoyaleMasterGameViewModel
 {
-    public PossibleRoyaleMasterGameViewModel(MasterGameYear masterGame, LocalDate currentDate, RoyaleYearQuarter yearQuarter, bool alreadyOwned, IEnumerable<MasterGameTag> masterGameTags)
+    private readonly RoyalePurchaseGameValidation _purchaseValidation;
+
+    public PossibleRoyaleMasterGameViewModel(MasterGameYear masterGame, LocalDate currentDate, RoyalePublisher publisher, IEnumerable<MasterGameTag> masterGameTags)
     {
+        _purchaseValidation = RoyaleService.ValidatePurchaseGame(publisher, masterGame, masterGameTags, currentDate);
         MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
-        WillReleaseInQuarter = masterGame.CouldReleaseInQuarter(yearQuarter.YearQuarter);
-        AlreadyOwned = alreadyOwned;
-        IsEligible = !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, yearQuarter).Any();
+        WillReleaseInQuarter = masterGame.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter);
+        AlreadyOwned = publisher.PublisherGames.Any(y => y.MasterGame.MasterGame.Equals(masterGame.MasterGame));
+        IsEligible = !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, publisher.YearQuarter).Any();
         IsReleased = masterGame.MasterGame.IsReleased(currentDate);
         HasScore = masterGame.MasterGame.CriticScore.HasValue;
         Cost = masterGame.GetRoyaleGameCost();
@@ -23,7 +27,8 @@ public class PossibleRoyaleMasterGameViewModel
     public bool IsEligible { get; }
     public bool IsReleased { get; }
     public bool HasScore { get; }
-    public bool IsAvailable => !AlreadyOwned && IsEligible && !IsReleased && !HasScore && WillReleaseInQuarter;
+
+    public bool IsAvailable => _purchaseValidation.CanPurchase;
 
     public string Status
     {
@@ -33,24 +38,13 @@ public class PossibleRoyaleMasterGameViewModel
             {
                 return "Already Owned";
             }
-            if (IsReleased)
+
+            if (_purchaseValidation.CanPurchase)
             {
-                return "Released";
-            }
-            if (HasScore)
-            {
-                return "Has Score";
-            }
-            if (!IsEligible)
-            {
-                return "Ineligible";
-            }
-            if (!WillReleaseInQuarter)
-            {
-                return "Will Not Release";
+                return "Available";
             }
 
-            return "Available";
+            return _purchaseValidation.BlockingReason!;
         }
     }
 }
