@@ -35,7 +35,7 @@ public class MySQLDailyStatsRepo : IDailyStatsRepo
         foreach (var supportedQuarter in royaleQuarters)
         {
             var inGracePeriod = supportedQuarter.YearQuarter.LastDateOfQuarter.PlusDays(RoyaleService.POST_QUARTER_GRACE_DAYS) >= currentDate;
-            if ((supportedQuarter.OpenForPlay && !supportedQuarter.Finished) || inGracePeriod)
+            if (currentDate >= supportedQuarter.YearQuarter.FirstDateOfQuarter && ((supportedQuarter.OpenForPlay && !supportedQuarter.Finished) || inGracePeriod))
             {
                 await UpdateDailyRoyalePublisherStatistics(supportedQuarter, currentDate, connection, transaction);
             }
