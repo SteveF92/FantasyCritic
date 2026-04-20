@@ -12,8 +12,9 @@
 
     <div class="col-md-10 offset-md-1 col-sm-12">
       <div v-if="userInfo" class="text-well welcome-area">
+        <h2 class="welcome-header">Welcome {{ userInfo.displayName }}!</h2>
         <div class="row welcome-main">
-          <div class="col-12 welcome-actions-col" :class="sortedSiteAnnouncements.length ? 'col-lg-4 mb-3 mb-lg-0' : ''">
+          <div class="col-12 col-lg-4 mb-3 mb-lg-0 welcome-actions-col">
             <div class="welcome-actions" role="toolbar" aria-label="Quick actions">
               <b-button size="sm" variant="outline-primary" :to="{ name: 'createLeague' }" class="welcome-action-btn">Create a League</b-button>
               <b-button v-if="isPlusUser" size="sm" variant="outline-primary" :to="{ name: 'createConference' }" class="welcome-action-btn">Create a Conference</b-button>
@@ -36,7 +37,7 @@
               <b-button v-show="isFactChecker || isAdmin" size="sm" variant="outline-warning" :to="{ name: 'adminConsole' }" class="welcome-action-btn">Admin Console</b-button>
             </div>
           </div>
-          <div v-if="sortedSiteAnnouncements.length" class="col-lg-8 col-12">
+          <div class="col-lg-8 col-12 welcome-announcements-col">
             <SiteAnnouncementsWidget :announcements="homeAnnouncementPreview" />
           </div>
         </div>
@@ -223,32 +224,55 @@ export default {
 };
 </script>
 <style scoped>
+.welcome-header {
+  text-align: center;
+}
 .welcome-area {
   margin-top: 10px;
   margin-bottom: 20px;
 }
 
-.welcome-main {
-  margin-top: 0.5rem;
-}
-
 .welcome-actions-col {
   display: flex;
   justify-content: center;
+  /* Size the button toolbar by column width so we can switch grid columns without tying it to full-page breakpoints */
+  container-type: inline-size;
+  container-name: welcome-actions;
 }
 
 .welcome-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 0.35rem 0.5rem;
-  margin-top: 0.5rem;
-  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
 }
 
-.welcome-action-btn {
-  flex: 0 1 auto;
+/* Wide enough actions column: two compact columns */
+@container welcome-actions (min-width: 26rem) {
+  .welcome-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Odd count in 2-col mode: last button spans full width */
+@container welcome-actions (min-width: 26rem) {
+  .welcome-actions .welcome-action-btn:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 992px) {
+  /* Equal-height columns (row default stretch); center the button grid vertically vs. announcements */
+  .welcome-actions-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+  }
+
+  .welcome-actions {
+    margin-top: 0;
+    max-width: none;
+  }
 }
 
 div >>> div.card {
@@ -265,7 +289,7 @@ div >>> .tab-header a {
   color: white;
 }
 
-div >>> .btn {
-  padding-top: 8px;
+div >>> .welcome-action-btn {
+  padding-top: 10px;
 }
 </style>

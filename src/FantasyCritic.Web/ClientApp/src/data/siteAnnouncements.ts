@@ -8,7 +8,7 @@ export const SITE_ANNOUNCEMENTS: SiteAnnouncement[] = [
   {
     id: 'royale-groups-and-charts',
     title: 'Royale Groups, Charts, and More!',
-    body: 'Edit src/data/siteAnnouncements.ts to post messages for all signed-in users. Entries use the SiteAnnouncement model in src/models/SiteAnnouncement.ts.',
+    body: "The biggest site update in months! Critic's Royale received a lot of attention this time, with new features for forming groups, seeing a player's past performance, and charts to view a quarter in more detail.",
     postedAt: '2026-04-19',
     sortDate: '2026-04-19',
     variant: 'secondary',
