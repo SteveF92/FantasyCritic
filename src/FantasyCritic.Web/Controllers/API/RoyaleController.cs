@@ -427,7 +427,6 @@ public class RoyaleController : FantasyCriticController
                 _ => masterGameYears,
             };
         }
-
         
         var viewModels = masterGameYears.Select(masterGame =>
             new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher, masterGameTags)).ToList();
