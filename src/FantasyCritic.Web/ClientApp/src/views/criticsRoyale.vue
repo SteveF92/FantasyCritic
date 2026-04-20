@@ -64,7 +64,7 @@
               </router-link>
             </template>
             <template #cell(playerName)="data">
-              {{ data.item.playerName }}
+              <router-link :to="{ name: 'royaleHistory', params: { userid: data.item.userID } }">{{ data.item.playerName }}</router-link>
               <font-awesome-icon v-if="data.item.previousQuarterWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-quarter-winner" />
               <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
             </template>
