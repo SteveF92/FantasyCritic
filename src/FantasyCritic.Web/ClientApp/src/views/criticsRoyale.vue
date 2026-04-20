@@ -43,13 +43,12 @@
       </div>
     </div>
 
-    <div class="leaderboard-header">
-      <h2>Leaderboards {{ year }}-Q{{ quarter }}</h2>
-      <b-button v-if="royaleStandings && userRoyalePublisherID" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisherID } }">View My Publisher</b-button>
-    </div>
-
     <div class="row royale-leaderboard-row">
       <div class="col-xl-8 col-lg-12">
+        <div class="leaderboard-header">
+          <h2>Leaderboards {{ year }}-Q{{ quarter }}</h2>
+          <b-button v-if="royaleStandings && userRoyalePublisherID" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisherID } }">View My Publisher</b-button>
+        </div>
         <div v-if="royaleStandings">
           <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
             <template #cell(ranking)="data">
