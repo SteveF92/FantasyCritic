@@ -84,7 +84,8 @@
           :quarter="quarter"
           :group-search-query="groupSearchQuery"
           :group-search-results="groupSearchResults"
-          @search-query-change="onGroupSearchQueryChange" />
+          @search-query-change="onGroupSearchQueryChange"
+          @search-request="searchGroups" />
       </div>
 
       <div v-if="showTopRankedChart" class="col-lg-12 top-publishers-section">
@@ -141,7 +142,6 @@ export default {
       myGroups: null,
       rulesBasedGroups: null,
       newGroupName: '',
-      groupSearchTimeout: null,
       standingsFields: [
         { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
@@ -237,22 +237,18 @@ export default {
         this.rulesBasedGroups = [];
       }
     },
-    searchGroups() {
-      if (this.groupSearchTimeout) {
-        clearTimeout(this.groupSearchTimeout);
-      }
-      if (!this.groupSearchQuery || this.groupSearchQuery.length < 2) {
+    async searchGroups() {
+      const query = (this.groupSearchQuery || '').trim();
+      if (query.length < 2) {
         this.groupSearchResults = null;
         return;
       }
-      this.groupSearchTimeout = setTimeout(async () => {
-        try {
-          const response = await axios.get('/api/RoyaleGroup/SearchRoyaleGroups', { params: { query: this.groupSearchQuery } });
-          this.groupSearchResults = response.data;
-        } catch {
-          this.groupSearchResults = [];
-        }
-      }, 300);
+      try {
+        const response = await axios.get('/api/RoyaleGroup/SearchRoyaleGroups', { params: { query } });
+        this.groupSearchResults = response.data;
+      } catch {
+        this.groupSearchResults = [];
+      }
     },
     async createGroup(bvModalEvent) {
       bvModalEvent.preventDefault();
@@ -269,7 +265,6 @@ export default {
     },
     onGroupSearchQueryChange(value) {
       this.groupSearchQuery = value;
-      this.searchGroups();
     }
   }
 };

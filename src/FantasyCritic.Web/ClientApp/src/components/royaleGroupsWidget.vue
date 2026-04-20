@@ -5,7 +5,7 @@
     </template>
 
     <b-tabs pills class="royale-groups-tabs">
-      <b-tab v-if="showMyGroupsTab" title="My Groups" title-item-class="tab-header">
+      <b-tab v-if="isAuth" title="My Groups" title-item-class="tab-header">
         <b-table v-if="myGroups && myGroups.length > 0" :items="myGroups" :fields="groupFields" thead-class="hidden_header" bordered striped responsive small class="royale-groups-table">
           <template #cell(groupName)="data">
             <router-link :to="groupQuarterLink(data.item.groupID)" class="group-link">{{ data.item.groupName }}</router-link>
@@ -13,7 +13,7 @@
           </template>
         </b-table>
         <div v-else class="text-muted small">No groups yet.</div>
-        <b-button v-if="isAuth" v-b-modal="'createRoyaleGroupModal'" variant="primary" size="sm" class="mb-2 w-100">Create Group</b-button>
+        <b-button v-if="isAuth" v-b-modal="'createRoyaleGroupModal'" variant="primary" size="sm" class="mb-2">Create Group</b-button>
       </b-tab>
 
       <b-tab title="Featured" title-item-class="tab-header">
@@ -36,7 +36,10 @@
       </b-tab>
 
       <b-tab title="Search" title-item-class="tab-header">
-        <b-form-input :value="groupSearchQuery" placeholder="Search groups by name..." class="mb-2" @input="onSearchInput"></b-form-input>
+        <b-input-group class="mb-2">
+          <b-form-input :value="groupSearchQuery" placeholder="Search groups by name..." aria-label="Search groups by name" @input="onSearchInput" @keyup.enter="emitSearchRequest"></b-form-input>
+          <b-button variant="primary" @click="emitSearchRequest">Search</b-button>
+        </b-input-group>
 
         <b-table
           v-if="groupSearchResults && groupSearchResults.length > 0"
@@ -53,7 +56,7 @@
             <div class="group-detail text-muted">{{ data.item.memberCount }} members &middot; {{ data.item.groupType }}</div>
           </template>
         </b-table>
-        <div v-if="groupSearchQuery && groupSearchQuery.length >= 2 && groupSearchResults && groupSearchResults.length === 0" class="text-muted small">No groups found.</div>
+        <div v-if="groupSearchQuery && groupSearchQuery.trim().length >= 2 && groupSearchResults && groupSearchResults.length === 0" class="text-muted small">No groups found.</div>
       </b-tab>
     </b-tabs>
   </b-card>
@@ -74,17 +77,15 @@ export default {
       groupFields: [{ key: 'groupName', label: '' }]
     };
   },
-  computed: {
-    showMyGroupsTab() {
-      return this.isAuth && this.myGroups && this.myGroups.length > 0;
-    }
-  },
   methods: {
     groupQuarterLink(groupID) {
       return { name: 'royaleGroupQuarter', params: { groupid: groupID, year: this.year, quarter: this.quarter } };
     },
     onSearchInput(value) {
       this.$emit('search-query-change', value);
+    },
+    emitSearchRequest() {
+      this.$emit('search-request');
     }
   }
 };
