@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
+using FantasyCritic.MySQL.Entities.Identity;
 using System.Data;
 
 namespace FantasyCritic.MySQL;
@@ -705,6 +706,146 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await using var connection = new MySqlConnection(_connectionString);
         var results = await connection.QueryAsync<VeryMinimalFantasyCriticUser>(sql, new { groupID });
         return results.ToList();
+    }
+
+    public async Task<RoyaleGroupWithMemberDisplayRows?> GetRoyaleGroupMemberDisplayRows(Guid groupID, int year, int quarter)
+    {
+        var param = new
+        {
+            P_GroupID = groupID,
+            P_Year = year,
+            P_Quarter = quarter
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getroyalegroupmemberdisplayrows", param, commandType: CommandType.StoredProcedure);
+
+        var groupEntity = resultSets.Read<RoyaleGroupEntity>().FirstOrDefault();
+        var memberUsers = resultSets.Read<VeryMinimalFantasyCriticUser>().ToList();
+        var currentQuarterEntity = resultSets.Read<RoyaleYearQuarterEntity>().FirstOrDefault();
+        var previousQuarterEntity = resultSets.Read<RoyaleYearQuarterEntity>().FirstOrDefault();
+        var currentPublisherEntities = resultSets.Read<RoyalePublisherEntity>().ToList();
+        var previousPublisherUserRows = resultSets.Read<MinimalUserID>().ToList();
+        var publisherGameEntities = resultSets.Read<RoyalePublisherGameEntity>().ToList();
+        var tagResults = resultSets.Read<MasterGameTagEntity>().ToList();
+        var masterSubGameResults = resultSets.Read<MasterSubGameEntity>().ToList();
+        var masterGameTagResults = resultSets.Read<MasterGameHasTagEntity>().ToList();
+        var masterGameYearResults = resultSets.Read<MasterGameYearEntity>().ToList();
+        var statisticsEntities = resultSets.Read<RoyalePublisherStatisticsEntity>().ToList();
+
+        if (groupEntity is null || currentQuarterEntity is null)
+        {
+            return null;
+        }
+
+        var group = groupEntity.ToDomain();
+        var yearQuarter = currentQuarterEntity.ToDomain();
+        RoyaleYearQuarter? previousYearQuarter = previousQuarterEntity?.ToDomain();
+        var prevUserIdsWithPublisher = previousPublisherUserRows.Select(x => x.UserID).ToHashSet();
+
+        var possibleTags = tagResults.Select(x => x.ToDomain()).ToDictionary(x => x.Name);
+        var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
+        var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
+
+        var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
+        foreach (var entity in masterGameYearResults)
+        {
+            var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
+            var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
+        }
+
+        List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
+        foreach (var entity in publisherGameEntities)
+        {
+            var masterGameYear = masterGameYearDictionary.GetValueOrDefault(entity.MasterGameID);
+            if (masterGameYear is null)
+            {
+                var masterGame = await _masterGameRepo.GetMasterGame(entity.MasterGameID);
+                masterGameYear = new MasterGameYear(masterGame!, yearQuarter.YearQuarter.Year);
+            }
+            var domain = entity.ToDomain(yearQuarter, masterGameYear);
+            domainPublisherGames.Add(domain);
+        }
+
+        var publisherGameLookup = domainPublisherGames.ToLookup(x => x.PublisherID);
+
+        Dictionary<Guid, RoyalePublisher> userIdToPublisher = new Dictionary<Guid, RoyalePublisher>();
+        foreach (var entity in currentPublisherEntities)
+        {
+            var gamesForPublisher = publisherGameLookup[entity.PublisherID];
+            var domain = entity.ToDomain(yearQuarter, gamesForPublisher);
+            userIdToPublisher[entity.UserID] = domain;
+        }
+
+        var statisticsByPublisher = statisticsEntities
+            .GroupBy(x => x.PublisherID)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<RoyalePublisherStatistics>)g.Select(x => x.ToDomain()).ToList());
+
+        List<RoyaleGroupMemberDisplayRow> rows = new List<RoyaleGroupMemberDisplayRow>();
+
+        foreach (var member in memberUsers)
+        {
+            userIdToPublisher.TryGetValue(member.UserID, out var publisher);
+
+            if (yearQuarter.Finished)
+            {
+                if (publisher is null)
+                {
+                    continue;
+                }
+            }
+            else if (previousYearQuarter is not null)
+            {
+                if (publisher is null && !prevUserIdsWithPublisher.Contains(member.UserID))
+                {
+                    continue;
+                }
+            }
+
+            IReadOnlyList<RoyalePublisherStatistics> statistics = Array.Empty<RoyalePublisherStatistics>();
+            if (publisher is not null && statisticsByPublisher.TryGetValue(publisher.PublisherID, out var stats))
+            {
+                statistics = stats;
+            }
+
+            rows.Add(new RoyaleGroupMemberDisplayRow(member, publisher, statistics));
+        }
+
+        return new RoyaleGroupWithMemberDisplayRows(group, rows);
+    }
+
+    public async Task<RoyaleGroupWithMemberWithLifetimeStats?> GetRoyaleGroupMembersWithLifetimeStats(Guid groupID)
+    {
+        var param = new { P_GroupID = groupID };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync("sp_getroyalegrouplifetimestats", param, commandType: CommandType.StoredProcedure);
+
+        var groupEntity = resultSets.Read<RoyaleGroupEntity>().FirstOrDefault();
+        var memberUsers = resultSets.Read<VeryMinimalFantasyCriticUser>().ToList();
+        var statRows = resultSets.Read<RoyaleGroupLifetimeStatRow>().ToDictionary(x => x.UserID);
+
+        if (groupEntity is null)
+        {
+            return null;
+        }
+
+        var group = groupEntity.ToDomain();
+
+        if (memberUsers.Count == 0)
+        {
+            return new RoyaleGroupWithMemberWithLifetimeStats(group, []);
+        }
+
+        var lifetimeStats = memberUsers.Select(m =>
+        {
+            var row = statRows[m.UserID];
+            return new RoyaleGroupMemberWithLifetimeStats(m, row.QuartersParticipated, row.TotalPoints, row.AverageRankWithinGroup);
+        }).ToList();
+
+        return new RoyaleGroupWithMemberWithLifetimeStats(group, lifetimeStats);
     }
 
     public async Task SetRoyaleGroupMembers(Guid groupID, IReadOnlyList<Guid> userIDs)

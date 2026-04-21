@@ -381,102 +381,14 @@ public class RoyaleService
         return await _royaleRepo.GetRoyaleGroupMembers(group.GroupID);
     }
 
-    public async Task<IReadOnlyList<RoyaleGroupMemberDisplayRow>> GetRoyaleGroupMemberDisplayRows(RoyaleGroup group, int year, int quarter)
+    public Task<RoyaleGroupWithMemberDisplayRows?> GetRoyaleGroupMemberDisplayRows(Guid groupID, int year, int quarter)
     {
-        var members = await GetRoyaleGroupMembers(group);
-        var yearQuarter = await GetYearQuarter(year, quarter);
-        if (yearQuarter is null)
-        {
-            return new List<RoyaleGroupMemberDisplayRow>();
-        }
-
-        RoyaleYearQuarter? previousYearQuarter = null;
-        if (!yearQuarter.Finished)
-        {
-            previousYearQuarter = await GetYearQuarter(yearQuarter.YearQuarter.LastQuarter.Year, yearQuarter.YearQuarter.LastQuarter.Quarter);
-        }
-
-        List<RoyaleGroupMemberDisplayRow> rows = new();
-        foreach (var member in members)
-        {
-            var publisher = await _royaleRepo.GetPublisher(yearQuarter, member);
-            if (yearQuarter.Finished)
-            {
-                if (publisher is null)
-                {
-                    continue;
-                }
-            }
-            else if (previousYearQuarter is not null)
-            {
-                if (publisher is null)
-                {
-                    var previousPublisher = await _royaleRepo.GetPublisher(previousYearQuarter, member);
-                    if (previousPublisher is null)
-                    {
-                        continue;
-                    }
-                }
-            }
-
-            IReadOnlyList<RoyalePublisherStatistics> statistics = new List<RoyalePublisherStatistics>();
-            if (publisher is not null)
-            {
-                statistics = await _royaleRepo.GetPublisherStatistics(publisher.PublisherID);
-            }
-            rows.Add(new RoyaleGroupMemberDisplayRow(member, publisher, statistics));
-        }
-
-        return rows;
+        return _royaleRepo.GetRoyaleGroupMemberDisplayRows(groupID, year, quarter);
     }
 
-    public async Task<IReadOnlyList<RoyaleGroupMemberWithLifetimeStats>> GetRoyaleGroupMembersWithLifetimeStats(RoyaleGroup group)
+    public Task<RoyaleGroupWithMemberWithLifetimeStats?> GetRoyaleGroupMembersWithLifetimeStats(Guid groupID)
     {
-        var members = await GetRoyaleGroupMembers(group);
-        if (members.Count == 0)
-        {
-            return Array.Empty<RoyaleGroupMemberWithLifetimeStats>();
-        }
-
-        var quartersParticipated = members.ToDictionary(m => m.UserID, _ => 0);
-        var totalPoints = members.ToDictionary(m => m.UserID, _ => 0m);
-        var ranksForAverage = members.ToDictionary(m => m.UserID, _ => new List<int>());
-
-        var allQuarters = await GetYearQuarters();
-        foreach (var yearQuarter in allQuarters)
-        {
-            var rows = await GetRoyaleGroupMemberDisplayRows(group, yearQuarter.YearQuarter.Year, yearQuarter.YearQuarter.Quarter);
-            var orderedRows = rows.OrderByDescending(r => r.Publisher?.GetTotalFantasyPoints() ?? -1m).ToList();
-            var ranking = 1;
-            foreach (var row in orderedRows)
-            {
-                int? rank = null;
-                if (row.Publisher is not null && row.Publisher.GetTotalFantasyPoints() > 0)
-                {
-                    rank = ranking;
-                    ranking++;
-                }
-
-                if (row.Publisher is null || !quartersParticipated.ContainsKey(row.User.UserID))
-                {
-                    continue;
-                }
-
-                quartersParticipated[row.User.UserID]++;
-                totalPoints[row.User.UserID] += row.Publisher.GetTotalFantasyPoints();
-                if (rank.HasValue)
-                {
-                    ranksForAverage[row.User.UserID].Add(rank.Value);
-                }
-            }
-        }
-
-        return members.Select(m =>
-        {
-            var rankList = ranksForAverage[m.UserID];
-            double? averageRank = rankList.Count > 0 ? rankList.Average() : null;
-            return new RoyaleGroupMemberWithLifetimeStats(m, quartersParticipated[m.UserID], totalPoints[m.UserID], averageRank);
-        }).ToList();
+        return _royaleRepo.GetRoyaleGroupMembersWithLifetimeStats(groupID);
     }
 
     public async Task<Result> JoinRoyaleGroupViaInviteLink(Guid inviteCode, FantasyCriticUser user)

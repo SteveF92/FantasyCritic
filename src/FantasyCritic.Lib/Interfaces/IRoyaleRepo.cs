@@ -33,6 +33,8 @@ public interface IRoyaleRepo
     Task AddMemberToRoyaleGroup(Guid groupID, Guid userID);
     Task RemoveMemberFromRoyaleGroup(Guid groupID, Guid userID);
     Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetRoyaleGroupMembers(Guid groupID);
+    Task<RoyaleGroupWithMemberDisplayRows?> GetRoyaleGroupMemberDisplayRows(Guid groupID, int year, int quarter);
+    Task<RoyaleGroupWithMemberWithLifetimeStats?> GetRoyaleGroupMembersWithLifetimeStats(Guid groupID);
     Task SetRoyaleGroupMembers(Guid groupID, IReadOnlyList<Guid> userIDs);
 
     Task<IReadOnlyList<VeryMinimalFantasyCriticUser>> GetLeagueActivePlayersForMostRecentYear(Guid leagueID);

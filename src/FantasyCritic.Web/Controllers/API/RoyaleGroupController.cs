@@ -48,15 +48,14 @@ public class RoyaleGroupController : FantasyCriticController
     [HttpGet("{groupID}/{year}/{quarter}")]
     public async Task<IActionResult> GetRoyaleGroupQuarter(Guid groupID, int year, int quarter)
     {
-        var group = await _royaleService.GetRoyaleGroup(groupID);
+        var group = await _royaleService.GetRoyaleGroupMemberDisplayRows(groupID, year, quarter);
         if (group is null)
         {
             return NotFound();
         }
 
-        var memberRows = await _royaleService.GetRoyaleGroupMemberDisplayRows(group, year, quarter);
         var allMasterGameTags = await _interLeagueService.GetMasterGameTags();
-        var vm = new RoyaleGroupQuarterViewModel(group, year, quarter, memberRows, _clock.GetToday(), allMasterGameTags);
+        var vm = new RoyaleGroupQuarterViewModel(group.RoyaleGroup, year, quarter, group.DisplayRows, _clock.GetToday(), allMasterGameTags);
         return Ok(vm);
     }
 
@@ -271,14 +270,12 @@ public class RoyaleGroupController : FantasyCriticController
     [HttpGet("{groupID}")]
     public async Task<IActionResult> GetRoyaleGroupMembers(Guid groupID)
     {
-        var group = await _royaleService.GetRoyaleGroup(groupID);
-        if (group is null)
+        var stats = await _royaleService.GetRoyaleGroupMembersWithLifetimeStats(groupID);
+        if (stats is null)
         {
             return NotFound();
         }
-
-        var stats = await _royaleService.GetRoyaleGroupMembersWithLifetimeStats(group);
-        var viewModels = stats.Select(x => new RoyaleGroupMemberListItemViewModel(x)).ToList();
+        var viewModels = stats.LifetimeStats.Select(x => new RoyaleGroupMemberListItemViewModel(x)).ToList();
         return Ok(viewModels);
     }
 
