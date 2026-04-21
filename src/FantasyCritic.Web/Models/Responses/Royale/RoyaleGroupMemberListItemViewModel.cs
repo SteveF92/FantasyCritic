@@ -11,6 +11,7 @@ public class RoyaleGroupMemberListItemViewModel
         QuartersParticipated = stats.QuartersParticipated;
         TotalPoints = stats.TotalPoints;
         AverageRankWithinGroup = stats.AverageRankWithinGroup;
+        AverageRankOverall = stats.AverageRankOverall;
     }
 
     public Guid UserID { get; }
@@ -18,4 +19,5 @@ public class RoyaleGroupMemberListItemViewModel
     public int QuartersParticipated { get; }
     public decimal TotalPoints { get; }
     public double? AverageRankWithinGroup { get; }
+    public double? AverageRankOverall { get; }
 }

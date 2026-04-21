@@ -6,4 +6,5 @@ internal sealed class RoyaleGroupLifetimeStatRow
     public int QuartersParticipated { get; set; }
     public decimal TotalPoints { get; set; }
     public double? AverageRankWithinGroup { get; set; }
+    public double? AverageRankOverall { get; set; }
 }

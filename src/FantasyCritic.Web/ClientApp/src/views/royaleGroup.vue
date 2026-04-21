@@ -47,6 +47,10 @@
             <template v-if="data.item.averageRankWithinGroup != null">{{ formatAverageRank(data.item.averageRankWithinGroup) }}</template>
             <template v-else>--</template>
           </template>
+          <template #cell(averageRankOverall)="data">
+            <template v-if="data.item.averageRankOverall != null">{{ formatAverageRank(data.item.averageRankOverall) }}</template>
+            <template v-else>--</template>
+          </template>
           <template #cell(actions)="data">
             <b-button v-if="data.item.userID !== group.managerUserID" size="sm" variant="danger" @click="removeMember(data.item.userID)" class="remove-member-button">Remove</b-button>
           </template>
@@ -103,13 +107,26 @@ export default {
         tdClass: 'text-right',
         sortable: true
       },
+      averageRankOverallField: {
+        key: 'averageRankOverall',
+        label: 'Avg. Rank (Overall)',
+        thClass: 'bg-primary',
+        tdClass: 'text-right',
+        sortable: true
+      },
       totalPointsField: { key: 'totalPoints', label: 'Total Points', thClass: 'bg-primary', tdClass: 'text-right', sortable: true },
       actionField: { key: 'actions', label: 'Actions', thClass: 'bg-primary', thStyle: 'width: 1%' }
     };
   },
   computed: {
     memberFields() {
-      const statsFields = [this.displayNameField, this.quartersParticipatedField, this.averageRankField, this.totalPointsField];
+      const statsFields = [
+        this.displayNameField,
+        this.quartersParticipatedField,
+        this.averageRankField,
+        this.averageRankOverallField,
+        this.totalPointsField
+      ];
       if (this.isManager && this.showManagerActions) {
         return [...statsFields, this.actionField];
       }

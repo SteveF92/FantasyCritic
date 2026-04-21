@@ -113,18 +113,51 @@ BEGIN
     FROM pub_pts
     WHERE PublisherID IS NOT NULL
       AND total_pts > 0
+  ),
+  global_pub_pts AS (
+    SELECT
+      p.Year,
+      p.Quarter,
+      p.UserID,
+      p.PublisherID,
+      COALESCE(gp.game_pts, 0) AS total_pts
+    FROM tbl_royale_publisher p
+    LEFT JOIN (
+      SELECT PublisherID, COALESCE(SUM(FantasyPoints), 0) AS game_pts
+      FROM tbl_royale_publishergame
+      GROUP BY PublisherID
+    ) gp ON gp.PublisherID = p.PublisherID
+  ),
+  global_positive_ranks AS (
+    SELECT
+      Year,
+      Quarter,
+      UserID,
+      total_pts,
+      ROW_NUMBER() OVER (
+        PARTITION BY Year, Quarter
+        ORDER BY total_pts DESC, UserID
+      ) AS global_quarter_rank
+    FROM global_pub_pts
+    WHERE PublisherID IS NOT NULL
+      AND total_pts > 0
   )
   SELECT
     m.UserID,
     COALESCE(SUM(CASE WHEN pp.PublisherID IS NOT NULL THEN 1 ELSE 0 END), 0) AS QuartersParticipated,
     COALESCE(SUM(CASE WHEN pp.PublisherID IS NOT NULL THEN pp.total_pts ELSE 0 END), 0) AS TotalPoints,
-    AVG(pr.quarter_rank) AS AverageRankWithinGroup
+    AVG(pr.quarter_rank) AS AverageRankWithinGroup,
+    AVG(gpr.global_quarter_rank) AS AverageRankOverall
   FROM gm m
   LEFT JOIN pub_pts pp ON pp.UserID = m.UserID
   LEFT JOIN positive_ranks pr
     ON pr.Year = pp.Year
    AND pr.Quarter = pp.Quarter
    AND pr.UserID = pp.UserID
+  LEFT JOIN global_positive_ranks gpr
+    ON gpr.Year = pp.Year
+   AND gpr.Quarter = pp.Quarter
+   AND gpr.UserID = pp.UserID
   GROUP BY m.UserID, m.DisplayName
   ORDER BY m.DisplayName;
 END//

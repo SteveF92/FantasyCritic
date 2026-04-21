@@ -842,7 +842,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var lifetimeStats = memberUsers.Select(m =>
         {
             var row = statRows[m.UserID];
-            return new RoyaleGroupMemberWithLifetimeStats(m, row.QuartersParticipated, row.TotalPoints, row.AverageRankWithinGroup);
+            return new RoyaleGroupMemberWithLifetimeStats(m, row.QuartersParticipated, row.TotalPoints, row.AverageRankWithinGroup, row.AverageRankOverall);
         }).ToList();
 
         return new RoyaleGroupWithMemberWithLifetimeStats(group, lifetimeStats);
