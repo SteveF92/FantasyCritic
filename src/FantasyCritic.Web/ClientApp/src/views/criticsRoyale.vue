@@ -77,6 +77,7 @@
 
       <div class="col-xl-4 col-lg-12">
         <RoyaleGroupsWidget
+          v-if="year && quarter"
           :my-groups="myGroups"
           :rules-based-groups="rulesBasedGroups"
           :year="year"
