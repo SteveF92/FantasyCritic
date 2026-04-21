@@ -12,7 +12,7 @@ export const SITE_ANNOUNCEMENTS: SiteAnnouncement[] = [
     postedAt: '2026-04-19',
     sortDate: '2026-04-19',
     variant: 'secondary',
-    href: 'https://www.youtube.com/watch?v=ZFsHZjA2AVg',
+    href: 'https://www.youtube.com/watch?v=wOjiejePfRU',
     linkLabel: 'Watch the DevLog!'
   }
 ];
