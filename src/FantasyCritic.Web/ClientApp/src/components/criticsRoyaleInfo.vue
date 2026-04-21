@@ -76,7 +76,7 @@
         in budget to any single game. If a game has already been released or already has review scores, you can't change it's advertising budget anymore.
       </p>
     </div>
-    <h3>What games are elgible?</h3>
+    <h3>What games are eligible?</h3>
     <div class="text-well">
       <label>The following tags are banned:</label>
       <p>
