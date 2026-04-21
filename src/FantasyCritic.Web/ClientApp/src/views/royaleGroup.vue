@@ -39,7 +39,7 @@
 
       <h3>Members</h3>
       <div v-if="members && members.length > 0">
-        <b-table striped bordered small responsive :items="members" :fields="memberFields">
+        <b-table striped bordered small responsive :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="members" :fields="memberFields">
           <template #cell(displayName)="data">
             <router-link :to="{ name: 'royaleHistory', params: { userid: data.item.userID } }">{{ data.item.displayName }}</router-link>
           </template>
@@ -86,20 +86,24 @@ export default {
       notFound: false,
       joinMessage: null,
       joinSuccess: false,
+      sortBy: 'averageRankWithinGroup',
+      sortDesc: false,
       displayNameField: { key: 'displayName', label: 'Player Name', thClass: 'bg-primary' },
       quartersParticipatedField: {
         key: 'quartersParticipated',
-        label: 'Quarters played',
+        label: 'Quarters Played',
         thClass: 'bg-primary',
-        tdClass: 'text-right'
+        tdClass: 'text-right',
+        sortable: true
       },
       averageRankField: {
         key: 'averageRankWithinGroup',
-        label: 'Avg. rank',
+        label: 'Avg. Rank (Within Group)',
         thClass: 'bg-primary',
-        tdClass: 'text-right'
+        tdClass: 'text-right',
+        sortable: true
       },
-      totalPointsField: { key: 'totalPoints', label: 'Total points', thClass: 'bg-primary', tdClass: 'text-right' },
+      totalPointsField: { key: 'totalPoints', label: 'Total Points', thClass: 'bg-primary', tdClass: 'text-right', sortable: true },
       actionField: { key: 'actions', label: 'Actions', thClass: 'bg-primary', thStyle: 'width: 1%' }
     };
   },
