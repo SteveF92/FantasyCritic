@@ -4,6 +4,9 @@
 -- Server OS:                    Linux
 -- HeidiSQL Version:             12.3.0.6589
 -- --------------------------------------------------------
+-- Note: MySQL does not allow referencing the same TEMPORARY table more than once
+-- in a single statement. The large WITH block must use an inline member union for `gm`,
+-- not SELECT FROM tmp_rgm (that caused ER_CANT_REOPEN_TABLE).
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
@@ -27,19 +30,64 @@ BEGIN
   LEFT JOIN tbl_user u ON g.ManagerUserID = u.UserID
   WHERE g.GroupID = P_GroupID;
 
-  -- 2. Members (same order as GetRoyaleGroupMembers)
-  SELECT u.UserID, u.DisplayName
-  FROM tbl_royale_group_member gm
-  JOIN tbl_user u ON gm.UserID = u.UserID
-  WHERE gm.GroupID = P_GroupID
-  ORDER BY u.DisplayName;
+  -- 2. Members (same order as RoyaleService.GetRoyaleGroupMembers)
+  SELECT UserID, DisplayName
+  FROM (
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_league_activeplayer ap ON ap.LeagueID = g.LeagueID
+    INNER JOIN tbl_user u ON u.UserID = ap.UserID
+    WHERE g.GroupID = P_GroupID
+      AND g.GroupType = 'LeagueTied'
+      AND g.LeagueID IS NOT NULL
+      AND ap.Year = (SELECT MAX(lap.Year) FROM tbl_league_activeplayer lap WHERE lap.LeagueID = g.LeagueID)
+    UNION ALL
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_conference_activeplayer ap ON ap.ConferenceID = g.ConferenceID
+    INNER JOIN tbl_user u ON u.UserID = ap.UserID
+    WHERE g.GroupID = P_GroupID
+      AND g.GroupType = 'ConferenceTied'
+      AND g.ConferenceID IS NOT NULL
+      AND ap.Year = (SELECT MAX(cap.Year) FROM tbl_conference_activeplayer cap WHERE cap.ConferenceID = g.ConferenceID)
+    UNION ALL
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_royale_group_member gm ON gm.GroupID = g.GroupID
+    INNER JOIN tbl_user u ON u.UserID = gm.UserID
+    WHERE g.GroupID = P_GroupID
+      AND NOT (g.GroupType = 'LeagueTied' AND g.LeagueID IS NOT NULL)
+      AND NOT (g.GroupType = 'ConferenceTied' AND g.ConferenceID IS NOT NULL)
+  ) AS effective_members
+  ORDER BY DisplayName;
 
-  -- 3. Per-member lifetime aggregates (visibility, points, and rank mirror GetRoyaleGroupMemberDisplayRows + loop)
+  -- 3. Per-member lifetime aggregates (inline `gm` — do not use a temp table inside this WITH)
   WITH gm AS (
     SELECT u.UserID, u.DisplayName
-    FROM tbl_royale_group_member g
-    JOIN tbl_user u ON u.UserID = g.UserID
+    FROM tbl_royale_group g
+    INNER JOIN tbl_league_activeplayer ap ON ap.LeagueID = g.LeagueID
+    INNER JOIN tbl_user u ON u.UserID = ap.UserID
     WHERE g.GroupID = P_GroupID
+      AND g.GroupType = 'LeagueTied'
+      AND g.LeagueID IS NOT NULL
+      AND ap.Year = (SELECT MAX(lap.Year) FROM tbl_league_activeplayer lap WHERE lap.LeagueID = g.LeagueID)
+    UNION ALL
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_conference_activeplayer ap ON ap.ConferenceID = g.ConferenceID
+    INNER JOIN tbl_user u ON u.UserID = ap.UserID
+    WHERE g.GroupID = P_GroupID
+      AND g.GroupType = 'ConferenceTied'
+      AND g.ConferenceID IS NOT NULL
+      AND ap.Year = (SELECT MAX(cap.Year) FROM tbl_conference_activeplayer cap WHERE cap.ConferenceID = g.ConferenceID)
+    UNION ALL
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_royale_group_member gm ON gm.GroupID = g.GroupID
+    INNER JOIN tbl_user u ON u.UserID = gm.UserID
+    WHERE g.GroupID = P_GroupID
+      AND NOT (g.GroupType = 'LeagueTied' AND g.LeagueID IS NOT NULL)
+      AND NOT (g.GroupType = 'ConferenceTied' AND g.ConferenceID IS NOT NULL)
   ),
   base AS (
     SELECT

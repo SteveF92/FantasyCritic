@@ -34,6 +34,38 @@ BEGIN
     SET v_prev_quarter = P_Quarter - 1;
   END IF;
 
+  -- Effective members (must match RoyaleService.GetRoyaleGroupMembers / GetLeagueActivePlayersForMostRecentYear / GetConferenceActivePlayersForMostRecentYear)
+  DROP TEMPORARY TABLE IF EXISTS tmp_rgm;
+  CREATE TEMPORARY TABLE tmp_rgm AS
+  SELECT m.UserID, m.DisplayName
+  FROM (
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_league_activeplayer ap ON ap.LeagueID = g.LeagueID
+    INNER JOIN tbl_user u ON u.UserID = ap.UserID
+    WHERE g.GroupID = P_GroupID
+      AND g.GroupType = 'LeagueTied'
+      AND g.LeagueID IS NOT NULL
+      AND ap.Year = (SELECT MAX(lap.Year) FROM tbl_league_activeplayer lap WHERE lap.LeagueID = g.LeagueID)
+    UNION ALL
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_conference_activeplayer ap ON ap.ConferenceID = g.ConferenceID
+    INNER JOIN tbl_user u ON u.UserID = ap.UserID
+    WHERE g.GroupID = P_GroupID
+      AND g.GroupType = 'ConferenceTied'
+      AND g.ConferenceID IS NOT NULL
+      AND ap.Year = (SELECT MAX(cap.Year) FROM tbl_conference_activeplayer cap WHERE cap.ConferenceID = g.ConferenceID)
+    UNION ALL
+    SELECT u.UserID, u.DisplayName
+    FROM tbl_royale_group g
+    INNER JOIN tbl_royale_group_member gm ON gm.GroupID = g.GroupID
+    INNER JOIN tbl_user u ON u.UserID = gm.UserID
+    WHERE g.GroupID = P_GroupID
+      AND NOT (g.GroupType = 'LeagueTied' AND g.LeagueID IS NOT NULL)
+      AND NOT (g.GroupType = 'ConferenceTied' AND g.ConferenceID IS NOT NULL)
+  ) AS m;
+
   -- 1. Group (0 or 1 row)
   SELECT g.*, u.DisplayName AS ManagerDisplayName
   FROM tbl_royale_group g
@@ -41,11 +73,9 @@ BEGIN
   WHERE g.GroupID = P_GroupID;
 
   -- 2. Members
-  SELECT u.UserID, u.DisplayName
-  FROM tbl_royale_group_member gm
-  JOIN tbl_user u ON gm.UserID = u.UserID
-  WHERE gm.GroupID = P_GroupID
-  ORDER BY u.DisplayName;
+  SELECT UserID, DisplayName
+  FROM tmp_rgm
+  ORDER BY DisplayName;
 
   -- 3. Requested supported quarter (0 or 1 row)
   SELECT tbl_royale_supportedquarter.*,
@@ -70,7 +100,7 @@ BEGIN
   WHERE p.Year = P_Year
     AND p.Quarter = P_Quarter
     AND p.UserID IN (
-      SELECT UserID FROM tbl_royale_group_member WHERE GroupID = P_GroupID
+      SELECT UserID FROM tmp_rgm
     );
 
   -- 6. Group members who have a publisher in the previous quarter (for visibility when current is null)
@@ -79,7 +109,7 @@ BEGIN
   WHERE p.Year = v_prev_year
     AND p.Quarter = v_prev_quarter
     AND p.UserID IN (
-      SELECT UserID FROM tbl_royale_group_member WHERE GroupID = P_GroupID
+      SELECT UserID FROM tmp_rgm
     );
 
   -- 7. Publisher games for current-quarter group publishers
@@ -89,7 +119,7 @@ BEGIN
   WHERE p.Year = P_Year
     AND p.Quarter = P_Quarter
     AND p.UserID IN (
-      SELECT UserID FROM tbl_royale_group_member WHERE GroupID = P_GroupID
+      SELECT UserID FROM tmp_rgm
     );
 
   -- Master game data (same pattern as sp_getroyaleyearquarterdata)
@@ -121,10 +151,12 @@ BEGIN
     WHERE p.Year = P_Year
       AND p.Quarter = P_Quarter
       AND p.UserID IN (
-        SELECT UserID FROM tbl_royale_group_member WHERE GroupID = P_GroupID
+        SELECT UserID FROM tmp_rgm
       )
   )
   ORDER BY ps.PublisherID, ps.Date ASC;
+
+  DROP TEMPORARY TABLE IF EXISTS tmp_rgm;
 END//
 DELIMITER ;
 
