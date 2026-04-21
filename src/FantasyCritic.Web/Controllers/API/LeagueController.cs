@@ -427,6 +427,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [AllowAnonymous]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetPublisher(Guid id)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(id, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
