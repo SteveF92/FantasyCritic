@@ -153,14 +153,10 @@ export default {
     },
     async fetchData() {
       try {
-        const [groupResponse, membersResponse, quarterResponse] = await Promise.all([
-          axios.get(`/api/RoyaleGroup/GetRoyaleGroup/${this.groupid}`),
-          axios.get(`/api/RoyaleGroup/GetRoyaleGroupMembers/${this.groupid}`),
-          axios.get('/api/Royale/ActiveRoyaleQuarter')
-        ]);
-        this.group = groupResponse.data;
-        this.members = membersResponse.data;
-        this.activeQuarter = quarterResponse.data;
+        const response = await axios.get(`/api/RoyaleGroup/GetRoyaleGroupData/${this.groupid}`);
+        this.group = response.data.group;
+        this.members = response.data.members;
+        this.activeQuarter = response.data.activeQuarter;
       } catch {
         this.notFound = true;
       }

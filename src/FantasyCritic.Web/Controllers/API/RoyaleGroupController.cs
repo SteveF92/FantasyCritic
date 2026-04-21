@@ -268,15 +268,19 @@ public class RoyaleGroupController : FantasyCriticController
 
     [AllowAnonymous]
     [HttpGet("{groupID}")]
-    public async Task<IActionResult> GetRoyaleGroupMembers(Guid groupID)
+    public async Task<IActionResult> GetRoyaleGroupData(Guid groupID)
     {
         var stats = await _royaleService.GetRoyaleGroupMembersWithLifetimeStats(groupID);
         if (stats is null)
         {
             return NotFound();
         }
-        var viewModels = stats.LifetimeStats.Select(x => new RoyaleGroupMemberListItemViewModel(x)).ToList();
-        return Ok(viewModels);
+
+        var group = new RoyaleGroupViewModel(stats.RoyaleGroup, stats.LifetimeStats.Count);
+        var members = stats.LifetimeStats.Select(x => new RoyaleGroupMemberListItemViewModel(x)).ToList();
+        var activeQuarter = await _royaleService.GetActiveYearQuarter();
+        var vm = new RoyaleGroupDataViewModel(group, members, new RoyaleYearQuarterViewModel(activeQuarter));
+        return Ok(vm);
     }
 
     [AllowAnonymous]
