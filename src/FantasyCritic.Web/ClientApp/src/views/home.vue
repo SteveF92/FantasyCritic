@@ -18,22 +18,7 @@
             <div class="welcome-actions" role="toolbar" aria-label="Quick actions">
               <b-button size="sm" variant="outline-primary" :to="{ name: 'createLeague' }" class="welcome-action-btn">Create a League</b-button>
               <b-button v-if="isPlusUser" size="sm" variant="outline-primary" :to="{ name: 'createConference' }" class="welcome-action-btn">Create a Conference</b-button>
-              <b-button
-                v-if="activeRoyaleYearQuarter && !userRoyalePublisher"
-                size="sm"
-                variant="outline-primary"
-                :to="{ name: 'criticsRoyale', params: { year: activeRoyaleYearQuarter.year, quarter: activeRoyaleYearQuarter.quarter } }"
-                class="welcome-action-btn">
-                Play Critics Royale
-              </b-button>
-              <b-button
-                v-if="activeRoyaleYearQuarter && userRoyalePublisher"
-                size="sm"
-                variant="outline-primary"
-                :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisher.publisherID } }"
-                class="welcome-action-btn">
-                Critics Royale
-              </b-button>
+              <b-button size="sm" variant="outline-primary" :to="{ name: 'criticsRoyale' }" class="welcome-action-btn">Play Critics Royale</b-button>
               <b-button v-show="isFactChecker || isAdmin" size="sm" variant="outline-warning" :to="{ name: 'adminConsole' }" class="welcome-action-btn">Admin Console</b-button>
             </div>
           </div>
@@ -144,9 +129,7 @@ export default {
       myFollowedLeagues: [],
       myConferences: [],
       selectedYear: null,
-      activeRoyaleYearQuarter: null,
       publicLeagues: [],
-      userRoyalePublisher: null,
       publicLeagueFields: [
         { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' }
@@ -210,12 +193,6 @@ export default {
 
         //Public Leagues
         this.publicLeagues = response.data.publicLeagues;
-
-        //Active Royale Quarter
-        this.activeRoyaleYearQuarter = response.data.activeRoyaleQuarter;
-
-        //User Royale Publisher
-        this.userRoyalePublisher = response.data.userRoyalePublisher;
       } catch (error) {
         this.errorInfo = error.response.data;
       }
