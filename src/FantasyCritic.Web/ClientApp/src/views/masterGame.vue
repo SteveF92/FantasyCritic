@@ -36,11 +36,7 @@
           <masterGameDetails :master-game="masterGame"></masterGameDetails>
         </div>
 
-        <MasterGameYearStats
-          v-if="masterGameYears && masterGameYears.length > 0"
-          :master-game-id="mastergameid"
-          :master-game-years="masterGameYears"
-        ></MasterGameYearStats>
+        <MasterGameYearStats v-if="masterGameYears && masterGameYears.length > 0" :master-game-id="mastergameid" :master-game-years="masterGameYears"></MasterGameYearStats>
 
         <div v-if="Object.keys(leaguesWithGameByYear).length > 0" class="text-well league-game-section">
           <h2>Your Leagues with this Game</h2>
@@ -81,7 +77,7 @@
         </p>
         <p v-if="subGame.openCriticID">
           <a :href="openCriticLink(subGame)" target="_blank">
-            Open Critic Link
+            OpenCritic Link
             <font-awesome-icon icon="external-link-alt" size="xs" />
           </a>
         </p>

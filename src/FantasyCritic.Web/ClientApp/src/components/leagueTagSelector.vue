@@ -16,7 +16,7 @@
       The settings you have selected are REALLY not recommended, unless you really know what you are doing and want a highly custom league.
     </div>
     <div v-show="showPortDanger" class="alert alert-danger">
-      Please, please, don't allow the tag 'Port'. These games very very rarely get new Open Critic pages. You're free to allow the tag, but please be aware that this is an "unsupported" feature.
+      Please, please, don't allow the tag 'Port'. These games very very rarely get new OpenCritic pages. You're free to allow the tag, but please be aware that this is an "unsupported" feature.
     </div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">

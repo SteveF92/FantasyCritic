@@ -78,7 +78,7 @@
               </div>
 
               <div class="form-group">
-                <label for="openCriticID" class="control-label">Open Critic ID</label>
+                <label for="openCriticID" class="control-label">OpenCritic ID</label>
                 <input id="openCriticID" v-model="masterGame.openCriticID" name="openCriticID" class="form-control input" />
               </div>
 
@@ -130,7 +130,7 @@
               </div>
 
               <div v-if="clearCriticScore && !masterGame.syncWithExternalAPIs" class="alert alert-warning">
-                Are you sure you want to clear the critic score while leaving Open Critic Score Refreshing on?
+                Are you sure you want to clear the critic score while leaving OpenCritic Score Refreshing on?
               </div>
 
               <div class="submit-button">

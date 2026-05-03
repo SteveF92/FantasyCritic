@@ -257,7 +257,7 @@
             <em>Overwatch 2</em>
             and
             <em>Multiversus</em>
-            . This option will allow a player to get points as soon as a game has an Open Critic score, regardless of it's release status. This also means that Early Access games
+            . This option will allow a player to get points as soon as a game has an OpenCritic score, regardless of it's release status. This also means that Early Access games
             <em>will</em>
             count for points while they are in early access.
           </p>

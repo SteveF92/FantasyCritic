@@ -45,7 +45,7 @@
             <input id="steamLink" v-model="steamLink" name="steamLink" class="form-control input" />
           </div>
           <div class="form-group">
-            <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
+            <label for="openCriticLink" class="control-label">Link to OpenCritic Page (Optional)</label>
             <input id="openCriticLink" v-model="openCriticLink" name="openCriticLink" class="form-control input" />
           </div>
           <div class="form-group">

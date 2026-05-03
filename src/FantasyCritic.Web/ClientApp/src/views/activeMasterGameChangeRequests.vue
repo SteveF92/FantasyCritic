@@ -171,7 +171,7 @@ export default {
       axios
         .post('/api/factChecker/LinkGameToOpenCritic', linkRequest)
         .then(() => {
-          this.linkSuccessType = 'Open Critic';
+          this.linkSuccessType = 'OpenCritic';
         })
         .catch((error) => {
           this.errorInfo = error.response;

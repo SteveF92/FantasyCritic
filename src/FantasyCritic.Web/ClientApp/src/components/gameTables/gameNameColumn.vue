@@ -170,10 +170,10 @@ export default {
       return {
         html: true,
         title: () => {
-          return 'Needs Open Critic Link';
+          return 'Needs OpenCritic Link';
         },
         content: () => {
-          return "This game has released, but is not linked to an Open Critic page. If one exists, you can 'suggest a correction' and we'll get it fixed.";
+          return "This game has released, but is not linked to an OpenCritic page. If one exists, you can 'suggest a correction' and we'll get it fixed.";
         }
       };
     },
@@ -184,7 +184,7 @@ export default {
           return 'Needs more reviews';
         },
         content: () => {
-          return 'This game has released, and has an Open Critic page, but there are not enough reviews yet.';
+          return 'This game has released, and has an OpenCritic page, but there are not enough reviews yet.';
         }
       };
     },

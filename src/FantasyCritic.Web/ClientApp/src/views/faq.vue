@@ -411,8 +411,8 @@
             Wait for a game to get delayed, and then counter pick that.
           </li>
           <li>
-            Sometimes, a game will have extremely credible reports of a delay, but the developer/publisher will not confirm the delay. In that case, we will mark the game as "Delay in Contention",
-            and then the game will not be counter pickable.
+            Sometimes, a game will have extremely credible reports of a delay, but the developer/publisher will not confirm the delay. In that case, we will mark the game as "Delay in Contention", and
+            then the game will not be counter pickable.
           </li>
         </ul>
       </template>
@@ -683,11 +683,11 @@
       </template>
     </collapseCard>
     <collapseCard>
-      <template #header>A game is linked to an Open Critic page but there is no score. Why?</template>
-      <template #body>Open Critic only generates and displays an average score once there are at least three "Top Critic" reviews. This is the score that Fantasy Critic uses.</template>
+      <template #header>A game is linked to an OpenCritic page but there is no score. Why?</template>
+      <template #body>OpenCritic only generates and displays an average score once there are at least three "Top Critic" reviews. This is the score that Fantasy Critic uses.</template>
     </collapseCard>
     <collapseCard>
-      <template #header>One of my games was released but never got enough reviews to have a score on Open Critic. Can I drop it?</template>
+      <template #header>One of my games was released but never got enough reviews to have a score on OpenCritic. Can I drop it?</template>
       <template #body>
         By default, no. There are some games that come with an inherent risk of not getting enough reviews. For example, obscure indie games, games that have been in early access for a long time, free
         to play games, and free DLC for already released games. Judging this risk is part of selecting your games. You league is free to make a "house rule" and allow games in this situation to be

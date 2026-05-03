@@ -40,7 +40,7 @@
     <div class="text-well">
       <p>Your games are hidden from other players until one of the following happens:</p>
       <ul>
-        <li>The game gets a score from Open Critic.</li>
+        <li>The game gets a score from OpenCritic.</li>
         <li>The game releases.</li>
         <li>The game is delayed out of the quarter.</li>
         <li>The quarter ends.</li>

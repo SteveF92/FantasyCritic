@@ -103,7 +103,7 @@
             </div>
 
             <div class="form-group">
-              <label for="openCriticID" class="control-label">Open Critic ID</label>
+              <label for="openCriticID" class="control-label">OpenCritic ID</label>
               <input id="openCriticID" v-model="openCriticID" name="openCriticID" class="form-control input" />
             </div>
 

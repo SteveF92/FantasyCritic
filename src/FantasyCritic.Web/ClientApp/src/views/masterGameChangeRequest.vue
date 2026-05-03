@@ -65,7 +65,7 @@
               </div>
 
               <div class="form-group">
-                <label for="openCriticLink" class="control-label">Link to Open Critic Page (Optional)</label>
+                <label for="openCriticLink" class="control-label">Link to OpenCritic Page (Optional)</label>
                 <input id="openCriticLink" v-model="openCriticLink" name="openCriticLink" class="form-control input" />
               </div>
 
@@ -75,7 +75,7 @@
               </div>
 
               <b-alert variant="warning" :show="invalidOpenCriticRequest">
-                If you are requesting an Open Critic link, please include the link here. It is possible that Open Critic may not have created a page yet if this game was recently released or is a
+                If you are requesting an OpenCritic link, please include the link here. It is possible that OpenCritic may not have created a page yet if this game was recently released or is a
                 lesser known title.
               </b-alert>
 
