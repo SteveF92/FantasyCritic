@@ -231,7 +231,7 @@ public class RoyaleController : FantasyCriticController
                 continue;
             }
 
-            var publisherViewModel = new RoyaleStandingsViewModel(publisher, winningQuarters);
+            var publisherViewModel = new RoyaleStandingsViewModel(publisher, winningQuarters, currentDate);
             publisherViewModels.Add(publisherViewModel);
 
             if (topPublishers.Count < 10 && validStatistics)

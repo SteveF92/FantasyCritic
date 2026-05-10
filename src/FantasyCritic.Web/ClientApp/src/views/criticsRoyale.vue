@@ -67,6 +67,9 @@
               <font-awesome-icon v-if="data.item.previousQuarterWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-quarter-winner" />
               <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
             </template>
+            <template #cell(budget)="data">
+              <span>{{ data.item.budget | money(2) }}</span>
+            </template>
           </b-table>
           <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
         </div>
@@ -146,7 +149,10 @@ export default {
         { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
         { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
-        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' }
+        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' },
+        { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
+        { key: 'gamesPurchased', label: 'Games Purchased', thClass: 'bg-primary' },
+        { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary' }
       ],
       topRankedChartCanvasWidth: 1200,
       topRankedChartCanvasHeight: 600,
