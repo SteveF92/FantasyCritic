@@ -2814,6 +2814,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return result.ToDomain();
     }
 
+    public async Task<IReadOnlyList<SiteAnnouncement>> GetSiteAnnouncements()
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var result = await connection.QueryAsync<SiteAnnouncementEntity>("select * from tbl_meta_siteannouncements order by PostedAt desc;");
+        return result.Select(x => x.ToDomain()).ToList();
+    }
+
     public async Task SetActionProcessingMode(bool modeOn)
     {
         await using var connection = new MySqlConnection(_connectionString);

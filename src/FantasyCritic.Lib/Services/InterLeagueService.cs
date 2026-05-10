@@ -54,6 +54,11 @@ public class InterLeagueService
         return _fantasyCriticRepo.GetSiteCounts();
     }
 
+    public Task<IReadOnlyList<SiteAnnouncement>> GetSiteAnnouncements()
+    {
+        return _fantasyCriticRepo.GetSiteAnnouncements();
+    }
+
     public async Task CreateMasterGame(MasterGame masterGame)
     {
         await _masterGameRepo.CreateMasterGame(masterGame);

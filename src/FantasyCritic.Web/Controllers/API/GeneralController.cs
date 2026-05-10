@@ -37,4 +37,11 @@ public class GeneralController : FantasyCriticController
         var vm = DomainControllerUtilities.BuildBidTimesViewModel(_clock, systemWideSettings);
         return Ok(vm);
     }
+
+    public async Task<ActionResult<List<SiteAnnouncementViewModel>>> SiteAnnouncements()
+    {
+        var announcements = await _interLeagueService.GetSiteAnnouncements();
+        var vms = announcements.Select(x => new SiteAnnouncementViewModel(x)).ToList();
+        return Ok(vms);
+    }
 }

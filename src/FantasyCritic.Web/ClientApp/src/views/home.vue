@@ -110,8 +110,6 @@ import LeagueTable from '@/components/leagueTable.vue';
 import ConferenceTable from '@/components/conferenceTable.vue';
 import GameNews from '@/components/gameNews.vue';
 import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
-import { SITE_ANNOUNCEMENTS } from '@/data/siteAnnouncements';
-import { sortSiteAnnouncementsNewestFirst } from '@/data/siteAnnouncementSort';
 
 export default {
   components: {
@@ -138,7 +136,8 @@ export default {
       sortDesc: true,
       gameNews: null,
       topBidsAndDropsProcessDate: null,
-      topBidsAndDrops: null
+      topBidsAndDrops: null,
+      siteAnnouncements: []
     };
   },
   computed: {
@@ -151,18 +150,23 @@ export default {
     myTestLeagues() {
       return this.myLeagues.filter((x) => x.testLeague);
     },
-    sortedSiteAnnouncements() {
-      return sortSiteAnnouncementsNewestFirst(SITE_ANNOUNCEMENTS);
-    },
     homeAnnouncementPreview() {
-      return this.sortedSiteAnnouncements.slice(0, 1);
+      return this.siteAnnouncements.slice(0, 1);
     }
   },
   async created() {
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
-    await this.fetchHomePageData();
+    await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements()]);
   },
   methods: {
+    async fetchSiteAnnouncements() {
+      try {
+        const { data } = await axios.get('/api/general/siteannouncements');
+        this.siteAnnouncements = data;
+      } catch {
+        this.siteAnnouncements = [];
+      }
+    },
     async fetchHomePageData() {
       try {
         const response = await axios.get('/api/CombinedData/HomePageData');

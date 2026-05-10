@@ -121,6 +121,8 @@ public interface IFantasyCriticRepo
     Task<SystemWideValues> GetSystemWideValues();
     Task<SystemWideSettings> GetSystemWideSettings();
     Task<SiteCounts> GetSiteCounts();
+    Task<IReadOnlyList<SiteAnnouncement>> GetSiteAnnouncements();
+
     Task SetActionProcessingMode(bool modeOn);
 
     Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction);

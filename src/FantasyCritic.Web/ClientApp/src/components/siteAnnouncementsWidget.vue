@@ -6,18 +6,21 @@
         <router-link :to="{ name: 'siteUpdates' }">(See All)</router-link>
       </h2>
     </div>
-    <b-alert v-for="item in announcements" :key="item.id" show :variant="item.variant || 'secondary'" class="site-announcement-alert mb-2">
+    <b-alert v-for="item in announcements" :key="item.id" show variant="secondary" class="site-announcement-alert mb-2">
       <div class="site-announcement-title">{{ item.title }}</div>
-      <div v-if="item.postedAt" class="site-announcement-date">{{ item.postedAt }}</div>
+      <div v-if="item.postedAt" class="site-announcement-date">{{ formatPostedAt(item.postedAt) }}</div>
       <p class="site-announcement-body mb-1">{{ item.body }}</p>
-      <b-link v-if="item.href && item.linkLabel" :href="item.href" class="site-announcement-link">{{ item.linkLabel }}</b-link>
+      <b-link v-if="item.linkAddress && item.linkLabel" :href="item.linkAddress" class="site-announcement-link">{{ item.linkLabel }}</b-link>
     </b-alert>
   </section>
 </template>
 
 <script lang="ts">
+import { DateTime } from 'luxon';
 import { defineComponent, type PropType } from 'vue';
 import type { SiteAnnouncement } from '@/models/SiteAnnouncement';
+
+const DISPLAY_ZONE = 'America/New_York';
 
 export default defineComponent({
   name: 'SiteAnnouncementsWidget',
@@ -29,6 +32,15 @@ export default defineComponent({
     showHeading: {
       type: Boolean,
       default: true
+    }
+  },
+  methods: {
+    formatPostedAt(iso: string): string {
+      const dt = DateTime.fromISO(iso);
+      if (!dt.isValid) {
+        return iso;
+      }
+      return dt.setZone(DISPLAY_ZONE).toFormat('MMMM dd, yyyy');
     }
   }
 });
