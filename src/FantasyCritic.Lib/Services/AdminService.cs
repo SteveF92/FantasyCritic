@@ -667,9 +667,9 @@ public class AdminService
                 continue;
             }
 
+            var superDropPointCutoff = leagueYear.GetSuperDropPointCuttoff(systemWideValues);
             var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues));
-            var highestScoringPublisher = publishersWithProjectedPoints.MaxBy(x => x.Value);
-            var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < highestScoringPublisher.Value * 0.65m).ToList();
+            var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < superDropPointCutoff).ToList();
             List<LeagueAction> actions = new List<LeagueAction>();
             foreach (var publisher in publishersWithLowScores)
             {

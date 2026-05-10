@@ -143,7 +143,7 @@
       </div>
     </div>
     <div>
-      <leagueOptionsModal :league="league" :league-year-options="leagueYear.settings" :possible-league-options="possibleLeagueOptions" :supported-year="supportedYear"></leagueOptionsModal>
+      <leagueOptionsModal :league="league" :league-year="leagueYear" :possible-league-options="possibleLeagueOptions" :supported-year="supportedYear"></leagueOptionsModal>
       <eligibilityOverridesModal></eligibilityOverridesModal>
       <tagOverridesModal></tagOverridesModal>
 

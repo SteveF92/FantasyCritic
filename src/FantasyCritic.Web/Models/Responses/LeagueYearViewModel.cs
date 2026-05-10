@@ -134,6 +134,7 @@ public class LeagueYearViewModel
         }
 
         UnderReview = leagueYear.UnderReview;
+        SuperDropPointCutoff = leagueYear.Options.GrantSuperDrops ? leagueYear.GetSuperDropPointCuttoff(supplementalData.SystemWideValues) : null;
     }
 
     public LeagueViewModel League { get; }
@@ -157,4 +158,5 @@ public class LeagueYearViewModel
     public IReadOnlyList<LeaguePublisherViewModel> AllPublishersForUser { get; }
     public PrivatePublisherDataViewModel? PrivatePublisherData { get; }
     public bool UnderReview { get; }
+    public decimal? SuperDropPointCutoff { get; }
 }

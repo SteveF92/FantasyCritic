@@ -185,4 +185,11 @@ public class LeagueYear : IEquatable<LeagueYear>
         var publisherGames = Publishers.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame is not null);
         return publisherGames.Select(x => x.MasterGame!).ToHashSet();
     }
+
+    public decimal GetSuperDropPointCuttoff(SystemWideValues systemWideValues)
+    {
+        var publishersWithProjectedPoints = Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(this, systemWideValues));
+        var highestScoringPublisher = publishersWithProjectedPoints.MaxBy(x => x.Value);
+        return highestScoringPublisher.Value * 0.65m;
+    }
 }

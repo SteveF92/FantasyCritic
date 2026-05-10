@@ -55,7 +55,10 @@
         </tr>
         <tr>
           <th class="bg-primary">Automatic Super Drops</th>
-          <td>{{ leagueYearOptions.grantSuperDrops | yesNo }}</td>
+          <td>
+            <span>{{ leagueYearOptions.grantSuperDrops | yesNo }}</span>
+            <span v-if="leagueYearOptions.grantSuperDrops" class="point-cutoff">(Point Cutoff: {{ leagueYear.superDropPointCutoff | score(2) }})</span>
+          </td>
         </tr>
         <tr>
           <th class="bg-primary">Counter Picks Block Drops</th>
@@ -128,9 +131,19 @@ export default {
   },
   mixins: [BasicMixin],
   props: {
-    leagueYearOptions: { type: Object, required: true },
+    leagueYear: { type: Object, required: true },
     league: { type: Object, required: false },
     supportedYear: { type: Object, required: true }
+  },
+  computed: {
+    leagueYearOptions() {
+      return this.leagueYear.settings;
+    }
   }
 };
 </script>
+<style scoped>
+.point-cutoff {
+  margin-left: 5px;
+}
+</style>
