@@ -9,7 +9,7 @@ public class LeagueOptionsViewModel
     public LeagueOptionsViewModel(IEnumerable<int> openYears, IEnumerable<DraftSystem> draftSystems,
         IEnumerable<PickupSystem> pickupSystems, IEnumerable<TiebreakSystem> tiebreakSystems,
         IEnumerable<ScoringSystem> scoringSystems, IEnumerable<TradingSystem> tradingSystems,
-        IEnumerable<ReleaseSystem> releaseSystems)
+        IEnumerable<ReleaseSystem> releaseSystems, IEnumerable<IneligibleGameSystem> ineligibleGameSystems)
     {
         OpenYears = openYears.ToList();
         DraftSystems = draftSystems.Select(x => x.Value).ToList();
@@ -18,6 +18,7 @@ public class LeagueOptionsViewModel
         ScoringSystems = scoringSystems.Where(x => x.SupportedForNewLeagues()).Select(x => new SelectOptionViewModel(x.Name, x.GetReadableString())).ToList();
         TradingSystems = tradingSystems.Select(x => new SelectOptionViewModel(x.Value, x.ReadableName)).ToList();
         ReleaseSystems = releaseSystems.Select(x => new SelectOptionViewModel(x.Value, x.ReadableName)).ToList();
+        IneligibleGameSystems = ineligibleGameSystems.Select(x => new SelectOptionViewModel(x.Value, x.ReadableName)).ToList();
     }
 
     public IReadOnlyList<int> OpenYears { get; }
@@ -27,4 +28,5 @@ public class LeagueOptionsViewModel
     public IReadOnlyList<SelectOptionViewModel> ScoringSystems { get; }
     public IReadOnlyList<SelectOptionViewModel> TradingSystems { get; }
     public IReadOnlyList<SelectOptionViewModel> ReleaseSystems { get; }
+    public IReadOnlyList<SelectOptionViewModel> IneligibleGameSystems { get; }
 }

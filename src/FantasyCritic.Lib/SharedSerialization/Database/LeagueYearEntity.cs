@@ -38,6 +38,7 @@ public class LeagueYearEntity
         ScoringSystem = options.ScoringSystem.Name;
         TradingSystem = options.TradingSystem.Value;
         ReleaseSystem = options.ReleaseSystem.Value;
+        IneligibleGameSystem = options.IneligibleGameSystem.Value;
         PlayStatus = playStatus.Value;
         DraftOrderSet = draftOrderSet;
         ConferenceLocked = conferenceLocked;
@@ -67,6 +68,7 @@ public class LeagueYearEntity
     public string ScoringSystem { get; set; } = null!;
     public string TradingSystem { get; set; } = null!;
     public string ReleaseSystem { get; set; } = null!;
+    public string IneligibleGameSystem { get; set; } = null!;
     public string PlayStatus { get; set; } = null!;
     public bool DraftOrderSet { get; set; }
     public int CounterPickDeadlineMonth { get; set; }
@@ -87,6 +89,7 @@ public class LeagueYearEntity
         TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
         TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
         ReleaseSystem releaseSystem = Lib.Enums.ReleaseSystem.FromValue(ReleaseSystem);
+        IneligibleGameSystem ineligibleGameSystem = Lib.Enums.IneligibleGameSystem.FromValue(IneligibleGameSystem);
         ScoringSystem scoringSystem = Lib.Domain.ScoringSystems.ScoringSystem.GetScoringSystem(ScoringSystem);
 
         AnnualDate counterPickDeadline = new AnnualDate(CounterPickDeadlineMonth, CounterPickDeadlineDay);
@@ -99,7 +102,7 @@ public class LeagueYearEntity
         
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
-            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem,
+            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem,
             counterPickDeadline, mightReleaseDroppableDate);
 
         return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides,

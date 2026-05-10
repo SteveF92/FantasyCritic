@@ -10,8 +10,9 @@ public class LeagueOptions
 
     public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames,
         int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount,
-        IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, DraftSystem draftSystem, PickupSystem pickupSystem,
+        IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,         DraftSystem draftSystem, PickupSystem pickupSystem,
         ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
+        IneligibleGameSystem ineligibleGameSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
     {
         StandardGames = standardGames;
@@ -34,6 +35,7 @@ public class LeagueOptions
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
         ReleaseSystem = releaseSystem;
+        IneligibleGameSystem = ineligibleGameSystem;
         CounterPickDeadline = counterPickDeadline;
         MightReleaseDroppableDate = mightReleaseDroppableDate;
 
@@ -62,6 +64,7 @@ public class LeagueOptions
         TradingSystem = parameters.TradingSystem;
         TiebreakSystem = parameters.TiebreakSystem;
         ReleaseSystem = parameters.ReleaseSystem;
+        IneligibleGameSystem = parameters.IneligibleGameSystem;
         CounterPickDeadline = parameters.CounterPickDeadline;
         MightReleaseDroppableDate = parameters.MightReleaseDroppableDate;
 
@@ -88,6 +91,7 @@ public class LeagueOptions
     public TradingSystem TradingSystem { get; }
     public TiebreakSystem TiebreakSystem { get; }
     public ReleaseSystem ReleaseSystem { get; }
+    public IneligibleGameSystem IneligibleGameSystem { get; }
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
     public bool HasSpecialSlots => SpecialGameSlots.Any();
@@ -244,6 +248,11 @@ public class LeagueOptions
             differences.Add($"Game Release Rule changed from {existingOptions.ReleaseSystem.ReadableName} to {ReleaseSystem.ReadableName}.");
         }
 
+        if (!IneligibleGameSystem.Equals(existingOptions.IneligibleGameSystem))
+        {
+            differences.Add($"Ineligible Game Rule changed from {existingOptions.IneligibleGameSystem.ReadableName} to {IneligibleGameSystem.ReadableName}.");
+        }
+
         if (!CounterPickDeadline.Equals(existingOptions.CounterPickDeadline))
         {
             differences.Add($"Counter pick deadline changed from {existingOptions.CounterPickDeadline.ToReadableString()} to {CounterPickDeadline.ToReadableString()}.");
@@ -298,7 +307,7 @@ public class LeagueOptions
         LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
             AllowMoveIntoIneligible, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem,
-            PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem,
+            PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate);
         return options;
     }

@@ -263,6 +263,11 @@
           </p>
         </div>
         <div class="form-group">
+          <label for="ineligibleGameSystem" class="control-label">Ineligible games on roster</label>
+          <b-form-select v-model="internalValue.ineligibleGameSystem" :options="possibleLeagueOptions.ineligibleGameSystems"></b-form-select>
+          <p>Controls how the league treats standard games on a roster that are ineligible under the league tag rules. Domain behavior for each option is not finalized yet.</p>
+        </div>
+        <div class="form-group">
           <label for="counterPickDeadline" class="control-label">Counter Pick Deadline</label>
           <b-form-datepicker v-model="internalValue.counterPickDeadline" class="form-control"></b-form-datepicker>
           <p>

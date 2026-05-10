@@ -85,6 +85,10 @@
           <td>{{ leagueYearOptions.releaseSystem | selectTextFromPossibleOptions(possibleLeagueOptions.releaseSystems) }}</td>
         </tr>
         <tr>
+          <th class="bg-primary">Ineligible games on roster</th>
+          <td>{{ leagueYearOptions.ineligibleGameSystem | selectTextFromPossibleOptions(possibleLeagueOptions.ineligibleGameSystems) }}</td>
+        </tr>
+        <tr>
           <th class="bg-primary">Scoring Rule</th>
           <td>{{ leagueYearOptions.scoringSystem | selectTextFromPossibleOptions(possibleLeagueOptions.scoringSystems) }}</td>
         </tr>

@@ -11,6 +11,7 @@ public sealed class LeagueYearEntityMap : ClassMap<LeagueYearEntity>
         Map(m => m.LeagueYearName).Constant(null);
         Map(m => m.DraftStartedTimestamp).Constant(null);
         Map(m => m.ReleaseSystem).Constant("MustBeReleased");
+        Map(m => m.IneligibleGameSystem).Constant("CaseByCase");
         Map(m => m.MightReleaseDroppableMonth).Constant(null);
         Map(m => m.MightReleaseDroppableDay).Constant(null);
         Map(m => m.AllowMoveIntoIneligible).Constant(false);

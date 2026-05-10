@@ -79,6 +79,7 @@ public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionConte
         systemBasedOptionsMessage += $"Tiebreak System: **{leagueYearOptions.TiebreakSystem.ReadableName}**\n";
         systemBasedOptionsMessage += $"Trading System: **{leagueYearOptions.TradingSystem.ReadableName}**\n";
         systemBasedOptionsMessage += $"Game Release Rule: **{leagueYearOptions.ReleaseSystem.ReadableName}**\n";
+        systemBasedOptionsMessage += $"Ineligible Games on Roster: **{leagueYearOptions.IneligibleGameSystem.ReadableName}**\n";
         systemBasedOptionsMessage += $"Scoring Rule: **{leagueYearOptions.ScoringSystem.GetReadableString()}**\n";
 
         var leagueVisibilityMessage = $"Public League: **{YesOrNo(leagueChannel.LeagueYear.League.PublicLeague)}**\n";

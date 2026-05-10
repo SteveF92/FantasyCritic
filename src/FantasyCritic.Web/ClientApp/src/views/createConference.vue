@@ -137,6 +137,7 @@ export default {
       draftSystem: 'Flexible',
       scoringSystem: 'LinearPositive',
       releaseSystem: 'MustBeReleased',
+      ineligibleGameSystem: 'CaseByCase',
       specialGameSlots: [],
       tags: { banned: [], allowed: [], required: [] }
     };

@@ -60,6 +60,7 @@ internal abstract class BaseGameNewsTests
             new List<SpecialGameSlot>(),
             DraftSystem.Flexible, PickupSystem.SemiPublicBiddingSecretCounterPicks, ScoringSystem.GetDefaultScoringSystem(2025),
             TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, ReleaseSystem.MustBeReleased,
+            IneligibleGameSystem.CaseByCase,
             new AnnualDate(10, 1), new AnnualDate(10, 1));
 
         var games = new List<PublisherGame>();

@@ -100,7 +100,7 @@ public abstract class FantasyCriticController : ControllerBase
         LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
             PickupSystem.GetAllPossibleValues(), TiebreakSystem.GetAllPossibleValues(),
             ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues(),
-            ReleaseSystem.GetAllPossibleValues());
+            ReleaseSystem.GetAllPossibleValues(), IneligibleGameSystem.GetAllPossibleValues());
 
         return viewModel;
     }

@@ -8,6 +8,7 @@ public class LeagueYearParameters
         int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops,
         bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
         DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
+        IneligibleGameSystem ineligibleGameSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
     {
         LeagueID = leagueID;
@@ -33,6 +34,7 @@ public class LeagueYearParameters
         TradingSystem = tradingSystem;
         TiebreakSystem = tiebreakSystem;
         ReleaseSystem = releaseSystem;
+        IneligibleGameSystem = ineligibleGameSystem;
         CounterPickDeadline = counterPickDeadline;
         MightReleaseDroppableDate = mightReleaseDroppableDate;
     }
@@ -60,6 +62,7 @@ public class LeagueYearParameters
     public TradingSystem TradingSystem { get; }
     public TiebreakSystem TiebreakSystem { get; }
     public ReleaseSystem ReleaseSystem { get; }
+    public IneligibleGameSystem IneligibleGameSystem { get; }
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
 }
