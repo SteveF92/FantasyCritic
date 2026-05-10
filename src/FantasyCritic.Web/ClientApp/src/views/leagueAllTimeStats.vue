@@ -8,6 +8,12 @@
 
     <div v-if="leagueAllTimeStats">
       <h1>{{ league.leagueName }} All Time Stats</h1>
+      <div v-if="canDownloadFullLeagueArchive" class="my-2">
+        <b-button variant="info" @click="downloadFullLeagueArchive">
+          <font-awesome-icon icon="download" />
+          Download full league data (ZIP)
+        </b-button>
+      </div>
       <hr />
       <div v-if="league.years.length > 2">
         <h2>Player Stats</h2>
@@ -114,6 +120,10 @@ export default {
     league() {
       return this.leagueAllTimeStats?.league;
     },
+    canDownloadFullLeagueArchive() {
+      const league = this.leagueAllTimeStats?.league;
+      return league && (league.userIsInLeague || league.isManager);
+    },
     playerStatFields() {
       const yearsPlayedIn = this.leagueAllTimeStats.playerAllTimeStats.map((x) => x.yearsPlayedIn);
       const allSameYearsPlayed = yearsPlayedIn.every((x) => x === yearsPlayedIn[0]);
@@ -136,6 +146,9 @@ export default {
   },
   methods: {
     ordinal_suffix_of,
+    downloadFullLeagueArchive() {
+      window.location.href = `/api/league/DownloadConsolidatedLeagueData/${this.leagueid}`;
+    },
     async initializePage() {
       try {
         const response = await axios.get('/api/League/GetLeagueAllTimeStats/' + this.leagueid);

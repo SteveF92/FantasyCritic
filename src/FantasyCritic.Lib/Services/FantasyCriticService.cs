@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -598,5 +599,63 @@ public class FantasyCriticService
         var action = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Set Under Review Status", actionDescription);
         await _fantasyCriticRepo.SetUnderReview(leagueYear, underReview, action);
         return Result.Success();
+    }
+
+    public async Task<IReadOnlyList<ConsolidatedLeagueYearData>> GetConsolidatedLeagueYearData(League league)
+    {
+        List<ConsolidatedLeagueYearData> results = new List<ConsolidatedLeagueYearData>();
+        foreach (MinimalLeagueYearInfo yearInfo in league.Years.OrderBy(x => x.Year))
+        {
+            LeagueYear? leagueYear = await GetLeagueYear(league.LeagueID, yearInfo.Year);
+            if (leagueYear is null)
+            {
+                continue;
+            }
+
+            results.Add(await GetConsolidatedLeagueYearData(league, leagueYear));
+        }
+
+        return results;
+    }
+
+    public async Task<ConsolidatedLeagueYearData?> GetConsolidatedLeagueYearData(League league, int year)
+    {
+        if (!league.Years.Any(y => y.Year == year))
+        {
+            return null;
+        }
+
+        LeagueYear? leagueYear = await GetLeagueYear(league.LeagueID, year);
+        if (leagueYear is null)
+        {
+            return null;
+        }
+
+        return await GetConsolidatedLeagueYearData(league, leagueYear);
+    }
+
+    public Task<ConsolidatedLeagueYearData> GetConsolidatedLeagueYearData(League league, LeagueYear leagueYear)
+    {
+        return BuildConsolidatedLeagueYearData(league, leagueYear);
+    }
+
+    private async Task<ConsolidatedLeagueYearData> BuildConsolidatedLeagueYearData(League league, LeagueYear leagueYear)
+    {
+        IReadOnlyList<ManagerMessage> managerMessages = await _fantasyCriticRepo.GetManagerMessages(leagueYear);
+        IReadOnlyList<LeagueAction> leagueActions = await GetLeagueActions(leagueYear);
+        IReadOnlyList<LeagueManagerAction> leagueManagerActions = await GetLeagueManagerActions(leagueYear);
+        IReadOnlyList<Trade> trades = await _fantasyCriticRepo.GetTradesForLeague(leagueYear);
+        IReadOnlyList<SpecialAuction> specialAuctions = await _fantasyCriticRepo.GetSpecialAuctions(leagueYear);
+        IReadOnlyList<LeagueActionProcessingSet> actionProcessingSets = await GetLeagueActionProcessingSets(leagueYear);
+
+        Guid? previousSeasonWinnerUserID = null;
+        if (league.Years.Any(y => y.Year == leagueYear.Year - 1))
+        {
+            FantasyCriticUser? previousWinner = await _fantasyCriticRepo.GetLeagueYearWinner(league.LeagueID, leagueYear.Year - 1);
+            previousSeasonWinnerUserID = previousWinner?.UserID;
+        }
+
+        return new ConsolidatedLeagueYearData(leagueYear, managerMessages, leagueActions, leagueManagerActions, trades, specialAuctions,
+            actionProcessingSets, previousSeasonWinnerUserID);
     }
 }

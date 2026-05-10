@@ -17,3 +17,7 @@ public record LeagueYearWithUserStatus(LeagueYear LeagueYear, CombinedLeagueYear
 public record LeagueYearWithSupplementalData(LeagueYear LeagueYear, LeagueYearSupplementalData SupplementalData, CombinedLeagueYearUserStatus UserStatus);
 
 public record LeagueYearWithSupplementalDataFromRepo(LeagueYear LeagueYear, LeagueYearSupplementalDataFromRepo SupplementalData, CombinedLeagueYearUserStatus UserStatus);
+public record ConsolidatedLeagueYearData(LeagueYear LeagueYear, IReadOnlyList<ManagerMessage> ManagerMessages,
+    IReadOnlyList<LeagueAction> LeagueActions, IReadOnlyList<LeagueManagerAction> LeagueManagerActions,
+    IReadOnlyList<Trade> Trades, IReadOnlyList<SpecialAuction> SpecialAuctions,
+    IReadOnlyList<LeagueActionProcessingSet> ActionProcessingSets, Guid? PreviousSeasonWinnerUserID);

@@ -23,8 +23,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NodaTime.Serialization.JsonNet;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -33,6 +35,14 @@ namespace FantasyCritic.Web.Controllers.API;
 [Authorize]
 public class LeagueController : BaseLeagueController
 {
+    private static readonly JsonSerializerSettings ZipExportJsonSettings = CreateZipExportJsonSettings();
+
+    private static JsonSerializerSettings CreateZipExportJsonSettings()
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+        return settings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    }
+
     private readonly DraftService _draftService;
     private readonly GameSearchingService _gameSearchingService;
     private readonly PublisherService _publisherService;
@@ -370,6 +380,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [AllowAnonymous]
+    [HttpGet]
     public async Task<IActionResult> ExportLeagueActionSetsToCsv(Guid leagueID, int year)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
@@ -424,6 +435,131 @@ public class LeagueController : BaseLeagueController
         var bytes = Encoding.UTF8.GetBytes(finalString);
         var fileName = $"LeagueBidDropResults_{sanitizedLeagueName}_{year}.csv";
         return File(bytes, "text/csv", fileName);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> DownloadConsolidatedLeagueData(Guid id)
+    {
+        var leagueRecord = await GetExistingLeague(id, RequiredRelationship.InLeague);
+        if (leagueRecord.FailedResult is not null)
+        {
+            return leagueRecord.FailedResult;
+        }
+
+        var validResult = leagueRecord.ValidResult!;
+        var league = validResult.League;
+        var relationship = validResult.Relationship;
+        FantasyCriticUser? currentUser = validResult.CurrentUser;
+        if (currentUser is null)
+        {
+            return Unauthorized();
+        }
+
+        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
+        {
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
+        }
+
+        MinimalLeagueYearInfo? latestDraftStartedYearInfo = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        MinimalLeagueYearInfo? highestNonFinishedYearInfo = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
+        List<int> leagueYearNumbers = league.Years.Select(x => x.Year).ToList();
+        if (leagueYearNumbers.Count == 0)
+        {
+            return BadRequest("League has no years to export.");
+        }
+
+        int mostRecentYear = latestDraftStartedYearInfo?.Year ?? highestNonFinishedYearInfo?.Year ?? leagueYearNumbers.Max();
+        if (!await UserMayDownloadConsolidatedLeagueExportAsync(league, currentUser, relationship.LeagueManager, mostRecentYear))
+        {
+            return Forbid();
+        }
+
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var currentInstant = _clock.GetCurrentInstant();
+        var currentDate = currentInstant.ToEasternDate();
+        var allTimeStats = await _allTimeStatsService.GetLeagueAllTimeStats(league, currentDate);
+        IReadOnlyList<ConsolidatedLeagueYearData> consolidatedLeagueYearData = await _fantasyCriticService.GetConsolidatedLeagueYearData(league);
+
+        var consolidatedLeagueData = new ConsolidatedLeagueDataViewModel(validResult.League, validResult.PlayersInLeague, allTimeStats, systemWideValues, currentDate);
+
+        await using var memoryStream = new MemoryStream();
+        using (var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            AddConsolidatedExportZipEntry(zip, "league.json", consolidatedLeagueData);
+
+            foreach (ConsolidatedLeagueYearData yearData in consolidatedLeagueYearData)
+            {
+                LeagueYear leagueYear = yearData.LeagueYear;
+                IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+                var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+                var yearViewModel = new ConsolidatedLeagueYearViewModel(yearData, systemWideValues, currentInstant, currentDate, masterGameYearDictionary);
+
+                AddConsolidatedExportZipEntry(zip, $"{leagueYear.Year}.json", yearViewModel);
+            }
+        }
+
+        var sanitizedLeagueName = league.LeagueName.SanitizeForFileName();
+        var fileName = $"ConsolidatedLeagueData_{sanitizedLeagueName}.zip";
+        return File(memoryStream.ToArray(), "application/zip", fileName);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DownloadConsolidatedLeagueYearData(Guid leagueID, int year)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.InLeague, RequiredYearStatus.Any);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+        var league = leagueYear.League;
+        var relationship = validResult.Relationship;
+        FantasyCriticUser? currentUser = validResult.CurrentUser;
+        if (currentUser is null)
+        {
+            return Unauthorized();
+        }
+
+        if (!league.PublicLeague && !relationship.HasPermissionToViewLeague)
+        {
+            return UnauthorizedOrForbid(validResult.CurrentUser is not null);
+        }
+
+        if (!await UserMayDownloadConsolidatedLeagueExportAsync(league, currentUser, relationship.LeagueManager, year))
+        {
+            return Forbid();
+        }
+
+        ConsolidatedLeagueYearData yearData = await _fantasyCriticService.GetConsolidatedLeagueYearData(league, leagueYear);
+
+        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var currentInstant = _clock.GetCurrentInstant();
+        var currentDate = currentInstant.ToEasternDate();
+        IReadOnlyList<MasterGameYear> masterGameYears = await _interLeagueService.GetMasterGameYears(leagueYear.Year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        var yearViewModel = new ConsolidatedLeagueYearViewModel(yearData, systemWideValues, currentInstant, currentDate, masterGameYearDictionary);
+
+        string json = JsonConvert.SerializeObject(yearViewModel, ZipExportJsonSettings);
+        byte[] bytes = Encoding.UTF8.GetBytes(json);
+        string sanitizedLeagueName = league.LeagueName.SanitizeForFileName();
+        string fileName = $"{sanitizedLeagueName}_{year}_ConsolidatedYear.json";
+        return File(bytes, "application/json", fileName);
+    }
+
+    private async Task<bool> UserMayDownloadConsolidatedLeagueExportAsync(League league, FantasyCriticUser currentUser, bool isLeagueManager,
+        int yearForActivePlayerCheck)
+    {
+        if (isLeagueManager)
+        {
+            return true;
+        }
+
+        IReadOnlyList<FantasyCriticUser> activePlayers = await _leagueMemberService.GetActivePlayersForLeagueYear(league, yearForActivePlayerCheck);
+        return activePlayers.Any(x => x.Id == currentUser.Id);
     }
 
     [AllowAnonymous]
@@ -1588,6 +1724,15 @@ public class LeagueController : BaseLeagueController
         var inactiveTrades = trades.Where(x => !x.Status.IsActive);
         var viewModels = inactiveTrades.Select(x => new TradeViewModel(x, currentDate));
         return Ok(viewModels);
+    }
+
+    private static void AddConsolidatedExportZipEntry<T>(ZipArchive zip, string entryName, T payload)
+    {
+        ZipArchiveEntry entry = zip.CreateEntry(entryName);
+        using Stream entryStream = entry.Open();
+        using var writer = new StreamWriter(entryStream, Encoding.UTF8);
+        string json = JsonConvert.SerializeObject(payload, ZipExportJsonSettings);
+        writer.Write(json);
     }
 
     private static IReadOnlyList<SingleGameNewsViewModel> BuildLeagueGameNewsViewModel(LeagueYear leagueYear, LocalDate currentDate, IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> gameNews)

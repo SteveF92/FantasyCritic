@@ -9,6 +9,16 @@
     <div v-if="league && leagueYear">
       <h1>{{ league.leagueName }} History ({{ year }})</h1>
       <router-link :to="{ name: 'league', params: { leagueid: league.leagueID, year: leagueYear.year } }">Back to League</router-link>
+      <div v-if="canDownloadYearExports" class="history-download-actions">
+        <b-button variant="info" @click="exportHistoryToCsv">
+          <font-awesome-icon icon="download" />
+          Download History (CSV)
+        </b-button>
+        <b-button variant="info" @click="downloadYearAllDataJson">
+          <font-awesome-icon icon="download" />
+          Download All Data (JSON)
+        </b-button>
+      </div>
       <hr />
       <div v-if="leagueYear && leagueYear.managerMessages && leagueYear.managerMessages.length > 0">
         <h2>Manager's Messages</h2>
@@ -21,13 +31,7 @@
       </div>
 
       <div v-if="leagueActionSets && leagueActionSets.length > 0">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="mb-0">Detailed Bid/Drop Results</h2>
-          <b-button variant="primary" @click="exportToCSV">
-            <font-awesome-icon icon="download" />
-            Export to CSV
-          </b-button>
-        </div>
+        <h2 class="mb-3">Detailed Bid/Drop Results</h2>
         <div v-for="leagueActionSet in leagueActionSets" :key="leagueActionSet.processSetID" class="history-table">
           <collapseCard>
             <template #header>
@@ -108,6 +112,11 @@ export default {
   created() {
     this.initializePage();
   },
+  computed: {
+    canDownloadYearExports() {
+      return this.league && this.leagueYear && ((this.league.userIsInLeague && this.leagueYear.userIsActive) || this.league.isManager);
+    }
+  },
   methods: {
     initializePage() {
       const leaguePageParams = { leagueID: this.leagueid, year: this.year };
@@ -127,14 +136,25 @@ export default {
       await axios.post('/api/leagueManager/DeleteManagerMessage', model);
       this.fetchLeagueYear();
     },
-    exportToCSV() {
-      const url = `/api/league/ExportLeagueActionSetsToCSV?leagueID=${this.leagueid}&year=${this.year}`;
-      window.location.href = url;
+    exportHistoryToCsv() {
+      window.location.href = `/api/league/ExportLeagueActionSetsToCSV?leagueID=${this.leagueid}&year=${this.year}`;
+    },
+    downloadYearAllDataJson() {
+      window.location.href = `/api/league/DownloadConsolidatedLeagueYearData?leagueID=${this.leagueid}&year=${this.year}`;
     }
   }
 };
 </script>
 <style scoped>
+.history-download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
 .history-table {
   margin-left: 15px;
   margin-right: 15px;

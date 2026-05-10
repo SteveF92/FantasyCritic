@@ -454,10 +454,7 @@ export default {
     },
     async fetchRoyaleGroupForLeague() {
       try {
-        const [groupResponse, quarterResponse] = await Promise.all([
-          axios.get(`/api/RoyaleGroup/GetRoyaleGroupForLeague/${this.leagueid}`),
-          axios.get('/api/Royale/ActiveRoyaleQuarter')
-        ]);
+        const [groupResponse, quarterResponse] = await Promise.all([axios.get(`/api/RoyaleGroup/GetRoyaleGroupForLeague/${this.leagueid}`), axios.get('/api/Royale/ActiveRoyaleQuarter')]);
         this.royaleGroupData = groupResponse.data;
         this.activeRoyaleQuarter = quarterResponse.data;
       } catch {
