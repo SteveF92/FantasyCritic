@@ -32,6 +32,7 @@
         <li v-if="selectedMasterGameYear.projectedFantasyPoints">Projected Points: ~{{ selectedMasterGameYear.projectedFantasyPoints | score(1) }}</li>
 
         <li>Counter Picked in {{ selectedMasterGameYear.adjustedPercentCounterPick | percent(1) }} of leagues where it is published.</li>
+        <li>Counter Picked in {{ selectedMasterGameYear.percentCounterPick | percent(1) }} of leagues total.</li>
       </ul>
 
       <div v-if="statisticsLoadError" class="alert alert-warning small mt-3" role="alert">{{ statisticsLoadError }}</div>
@@ -62,7 +63,7 @@ const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#
 /** Every numeric series returned on each statistics row; trim or split axes later as needed. */
 const STATISTICS_CHART_SERIES = [
   { key: 'eligiblePercentStandardGame', label: '% Published', scaleZeroToOneAsPercent: true },
-  { key: 'adjustedPercentCounterPick', label: '% Counter Picked', scaleZeroToOneAsPercent: true },
+  { key: 'percentCounterPick', label: '% Counter Picked', scaleZeroToOneAsPercent: true },
   { key: 'dateAdjustedHypeFactor', label: 'Hype Factor' },
   { key: 'projectedFantasyPoints', label: 'Projected Points' },
   { key: 'royaleCost', label: 'Royale cost' }
