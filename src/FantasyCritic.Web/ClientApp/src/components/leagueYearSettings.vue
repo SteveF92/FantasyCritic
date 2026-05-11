@@ -268,7 +268,11 @@
           <p>
             Controls how the league treats standard games on a roster that are ineligible under the league tag rules. This can happen in a couple of ways, but the most common is if a game's tags
             change after a player already has it. "Case by Case Basis" is effectively a legacy mode that's here as a default because this option is new. The other options all clarify exactly how an
-            ineligble game is to be treated if a player wants to drop it.
+            ineligble game is to be treated if a player wants to drop it. If you choose one of the options that allows it to be dropped, it will be droppable
+            <em>even after release,</em>
+            as it could never score points for the player anyway. Also note that if you choose "Droppable As Will Release", and the game is both ineligible
+            <strong>and</strong>
+            it will not release, then the game will be droppable as "Will Not Release". The system is always going to give the player the most lenient drop option available.
           </p>
         </div>
         <div class="form-group">

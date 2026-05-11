@@ -9,7 +9,7 @@ ENGINE=InnoDB
 INSERT INTO `tbl_settings_ineligiblegamesystem` (`IneligibleGameSystem`) VALUES
 	('CaseByCase'),
 	('DroppableAsWillNotRelease'),
-	('DroppableAsWillRelease'),
+	('FreelyDroppable'),
 	('NotDroppable');
 
 ALTER TABLE `tbl_league_year`

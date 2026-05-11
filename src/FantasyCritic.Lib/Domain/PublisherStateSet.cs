@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain;
@@ -67,6 +68,21 @@ public class PublisherStateSet
                 leagueOptions.MightReleaseDroppableDate.Value.InYear(dateOfDrop.Year))
             {
                 gameCouldRelease = false;
+            }
+        }
+
+            var acquisitionDate = publisherGame.Timestamp.ToEasternDate();
+        if (publisherGame.MasterGame is not null && !leagueYear.GameIsEligibleInAnySlot(publisherGame.MasterGame.MasterGame, acquisitionDate))
+        {
+            if (leagueOptions.IneligibleGameSystem.Equals(IneligibleGameSystem.DroppableAsWillNotRelease))
+            {
+                gameCouldRelease = false;
+            }
+
+            if (leagueOptions.IneligibleGameSystem.Equals(IneligibleGameSystem.FreelyDroppable))
+            {
+                UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.NoCost);
+                return;
             }
         }
 
@@ -166,6 +182,7 @@ public class PublisherStateSet
         UnrestrictedReleaseStatus,
         WillNotRelease,
         WillRelease,
-        Super
+        Super,
+        NoCost
     }
 }

@@ -95,8 +95,9 @@ export default {
               'You can either move this game to a different slot, or, if your league disagrees with the tags this game has, you can override the tags for this game.';
           } else if (ineligibleSystem === 'DroppableAsWillNotRelease') {
             mainText = `This game is ineligible in this league. ${pointsText} <br/> <br/>` + 'Per your league settings, this game can be dropped using a <strong>Will Not Release</strong> drop.';
-          } else if (ineligibleSystem === 'DroppableAsWillRelease') {
-            mainText = `This game is ineligible in this league. ${pointsText} <br/> <br/>` + 'Per your league settings, this game can be dropped using a <strong>Will Release</strong> drop.';
+          } else if (ineligibleSystem === 'FreelyDroppable') {
+            mainText =
+              `This game is ineligible in this league. ${pointsText} <br/> <br/>` + 'Per your league settings, this game can be dropped <strong>for free</strong>, without using any of your drops.';
           } else if (ineligibleSystem === 'NotDroppable') {
             mainText = `This game is ineligible in this league. ${pointsText} <br/> <br/>` + 'Per your league settings, this game <strong>cannot be dropped</strong>.';
           } else {
