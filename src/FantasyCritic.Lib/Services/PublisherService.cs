@@ -110,14 +110,14 @@ public class PublisherService
             }
         }
 
-        bool allowUnlimitedFreeDrops = editValues.LeagueYear.Options.FreeDroppableGames == -1;
-        if (editValues.FreeGamesDropped.HasValue)
+        bool allowUnlimitedUnrestrictedReleaseStatusDrops = editValues.LeagueYear.Options.UnrestrictedReleaseStatusDroppableGames == -1;
+        if (editValues.UnrestrictedReleaseStatusGamesDropped.HasValue)
         {
-            if (allowUnlimitedFreeDrops)
+            if (allowUnlimitedUnrestrictedReleaseStatusDrops)
             {
                 return Result.Failure("Your league allows unlimited unrestricted drops, so there is no reason to edit this.");
             }
-            if (editValues.FreeGamesDropped.Value > editValues.LeagueYear.Options.FreeDroppableGames)
+            if (editValues.UnrestrictedReleaseStatusGamesDropped.Value > editValues.LeagueYear.Options.UnrestrictedReleaseStatusDroppableGames)
             {
                 return Result.Failure("Unrestricted games dropped cannot be set to more than is allowed in the league.");
             }

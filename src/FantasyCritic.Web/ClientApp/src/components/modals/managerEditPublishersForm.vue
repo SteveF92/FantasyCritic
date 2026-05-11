@@ -20,8 +20,8 @@
           <input id="newBudget" v-model="newBudget" name="newBudget" type="text" class="form-control input" />
         </div>
         <div class="form-group">
-          <label for="newFreeGamesDropped" class="control-label">"Any Unreleased" Games Dropped</label>
-          <input id="newFreeGamesDropped" v-model="newFreeGamesDropped" name="newFreeGamesDropped" type="text" class="form-control input" />
+          <label for="newUnrestrictedReleaseStatusGamesDropped" class="control-label">"Any Unreleased" Games Dropped</label>
+          <input id="newUnrestrictedReleaseStatusGamesDropped" v-model="newUnrestrictedReleaseStatusGamesDropped" name="newUnrestrictedReleaseStatusGamesDropped" type="text" class="form-control input" />
         </div>
         <div class="form-group">
           <label for="newWillNotReleaseGamesDropped" class="control-label">Will not Release Games Dropped</label>
@@ -60,7 +60,7 @@ export default {
       editPublisher: null,
       newPublisherName: null,
       newBudget: null,
-      newFreeGamesDropped: null,
+      newUnrestrictedReleaseStatusGamesDropped: null,
       newWillNotReleaseGamesDropped: null,
       newWillReleaseGamesDropped: null,
       newSuperDropsAvailable: null,
@@ -71,7 +71,7 @@ export default {
     selectPublisher(selectedPublisher) {
       this.newPublisherName = selectedPublisher.publisherName;
       this.newBudget = selectedPublisher.budget;
-      this.newFreeGamesDropped = selectedPublisher.freeGamesDropped;
+      this.newUnrestrictedReleaseStatusGamesDropped = selectedPublisher.unrestrictedReleaseStatusGamesDropped;
       this.newWillNotReleaseGamesDropped = selectedPublisher.willNotReleaseGamesDropped;
       this.newWillReleaseGamesDropped = selectedPublisher.willReleaseGamesDropped;
       this.newSuperDropsAvailable = selectedPublisher.superDropsAvailable;
@@ -81,7 +81,7 @@ export default {
         publisherID: this.editPublisher.publisherID,
         publisherName: this.newPublisherName,
         budget: this.newBudget,
-        freeGamesDropped: this.newFreeGamesDropped,
+        unrestrictedReleaseStatusGamesDropped: this.newUnrestrictedReleaseStatusGamesDropped,
         willNotReleaseGamesDropped: this.newWillNotReleaseGamesDropped,
         willReleaseGamesDropped: this.newWillReleaseGamesDropped,
         superDropsAvailable: this.newSuperDropsAvailable

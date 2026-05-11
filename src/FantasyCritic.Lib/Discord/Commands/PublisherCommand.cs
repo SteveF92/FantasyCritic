@@ -247,8 +247,8 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
                 publisherFound.WillReleaseGamesDropped);
         var remainingWillNotReleaseDrops = GetDropsRemainingText(
             leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames, publisherFound.WillNotReleaseGamesDropped);
-        var remainingFreeDroppableGames = GetDropsRemainingText(leagueChannel.LeagueYear.Options.FreeDroppableGames,
-            publisherFound.FreeGamesDropped);
+        var remainingUnrestrictedReleaseStatusDroppableGames = GetDropsRemainingText(leagueChannel.LeagueYear.Options.UnrestrictedReleaseStatusDroppableGames,
+            publisherFound.UnrestrictedReleaseStatusGamesDropped);
 
 
         var pickedGamesMessage = string.Join("\n", pickedGames.Select(BuildGameMessage));
@@ -263,8 +263,8 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
             leagueChannel.LeagueYear.Options.WillReleaseDroppableGames,
             remainingWillNotReleaseDrops,
             leagueChannel.LeagueYear.Options.WillNotReleaseDroppableGames,
-            remainingFreeDroppableGames,
-            leagueChannel.LeagueYear.Options.FreeDroppableGames);
+            remainingUnrestrictedReleaseStatusDroppableGames,
+            leagueChannel.LeagueYear.Options.UnrestrictedReleaseStatusDroppableGames);
         return embedFieldBuilders;
     }
 
@@ -343,8 +343,8 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         int leagueOptionWillReleaseDroppableGames,
         string remainingWillNotReleaseDrops,
         int leagueOptionWillNotReleaseDroppableGames,
-        string remainingFreeDroppableGames,
-        int leagueOptionsFreeDroppableGames)
+        string remainingUnrestrictedReleaseStatusDroppableGames,
+        int leagueOptionsUnrestrictedReleaseStatusDroppableGames)
     {
         return new List<EmbedFieldBuilder>
         {
@@ -385,7 +385,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
             new()
             {
                 Name = "'Unrestricted' Drops Remaining",
-                Value = BuildDropDisplay(remainingFreeDroppableGames, leagueOptionsFreeDroppableGames)
+                Value = BuildDropDisplay(remainingUnrestrictedReleaseStatusDroppableGames, leagueOptionsUnrestrictedReleaseStatusDroppableGames)
             }
         };
     }

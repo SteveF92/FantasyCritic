@@ -435,7 +435,7 @@
             The number (or unlimited) of games that ARE planned to release in the league year that can be dropped.
           </li>
           <li>
-            <strong>Free Droppable Games:</strong>
+            <strong>"Any Unreleased" Droppable Games:</strong>
             The number (or unlimited) of games that can be dropped, whether they are planned to release or not.
           </li>
         </ul>

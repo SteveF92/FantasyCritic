@@ -167,13 +167,13 @@ public class FantasyCriticService
             }
         }
 
-        int maxFreeGamesFreeDropped = publishers.Select(publisher => publisher.FreeGamesDropped).DefaultIfEmpty(0).Max();
+        int maxUnrestrictedReleaseStatusGamesDropped = publishers.Select(publisher => publisher.UnrestrictedReleaseStatusGamesDropped).DefaultIfEmpty(0).Max();
         int maxWillNotReleaseGamesDropped = publishers.Select(publisher => publisher.WillNotReleaseGamesDropped).DefaultIfEmpty(0).Max();
         int maxWillReleaseGamesDropped = publishers.Select(publisher => publisher.WillReleaseGamesDropped).DefaultIfEmpty(0).Max();
 
-        if (maxFreeGamesFreeDropped > options.FreeDroppableGames && options.FreeDroppableGames != -1)
+        if (maxUnrestrictedReleaseStatusGamesDropped > options.UnrestrictedReleaseStatusDroppableGames && options.UnrestrictedReleaseStatusDroppableGames != -1)
         {
-            return Result.Failure($"Cannot reduce number of unrestricted droppable games to {options.FreeDroppableGames} as a publisher has already dropped {maxFreeGamesFreeDropped} games.");
+            return Result.Failure($"Cannot reduce number of unrestricted droppable games to {options.UnrestrictedReleaseStatusDroppableGames} as a publisher has already dropped {maxUnrestrictedReleaseStatusGamesDropped} games.");
         }
         if (maxWillNotReleaseGamesDropped > options.WillNotReleaseDroppableGames && options.WillNotReleaseDroppableGames != -1)
         {

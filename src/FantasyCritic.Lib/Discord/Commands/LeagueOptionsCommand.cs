@@ -68,7 +68,7 @@ public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionConte
         picksCounterPicksMessage += $"Special Game Slots: **{(leagueYearOptions.HasSpecialSlots && leagueYearOptions.SpecialGameSlots.Count > 0 ? leagueYearOptions.SpecialGameSlots.Count : "None")}**\n";
 
         var bidsAndDropsMessage = $"Minimum Bid Amount: **${leagueYearOptions.MinimumBidAmount}**\n";
-        bidsAndDropsMessage += $"\"Any Unreleased\" Droppable Games: **{(leagueYearOptions.FreeDroppableGames == -1 ? "Unlimited" : leagueYearOptions.FreeDroppableGames)}**\n";
+        bidsAndDropsMessage += $"\"Any Unreleased\" Droppable Games: **{(leagueYearOptions.UnrestrictedReleaseStatusDroppableGames == -1 ? "Unlimited" : leagueYearOptions.UnrestrictedReleaseStatusDroppableGames)}**\n";
         bidsAndDropsMessage += $"\"Will Not Release\" Droppable Games: **{(leagueYearOptions.WillNotReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillNotReleaseDroppableGames)}**\n";
         bidsAndDropsMessage += $"\"Will Release\" Droppable Games: **{(leagueYearOptions.WillReleaseDroppableGames == -1 ? "Unlimited" : leagueYearOptions.WillReleaseDroppableGames)}**\n";
         bidsAndDropsMessage += $"Drop Only Draft Games: **{YesOrNo(leagueYearOptions.DropOnlyDraftGames)}**\n";

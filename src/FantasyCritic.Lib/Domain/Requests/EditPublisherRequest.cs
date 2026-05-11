@@ -2,7 +2,7 @@ namespace FantasyCritic.Lib.Domain.Requests;
 
 public class EditPublisherRequest
 {
-    public EditPublisherRequest(LeagueYear leagueYear, Publisher publisher, string newPublisherName, int budget, int freeGamesDropped,
+    public EditPublisherRequest(LeagueYear leagueYear, Publisher publisher, string newPublisherName, int budget, int unrestrictedReleaseStatusGamesDropped,
         int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable)
     {
         LeagueYear = leagueYear;
@@ -15,9 +15,9 @@ public class EditPublisherRequest
         {
             Budget = budget;
         }
-        if (publisher.FreeGamesDropped != freeGamesDropped)
+        if (publisher.UnrestrictedReleaseStatusGamesDropped != unrestrictedReleaseStatusGamesDropped)
         {
-            FreeGamesDropped = freeGamesDropped;
+            UnrestrictedReleaseStatusGamesDropped = unrestrictedReleaseStatusGamesDropped;
         }
         if (publisher.WillNotReleaseGamesDropped != willNotReleaseGamesDropped)
         {
@@ -37,7 +37,7 @@ public class EditPublisherRequest
     public Publisher Publisher { get; }
     public string? NewPublisherName { get; }
     public int? Budget { get; }
-    public int? FreeGamesDropped { get; }
+    public int? UnrestrictedReleaseStatusGamesDropped { get; }
     public int? WillNotReleaseGamesDropped { get; }
     public int? WillReleaseGamesDropped { get; }
     public int? SuperDropsAvailable { get; }
@@ -46,7 +46,7 @@ public class EditPublisherRequest
     {
         return NewPublisherName is not null ||
                Budget.HasValue ||
-               FreeGamesDropped.HasValue ||
+               UnrestrictedReleaseStatusGamesDropped.HasValue ||
                WillNotReleaseGamesDropped.HasValue ||
                WillReleaseGamesDropped.HasValue ||
                SuperDropsAvailable.HasValue;
@@ -63,9 +63,9 @@ public class EditPublisherRequest
         {
             changes.Add($"Changed budget to {Budget.Value}");
         }
-        if (FreeGamesDropped.HasValue)
+        if (UnrestrictedReleaseStatusGamesDropped.HasValue)
         {
-            changes.Add($"Changed 'unrestricted games dropped' to {FreeGamesDropped.Value}");
+            changes.Add($"Changed 'unrestricted games dropped' to {UnrestrictedReleaseStatusGamesDropped.Value}");
         }
         if (WillNotReleaseGamesDropped.HasValue)
         {

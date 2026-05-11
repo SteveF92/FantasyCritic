@@ -30,7 +30,7 @@
             <li>Budget: {{ publisher.budget | money(0) }}</li>
             <li>Will Release Games Dropped: {{ getDropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames) }}</li>
             <li>Will Not Release Games Dropped: {{ getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames) }}</li>
-            <li>"Any Unreleased" Games Dropped: {{ getDropStatus(publisher.freeGamesDropped, publisher.freeDroppableGames) }}</li>
+            <li>"Any Unreleased" Games Dropped: {{ getDropStatus(publisher.unrestrictedReleaseStatusGamesDropped, publisher.unrestrictedReleaseStatusDroppableGames) }}</li>
             <li>Super Drops Available: {{ publisher.superDropsAvailable }}</li>
           </ul>
         </div>

@@ -11,7 +11,7 @@ public class Publisher : IEquatable<Publisher>
 
     public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, string? publisherSlogan,
         int draftPosition, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
-        int freeGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, AutoDraftSettings autoDraftSettings)
+        int unrestrictedReleaseStatusGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, AutoDraftSettings autoDraftSettings)
     {
         PublisherID = publisherID;
         LeagueYearKey = leagueYearKey;
@@ -23,7 +23,7 @@ public class Publisher : IEquatable<Publisher>
         PublisherGames = publisherGames.ToList();
         FormerPublisherGames = formerPublisherGames.ToList();
         Budget = budget;
-        FreeGamesDropped = freeGamesDropped;
+        UnrestrictedReleaseStatusGamesDropped = unrestrictedReleaseStatusGamesDropped;
         WillNotReleaseGamesDropped = willNotReleaseGamesDropped;
         WillReleaseGamesDropped = willReleaseGamesDropped;
         SuperDropsAvailable = superDropsAvailable;
@@ -40,7 +40,7 @@ public class Publisher : IEquatable<Publisher>
     public IReadOnlyList<PublisherGame> PublisherGames { get; }
     public IReadOnlyList<FormerPublisherGame> FormerPublisherGames { get; }
     public uint Budget { get; }
-    public int FreeGamesDropped { get; }
+    public int UnrestrictedReleaseStatusGamesDropped { get; }
     public int WillNotReleaseGamesDropped { get; }
     public int WillReleaseGamesDropped { get; }
     public int SuperDropsAvailable { get; }
@@ -217,7 +217,7 @@ public class Publisher : IEquatable<Publisher>
     {
         var newPublisherGames = PublisherGames.Select(x => x.GetUpdatedPublisherGameWithNewScores(calculatedStats)).ToList();
         return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition, newPublisherGames,
-            FormerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
+            FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
     }
     
     public HashSet<MasterGame> MyMasterGames => PublisherGames
@@ -264,7 +264,7 @@ public class Publisher : IEquatable<Publisher>
             {
                 return Result.Success();
             }
-            if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
+            if (leagueOptions.UnrestrictedReleaseStatusDroppableGames == -1 || leagueOptions.UnrestrictedReleaseStatusDroppableGames > UnrestrictedReleaseStatusGamesDropped)
             {
                 return Result.Success();
             }
@@ -275,7 +275,7 @@ public class Publisher : IEquatable<Publisher>
         {
             return Result.Success();
         }
-        if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > FreeGamesDropped)
+        if (leagueOptions.UnrestrictedReleaseStatusDroppableGames == -1 || leagueOptions.UnrestrictedReleaseStatusDroppableGames > UnrestrictedReleaseStatusGamesDropped)
         {
             return Result.Success();
         }

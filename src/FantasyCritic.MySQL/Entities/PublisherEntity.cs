@@ -20,7 +20,7 @@ public class PublisherEntity
         Year = publisher.LeagueYearKey.Year;
         UserID = publisher.User.Id;
         DraftPosition = publisher.DraftPosition;
-        FreeGamesDropped = publisher.FreeGamesDropped;
+        UnrestrictedReleaseStatusGamesDropped = publisher.UnrestrictedReleaseStatusGamesDropped;
         WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
         WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
         SuperDropsAvailable = publisher.SuperDropsAvailable;
@@ -37,7 +37,7 @@ public class PublisherEntity
     public int Year { get; set; }
     public Guid UserID { get; set; }
     public int DraftPosition { get; set; }
-    public int FreeGamesDropped { get; set; }
+    public int UnrestrictedReleaseStatusGamesDropped { get; set; }
     public int WillNotReleaseGamesDropped { get; set; }
     public int WillReleaseGamesDropped { get; set; }
     public int SuperDropsAvailable { get; set; }
@@ -49,6 +49,6 @@ public class PublisherEntity
     {
         var autoDraftSettings = new Lib.Enums.AutoDraftSettings(Lib.Enums.AutoDraftMode.FromValue(AutoDraftMode), OnlyAutoDraftFromWatchlist);
         return new Publisher(PublisherID, new LeagueYearKey(LeagueID, Year), user, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition,
-            publisherGames, formerPublisherGames, Budget, FreeGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, autoDraftSettings);
+            publisherGames, formerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, autoDraftSettings);
     }
 }

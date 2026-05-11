@@ -1081,10 +1081,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string createLeagueYearSQL =
             """
             insert into tbl_league_year
-            (LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
+            (LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
             GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,PlayStatus,DraftOrderSet,
             CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview,LeagueYearName) VALUES
-            (@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
+            (@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
             @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
             @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0,@LeagueYearName);
             """;
@@ -1107,7 +1107,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string editLeagueYearSQL =
             """
             UPDATE tbl_league_year SET StandardGames = @StandardGames, GamesToDraft = @GamesToDraft, CounterPicks = @CounterPicks, CounterPicksToDraft = @CounterPicksToDraft,
-            FreeDroppableGames = @FreeDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
+            UnrestrictedReleaseStatusDroppableGames = @UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
             DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops,
             AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, DraftSystem = @DraftSystem,
             PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem, ReleaseSystem = @ReleaseSystem,
@@ -1156,10 +1156,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string newLeagueYearSQL =
             """
             insert into tbl_league_year
-            (LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,FreeDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
+            (LeagueID,Year,StandardGames,GamesToDraft,CounterPicks,CounterPicksToDraft,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
             GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,PlayStatus,DraftOrderSet,
             CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview) VALUES
-            (@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@FreeDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
+            (@LeagueID,@Year,@StandardGames,@GamesToDraft,@CounterPicks,@CounterPicksToDraft,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
             @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
             @ReleaseSystem,@PlayStatus,@DraftOrderSet,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0);
             """;
@@ -1664,8 +1664,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task CreatePublisher(Publisher publisher)
     {
         const string publisherCreateSQL =
-            "insert into tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,PublisherSlogan,LeagueID,Year,UserID,DraftPosition,Budget,FreeGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped,SuperDropsAvailable,AutoDraftMode,OnlyAutoDraftFromWatchlist) VALUES " +
-            "(@PublisherID,@PublisherName,@PublisherIcon,@PublisherSlogan,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@FreeGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped,@SuperDropsAvailable,@AutoDraftMode,@OnlyAutoDraftFromWatchlist);";
+            "insert into tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,PublisherSlogan,LeagueID,Year,UserID,DraftPosition,Budget,UnrestrictedReleaseStatusGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped,SuperDropsAvailable,AutoDraftMode,OnlyAutoDraftFromWatchlist) VALUES " +
+            "(@PublisherID,@PublisherName,@PublisherIcon,@PublisherSlogan,@LeagueID,@Year,@UserID,@DraftPosition,@Budget,@UnrestrictedReleaseStatusGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped,@SuperDropsAvailable,@AutoDraftMode,@OnlyAutoDraftFromWatchlist);";
         const string setFlagSQL = "update tbl_league_year SET DraftOrderSet = 0 WHERE LeagueID = @LeagueID AND Year = @Year;";
 
         var entity = new PublisherEntity(publisher);
@@ -2853,10 +2853,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             sql += "WillReleaseGamesDropped = @willReleaseGamesDropped,";
             parameters.Add("willReleaseGamesDropped", editValues.WillReleaseGamesDropped.Value);
         }
-        if (editValues.FreeGamesDropped.HasValue)
+        if (editValues.UnrestrictedReleaseStatusGamesDropped.HasValue)
         {
-            sql += "FreeGamesDropped = @freeGamesDropped,";
-            parameters.Add("freeGamesDropped", editValues.FreeGamesDropped.Value);
+            sql += "UnrestrictedReleaseStatusGamesDropped = @unrestrictedReleaseStatusGamesDropped,";
+            parameters.Add("unrestrictedReleaseStatusGamesDropped", editValues.UnrestrictedReleaseStatusGamesDropped.Value);
         }
         if (editValues.SuperDropsAvailable.HasValue)
         {
@@ -3092,7 +3092,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private static Task UpdatePublisherBudgetsAndDroppedGames(IEnumerable<Publisher> updatedPublishers, MySqlConnection connection, MySqlTransaction transaction)
     {
-        const string sql = "update tbl_league_publisher SET Budget = @Budget, FreeGamesDropped = @FreeGamesDropped, " +
+        const string sql = "update tbl_league_publisher SET Budget = @Budget, UnrestrictedReleaseStatusGamesDropped = @UnrestrictedReleaseStatusGamesDropped, " +
                      "WillNotReleaseGamesDropped = @WillNotReleaseGamesDropped, WillReleaseGamesDropped = @WillReleaseGamesDropped where PublisherID = @PublisherID;";
         var entities = updatedPublishers.Select(x => new PublisherEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);

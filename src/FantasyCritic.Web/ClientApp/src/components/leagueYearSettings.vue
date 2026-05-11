@@ -168,13 +168,13 @@
             <tr>
               <th scope="row">Any Unreleased</th>
               <td>
-                <ValidationProvider v-if="!internalValue.unlimitedFreeDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
-                  <input id="freeDroppableGames" v-model="internalValue.freeDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
+                <ValidationProvider v-if="!internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                  <input id="unrestrictedReleaseStatusDroppableGames" v-model="internalValue.unrestrictedReleaseStatusDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationProvider>
               </td>
               <td>
-                <b-form-checkbox v-model="internalValue.unlimitedFreeDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>
+                <b-form-checkbox v-model="internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>
               </td>
             </tr>
           </tbody>
@@ -421,9 +421,9 @@ export default {
       }
 
       this.internalValue.minimumBidAmount = 0;
-      this.internalValue.freeDroppableGames = 0;
+      this.internalValue.unrestrictedReleaseStatusDroppableGames = 0;
       this.internalValue.willNotReleaseDroppableGames = 0;
-      this.internalValue.unlimitedFreeDroppableGames = false;
+      this.internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames = false;
       this.internalValue.unlimitedWillReleaseDroppableGames = false;
       if (this.oneShotMode) {
         this.internalValue.willReleaseDroppableGames = 0;

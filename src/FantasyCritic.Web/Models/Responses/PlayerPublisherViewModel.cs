@@ -41,10 +41,10 @@ public class PlayerPublisherViewModel
             .Count(x => x.CouldRelease(leagueYear));
         GamesWillRelease = allWillRelease - GamesReleased;
 
-        FreeGamesDropped = publisher.FreeGamesDropped;
+        UnrestrictedReleaseStatusGamesDropped = publisher.UnrestrictedReleaseStatusGamesDropped;
         WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
         WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
-        FreeDroppableGames = leagueYear.Options.FreeDroppableGames;
+        UnrestrictedReleaseStatusDroppableGames = leagueYear.Options.UnrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = leagueYear.Options.WillReleaseDroppableGames;
     }
@@ -69,10 +69,10 @@ public class PlayerPublisherViewModel
     public bool OutstandingInvite { get; }
     public int GamesReleased { get; }
     public int GamesWillRelease { get; }
-    public int FreeGamesDropped { get; }
+    public int UnrestrictedReleaseStatusGamesDropped { get; }
     public int WillNotReleaseGamesDropped { get; }
     public int WillReleaseGamesDropped { get; }
-    public int FreeDroppableGames { get; }
+    public int UnrestrictedReleaseStatusDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
 }

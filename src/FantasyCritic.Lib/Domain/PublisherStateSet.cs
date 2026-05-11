@@ -77,9 +77,9 @@ public class PublisherStateSet
                 UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.WillRelease);
                 return;
             }
-            if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > publisherToEdit.FreeGamesDropped)
+            if (leagueOptions.UnrestrictedReleaseStatusDroppableGames == -1 || leagueOptions.UnrestrictedReleaseStatusDroppableGames > publisherToEdit.UnrestrictedReleaseStatusGamesDropped)
             {
-                UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.Free);
+                UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.UnrestrictedReleaseStatus);
                 return;
             }
             throw new Exception("Publisher cannot drop any more 'Will Release' games");
@@ -90,9 +90,9 @@ public class PublisherStateSet
             UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.WillNotRelease);
             return;
         }
-        if (leagueOptions.FreeDroppableGames == -1 || leagueOptions.FreeDroppableGames > publisherToEdit.FreeGamesDropped)
+        if (leagueOptions.UnrestrictedReleaseStatusDroppableGames == -1 || leagueOptions.UnrestrictedReleaseStatusDroppableGames > publisherToEdit.UnrestrictedReleaseStatusGamesDropped)
         {
-            UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.Free);
+            UpdatePublisher(publisherToEdit, null, publisherGame, 0, DropType.UnrestrictedReleaseStatus);
             return;
         }
         throw new Exception("Publisher cannot drop any more 'Will Not Release' games");
@@ -135,15 +135,15 @@ public class PublisherStateSet
 
         uint newBudget = (uint)(publisherToEdit.Budget + budgetChange);
 
-        int freeGamesDropped = publisherToEdit.FreeGamesDropped;
+        int unrestrictedReleaseStatusGamesDropped = publisherToEdit.UnrestrictedReleaseStatusGamesDropped;
         int willNotReleaseGamesDropped = publisherToEdit.WillNotReleaseGamesDropped;
         int willReleaseGamesDropped = publisherToEdit.WillReleaseGamesDropped;
         int superDropsAvailable = publisherToEdit.SuperDropsAvailable;
 
         switch (dropType)
         {
-            case DropType.Free:
-                freeGamesDropped++;
+            case DropType.UnrestrictedReleaseStatus:
+                unrestrictedReleaseStatusGamesDropped++;
                 break;
             case DropType.WillNotRelease:
                 willNotReleaseGamesDropped++;
@@ -157,13 +157,13 @@ public class PublisherStateSet
         }
 
         return new Publisher(publisherToEdit.PublisherID, publisherToEdit.LeagueYearKey, publisherToEdit.User, publisherToEdit.PublisherName, publisherToEdit.PublisherIcon, publisherToEdit.PublisherSlogan,
-            publisherToEdit.DraftPosition, newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, freeGamesDropped, willNotReleaseGamesDropped,
+            publisherToEdit.DraftPosition, newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, unrestrictedReleaseStatusGamesDropped, willNotReleaseGamesDropped,
             willReleaseGamesDropped, superDropsAvailable, publisherToEdit.AutoDraftSettings);
     }
 
     private enum DropType
     {
-        Free,
+        UnrestrictedReleaseStatus,
         WillNotRelease,
         WillRelease,
         Super

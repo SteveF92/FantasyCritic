@@ -36,7 +36,7 @@
         </tr>
         <tr>
           <th class="bg-primary">"Any Unreleased" Droppable Games</th>
-          <td v-if="!leagueYearOptions.unlimitedFreeDroppableGames">{{ leagueYearOptions.freeDroppableGames }}</td>
+          <td v-if="!leagueYearOptions.unlimitedUnrestrictedReleaseStatusDroppableGames">{{ leagueYearOptions.unrestrictedReleaseStatusDroppableGames }}</td>
           <td v-else>Unlimited</td>
         </tr>
         <tr>

@@ -19,7 +19,7 @@ public class LeagueYearEntity
         GamesToDraft = options.GamesToDraft;
         CounterPicks = options.CounterPicks;
         CounterPicksToDraft = options.CounterPicksToDraft;
-        FreeDroppableGames = options.FreeDroppableGames;
+        UnrestrictedReleaseStatusDroppableGames = options.UnrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = options.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = options.WillReleaseDroppableGames;
         DropOnlyDraftGames = options.DropOnlyDraftGames;
@@ -53,7 +53,7 @@ public class LeagueYearEntity
     public int GamesToDraft { get; set; }
     public int CounterPicks { get; set; }
     public int CounterPicksToDraft { get; set; }
-    public int FreeDroppableGames { get; set; }
+    public int UnrestrictedReleaseStatusDroppableGames { get; set; }
     public int WillNotReleaseDroppableGames { get; set; }
     public int WillReleaseDroppableGames { get; set; }
     public bool DropOnlyDraftGames { get; set; }
@@ -97,7 +97,7 @@ public class LeagueYearEntity
             mightReleaseDroppableDate = new AnnualDate(MightReleaseDroppableMonth.Value, MightReleaseDroppableDay.Value);
         }
         
-        LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, FreeDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
+        LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
             leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem,
             counterPickDeadline, mightReleaseDroppableDate);

@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Domain.Requests;
 public class LeagueYearParameters
 {
     public LeagueYearParameters(Guid leagueID, int year, string? leagueYearName, int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft,
-        int freeDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops,
+        int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops,
         bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
         DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
@@ -17,7 +17,7 @@ public class LeagueYearParameters
         GamesToDraft = gamesToDraft;
         CounterPicks = counterPicks;
         CounterPicksToDraft = counterPicksToDraft;
-        FreeDroppableGames = freeDroppableGames;
+        UnrestrictedReleaseStatusDroppableGames = unrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
         WillReleaseDroppableGames = willReleaseDroppableGames;
         DropOnlyDraftGames = dropOnlyDraftGames;
@@ -44,7 +44,7 @@ public class LeagueYearParameters
     public int GamesToDraft { get; }
     public int CounterPicks { get; }
     public int CounterPicksToDraft { get; }
-    public int FreeDroppableGames { get; }
+    public int UnrestrictedReleaseStatusDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
     public bool DropOnlyDraftGames { get; }

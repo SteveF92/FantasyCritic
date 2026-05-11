@@ -29,10 +29,10 @@ public class AllTimeStatsPublisherViewModel
             .Where(x => x.MasterGame is not null)
             .Count(x => x.MasterGame!.MasterGame.IsReleased(dateToCheck));
 
-        FreeGamesDropped = publisher.FreeGamesDropped;
+        UnrestrictedReleaseStatusGamesDropped = publisher.UnrestrictedReleaseStatusGamesDropped;
         WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
         WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
-        FreeDroppableGames = leagueYear.Options.FreeDroppableGames;
+        UnrestrictedReleaseStatusDroppableGames = leagueYear.Options.UnrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = leagueYear.Options.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = leagueYear.Options.WillReleaseDroppableGames;
     }
@@ -51,10 +51,10 @@ public class AllTimeStatsPublisherViewModel
     public uint Budget { get; }
 
     public int GamesReleased { get; }
-    public int FreeGamesDropped { get; }
+    public int UnrestrictedReleaseStatusGamesDropped { get; }
     public int WillNotReleaseGamesDropped { get; }
     public int WillReleaseGamesDropped { get; }
-    public int FreeDroppableGames { get; }
+    public int UnrestrictedReleaseStatusDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
 }
