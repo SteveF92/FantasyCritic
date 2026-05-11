@@ -49,7 +49,7 @@
           </ul>
         </template>
         <template #cell(publisher)="data">
-          <span v-if="!data.item.counterPickPublisherID">
+          <span v-if="!data.item.leaguePublisherSets[0].counterPickPublisherID">
             <router-link :to="{ name: 'publisher', params: { publisherid: data.item.leaguePublisherSets[0].publisherID } }">{{ data.item.leaguePublisherSets[0].publisherName }}</router-link>
           </span>
           <span v-else>
