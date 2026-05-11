@@ -1,6 +1,6 @@
 <template>
   <span v-if="masterGame">
-    <a :id="popoverID" href="javascript:;" :class="{ 'text-white': currentlyIneligible }">
+    <a :id="popoverID" href="javascript:;" :class="{ 'text-white': showAsWarning }">
       {{ masterGame.gameName }}
     </a>
     <b-popover :target="popoverID" triggers="click blur" custom-class="master-game-popover">
@@ -20,7 +20,7 @@ export default {
   },
   props: {
     masterGame: { type: Object, required: true },
-    currentlyIneligible: { type: Boolean }
+    showAsWarning: { type: Boolean }
   },
   computed: {
     popoverID() {

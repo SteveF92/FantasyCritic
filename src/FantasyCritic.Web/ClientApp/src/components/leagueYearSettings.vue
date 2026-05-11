@@ -263,9 +263,13 @@
           </p>
         </div>
         <div class="form-group">
-          <label for="ineligibleGameSystem" class="control-label">Ineligible games on roster</label>
+          <label for="ineligibleGameSystem" class="control-label">Handling of Ineligible Games on Roster</label>
           <b-form-select v-model="internalValue.ineligibleGameSystem" :options="possibleLeagueOptions.ineligibleGameSystems"></b-form-select>
-          <p>Controls how the league treats standard games on a roster that are ineligible under the league tag rules. Domain behavior for each option is not finalized yet.</p>
+          <p>
+            Controls how the league treats standard games on a roster that are ineligible under the league tag rules. This can happen in a couple of ways, but the most common is if a game's tags
+            change after a player already has it. "Case by Case Basis" is effectively a legacy mode that's here as a default because this option is new. The other options all clarify exactly how an
+            ineligble game is to be treated if a player wants to drop it.
+          </p>
         </div>
         <div class="form-group">
           <label for="counterPickDeadline" class="control-label">Counter Pick Deadline</label>

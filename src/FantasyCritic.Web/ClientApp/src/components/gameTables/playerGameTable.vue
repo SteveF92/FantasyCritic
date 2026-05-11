@@ -115,7 +115,7 @@ export default {
     tableRows() {
       let rows = this.tableItems;
       for (let i = 0; i < rows.length; ++i) {
-        if (rows[i].publisherGame && !rows[i].gameMeetsSlotCriteria && !rows[i].gameIsCancelled) {
+        if (rows[i].publisherGame && rows[i].showWarningRow && !rows[i].gameIsCancelled) {
           rows[i]._rowVariant = 'warning';
         } else {
           rows[i]._rowVariant = null;

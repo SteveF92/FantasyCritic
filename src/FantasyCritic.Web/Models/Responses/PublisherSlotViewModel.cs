@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
@@ -26,6 +27,20 @@ public class PublisherSlotViewModel
         EligibilityErrors = slot.GetClaimErrorsForSlot(leagueYear).Select(x => x.Error).ToList();
         GameMeetsSlotCriteria = !EligibilityErrors.Any();
 
+        if (!GameMeetsSlotCriteria && slot.PublisherGame?.MasterGame is not null)
+        {
+            var acquisitionDate = slot.PublisherGame.Timestamp.ToEasternDate();
+            GameEligibleInAnyLeagueSlot = leagueYear.GameIsEligibleInAnySlot(slot.PublisherGame.MasterGame.MasterGame, acquisitionDate);
+        }
+        else
+        {
+            GameEligibleInAnyLeagueSlot = true;
+        }
+
+        var isCaseByCase = leagueYear.Options.IneligibleGameSystem.Equals(IneligibleGameSystem.CaseByCase);
+        ShowWarningRow = !GameMeetsSlotCriteria && (isCaseByCase || GameEligibleInAnyLeagueSlot);
+        IneligibleGameSystemValue = leagueYear.Options.IneligibleGameSystem.Value;
+
         CounterPickedGameIsInvalid = slot.CounterPickedGameIsValid.HasValue && !slot.CounterPickedGameIsValid.Value;
 
         ProjectedFantasyPoints = slot.GetProjectedFantasyPoints(leagueYear.SupportedYear, leagueYear.Options.ScoringSystem, systemWideValues,
@@ -39,6 +54,9 @@ public class PublisherSlotViewModel
     public PublisherGameViewModel? PublisherGame { get; }
     public IReadOnlyList<string> EligibilityErrors { get; }
     public bool GameMeetsSlotCriteria { get; }
+    public bool GameEligibleInAnyLeagueSlot { get; }
+    public bool ShowWarningRow { get; }
+    public string IneligibleGameSystemValue { get; }
     public bool GameIsCancelled { get; }
     public bool CounterPickedGameIsInvalid { get; }
     public decimal ProjectedFantasyPoints { get; }

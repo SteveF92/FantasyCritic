@@ -5,7 +5,7 @@
       <b-button v-show="holdingGame && !gameSlot.counterPick" variant="success" class="move-button" @click="placeGame">Here</b-button>
       <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :game-slot="gameSlot"></slotTypeBadge>
       <span v-if="game" class="master-game-popover">
-        <masterGamePopover v-if="game.linked" :master-game="game.masterGame" :currently-ineligible="!gameSlot.gameMeetsSlotCriteria && !gameSlot.gameIsCancelled"></masterGamePopover>
+        <masterGamePopover v-if="game.linked" :master-game="game.masterGame" :show-as-warning="gameSlot.showWarningRow"></masterGamePopover>
         <span v-if="!game.linked">{{ game.gameName }}</span>
       </span>
     </span>
@@ -77,7 +77,6 @@ export default {
           this.gameSlot.eligibilityErrors.forEach((error) => {
             eligibilityErrorsList += `<li>${error}</li>`;
           });
-
           let eligibilityErrorsListElement = `<h5>Errors</h5><ul>${eligibilityErrorsList}</ul>`;
 
           let pointsText = 'Until you take action, the points the game received will not count.';
@@ -85,19 +84,31 @@ export default {
             pointsText = 'Until you take action, the points the game received will still count.';
           }
 
-          let mainText =
-            `This game is currently ineligible based on your league rules. ${pointsText} <br/> <br/>` +
-            'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
-            'league rules, this will disappear. <br/> <br/>' +
-            'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
-          if (this.hasSpecialSlots) {
+          let mainText;
+          const eligibleInAnySlot = this.gameSlot.gameEligibleInAnyLeagueSlot;
+          const ineligibleSystem = this.gameSlot.ineligibleGameSystemValue;
+
+          if (eligibleInAnySlot) {
+            // Game can fit in another slot — it's just misplaced. Always show the "move it" text.
             mainText =
               `This game is not eligible for this slot. ${pointsText} <br/> <br/>` +
-              'You can either move this game for a different slot, or, if your league disagrees with this the tags this game has, you can override the tags for this game.';
+              'You can either move this game to a different slot, or, if your league disagrees with the tags this game has, you can override the tags for this game.';
+          } else if (ineligibleSystem === 'DroppableAsWillNotRelease') {
+            mainText = `This game is ineligible in this league. ${pointsText} <br/> <br/>` + 'Per your league settings, this game can be dropped using a <strong>Will Not Release</strong> drop.';
+          } else if (ineligibleSystem === 'DroppableAsWillRelease') {
+            mainText = `This game is ineligible in this league. ${pointsText} <br/> <br/>` + 'Per your league settings, this game can be dropped using a <strong>Will Release</strong> drop.';
+          } else if (ineligibleSystem === 'NotDroppable') {
+            mainText = `This game is ineligible in this league. ${pointsText} <br/> <br/>` + 'Per your league settings, this game <strong>cannot be dropped</strong>.';
+          } else {
+            // CaseByCase (default)
+            mainText =
+              `This game is currently ineligible based on your league rules. ${pointsText} <br/> <br/>` +
+              'The intention is for the league to discuss what should happen. If you manually mark the game as eligible or change your ' +
+              'league rules, this will disappear. <br/> <br/>' +
+              'You could also choose to remove the game. The manager can use "Remove Publisher Game" to do that.';
           }
 
-          let fullText = `${mainText}<br/><br/>${eligibilityErrorsListElement}`;
-          return fullText;
+          return `${mainText}<br/><br/>${eligibilityErrorsListElement}`;
         }
       };
     },
