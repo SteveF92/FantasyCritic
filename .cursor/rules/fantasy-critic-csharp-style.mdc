@@ -1,0 +1,43 @@
+---
+description: C# style for Fantasy Critic (collections, control flow, async, nullability)
+globs: "**/*.cs"
+alwaysApply: false
+---
+
+# C# conventions
+
+## Read-only collection surfaces (intentional project style)
+
+- Expose **immutable collection types** on public APIs: prefer **`IReadOnlyList<T>`**, **`IReadOnlyDictionary<TKey,TValue>`**, and related read-only interfaces over **`List<T>`** / **`Dictionary<,>`** for properties, return types, and most parameters on services, repos, and domain types.
+- **`IEnumerable<T>`** is fine for **constructor** or method parameters when you will **copy immediately** (e.g. `.ToList()` once) and store as `IReadOnlyList<T>`—see domain types like `Publisher` for the pattern.
+- Use **`List<T>`** / **`Dictionary<,>`** locally inside methods for building or mutating, then expose the result as read-only (return `IReadOnlyList` from a copied list as the codebase already does).
+
+## Parameters and control flow
+
+- **Do not** use `out` or `ref` parameters. Return a **small dedicated result type**, or use **`Result` / `Result<T>`** from **CSharpFunctionalExtensions** (referenced by **FantasyCritic.Lib**) when that fits.
+
+## Async naming
+
+- **Do not** suffix app/repo/service methods with `Async` (e.g. prefer `GetLeague` over `GetLeagueAsync`). Framework methods (`OpenAsync`, etc.) keep their names.
+
+## Results and errors
+
+- For expected failure paths in services, prefer **`Result` / `Result<T>`** or domain-specific result types under **`FantasyCritic.Lib.Domain.Results`** over throwing for control flow.
+
+## Domain shape: classes vs records
+
+- Use **`class`** for entities with identity and substantial behavior (e.g. `Publisher`, `LeagueYear`).
+- Use **`record`** for small immutable bundles, combination DTOs, and “result of a calculation” values (see `Domain/Combinations/`, `LeagueYearScoreChanges`, etc.). Prefer **`record`** with **`IReadOnly*`** members when exposing collections.
+
+## Enums
+
+- String-backed domain enums extend **`TypeSafeEnum` / `TypeSafeEnum<T>`** in **`FantasyCritic.Lib.Enums`**; follow existing patterns instead of raw `string` or bare `enum` for those cases.
+
+## Static members
+
+- **`static` classes holding only pure functions** (no mutable state): good; match existing helpers and `*Functions` / utility patterns.
+- **Static mutable state** (`static` fields or properties that change over the lifetime of the app, hidden singletons, growable static caches, etc.): **avoid**. Prefer injecting services, passing arguments, or **`static readonly`** immutable data. Only add static mutability with an explicit, rare exception the user approves.
+
+## Nullable and warnings
+
+- **TreatWarningsAsErrors** is enabled on **Lib**, **Web**, **MySQL**, **Test**, **FakeRepo**, and several other projects—new code must stay warning-clean across the projects you touch.

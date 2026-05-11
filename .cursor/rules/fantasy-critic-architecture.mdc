@@ -1,0 +1,43 @@
+---
+description: Fantasy Critic solution layout, layering, and DB migration workflow
+alwaysApply: true
+---
+
+# Architecture and layering
+
+## Database schema changes
+
+- Add and evolve schema **only** through the **FantasyCritic.DatabaseUpdater** project (DbUp).
+- New scripts go under `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/` with the next dated sequential filename (match existing naming).
+- Do **not** hand-edit production DBs or add ad-hoc SQL outside this pipeline unless the user explicitly calls for an exception.
+
+## Where code belongs
+
+| Concern | Project | Naming / notes |
+|--------|---------|----------------|
+| Persistence (SQL, Dapper queries, row types owned by MySQL repos) | **FantasyCritic.MySQL** | Types under `Entities/` end in **`Entity`**. |
+| Shared wire/DB shapes across projects | **FantasyCritic.Lib** (`SharedSerialization/`) | **`Entity`** / **`ViewModel`** that **must** be referenced from more than one project—this folder is the **deliberate** home (see section below). |
+| HTTP/API JSON and MVC models | **FantasyCritic.Web** | **`ViewModel`**, **`Request`**, **`Response`** for shapes **owned by Web only**. Map domain at the edge; serialization attributes on Web types or shared types in **`SharedSerialization`**. |
+| Repository **interfaces** | **FantasyCritic.Lib** (`Interfaces/`) | Implementations live in **FantasyCritic.MySQL** (`*Repo`). Test doubles: **FantasyCritic.FakeRepo**. Automated tests: **FantasyCritic.Test**. |
+| Business rules and domain model | **FantasyCritic.Lib** (especially `Domain/`) | No coupling to DB column names, Vue/JSON property names, or other **non–compile-time** contract surfaces. |
+
+### `SharedSerialization` in Lib (intentional exception)
+
+- **`FantasyCritic.Lib.SharedSerialization`** is the **named, supported place** for **`Entity`** / **`ViewModel`** types that must be **shared across projects** (Lib, MySQL, Web, etc.) for mapping and serialization—**not** a legacy folder. The name marks the boundary: shapes that legitimately cross those boundaries live here; **domain** stays free of wire/DB layout, while **MySQL-only** row types stay under **`FantasyCritic.MySQL/Entities`**, and **Web-only** API models stay in **Web**.
+
+## Domain purity (`FantasyCritic.Lib` / `Domain`)
+
+- Prefer **pure** domain: behavior expressed in terms of domain types, value objects, and clear inputs/outputs.
+- Avoid attributes, stringly column maps, or anything that encodes **wire or storage layout** in domain types unless there is a rare, explicit exception the user approves.
+
+## ASP.NET JSON
+
+- **FantasyCritic.Web** uses **Newtonsoft.Json** for MVC/API (`Microsoft.AspNetCore.Mvc.NewtonsoftJson`, **NodaTime.Serialization.JsonNet**). Match Newtonsoft attributes and serializers when changing API contracts—do not assume `System.Text.Json` is the default for controllers.
+
+## Frontend
+
+- Browser UI lives under **`FantasyCritic.Web/ClientApp`**. See **`fantasy-critic-frontend.mdc`** for stack conventions.
+
+## Time in domain
+
+- **FantasyCritic.Lib** uses **NodaTime** (`Instant`, `LocalDate`, etc.) in domain and persistence mapping where the codebase already does; stay consistent.

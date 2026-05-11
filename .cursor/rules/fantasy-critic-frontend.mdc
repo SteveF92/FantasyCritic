@@ -1,0 +1,18 @@
+---
+description: Vue SPA conventions under FantasyCritic.Web/ClientApp
+globs: "**/ClientApp/**/*.{vue,ts,js}"
+alwaysApply: false
+---
+
+# Client app (`FantasyCritic.Web/ClientApp`)
+
+## Stack
+
+- **Vue 2.7** (Options API in existing views/components—match the file you are editing).
+- **Vite** for dev/build; **Bootstrap 4** + **bootstrap-vue** for UI primitives.
+- **Luxon** for dates/times in the browser; **axios** for HTTP.
+
+## Style
+
+- Follow colocated patterns in `src/` (components, views, mixins, utilities) and existing **eslint / prettier** scripts in `package.json`.
+- API field names typically follow **JSON/camelCase** as emitted from the server; align with existing components rather than inventing new naming.
