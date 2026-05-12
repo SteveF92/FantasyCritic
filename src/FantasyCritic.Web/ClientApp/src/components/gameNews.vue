@@ -35,6 +35,7 @@
         class="mb-0">
         <template #cell(gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
+          <b-badge v-if="showCounterPickBadge(data.item)" variant="warning" class="ml-1">Counter Pick</b-badge>
         </template>
         <template #cell(maximumReleaseDate)="data">
           {{ getReleaseDate(data.item) }}
@@ -45,6 +46,7 @@
               <router-link :to="{ name: 'league', params: { leagueid: leaguePublisherSet.leagueID, year: leaguePublisherSet.year } }">
                 {{ leaguePublisherSet.leagueName }}
               </router-link>
+              <span v-if="mode === 'user' && isCounterPickPublisherSet(leaguePublisherSet)"> (Counter Pick)</span>
             </li>
           </ul>
         </template>
@@ -53,10 +55,10 @@
             <router-link :to="{ name: 'publisher', params: { publisherid: data.item.leaguePublisherSets[0].publisherID } }">{{ data.item.leaguePublisherSets[0].publisherName }}</router-link>
           </span>
           <span v-else>
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.leaguePublisherSets[0].publisherID } }">{{ data.item.leaguePublisherSets[0].publisherName }}</router-link>
+            <router-link :to="{ name: 'publisher', params: { publisherid: getPrimaryPublisherSet(data.item).publisherID } }">{{ getPrimaryPublisherSet(data.item).publisherName }}</router-link>
             - Counter Picked by:
-            <router-link :to="{ name: 'publisher', params: { publisherid: data.item.leaguePublisherSets[0].counterPickPublisherID } }">
-              {{ data.item.leaguePublisherSets[0].counterPickPublisherName }}
+            <router-link :to="{ name: 'publisher', params: { publisherid: getCounterPickPublisherID(data.item) } }">
+              {{ getPrimaryPublisherSet(data.item).counterPickPublisherName }}
             </router-link>
           </span>
         </template>
@@ -126,6 +128,41 @@ export default {
     }
   },
   methods: {
+    isCounterPickPublisherSet(publisherSet) {
+      if (!publisherSet) {
+        return false;
+      }
+
+      return Boolean(publisherSet.counterPick || publisherSet.CounterPick || publisherSet.counterpick);
+    },
+    showCounterPickBadge(game) {
+      if (this.mode === 'league') {
+        return this.hasCounterPickPublisher(game);
+      }
+
+      return this.hasUserCounterPick(game);
+    },
+    getPrimaryPublisherSet(game) {
+      if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
+        return {};
+      }
+
+      return game.leaguePublisherSets[0];
+    },
+    getCounterPickPublisherID(game) {
+      const publisherSet = this.getPrimaryPublisherSet(game);
+      return publisherSet.counterPickPublisherID || publisherSet.counterPickPublisherId || null;
+    },
+    hasCounterPickPublisher(game) {
+      return Boolean(this.getCounterPickPublisherID(game));
+    },
+    hasUserCounterPick(game) {
+      if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
+        return false;
+      }
+
+      return game.leaguePublisherSets.some((x) => this.isCounterPickPublisherSet(x));
+    },
     getReleaseDate(game) {
       if (game.releaseDate) {
         return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');

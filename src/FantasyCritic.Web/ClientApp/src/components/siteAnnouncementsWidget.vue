@@ -4,6 +4,7 @@
       <h2 v-if="showHeading" class="site-announcements-heading">
         Announcements
         <router-link :to="{ name: 'siteUpdates' }">(See All)</router-link>
+        <b-link href="/api/general/siteannouncementsrss" class="site-announcements-rss-link" target="_blank" rel="noopener">(RSS)</b-link>
       </h2>
     </div>
     <b-alert v-for="item in announcements" :key="item.id" show variant="secondary" class="site-announcement-alert mb-2">
@@ -57,6 +58,10 @@ export default defineComponent({
   font-weight: bold;
   margin-bottom: 0.5rem;
   text-align: center;
+}
+
+.site-announcements-rss-link {
+  margin-left: 0.35rem;
 }
 
 @media (min-width: 992px) {

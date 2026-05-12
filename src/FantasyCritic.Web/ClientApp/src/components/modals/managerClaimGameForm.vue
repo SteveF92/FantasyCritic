@@ -46,7 +46,7 @@
       </div>
       <div class="form-check">
         <span>
-          <label class="form-check-label">CounterPick</label>
+          <label class="form-check-label">Counter Pick</label>
           <input v-model="claimCounterPick" class="form-check-input override-checkbox" type="checkbox" />
         </span>
       </div>
@@ -197,5 +197,7 @@ export default {
 .override-checkbox {
   margin-left: 10px;
   margin-top: 8px;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 </style>

@@ -47,7 +47,7 @@ public class GameAcquisitionService
         await _fantasyCriticRepo.AddPublisherGame(playerGame);
         if (managerAction)
         {
-            await _discordPushService.SendLeagueManagerManualPublisherGameMessage(request.Publisher, request.GameName, true);
+            await _discordPushService.SendLeagueManagerManualPublisherGameMessage(request.Publisher, request.GameName, true, request.CounterPick);
         }
         else
         {
