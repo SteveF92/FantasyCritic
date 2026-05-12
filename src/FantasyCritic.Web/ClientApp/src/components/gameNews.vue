@@ -35,7 +35,6 @@
         class="mb-0">
         <template #cell(gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
-          <b-badge v-if="showCounterPickBadge(data.item)" variant="warning" class="ml-1">Counter Pick</b-badge>
         </template>
         <template #cell(maximumReleaseDate)="data">
           {{ getReleaseDate(data.item) }}
@@ -135,13 +134,6 @@ export default {
 
       return Boolean(publisherSet.counterPick || publisherSet.CounterPick || publisherSet.counterpick);
     },
-    showCounterPickBadge(game) {
-      if (this.mode === 'league') {
-        return this.hasCounterPickPublisher(game);
-      }
-
-      return this.hasUserCounterPick(game);
-    },
     getPrimaryPublisherSet(game) {
       if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
         return {};
@@ -152,16 +144,6 @@ export default {
     getCounterPickPublisherID(game) {
       const publisherSet = this.getPrimaryPublisherSet(game);
       return publisherSet.counterPickPublisherID || publisherSet.counterPickPublisherId || null;
-    },
-    hasCounterPickPublisher(game) {
-      return Boolean(this.getCounterPickPublisherID(game));
-    },
-    hasUserCounterPick(game) {
-      if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
-        return false;
-      }
-
-      return game.leaguePublisherSets.some((x) => this.isCounterPickPublisherSet(x));
     },
     getReleaseDate(game) {
       if (game.releaseDate) {
