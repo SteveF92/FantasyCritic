@@ -3,7 +3,7 @@
     <h1>Site updates</h1>
     <hr />
     <div class="text-well">
-      <p v-if="!sortedAnnouncements.length" class="mb-0">No site updates have been posted yet.</p>
+      <p v-if="!siteAnnouncements.length" class="mb-0">No site updates have been posted yet.</p>
       <SiteAnnouncementsWidget v-else :announcements="siteAnnouncements" :show-heading="false" />
     </div>
   </div>
@@ -13,7 +13,6 @@
 import axios from 'axios';
 import { defineComponent } from 'vue';
 import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
-import { sortSiteAnnouncementsNewestFirst } from '@/data/siteAnnouncementSort';
 import type { SiteAnnouncement } from '@/models/SiteAnnouncement';
 
 export default defineComponent({
