@@ -154,10 +154,6 @@ public static class GameEligibilityFunctions
 
         var acquisitionDate = publisherGame.Timestamp.ToEasternDate();
         bool gameIsEligibleInAnySlots = leagueYear.GameIsEligibleInAnySlot(request.MasterGame, acquisitionDate);
-        if (!gameIsEligibleInAnySlots && !leagueYear.Options.IneligibleGameSystem.AllowsDrops)
-        {
-            return new DropResult(Result.Failure("That game is ineligible in this league, and your league settings do not allow it to be dropped."));
-        }
 
         var system = leagueYear.Options.IneligibleGameSystem;
         if (system.Equals(IneligibleGameSystem.FreelyDroppable) && !gameIsEligibleInAnySlots)
@@ -166,7 +162,9 @@ public static class GameEligibilityFunctions
         }
 
         if (system.Equals(IneligibleGameSystem.DroppableAsWillNotRelease) && !gameIsEligibleInAnySlots)
+        {
             gameCouldRelease = false;
+        }
 
         var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);
         return new DropResult(dropResult);

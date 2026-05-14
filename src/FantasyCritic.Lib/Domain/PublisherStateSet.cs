@@ -71,7 +71,7 @@ public class PublisherStateSet
             }
         }
 
-            var acquisitionDate = publisherGame.Timestamp.ToEasternDate();
+        var acquisitionDate = publisherGame.Timestamp.ToEasternDate();
         if (publisherGame.MasterGame is not null && !leagueYear.GameIsEligibleInAnySlot(publisherGame.MasterGame.MasterGame, acquisitionDate))
         {
             if (leagueOptions.IneligibleGameSystem.Equals(IneligibleGameSystem.DroppableAsWillNotRelease))
