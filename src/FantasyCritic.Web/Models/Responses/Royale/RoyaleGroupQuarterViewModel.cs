@@ -62,6 +62,9 @@ public class RoyaleGroupMemberRankedViewModel
         PublisherName = row.Publisher?.PublisherName;
         TotalFantasyPoints = row.Publisher?.GetTotalFantasyPoints();
         Ranking = ranking;
+        Budget = row.Publisher?.Budget;
+        GamesPurchased = row.Publisher?.PublisherGames.Count;
+        GamesReleased = row.Publisher?.PublisherGames.Count(x => x.MasterGame.IsReleasedAndReleasedInQuarter(currentDate, row.Publisher.YearQuarter.YearQuarter));
 
         PublisherGames = (row.Publisher?.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, row.Publisher.YearQuarter, currentDate, allMasterGameTags, false)).ToList()) ?? new List<RoyalePublisherGameViewModel>();
         Statistics = row.Statistics.Select(x => new RoyalePublisherStatisticsViewModel(x)).ToList();
@@ -74,6 +77,9 @@ public class RoyaleGroupMemberRankedViewModel
     public string? PublisherName { get; }
     public decimal? TotalFantasyPoints { get; }
     public int? Ranking { get; }
+    public decimal? Budget { get; }
+    public int? GamesPurchased { get; }
+    public int? GamesReleased { get; }
     public IReadOnlyList<RoyalePublisherGameViewModel> PublisherGames { get; }
     public IReadOnlyList<RoyalePublisherStatisticsViewModel> Statistics { get; }
 }

@@ -53,6 +53,18 @@
           <template v-if="data.item.hasPublisher">{{ data.item.totalFantasyPoints }}</template>
           <template v-else>--</template>
         </template>
+        <template #cell(budget)="data">
+          <template v-if="data.item.hasPublisher">{{ data.item.budget | money(2) }}</template>
+          <template v-else>--</template>
+        </template>
+        <template #cell(gamesPurchased)="data">
+          <template v-if="data.item.hasPublisher">{{ data.item.gamesPurchased }}</template>
+          <template v-else>--</template>
+        </template>
+        <template #cell(gamesReleased)="data">
+          <template v-if="data.item.hasPublisher">{{ data.item.gamesReleased }}</template>
+          <template v-else>--</template>
+        </template>
       </b-table>
       <div v-else>
         <p>No members in this group.</p>
@@ -96,7 +108,10 @@ export default {
         { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
         { key: 'displayName', label: 'Player', thClass: 'bg-primary' },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' }
+        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' },
+        { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
+        { key: 'gamesPurchased', label: 'Games Purchased', thClass: 'bg-primary' },
+        { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary' }
       ]
     };
   },
