@@ -46,7 +46,7 @@
               :key="leaguePublisherSet.LeagueID"
               :to="{ name: 'league', params: { leagueid: leaguePublisherSet.leagueID, year: leaguePublisherSet.year } }"
               class="league-pill-link">
-              <span>{{ leaguePublisherSet.leagueName }}</span>
+              <span class="league-pill-name">{{ leaguePublisherSet.leagueName }}</span>
               <span v-if="mode === 'user' && isCounterPickPublisherSet(leaguePublisherSet)" class="league-pill-counter-pick">Counter Pick</span>
             </router-link>
           </div>
@@ -179,6 +179,12 @@ export default {
   gap: 0.35rem;
 }
 
+.league-pill-name {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
 .league-pill-link {
   display: inline-flex;
   align-items: center;
@@ -189,7 +195,7 @@ export default {
   background: rgba(214, 153, 58, 0.12);
   color: #f0f0f0;
   text-decoration: none;
-  line-height: 1.2;
+  line-height: 1;
 }
 
 .league-pill-link:hover,
@@ -201,9 +207,13 @@ export default {
 }
 
 .league-pill-counter-pick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
   font-size: 0.7rem;
   font-weight: 600;
-  padding: 0.05rem 0.35rem;
+  padding: 0.12rem 0.35rem;
   border-radius: 999px;
   background: rgba(255, 193, 7, 0.25);
   border: 1px solid rgba(255, 193, 7, 0.55);
@@ -234,7 +244,7 @@ export default {
     overflow-wrap: break-word;
   }
 
-  .league-pill-link > span:first-child {
+  .league-pill-name {
     text-decoration: underline;
     text-underline-offset: 2px;
   }
