@@ -16,7 +16,7 @@
             <label for="removeGame" class="control-label">Game</label>
             <b-form-select v-model="removeGame">
               <option v-for="publisherGame in removeGamePublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
-                {{ publisherGame.gameName }}
+                {{ formatGameOption(publisherGame) }}
               </option>
             </b-form-select>
           </div>
@@ -47,6 +47,13 @@ export default {
     };
   },
   methods: {
+    formatGameOption(publisherGame) {
+      if (!publisherGame) {
+        return '';
+      }
+
+      return publisherGame.counterPick ? `${publisherGame.gameName} (Counter Pick)` : publisherGame.gameName;
+    },
     removePublisherGame() {
       const model = {
         publisherGameID: this.removeGame.publisherGameID,

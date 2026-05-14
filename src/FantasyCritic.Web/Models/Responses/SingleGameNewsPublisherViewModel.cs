@@ -21,6 +21,7 @@ public class SingleGameNewsPublisherViewModel
         LeagueName = publisherInfo.LeagueName;
         PublisherID = publisherInfo.PublisherID;
         PublisherName = publisherInfo.PublisherName;
+        CounterPick = publisherInfo.CounterPick;
     }
 
     //For League Mode
@@ -34,6 +35,7 @@ public class SingleGameNewsPublisherViewModel
             LeagueName = publisherPair.LeagueYear.League.LeagueName;
             PublisherID = publisherPair.Publisher.PublisherID;
             PublisherName = publisherPair.Publisher.PublisherName;
+            CounterPick = false;
         }
         else if (publisherPairs.Count == 2)
         {
@@ -46,6 +48,7 @@ public class SingleGameNewsPublisherViewModel
             PublisherName = standardPublisherPair.Publisher.PublisherName;
             CounterPickPublisherID = counterPickPublisherPair.Publisher.PublisherID;
             CounterPickPublisherName = counterPickPublisherPair.Publisher.PublisherName;
+            CounterPick = false;
         }
         else
         {
@@ -58,6 +61,7 @@ public class SingleGameNewsPublisherViewModel
     public string LeagueName { get; }
     public Guid? PublisherID { get; }
     public string PublisherName { get; }
+    public bool CounterPick { get; }
     public Guid? CounterPickPublisherID { get; }
     public string? CounterPickPublisherName { get; }
 }

@@ -607,9 +607,9 @@ public class DiscordPushService
         return await fantasyCriticRepo.GetLeague(leagueID);
     }
 
-    public async Task SendLeagueManagerManualPublisherGameMessage(Publisher publisher, string gameName, bool isAdd)
+    public async Task SendLeagueManagerManualPublisherGameMessage(Publisher publisher, string gameName, bool isAdd, bool isCounterPick)
     {
-        var messageToSend = $"Publisher: **{publisher.GetPublisherAndUserDisplayName()}**\nAction: Game **{gameName}** has been manually **{(isAdd ? "ADDED" : "REMOVED")}** by the League Manager.";
+        var messageToSend = $"Publisher: **{publisher.GetPublisherAndUserDisplayName()}**\nAction: Game **{gameName}{(isCounterPick ? " (Counter Pick)" : "")}** has been manually **{(isAdd ? "ADDED" : "REMOVED")}** by the League Manager.";
         await SendLeagueManagerActionMessage(publisher.LeagueYearKey.LeagueID, messageToSend);
     }
 
