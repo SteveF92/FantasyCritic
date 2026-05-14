@@ -233,10 +233,6 @@ public static class GameEligibilityFunctions
 
         var acquisitionDate = publisherGame.Timestamp.ToEasternDate();
         bool gameIsEligibleInAnySlots = leagueYear.GameIsEligibleInAnySlot(conditionalMasterGame, acquisitionDate);
-        if (!gameIsEligibleInAnySlots && !leagueYear.Options.IneligibleGameSystem.AllowsDrops)
-        {
-            return new DropResult(Result.Failure("That game is ineligible in this league, and your league settings do not allow it to be dropped."));
-        }
 
         if (leagueYear.Options.IneligibleGameSystem.Equals(IneligibleGameSystem.FreelyDroppable) && !gameIsEligibleInAnySlots)
         {
