@@ -204,9 +204,17 @@ public class AdminService
             await PushDiscordScoreChangeMessages(leagueYears, calculatedStats.PublisherGameCalculatedStats);
         }
 
+        var today = _clock.GetToday();
         var finishedYears = supportedYears.Where(x => x.Finished);
         foreach (var finishedYear in finishedYears)
         {
+            var lastDayOfFinishedYear = new LocalDate(finishedYear.Year, 12, 31);
+            if (today.PlusDays(30) > lastDayOfFinishedYear)
+            {
+                //We don't need to keep updating old years after a certain point.
+                continue;
+            }
+
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(finishedYear.Year);
             var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year, leagueYears, false);
             await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, false);
@@ -228,7 +236,6 @@ public class AdminService
                 if (SupportedYear.Year2026FeatureSupported(supportedQuarter.YearQuarter.Year))
                 {
                     var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(RoyaleService.POST_QUARTER_GRACE_DAYS));
-                    var today = _clock.GetToday();
                     if (today > gracePeriodDate)
                     {
                         continue;

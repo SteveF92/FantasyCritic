@@ -1,0 +1,1 @@
+GRANT CREATE TEMPORARY TABLES  ON `fantasycritic`.* TO 'fantasycritic'@'%';
