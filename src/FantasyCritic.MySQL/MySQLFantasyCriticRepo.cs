@@ -231,19 +231,34 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task UpdatePublisherGameCalculatedStats(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
-        const string sql = "update tbl_league_publishergame SET FantasyPoints = @FantasyPoints where PublisherGameID = @PublisherGameID;";
+        if (calculatedStats.Count == 0)
+        {
+            return;
+        }
+
+        const string tempTableName = "tmp_publisher_game_calculated_stats";
+        const string createTempTableSql =
+            $"CREATE TEMPORARY TABLE {tempTableName} (" +
+            "PublisherGameID CHAR(36) NOT NULL, " +
+            "FantasyPoints DECIMAL(12,4) NULL, " +
+            "PRIMARY KEY (PublisherGameID)" +
+            ");";
+        const string bulkUpdateSql =
+            $"UPDATE tbl_league_publishergame pg " +
+            $"INNER JOIN {tempTableName} t ON pg.PublisherGameID = t.PublisherGameID " +
+            "SET pg.FantasyPoints = t.FantasyPoints;";
+
         List<PublisherGameUpdateEntity> updateEntities = calculatedStats.Select(x => new PublisherGameUpdateEntity(x)).ToList();
-        var updateBatches = updateEntities.Chunk(1000).ToList();
         var longTimeoutConnectionString = ConnectionStringUtilities.GetLongTimeoutConnectionString(_connectionString, Duration.FromSeconds(60));
         await using var connection = new MySqlConnection(longTimeoutConnectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        for (var index = 0; index < updateBatches.Count; index++)
-        {
-            _logger.Information($"Running publisher game update {index + 1}/{updateBatches.Count}");
-            var batch = updateBatches[index];
-            await connection.ExecuteAsync(sql, batch, transaction);
-        }
+
+        await connection.ExecuteAsync(createTempTableSql, transaction: transaction);
+        _logger.Information("Bulk inserting {Count} publisher game calculated stats into temp table", updateEntities.Count);
+        await connection.BulkInsertAsync(updateEntities, tempTableName, 500, transaction);
+        _logger.Information("Applying publisher game calculated stats bulk update");
+        await connection.ExecuteAsync(bulkUpdateSql, transaction: transaction);
 
         await transaction.CommitAsync();
     }
