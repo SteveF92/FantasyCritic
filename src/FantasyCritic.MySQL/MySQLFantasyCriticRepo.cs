@@ -3022,6 +3022,87 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+    public async Task UpdateSystemWideValuesForYear(int year, SystemWideValues values, int standardDataPoints, int pickupOnlyDataPoints, int counterPickDataPoints)
+    {
+        const string deleteSystemWideYearSql = "delete from tbl_caching_systemwidevaluesyear where Year = @year;";
+        const string deletePositionsYearSql = "delete from tbl_caching_averagepositionpointsyear where Year = @year;";
+        const string deleteBidAmountsYearSql = "delete from tbl_caching_averagebidamountpointsyear where Year = @year;";
+        const string insertSystemWideYearSql =
+            """
+            INSERT into tbl_caching_systemwidevaluesyear
+            (Year, AverageStandardGamePoints, StandardGameDataPoints, AveragePickupOnlyStandardGamePoints, PickupOnlyDataPoints, AverageCounterPickPoints, CounterPickDataPoints)
+            VALUES (@Year, @AverageStandardGamePoints, @StandardGameDataPoints, @AveragePickupOnlyStandardGamePoints, @PickupOnlyDataPoints, @AverageCounterPickPoints, @CounterPickDataPoints);
+            """;
+
+        var yearEntity = new SystemWideValuesYearEntity(year, values.AverageStandardGamePoints, standardDataPoints,
+            values.AveragePickupOnlyStandardGamePoints, pickupOnlyDataPoints, values.AverageCounterPickPoints, counterPickDataPoints);
+        var positionEntities = values.AverageStandardGamePointsByPickPosition.Select(x => new AveragePositionPointsYearEntity(year, x)).ToList();
+        var bidAmountEntities = values.AverageStandardGamePointsByBidAmount.Select(x => new AverageBidAmountPointsYearEntity(year, x)).ToList();
+
+        var queryObject = new { year };
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(deleteSystemWideYearSql, queryObject, transaction);
+        await connection.ExecuteAsync(deletePositionsYearSql, queryObject, transaction);
+        await connection.ExecuteAsync(deleteBidAmountsYearSql, queryObject, transaction);
+        await connection.ExecuteAsync(insertSystemWideYearSql, yearEntity, transaction);
+        await connection.BulkInsertAsync(positionEntities, "tbl_caching_averagepositionpointsyear", 500, transaction);
+        await connection.BulkInsertAsync(bidAmountEntities, "tbl_caching_averagebidamountpointsyear", 500, transaction);
+        await transaction.CommitAsync();
+    }
+
+    public async Task<IReadOnlyList<int>> GetCachedSystemWideValueYears()
+    {
+        const string sql = "select Year from tbl_caching_systemwidevaluesyear;";
+        await using var connection = new MySqlConnection(_connectionString);
+        var years = await connection.QueryAsync<int>(sql);
+        return years.ToList();
+    }
+
+    public async Task<SystemWideValues> BuildSystemWideValuesFromYearCache()
+    {
+        const string sql = """
+                           select * from tbl_caching_systemwidevaluesyear;
+                           select * from tbl_caching_averagepositionpointsyear;
+                           select * from tbl_caching_averagebidamountpointsyear;
+                           """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await using var resultSets = await connection.QueryMultipleAsync(sql);
+        var systemWideValuesByYear = (await resultSets.ReadAsync<SystemWideValuesYearEntity>()).ToList();
+        var positionPointsByYear = (await resultSets.ReadAsync<AveragePositionPointsYearEntity>()).ToList();
+        var bidAmountPointsByYear = (await resultSets.ReadAsync<AverageBidAmountPointsYearEntity>()).ToList();
+
+        var averageStandardPoints = WeightedAverage(systemWideValuesByYear.Select(y => (y.AverageStandardGamePoints, y.StandardGameDataPoints)));
+        var averagePickupOnlyStandardPoints = WeightedAverage(systemWideValuesByYear.Select(y => (y.AveragePickupOnlyStandardGamePoints, y.PickupOnlyDataPoints)));
+        var averageCounterPickPoints = WeightedAverage(systemWideValuesByYear.Select(y => (y.AverageCounterPickPoints, y.CounterPickDataPoints)));
+
+        var averageStandardGamePointsByPickPosition = positionPointsByYear
+            .GroupBy(x => x.PickPosition)
+            .Select(g => new AveragePickPositionPoints(g.Key, g.Sum(x => x.DataPoints), WeightedAverage(g.Select(x => (x.AveragePoints, x.DataPoints)))))
+            .ToList();
+        var averageStandardGamePointsByBidAmount = bidAmountPointsByYear
+            .GroupBy(x => x.BidAmount)
+            .Select(g => new AverageBidAmountPoints(g.Key, g.Sum(x => x.DataPoints), WeightedAverage(g.Select(x => (x.AveragePoints, x.DataPoints)))))
+            .ToList();
+
+        return new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints,
+            averageStandardGamePointsByPickPosition, averageStandardGamePointsByBidAmount);
+    }
+
+    private static decimal WeightedAverage(IEnumerable<(decimal average, int dataPoints)> values)
+    {
+        var valueList = values.ToList();
+        int totalDataPoints = valueList.Sum(x => x.dataPoints);
+        if (totalDataPoints == 0)
+        {
+            return 0m;
+        }
+
+        return valueList.Sum(x => x.average * x.dataPoints) / totalDataPoints;
+    }
+
     public async Task SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
     {
         if (!bidPriorities.Any())
@@ -3390,13 +3471,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return fakePublisherGame;
     }
 
-    public async Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears)
+    public async Task UpdateLeagueYearCache(int year, IReadOnlyList<LeagueYear> leagueYears)
     {
-        var leagueYearEntities = allLeagueYears.Select(x => new LeagueYearCacheEntity(x));
+        var leagueYearEntities = leagueYears.Select(x => new LeagueYearCacheEntity(x)).ToList();
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await connection.ExecuteAsync("delete from tbl_caching_leagueyear", transaction: transaction);
+        await connection.ExecuteAsync("delete from tbl_caching_leagueyear where Year = @year", new { year }, transaction);
         await connection.BulkInsertAsync<LeagueYearCacheEntity>(leagueYearEntities, "tbl_caching_leagueyear", 500, transaction);
         await transaction.CommitAsync();
     }

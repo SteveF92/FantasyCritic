@@ -317,15 +317,20 @@ public class AdminService
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        var allLeagueYears = new List<LeagueYear>();
+        var cachedSystemWideValueYears = (await _fantasyCriticRepo.GetCachedSystemWideValueYears()).ToHashSet();
         foreach (var supportedYear in supportedYears)
         {
-            var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-            allLeagueYears.AddRange(leagueYears);
+            if (!YearNeedsSystemWideValuesRefresh(supportedYear, today, cachedSystemWideValueYears))
+            {
+                continue;
+            }
+
+            IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+            await UpdateSystemWideValuesForYear(supportedYear.Year, leagueYears);
+            await _fantasyCriticRepo.UpdateLeagueYearCache(supportedYear.Year, leagueYears);
         }
 
-        await UpdateSystemWideValues(allLeagueYears);
-        await _fantasyCriticRepo.UpdateLeagueYearCache(allLeagueYears);
+        await UpdateSystemWideValues();
         HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
         await UpdateGameStats(hypeConstants);
         _interLeagueService.ClearMasterGameCache();
@@ -750,24 +755,41 @@ public class AdminService
         await _dailyStatsRepo.UpdateDailyStats(activeYears, supportedQuarters, today, systemWideValues);
     }
 
-    private async Task UpdateSystemWideValues(IReadOnlyList<LeagueYear> allLeagueYears)
+    private static bool YearNeedsSystemWideValuesRefresh(SupportedYear supportedYear, LocalDate today, HashSet<int> cachedYears)
     {
-        _logger.Information("Updating system wide values");
+        if (!supportedYear.Finished)
+        {
+            return true;
+        }
 
-        var leaguesToCount = allLeagueYears.Where(x => x.League.AffectsStats && x.PlayStatus.DraftFinished).ToList();
+        LocalDate yearEndGracePeriodEnd = new LocalDate(supportedYear.Year + 1, 1, 1).PlusDays(30);
+        if (yearEndGracePeriodEnd >= today)
+        {
+            return true;
+        }
+
+        return !cachedYears.Contains(supportedYear.Year);
+    }
+
+    private async Task UpdateSystemWideValuesForYear(int year, IReadOnlyList<LeagueYear> leagueYears)
+    {
+        _logger.Information("Updating system wide values for year {Year}", year);
+
+        var leaguesToCount = leagueYears.Where(x => x.League.AffectsStats && x.PlayStatus.DraftFinished).ToList();
         var publisherGames = leaguesToCount.SelectMany(x => x.Publishers).SelectMany(x => x.PublisherGames);
         var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).ToList();
 
         var allStandardGamesWithPoints = gamesWithPoints.Where(x => !x.CounterPick).ToList();
+        var allPickupOnlyStandardGamesWithPoints = allStandardGamesWithPoints.Where(x => !x.OverallDraftPosition.HasValue).ToList();
         var allCounterPicksWithPoints = gamesWithPoints.Where(x => x.CounterPick).ToList();
 
         var averageStandardPoints = allStandardGamesWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
-        var averagePickupOnlyStandardPoints = allStandardGamesWithPoints.Where(x => !x.OverallDraftPosition.HasValue).Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
+        var averagePickupOnlyStandardPoints = allPickupOnlyStandardGamesWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
         var averageCounterPickPoints = allCounterPicksWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
 
         Dictionary<int, List<decimal>> pointsForPosition = new Dictionary<int, List<decimal>>();
         Dictionary<uint, List<decimal>> pointsForBidAmount = new Dictionary<uint, List<decimal>>();
-        foreach (var leagueYear in allLeagueYears)
+        foreach (var leagueYear in leagueYears)
         {
             var publishers = leagueYear.Publishers;
             var orderedGames = publishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick & x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).OrderBy(x => x.Timestamp).ToList();
@@ -799,6 +821,15 @@ public class AdminService
         var averageStandardGamePointsByBidAmount = pointsForBidAmount.Select(bidAmount => new AverageBidAmountPoints(bidAmount.Key, bidAmount.Value.Count, bidAmount.Value.Average())).ToList();
         var systemWideValues = new SystemWideValues(averageStandardPoints, averagePickupOnlyStandardPoints, averageCounterPickPoints,
             averageStandardGamePointsByPickPosition, averageStandardGamePointsByBidAmount);
+        await _fantasyCriticRepo.UpdateSystemWideValuesForYear(year, systemWideValues, allStandardGamesWithPoints.Count,
+            allPickupOnlyStandardGamesWithPoints.Count, allCounterPicksWithPoints.Count);
+    }
+
+    private async Task UpdateSystemWideValues()
+    {
+        _logger.Information("Aggregating system wide values from year cache");
+
+        var systemWideValues = await _fantasyCriticRepo.BuildSystemWideValuesFromYearCache();
         await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
     }
 

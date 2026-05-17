@@ -135,6 +135,9 @@ public interface IFantasyCriticRepo
     Task SaveProcessedActionResults(FinalizedActionProcessingResults actionProcessingResults);
     Task ManualMakePublisherGameSlotsConsistent(int year);
     Task UpdateSystemWideValues(SystemWideValues systemWideValues);
+    Task UpdateSystemWideValuesForYear(int year, SystemWideValues values, int standardDataPoints, int pickupOnlyDataPoints, int counterPickDataPoints);
+    Task<IReadOnlyList<int>> GetCachedSystemWideValueYears();
+    Task<SystemWideValues> BuildSystemWideValuesFromYearCache();
     Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage domainMessage);
     Task<IReadOnlyList<ManagerMessage>> GetManagerMessages(LeagueYear leagueYear);
     Task<Result> DeleteManagerMessage(LeagueYear leagueYear, Guid messageID);
@@ -156,7 +159,7 @@ public interface IFantasyCriticRepo
     Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
     Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
     Task GrantSuperDrops(IEnumerable<Publisher> publishersToGrantSuperDrop, IEnumerable<LeagueAction> superDropActions);
-    Task UpdateLeagueYearCache(IEnumerable<LeagueYear> allLeagueYears);
+    Task UpdateLeagueYearCache(int year, IReadOnlyList<LeagueYear> leagueYears);
     Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year);
     Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user);
     Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year);
