@@ -293,10 +293,23 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
     public async Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores)
     {
-        const string updateGamePointsSql =
-            """
-            update tbl_royale_publishergame SET FantasyPoints = @FantasyPoints where PublisherID = @PublisherID AND MasterGameID = @MasterGameID;
-            """;
+        if (publisherGameScores.Count == 0)
+        {
+            return;
+        }
+
+        const string tempTableName = "tmp_royale_publisher_game_scores";
+        const string createTempTableSql =
+            $"CREATE TEMPORARY TABLE {tempTableName} (" +
+            "PublisherID CHAR(36) NOT NULL, " +
+            "MasterGameID CHAR(36) NOT NULL, " +
+            "FantasyPoints DECIMAL(12,4) NULL, " +
+            "PRIMARY KEY (PublisherID, MasterGameID)" +
+            ");";
+        const string bulkUpdateGamePointsSql =
+            $"UPDATE tbl_royale_publishergame pg " +
+            $"INNER JOIN {tempTableName} t ON pg.PublisherID = t.PublisherID AND pg.MasterGameID = t.MasterGameID " +
+            "SET pg.FantasyPoints = t.FantasyPoints;";
 
         const string updatePublisherRanksSql =
             """
@@ -345,8 +358,12 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await connection.ExecuteAsync(updateGamePointsSql, updateEntities, transaction);
+
+        await connection.ExecuteAsync(createTempTableSql, transaction: transaction);
+        await connection.BulkInsertAsync(updateEntities, tempTableName, 500, transaction);
+        await connection.ExecuteAsync(bulkUpdateGamePointsSql, transaction: transaction);
         await connection.ExecuteAsync(updatePublisherRanksSql, transaction: transaction);
+
         await transaction.CommitAsync();
     }
 
