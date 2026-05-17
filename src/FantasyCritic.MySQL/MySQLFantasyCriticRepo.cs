@@ -265,27 +265,39 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task UpdateLeagueWinners(IReadOnlyDictionary<LeagueYearKey, FantasyCriticUser> winningUsers, bool recalculate)
     {
-        string sql = "";
-        if (recalculate)
+        if (winningUsers.Count == 0)
         {
-            sql = "update tbl_league_year set WinningUserID = @WinningUserID where LeagueID = @LeagueID and Year = @Year;";
-        }
-        else
-        {
-            sql = "update tbl_league_year set WinningUserID = @WinningUserID where LeagueID = @LeagueID and Year = @Year and WinningUserID is null;";
+            return;
         }
 
+        const string tempTableName = "tmp_league_year_winners";
+        const string createTempTableSql =
+            $"CREATE TEMPORARY TABLE {tempTableName} (" +
+            "LeagueID CHAR(36) NOT NULL, " +
+            "Year YEAR NOT NULL, " +
+            "WinningUserID CHAR(36) NOT NULL, " +
+            "PRIMARY KEY (LeagueID, Year)" +
+            ");";
+        string bulkUpdateSql =
+            $"UPDATE tbl_league_year ly " +
+            $"INNER JOIN {tempTableName} t ON ly.LeagueID = t.LeagueID AND ly.Year = t.Year " +
+            "SET ly.WinningUserID = t.WinningUserID";
+        if (!recalculate)
+        {
+            bulkUpdateSql += " WHERE ly.WinningUserID IS NULL";
+        }
+        bulkUpdateSql += ";";
+
         List<LeagueYearWinnerUpdateEntity> updateEntities = winningUsers.Select(x => new LeagueYearWinnerUpdateEntity(x)).ToList();
-        var updateBatches = updateEntities.Chunk(1000).ToList();
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        for (var index = 0; index < updateBatches.Count; index++)
-        {
-            _logger.Information($"Running league year winner update {index + 1}/{updateBatches.Count}");
-            var batch = updateBatches[index];
-            await connection.ExecuteAsync(sql, batch, transaction);
-        }
+
+        await connection.ExecuteAsync(createTempTableSql, transaction: transaction);
+        _logger.Information("Bulk inserting {Count} league year winners into temp table", updateEntities.Count);
+        await connection.BulkInsertAsync(updateEntities, tempTableName, 500, transaction);
+        _logger.Information("Applying league year winners bulk update");
+        await connection.ExecuteAsync(bulkUpdateSql, transaction: transaction);
 
         await transaction.CommitAsync();
     }
