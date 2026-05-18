@@ -422,7 +422,7 @@ export default {
       this.refreshLeagueYear();
     },
     async startHubConnection() {
-      if (!this.leagueYear || !this.leagueYear.playStatus.playStarted || this.leagueYear.draftFinished) {
+      if (!this.leagueYear || !this.leagueYear.playStatus.playStarted || this.leagueYear.playStatus.draftFinished) {
         return;
       }
 
