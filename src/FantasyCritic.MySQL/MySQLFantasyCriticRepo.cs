@@ -3471,17 +3471,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return fakePublisherGame;
     }
 
-    public async Task UpdateLeagueYearCache(int year, IReadOnlyList<LeagueYear> leagueYears)
-    {
-        var leagueYearEntities = leagueYears.Select(x => new LeagueYearCacheEntity(x)).ToList();
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
-        await using var transaction = await connection.BeginTransactionAsync();
-        await connection.ExecuteAsync("delete from tbl_caching_leagueyear where Year = @year", new { year }, transaction);
-        await connection.BulkInsertAsync<LeagueYearCacheEntity>(leagueYearEntities, "tbl_caching_leagueyear", 500, transaction);
-        await transaction.CommitAsync();
-    }
-
     public async Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user)
     {
         const string sql =

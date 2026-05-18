@@ -327,7 +327,6 @@ public class AdminService
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
             await UpdateSystemWideValuesForYear(supportedYear.Year, leagueYears);
-            await _fantasyCriticRepo.UpdateLeagueYearCache(supportedYear.Year, leagueYears);
         }
 
         await UpdateSystemWideValues();
@@ -762,7 +761,7 @@ public class AdminService
             return true;
         }
 
-        LocalDate yearEndGracePeriodEnd = new LocalDate(supportedYear.Year + 1, 1, 1).PlusDays(30);
+        LocalDate yearEndGracePeriodEnd = new LocalDate(supportedYear.Year, 12, 31).PlusDays(30);
         if (yearEndGracePeriodEnd >= today)
         {
             return true;

@@ -23,20 +23,9 @@ CREATE PROCEDURE `sp_getleague`(
 BEGIN
   SELECT vw_league.*,
          tbl_user.DisplayName AS ManagerDisplayName,
-         tbl_user.EmailAddress AS ManagerEmailAddress,
-         CASE
-             WHEN tbl_caching_leagueyear.OneShotMode = 1 THEN 'true'
-             ELSE 'false'
-         END AS MostRecentOneShotMode
+         tbl_user.EmailAddress AS ManagerEmailAddress
   FROM vw_league
   JOIN tbl_user ON tbl_user.UserID = vw_league.LeagueManager
-  LEFT JOIN
-    (SELECT tbl_caching_leagueyear.LeagueID,
-            tbl_caching_leagueyear.OneShotMode,
-            ROW_NUMBER() OVER (PARTITION BY tbl_caching_leagueyear.LeagueID
-                               ORDER BY tbl_caching_leagueyear.Year DESC) AS rn
-     FROM tbl_caching_leagueyear) AS tbl_caching_leagueyear ON vw_league.LeagueID = tbl_caching_leagueyear.LeagueID
-  AND tbl_caching_leagueyear.rn = 1
   WHERE vw_league.LeagueID = P_LeagueID
     AND vw_league.IsDeleted = 0;
   

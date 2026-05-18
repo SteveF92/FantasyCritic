@@ -159,7 +159,6 @@ public interface IFantasyCriticRepo
     Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
     Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
     Task GrantSuperDrops(IEnumerable<Publisher> publishersToGrantSuperDrop, IEnumerable<LeagueAction> superDropActions);
-    Task UpdateLeagueYearCache(int year, IReadOnlyList<LeagueYear> leagueYears);
     Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid userID, int year);
     Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user);
     Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year);

@@ -27,7 +27,7 @@ BEGIN
          tbl_user.DisplayName AS ManagerDisplayName,
          tbl_user.EmailAddress AS ManagerEmailAddress,
          CASE
-             WHEN tbl_caching_leagueyear.OneShotMode = 1 THEN 1
+             WHEN most_recent_ly.OneShotMode = 1 THEN 1
              ELSE 0
          END AS MostRecentYearOneShot,
          CASE
@@ -66,12 +66,21 @@ BEGIN
   LEFT JOIN tbl_user_followingleague ON vw_league.LeagueID = tbl_user_followingleague.LeagueID
   AND tbl_user_followingleague.UserID = P_UserID
   LEFT JOIN
-    (SELECT tbl_caching_leagueyear.LeagueID,
-            tbl_caching_leagueyear.OneShotMode,
-            ROW_NUMBER() OVER (PARTITION BY tbl_caching_leagueyear.LeagueID
-                               ORDER BY tbl_caching_leagueyear.Year DESC) AS rn
-     FROM tbl_caching_leagueyear) AS tbl_caching_leagueyear ON vw_league.LeagueID = tbl_caching_leagueyear.LeagueID
-  AND tbl_caching_leagueyear.rn = 1
+    (SELECT tbl_league_year.LeagueID,
+            CASE
+                WHEN tbl_league_year.StandardGames = tbl_league_year.GamesToDraft
+                     AND tbl_league_year.CounterPicks = tbl_league_year.CounterPicksToDraft
+                     AND tbl_league_year.UnrestrictedReleaseStatusDroppableGames = 0
+                     AND tbl_league_year.WillNotReleaseDroppableGames = 0
+                     AND tbl_league_year.WillReleaseDroppableGames = 0
+                     AND tbl_league_year.GrantSuperDrops = 0
+                     AND tbl_league_year.TradingSystem = 'NoTrades' THEN 1
+                ELSE 0
+            END AS OneShotMode,
+            ROW_NUMBER() OVER (PARTITION BY tbl_league_year.LeagueID
+                               ORDER BY tbl_league_year.Year DESC) AS rn
+     FROM tbl_league_year) AS most_recent_ly ON vw_league.LeagueID = most_recent_ly.LeagueID
+  AND most_recent_ly.rn = 1
   JOIN tbl_user ON tbl_user.UserID = vw_league.LeagueManager
   WHERE (tbl_league_hasuser.UserID IS NOT NULL
          OR tbl_user_followingleague.UserID IS NOT NULL)

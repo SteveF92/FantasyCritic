@@ -10,7 +10,7 @@ public class LeagueOptions
 
     public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames,
         int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount,
-        IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,         DraftSystem draftSystem, PickupSystem pickupSystem,
+        IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, DraftSystem draftSystem, PickupSystem pickupSystem,
         ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
