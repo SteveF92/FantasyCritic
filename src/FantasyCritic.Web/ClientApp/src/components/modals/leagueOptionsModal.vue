@@ -57,7 +57,7 @@
           <th class="bg-primary">Automatic Super Drops</th>
           <td>
             <span>{{ leagueYearOptions.grantSuperDrops | yesNo }}</span>
-            <span v-if="leagueYearOptions.grantSuperDrops" class="point-cutoff">(Point Cutoff: {{ leagueYear.superDropPointCutoff | score(2) }})</span>
+            <span v-if="leagueYearOptions.grantSuperDrops && superDropPointCutoff" class="point-cutoff">(Point Cutoff: {{ superDropPointCutoff | score(2) }})</span>
           </td>
         </tr>
         <tr>
@@ -135,14 +135,10 @@ export default {
   },
   mixins: [BasicMixin],
   props: {
-    leagueYear: { type: Object, required: true },
+    leagueYearOptions: { type: Object, required: true },
     league: { type: Object, required: false },
-    supportedYear: { type: Object, required: true }
-  },
-  computed: {
-    leagueYearOptions() {
-      return this.leagueYear.settings;
-    }
+    supportedYear: { type: Object, required: true },
+    superDropPointCutoff: { type: Number, required: false }
   }
 };
 </script>
