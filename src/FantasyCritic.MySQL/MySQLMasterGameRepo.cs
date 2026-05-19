@@ -597,6 +597,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateCalculatedStats(IEnumerable<MasterGameCalculatedStats> calculatedStats, int year)
     {
+        _logger.Information("Updating game stats in database for year {Year}", year);
         List<MasterGameYearEntity> masterGameYearEntities = calculatedStats.Select(x => new MasterGameYearEntity(x)).ToList();
 
         var excludeFields = new List<string>() { "SyncWithExternalAPIs", "AddedByUserDisplayName" };

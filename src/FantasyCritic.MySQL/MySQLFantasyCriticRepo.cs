@@ -111,6 +111,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year, bool includeDeleted = false)
     {
+        _logger.Information("Getting all league years for year {Year}", year);
         var allLeagueTags = await GetLeagueYearTagEntities(year);
         var allSpecialGameSlots = await GetSpecialGameSlotEntities(year);
         var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
