@@ -846,15 +846,15 @@ public class AdminService
             }
 
             _logger.Information("Updating game stats for year {Year}", supportedYear.Year);
-            List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
             IReadOnlyList<MasterGame> cleanMasterGames = await _masterGameRepo.GetMasterGames();
             IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-            var royalePublishers = await _royaleService.GetAllPublishers(supportedYear.Year);
             IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears);
+            var royalePublishers = await _royaleService.GetAllPublishers(supportedYear.Year);
             _logger.Information("All data retrieved for calculations for year {Year}", supportedYear.Year);
 
+            List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
             var publisherMasterGames = new HashSet<MasterGame>();
             foreach (var leagueYear in leagueYears)
             {
