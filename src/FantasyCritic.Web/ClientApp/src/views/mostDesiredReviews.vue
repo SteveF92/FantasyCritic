@@ -3,7 +3,11 @@
     <h1>Most Desired Reviews</h1>
     <p>These are the games that have the most interest in seeing more reviews written for them.</p>
 
-    <b-table small bordered striped responsive :items="mostDesiredReviews" :fields="gameFields" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
+    <b-form-group label="Released within" label-for="release-date-filter" label-size="sm" class="release-date-filter">
+      <b-form-radio-group id="release-date-filter" v-model="releaseDateFilter" :options="releaseDateFilterOptions" buttons button-variant="outline-primary" size="sm" />
+    </b-form-group>
+
+    <b-table small bordered striped responsive :items="filteredMostDesiredReviews" :fields="gameFields" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
       <template #cell(masterGame.gameName)="data">
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
@@ -25,6 +29,7 @@
 
 <script>
 import axios from 'axios';
+import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
@@ -34,6 +39,13 @@ export default {
   data() {
     return {
       mostDesiredReviews: null,
+      releaseDateFilter: 'year',
+      releaseDateFilterOptions: [
+        { text: 'Past week', value: 'week' },
+        { text: 'Past month', value: 'month' },
+        { text: 'Past 3 months', value: '3months' },
+        { text: 'All Year', value: 'year' }
+      ],
       sortBy: 'desireFactor',
       sortDesc: true,
       gameFields: [
@@ -43,6 +55,43 @@ export default {
         { key: 'desireFactor', label: 'Desire Factor', sortable: true, thClass: 'bg-primary' }
       ]
     };
+  },
+  computed: {
+    filteredMostDesiredReviews() {
+      if (!this.mostDesiredReviews) {
+        return null;
+      }
+
+      if (this.releaseDateFilter === 'year') {
+        return this.mostDesiredReviews;
+      }
+
+      const now = DateTime.local().startOf('day');
+      let cutoff;
+      switch (this.releaseDateFilter) {
+        case 'week':
+          cutoff = now.minus({ weeks: 1 });
+          break;
+        case 'month':
+          cutoff = now.minus({ months: 1 });
+          break;
+        case '3months':
+          cutoff = now.minus({ months: 3 });
+          break;
+        default:
+          return this.mostDesiredReviews;
+      }
+
+      return this.mostDesiredReviews.filter((item) => {
+        const releaseDateStr = item.masterGame.releaseDate || item.masterGame.maximumReleaseDate;
+        if (!releaseDateStr) {
+          return false;
+        }
+
+        const releaseDate = DateTime.fromISO(releaseDateStr);
+        return releaseDate >= cutoff;
+      });
+    }
   },
   methods: {
     openCriticLink(game) {
@@ -55,3 +104,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.release-date-filter {
+  margin-bottom: 1rem;
+}
+</style>
