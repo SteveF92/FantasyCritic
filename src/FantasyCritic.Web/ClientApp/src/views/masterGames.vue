@@ -15,12 +15,11 @@
         </div>
       </div>
       <hr />
-      <div class="row g-2">
-        <div v-for="item in navItems" :key="item.name" class="col-12 col-sm-6 col-lg-3">
-          <b-button variant="info" :to="{ name: item.name }" class="request-button w-100">
-            {{ item.label }}
-          </b-button>
-        </div>
+      <div class="master-games-nav">
+        <template v-for="(item, index) in navItems">
+          <router-link :key="item.name" :to="{ name: item.name }" class="master-games-nav-link text-primary">{{ item.label }}</router-link>
+          <span v-if="index < navItems.length - 1" :key="item.name + '-sep'" class="master-games-nav-sep">|</span>
+        </template>
       </div>
 
       <div class="special-selectors text-well">
@@ -91,13 +90,9 @@ export default {
     navItems() {
       const items = [];
       if (this.isAuth) {
-        items.push({ name: 'masterGameRequest', label: 'Request new Master Game' }, { name: 'masterGameChangeRequest', label: 'Suggest a Correction' });
+        items.push({ name: 'masterGameRequest', label: 'Request Game' }, { name: 'masterGameChangeRequest', label: 'Suggest Correction' });
       }
-      items.push(
-        { name: 'gameChanges', label: 'See Recent Game Changes' },
-        { name: 'mostDesiredReviews', label: 'Most Desired Reviews' },
-        { name: 'topBidsAndDrops', label: 'See Top Bids/Drops' }
-      );
+      items.push({ name: 'gameChanges', label: 'Recent Changes' }, { name: 'mostDesiredReviews', label: 'Most Desired Reviews' }, { name: 'topBidsAndDrops', label: 'Top Bids/Drops' });
       return items;
     },
     gamesToShow() {
@@ -198,9 +193,20 @@ export default {
   width: 100px;
 }
 
-.request-button {
-  width: 100%;
-  margin-bottom: 15px;
+.master-games-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+
+.master-games-nav-sep {
+  color: #6c757d;
+  user-select: none;
 }
 
 .league-label {
