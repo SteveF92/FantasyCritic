@@ -317,6 +317,14 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    public async Task<ActionResult<List<MostDesiredReviewViewModel>>> GetMostDesiredReviews()
+    {
+        var currentDate = _clock.GetToday();
+        IReadOnlyList<MasterGameDesireResult> results = await _interLeagueService.GetMostDesiredReviews(currentDate);
+        var vms = results.Select(x => new MostDesiredReviewViewModel(x, currentDate)).ToList();
+        return vms;
+    }
+
     public async Task<ActionResult<List<LocalDate>>> GetProcessingDatesForTopBidsAndDrops()
     {
         var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();

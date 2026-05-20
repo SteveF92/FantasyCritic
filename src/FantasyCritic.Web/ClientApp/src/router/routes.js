@@ -15,6 +15,7 @@ import Publisher from '@/views/publisher.vue';
 import MasterGame from '@/views/masterGame.vue';
 import MasterGames from '@/views/masterGames.vue';
 import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
+import MostDesiredReviews from '@/views/mostDesiredReviews.vue';
 import PublicLeagues from '@/views/publicLeagues.vue';
 import LeagueHistory from '@/views/leagueHistory.vue';
 import LeagueAllTimeStats from '@/views/leagueAllTimeStats.vue';
@@ -156,6 +157,15 @@ export const routes = [
     name: 'gameChanges',
     meta: {
       title: 'Game Changes',
+      isPublic: true
+    }
+  },
+  {
+    path: '/mostDesiredReviews',
+    component: MostDesiredReviews,
+    name: 'mostDesiredReviews',
+    meta: {
+      title: 'Most Desired Reviews',
       isPublic: true
     }
   },

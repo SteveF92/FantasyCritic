@@ -93,6 +93,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
+    public Task<IReadOnlyList<MasterGameDesireResult>> GetMostDesiredReviews(LocalDate currentDate)
+    {
+        return Task.FromResult<IReadOnlyList<MasterGameDesireResult>>(Array.Empty<MasterGameDesireResult>());
+    }
+
     public Task CreateMasterGameRequest(MasterGameRequest domainRequest)
     {
         throw new NotImplementedException();

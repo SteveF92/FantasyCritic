@@ -261,6 +261,11 @@ public class InterLeagueService
         return _masterGameRepo.GetRecentMasterGameChanges();
     }
 
+    public Task<IReadOnlyList<MasterGameDesireResult>> GetMostDesiredReviews(LocalDate currentDate)
+    {
+        return _masterGameRepo.GetMostDesiredReviews(currentDate);
+    }
+
     public void ClearMasterGameCache()
     {
         _masterGameRepo.ClearMasterGameCache();

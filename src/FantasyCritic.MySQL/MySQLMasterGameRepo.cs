@@ -305,6 +305,62 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return domains;
     }
 
+    public async Task<IReadOnlyList<MasterGameDesireResult>> GetMostDesiredReviews(LocalDate currentDate)
+    {
+        int year = currentDate.Year;
+
+        const string sql =
+            """
+            SELECT mg.MasterGameID, COUNT(DISTINCT interested.UserID) AS DesireFactor
+            FROM tbl_mastergame mg
+            JOIN (
+                SELECT lpg.MasterGameID, lp.UserID
+                FROM tbl_league_publishergame lpg
+                JOIN tbl_league_publisher lp ON lp.PublisherID = lpg.PublisherID
+                JOIN tbl_league l ON l.LeagueID = lp.LeagueID
+                WHERE lp.Year = @year
+                  AND l.TestLeague = 0
+                  AND l.IsDeleted = 0
+                  AND lpg.MasterGameID IS NOT NULL
+
+                UNION ALL
+
+                SELECT rpg.MasterGameID, rp.UserID
+                FROM tbl_royale_publishergame rpg
+                JOIN tbl_royale_publisher rp ON rp.PublisherID = rpg.PublisherID
+                WHERE rp.Year = @year
+            ) interested ON interested.MasterGameID = mg.MasterGameID
+            WHERE mg.ReleaseDate IS NOT NULL
+              AND mg.ReleaseDate <= @today
+              AND mg.CriticScore IS NULL
+            GROUP BY mg.MasterGameID
+            ORDER BY DesireFactor DESC;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<MasterGameDesireRow> rows = await connection.QueryAsync<MasterGameDesireRow>(sql, new { year, today = currentDate });
+
+        var masterGameYears = await GetMasterGameYears(year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        List<MasterGameDesireResult> results = new List<MasterGameDesireResult>();
+        foreach (MasterGameDesireRow row in rows)
+        {
+            if (masterGameYearDictionary.TryGetValue(row.MasterGameID, out MasterGameYear? masterGameYear))
+            {
+                results.Add(new MasterGameDesireResult(masterGameYear, row.DesireFactor));
+            }
+        }
+
+        return results;
+    }
+
+    private class MasterGameDesireRow
+    {
+        public Guid MasterGameID { get; set; }
+        public int DesireFactor { get; set; }
+    }
+
     public async Task CreateMasterGameRequest(MasterGameRequest domainRequest)
     {
         var entity = new MasterGameRequestEntity(domainRequest);

@@ -93,7 +93,11 @@ export default {
       if (this.isAuth) {
         items.push({ name: 'masterGameRequest', label: 'Request new Master Game' }, { name: 'masterGameChangeRequest', label: 'Suggest a Correction' });
       }
-      items.push({ name: 'gameChanges', label: 'See Recent Game Changes' }, { name: 'topBidsAndDrops', label: 'See Top Bids/Drops' });
+      items.push(
+        { name: 'gameChanges', label: 'See Recent Game Changes' },
+        { name: 'mostDesiredReviews', label: 'Most Desired Reviews' },
+        { name: 'topBidsAndDrops', label: 'See Top Bids/Drops' }
+      );
       return items;
     },
     gamesToShow() {
