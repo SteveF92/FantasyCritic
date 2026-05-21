@@ -70,8 +70,7 @@
 
           <b-alert variant="info">
             The difference between a "Custom Rules League" and a "Test League" is that a "Custom Rules League" will still be listed alongside your normal leagues and you will see upcoming games for
-            that league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. The "Custom Rules League" option
-            is new as of 2023, and you
+            that league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. You
             <em>are</em>
             allowed to change your "Test League" into a "Custom Rules League", since neither affect the site's stats.
           </b-alert>

@@ -23,13 +23,12 @@
     <collapseCard>
       <template #header>Something about the site is broken!</template>
       <template #body>
-        Sounds likely. I don't have a dedicated testing team and there are bound to be issues. Honestly, most issues can be fixed by refreshing the page. Beyond that, the best option is to open an
-        issue on
+        The best option is to open an issue on
         <a href="https://github.com/SteveF92/FantasyCritic" target="_blank">
           GitHub
           <font-awesome-icon icon="external-link-alt" size="sm" />
         </a>
-        . Contacting me on Discord or via email is also an option.
+        , or post on our Discord in the #tech-support channel. If it's an issue with your account, I recommend emailing me or sending a Discord DM.
       </template>
     </collapseCard>
     <collapseCard>
@@ -64,7 +63,7 @@
     <collapseCard>
       <template #header>How can I follow updates for the site?</template>
       <template #body>
-        The best place to go is our
+        The site has an announcements feature now! You'll see all the critical updates there. You can even follow us with RSS! If you want even more detailed news, the best place to go is our
         <a href="https://discord.gg/dNa7DD3" target="_blank">
           Discord Server
           <font-awesome-icon icon="external-link-alt" size="sm" />
@@ -162,9 +161,8 @@
     <collapseCard>
       <template #header>What are conferences?</template>
       <template #body>
-        Conferences are a new feature for 2024. They are intended for large groups that do not fit into one league. If you have a group of, say, 50 people, there has not been a good way for you to
-        play Fantasy Critic until now. With conferences, you can split your group into seperate leagues, but keep those leagues linked together. This allows you to see cross-league standings, makes
-        management easier, and more.
+        Conferences are intended for large groups that do not fit into one league. If you have a group of, say, 50 people, there has not been a good way for you to play Fantasy Critic until now. With
+        conferences, you can split your group into seperate leagues, but keep those leagues linked together. This allows you to see cross-league standings, makes management easier, and more.
       </template>
     </collapseCard>
     <collapseCard>
@@ -551,8 +549,9 @@
         </p>
 
         <p>
-          However, there are special rules to make certain points worth more or less. If a game scores above a 90, every point above 90 is worth two points. So if a game gets a 94, you get 20 points
-          for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94. However, starting in 2023, these "bonus" points can be turned off if you wish.
+          Leagues can also choose to give "bonus points" for games that score over 90. This used to be the default, but is now an option. If you enable this, and a game scores above a 90, every point
+          above 90 is worth two points. So if a game gets a 94, you get 20 points for 70 through 90, and 8 points for 90 through 94, for a total of 28 points for the 94. To be truthful, any option
+          other than 1 is a bit of a "legacy feature", and I'd recommend you stick with 1.
         </p>
 
         Another special rule is that there are diminishing returns on how much a very bad game hurts you. Each point from 60 through 70 loses you one point, but every 10 point range below that, each
@@ -798,7 +797,7 @@
           access. This is true even if they get reviews while in early access, which is rare.
         </p>
         <p>
-          However, starting with the 2023 season, leagues can choose to enable "Only Needs Score" mode, which would mean that an early access game that gets reviews and an OpenCritic score
+          One other option that leagues can choose to enable is "Only Needs Score" mode, which would mean that an early access game that gets reviews and an OpenCritic score
           <em>would</em>
           count for points.
         </p>
@@ -852,10 +851,6 @@
     <collapseCard>
       <template #header>How are "re-releases" of games that were never released in North America handled?</template>
       <template #body>
-        <div class="alert alert-info">
-          Note: This rule has been changed for the 2023 season. The below text reflects the new rule, and games that came out in 2022 and earlier may be classified differently than this text would
-          suggest.
-        </div>
         <p>
           This one is complicated. For example, if a game came out in Japan, but not North America, and then some time later, the game is updated with a new release in Japan and
           <em>that</em>

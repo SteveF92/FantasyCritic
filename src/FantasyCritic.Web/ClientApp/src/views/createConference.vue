@@ -11,7 +11,7 @@
         Unfortunately, conferences cannot be created right now, as the current year is closed and the next year is not open yet. Check Discord for updates.
       </div>
       <template v-else>
-        <div class="alert alert-info">Conferences are a new feature for 2024. They are intended for large groups that do not fit into one league. For more details, see the FAQ page.</div>
+        <div class="alert alert-info">Conferences are intended for large groups that do not fit into one league. For more details, see the FAQ page.</div>
         <div class="text-well">
           <h2>Basic Settings</h2>
           <div class="form-group">

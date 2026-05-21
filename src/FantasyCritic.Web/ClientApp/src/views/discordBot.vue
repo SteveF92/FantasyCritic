@@ -271,7 +271,8 @@
                 </p>
                 <span>
                   Allows you to search for a game by its name. It will prioritize a game if it's in the league on someone's roster, but if it's not, it'll still return that game's details as it exists
-                  on the Fantasy Critic site. If the channel is configured with either a conference or a league that is within a conference, there will also be a button that allows you to search within the leagues in your conference for the returned games as well.
+                  on the Fantasy Critic site. If the channel is configured with either a conference or a league that is within a conference, there will also be a button that allows you to search
+                  within the leagues in your conference for the returned games as well.
                 </span>
               </div>
               <hr />
@@ -471,7 +472,8 @@
                   </span>
                 </p>
                 <span>
-                  Allows you to toggle league news updates for the conference channel. When enabled, this channel will receive league-specific updates (such as bid results, drop results, publisher score updates, and league actions) for all leagues within the conference. This is useful if you want a central channel to monitor all league activity across your entire conference.
+                  Allows you to toggle league news updates for the conference channel. When enabled, this channel will receive league-specific updates (such as bid results, drop results, publisher
+                  score updates, and league actions) for all leagues within the conference. This is useful if you want a central channel to monitor all league activity across your entire conference.
                   <br />
                   <br />
                   <strong>Note:</strong>
@@ -527,8 +529,9 @@
                   </span>
                 </p>
                 <span>
-                  Allows you to set a role that has permission to manage bot settings in the channel. Users with this role will be able to configure the bot, including managing game news settings for a league channel. By default, any user can manage the bot, since we are not able to determine who should or should not be able to do so within Discord.
-                  Note: this currently has no impact on managing conferences in Discord channels as there are no administrative functions besides setting and removing the conference from the channel.
+                  Allows you to set a role that has permission to manage bot settings in the channel. Users with this role will be able to configure the bot, including managing game news settings for
+                  a league channel. By default, any user can manage the bot, since we are not able to determine who should or should not be able to do so within Discord. Note: this currently has no
+                  impact on managing conferences in Discord channels as there are no administrative functions besides setting and removing the conference from the channel.
                 </span>
               </div>
               <hr />
@@ -540,9 +543,8 @@
                 </p>
                 <span>
                   Allows you to choose exactly what types of game news you want to be notified about. While the other commands use parameters, this one actually provides an interface with clickable
-                  buttons. If you're not sure what to choose, you can click the selection menu and choose from a few presets,
-                  you will start with recommended settings, but if you ever get into a weird state, this is where you can reset to recmmended.
-                  If you want to fine tune the options you can click "Set Custom Filters [Advanced]"
+                  buttons. If you're not sure what to choose, you can click the selection menu and choose from a few presets, you will start with recommended settings, but if you ever get into a weird
+                  state, this is where you can reset to recmmended. If you want to fine tune the options you can click "Set Custom Filters [Advanced]"
                   <ul>
                     <li>
                       <strong>League News Settings</strong>
@@ -550,8 +552,8 @@
                       <ul>
                         <li>
                           <strong>Enable Picked Game News Override</strong>
-                          - If Enabled, you will always see game news for games in your leagues roster no matter what, aka any game picked by a publisher in your league.
-                          All other filter categories will be for Eligible or Ineligible games only.
+                          - If Enabled, you will always see game news for games in your leagues roster no matter what, aka any game picked by a publisher in your league. All other filter categories
+                          will be for Eligible or Ineligible games only.
                         </li>
                         <li>
                           <strong>Show Eligible Game News</strong>
@@ -559,12 +561,13 @@
                         </li>
                         <li>
                           <strong>Show Ineligible Game News</strong>
-                          - If Enabled, Shows game news for games ineligible for your league, like banned tags, or games not releasing this year. Other filter categories will be displayed to filter within this category.
+                          - If Enabled, Shows game news for games ineligible for your league, like banned tags, or games not releasing this year. Other filter categories will be displayed to filter
+                          within this category.
                         </li>
                         <li>
                           <strong>Notable Miss Setting</strong>
-                          - Lets you see score updates on eligible games that have scored well that your league didnt pick! This will show even if you have eligible game news or score game news is turned off.
-                          You can set it to show all score updates, just the initial score, or no notable miss news at all.
+                          - Lets you see score updates on eligible games that have scored well that your league didnt pick! This will show even if you have eligible game news or score game news is
+                          turned off. You can set it to show all score updates, just the initial score, or no notable miss news at all.
                         </li>
                       </ul>
                     </li>
@@ -574,7 +577,8 @@
                       <ul>
                         <li>
                           <strong>Show New Game Announcements</strong>
-                          - If Enabled, the channel will recieve a one time announcement about games Fantasy Critic just learned about and added to the site, will only show games not affected by other filters.
+                          - If Enabled, the channel will recieve a one time announcement about games Fantasy Critic just learned about and added to the site, will only show games not affected by other
+                          filters.
                         </li>
                         <li>
                           <strong>Show Just Released Announcements</strong>
@@ -584,8 +588,8 @@
                     </li>
                     <li>
                       <strong>Game Release Status Filters</strong>
-                      - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release in the current year and other similiar filters. This one requires some
-                      definitions.
+                      - Tells the bot whether or not to notify you about games based on whether or not they are confirmed to release in the current year and other similiar filters. This one requires
+                      some definitions.
                       <ul>
                         <li>
                           <strong>Already Released</strong>
@@ -593,17 +597,17 @@
                         </li>
                         <li>
                           <strong>Will Release</strong>
-                          - A game that is confirmed to release in the current year, whether it has a specific release date or not. For example, both "October 19, 2025" and "Late 2025" both count as
-                          "Will Release" for 2025.
+                          - A game that is confirmed to release in the current year, whether it has a specific release date or not. For example, both "October 19, 2026" and "Late 2026" both count as
+                          "Will Release" for 2026.
                         </li>
                         <li>
                           <strong>Might Release</strong>
-                          - A game that is neither confirmed for release in the current year nor confirmed not to release in the current year. For example, "TBA", "Unannounced", and "Late 2025 or
-                          Later" all count as "Might Release" for 2025.
+                          - A game that is neither confirmed for release in the current year nor confirmed not to release in the current year. For example, "TBA", "Unannounced", and "Late 2026 or
+                          Later" all count as "Might Release" for 2026.
                         </li>
                         <li>
                           <strong>Will Not Release</strong>
-                          - A game that is confirmed not to release in the current year. For example, "2026 or Later" and "May 26, 2026" both count as "Will Not Release" for 2025.
+                          - A game that is confirmed not to release in the current year. For example, "2026 or Later" and "May 26, 2026" both count as "Will Not Release" for 2026.
                         </li>
                       </ul>
                     </li>
@@ -650,7 +654,8 @@
                   </span>
                 </p>
                 <span>
-                  Enable or disable an automatic weekly message to notify your channel about games releasing in the upcoming week. When enabled, the bot will post a summary of upcoming game releases every Sunday at 8:00 PM Eastern time.
+                  Enable or disable an automatic weekly message to notify your channel about games releasing in the upcoming week. When enabled, the bot will post a summary of upcoming game releases
+                  every Sunday at 8:00 PM Eastern time.
                   <br />
                   <br />
                   <strong>Note:</strong>
@@ -717,46 +722,46 @@
 </template>
 
 <script>
-  import CollapseCard from '@/components/collapseCard.vue';
+import CollapseCard from '@/components/collapseCard.vue';
 
-  export default {
-    components: {
-      CollapseCard
-    },
-    data() {
-      return {};
-    },
-    mounted() {
-      if (this.$route.hash) {
-        this.showCollapse(this.$route.hash);
-      }
-    },
-    methods: {
-      showCollapse(hash) {
-        this.$refs.discordBotInfoCollapseRef.show();
-        setTimeout(() => {
-          this.$router.push({ hash: hash });
-        }, 250);
-      }
+export default {
+  components: {
+    CollapseCard
+  },
+  data() {
+    return {};
+  },
+  mounted() {
+    if (this.$route.hash) {
+      this.showCollapse(this.$route.hash);
     }
-  };
+  },
+  methods: {
+    showCollapse(hash) {
+      this.$refs.discordBotInfoCollapseRef.show();
+      setTimeout(() => {
+        this.$router.push({ hash: hash });
+      }, 250);
+    }
+  }
+};
 </script>
 <style scoped>
-  .command-label {
-    margin-right: 3px;
-    font-weight: bold;
-  }
+.command-label {
+  margin-right: 3px;
+  font-weight: bold;
+}
 
-  .param-label {
-    font-weight: bold;
-  }
+.param-label {
+  font-weight: bold;
+}
 
-  .discord-command-explanation {
-    margin-top: 20px;
-    margin-bottom: 10px;
-  }
+.discord-command-explanation {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
 
-  .parameter-explanation {
-    margin-top: 10px;
-  }
+.parameter-explanation {
+  margin-top: 10px;
+}
 </style>

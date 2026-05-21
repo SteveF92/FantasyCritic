@@ -169,7 +169,12 @@
               <th scope="row">Any Unreleased</th>
               <td>
                 <ValidationProvider v-if="!internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
-                  <input id="unrestrictedReleaseStatusDroppableGames" v-model="internalValue.unrestrictedReleaseStatusDroppableGames" name="Unrestricted Droppable Games" type="text" class="form-control input drop-number" />
+                  <input
+                    id="unrestrictedReleaseStatusDroppableGames"
+                    v-model="internalValue.unrestrictedReleaseStatusDroppableGames"
+                    name="Unrestricted Droppable Games"
+                    type="text"
+                    class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationProvider>
               </td>
@@ -236,11 +241,12 @@
       </h3>
       <b-collapse id="advanced-settings-collapse">
         <div class="alert alert-info">We recommend you keep these settings to the default options.</div>
-        <div v-if="year >= 2023" class="form-group">
+        <div class="form-group">
           <label for="scoringSystem" class="control-label">90+ Points Rule</label>
           <b-form-select v-model="internalValue.scoringSystem" :options="possibleLeagueOptions.scoringSystems"></b-form-select>
           <p>
-            This option controls how many fantasy points each critic score point over 90 counts as. From 2018-2022, this value was always "2". Now, in 2023, we're giving leagues the option to chose.
+            This option controls how many fantasy points each critic score point over 90 counts as. To be truthful, any option other than 1 is a bit of a "legacy feature", and I'd recommend you stick
+            with 1.
           </p>
         </div>
         <div class="form-group">
@@ -293,7 +299,7 @@
           </div>
 
           <p>If you enable this option, then after this date, a game that is considered "might release" will be treated like a "will not release" game for dropping and counter-picking purposes.</p>
-          <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific "2023" date, then it will still be counter as "Will Release" for 2023.</p>
+          <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific {{ this.year }} date, then it will still be counter as "Will Release" for {{ this.year }}.</p>
           <p>In more technical terms, this is based on the "Maximum Release Date" that you can see on the Master Game page.</p>
         </div>
         <div>
