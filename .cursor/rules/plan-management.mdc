@@ -1,0 +1,26 @@
+---
+description: How to create, update, and commit implementation plans
+alwaysApply: true
+---
+
+# Plan Management
+
+Plans live in `.cursor/plans/` in the workspace root and must be committed to git.
+
+## When creating a new plan
+
+1. Write the plan to `.cursor/plans/<descriptive-name>.md`
+2. Commit it immediately with a message like `"Add <feature> implementation plan."`
+
+## When updating an existing plan
+
+1. **Commit the current state of the plan file first** (so the original is preserved in git history and can be diffed)
+2. Then edit the file with the updates
+3. Commit the updated version with a message like `"Update <feature> plan: <brief reason>"`
+
+This two-commit approach means every plan revision is diffable in git history.
+
+## File location
+
+- Workspace plans: `I:/CodeProjects/FantasyCritic/.cursor/plans/`
+- Cursor-managed plans (in `C:\Users\...\cursor\projects\...\plans\`) are **not** committed — always copy/write to the workspace path above
