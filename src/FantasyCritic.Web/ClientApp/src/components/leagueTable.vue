@@ -29,6 +29,9 @@
             </span>
             <span v-else>{{ data.item.leagueManager.displayName }}</span>
           </div>
+          <div v-if="data.item.royaleGroupID" class="league-detail">
+            <router-link :to="{ name: 'royaleGroup', params: { groupid: data.item.royaleGroupID } }">View Royale Group</router-link>
+          </div>
         </div>
         <div v-show="showArchive" class="archive-button-section">
           <font-awesome-icon v-b-popover.hover.focus.rightbottom="'Archive this league (only affects you)'" class="archive-button fake-link" icon="archive" @click="setArchive(data.item, true)" />

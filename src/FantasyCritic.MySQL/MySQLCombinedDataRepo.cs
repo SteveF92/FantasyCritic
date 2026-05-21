@@ -84,7 +84,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
             var activeYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? league.Years.Max(x => x.Year);
             var activeYearLeagueYearName = years.FirstOrDefault(x => x.Year == activeYear)?.LeagueYearName;
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
-                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot, activeYearLeagueYearName));
+                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot, activeYearLeagueYearName, leagueEntity.LeagueRoyaleGroupID));
         }
 
         //MyInvites

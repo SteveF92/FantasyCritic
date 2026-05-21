@@ -59,7 +59,8 @@ BEGIN
                      WHERE ly.LeagueID = vw_league.LeagueID
                        AND sy.OpenForPlay = 1) THEN 1
              ELSE 0
-         END AS LeagueIsActiveInActiveYear
+         END AS LeagueIsActiveInActiveYear,
+         rg.GroupID AS LeagueRoyaleGroupID
   FROM vw_league
   LEFT JOIN tbl_league_hasuser ON vw_league.LeagueID = tbl_league_hasuser.LeagueID
   AND tbl_league_hasuser.UserID = P_UserID
@@ -81,6 +82,7 @@ BEGIN
                                ORDER BY tbl_league_year.Year DESC) AS rn
      FROM tbl_league_year) AS most_recent_ly ON vw_league.LeagueID = most_recent_ly.LeagueID
   AND most_recent_ly.rn = 1
+  LEFT JOIN tbl_royale_group rg ON rg.LeagueID = vw_league.LeagueID
   JOIN tbl_user ON tbl_user.UserID = vw_league.LeagueManager
   WHERE (tbl_league_hasuser.UserID IS NOT NULL
          OR tbl_user_followingleague.UserID IS NOT NULL)

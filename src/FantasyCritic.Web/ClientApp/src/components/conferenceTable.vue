@@ -8,6 +8,9 @@
         <div>
           <router-link :to="{ name: 'conference', params: { conferenceid: data.item.conferenceID, year: data.item.activeYear } }" class="conference-link">{{ data.item.conferenceName }}</router-link>
           <div class="manager">Manager: {{ data.item.conferenceManagerDisplayName }}</div>
+          <div v-if="data.item.royaleGroupID" class="manager">
+            <router-link :to="{ name: 'royaleGroup', params: { groupid: data.item.royaleGroupID } }">View Royale Group</router-link>
+          </div>
         </div>
       </div>
     </template>

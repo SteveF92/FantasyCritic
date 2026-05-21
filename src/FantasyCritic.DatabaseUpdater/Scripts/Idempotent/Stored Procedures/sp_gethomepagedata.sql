@@ -62,10 +62,12 @@ BEGIN
          c.ConferenceName,
          c.CustomRulesConference,
          u.UserID AS ConferenceManagerID,
-         u.DisplayName AS ConferenceManagerDisplayName
+         u.DisplayName AS ConferenceManagerDisplayName,
+         rg.GroupID AS ConferenceRoyaleGroupID
   FROM tbl_conference c
   JOIN tbl_conference_hasuser chu ON c.ConferenceID = chu.ConferenceID
   JOIN tbl_user u ON c.ConferenceManager = u.UserID
+  LEFT JOIN tbl_royale_group rg ON rg.ConferenceID = c.ConferenceID
   WHERE chu.UserID = P_UserID
     AND c.IsDeleted = 0;
   

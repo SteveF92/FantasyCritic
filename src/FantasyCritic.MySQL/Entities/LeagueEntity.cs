@@ -45,6 +45,8 @@ internal class LeagueEntity
     public string ManagerEmailAddress { get; set; } = null!;
 
     public bool MostRecentYearOneShot { get; set; }
+
+    public Guid? LeagueRoyaleGroupID { get; set; }
     
     public League ToDomain(IEnumerable<MinimalLeagueYearInfo> years)
     {

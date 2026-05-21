@@ -17,10 +17,11 @@ internal class MyConferenceEntity
     public Guid ConferenceManagerID { get; set; }
     public string ConferenceManagerDisplayName { get; set; } = null!;
     public bool CustomRulesConference { get; set; }
+    public Guid? ConferenceRoyaleGroupID { get; set; }
 
     public MinimalConference ToDomain(IEnumerable<int> years)
     {
-        return new MinimalConference(ConferenceID, ConferenceName, years.ToList(), CustomRulesConference, new VeryMinimalFantasyCriticUser(ConferenceManagerID, ConferenceManagerDisplayName));
+        return new MinimalConference(ConferenceID, ConferenceName, years.ToList(), CustomRulesConference, new VeryMinimalFantasyCriticUser(ConferenceManagerID, ConferenceManagerDisplayName), ConferenceRoyaleGroupID);
     }
 }
 

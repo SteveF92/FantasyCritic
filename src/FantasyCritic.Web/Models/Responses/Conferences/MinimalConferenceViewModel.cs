@@ -13,6 +13,7 @@ public class MinimalConferenceViewModel
         ActiveYear = domain.Years.Max();
         CustomRulesConference = domain.CustomRulesConference;
         ConferenceManagerDisplayName = domain.ConferenceManager.DisplayName;
+        RoyaleGroupID = domain.RoyaleGroupID;
     }
 
     public Guid ConferenceID { get; }
@@ -22,4 +23,5 @@ public class MinimalConferenceViewModel
     public int ActiveYear { get; }
     public bool CustomRulesConference { get; }
     public string ConferenceManagerDisplayName { get; }
+    public Guid? RoyaleGroupID { get; }
 }

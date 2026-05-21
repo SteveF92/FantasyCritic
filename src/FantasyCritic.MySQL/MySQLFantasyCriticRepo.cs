@@ -1346,7 +1346,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
             var activeYearLeagueYearName = GetActiveYearLeagueYearName(years, league);
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
-                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot, activeYearLeagueYearName));
+                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot, activeYearLeagueYearName, leagueEntity.LeagueRoyaleGroupID));
         }
 
         return leaguesWithStatus;

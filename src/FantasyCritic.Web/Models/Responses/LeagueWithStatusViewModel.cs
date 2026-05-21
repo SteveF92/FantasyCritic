@@ -31,6 +31,7 @@ public class LeagueWithStatusViewModel
         LeagueIsActiveInActiveYear = leagueStatus.LeagueIsActiveInActiveYear;
         OneShotMode = leagueStatus.MostRecentYearOneShot;
         ActiveYearLeagueYearName = leagueStatus.ActiveYearLeagueYearName;
+        RoyaleGroupID = leagueStatus.RoyaleGroupID;
     }
 
     public Guid LeagueID { get; }
@@ -51,6 +52,7 @@ public class LeagueWithStatusViewModel
     public bool LeagueIsActiveInActiveYear { get; }
     public bool OneShotMode { get; }
     public string? ActiveYearLeagueYearName { get; }
+    public Guid? RoyaleGroupID { get; }
 
     public override string ToString() => $"{LeagueName}|{ActiveYear}";
 }
