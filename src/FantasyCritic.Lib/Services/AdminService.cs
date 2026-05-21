@@ -854,198 +854,206 @@ public class AdminService
             var royalePublishers = await _royaleService.GetAllPublishers(supportedYear.Year);
             _logger.Information("All data retrieved for calculations for year {Year}", supportedYear.Year);
 
-            List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
-            var publisherMasterGames = new HashSet<MasterGame>();
-            foreach (var leagueYear in leagueYears)
+            var calculatedStats = CalculateStatsForGames(supportedYear, leagueYears, cleanMasterGames, cachedMasterGames, processedBids, royalePublishers, hypeConstants, currentDate);
+            await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);
+        }
+    }
+
+    private static IReadOnlyList<MasterGameCalculatedStats> CalculateStatsForGames(SupportedYear supportedYear, IReadOnlyList<LeagueYear> leagueYears,
+        IReadOnlyList<MasterGame> cleanMasterGames, IReadOnlyList<MasterGameYear> cachedMasterGames, IReadOnlyList<PickupBid> processedBids,
+        IReadOnlyList<RoyalePublisher> royalePublishers, HypeConstants hypeConstants, LocalDate currentDate)
+    {
+        List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
+        var publisherMasterGames = new HashSet<MasterGame>();
+        foreach (var leagueYear in leagueYears)
+        {
+            foreach (var publisher in leagueYear.Publishers)
             {
-                foreach (var publisher in leagueYear.Publishers)
-                {
-                    var currentGames = publisher.MyMasterGames;
-                    var formerGames = publisher.FormerPublisherGames.Where(x => x.PublisherGame.MasterGame is not null)
-                        .Select(x => x.PublisherGame.MasterGame!.MasterGame);
-                    publisherMasterGames.UnionWith(currentGames);
-                    publisherMasterGames.UnionWith(formerGames);
-                }
+                var currentGames = publisher.MyMasterGames;
+                var formerGames = publisher.FormerPublisherGames.Where(x => x.PublisherGame.MasterGame is not null)
+                    .Select(x => x.PublisherGame.MasterGame!.MasterGame);
+                publisherMasterGames.UnionWith(currentGames);
+                publisherMasterGames.UnionWith(formerGames);
+            }
+        }
+
+        var royalePublisherMasterGames = royalePublishers.SelectMany(x => x.PublisherGames.Select(x => x.MasterGame.MasterGame)).ToHashSet();
+        var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
+        IReadOnlyList<Publisher> allPublishers = leagueYears.SelectMany(x => x.Publishers).ToList();
+        List<Publisher> publishersInCompleteLeagues = new List<Publisher>();
+        foreach (var publisher in allPublishers)
+        {
+            var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
+            if (!leagueYear.League.AffectsStats || !leagueYear.PlayStatus.DraftFinished)
+            {
+                continue;
             }
 
-            var royalePublisherMasterGames = royalePublishers.SelectMany(x => x.PublisherGames.Select(x => x.MasterGame.MasterGame)).ToHashSet();
-            var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
-            IReadOnlyList<Publisher> allPublishers = leagueYears.SelectMany(x => x.Publishers).ToList();
-            List<Publisher> publishersInCompleteLeagues = new List<Publisher>();
-            foreach (var publisher in allPublishers)
+            publishersInCompleteLeagues.Add(publisher);
+        }
+
+        var leagueYearsToCount = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
+        IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame is not null).ToList();
+        var bidsToCount = processedBids.Where(x => leagueYearsToCount.Contains(x.LeagueYear.Key)).ToList();
+        ILookup<MasterGame, PickupBid> bidsByGame = bidsToCount.ToLookup(x => x.MasterGame);
+        IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
+
+        var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame!.MasterGame.MasterGameID);
+        Dictionary<LeagueYearKey, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
+        Dictionary<LeagueYearKey, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
+        foreach (var publisher in publishersInCompleteLeagues)
+        {
+            if (!standardGamesByLeague.ContainsKey(publisher.LeagueYearKey))
             {
-                var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
-                if (!leagueYear.League.AffectsStats || !leagueYear.PlayStatus.DraftFinished)
+                standardGamesByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
+            }
+
+            if (!counterPicksByLeague.ContainsKey(publisher.LeagueYearKey))
+            {
+                counterPicksByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
+            }
+
+            foreach (var game in publisher.PublisherGames)
+            {
+                if (game.MasterGame is null)
                 {
                     continue;
                 }
 
-                publishersInCompleteLeagues.Add(publisher);
-            }
-
-            var leagueYearsToCount = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
-            IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame is not null).ToList();
-            var bidsToCount = processedBids.Where(x => leagueYearsToCount.Contains(x.LeagueYear.Key)).ToList();
-            ILookup<MasterGame, PickupBid> bidsByGame = bidsToCount.ToLookup(x => x.MasterGame);
-            IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
-
-            var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame!.MasterGame.MasterGameID);
-            Dictionary<LeagueYearKey, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
-            Dictionary<LeagueYearKey, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
-            foreach (var publisher in publishersInCompleteLeagues)
-            {
-                if (!standardGamesByLeague.ContainsKey(publisher.LeagueYearKey))
+                if (game.CounterPick)
                 {
-                    standardGamesByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
-                }
-
-                if (!counterPicksByLeague.ContainsKey(publisher.LeagueYearKey))
-                {
-                    counterPicksByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
-                }
-
-                foreach (var game in publisher.PublisherGames)
-                {
-                    if (game.MasterGame is null)
-                    {
-                        continue;
-                    }
-
-                    if (game.CounterPick)
-                    {
-                        counterPicksByLeague[publisher.LeagueYearKey].Add(game.MasterGame.MasterGame);
-                    }
-                    else
-                    {
-                        standardGamesByLeague[publisher.LeagueYearKey].Add(game.MasterGame.MasterGame);
-                    }
-                }
-            }
-
-            var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
-            var completeLeagueYearKeys = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
-            var allLeagueYears = leagueYears.Where(x => completeLeagueYearKeys.Contains(x.Key)).ToList();
-            double totalLeagueCount = allLeagueYears.Count;
-
-            foreach (var masterGame in cleanMasterGames)
-            {
-                bool releasedBeforeYear = masterGame.ReleaseDate.HasValue &&
-                                          masterGame.ReleaseDate.Value.Year < supportedYear.Year;
-
-                //Basic Stats
-                var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
-                var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
-                var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
-                List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligibleInAnySlot(masterGame, currentDate)).ToList();
-
-                bool wasEverPartOfYear = publisherMasterGames.Contains(masterGame) || royalePublisherMasterGames.Contains(masterGame);
-                if (releasedBeforeYear && !wasEverPartOfYear)
-                {
-                    continue;
-                }
-
-                List<LeagueYear> timeAdjustedLeagues;
-                var scoreOrReleaseTime = masterGame.FirstCriticScoreTimestamp ?? masterGame.ReleaseDate?.AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();
-                var hadScoreBeforeYear = scoreOrReleaseTime.HasValue && scoreOrReleaseTime.Value.ToEasternDate() < new LocalDate(supportedYear.Year, 1, 1);
-                if (scoreOrReleaseTime.HasValue && !hadScoreBeforeYear)
-                {
-                    timeAdjustedLeagues = leaguesWhereEligible.Where(x =>
-                            x.DraftStartedTimestamp.HasValue &&
-                            x.DraftStartedTimestamp <= scoreOrReleaseTime)
-                        .ToList();
+                    counterPicksByLeague[publisher.LeagueYearKey].Add(game.MasterGame.MasterGame);
                 }
                 else
                 {
-                    timeAdjustedLeagues = leaguesWhereEligible;
+                    standardGamesByLeague[publisher.LeagueYearKey].Add(game.MasterGame.MasterGame);
                 }
+            }
+        }
 
-                double leaguesWhereEligibleCount = timeAdjustedLeagues.Count;
-                double percentStandardGame = leaguesWithGame / totalLeagueCount;
-                double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
+        var masterGameCacheLookup = cachedMasterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
+        var completeLeagueYearKeys = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
+        var allLeagueYears = leagueYears.Where(x => completeLeagueYearKeys.Contains(x.Key)).ToList();
+        double totalLeagueCount = allLeagueYears.Count;
 
-                double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
-                double? adjustedPercentCounterPick = null;
-                if (leaguesWithGame >= 3)
-                {
-                    adjustedPercentCounterPick = (double)leaguesWithCounterPickGame / (double)leaguesWithGame;
-                }
+        foreach (var masterGame in cleanMasterGames)
+        {
+            bool releasedBeforeYear = masterGame.ReleaseDate.HasValue &&
+                                      masterGame.ReleaseDate.Value.Year < supportedYear.Year;
 
-                var bidsForGame = bidsByGame[masterGame];
-                int numberOfBids = bidsForGame.Count();
-                long totalBidAmount = totalBidAmounts.GetValueOrDefault(masterGame);
+            //Basic Stats
+            var publisherGamesForMasterGame = publisherGamesByMasterGame[masterGame.MasterGameID];
+            var leaguesWithGame = standardGamesByLeague.Count(x => x.Value.Contains(masterGame));
+            var leaguesWithCounterPickGame = counterPicksByLeague.Count(x => x.Value.Contains(masterGame));
+            List<LeagueYear> leaguesWhereEligible = allLeagueYears.Where(x => x.GameIsEligibleInAnySlot(masterGame, currentDate)).ToList();
 
-                var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
-                double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double)cleanMasterGames.Count;
-                double bidPercentile = 100 - (percentageGamesWithHigherBidTotal * 100);
-                double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.OverallDraftPosition);
-                double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double)x.BidAmount).DefaultIfEmpty(0.0).Average();
-
-                double notNullAverageDraftPosition = averageDraftPosition ?? 0;
-
-                double percentStandardGameToUse = eligiblePercentStandardGame;
-                double percentCounterPickToUse = adjustedPercentCounterPick ?? percentCounterPick;
-                if (masterGame.UseSimpleEligibility || eligiblePercentStandardGame > 1)
-                {
-                    percentStandardGameToUse = percentStandardGame;
-                    percentCounterPickToUse = percentCounterPick;
-                }
-
-                //Derived Stats
-                double hypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGame;
-                double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
-
-                percentStandardGame = FixDouble(percentStandardGame);
-                percentCounterPick = FixDouble(percentCounterPick);
-                eligiblePercentStandardGame = FixDouble(eligiblePercentStandardGame);
-                adjustedPercentCounterPick = FixDouble(adjustedPercentCounterPick);
-                bidPercentile = FixDouble(bidPercentile);
-                hypeFactor = FixDouble(hypeFactor);
-                dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
-                double peakHypeFactor = hypeFactor;
-
-                //Linear Regression
-                double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
-                double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
-                double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
-
-                double linearRegressionHypeFactor = hypeConstants.BaseScore
-                                                    + standardGameCalculation
-                                                    + counterPickCalculation
-                                                    + hypeFactorCalculation;
-
-                linearRegressionHypeFactor = FixDouble(linearRegressionHypeFactor);
-
-                var cachedMasterGame = masterGameCacheLookup.GetValueOrDefault(masterGame.MasterGameID);
-                if (cachedMasterGame is not null)
-                {
-                    var bigEnoughSampleSize = leaguesWithGame > 5 && allLeagueYears.Count > 20;
-                    if (bigEnoughSampleSize && cachedMasterGame.PeakHypeFactor > peakHypeFactor)
-                    {
-                        peakHypeFactor = cachedMasterGame.PeakHypeFactor;
-                    }
-
-                    var linearRegressionHypeFactorToUse = cachedMasterGame.LinearRegressionHypeFactor;
-                    if (linearRegressionHypeFactorToUse == 0)
-                    {
-                        linearRegressionHypeFactorToUse = linearRegressionHypeFactor;
-                    }
-
-                    if (masterGame.CriticScore.HasValue)
-                    {
-                        calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
-                            adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
-                            dateAdjustedHypeFactor, peakHypeFactor, linearRegressionHypeFactorToUse));
-                        continue;
-                    }
-                }
-
-                calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
-                    adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
-                    dateAdjustedHypeFactor, peakHypeFactor, linearRegressionHypeFactor));
+            bool wasEverPartOfYear = publisherMasterGames.Contains(masterGame) || royalePublisherMasterGames.Contains(masterGame);
+            if (releasedBeforeYear && !wasEverPartOfYear)
+            {
+                continue;
             }
 
-            await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);
+            List<LeagueYear> timeAdjustedLeagues;
+            var scoreOrReleaseTime = masterGame.FirstCriticScoreTimestamp ?? masterGame.ReleaseDate?.AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();
+            var hadScoreBeforeYear = scoreOrReleaseTime.HasValue && scoreOrReleaseTime.Value.ToEasternDate() < new LocalDate(supportedYear.Year, 1, 1);
+            if (scoreOrReleaseTime.HasValue && !hadScoreBeforeYear)
+            {
+                timeAdjustedLeagues = leaguesWhereEligible.Where(x =>
+                        x.DraftStartedTimestamp.HasValue &&
+                        x.DraftStartedTimestamp <= scoreOrReleaseTime)
+                    .ToList();
+            }
+            else
+            {
+                timeAdjustedLeagues = leaguesWhereEligible;
+            }
+
+            double leaguesWhereEligibleCount = timeAdjustedLeagues.Count;
+            double percentStandardGame = leaguesWithGame / totalLeagueCount;
+            double eligiblePercentStandardGame = leaguesWithGame / leaguesWhereEligibleCount;
+
+            double percentCounterPick = leaguesWithCounterPickGame / totalLeagueCount;
+            double? adjustedPercentCounterPick = null;
+            if (leaguesWithGame >= 3)
+            {
+                adjustedPercentCounterPick = (double)leaguesWithCounterPickGame / (double)leaguesWithGame;
+            }
+
+            var bidsForGame = bidsByGame[masterGame];
+            int numberOfBids = bidsForGame.Count();
+            long totalBidAmount = totalBidAmounts.GetValueOrDefault(masterGame);
+
+            var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
+            double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double)cleanMasterGames.Count;
+            double bidPercentile = 100 - (percentageGamesWithHigherBidTotal * 100);
+            double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.OverallDraftPosition);
+            double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double)x.BidAmount).DefaultIfEmpty(0.0).Average();
+
+            double notNullAverageDraftPosition = averageDraftPosition ?? 0;
+
+            double percentStandardGameToUse = eligiblePercentStandardGame;
+            double percentCounterPickToUse = adjustedPercentCounterPick ?? percentCounterPick;
+            if (masterGame.UseSimpleEligibility || eligiblePercentStandardGame > 1)
+            {
+                percentStandardGameToUse = percentStandardGame;
+                percentCounterPickToUse = percentCounterPick;
+            }
+
+            //Derived Stats
+            double hypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGame;
+            double dateAdjustedHypeFactor = (101 - notNullAverageDraftPosition) * percentStandardGameToUse;
+
+            percentStandardGame = FixDouble(percentStandardGame);
+            percentCounterPick = FixDouble(percentCounterPick);
+            eligiblePercentStandardGame = FixDouble(eligiblePercentStandardGame);
+            adjustedPercentCounterPick = FixDouble(adjustedPercentCounterPick);
+            bidPercentile = FixDouble(bidPercentile);
+            hypeFactor = FixDouble(hypeFactor);
+            dateAdjustedHypeFactor = FixDouble(dateAdjustedHypeFactor);
+            double peakHypeFactor = hypeFactor;
+
+            //Linear Regression
+            double standardGameCalculation = percentStandardGameToUse * hypeConstants.StandardGameConstant;
+            double counterPickCalculation = percentCounterPickToUse * hypeConstants.CounterPickConstant;
+            double hypeFactorCalculation = dateAdjustedHypeFactor * hypeConstants.HypeFactorConstant;
+
+            double linearRegressionHypeFactor = hypeConstants.BaseScore
+                                                + standardGameCalculation
+                                                + counterPickCalculation
+                                                + hypeFactorCalculation;
+
+            linearRegressionHypeFactor = FixDouble(linearRegressionHypeFactor);
+
+            var cachedMasterGame = masterGameCacheLookup.GetValueOrDefault(masterGame.MasterGameID);
+            if (cachedMasterGame is not null)
+            {
+                var bigEnoughSampleSize = leaguesWithGame > 5 && allLeagueYears.Count > 20;
+                if (bigEnoughSampleSize && cachedMasterGame.PeakHypeFactor > peakHypeFactor)
+                {
+                    peakHypeFactor = cachedMasterGame.PeakHypeFactor;
+                }
+
+                var linearRegressionHypeFactorToUse = cachedMasterGame.LinearRegressionHypeFactor;
+                if (linearRegressionHypeFactorToUse == 0)
+                {
+                    linearRegressionHypeFactorToUse = linearRegressionHypeFactor;
+                }
+
+                if (masterGame.CriticScore.HasValue)
+                {
+                    calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
+                        adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
+                        dateAdjustedHypeFactor, peakHypeFactor, linearRegressionHypeFactorToUse));
+                    continue;
+                }
+            }
+
+            calculatedStats.Add(new MasterGameCalculatedStats(masterGame, supportedYear.Year, percentStandardGame, percentCounterPick, eligiblePercentStandardGame,
+                adjustedPercentCounterPick, numberOfBids, (int)totalBidAmount, bidPercentile, averageDraftPosition, averageWinningBid, hypeFactor,
+                dateAdjustedHypeFactor, peakHypeFactor, linearRegressionHypeFactor));
         }
+
+        return calculatedStats;
     }
 
     private async Task UpdateCodeBasedTags(LocalDate today)
