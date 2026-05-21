@@ -1,48 +1,45 @@
 ---
 name: Multi Draft Leagues
-overview: Introduce a `tbl_league_yeardraft` table so each league year owns one or more draft sessions. Every existing league gets one row automatically; multi-draft leagues get additional rows. PlayStatus, GamesToDraft, CounterPicksToDraft, and DraftStartedTimestamp migrate from the year level to the draft level.
+overview: Introduce `tbl_league_yeardraft` and `tbl_league_yeardraftpublisher` so each league year can have multiple draft sessions. Draft-related columns migrate off `tbl_league_year`; year-level `EnableBids` controls pickups. Drafts load with `LeagueYear` (no separate repo getter). `PublisherDraftInfo` is on both `Publisher` and `LeagueYearDraft`.
 todos:
   - id: db-migration
-    content: "Write the DbUp migration script: create tbl_league_yeardraft + tbl_league_yeardraftpublisher, migrate existing data, drop columns from tbl_league_year and DraftPosition from tbl_league_publisher, add AllowPickupsBetweenDrafts, add DraftID to tbl_league_publishergame"
+    content: "DbUp script: tbl_league_yeardraft, tbl_league_yeardraftpublisher, migrate data, EnableBids on tbl_league_year, DraftID on publishergame, drop old columns"
     status: pending
-  - id: domain-league-year-draft
-    content: Create LeagueYearDraft domain type in FantasyCritic.Lib/Domain/
-    status: pending
-  - id: domain-league-options
-    content: Remove GamesToDraft/CounterPicksToDraft/OneShotMode from LeagueOptions; add AllowPickupsBetweenDrafts
-    status: pending
-  - id: domain-league-year
-    content: "Update LeagueYear: add Drafts list, computed PlayStatus/DraftOrderSet/DraftStartedTimestamp/CurrentDraft/OneShotMode"
+  - id: domain-types
+    content: "PublisherDraftInfo, LeagueYearDraft, Publisher.DraftInfos, LeagueYear.Drafts/CurrentDraft, LeagueOptions.EnableBids"
     status: pending
   - id: domain-parameters
-    content: Update LeagueYearParameters (add AllowPickupsBetweenDrafts); create CreateDraftParameters request type
+    content: Update LeagueYearParameters (add EnableBids); create CreateDraftParameters request type
+    status: pending
+  - id: league-year-entity
+    content: Update LeagueYearEntity + MySQL GetLeagueYear mapping (drafts on LeagueYear, DraftInfos on publishers; no public GetDrafts)
     status: pending
   - id: repo-interface
-    content: Update IFantasyCriticRepo with GetDraftsForLeagueYear, CreateDraft, and update existing draft methods
+    content: "IFantasyCriticRepo: CreateDraft + draft lifecycle on yeardraft tables; no GetDraftsForLeagueYear"
     status: pending
   - id: stored-procs
-    content: "Update idempotent stored procedures: sp_getleagueyear (add tbl_league_yeardraft + tbl_league_yeardraftpublisher result sets, fix PlayStatus join), sp_getconferenceyeardata (fix PlayStatus join to new table)"
+    content: "Update sp_getleagueyear, sp_getconferenceyeardata, sp_getleaguesforuser for new tables and EnableBids"
     status: pending
   - id: mysql-impl
-    content: "Update MySQLFantasyCriticRepo: new LeagueYearDraftEntity + LeagueYearDraftPublisherEntity, update all draft SQL to target new tables, update LeagueYear construction, update SetDraftOrder to write tbl_league_yeardraftpublisher"
+    content: "MySQLFantasyCriticRepo: draft entities, SetDraftOrder to yeardraftpublisher, LeagueYear construction with drafts"
     status: pending
   - id: service-draft
-    content: "Update DraftService: use CurrentDraft, link PublisherGame.DraftID, add CreateNextDraft method"
+    content: "DraftService/DraftFunctions: CurrentDraft, PublisherDraftInfo for order, PublisherGame.DraftID, CreateNextDraft"
     status: pending
   - id: service-fc
-    content: "Update FantasyCriticService.EditLeague: guard logic for Draft 1, AllowPickupsBetweenDrafts, OneShotMode reference shift"
+    content: "FantasyCriticService.EditLeague: Draft 1 guards, EnableBids, OneShotMode on LeagueYear"
     status: pending
   - id: service-acquisition
-    content: "Update GameAcquisitionService: OneShotMode check + AllowPickupsBetweenDrafts block for pending subsequent drafts"
+    content: "GameAcquisitionService: reject bids when !EnableBids; OneShotMode via leagueYear"
     status: pending
   - id: web-controllers
-    content: "Update LeagueManagerController/LeagueController: OneShotMode references, new createNextDraft endpoint"
+    content: "LeagueManagerController/LeagueController: OneShotMode, createNextDraft endpoint"
     status: pending
   - id: web-viewmodels
-    content: Add LeagueYearDraftViewModel; update LeagueYearSettings response to include drafts list and AllowPickupsBetweenDrafts
+    content: LeagueYearDraftViewModel; settings include enableBids and draft list
     status: pending
   - id: frontend
-    content: Update leagueYearSettings.vue (AllowPickupsBetweenDrafts toggle, conditional GamesToDraft editing), league manager page (Create Draft button), draft status labels
+    content: leagueYearSettings.vue EnableBids toggle; Create Draft button; draft status labels
     status: pending
 isProject: false
 ---
@@ -55,14 +52,17 @@ isProject: false
 flowchart TD
     LeagueYear -->|"has many"| LeagueYearDraft
     LeagueYearDraft -->|"status per draft"| PlayStatus
+    LeagueYearDraft --> PublisherDraftInfos["PublisherDraftInfos[]"]
+    Publisher --> DraftInfos["DraftInfos: PublisherDraftInfo[]"]
     PublisherGame -->|"nullable FK"| LeagueYearDraft
+    LeagueYear --> EnableBids["Options.EnableBids"]
     LeagueYear -->|"computed from drafts"| ComputedPlayStatus["PlayStatus (computed)"]
-    LeagueYear -->|"computed from drafts"| OneShotMode["OneShotMode (computed, moved from Options)"]
+    LeagueYear -->|"computed from drafts"| OneShotMode["OneShotMode (computed)"]
 ```
 
 ## 1. Database Schema — new migration script
 
-File: `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/2026-05-13_001_multiDraftLeagues.sql`
+File: `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/YYYY-MM-DD_NNN_multiDraftLeagues.sql`
 
 **New table `tbl_league_yeardraft`:**
 
@@ -89,7 +89,7 @@ File: `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/2026-05-13_001_multi
 
 **Alter `tbl_league_year`:**
 - DROP `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftOrderSet`, `DraftStartedTimestamp`
-- ADD `AllowPickupsBetweenDrafts` bit(1) NOT NULL DEFAULT 1
+- ADD **`EnableBids`** bit(1) NOT NULL DEFAULT 1
 
 **Alter `tbl_league_publisher`:**
 - DROP `DraftPosition` (now lives in `tbl_league_yeardraftpublisher`)
@@ -97,7 +97,18 @@ File: `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/2026-05-13_001_multi
 **Alter `tbl_league_publishergame`:**
 - ADD `DraftID` char(36) NULL FK → `tbl_league_yeardraft`
 
-## 2. New Domain Types
+## 2. Domain Types
+
+**`PublisherDraftInfo`** — `src/FantasyCritic.Lib/Domain/PublisherDraftInfo.cs`
+
+```csharp
+public class PublisherDraftInfo
+{
+    public Guid DraftID { get; }
+    public Guid PublisherID { get; }
+    public int DraftPosition { get; }
+}
+```
 
 **`LeagueYearDraft`** — `src/FantasyCritic.Lib/Domain/LeagueYearDraft.cs`
 
@@ -110,30 +121,24 @@ public class LeagueYearDraft
     public int GamesToDraft { get; }
     public int CounterPicksToDraft { get; }
     public PlayStatus PlayStatus { get; }
-    public IReadOnlyList<LeagueYearDraftPublisher> DraftPublishers { get; }
+    public IReadOnlyList<PublisherDraftInfo> PublisherDraftInfos { get; }
     public Instant? DraftStartedTimestamp { get; }
-    // Computed
-    public bool DraftOrderSet => DraftPublishers.Any();
+    public bool DraftOrderSet => PublisherDraftInfos.Any();
 }
 ```
 
-**`LeagueYearDraftPublisher`** — `src/FantasyCritic.Lib/Domain/LeagueYearDraftPublisher.cs`
+**[`Publisher.cs`](src/FantasyCritic.Lib/Domain/Publisher.cs)**
 
-```csharp
-public class LeagueYearDraftPublisher
-{
-    public Guid DraftID { get; }
-    public Guid PublisherID { get; }
-    public int DraftPosition { get; }
-}
-```
+- Remove scalar **`DraftPosition`** from constructor and properties.
+- Add **`IReadOnlyList<PublisherDraftInfo> DraftInfos`** (one entry per draft this publisher participates in for the year).
+- Optional helper: `int? GetDraftPosition(Guid draftID)` via lookup in `DraftInfos`.
 
-`Publisher.DraftPosition` is removed; draft position for the current draft is resolved by joining `leagueYear.CurrentDraft.DraftPublishers` on `PublisherID`.
+Draft order can be resolved from either side: `leagueYear.CurrentDraft.PublisherDraftInfos` or `publisher.GetDraftPosition(currentDraft.DraftID)`.
 
 ## 3. Changes to `LeagueOptions` — [`src/FantasyCritic.Lib/Domain/LeagueOptions.cs`](src/FantasyCritic.Lib/Domain/LeagueOptions.cs)
 
 - **Remove** `GamesToDraft`, `CounterPicksToDraft` properties and constructor parameters
-- **Add** `AllowPickupsBetweenDrafts` bool property
+- **Add** **`EnableBids`** bool property (general bids-on/off; not tied to multi-draft naming)
 - **Remove** `OneShotMode` (moves to `LeagueYear` — see below)
 - Update `Validate()` to remove GamesToDraft/CounterPicksToDraft checks (those move to per-draft validation)
 
@@ -147,12 +152,12 @@ public class LeagueYearDraftPublisher
   - `PlayStatus PlayStatus` → `CurrentDraft?.PlayStatus ?? PlayStatus.NotStartedDraft`
   - `bool DraftOrderSet` → `CurrentDraft?.DraftOrderSet ?? false`
   - `Instant? DraftStartedTimestamp` → `CurrentDraft?.DraftStartedTimestamp`
-  - `bool OneShotMode` → `!Options.AllowPickupsBetweenDrafts && Options.StandardGames == Drafts.Sum(d => d.GamesToDraft) && Options.CounterPicks == Drafts.Sum(d => d.CounterPicksToDraft) && <existing drop/trade conditions on Options>`
+  - `bool OneShotMode` → `!Options.EnableBids && Options.StandardGames == Drafts.Sum(d => d.GamesToDraft) && Options.CounterPicks == Drafts.Sum(d => d.CounterPicksToDraft) && <existing drop/trade conditions on Options>`
 
 ## 5. Changes to `LeagueYearParameters` — [`src/FantasyCritic.Lib/Domain/Requests/LeagueYearParameters.cs`](src/FantasyCritic.Lib/Domain/Requests/LeagueYearParameters.cs)
 
 - Keep `GamesToDraft` and `CounterPicksToDraft` — they represent Draft 1 configuration when creating/editing a year before Draft 1 starts
-- Add `AllowPickupsBetweenDrafts` bool
+- Add **`EnableBids`** bool
 
 ## 6. New `CreateDraftParameters` Request Type
 
@@ -166,15 +171,19 @@ Used by the manager to add a subsequent draft to a league year:
 
 ## 7. Repo Interface — [`src/FantasyCritic.Lib/Interfaces/IFantasyCriticRepo.cs`](src/FantasyCritic.Lib/Interfaces/IFantasyCriticRepo.cs)
 
-New/changed signatures:
+Drafts are **not** fetched via a separate public method. They are loaded whenever `GetLeagueYear` (and related loaders) run, and attached to `LeagueYear.Drafts`.
 
-- `Task<IReadOnlyList<LeagueYearDraft>> GetDraftsForLeagueYear(LeagueYearKey key)`
+**Public changes:**
+
+- **Do not add** `GetDraftsForLeagueYear`.
 - `Task CreateDraft(LeagueYearDraft draft)` — adds a new draft row (for subsequent drafts)
-- `Task StartDraft(LeagueYear leagueYear)` — now updates `tbl_league_yeardraft` not `tbl_league_year`
+- `Task StartDraft(LeagueYear leagueYear)` — updates `tbl_league_yeardraft` via `leagueYear.CurrentDraft`
 - `Task CompleteDraft(LeagueYear leagueYear)` — same
 - `Task SetDraftPause(LeagueYear leagueYear, bool pause)` — same
-- `Task ResetDraft(LeagueYear leagueYear)` — now targets current draft row; if DraftNumber > 1, optionally deletes it
-- `Task EditLeagueYear(LeagueYear leagueYear)` — updates `tbl_league_year`; also updates Draft 1 row if draft hasn't started
+- `Task ResetDraft(LeagueYear leagueYear)` — targets current draft row; if `DraftNumber > 1`, delete the row rather than reset Draft 1
+- `Task EditLeagueYear(LeagueYear leagueYear)` — updates `tbl_league_year` (including `EnableBids`); updates Draft 1 row when draft hasn't started
+
+Private mapping helpers inside `MySQLFantasyCriticRepo` are fine for assembling drafts from SP result sets.
 
 ## 8. Stored Procedures — `Scripts/Idempotent/Stored Procedures/`
 
@@ -184,19 +193,23 @@ These are idempotent `DROP … CREATE` files, updated directly (no sequential sc
 - Add `SELECT * FROM tbl_league_yeardraft WHERE LeagueID = P_LeagueID AND Year = P_Year`
 - Add `SELECT dp.* FROM tbl_league_yeardraftpublisher dp JOIN tbl_league_yeardraft d ON dp.DraftID = d.DraftID WHERE d.LeagueID = P_LeagueID AND d.Year = P_Year`
 - Fix the mid-procedure result set that selects `ly.PlayStatus` — join `tbl_league_yeardraft` instead
-- The `SELECT * FROM tbl_league_year` result set now omits the migrated columns (fine, they're gone)
+- The `SELECT * FROM tbl_league_year` result set omits migrated columns and includes `EnableBids`
 
 **`sp_getconferenceyeardata.sql`** — fix the `CASE WHEN ly.PlayStatus <> 'NotStartedDraft'` expression:
 - LEFT JOIN `tbl_league_yeardraft` and check draft status there instead of `tbl_league_year.PlayStatus`
 
+**`sp_getleaguesforuser.sql`** — inline one-shot detection currently reads `GamesToDraft` / `CounterPicksToDraft` from `tbl_league_year`:
+- After migration, JOIN `tbl_league_yeardraft` and sum draft counts per year; keep other predicates on `tbl_league_year` (including `EnableBids` where relevant)
+
 ## 9. MySQL Implementation — `src/FantasyCritic.MySQL/MySQLFantasyCriticRepo.cs`
 
 - All `UPDATE tbl_league_year SET PlayStatus = …` → `UPDATE tbl_league_yeardraft SET PlayStatus = … WHERE DraftID = @draftID`
-- New entity classes: `LeagueYearDraftEntity`, `LeagueYearDraftPublisherEntity`
-- `SetDraftOrder`: writes to `tbl_league_yeardraftpublisher` (DELETE existing for this DraftID, INSERT new rows) instead of updating `DraftPosition` on `tbl_league_publisher`
-- `Publisher` construction: remove `DraftPosition` from publisher entity; resolve it from `LeagueYearDraftPublisher` when needed
-- Update `LeagueYear` construction throughout to pass `drafts` list (each with their `DraftPublishers`)
+- New entity classes: `LeagueYearDraftEntity`, `LeagueYearDraftPublisherEntity` (DB mapping only; domain uses `PublisherDraftInfo`)
+- In **`GetLeagueYear`** / `QueryMultiple`: read draft + draft-publisher result sets; build `LeagueYearDraft` with `PublisherDraftInfos`; build each `Publisher` with **`DraftInfos`** aggregated across drafts for that `PublisherID`
+- `SetDraftOrder`: writes to `tbl_league_yeardraftpublisher` (DELETE existing for this DraftID, INSERT new rows)
 - Update `PublisherGameEntity` to include nullable `DraftID` field
+
+**[`LeagueYearEntity`](src/FantasyCritic.Lib/SharedSerialization/Database/LeagueYearEntity.cs)** — remove migrated columns; add `EnableBids`; `ToDomain()` accepts drafts from repo mapping (not from this entity alone).
 
 ## 10. Service Changes
 
@@ -205,18 +218,20 @@ These are idempotent `DROP … CREATE` files, updated directly (no sequential sc
 - `StartDraft`: uses `leagueYear.CurrentDraft` for all checks
 - `CompleteDraft`: count check uses `leagueYear.CurrentDraft.GamesToDraft * publisherCount`
 - `DraftGame`: links new `PublisherGame.DraftID = currentDraft.DraftID`
-- New method `CreateNextDraft(LeagueYear, CreateDraftParameters)` — validates year is not finished, a draft is not active, creates new `LeagueYearDraft` row with `DraftNumber = maxExisting + 1`
+- `CreateNextDraft`: uses `leagueYear.Drafts` already on the loaded year; creates new row with `DraftNumber = maxExisting + 1`
+
+**`DraftFunctions`:** resolve pick order from `CurrentDraft.PublisherDraftInfos` or `publisher.GetDraftPosition(currentDraft.DraftID)` — not `publisher.DraftPosition`.
 
 **`FantasyCriticService.EditLeague`** — [`src/FantasyCritic.Lib/Services/FantasyCriticService.cs`](src/FantasyCritic.Lib/Services/FantasyCriticService.cs)
 
-- `GamesToDraft`/`CounterPicksToDraft` guard logic now targets Draft 1: blocked if Draft 1's `PlayStatus.DraftFinished`; adjustable if Draft 1 not yet started
-- New `AllowPickupsBetweenDrafts` parameter flows through
+- `GamesToDraft`/`CounterPicksToDraft` guard logic targets Draft 1: blocked if Draft 1's `PlayStatus.DraftFinished`; adjustable if Draft 1 not yet started
+- **`EnableBids`** flows through `LeagueOptions` / `LeagueYearParameters`
 - `OneShotMode` references shift from `Options.OneShotMode` → `leagueYear.OneShotMode`
 
 **`GameAcquisitionService`** — bid/pickup guard changes:
 
+- Reject bids when **`!leagueYear.Options.EnableBids`**
 - `OneShotMode` check: `leagueYear.OneShotMode` (was `leagueYear.Options.OneShotMode`)
-- New check: if `!Options.AllowPickupsBetweenDrafts` AND a subsequent draft is pending (created but `NotStartedDraft`), block bids
 
 ## 11. Web Layer
 
@@ -224,28 +239,30 @@ These are idempotent `DROP … CREATE` files, updated directly (no sequential sc
 
 - `OneShotMode` references: `leagueYear.OneShotMode` throughout
 - New endpoint: `POST /api/leaguemanager/createNextDraft` → calls `DraftService.CreateNextDraft`
-- Existing draft endpoints (`StartDraft`, `ResetDraft`, `SetDraftOrder`, etc.) remain largely the same; they operate on `leagueYear.CurrentDraft`
+- Existing draft endpoints operate on `leagueYear.CurrentDraft`
 
 **ViewModels**
 
 - `PlayStatusViewModel` — no structural change; fed by computed `leagueYear.PlayStatus`
-- Update `LeagueYearSettingsViewModel` / response models to include `AllowPickupsBetweenDrafts` and a list of draft summaries
+- Update `LeagueYearSettingsViewModel` / response models to include **`enableBids`** and a list of draft summaries
 - New `LeagueYearDraftViewModel` with `DraftID`, `DraftNumber`, `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`
 
 **`RequiredYearStatus`** — no structural change; still reads `leagueYear.PlayStatus` (now computed)
 
 ## 12. Frontend — `src/FantasyCritic.Web/ClientApp/`
 
-- `leagueYearSettings.vue` — add `AllowPickupsBetweenDrafts` toggle; `GamesToDraft` field only editable when Draft 1 hasn't started
+- `leagueYearSettings.vue` — **`EnableBids`** toggle (general “allow bids”, not multi-draft-specific); `GamesToDraft` only editable when Draft 1 hasn't started
 - League manager page — new "Create Draft #N" button (visible after Draft 1 is final and year not finished)
 - Draft status displays — show which draft number is currently active (e.g. "Draft 2 in progress")
-- `leagueMixin.js` — `oneShotMode` reads from `leagueYear.oneShotMode` (unchanged if API still returns the field)
+- `leagueMixin.js` — `oneShotMode` reads from API as today
 
 ## Key Constraints / Risks
 
 - `GamesToDraft` is referenced in ~15+ places across Lib, MySQL, Web, and Discord — the removal from `LeagueOptions` is the biggest ripple change
 - `OneShotMode` moving from `LeagueOptions` to `LeagueYear` touches every controller/service that calls `Options.OneShotMode`
-- `Publisher.DraftPosition` removal ripples into `DraftFunctions.GetNextDraftPublisher` and `GetDraftPositions` — these must be updated to resolve position from `CurrentDraft.DraftPublishers`
+- `Publisher.DraftPosition` removal ripples into `DraftFunctions.GetNextDraftPublisher` and `GetDraftPositions` — use `PublisherDraftInfo` instead
+- `LeagueYearEntity` in `SharedSerialization/Database/` must be updated before the stack compiles cleanly
 - The DB migration must atomically copy draft data and drop old columns — needs careful testing against existing year data
-- `sp_getleagueyear` returns multiple result sets in a fixed order; the C# repo reads them positionally via Dapper's `QueryMultiple` — adding two new result sets requires matching C# read order updates
-- `GetPublisherSlots` logic on `Publisher.cs` does not use `GamesToDraft` and is unaffected
+- `sp_getleagueyear` returns multiple result sets in a fixed order; C# `QueryMultiple` read order must match new result sets
+- `tbl_caching_leagueyear` is already dropped — no cache table to maintain for one-shot listing
+- `GetPublisherSlots` on `Publisher.cs` does not use `GamesToDraft` and is unaffected
