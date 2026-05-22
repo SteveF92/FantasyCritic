@@ -17,6 +17,11 @@ public class LeagueYear : IEquatable<LeagueYear>
         FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers,
         bool? conferenceLocked, bool underReview, string? leagueYearName)
     {
+        if (!drafts.Any())
+        {
+            throw new Exception("All leagues must have at least one draft.");
+        }
+
         League = league;
         SupportedYear = year;
         Options = options;
@@ -40,14 +45,12 @@ public class LeagueYear : IEquatable<LeagueYear>
     public int Year => SupportedYear.Year;
     public LeagueOptions Options { get; }
     public IReadOnlyList<LeagueDraft> Drafts => _drafts;
-    public LeagueDraft? FirstDraft => _drafts.FirstOrDefault();
-    public LeagueDraft? CurrentDraft =>
-        _drafts.FirstOrDefault(d => d.PlayStatus.DraftIsActiveOrPaused)
-        ?? _drafts.Where(d => d.PlayStatus.DraftFinished).MaxBy(d => d.DraftNumber)
-        ?? _drafts.Where(d => d.PlayStatus.Equals(PlayStatus.NotStartedDraft)).MaxBy(d => d.DraftNumber);
-    public PlayStatus PlayStatus => CurrentDraft?.PlayStatus ?? PlayStatus.NotStartedDraft;
-    public bool DraftOrderSet => CurrentDraft?.DraftOrderSet ?? false;
-    public Instant? DraftStartedTimestamp => CurrentDraft?.DraftStartedTimestamp;
+
+    public LeagueDraft FirstDraft => _drafts.First();
+    public PlayStatus PlayStatus => FirstDraft.PlayStatus;
+    public bool DraftOrderSet => FirstDraft.DraftOrderSet;
+    public Instant? DraftStartedTimestamp => FirstDraft.DraftStartedTimestamp;
+
     public bool OneShotMode => !Options.EnableBids
                                && Options.StandardGames == _drafts.Sum(d => d.GamesToDraft)
                                && Options.CounterPicks == _drafts.Sum(d => d.CounterPicksToDraft)
