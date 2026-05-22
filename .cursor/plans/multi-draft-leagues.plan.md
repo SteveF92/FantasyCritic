@@ -4,10 +4,10 @@ overview: Introduce `tbl_league_draft` and `tbl_league_draftpublisher` so each l
 todos:
   - id: db-migration
     content: "DbUp script: tbl_league_draft, tbl_league_draftpublisher, migrate data (backfill EnableBids=0 for current one-shot leagues), EnableBids on tbl_league_year, DraftID on publishergame + formerpublishergame, drop old columns"
-    status: pending
+    status: completed
   - id: domain-types
     content: PublisherDraftInfo, LeagueDraft, Publisher.DraftInfos, LeagueYear.Drafts/CurrentDraft, LeagueOptions.EnableBids
-    status: pending
+    status: in_progress
   - id: domain-parameters
     content: Update LeagueYearParameters (add EnableBids); create CreateDraftParameters request type (with optional NewStandardGames)
     status: pending
