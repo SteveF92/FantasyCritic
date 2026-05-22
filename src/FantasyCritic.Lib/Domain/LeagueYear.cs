@@ -10,22 +10,21 @@ public class LeagueYear : IEquatable<LeagueYear>
     private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
     private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
     private readonly IReadOnlyDictionary<Guid, Publisher> _publisherDictionary;
+    private readonly IReadOnlyList<LeagueDraft> _drafts;
 
-    public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
-        bool draftOrderSet, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
-        Instant? draftStartedTimestamp, FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers,
+    public LeagueYear(League league, SupportedYear year, LeagueOptions options,
+        IEnumerable<LeagueDraft> drafts, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
+        FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers,
         bool? conferenceLocked, bool underReview, string? leagueYearName)
     {
         League = league;
         SupportedYear = year;
         Options = options;
-        PlayStatus = playStatus;
-        DraftOrderSet = draftOrderSet;
+        _drafts = drafts.OrderBy(x => x.DraftNumber).ToList();
         EligibilityOverrides = eligibilityOverrides.ToList();
         _eligibilityOverridesDictionary = EligibilityOverrides.ToDictionary(x => x.MasterGame);
         TagOverrides = tagOverrides.ToList();
         _tagOverridesDictionary = TagOverrides.ToDictionary(x => x.MasterGame);
-        DraftStartedTimestamp = draftStartedTimestamp;
         WinningUser = winningUser;
         ConferenceLocked = conferenceLocked;
         UnderReview = underReview;
@@ -40,11 +39,25 @@ public class LeagueYear : IEquatable<LeagueYear>
     public SupportedYear SupportedYear { get; }
     public int Year => SupportedYear.Year;
     public LeagueOptions Options { get; }
-    public PlayStatus PlayStatus { get; }
-    public bool DraftOrderSet { get; }
+    public IReadOnlyList<LeagueDraft> Drafts => _drafts;
+    public LeagueDraft? FirstDraft => _drafts.FirstOrDefault();
+    public LeagueDraft? CurrentDraft =>
+        _drafts.FirstOrDefault(d => d.PlayStatus.DraftIsActiveOrPaused)
+        ?? _drafts.Where(d => d.PlayStatus.DraftFinished).MaxBy(d => d.DraftNumber)
+        ?? _drafts.Where(d => d.PlayStatus.Equals(PlayStatus.NotStartedDraft)).MaxBy(d => d.DraftNumber);
+    public PlayStatus PlayStatus => CurrentDraft?.PlayStatus ?? PlayStatus.NotStartedDraft;
+    public bool DraftOrderSet => CurrentDraft?.DraftOrderSet ?? false;
+    public Instant? DraftStartedTimestamp => CurrentDraft?.DraftStartedTimestamp;
+    public bool OneShotMode => !Options.EnableBids
+                               && Options.StandardGames == _drafts.Sum(d => d.GamesToDraft)
+                               && Options.CounterPicks == _drafts.Sum(d => d.CounterPicksToDraft)
+                               && Options.UnrestrictedReleaseStatusDroppableGames == 0
+                               && Options.WillNotReleaseDroppableGames == 0
+                               && Options.WillReleaseDroppableGames == 0
+                               && !Options.GrantSuperDrops
+                               && Options.TradingSystem.Equals(TradingSystem.NoTrades);
     public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverride> TagOverrides { get; }
-    public Instant? DraftStartedTimestamp { get; }
     public FantasyCriticUser? WinningUser { get; }
     public bool? ConferenceLocked { get; }
     public bool UnderReview { get; }
@@ -155,7 +168,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public LeagueYear GetUpdatedLeagueYearWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         var newPublishers = Publishers.Select(x => x.GetUpdatedPublisherWithNewScores(calculatedStats)).ToList();
-        return new LeagueYear(League, SupportedYear, Options, PlayStatus, DraftOrderSet, EligibilityOverrides, TagOverrides, DraftStartedTimestamp, WinningUser, newPublishers, ConferenceLocked, UnderReview, LeagueYearName);
+        return new LeagueYear(League, SupportedYear, Options, _drafts, EligibilityOverrides, TagOverrides, WinningUser, newPublishers, ConferenceLocked, UnderReview, LeagueYearName);
     }
 
     public override string ToString() => $"{League}|{Year}";

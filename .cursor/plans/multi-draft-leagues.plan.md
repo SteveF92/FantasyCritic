@@ -7,7 +7,7 @@ todos:
     status: completed
   - id: domain-types
     content: PublisherDraftInfo, LeagueDraft, Publisher.DraftInfos, LeagueYear.Drafts/CurrentDraft, LeagueOptions.EnableBids
-    status: in_progress
+    status: completed
   - id: domain-parameters
     content: Update LeagueYearParameters (add EnableBids); create CreateDraftParameters request type (with optional NewStandardGames)
     status: pending

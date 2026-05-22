@@ -10,7 +10,7 @@ public class Publisher : IEquatable<Publisher>
     private decimal? _cachedTotalPoints;
 
     public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, string? publisherSlogan,
-        int draftPosition, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
+        IEnumerable<PublisherDraftInfo> draftInfos, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
         int unrestrictedReleaseStatusGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, AutoDraftSettings autoDraftSettings)
     {
         PublisherID = publisherID;
@@ -19,7 +19,7 @@ public class Publisher : IEquatable<Publisher>
         PublisherName = publisherName;
         PublisherIcon = publisherIcon;
         PublisherSlogan = publisherSlogan;
-        DraftPosition = draftPosition;
+        DraftInfos = draftInfos.ToList();
         PublisherGames = publisherGames.ToList();
         FormerPublisherGames = formerPublisherGames.ToList();
         Budget = budget;
@@ -36,8 +36,10 @@ public class Publisher : IEquatable<Publisher>
     public string PublisherName { get; }
     public string? PublisherIcon { get; }
     public string? PublisherSlogan { get; }
-    public int DraftPosition { get; }
+    public IReadOnlyList<PublisherDraftInfo> DraftInfos { get; }
     public IReadOnlyList<PublisherGame> PublisherGames { get; }
+
+    public int? GetDraftPosition(Guid draftID) => DraftInfos.FirstOrDefault(x => x.DraftID == draftID)?.DraftPosition;
     public IReadOnlyList<FormerPublisherGame> FormerPublisherGames { get; }
     public uint Budget { get; }
     public int UnrestrictedReleaseStatusGamesDropped { get; }
@@ -216,7 +218,7 @@ public class Publisher : IEquatable<Publisher>
     public Publisher GetUpdatedPublisherWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         var newPublisherGames = PublisherGames.Select(x => x.GetUpdatedPublisherGameWithNewScores(calculatedStats)).ToList();
-        return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftPosition, newPublisherGames,
+        return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftInfos, newPublisherGames,
             FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
     }
     
@@ -285,7 +287,7 @@ public class Publisher : IEquatable<Publisher>
     public static Publisher GetFakePublisher(LeagueYearKey leagueYearKey)
     {
         return new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
-            null,null, 0, new List<PublisherGame>(),
+            null, null, new List<PublisherDraftInfo>(), new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
     }
 
