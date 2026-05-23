@@ -1,28 +1,34 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <h1>Longest Tenured Games</h1>
-    <p>These are unreleased games that have been in the system the longest.</p>
+    <p>This is a list of unreleased games, which have not been cancelled, that have been in the system for the longest.</p>
 
     <b-form-checkbox v-model="includeUnannouncedGames" class="unannounced-toggle">
       <span class="checkbox-label">Include unannounced games</span>
     </b-form-checkbox>
 
-    <b-table small bordered striped responsive :items="filteredGames" :fields="gameFields" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
-      <template #cell(gameName)="data">
-        <masterGamePopover :master-game="data.item"></masterGamePopover>
-      </template>
-      <template #cell(maximumReleaseDate)="data">
-        {{ getReleaseDate(data.item) }}
-      </template>
-      <template #cell(tags)="data">
-        <span v-for="tag in data.item.tags" :key="tag">
-          <masterGameTagBadge :tag-name="tag" short></masterGameTagBadge>
-        </span>
-      </template>
-      <template #cell(addedTimestamp)="data">
-        {{ data.item.addedTimestamp | date }}
-      </template>
-    </b-table>
+    <div v-if="showTable">
+      <b-table small bordered striped responsive :items="filteredGames" :fields="gameFields" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
+        <template #cell(gameName)="data">
+          <masterGamePopover :master-game="data.item"></masterGamePopover>
+        </template>
+        <template #cell(maximumReleaseDate)="data">
+          {{ getReleaseDate(data.item) }}
+        </template>
+        <template #cell(tags)="data">
+          <span v-for="tag in data.item.tags" :key="tag">
+            <masterGameTagBadge :tag-name="tag" short></masterGameTagBadge>
+          </span>
+        </template>
+        <template #cell(addedTimestamp)="data">
+          {{ data.item.addedTimestamp | date }}
+        </template>
+      </b-table>
+    </div>
+
+    <div v-else class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+    </div>
   </div>
 </template>
 
@@ -41,6 +47,7 @@ export default {
   data() {
     return {
       longestTenuredGames: null,
+      isBusy: true,
       includeUnannouncedGames: false,
       sortBy: 'daysSinceAddition',
       sortDesc: true,
@@ -54,6 +61,9 @@ export default {
     };
   },
   computed: {
+    showTable() {
+      return this.longestTenuredGames && !this.isBusy;
+    },
     filteredGames() {
       if (!this.longestTenuredGames) {
         return null;
@@ -72,6 +82,7 @@ export default {
     }
   },
   async created() {
+    this.isBusy = true;
     const response = await axios.get('/api/game/GetLongestTenuredGames');
     const now = DateTime.local().startOf('day');
     this.longestTenuredGames = response.data.map((game) => {
@@ -81,6 +92,7 @@ export default {
         daysSinceAddition: Math.floor(now.diff(added, 'days').days)
       };
     });
+    this.isBusy = false;
   }
 };
 </script>
@@ -88,5 +100,10 @@ export default {
 <style scoped>
 .unannounced-toggle {
   margin-bottom: 1rem;
+}
+
+.spinner {
+  display: flex;
+  justify-content: space-around;
 }
 </style>

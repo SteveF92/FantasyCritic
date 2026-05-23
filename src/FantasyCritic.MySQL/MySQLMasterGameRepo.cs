@@ -367,7 +367,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
               AND mg.MasterGameID NOT IN (
                 SELECT mght.MasterGameID FROM tbl_mastergame_hastag mght WHERE mght.TagName = 'Cancelled'
               )
-            ORDER BY mg.AddedTimestamp ASC;
+            ORDER BY mg.AddedTimestamp ASC
+            LIMIT 100;
             """;
 
         await using var connection = new MySqlConnection(_connectionString);

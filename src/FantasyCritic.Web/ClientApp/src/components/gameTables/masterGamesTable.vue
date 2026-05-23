@@ -100,9 +100,6 @@
         </template>
         <span v-if="!showYearStats">--</span>
       </template>
-      <template #cell(addedTimestamp)="data">
-        {{ data.item.addedTimestamp | date }}
-      </template>
       <template #cell(tags)="data">
         <span v-for="tag in data.item.tags" :key="tag">
           <masterGameTagBadge :tag-name="tag" short></masterGameTagBadge>
@@ -136,8 +133,7 @@ export default {
         { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
         { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
         { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum', 'position-relative'], tdClass: 'lg-screen-minimum' },
-        { key: 'addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' }
+        { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum', 'position-relative'], tdClass: 'lg-screen-minimum' }
       ],
       totalRows: 1,
       currentPage: 1,

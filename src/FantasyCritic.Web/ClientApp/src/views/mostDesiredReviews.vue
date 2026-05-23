@@ -7,23 +7,29 @@
       <b-form-radio-group id="release-date-filter" v-model="releaseDateFilter" :options="releaseDateFilterOptions" buttons button-variant="outline-primary" size="sm" />
     </b-form-group>
 
-    <b-table small bordered striped responsive :items="filteredMostDesiredReviews" :fields="gameFields" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
-      <template #cell(masterGame.gameName)="data">
-        <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
-      </template>
-      <template #cell(masterGame.maximumReleaseDate)="data">
-        {{ data.item.masterGame.maximumReleaseDate | longDate }}
-      </template>
-      <template #cell(openCriticLink)="data">
-        <a v-if="data.item.masterGame.openCriticID" :href="openCriticLink(data.item.masterGame)" target="_blank">
-          <strong>
-            OpenCritic
-            <font-awesome-icon icon="external-link-alt" />
-          </strong>
-        </a>
-        <span v-else>--</span>
-      </template>
-    </b-table>
+    <div v-if="showTable">
+      <b-table small bordered striped responsive :items="filteredMostDesiredReviews" :fields="gameFields" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
+        <template #cell(masterGame.gameName)="data">
+          <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
+        </template>
+        <template #cell(masterGame.maximumReleaseDate)="data">
+          {{ data.item.masterGame.maximumReleaseDate | longDate }}
+        </template>
+        <template #cell(openCriticLink)="data">
+          <a v-if="data.item.masterGame.openCriticID" :href="openCriticLink(data.item.masterGame)" target="_blank">
+            <strong>
+              OpenCritic
+              <font-awesome-icon icon="external-link-alt" />
+            </strong>
+          </a>
+          <span v-else>--</span>
+        </template>
+      </b-table>
+    </div>
+
+    <div v-else class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+    </div>
   </div>
 </template>
 
@@ -39,6 +45,7 @@ export default {
   data() {
     return {
       mostDesiredReviews: null,
+      isBusy: true,
       releaseDateFilter: 'year',
       releaseDateFilterOptions: [
         { text: 'Past week', value: 'week' },
@@ -57,6 +64,9 @@ export default {
     };
   },
   computed: {
+    showTable() {
+      return this.mostDesiredReviews && !this.isBusy;
+    },
     filteredMostDesiredReviews() {
       if (!this.mostDesiredReviews) {
         return null;
@@ -99,8 +109,10 @@ export default {
     }
   },
   async created() {
+    this.isBusy = true;
     const response = await axios.get('/api/game/GetMostDesiredReviews');
     this.mostDesiredReviews = response.data;
+    this.isBusy = false;
   }
 };
 </script>
@@ -108,5 +120,10 @@ export default {
 <style scoped>
 .release-date-filter {
   margin-bottom: 1rem;
+}
+
+.spinner {
+  display: flex;
+  justify-content: space-around;
 }
 </style>
