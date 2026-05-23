@@ -92,7 +92,12 @@ export default {
       if (this.isAuth) {
         items.push({ name: 'masterGameRequest', label: 'Request Game' }, { name: 'masterGameChangeRequest', label: 'Suggest Correction' });
       }
-      items.push({ name: 'gameChanges', label: 'Recent Changes' }, { name: 'mostDesiredReviews', label: 'Most Desired Reviews' }, { name: 'topBidsAndDrops', label: 'Top Bids/Drops' });
+      items.push(
+        { name: 'gameChanges', label: 'Recent Changes' },
+        { name: 'mostDesiredReviews', label: 'Most Desired Reviews' },
+        { name: 'longestTenuredGames', label: 'Longest Tenured' },
+        { name: 'topBidsAndDrops', label: 'Top Bids/Drops' }
+      );
       return items;
     },
     gamesToShow() {

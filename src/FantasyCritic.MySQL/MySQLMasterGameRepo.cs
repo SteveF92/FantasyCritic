@@ -355,6 +355,39 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return results;
     }
 
+    public async Task<IReadOnlyList<MasterGameYear>> GetLongestTenuredGames(LocalDate currentDate)
+    {
+        int year = currentDate.Year;
+
+        const string sql =
+            """
+            SELECT mg.MasterGameID
+            FROM tbl_mastergame mg
+            WHERE (mg.ReleaseDate IS NULL OR mg.ReleaseDate > @today)
+              AND mg.MasterGameID NOT IN (
+                SELECT mght.MasterGameID FROM tbl_mastergame_hastag mght WHERE mght.TagName = 'Cancelled'
+              )
+            ORDER BY mg.AddedTimestamp ASC;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<Guid> masterGameIDs = await connection.QueryAsync<Guid>(sql, new { today = currentDate });
+
+        var masterGameYears = await GetMasterGameYears(year);
+        var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
+
+        List<MasterGameYear> results = new List<MasterGameYear>();
+        foreach (Guid masterGameID in masterGameIDs)
+        {
+            if (masterGameYearDictionary.TryGetValue(masterGameID, out MasterGameYear? masterGameYear))
+            {
+                results.Add(masterGameYear);
+            }
+        }
+
+        return results;
+    }
+
     private class MasterGameDesireRow
     {
         public Guid MasterGameID { get; set; }

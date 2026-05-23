@@ -16,6 +16,7 @@ import MasterGame from '@/views/masterGame.vue';
 import MasterGames from '@/views/masterGames.vue';
 import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
 import MostDesiredReviews from '@/views/mostDesiredReviews.vue';
+import LongestTenuredGames from '@/views/longestTenuredGames.vue';
 import PublicLeagues from '@/views/publicLeagues.vue';
 import LeagueHistory from '@/views/leagueHistory.vue';
 import LeagueAllTimeStats from '@/views/leagueAllTimeStats.vue';
@@ -166,6 +167,15 @@ export const routes = [
     name: 'mostDesiredReviews',
     meta: {
       title: 'Most Desired Reviews',
+      isPublic: true
+    }
+  },
+  {
+    path: '/longestTenuredGames',
+    component: LongestTenuredGames,
+    name: 'longestTenuredGames',
+    meta: {
+      title: 'Longest Tenured Games',
       isPublic: true
     }
   },
