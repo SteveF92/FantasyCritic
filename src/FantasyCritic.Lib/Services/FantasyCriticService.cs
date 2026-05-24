@@ -143,12 +143,12 @@ public class FantasyCriticService
 
         if (leagueYear.PlayStatus.DraftIsActive)
         {
-            if (leagueYear.Options.GamesToDraft > parameters.GamesToDraft)
+            if (leagueYear.FirstDraft.GamesToDraft > parameters.GamesToDraft)
             {
                 return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
             }
 
-            if (leagueYear.Options.CounterPicksToDraft > parameters.CounterPicksToDraft)
+            if (leagueYear.FirstDraft.CounterPicksToDraft > parameters.CounterPicksToDraft)
             {
                 return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
             }
@@ -156,12 +156,12 @@ public class FantasyCriticService
 
         if (leagueYear.PlayStatus.DraftFinished)
         {
-            if (leagueYear.Options.GamesToDraft != parameters.GamesToDraft)
+            if (leagueYear.FirstDraft.GamesToDraft != parameters.GamesToDraft)
             {
                 return Result.Failure("Cannot change the number of drafted games after the draft.");
             }
 
-            if (leagueYear.Options.CounterPicksToDraft != parameters.CounterPicksToDraft)
+            if (leagueYear.FirstDraft.CounterPicksToDraft != parameters.CounterPicksToDraft)
             {
                 return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
             }
@@ -189,9 +189,12 @@ public class FantasyCriticService
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
+        //TODO make new LeagueDrafts objects
+        List<LeagueDraft> leagueDrafts = leagueYear.Drafts.ToList();
+
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
-            leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
-            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
+            leagueDrafts, eligibilityOverrides, tagOverrides,
+            leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
             leagueYear.UnderReview, parameters.LeagueYearName);
 
         var differenceString = options.GetDifferenceString(leagueYear.Options);

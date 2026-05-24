@@ -165,7 +165,7 @@ public static class DraftFunctions
 
     private static DraftPhase GetDraftPhase(LeagueYear leagueYear)
     {
-        int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * leagueYear.Publishers.Count;
+        int numberOfStandardGamesToDraft = leagueYear.FirstDraft.GamesToDraft * leagueYear.Publishers.Count;
         var allPublisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
         int standardGamesDrafted = allPublisherGames.Count(x => !x.CounterPick);
         if (standardGamesDrafted < numberOfStandardGamesToDraft)
@@ -173,7 +173,7 @@ public static class DraftFunctions
             return DraftPhase.StandardGames;
         }
 
-        int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicksToDraft * leagueYear.Publishers.Count;
+        int numberOfCounterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft * leagueYear.Publishers.Count;
         int counterPicksDrafted = allPublisherGames.Count(x => x.CounterPick);
         if (counterPicksDrafted < numberOfCounterPicksToDraft)
         {

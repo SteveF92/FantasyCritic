@@ -277,7 +277,7 @@ public class DraftService
     private async Task<bool> CompleteDraft(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
     {
         var publishers = leagueYear.Publishers;
-        int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
+        int numberOfStandardGamesToDraft = leagueYear.FirstDraft.GamesToDraft * publishers.Count;
         int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
         standardGamesDrafted += standardGamesAdded;
 
@@ -286,7 +286,7 @@ public class DraftService
             return false;
         }
 
-        int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicksToDraft * publishers.Count;
+        int numberOfCounterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft * publishers.Count;
         int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
         counterPicksDrafted += counterPicksAdded;
 

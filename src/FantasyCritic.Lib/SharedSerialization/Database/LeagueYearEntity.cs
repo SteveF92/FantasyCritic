@@ -10,15 +10,13 @@ public class LeagueYearEntity
 
     }
 
-    public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus, bool draftOrderSet, bool? conferenceLocked, bool underReview, string? leagueYearName)
+    public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus, bool? conferenceLocked, bool underReview, string? leagueYearName)
     {
         LeagueID = league.LeagueID;
         Year = year;
 
         StandardGames = options.StandardGames;
-        GamesToDraft = options.GamesToDraft;
         CounterPicks = options.CounterPicks;
-        CounterPicksToDraft = options.CounterPicksToDraft;
         UnrestrictedReleaseStatusDroppableGames = options.UnrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = options.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = options.WillReleaseDroppableGames;
@@ -27,6 +25,7 @@ public class LeagueYearEntity
         CounterPicksBlockDrops = options.CounterPicksBlockDrops;
         AllowMoveIntoIneligible = options.AllowMoveIntoIneligible;
         MinimumBidAmount = options.MinimumBidAmount;
+        EnableBids = options.EnableBids;
         CounterPickDeadlineMonth = options.CounterPickDeadline.Month;
         CounterPickDeadlineDay = options.CounterPickDeadline.Day;
         MightReleaseDroppableMonth = options.MightReleaseDroppableDate?.Month;
@@ -39,8 +38,6 @@ public class LeagueYearEntity
         TradingSystem = options.TradingSystem.Value;
         ReleaseSystem = options.ReleaseSystem.Value;
         IneligibleGameSystem = options.IneligibleGameSystem.Value;
-        PlayStatus = playStatus.Value;
-        DraftOrderSet = draftOrderSet;
         ConferenceLocked = conferenceLocked;
 
         UnderReview = underReview;
@@ -51,9 +48,7 @@ public class LeagueYearEntity
     public int Year { get; set; }
     public string? LeagueYearName { get; set; }
     public int StandardGames { get; set; }
-    public int GamesToDraft { get; set; }
     public int CounterPicks { get; set; }
-    public int CounterPicksToDraft { get; set; }
     public int UnrestrictedReleaseStatusDroppableGames { get; set; }
     public int WillNotReleaseDroppableGames { get; set; }
     public int WillReleaseDroppableGames { get; set; }
@@ -62,6 +57,7 @@ public class LeagueYearEntity
     public bool CounterPicksBlockDrops { get; set; }
     public bool AllowMoveIntoIneligible { get; set; }
     public int MinimumBidAmount { get; set; }
+    public bool EnableBids { get; set; }
     public string DraftSystem { get; set; } = null!;
     public string PickupSystem { get; set; } = null!;
     public string TiebreakSystem { get; set; } = null!;
@@ -69,8 +65,6 @@ public class LeagueYearEntity
     public string TradingSystem { get; set; } = null!;
     public string ReleaseSystem { get; set; } = null!;
     public string IneligibleGameSystem { get; set; } = null!;
-    public string PlayStatus { get; set; } = null!;
-    public bool DraftOrderSet { get; set; }
     public int CounterPickDeadlineMonth { get; set; }
     public int CounterPickDeadlineDay { get; set; }
     public int? MightReleaseDroppableMonth { get; set; }
@@ -82,7 +76,7 @@ public class LeagueYearEntity
 
     public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides,
         IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        FantasyCriticUser? winningUser, IEnumerable<Publisher> publishersInLeague)
+        FantasyCriticUser? winningUser, IEnumerable<Publisher> publishersInLeague, IEnumerable<LeagueDraft> leagueDrafts)
     {
         DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -100,12 +94,12 @@ public class LeagueYearEntity
             mightReleaseDroppableDate = new AnnualDate(MightReleaseDroppableMonth.Value, MightReleaseDroppableDay.Value);
         }
         
-        LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
+        LeagueOptions options = new LeagueOptions(StandardGames, CounterPicks, UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
-            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem,
+            EnableBids, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem,
             counterPickDeadline, mightReleaseDroppableDate);
 
-        return new LeagueYear(league, year, options, Lib.Enums.PlayStatus.FromValue(PlayStatus), DraftOrderSet, eligibilityOverrides, tagOverrides,
-            DraftStartedTimestamp, winningUser, publishersInLeague, ConferenceLocked, UnderReview, LeagueYearName);
+        return new LeagueYear(league, year, options, leagueDrafts, eligibilityOverrides, tagOverrides,
+            winningUser, publishersInLeague, ConferenceLocked, UnderReview, LeagueYearName);
     }
 }
