@@ -325,11 +325,11 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
-    public async Task<ActionResult<List<MasterGameYearViewModel>>> GetLongestTenuredGames()
+    public async Task<ActionResult<List<LongestTenuredGameViewModel>>> GetLongestTenuredGames([FromQuery] bool includeReleasedGames = false)
     {
         var currentDate = _clock.GetToday();
-        IReadOnlyList<MasterGameYear> results = await _interLeagueService.GetLongestTenuredGames(currentDate);
-        var vms = results.Select(x => new MasterGameYearViewModel(x, currentDate)).ToList();
+        IReadOnlyList<LongestTenuredGame> results = await _interLeagueService.GetLongestTenuredGames(currentDate, includeReleasedGames);
+        var vms = results.Select(x => new LongestTenuredGameViewModel(x, currentDate)).ToList();
         return vms;
     }
 

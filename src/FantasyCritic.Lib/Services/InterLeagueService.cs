@@ -266,9 +266,11 @@ public class InterLeagueService
         return _masterGameRepo.GetMostDesiredReviews(currentDate);
     }
 
-    public Task<IReadOnlyList<MasterGameYear>> GetLongestTenuredGames(LocalDate currentDate)
+    public Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredGames(LocalDate currentDate, bool includeReleasedGames)
     {
-        return _masterGameRepo.GetLongestTenuredGames(currentDate);
+        return includeReleasedGames
+            ? _masterGameRepo.GetLongestTenuredReleasedGames(currentDate)
+            : _masterGameRepo.GetLongestTenuredUnreleasedGames(currentDate);
     }
 
     public void ClearMasterGameCache()

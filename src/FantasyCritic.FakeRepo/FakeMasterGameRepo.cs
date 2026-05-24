@@ -98,9 +98,14 @@ public class FakeMasterGameRepo : IMasterGameRepo
         return Task.FromResult<IReadOnlyList<MasterGameDesireResult>>(Array.Empty<MasterGameDesireResult>());
     }
 
-    public Task<IReadOnlyList<MasterGameYear>> GetLongestTenuredGames(LocalDate currentDate)
+    public Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredUnreleasedGames(LocalDate currentDate)
     {
-        return Task.FromResult<IReadOnlyList<MasterGameYear>>(Array.Empty<MasterGameYear>());
+        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>(Array.Empty<LongestTenuredGame>());
+    }
+
+    public Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredReleasedGames(LocalDate currentDate)
+    {
+        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>(Array.Empty<LongestTenuredGame>());
     }
 
     public Task CreateMasterGameRequest(MasterGameRequest domainRequest)

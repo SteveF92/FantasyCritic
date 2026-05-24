@@ -355,10 +355,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return results;
     }
 
-    public async Task<IReadOnlyList<MasterGameYear>> GetLongestTenuredGames(LocalDate currentDate)
+    public async Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredUnreleasedGames(LocalDate currentDate)
     {
-        int year = currentDate.Year;
-
         const string sql =
             """
             SELECT mg.MasterGameID
@@ -371,28 +369,170 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             LIMIT 100;
             """;
 
+        int year = currentDate.Year;
+
         await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<Guid> masterGameIDs = await connection.QueryAsync<Guid>(sql, new { today = currentDate });
+        List<Guid> masterGameIDs = (await connection.QueryAsync<Guid>(sql, new { today = currentDate })).ToList();
 
         var masterGameYears = await GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        List<MasterGameYear> results = new List<MasterGameYear>();
+        IReadOnlyDictionary<Guid, LongestTenuredDreamsStatsRow> dreamsStats = await GetLongestTenuredDreamsStats(masterGameIDs);
+        IReadOnlyDictionary<Guid, LongestTenuredPeakHypeRow> peakHypeByGame = await GetLongestTenuredPeakHypeByGame(masterGameIDs);
+
+        List<LongestTenuredGame> results = new List<LongestTenuredGame>();
         foreach (Guid masterGameID in masterGameIDs)
         {
-            if (masterGameYearDictionary.TryGetValue(masterGameID, out MasterGameYear? masterGameYear))
+            if (!masterGameYearDictionary.TryGetValue(masterGameID, out MasterGameYear? masterGameYear))
             {
-                results.Add(masterGameYear);
+                continue;
             }
+
+            dreamsStats.TryGetValue(masterGameID, out LongestTenuredDreamsStatsRow? dreamsRow);
+            peakHypeByGame.TryGetValue(masterGameID, out LongestTenuredPeakHypeRow? peakHypeRow);
+
+            results.Add(new LongestTenuredGame(masterGameYear, dreamsRow?.DreamsDashed ?? 0, null, peakHypeRow?.Year, peakHypeRow?.YearCount));
         }
 
         return results;
     }
 
-    private class MasterGameDesireRow
+    public async Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredReleasedGames(LocalDate currentDate)
     {
-        public Guid MasterGameID { get; set; }
-        public int DesireFactor { get; set; }
+        const string sql =
+            """
+            SELECT mg.MasterGameID, mg.ReleaseDate
+            FROM tbl_mastergame mg
+            WHERE mg.ReleaseDate IS NOT NULL
+              AND mg.ReleaseDate <= @today
+              AND mg.MasterGameID NOT IN (
+                SELECT mght.MasterGameID FROM tbl_mastergame_hastag mght WHERE mght.TagName = 'Cancelled'
+              )
+            ORDER BY DATEDIFF(mg.ReleaseDate, DATE(mg.AddedTimestamp)) DESC
+            LIMIT 100;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        List<LongestTenuredReleasedGameRow> rows = (await connection.QueryAsync<LongestTenuredReleasedGameRow>(sql, new { today = currentDate })).ToList();
+
+        List<Guid> masterGameIDs = rows.Select(x => x.MasterGameID).ToList();
+        IReadOnlyDictionary<Guid, LongestTenuredDreamsStatsRow> dreamsStats = await GetLongestTenuredDreamsStats(masterGameIDs);
+
+        List<LongestTenuredGame> results = new List<LongestTenuredGame>();
+        foreach (LongestTenuredReleasedGameRow row in rows)
+        {
+            MasterGameYear? masterGameYear = await GetMasterGameYear(row.MasterGameID, row.ReleaseDate.Year);
+            if (masterGameYear is null)
+            {
+                continue;
+            }
+
+            dreamsStats.TryGetValue(row.MasterGameID, out LongestTenuredDreamsStatsRow? dreamsRow);
+
+            results.Add(new LongestTenuredGame(masterGameYear, dreamsRow?.DreamsDashed ?? 0, dreamsRow?.DreamsRealized, null, null));
+        }
+
+        return results;
+    }
+
+    private async Task<IReadOnlyDictionary<Guid, LongestTenuredDreamsStatsRow>> GetLongestTenuredDreamsStats(IReadOnlyList<Guid> masterGameIDs)
+    {
+        if (masterGameIDs.Count == 0)
+        {
+            return new Dictionary<Guid, LongestTenuredDreamsStatsRow>();
+        }
+
+        const string sql =
+            """
+            SELECT holdings.MasterGameID,
+                   COUNT(DISTINCT CASE WHEN holdings.DreamRealized = 0 THEN holdings.UserID END) AS DreamsDashed,
+                   COUNT(DISTINCT CASE WHEN holdings.DreamRealized = 1 THEN holdings.UserID END) AS DreamsRealized
+            FROM (
+                SELECT lpg.MasterGameID,
+                       lp.UserID,
+                       CASE
+                         WHEN mg.ReleaseDate IS NOT NULL AND YEAR(mg.ReleaseDate) = lp.Year THEN 1
+                         ELSE 0
+                       END AS DreamRealized
+                FROM tbl_league_publishergame lpg
+                JOIN tbl_league_publisher lp ON lp.PublisherID = lpg.PublisherID
+                JOIN tbl_league l ON l.LeagueID = lp.LeagueID
+                JOIN tbl_mastergame mg ON mg.MasterGameID = lpg.MasterGameID
+                WHERE lpg.MasterGameID IN @masterGameIDs
+                  AND l.TestLeague = 0
+                  AND l.IsDeleted = 0
+                  AND lpg.CounterPick = 0
+
+                UNION ALL
+
+                SELECT fpg.MasterGameID,
+                       lp.UserID,
+                       0 AS DreamRealized
+                FROM tbl_league_formerpublishergame fpg
+                JOIN tbl_league_publisher lp ON lp.PublisherID = fpg.PublisherID
+                JOIN tbl_league l ON l.LeagueID = lp.LeagueID
+                JOIN tbl_mastergame mg ON mg.MasterGameID = fpg.MasterGameID
+                WHERE fpg.MasterGameID IN @masterGameIDs
+                  AND l.TestLeague = 0
+                  AND l.IsDeleted = 0
+                  AND fpg.CounterPick = 0
+                  AND (mg.ReleaseDate IS NULL OR YEAR(mg.ReleaseDate) != lp.Year)
+
+                UNION ALL
+
+                SELECT rpg.MasterGameID,
+                       rp.UserID,
+                       CASE
+                         WHEN mg.ReleaseDate IS NOT NULL
+                           AND mg.ReleaseDate >= STR_TO_DATE(CONCAT(rp.Year, '-', (rp.Quarter - 1) * 3 + 1, '-01'), '%Y-%m-%d')
+                           AND mg.ReleaseDate <= LAST_DAY(STR_TO_DATE(CONCAT(rp.Year, '-', rp.Quarter * 3, '-01'), '%Y-%m-%d'))
+                           THEN 1
+                         ELSE 0
+                       END AS DreamRealized
+                FROM tbl_royale_publishergame rpg
+                JOIN tbl_royale_publisher rp ON rp.PublisherID = rpg.PublisherID
+                JOIN tbl_mastergame mg ON mg.MasterGameID = rpg.MasterGameID
+                WHERE rpg.MasterGameID IN @masterGameIDs
+            ) holdings
+            GROUP BY holdings.MasterGameID;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<LongestTenuredDreamsStatsRow> rows = await connection.QueryAsync<LongestTenuredDreamsStatsRow>(sql, new { masterGameIDs });
+        return rows.ToDictionary(x => x.MasterGameID);
+    }
+
+    private async Task<IReadOnlyDictionary<Guid, LongestTenuredPeakHypeRow>> GetLongestTenuredPeakHypeByGame(IReadOnlyList<Guid> masterGameIDs)
+    {
+        if (masterGameIDs.Count == 0)
+        {
+            return new Dictionary<Guid, LongestTenuredPeakHypeRow>();
+        }
+
+        const string sql =
+            """
+            SELECT lpg.MasterGameID, lp.Year, COUNT(DISTINCT lp.UserID) AS YearCount
+            FROM tbl_league_publishergame lpg
+            JOIN tbl_league_publisher lp ON lp.PublisherID = lpg.PublisherID
+            JOIN tbl_league l ON l.LeagueID = lp.LeagueID
+            WHERE lpg.MasterGameID IN @masterGameIDs
+              AND l.TestLeague = 0
+              AND l.IsDeleted = 0
+              AND lpg.CounterPick = 0
+            GROUP BY lpg.MasterGameID, lp.Year;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<LongestTenuredPeakHypeYearRow> rows = await connection.QueryAsync<LongestTenuredPeakHypeYearRow>(sql, new { masterGameIDs });
+
+        Dictionary<Guid, LongestTenuredPeakHypeRow> peakHypeByGame = new Dictionary<Guid, LongestTenuredPeakHypeRow>();
+        foreach (IGrouping<Guid, LongestTenuredPeakHypeYearRow> gameGroup in rows.GroupBy(x => x.MasterGameID))
+        {
+            LongestTenuredPeakHypeYearRow peakYear = gameGroup.OrderByDescending(x => x.YearCount).ThenByDescending(x => x.Year).First();
+            peakHypeByGame[gameGroup.Key] = new LongestTenuredPeakHypeRow(peakYear.Year, peakYear.YearCount);
+        }
+
+        return peakHypeByGame;
     }
 
     public async Task CreateMasterGameRequest(MasterGameRequest domainRequest)
