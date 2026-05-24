@@ -5,12 +5,15 @@ namespace FantasyCritic.Lib.Domain;
 
 public class LeagueDraft
 {
-    public LeagueDraft(Guid draftID, LeagueYearKey leagueYearKey, int draftNumber, int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus,
+    public LeagueDraft(Guid draftID, LeagueYearKey leagueYearKey, int draftNumber, string name, LocalDate? scheduledDate,
+        int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus,
         IEnumerable<PublisherDraftInfo> publisherDraftInfos, Instant? draftStartedTimestamp)
     {
         DraftID = draftID;
         LeagueYearKey = leagueYearKey;
         DraftNumber = draftNumber;
+        Name = name;
+        ScheduledDate = scheduledDate;
         GamesToDraft = gamesToDraft;
         CounterPicksToDraft = counterPicksToDraft;
         PlayStatus = playStatus;
@@ -21,6 +24,8 @@ public class LeagueDraft
     public Guid DraftID { get; }
     public LeagueYearKey LeagueYearKey { get; }
     public int DraftNumber { get; }
+    public string Name { get; }
+    public LocalDate? ScheduledDate { get; }
     public int GamesToDraft { get; }
     public int CounterPicksToDraft { get; }
     public PlayStatus PlayStatus { get; }

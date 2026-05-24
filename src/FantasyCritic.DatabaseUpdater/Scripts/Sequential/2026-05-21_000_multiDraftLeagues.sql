@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS `tbl_league_draft` (
   `LeagueID` char(36) NOT NULL,
   `Year` year NOT NULL,
   `DraftNumber` tinyint NOT NULL,
+  `Name` varchar(255) NOT NULL DEFAULT 'InitialDraft',
+  `ScheduledDate` date NULL,
   `GamesToDraft` tinyint NOT NULL,
   `CounterPicksToDraft` tinyint NOT NULL,
   `PlayStatus` varchar(50) NOT NULL,
@@ -41,9 +43,12 @@ WHERE `StandardGames` = `GamesToDraft`
 ALTER TABLE `tbl_league_year`
   MODIFY COLUMN `EnableBids` bit(1) NOT NULL;
 
-INSERT INTO `tbl_league_draft` (`DraftID`, `LeagueID`, `Year`, `DraftNumber`, `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftStartedTimestamp`)
-SELECT UUID(), `LeagueID`, `Year`, 1, `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftStartedTimestamp`
+INSERT INTO `tbl_league_draft` (`DraftID`, `LeagueID`, `Year`, `DraftNumber`, `Name`, `ScheduledDate`, `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftStartedTimestamp`)
+SELECT UUID(), `LeagueID`, `Year`, 1, 'InitialDraft', DATE(`DraftStartedTimestamp`), `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftStartedTimestamp`
 FROM `tbl_league_year`;
+
+ALTER TABLE `tbl_league_draft`
+  MODIFY COLUMN `Name` varchar(255) NOT NULL;
 
 INSERT INTO `tbl_league_draftpublisher` (`DraftID`, `PublisherID`, `DraftPosition`)
 SELECT d.`DraftID`, p.`PublisherID`, p.`DraftPosition`

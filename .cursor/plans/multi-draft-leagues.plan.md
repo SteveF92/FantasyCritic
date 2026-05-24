@@ -69,9 +69,11 @@ File: `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/2026-05-21_000_multi
 
 Creates `tbl_league_draft` and `tbl_league_draftpublisher`; backfills `EnableBids = 0` for current one-shot leagues before dropping the moved columns; adds nullable `DraftID` to `tbl_league_publishergame` and `tbl_league_formerpublishergame`; drops `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftOrderSet`, `DraftStartedTimestamp` from `tbl_league_year`; drops `DraftPosition` from `tbl_league_publisher`.
 
+`tbl_league_draft` columns: `DraftID`, `LeagueID`, `Year`, `DraftNumber`, `Name` (varchar 255, NOT NULL — existing rows backfilled to `'InitialDraft'`), `ScheduledDate` (date, nullable — existing rows backfilled to `DATE(DraftStartedTimestamp)`, NULL when draft not yet started), `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftStartedTimestamp`. `Name` default dropped after backfill.
+
 ### Step 2 — Domain types ✓
 
-**New:** `PublisherDraftInfo` (DraftID, PublisherID, DraftPosition), `LeagueDraft` (DraftID, LeagueYearKey, DraftNumber, GamesToDraft, CounterPicksToDraft, PlayStatus, PublisherDraftInfos, DraftStartedTimestamp, DraftOrderSet), `CreateDraftParameters` (for Phase 2).
+**New:** `PublisherDraftInfo` (DraftID, PublisherID, DraftPosition), `LeagueDraft` (DraftID, LeagueYearKey, DraftNumber, Name, ScheduledDate, GamesToDraft, CounterPicksToDraft, PlayStatus, PublisherDraftInfos, DraftStartedTimestamp, DraftOrderSet), `CreateDraftParameters` (for Phase 2).
 
 **Updated `Publisher`:** `DraftPosition` removed; `DraftInfos: IReadOnlyList<PublisherDraftInfo>` added; `GetDraftPosition(Guid draftID)` helper.
 
