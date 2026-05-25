@@ -435,6 +435,135 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return results;
     }
 
+    public async Task<IReadOnlyList<LongestTenuredGame>> GetMostDreamsDashedGames(LocalDate currentDate, int? year)
+    {
+        string yearFilter = year.HasValue ? "AND lp.Year = @year" : "";
+        string royaleYearFilter = year.HasValue ? "AND rp.Year = @year" : "";
+
+        string sql =
+            $"""
+            SELECT holdings.MasterGameID,
+                   COUNT(DISTINCT CASE WHEN holdings.DreamRealized = 0 THEN holdings.UserID END) AS DreamsDashed,
+                   COUNT(DISTINCT CASE WHEN holdings.DreamRealized = 1 THEN holdings.UserID END) AS DreamsRealized
+            FROM (
+                SELECT lpg.MasterGameID,
+                       lp.UserID,
+                       CASE
+                         WHEN mg.ReleaseDate IS NOT NULL AND YEAR(mg.ReleaseDate) = lp.Year THEN 1
+                         ELSE 0
+                       END AS DreamRealized
+                FROM tbl_league_publishergame lpg
+                JOIN tbl_league_publisher lp ON lp.PublisherID = lpg.PublisherID
+                JOIN tbl_league l ON l.LeagueID = lp.LeagueID
+                JOIN tbl_mastergame mg ON mg.MasterGameID = lpg.MasterGameID
+                WHERE l.TestLeague = 0
+                  AND l.IsDeleted = 0
+                  AND lpg.CounterPick = 0
+                  {yearFilter}
+
+                UNION ALL
+
+                SELECT fpg.MasterGameID,
+                       lp.UserID,
+                       0 AS DreamRealized
+                FROM tbl_league_formerpublishergame fpg
+                JOIN tbl_league_publisher lp ON lp.PublisherID = fpg.PublisherID
+                JOIN tbl_league l ON l.LeagueID = lp.LeagueID
+                JOIN tbl_mastergame mg ON mg.MasterGameID = fpg.MasterGameID
+                WHERE l.TestLeague = 0
+                  AND l.IsDeleted = 0
+                  AND fpg.CounterPick = 0
+                  AND (mg.ReleaseDate IS NULL OR YEAR(mg.ReleaseDate) != lp.Year)
+                  {yearFilter}
+
+                UNION ALL
+
+                SELECT rpg.MasterGameID,
+                       rp.UserID,
+                       CASE
+                         WHEN mg.ReleaseDate IS NOT NULL
+                           AND mg.ReleaseDate >= STR_TO_DATE(CONCAT(rp.Year, '-', (rp.Quarter - 1) * 3 + 1, '-01'), '%Y-%m-%d')
+                           AND mg.ReleaseDate <= LAST_DAY(STR_TO_DATE(CONCAT(rp.Year, '-', rp.Quarter * 3, '-01'), '%Y-%m-%d'))
+                           THEN 1
+                         ELSE 0
+                       END AS DreamRealized
+                FROM tbl_royale_publishergame rpg
+                JOIN tbl_royale_publisher rp ON rp.PublisherID = rpg.PublisherID
+                JOIN tbl_mastergame mg ON mg.MasterGameID = rpg.MasterGameID
+                WHERE 1=1
+                  {royaleYearFilter}
+            ) holdings
+            GROUP BY holdings.MasterGameID
+            HAVING DreamsDashed > 0
+            ORDER BY DreamsDashed DESC
+            LIMIT 100;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        List<LongestTenuredDreamsStatsRow> rows = (await connection.QueryAsync<LongestTenuredDreamsStatsRow>(sql, new { year })).ToList();
+
+        if (rows.Count == 0)
+        {
+            return Array.Empty<LongestTenuredGame>();
+        }
+
+        List<LongestTenuredGame> results = new List<LongestTenuredGame>();
+
+        if (year.HasValue)
+        {
+            foreach (LongestTenuredDreamsStatsRow row in rows)
+            {
+                MasterGameYear? masterGameYear = await GetMasterGameYear(row.MasterGameID, year.Value);
+                if (masterGameYear is null)
+                {
+                    continue;
+                }
+
+                results.Add(new LongestTenuredGame(masterGameYear, row.DreamsDashed, null, null, null));
+            }
+
+            return results;
+        }
+
+        List<Guid> masterGameIDs = rows.Select(x => x.MasterGameID).ToList();
+
+        const string maxYearSql =
+            """
+            SELECT MasterGameID, MAX(Year) AS MaxYear
+            FROM tbl_caching_mastergameyear
+            WHERE MasterGameID IN @masterGameIDs
+            GROUP BY MasterGameID;
+            """;
+
+        await using var maxYearConnection = new MySqlConnection(_connectionString);
+        IEnumerable<MasterGameMaxYearRow> maxYearRows = await maxYearConnection.QueryAsync<MasterGameMaxYearRow>(maxYearSql, new { masterGameIDs });
+        Dictionary<Guid, int> maxYearByGame = maxYearRows.ToDictionary(x => x.MasterGameID, x => x.MaxYear);
+
+        foreach (LongestTenuredDreamsStatsRow row in rows)
+        {
+            if (!maxYearByGame.TryGetValue(row.MasterGameID, out int maxYear))
+            {
+                continue;
+            }
+
+            MasterGameYear? masterGameYear = await GetMasterGameYear(row.MasterGameID, maxYear);
+            if (masterGameYear is null)
+            {
+                continue;
+            }
+
+            results.Add(new LongestTenuredGame(masterGameYear, row.DreamsDashed, null, null, null));
+        }
+
+        return results;
+    }
+
+    private class MasterGameMaxYearRow
+    {
+        public Guid MasterGameID { get; set; }
+        public int MaxYear { get; set; }
+    }
+
     private async Task<IReadOnlyDictionary<Guid, LongestTenuredDreamsStatsRow>> GetLongestTenuredDreamsStats(IReadOnlyList<Guid> masterGameIDs)
     {
         if (masterGameIDs.Count == 0)

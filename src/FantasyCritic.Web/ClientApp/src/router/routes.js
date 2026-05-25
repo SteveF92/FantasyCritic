@@ -15,8 +15,8 @@ import Publisher from '@/views/publisher.vue';
 import MasterGame from '@/views/masterGame.vue';
 import MasterGames from '@/views/masterGames.vue';
 import RecentMasterGameChanges from '@/views/recentMasterGameChanges.vue';
+import AdvancedGameStats from '@/views/advancedGameStats.vue';
 import MostDesiredReviews from '@/views/mostDesiredReviews.vue';
-import LongestTenuredGames from '@/views/longestTenuredGames.vue';
 import PublicLeagues from '@/views/publicLeagues.vue';
 import LeagueHistory from '@/views/leagueHistory.vue';
 import LeagueAllTimeStats from '@/views/leagueAllTimeStats.vue';
@@ -170,12 +170,13 @@ export const routes = [
       isPublic: true
     }
   },
+  { path: '/longestTenuredGames', redirect: '/advancedGameStats#longestTenuredUnreleased' },
   {
-    path: '/longestTenuredGames',
-    component: LongestTenuredGames,
-    name: 'longestTenuredGames',
+    path: '/advancedGameStats',
+    component: AdvancedGameStats,
+    name: 'advancedGameStats',
     meta: {
-      title: 'Longest Tenured Games',
+      title: 'Advanced Game Stats',
       isPublic: true
     }
   },

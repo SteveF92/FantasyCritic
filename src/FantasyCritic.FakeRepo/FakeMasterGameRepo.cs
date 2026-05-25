@@ -108,6 +108,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
         return Task.FromResult<IReadOnlyList<LongestTenuredGame>>(Array.Empty<LongestTenuredGame>());
     }
 
+    public Task<IReadOnlyList<LongestTenuredGame>> GetMostDreamsDashedGames(LocalDate currentDate, int? year)
+    {
+        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>(Array.Empty<LongestTenuredGame>());
+    }
+
     public Task CreateMasterGameRequest(MasterGameRequest domainRequest)
     {
         throw new NotImplementedException();

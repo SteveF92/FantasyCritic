@@ -1,0 +1,40 @@
+---
+description: Conventions and constraints for the Advanced Game Stats page and its panel components.
+globs: **/gameStats/**
+alwaysApply: false
+---
+
+# Advanced Game Stats Conventions
+
+## Core constraint: every result is a list of games
+
+All Advanced Stats panels return a ranked `List<MasterGameYear>` (or a wrapper like `LongestTenuredGame`) aggregated per game. Never expose individual user, publisher, or league rows — only aggregate counts/metrics keyed by `MasterGameID`.
+
+## Full-stack layer map
+
+```
+SQL query (MySQLMasterGameRepo)
+  → IMasterGameRepo interface + FakeMasterGameRepo stub
+  → InterLeagueService pass-through
+  → GameController [HttpGet] action → ViewModel
+  → Vue panel component (components/gameStats/*.vue)
+  → Registered in advancedGameStats.vue (sections array + v-else-if + VALID_SECTIONS)
+```
+
+See `GetMostDreamsDashedGames` / `mostDreamsDashedPanel.vue` as the canonical full-stack example.
+
+## No DB schema changes in this vertical
+
+New stat panels must use existing tables. Schema migrations belong to other feature work.
+
+## Hydration rule
+
+Use `GetMasterGameYear(id, year)` where the correct year is:
+- Released game → year of `ReleaseDate`
+- Unreleased game → `currentDate.Year`
+- Cancelled game (or "highest available") → `MAX(Year)` from `tbl_caching_mastergameyear`
+
+## ViewModel shape
+
+- Stat needs only game data → return `List<MasterGameYearViewModel>` directly, no new ViewModel needed.
+- Stat needs extra fields → create a specific ViewModel in `Web/Models/Responses/` wrapping `MasterGameYearViewModel` plus your properties. Use `LongestTenuredGameViewModel` as the pattern, not as a type to reuse.

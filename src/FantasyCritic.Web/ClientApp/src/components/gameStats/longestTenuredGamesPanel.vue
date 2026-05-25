@@ -1,32 +1,19 @@
 <template>
-  <div class="col-md-10 offset-md-1 col-sm-12">
-    <div class="page-header">
-      <h1>Longest Tenured Games</h1>
-      <toggle-button
-        v-model="includeReleasedGames"
-        class="toggle"
-        :sync="true"
-        :labels="{ checked: 'Released', unchecked: 'Unreleased' }"
-        :css-colors="true"
-        :font-size="13"
-        :width="105"
-        :height="28" />
-    </div>
-
-    <p v-show="!includeReleasedGames">
+  <div>
+    <p v-if="!released">
       This is a list of unreleased games, which have not been cancelled, that have been in the system for the longest. "Dreams Dashed" is the total number of people who have had this game in a year
       that it did not release. "Peak Hype Year" is the year in which the most people had the game.
     </p>
-    <p v-show="includeReleasedGames">
+    <p v-else>
       The counterpoint to the previous list, these games were in the system for a long time, but
       <em>did</em>
-      eventually release. "Dreams Dashed" is the total number of people who have had this game in a year that it did not release, whereas "Dreams realized" is the total number of players who had this
+      eventually release. "Dreams Dashed" is the total number of people who have had this game in a year that it did not release, whereas "Dreams Realized" is the total number of players who had this
       game in the year it
       <em>did</em>
       release.
     </p>
 
-    <b-form-checkbox v-if="!includeReleasedGames" v-model="includeUnannouncedGames" class="unannounced-toggle">
+    <b-form-checkbox v-if="!released" v-model="includeUnannouncedGames" class="unannounced-toggle">
       <span class="checkbox-label">Include unannounced games</span>
     </b-form-checkbox>
 
@@ -58,7 +45,6 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'luxon';
-import { ToggleButton } from 'vue-js-toggle-button';
 import { formatMasterGameReleaseDate } from '@/globalFunctions';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
@@ -66,14 +52,15 @@ import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 export default {
   components: {
     MasterGamePopover,
-    MasterGameTagBadge,
-    ToggleButton
+    MasterGameTagBadge
+  },
+  props: {
+    released: { type: Boolean, required: true }
   },
   data() {
     return {
-      longestTenuredGames: null,
+      games: null,
       isBusy: true,
-      includeReleasedGames: false,
       includeUnannouncedGames: false,
       sortBy: 'daysSinceAddition',
       sortDesc: true
@@ -81,48 +68,49 @@ export default {
   },
   computed: {
     showTable() {
-      return this.longestTenuredGames && !this.isBusy;
+      return this.games && !this.isBusy;
     },
     filteredGames() {
-      if (!this.longestTenuredGames) {
+      if (!this.games) {
         return null;
       }
-
-      if (this.includeReleasedGames || this.includeUnannouncedGames) {
-        return this.longestTenuredGames;
+      if (this.released || this.includeUnannouncedGames) {
+        return this.games;
       }
-
-      return this.longestTenuredGames.filter((game) => !game.masterGame.tags.includes('UnannouncedGame'));
+      return this.games.filter((game) => !game.masterGame.tags.includes('UnannouncedGame'));
     },
     gameFields() {
-      const baseFields = [
+      const base = [
         { key: 'masterGame.gameName', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'masterGame.addedTimestamp', label: 'Date Added', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
         {
           key: 'daysSinceAddition',
-          label: this.includeReleasedGames ? 'Days Before Release' : 'Days Since Addition',
+          label: this.released ? 'Days Before Release' : 'Days Since Addition',
           sortable: true,
           thClass: 'bg-primary'
         },
         { key: 'dreamsDashed', label: 'Dreams Dashed', sortable: true, thClass: 'bg-primary' }
       ];
 
-      if (this.includeReleasedGames) {
-        return baseFields.concat([{ key: 'dreamsRealized', label: 'Dreams Realized', sortable: true, thClass: 'bg-primary' }]);
+      if (this.released) {
+        return base.concat([{ key: 'dreamsRealized', label: 'Dreams Realized', sortable: true, thClass: 'bg-primary' }]);
       }
 
-      return baseFields.concat([
+      return base.concat([
         { key: 'yearOfPeakHype', label: 'Peak Hype Year', sortable: true, thClass: 'bg-primary' },
         { key: 'yearOfPeakHypeCount', label: 'Peak Hype Count', sortable: true, thClass: 'bg-primary' }
       ]);
     }
   },
   watch: {
-    includeReleasedGames() {
+    released() {
       this.fetchGames();
     }
+  },
+  created() {
+    this.fetchGames();
   },
   methods: {
     getReleaseDate(game) {
@@ -130,44 +118,29 @@ export default {
     },
     getDaysSinceAddition(masterGame) {
       const added = DateTime.fromISO(masterGame.addedTimestamp).startOf('day');
-
-      if (this.includeReleasedGames) {
+      if (this.released) {
         const releaseDate = DateTime.fromISO(masterGame.releaseDate).startOf('day');
         return Math.floor(releaseDate.diff(added, 'days').days);
       }
-
       const now = DateTime.local().startOf('day');
       return Math.floor(now.diff(added, 'days').days);
     },
     async fetchGames() {
       this.isBusy = true;
-
       const response = await axios.get('/api/game/GetLongestTenuredGames', {
-        params: {
-          includeReleasedGames: this.includeReleasedGames
-        }
+        params: { includeReleasedGames: this.released }
       });
-
-      this.longestTenuredGames = response.data.map((game) => ({
+      this.games = response.data.map((game) => ({
         ...game,
         daysSinceAddition: this.getDaysSinceAddition(game.masterGame)
       }));
       this.isBusy = false;
     }
-  },
-  created() {
-    this.fetchGames();
   }
 };
 </script>
 
 <style scoped>
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .unannounced-toggle {
   margin-bottom: 1rem;
 }

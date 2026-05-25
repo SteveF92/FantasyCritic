@@ -13,6 +13,13 @@ internal class LongestTenuredDreamsStatsRow
     public int DreamsRealized { get; set; }
 }
 
+internal class MostDreamsDashedGameRow
+{
+    public Guid MasterGameID { get; set; }
+    public LocalDate? ReleaseDate { get; set; }
+    public int DreamsDashed { get; set; }
+}
+
 internal class LongestTenuredPeakHypeYearRow
 {
     public Guid MasterGameID { get; set; }

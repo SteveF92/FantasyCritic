@@ -273,6 +273,11 @@ public class InterLeagueService
             : _masterGameRepo.GetLongestTenuredUnreleasedGames(currentDate);
     }
 
+    public Task<IReadOnlyList<LongestTenuredGame>> GetMostDreamsDashedGames(LocalDate currentDate, int? year)
+    {
+        return _masterGameRepo.GetMostDreamsDashedGames(currentDate, year);
+    }
+
     public void ClearMasterGameCache()
     {
         _masterGameRepo.ClearMasterGameCache();

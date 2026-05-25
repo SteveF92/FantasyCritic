@@ -27,6 +27,7 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<MasterGameDesireResult>> GetMostDesiredReviews(LocalDate currentDate);
     Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredUnreleasedGames(LocalDate currentDate);
     Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredReleasedGames(LocalDate currentDate);
+    Task<IReadOnlyList<LongestTenuredGame>> GetMostDreamsDashedGames(LocalDate currentDate, int? year);
     Task CreateMasterGameRequest(MasterGameRequest domainRequest);
     Task CreateMasterGameChangeRequest(MasterGameChangeRequest domainRequest);
     Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user);

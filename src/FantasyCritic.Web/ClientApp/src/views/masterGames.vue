@@ -95,7 +95,7 @@ export default {
       items.push(
         { name: 'gameChanges', label: 'Recent Changes' },
         { name: 'mostDesiredReviews', label: 'Most Desired Reviews' },
-        { name: 'longestTenuredGames', label: 'Longest Tenured' },
+        { name: 'advancedGameStats', label: 'Advanced Stats' },
         { name: 'topBidsAndDrops', label: 'Top Bids/Drops' }
       );
       return items;

@@ -333,6 +333,14 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    public async Task<ActionResult<List<LongestTenuredGameViewModel>>> GetMostDreamsDashedGames([FromQuery] int? year = null)
+    {
+        var currentDate = _clock.GetToday();
+        IReadOnlyList<LongestTenuredGame> results = await _interLeagueService.GetMostDreamsDashedGames(currentDate, year);
+        var vms = results.Select(x => new LongestTenuredGameViewModel(x, currentDate)).ToList();
+        return vms;
+    }
+
     public async Task<ActionResult<List<LocalDate>>> GetProcessingDatesForTopBidsAndDrops()
     {
         var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
