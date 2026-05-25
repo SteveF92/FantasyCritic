@@ -11,8 +11,8 @@ public interface IFantasyCriticRepo
 {
     Task<League?> GetLeague(Guid id);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
-    Task CreateLeague(League league, int initialYear, LeagueOptions options);
-    Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
+    Task CreateLeague(League league, int initialYear, LeagueOptions options, LeagueDraft initialDraft);
+    Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, LeagueDraft initialDraft);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction);
 
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
@@ -113,7 +113,7 @@ public interface IFantasyCriticRepo
     Task ResetDraft(LeagueYear leagueYear, Instant timestamp);
 
     Task SetDraftPause(LeagueYear leagueYear, bool pause);
-    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueManagerAction draftSetAction);
+    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft draft, LeagueManagerAction draftSetAction);
     Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
     Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
     Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags);

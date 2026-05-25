@@ -50,7 +50,10 @@ public class ConferenceService
         //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
         League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, leagueYears, true, false, parameters.CustomRulesConference, false, 0);
         Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, conferenceYears, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
-        await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options);
+        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(primaryLeague.LeagueID, parameters.LeagueYearParameters.Year), 1,
+            "InitialDraft", null, parameters.LeagueYearParameters.GamesToDraft, parameters.LeagueYearParameters.CounterPicksToDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
+        await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options, initialDraft);
         return Result.Success(newConference);
     }
 
@@ -77,7 +80,10 @@ public class ConferenceService
         IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(year, false, PlayStatus.NotStartedDraft) };
         League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager.ToMinimal(), conference.ConferenceID, conference.ConferenceName,
             leagueYears, true, false, conference.CustomRulesConference, false, 0);
-        await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague);
+        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(newLeague.LeagueID, year), 1,
+            "InitialDraft", null, primaryLeagueYear.FirstDraft.GamesToDraft, primaryLeagueYear.FirstDraft.CounterPicksToDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
+        await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague, initialDraft);
         return Result.Success();
     }
 
@@ -101,7 +107,11 @@ public class ConferenceService
         }
 
         var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(leagueToRenew.LeagueID, year - 1);
-        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options, mostRecentActivePlayers);
+        // TODO(Phase2-MultiDraft): New conference year always starts with a single initial draft using the primary league's draft counts.
+        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(leagueToRenew.LeagueID, year), 1,
+            "InitialDraft", null, primaryLeagueYear.FirstDraft.GamesToDraft, primaryLeagueYear.FirstDraft.CounterPicksToDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
+        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options, mostRecentActivePlayers, initialDraft);
         return Result.Success();
     }
 

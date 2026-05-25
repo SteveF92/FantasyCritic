@@ -10,7 +10,7 @@ public class LeagueYearEntity
 
     }
 
-    public LeagueYearEntity(League league, int year, LeagueOptions options, PlayStatus playStatus, bool? conferenceLocked, bool underReview, string? leagueYearName)
+    public LeagueYearEntity(League league, int year, LeagueOptions options, bool? conferenceLocked, bool underReview, string? leagueYearName)
     {
         LeagueID = league.LeagueID;
         Year = year;
@@ -69,7 +69,6 @@ public class LeagueYearEntity
     public int CounterPickDeadlineDay { get; set; }
     public int? MightReleaseDroppableMonth { get; set; }
     public int? MightReleaseDroppableDay { get; set; }
-    public Instant? DraftStartedTimestamp { get; set; }
     public Guid? WinningUserID { get; set; }
     public bool? ConferenceLocked { get; set; }
     public bool UnderReview { get; set; }

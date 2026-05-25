@@ -104,7 +104,10 @@ public class FantasyCriticService
 
         IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, PlayStatus.NotStartedDraft) };
         League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager.ToMinimal(), null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
-        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options);
+        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(newLeague.LeagueID, parameters.LeagueYearParameters.Year), 1,
+            "InitialDraft", null, parameters.LeagueYearParameters.GamesToDraft, parameters.LeagueYearParameters.CounterPicksToDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
+        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options, initialDraft);
         return Result.Success(newLeague);
     }
 
@@ -269,7 +272,11 @@ public class FantasyCriticService
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, LeagueYear mostRecentLeagueYear)
     {
         var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, mostRecentLeagueYear.Year);
-        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers);
+        // TODO(Phase2-MultiDraft): New year always starts with a single initial draft using the options' draft counts.
+        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(league.LeagueID, year), 1,
+            "InitialDraft", null, mostRecentLeagueYear.FirstDraft.GamesToDraft, mostRecentLeagueYear.FirstDraft.CounterPicksToDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
+        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers, initialDraft);
     }
 
     public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears, bool recalculateWinners)

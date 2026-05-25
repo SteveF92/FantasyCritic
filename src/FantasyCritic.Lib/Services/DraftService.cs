@@ -106,7 +106,8 @@ public class DraftService
         LeagueManagerAction draftSetAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription);
         await _discordPushService.SendLeagueActionMessage(draftSetAction);
 
-        await _fantasyCriticRepo.SetDraftOrder(draftPositions, draftSetAction);
+        // TODO(Phase2-MultiDraft): Always sets draft order for the first draft only.
+        await _fantasyCriticRepo.SetDraftOrder(draftPositions, leagueYear.FirstDraft, draftSetAction);
         return Result.Success();
     }
 

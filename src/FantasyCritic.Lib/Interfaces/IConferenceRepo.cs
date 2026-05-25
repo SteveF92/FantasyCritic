@@ -5,8 +5,8 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IConferenceRepo
 {
     Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser user);
-    Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options);
-    Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague);
+    Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options, LeagueDraft initialDraft);
+    Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague, LeagueDraft initialDraft);
     Task<Result> AddNewConferenceYear(Conference conference, int year);
     Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<MinimalFantasyCriticUser, bool> usersToChange);
 

@@ -33,10 +33,11 @@ BEGIN
   SELECT tbl_league.LeagueID, 
   tbl_league_year.`YEAR`,
   tbl_meta_supportedyear.Finished AS "SupportedYearIsFinished",
-  tbl_league_year.PlayStatus
+  ld.PlayStatus
   FROM tbl_league_year
-  JOIN tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID
+  JOIN tbl_league ON tbl_league.LeagueID = tbl_league_year.LeagueID
   JOIN tbl_meta_supportedyear ON tbl_meta_supportedyear.`Year` = tbl_league_year.`Year`
+  JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year AND ld.DraftNumber = 1
   WHERE ConferenceID = P_ConferenceID;
   
   -- League Year
@@ -46,6 +47,22 @@ BEGIN
   JOIN tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID
   WHERE ConferenceID = P_ConferenceID
     AND YEAR = P_Year;
+  
+  -- Drafts
+  
+  SELECT d.*
+  FROM tbl_league_draft d
+  JOIN tbl_league ON tbl_league.LeagueID = d.LeagueID
+  WHERE tbl_league.ConferenceID = P_ConferenceID
+    AND d.Year = P_Year
+  ORDER BY d.DraftNumber;
+  
+  SELECT dp.*
+  FROM tbl_league_draftpublisher dp
+  JOIN tbl_league_draft d ON dp.DraftID = d.DraftID
+  JOIN tbl_league ON tbl_league.LeagueID = d.LeagueID
+  WHERE tbl_league.ConferenceID = P_ConferenceID
+    AND d.Year = P_Year;
   
   
   SELECT *
