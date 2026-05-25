@@ -1,5 +1,3 @@
-using NodaTime;
-
 namespace FantasyCritic.Lib.SharedSerialization.Database;
 
 public class LeagueDraftEntity
@@ -9,7 +7,7 @@ public class LeagueDraftEntity
     public int Year { get; set; }
     public int DraftNumber { get; set; }
     public string Name { get; set; } = null!;
-    public DateTime? ScheduledDate { get; set; }
+    public LocalDate? ScheduledDate { get; set; }
     public int GamesToDraft { get; set; }
     public int CounterPicksToDraft { get; set; }
     public bool DraftOrderSet { get; set; }
@@ -18,11 +16,7 @@ public class LeagueDraftEntity
 
     public LeagueDraft ToDomain(IEnumerable<PublisherDraftInfo> publisherDraftInfos)
     {
-        LocalDate? scheduledDate = ScheduledDate.HasValue
-            ? LocalDate.FromDateTime(ScheduledDate.Value)
-            : null;
-
-        return new LeagueDraft(DraftID, new LeagueYearKey(LeagueID, Year), DraftNumber, Name, scheduledDate,
+        return new LeagueDraft(DraftID, new LeagueYearKey(LeagueID, Year), DraftNumber, Name, ScheduledDate,
             GamesToDraft, CounterPicksToDraft, DraftOrderSet, Lib.Enums.PlayStatus.FromValue(PlayStatus),
             publisherDraftInfos, DraftStartedTimestamp);
     }
