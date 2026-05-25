@@ -27,7 +27,7 @@ public class PublisherService
         var draftInfos = new List<PublisherDraftInfo>();
         foreach (var draft in leagueYear.Drafts)
         {
-            var nextDraftPosition = draft.PublisherDraftInfos.Max(x => x.DraftPosition) + 1;
+            var nextDraftPosition = draft.PublisherDraftInfos.Any() ? draft.PublisherDraftInfos.Max(x => x.DraftPosition) + 1 : 1;
             draftInfos.Add(new PublisherDraftInfo(draft.DraftID, draft.DraftNumber, publisherID, nextDraftPosition));
         }
 
