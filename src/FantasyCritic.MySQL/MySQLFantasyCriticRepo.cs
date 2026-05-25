@@ -73,6 +73,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var supportedYearDictionary = supportedYears.ToDictionary(x => x.Year);
 
         IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
+        // TODO(Phase2-MultiDraft): PlayStatus comes from the first draft only.
+        var firstDraftStatuses = await connection.QueryAsync<(Guid LeagueID, int Year, string PlayStatus)>(
+            "SELECT LeagueID, Year, PlayStatus FROM tbl_league_draft WHERE DraftNumber = 1");
+        var playStatusByLeagueYear = firstDraftStatuses.ToDictionary(x => (x.LeagueID, x.Year), x => x.PlayStatus);
         var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
         List<League> leagues = new List<League>();
         var allUsers = await _userStore.GetAllUsers();
@@ -84,7 +88,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             leagueEntity.ManagerEmailAddress = manager.UserName;
 
             var leagueYears = leagueYearLookup[leagueEntity.LeagueID];
-            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished, PlayStatus.FromValue(x.PlayStatus))));
+            League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished,
+                PlayStatus.FromValue(playStatusByLeagueYear[(leagueEntity.LeagueID, x.Year)]))));
             leagues.Add(league);
         }
 
@@ -1023,7 +1028,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         // TODO(Phase2-MultiDraft): Resets only the first draft's status.
         const string gameDeleteSQL = "DELETE FROM tbl_league_publishergame WHERE PublisherID IN @publisherIDs";
-        const string draftResetSQL = $"UPDATE tbl_league_draft SET PlayStatus = '{PlayStatus.NotStartedDraft.Value}' WHERE DraftID = @draftID";
+        string draftResetSQL = $"UPDATE tbl_league_draft SET PlayStatus = '{PlayStatus.NotStartedDraft.Value}' WHERE DraftID = @draftID";
 
         LeagueManagerAction resetDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Draft Reset", "Draft was reset.");
 
@@ -1935,8 +1940,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         IReadOnlyList<PublisherGame> domainGames = await GetPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
         IReadOnlyList<FormerPublisherGame> domainFormerGames = await GetFormerPublisherGames(publisherEntity.PublisherID, publisherEntity.Year);
+        const string draftPublisherSql =
+            """
+            SELECT dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition
+            FROM tbl_league_draftpublisher dp
+            JOIN tbl_league_draft d ON dp.DraftID = d.DraftID
+            WHERE dp.PublisherID = @publisherID
+            """;
+        var draftPublisherRows = await connection.QueryAsync<(Guid DraftID, int DraftNumber, Guid PublisherID, int DraftPosition)>(draftPublisherSql, query);
+        var draftInfos = draftPublisherRows.Select(x => new PublisherDraftInfo(x.DraftID, x.DraftNumber, x.PublisherID, x.DraftPosition)).ToList();
         var user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID, CancellationToken.None);
-        var domainPublisher = publisherEntity.ToDomain(user, domainGames, domainFormerGames);
+        var domainPublisher = publisherEntity.ToDomain(user, draftInfos, domainGames, domainFormerGames);
         return domainPublisher;
     }
 
