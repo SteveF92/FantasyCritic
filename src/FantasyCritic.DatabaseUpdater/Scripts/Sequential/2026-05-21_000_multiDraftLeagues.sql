@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league_draft` (
   `ScheduledDate` date NULL,
   `GamesToDraft` tinyint NOT NULL,
   `CounterPicksToDraft` tinyint NOT NULL,
+  `DraftOrderSet` bit(1) NOT NULL,
   `PlayStatus` varchar(50) NOT NULL,
   `DraftStartedTimestamp` timestamp NULL,
   PRIMARY KEY (`DraftID`),
@@ -43,8 +44,8 @@ WHERE `StandardGames` = `GamesToDraft`
 ALTER TABLE `tbl_league_year`
   MODIFY COLUMN `EnableBids` bit(1) NOT NULL;
 
-INSERT INTO `tbl_league_draft` (`DraftID`, `LeagueID`, `Year`, `DraftNumber`, `Name`, `ScheduledDate`, `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftStartedTimestamp`)
-SELECT UUID(), `LeagueID`, `Year`, 1, 'InitialDraft', DATE(`DraftStartedTimestamp`), `GamesToDraft`, `CounterPicksToDraft`, `PlayStatus`, `DraftStartedTimestamp`
+INSERT INTO `tbl_league_draft` (`DraftID`, `LeagueID`, `Year`, `DraftNumber`, `Name`, `ScheduledDate`, `GamesToDraft`, `CounterPicksToDraft`, `DraftOrderSet`, `PlayStatus`, `DraftStartedTimestamp`)
+SELECT UUID(), `LeagueID`, `Year`, 1, 'InitialDraft', DATE(`DraftStartedTimestamp`), `GamesToDraft`, `CounterPicksToDraft`, `DraftOrderSet`, `PlayStatus`, `DraftStartedTimestamp`
 FROM `tbl_league_year`;
 
 ALTER TABLE `tbl_league_draft`

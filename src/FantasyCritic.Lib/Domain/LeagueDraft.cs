@@ -3,7 +3,7 @@ namespace FantasyCritic.Lib.Domain;
 public class LeagueDraft
 {
     public LeagueDraft(Guid draftID, LeagueYearKey leagueYearKey, int draftNumber, string name, LocalDate? scheduledDate,
-        int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus,
+        int gamesToDraft, int counterPicksToDraft, bool draftOrderSet, PlayStatus playStatus,
         IEnumerable<PublisherDraftInfo> publisherDraftInfos, Instant? draftStartedTimestamp)
     {
         DraftID = draftID;
@@ -13,6 +13,7 @@ public class LeagueDraft
         ScheduledDate = scheduledDate;
         GamesToDraft = gamesToDraft;
         CounterPicksToDraft = counterPicksToDraft;
+        DraftOrderSet = draftOrderSet;
         PlayStatus = playStatus;
         PublisherDraftInfos = publisherDraftInfos.ToList();
         DraftStartedTimestamp = draftStartedTimestamp;
@@ -25,10 +26,10 @@ public class LeagueDraft
     public LocalDate? ScheduledDate { get; }
     public int GamesToDraft { get; }
     public int CounterPicksToDraft { get; }
+    public bool DraftOrderSet { get; }
     public PlayStatus PlayStatus { get; }
     public IReadOnlyList<PublisherDraftInfo> PublisherDraftInfos { get; }
     public Instant? DraftStartedTimestamp { get; }
-    public bool DraftOrderSet => PublisherDraftInfos.Any();
 
     public static Result ValidateDraftCounts(int gamesToDraft, int counterPicksToDraft, int standardGames, int counterPicks)
     {
@@ -53,6 +54,6 @@ public class LeagueDraft
     public LeagueDraft UpdateDraft(int gamesToDraft, int counterPicksToDraft)
     {
         return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, Name, ScheduledDate, gamesToDraft, counterPicksToDraft,
-            PlayStatus, PublisherDraftInfos, DraftStartedTimestamp);
+            DraftOrderSet, PlayStatus, PublisherDraftInfos, DraftStartedTimestamp);
     }
 }
