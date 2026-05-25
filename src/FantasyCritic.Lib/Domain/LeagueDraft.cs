@@ -49,4 +49,10 @@ public class LeagueDraft
 
         return Result.Success();
     }
+
+    public LeagueDraft UpdateDraft(int gamesToDraft, int counterPicksToDraft)
+    {
+        return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, Name, ScheduledDate, gamesToDraft, counterPicksToDraft,
+            PlayStatus, PublisherDraftInfos, DraftStartedTimestamp);
+    }
 }

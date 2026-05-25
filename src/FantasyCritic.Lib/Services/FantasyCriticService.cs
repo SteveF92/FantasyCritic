@@ -189,8 +189,10 @@ public class FantasyCriticService
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
-        //TODO make new LeagueDrafts objects
+        //TODO this needs to be adjusted once multi draft is actually possible
         List<LeagueDraft> leagueDrafts = leagueYear.Drafts.ToList();
+        var newFirstDraft = leagueYear.FirstDraft.UpdateDraft(parameters.GamesToDraft, parameters.CounterPicksToDraft);
+        leagueDrafts = [newFirstDraft];
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
             leagueDrafts, eligibilityOverrides, tagOverrides,
