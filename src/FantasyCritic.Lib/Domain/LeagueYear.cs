@@ -10,7 +10,6 @@ public class LeagueYear : IEquatable<LeagueYear>
     private readonly IReadOnlyDictionary<MasterGame, EligibilityOverride> _eligibilityOverridesDictionary;
     private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
     private readonly IReadOnlyDictionary<Guid, Publisher> _publisherDictionary;
-    private readonly IReadOnlyList<LeagueDraft> _drafts;
 
     public LeagueYear(League league, SupportedYear year, LeagueOptions options,
         IEnumerable<LeagueDraft> drafts, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
@@ -25,7 +24,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         League = league;
         SupportedYear = year;
         Options = options;
-        _drafts = drafts.OrderBy(x => x.DraftNumber).ToList();
+        Drafts = drafts.OrderBy(x => x.DraftNumber).ToList();
         EligibilityOverrides = eligibilityOverrides.ToList();
         _eligibilityOverridesDictionary = EligibilityOverrides.ToDictionary(x => x.MasterGame);
         TagOverrides = tagOverrides.ToList();
@@ -44,16 +43,16 @@ public class LeagueYear : IEquatable<LeagueYear>
     public SupportedYear SupportedYear { get; }
     public int Year => SupportedYear.Year;
     public LeagueOptions Options { get; }
-    public IReadOnlyList<LeagueDraft> Drafts => _drafts;
+    public IReadOnlyList<LeagueDraft> Drafts { get; }
 
-    public LeagueDraft FirstDraft => _drafts.First();
+    public LeagueDraft FirstDraft => Drafts.First();
     public PlayStatus PlayStatus => FirstDraft.PlayStatus;
     public bool DraftOrderSet => FirstDraft.DraftOrderSet;
     public Instant? DraftStartedTimestamp => FirstDraft.DraftStartedTimestamp;
 
     public bool OneShotMode => !Options.EnableBids
-                               && Options.StandardGames == _drafts.Sum(d => d.GamesToDraft)
-                               && Options.CounterPicks == _drafts.Sum(d => d.CounterPicksToDraft)
+                               && Options.StandardGames == Drafts.Sum(d => d.GamesToDraft)
+                               && Options.CounterPicks == Drafts.Sum(d => d.CounterPicksToDraft)
                                && Options.UnrestrictedReleaseStatusDroppableGames == 0
                                && Options.WillNotReleaseDroppableGames == 0
                                && Options.WillReleaseDroppableGames == 0
@@ -171,7 +170,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public LeagueYear GetUpdatedLeagueYearWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         var newPublishers = Publishers.Select(x => x.GetUpdatedPublisherWithNewScores(calculatedStats)).ToList();
-        return new LeagueYear(League, SupportedYear, Options, _drafts, EligibilityOverrides, TagOverrides, WinningUser, newPublishers, ConferenceLocked, UnderReview, LeagueYearName);
+        return new LeagueYear(League, SupportedYear, Options, Drafts, EligibilityOverrides, TagOverrides, WinningUser, newPublishers, ConferenceLocked, UnderReview, LeagueYearName);
     }
 
     public override string ToString() => $"{League}|{Year}";

@@ -173,7 +173,7 @@ public class PublisherStateSet
         }
 
         return new Publisher(publisherToEdit.PublisherID, publisherToEdit.LeagueYearKey, publisherToEdit.User, publisherToEdit.PublisherName, publisherToEdit.PublisherIcon, publisherToEdit.PublisherSlogan,
-            publisherToEdit.DraftPosition, newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, unrestrictedReleaseStatusGamesDropped, willNotReleaseGamesDropped,
+            publisherToEdit.DraftInfos, newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, unrestrictedReleaseStatusGamesDropped, willNotReleaseGamesDropped,
             willReleaseGamesDropped, superDropsAvailable, publisherToEdit.AutoDraftSettings);
     }
 

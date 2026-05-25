@@ -23,14 +23,15 @@ public class PublisherService
 
     public async Task<Publisher> CreatePublisher(LeagueYear leagueYear, FantasyCriticUser user, string publisherName)
     {
-        int draftPosition = 1;
-        var existingPublishers = leagueYear.Publishers;
-        if (existingPublishers.Any())
+        var publisherID = Guid.NewGuid();
+        var draftInfos = new List<PublisherDraftInfo>();
+        foreach (var draft in leagueYear.Drafts)
         {
-            draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
+            var nextDraftPosition = draft.PublisherDraftInfos.Max(x => x.DraftPosition) + 1;
+            draftInfos.Add(new PublisherDraftInfo(draft.DraftID, draft.DraftNumber, publisherID, nextDraftPosition));
         }
 
-        Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear.Key, user, publisherName, null, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
+        Publisher publisher = new Publisher(publisherID, leagueYear.Key, user, publisherName, null, null, draftInfos, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
         await _fantasyCriticRepo.CreatePublisher(publisher);
         await _discordPushService.SendNewPublisherMessage(publisher);
         return publisher;

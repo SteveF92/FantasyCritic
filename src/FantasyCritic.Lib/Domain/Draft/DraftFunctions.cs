@@ -200,12 +200,12 @@ public static class DraftFunctions
             bool roundNumberIsOdd = (roundNumber % 2 != 0);
             if (roundNumberIsOdd)
             {
-                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
+                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.FirstDraftInfo.DraftPosition);
                 var firstPublisherOdd = sortedPublishersOdd.First();
                 return firstPublisherOdd;
             }
             //Else round is even
-            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
+            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.FirstDraftInfo.DraftPosition);
             var firstPublisherEven = sortedPublishersEven.First();
             return firstPublisherEven;
         }
@@ -224,12 +224,12 @@ public static class DraftFunctions
             bool roundNumberIsOdd = (roundNumber % 2 != 0);
             if (roundNumberIsOdd)
             {
-                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
+                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.FirstDraftInfo.DraftPosition);
                 var firstPublisherOdd = sortedPublishersOdd.First();
                 return firstPublisherOdd;
             }
             //Else round is even
-            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
+            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.FirstDraftInfo.DraftPosition);
             var firstPublisherEven = sortedPublishersEven.First();
             return firstPublisherEven;
         }

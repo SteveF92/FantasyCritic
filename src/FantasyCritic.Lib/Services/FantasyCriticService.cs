@@ -281,7 +281,7 @@ public class FantasyCriticService
         var publishersByLeagueYear = allPublishersForYear.GroupBy(x => x.LeagueYearKey);
         foreach (var publishersForLeagueYear in publishersByLeagueYear)
         {
-            var sortedLeagueYearPublishers = publishersForLeagueYear.OrderBy(x => x.DraftPosition).ToList();
+            var sortedLeagueYearPublishers = publishersForLeagueYear.OrderBy(x => x.FirstDraftInfo.DraftPosition).ToList();
             decimal highestPoints = 0m;
             var leagueYear = leagueYearDictionary[publishersForLeagueYear.Key];
             foreach (var publisher in sortedLeagueYearPublishers)

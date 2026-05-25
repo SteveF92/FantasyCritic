@@ -1,6 +1,3 @@
-using FantasyCritic.Lib.Extensions;
-using NodaTime;
-
 namespace FantasyCritic.Lib.Domain;
 
 public class LeagueDraft

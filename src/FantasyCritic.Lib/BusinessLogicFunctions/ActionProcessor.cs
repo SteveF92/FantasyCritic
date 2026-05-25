@@ -478,7 +478,7 @@ public class ActionProcessor
             throw new NotImplementedException($"Unknown tiebreak system: {leagueYear.Options.TiebreakSystem}");
         }
 
-        var bestBidsByDraftPosition = remainingGamesAfterTiebreaks.OrderByDescending(x => x.PickupBid.Publisher.DraftPosition).ToList();
+        var bestBidsByDraftPosition = remainingGamesAfterTiebreaks.OrderByDescending(x => x.PickupBid.Publisher.FirstDraftInfo.DraftPosition).ToList();
         if (bestBidsByDraftPosition.Count == 1)
         {
             var singleBid = bestBidsByDraftPosition.Single();

@@ -13,13 +13,18 @@ public class Publisher : IEquatable<Publisher>
         IEnumerable<PublisherDraftInfo> draftInfos, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
         int unrestrictedReleaseStatusGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, AutoDraftSettings autoDraftSettings)
     {
+        if (!draftInfos.Any())
+        {
+            throw new Exception("All leagues must have at least one draft.");
+        }
+
         PublisherID = publisherID;
         LeagueYearKey = leagueYearKey;
         User = user;
         PublisherName = publisherName;
         PublisherIcon = publisherIcon;
         PublisherSlogan = publisherSlogan;
-        DraftInfos = draftInfos.ToList();
+        DraftInfos = draftInfos.OrderBy(x => x.DraftNumber).ToList();
         PublisherGames = publisherGames.ToList();
         FormerPublisherGames = formerPublisherGames.ToList();
         Budget = budget;
@@ -37,6 +42,7 @@ public class Publisher : IEquatable<Publisher>
     public string? PublisherIcon { get; }
     public string? PublisherSlogan { get; }
     public IReadOnlyList<PublisherDraftInfo> DraftInfos { get; }
+    public PublisherDraftInfo FirstDraftInfo => DraftInfos.First();
     public IReadOnlyList<PublisherGame> PublisherGames { get; }
 
     public int? GetDraftPosition(Guid draftID) => DraftInfos.FirstOrDefault(x => x.DraftID == draftID)?.DraftPosition;
