@@ -56,13 +56,15 @@ internal abstract class BaseGameNewsTests
             new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)
         };
 
-        var leagueOptions = new LeagueOptions(10, 5, 2, 1, 0, 0, 0, false, false, false, false, 0, leagueTags,
+        var leagueOptions = new LeagueOptions(10, 5, 2, 1, 0, false, false, false, false, 0, true, leagueTags,
             new List<SpecialGameSlot>(),
             DraftSystem.Flexible, PickupSystem.SemiPublicBiddingSecretCounterPicks, ScoringSystem.GetDefaultScoringSystem(2025),
             TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, ReleaseSystem.MustBeReleased,
             IneligibleGameSystem.CaseByCase,
             new AnnualDate(10, 1), new AnnualDate(10, 1));
 
+        var leagueYearKey = new LeagueYearKey(Guid.Empty, 2025);
+        var draftID = TestLeagueDraftIds.For(leagueYearKey);
         var games = new List<PublisherGame>();
         if (includeGame)
         {
@@ -70,12 +72,14 @@ internal abstract class BaseGameNewsTests
             var gameYear = new MasterGameYear(game, 2025);
             games.Add(new PublisherGame(Guid.Empty, Guid.Empty, "Game", Instant.MinValue, false, null, false, null, gameYear, 1, 1, 1, null, null));
         }
+        var draftInfos = new[] { new PublisherDraftInfo(draftID, 1, Guid.Empty, 1) };
         var publishers = new List<Publisher>
         {
-            new Publisher(Guid.Empty, new LeagueYearKey(Guid.Empty, 2025), FantasyCriticUser.GetFakeUser(), "Publisher", null, null, 1, games, new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false))
+            new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "Publisher", null, null, draftInfos, games, new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false))
         };
-        return new LeagueYear(league, supportedYear, leagueOptions, PlayStatus.DraftFinal, true,
-            new List<EligibilityOverride>(), new List<TagOverride>(), Instant.MinValue, null, publishers, null, false, null);
+        var leagueDraft = new LeagueDraft(draftID, leagueYearKey, 1, "InitialDraft", null, 10, 5, true, PlayStatus.DraftFinal, draftInfos, null);
+        return new LeagueYear(league, supportedYear, leagueOptions, new[] { leagueDraft },
+            new List<EligibilityOverride>(), new List<TagOverride>(), null, publishers, null, false, null);
     }
 
     private static MasterGame CreateBasicMasterGame(LocalDate minimumReleaseDate, LocalDate maximumReleaseDate, MasterGameTag tag)

@@ -133,10 +133,9 @@ public class TestDataService
     public IReadOnlyList<LeagueYear> GetLeagueYears(IReadOnlyList<Publisher> publishers, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears, IReadOnlyList<MasterGameTag> tags)
     {
         var publisherLookup = publishers.ToLookup(x => x.LeagueYearKey);
-        using var reader = new StreamReader(Path.Combine(_basePath, "LeagueYears.csv"));
-        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        csv.Context.RegisterClassMap<LeagueYearEntityMap>();
-        var leagueYearEntities = csv.GetRecords<LeagueYearEntity>().ToList();
+        var leagueYearEntities = GetLeagueYearEntities();
+        var leagueDraftEntities = GetLeagueDraftEntities();
+        var draftByLeagueYear = leagueDraftEntities.ToDictionary(x => (x.LeagueID, x.Year));
         var tagDictionary = tags.ToDictionary(x => x.Name);
 
         var eligibilityOverrideEntities = GetEligibilityOverrideEntities();
@@ -150,14 +149,22 @@ public class TestDataService
         var specialGameSlotsDictionary = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
 
         List<LeagueYear> domains = new List<LeagueYear>();
-        foreach (var leagueYear in leagueYearEntities)
+        foreach (var leagueYearEntity in leagueYearEntities)
         {
-            var leagueYearKey = new LeagueYearKey(leagueYear.LeagueID, leagueYear.Year);
-            var league = new League(leagueYear.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser().ToMinimal(), null, null, new List<MinimalLeagueYearInfo>() {new MinimalLeagueYearInfo(leagueYear.Year, false, PlayStatus.DraftFinal)},
+            var leagueYearKey = new LeagueYearKey(leagueYearEntity.LeagueID, leagueYearEntity.Year);
+            var leagueDraftEntity = draftByLeagueYear[(leagueYearEntity.LeagueID, leagueYearEntity.Year)];
+            leagueYearEntity.EnableBids = TestLeagueYearDefaults.DeriveEnableBids(leagueYearEntity, leagueDraftEntity);
+
+            var playStatus = PlayStatus.FromValue(leagueDraftEntity.PlayStatus);
+            var league = new League(leagueYearEntity.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser().ToMinimal(), null, null,
+                new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(leagueYearEntity.Year, false, playStatus) },
                 false, false, false, false, 0);
-            var supportedYear = new SupportedYear(leagueYear.Year, true, true, true, new LocalDate(leagueYear.Year, 1, 1), false);
+            var supportedYear = new SupportedYear(leagueYearEntity.Year, true, true, true, new LocalDate(leagueYearEntity.Year, 1, 1), false);
 
             var publishersInLeague = publisherLookup[leagueYearKey].ToList();
+            var publisherDraftInfos = publishersInLeague.Select(x => x.FirstDraftInfo).ToList();
+            var leagueDraft = leagueDraftEntity.ToDomain(publisherDraftInfos);
+
             var eligibilityOverrides = eligibilityOverrideLookup[leagueYearKey].Select(x => x.ToDomain(masterGameYears[x.MasterGameID].MasterGame));
             var tagOverrides = tagOverrideEntityLookup[leagueYearKey]
                 .Where(x => masterGameYears.ContainsKey(x.MasterGameID))
@@ -165,10 +172,29 @@ public class TestDataService
                 .Select(x => new TagOverride(masterGameYears[x.Key].MasterGame, tags.Where(t => x.Select(e => e.TagName).Contains(t.Name))));
             var leagueTags = leagueTagEntityLookup[leagueYearKey].Select(x => x.ToDomain(tagDictionary[x.Tag]));
             var specialGameSlots = specialGameSlotsDictionary[leagueYearKey];
-            domains.Add(leagueYear.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, specialGameSlots, null, publishersInLeague));
+            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, specialGameSlots, null, publishersInLeague, new[] { leagueDraft }));
         }
 
         return domains;
+    }
+
+    private IReadOnlyList<LeagueYearEntity> GetLeagueYearEntities()
+    {
+        using var reader = new StreamReader(Path.Combine(_basePath, "LeagueYears.csv"));
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Context.RegisterClassMap<LeagueYearEntityMap>();
+        return csv.GetRecords<LeagueYearEntity>().ToList();
+    }
+
+    /// <summary>
+    /// Reads draft rows from LeagueYears.csv today. When test data is split, change path to LeagueDraft.csv only.
+    /// </summary>
+    private IReadOnlyList<LeagueDraftEntity> GetLeagueDraftEntities()
+    {
+        using var reader = new StreamReader(Path.Combine(_basePath, "LeagueYears.csv"));
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Context.RegisterClassMap<LeagueDraftEntityMap>();
+        return csv.GetRecords<LeagueDraftEntity>().ToList();
     }
 
     private IReadOnlyList<PickupBidEntity> GetPickupBidEntities()
@@ -207,6 +233,7 @@ public class TestDataService
     {
         using var reader = new StreamReader(Path.Combine(_basePath, "PublisherGames.csv"));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Context.RegisterClassMap<PublisherGameEntityMap>();
         var publisherGames = csv.GetRecords<PublisherGameEntity>().ToList();
         return publisherGames;
     }
