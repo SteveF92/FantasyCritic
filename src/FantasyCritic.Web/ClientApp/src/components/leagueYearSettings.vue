@@ -440,6 +440,8 @@ export default {
       }
 
       this.internalValue.minimumBidAmount = 0;
+      // TODO(Phase2-MultiDraft): Need to make this a real option.
+      this.internalValue.enableBids = !this.oneShotMode;
       this.internalValue.unrestrictedReleaseStatusDroppableGames = 0;
       this.internalValue.willNotReleaseDroppableGames = 0;
       this.internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames = false;

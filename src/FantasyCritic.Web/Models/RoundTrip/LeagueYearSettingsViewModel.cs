@@ -11,7 +11,7 @@ public class LeagueYearSettingsViewModel
     public LeagueYearSettingsViewModel(Guid leagueID, int year, string? leagueYearName, int standardGames, int gamesToDraft, int counterPicks,
         int counterPicksToDraft, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedUnrestrictedReleaseStatusDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible,
-        int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
+        int minimumBidAmount, bool enableBids, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
         string ineligibleGameSystem,
         LocalDate counterPickDeadline, LocalDate? mightReleaseDroppableDate, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
     {
@@ -34,6 +34,7 @@ public class LeagueYearSettingsViewModel
         CounterPicksBlockDrops = counterPicksBlockDrops;
         AllowMoveIntoIneligible = allowMoveIntoIneligible;
         MinimumBidAmount = minimumBidAmount;
+        EnableBids = enableBids;
         DraftSystem = draftSystem;
         PickupSystem = pickupSystem;
         ScoringSystem = scoringSystem;
@@ -55,9 +56,9 @@ public class LeagueYearSettingsViewModel
         LeagueYearName = leagueYear.LeagueYearName;
 
         StandardGames = leagueYear.Options.StandardGames;
-        GamesToDraft = leagueYear.Options.GamesToDraft;
+        GamesToDraft = leagueYear.FirstDraft.GamesToDraft;
         CounterPicks = leagueYear.Options.CounterPicks;
-        CounterPicksToDraft = leagueYear.Options.CounterPicksToDraft;
+        CounterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft;
 
         UnrestrictedReleaseStatusDroppableGames = leagueYear.Options.UnrestrictedReleaseStatusDroppableGames;
         if (leagueYear.Options.UnrestrictedReleaseStatusDroppableGames == -1)
@@ -82,6 +83,7 @@ public class LeagueYearSettingsViewModel
         CounterPicksBlockDrops = leagueYear.Options.CounterPicksBlockDrops;
         AllowMoveIntoIneligible = leagueYear.Options.AllowMoveIntoIneligible;
         MinimumBidAmount = leagueYear.Options.MinimumBidAmount;
+        EnableBids = leagueYear.Options.EnableBids;
 
         DraftSystem = leagueYear.Options.DraftSystem.Value;
         PickupSystem = leagueYear.Options.PickupSystem.Value;
@@ -136,6 +138,7 @@ public class LeagueYearSettingsViewModel
     public bool AllowMoveIntoIneligible { get; }
 
     public int MinimumBidAmount { get; }
+    public bool EnableBids { get; }
     public string DraftSystem { get; }
     public string PickupSystem { get; }
     public string ScoringSystem { get; }
@@ -207,7 +210,7 @@ public class LeagueYearSettingsViewModel
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
         LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
-            unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
+            unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount, EnableBids,
             leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate);
         return parameters;
     }

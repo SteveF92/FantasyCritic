@@ -27,7 +27,7 @@ public class LeagueYearViewModel
         }
 
         Publishers = leagueYear.Publishers
-            .OrderBy(x => x.DraftPosition)
+            .OrderBy(x => x.FirstDraftInfo.DraftPosition)
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher, userIsInLeague, userIsInvitedToLeague, supplementalData.SystemWideValues, counterPickedByDictionary))
             .ToList();
 

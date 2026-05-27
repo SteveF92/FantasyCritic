@@ -841,7 +841,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
         }
 
-        if (leagueYear.Options.OneShotMode)
+        if (leagueYear.OneShotMode)
         {
             return BadRequest("This league is in 'one shot mode', which doesn't support bids.");
         }
@@ -1238,7 +1238,7 @@ public class LeagueController : BaseLeagueController
         var publisher = validResult.Publisher;
         var publisherGame = validResult.PublisherGame;
 
-        if (leagueYear.Options.OneShotMode)
+        if (leagueYear.OneShotMode)
         {
             return BadRequest("This league is in 'one shot mode', which doesn't support drops.");
         }
