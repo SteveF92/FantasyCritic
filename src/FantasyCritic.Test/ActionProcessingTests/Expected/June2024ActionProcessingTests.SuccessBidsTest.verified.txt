@@ -36589,7 +36589,7 @@
     CounterPick: false,
     Priority: 1,
     BidAmount: 5,
-    ProjectedPointsAtTimeOfBid: 114.61894971667130000000000002,
+    ProjectedPointsAtTimeOfBid: 111.74401609126030000000000002,
     SlotNumber: 17,
     Outcome: No competing bids for this game.,
     ConditionalDropMasterGameID: null,
