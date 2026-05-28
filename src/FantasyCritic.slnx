@@ -8,6 +8,7 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="FantasyCritic.FakeRepo/FantasyCritic.FakeRepo.csproj" />
+    <Project Path="FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj" />
     <Project Path="FantasyCritic.Test/FantasyCritic.Test.csproj" />
   </Folder>
   <Folder Name="/Utilities/">
