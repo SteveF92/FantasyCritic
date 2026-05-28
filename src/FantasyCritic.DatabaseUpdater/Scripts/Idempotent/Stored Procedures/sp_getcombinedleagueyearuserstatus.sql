@@ -28,10 +28,12 @@ BEGIN
   WHERE tbl_league_hasuser.LeagueID = P_LeagueID;
   
   
-  SELECT YEAR,
-         PlayStatus
+  -- TODO(Phase2-MultiDraft): Any implicit use of DraftNumber = 1 needs to be updated to something more robust once multi-draft is implemented.
+  SELECT tbl_league_year.YEAR,
+         ld.PlayStatus
   FROM tbl_league_year
-  WHERE LeagueID = P_LeagueID;
+  JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year AND ld.DraftNumber = 1
+  WHERE tbl_league_year.LeagueID = P_LeagueID;
   
   
   SELECT UserID,

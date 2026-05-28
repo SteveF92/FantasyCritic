@@ -15,6 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping structure for procedure fantasycritic.sp_getleague
+-- TODO(Phase2-MultiDraft): Any implicit use of DraftNumber = 1 needs to be updated to something more robust once multi-draft is implemented.
 DROP PROCEDURE IF EXISTS `sp_getleague`;
 DELIMITER //
 CREATE PROCEDURE `sp_getleague`(
@@ -32,10 +33,11 @@ BEGIN
   SELECT 
   tbl_league_year.`Year`,
   tbl_meta_supportedyear.Finished AS "SupportedYearIsFinished",
-  tbl_league_year.PlayStatus
+  ld.PlayStatus
   FROM tbl_league_year
   JOIN tbl_meta_supportedyear ON tbl_meta_supportedyear.`Year` = tbl_league_year.`Year`
-  WHERE LeagueID = P_LeagueID;
+  JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year AND ld.DraftNumber = 1
+  WHERE tbl_league_year.LeagueID = P_LeagueID;
 END//
 DELIMITER ;
 

@@ -30,7 +30,7 @@ BEGIN
   WHERE ConferenceID = P_ConferenceID
     AND tbl_conference.IsDeleted = 0;
   
-  
+  -- TODO(Phase2-MultiDraft): Any implicit use of DraftNumber = 1 needs to be updated to something more robust once multi-draft is implemented.
   SELECT 
     cy.Year,
     sy.Finished AS SupportedYearIsFinished,

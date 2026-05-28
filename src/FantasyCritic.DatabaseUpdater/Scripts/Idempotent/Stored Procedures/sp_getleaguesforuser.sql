@@ -22,6 +22,7 @@ CREATE PROCEDURE `sp_getleaguesforuser`(
 )
 BEGIN 
   -- Main query with added fields UserIsInLeague and UserIsFollowingLeague
+  -- TODO(Phase2-MultiDraft): Any implicit use of DraftNumber = 1 needs to be updated to something more robust once multi-draft is implemented.
   SELECT vw_league.*,
          tbl_league_hasuser.Archived,
          tbl_user.DisplayName AS ManagerDisplayName,
