@@ -566,10 +566,13 @@ public class MySQLConferenceRepo : IConferenceRepo
                                             """;
 
         const string publisherEntitiesSQL = """
-                                            SELECT tbl_league_publisher.PublisherID, tbl_league_publisher.LeagueID, tbl_league_publisher.Year, tbl_league_publisher.UserID
-                                            FROM tbl_league_publisher
-                                            JOIN tbl_league ON tbl_league_publisher.LeagueID = tbl_league.LeagueID 
-                                            WHERE tbl_league.ConferenceID = @conferenceID AND tbl_league_publisher.Year = @year;
+                                            SELECT p.PublisherID, p.LeagueID, p.Year, p.UserID,
+                                                   ld.DraftID, dp.DraftPosition
+                                            FROM tbl_league_publisher p
+                                            JOIN tbl_league l ON p.LeagueID = l.LeagueID
+                                            LEFT JOIN tbl_league_draft ld ON ld.LeagueID = p.LeagueID AND ld.Year = p.Year AND ld.DraftNumber = 1
+                                            LEFT JOIN tbl_league_draftpublisher dp ON dp.DraftID = ld.DraftID AND dp.PublisherID = p.PublisherID
+                                            WHERE l.ConferenceID = @conferenceID AND p.Year = @year;
                                             """;
 
         const string activePlayersSQL = """
@@ -582,7 +585,10 @@ public class MySQLConferenceRepo : IConferenceRepo
         const string publisherUpdateSQL = "UPDATE tbl_league_publisher SET LeagueID = @LeagueID WHERE PublisherID = @PublisherID;";
         const string deleteExistingLeagueUserSQL = "delete from tbl_league_hasuser where LeagueID = @LeagueID AND UserID = @UserID;";
         const string deleteExistingLeagueYearActivePlayerSQL = "delete from tbl_league_activeplayer where LeagueID = @LeagueID AND Year = @Year AND UserID = @UserID;";
-        // TODO(Phase2-MultiDraft): Draft order fixup after conference publisher movement needs to target tbl_league_draftpublisher.
+        // Clears and re-inserts positions for the first draft of an affected league year.
+        // Since publishers can only move prior to the first draft starting, DraftNumber = 1 is always the right target.
+        const string clearDraftPositionsSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID;";
+        const string insertDraftPositionSQL = "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
 
         var conferenceParam = new
         {
@@ -628,7 +634,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         try
         {
             var currentLeagueUsers = (await connection.QueryAsync<LeagueHasUserEntity>(currentLeagueUserSQL, conferenceParam, transaction)).ToList();
-            var currentPublisherEntities = (await connection.QueryAsync<PublisherEntity>(publisherEntitiesSQL, conferenceParam, transaction)).ToList();
+            var currentPublisherEntities = (await connection.QueryAsync<ConferencePublisherInfo>(publisherEntitiesSQL, conferenceParam, transaction)).ToList();
             var currentActivePlayerEntities = (await connection.QueryAsync<LeagueActivePlayerEntity>(activePlayersSQL, conferenceParam, transaction)).ToList();
 
             var leagueUserLookup = currentLeagueUsers.ToLookup(x => x.LeagueID);
@@ -682,7 +688,8 @@ public class MySQLConferenceRepo : IConferenceRepo
                 }));
             }
 
-            List<PublisherEntity> publishersToUpdate = new List<PublisherEntity>();
+            List<LeagueYearKey> leagueYearsToFixDraftOrders = new List<LeagueYearKey>();
+            List<ConferencePublisherInfo> publishersToUpdate = new List<ConferencePublisherInfo>();
             foreach (var publisher in currentPublisherEntities)
             {
                 var userNewLeague = newActivePlayersToAdd.FirstOrDefault(x => x.UserID == publisher.UserID);
@@ -691,17 +698,47 @@ public class MySQLConferenceRepo : IConferenceRepo
                     continue;
                 }
 
-                publishersToUpdate.Add(new PublisherEntity()
-                {
-                    PublisherID = publisher.PublisherID,
-                    LeagueID = userNewLeague.LeagueID,
-                    Year = publisher.Year,
-                    UserID = publisher.UserID
-                });
-            }
+                leagueYearsToFixDraftOrders.Add(new LeagueYearKey(publisher.LeagueID, publisher.Year));
+                leagueYearsToFixDraftOrders.Add(new LeagueYearKey(userNewLeague.LeagueID, publisher.Year));
 
-            // TODO(Phase2-MultiDraft): Draft order fixup after conference publisher movement is not implemented.
-            // After Phase 2, load tbl_league_draftpublisher positions and re-number them for affected league years.
+                publishersToUpdate.Add(publisher with { LeagueID = userNewLeague.LeagueID });
+            }
+            leagueYearsToFixDraftOrders = leagueYearsToFixDraftOrders.Distinct().ToList();
+
+            var publishersByID = currentPublisherEntities.ToDictionary(x => x.PublisherID);
+            var publisherLookup = currentPublisherEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
+            var draftClearsNeeded = new List<object>();
+            var draftPositionInserts = new List<object>();
+            foreach (var leagueYearKey in leagueYearsToFixDraftOrders)
+            {
+                var existingPublishersInLeagueYear = publisherLookup[leagueYearKey].ToList();
+                var existingPublisherIDsInLeagueYear = existingPublishersInLeagueYear.Select(x => x.PublisherID).ToHashSet();
+
+                // Only the first draft is relevant; publishers move before any draft starts.
+                var draftID = existingPublishersInLeagueYear.Select(x => x.DraftID).FirstOrDefault(x => x.HasValue)?.Value;
+                if (!draftID.HasValue)
+                {
+                    continue;
+                }
+
+                draftClearsNeeded.Add(new { draftID = draftID.Value });
+
+                var publishersMovedOutIDs = publishersToUpdate
+                    .Where(x => existingPublisherIDsInLeagueYear.Contains(x.PublisherID) && x.LeagueID != leagueYearKey.LeagueID)
+                    .Select(x => x.PublisherID)
+                    .ToHashSet();
+                var publishersMovedIn = publishersToUpdate
+                    .Where(x => !existingPublisherIDsInLeagueYear.Contains(x.PublisherID) && x.LeagueID == leagueYearKey.LeagueID)
+                    .Select(x => publishersByID[x.PublisherID])
+                    .ToList();
+
+                var finalPublishers = existingPublishersInLeagueYear
+                    .Concat(publishersMovedIn)
+                    .Where(x => !publishersMovedOutIDs.Contains(x.PublisherID))
+                    .OrderBy(x => x.DraftPosition)
+                    .Select((pub, index) => new { draftID = draftID.Value, publisherID = pub.PublisherID, draftPosition = index + 1 });
+                draftPositionInserts.AddRange(finalPublishers);
+            }
 
             var leagueYearsBeingChanged = new HashSet<LeagueYearKey>();
             leagueYearsBeingChanged.UnionWith(newActivePlayersToAdd.Select(x => new LeagueYearKey(x.LeagueID, x.Year)));
@@ -719,11 +756,17 @@ public class MySQLConferenceRepo : IConferenceRepo
             await connection.BulkInsertAsync(newUsersToAdd, "tbl_league_hasuser", 500, transaction);
             await connection.BulkInsertAsync(newActivePlayersToAdd, "tbl_league_activeplayer", 500, transaction, insertIgnore: true);
 
+            // Clear draft positions for all affected drafts before moving publishers
+            await connection.ExecuteAsync(clearDraftPositionsSQL, draftClearsNeeded, transaction);
+
             //Update any existing publishers to the new league
             foreach (var publisher in publishersToUpdate)
             {
                 await connection.ExecuteAsync(publisherUpdateSQL, publisher, transaction);
             }
+
+            // Re-insert renumbered draft positions for affected drafts
+            await connection.ExecuteAsync(insertDraftPositionSQL, draftPositionInserts, transaction);
 
             //Delete users from old leagues
             foreach (var activePlayerToRemove in activePlayersToRemove)
@@ -794,4 +837,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         return Result.Success();
     }
+
+    // Used only within AssignLeaguePlayers to carry publisher + first-draft position info from a single query.
+    private record ConferencePublisherInfo(Guid PublisherID, Guid LeagueID, int Year, Guid UserID, Guid? DraftID, int? DraftPosition);
 }
