@@ -80,7 +80,31 @@ internal sealed class ApiSession : IDisposable
     public Task<HttpResponseMessage> GetAsync(string path)
         => _client.GetAsync(path);
 
-    public Task<HttpResponseMessage> PostJsonAsync(string path, object body)
+    /// <summary>
+    /// GETs <paramref name="path"/> and deserializes the JSON body as
+    /// <typeparamref name="T"/>. Throws if the response is not 200 OK.
+    /// Use the concrete ViewModel/response type from <c>FantasyCritic.Lib</c> or
+    /// <c>FantasyCritic.Web</c> so that property renames break this at compile time.
+    /// </summary>
+    public async Task<T> GetAndDeserializeAsync<T>(string path)
+    {
+        var response = await _client.GetAsync(path);
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException(
+                $"GET {path} failed with {(int)response.StatusCode}. Body: {body[..Math.Min(500, body.Length)]}");
+        }
+        return JsonConvert.DeserializeObject<T>(body)
+               ?? throw new InvalidOperationException($"GET {path} returned null after deserialization.");
+    }
+
+    /// <summary>
+    /// POSTs <paramref name="body"/> as JSON to <paramref name="path"/>.
+    /// Pass the concrete request type from <c>FantasyCritic.Web</c> so that
+    /// property renames break this at compile time.
+    /// </summary>
+    public Task<HttpResponseMessage> PostJsonAsync<T>(string path, T body)
     {
         var json = JsonConvert.SerializeObject(body);
         return _client.PostAsync(path,

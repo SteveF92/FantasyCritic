@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using FantasyCritic.IntegrationTests.Helpers;
-using Newtonsoft.Json.Linq;
+using FantasyCritic.Lib.SharedSerialization.API;
 using NUnit.Framework;
 
 namespace FantasyCritic.IntegrationTests.Tests.Auth;
@@ -56,15 +56,8 @@ public class AuthTests
         // Registration with RequireConfirmedAccount=false signs the user in immediately.
         await session.RegisterAsync(email, password, displayName);
 
-        var response = await session.GetAsync("/api/Account/CurrentUser");
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-
-        var body = await response.Content.ReadAsStringAsync();
-        var json = JObject.Parse(body);
-        Assert.That(
-            json["emailAddress"]?.ToString(),
-            Is.EqualTo(email).IgnoreCase,
-            "CurrentUser response should contain the registered email.");
+        var user = await session.GetAndDeserializeAsync<FantasyCriticUserViewModel>("/api/Account/CurrentUser");
+        Assert.That(user.EmailAddress, Is.EqualTo(email).IgnoreCase);
     }
 
     [Test]
@@ -81,14 +74,8 @@ public class AuthTests
         var loginSucceeded = await sessionB.LoginAsync(email, password);
         Assert.That(loginSucceeded, Is.True, "Login with correct credentials should return a redirect.");
 
-        var response = await sessionB.GetAsync("/api/Account/CurrentUser");
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-
-        var body = await response.Content.ReadAsStringAsync();
-        var json = JObject.Parse(body);
-        Assert.That(
-            json["emailAddress"]?.ToString(),
-            Is.EqualTo(email).IgnoreCase);
+        var user = await sessionB.GetAndDeserializeAsync<FantasyCriticUserViewModel>("/api/Account/CurrentUser");
+        Assert.That(user.EmailAddress, Is.EqualTo(email).IgnoreCase);
     }
 
     [Test]
