@@ -36,6 +36,9 @@
              CopyToOutputDirectory="PreserveNewest"
              Link="appsettings.json" />
     <Content Include="appsettings.Testing.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="appsettings.Testing.Local.json"
+             CopyToOutputDirectory="PreserveNewest"
+             Condition="Exists('appsettings.Testing.Local.json')" />
   </ItemGroup>
 
 </Project>

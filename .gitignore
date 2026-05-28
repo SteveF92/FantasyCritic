@@ -264,3 +264,4 @@ src/FantasyCritic.Web/tempkey.jwk
 
 *.received.*
 src/FantasyCritic.Web/ClientApp/dist/
+src/FantasyCritic.IntegrationTests/appsettings.Testing.Local.json
