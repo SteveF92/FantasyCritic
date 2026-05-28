@@ -108,19 +108,17 @@ The connection string matches the Docker Compose MySQL defaults already in `apps
 
 ### 2c — Service overrides (`ConfigureTestServices`)
 
-Three categories of services are overridden:
+Only one service category needs to be overridden:
 
-**Email — no-op sender + disable email confirmation**
+**Email — no-op sender**
 
-Replace the concrete `IEmailSender` implementation with a `NullEmailSender` that does nothing. This prevents any attempt to call Postmark during registration. Additionally, reconfigure ASP.NET Identity's `SignInOptions` to set `RequireConfirmedAccount = false`, so tests can log in immediately after registering without needing to confirm an email address.
+Replace the concrete `IEmailSender` implementation with a `NullEmailSender` that does nothing. This prevents any attempt to call Postmark during registration.
 
-**Background services — remove all**
+The following concerns from the original design do **not** require any action, because the production code already handles them:
 
-Remove all `IHostedService` registrations. This prevents the Discord bot, OpenCritic refresh scheduler, and any other hosted services from starting. They would fail immediately with dummy credentials and add noise to test output.
-
-**Discord — no-op**
-
-The `FantasyCriticDiscordConfiguration` is instantiated with the dummy `BotToken` from config. Since hosted services are removed, it never actually connects. No additional override needed.
+- **`RequireConfirmedAccount`** — already `false` in `HostingExtensions.cs`; no override needed.
+- **Scheduled background tasks** — already gated on `!environment.IsDevelopment()`; setting the environment to `"Development"` skips them automatically.
+- **Discord hosted service** — already gated on `discordBotToken != "secret"`; the default `appsettings.json` has `"BotToken": "secret"`, so Discord is never registered.
 
 ---
 
