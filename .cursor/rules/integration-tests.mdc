@@ -1,0 +1,33 @@
+---
+description: Conventions for writing integration tests in FantasyCritic.IntegrationTests
+globs: src/FantasyCritic.IntegrationTests/**
+alwaysApply: false
+---
+
+# Integration Test Conventions
+
+## Every new test fixture
+
+- Inherit from `IntegrationTestBase` (provides `Factory`, `NewUser()`, and `[OneTimeSetUp/TearDown]`)
+- Place in `Tests/<FeatureArea>/` mirroring the request folder structure (`Tests/League/`, `Tests/LeagueManager/`, `Tests/Royale/`, etc.)
+- One `[TestFixture]` class per feature area
+
+## Test data
+
+- Always use `NewUser()` for user credentials — never hardcode emails or display names
+- Build state through the API; never insert directly into the DB
+
+## Typed contracts
+
+- `PostJsonAsync<TRequest>` and `PostJsonAndDeserializeAsync<TRequest, TResponse>`: always pass a concrete request type from `FantasyCritic.Web.Models.Requests.*`
+- `GetAndDeserializeAsync<TResponse>`: always pass a concrete ViewModel from `FantasyCritic.Lib.SharedSerialization.API.*`
+- Never use anonymous objects or `JObject` — compile-time breakage on contract changes is the goal
+
+## Running
+
+- Run with `-c Release` when the dev web server is running (dev server holds Debug DLL locks)
+- MySQL Docker container must be up first: `docker compose -f infrastructure/docker-compose-mysql.yaml up -d`
+
+## No cleanup
+
+Tests use GUID-based unique identifiers; they never collide across runs and require no teardown.
