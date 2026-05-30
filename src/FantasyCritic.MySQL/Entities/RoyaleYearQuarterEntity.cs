@@ -3,7 +3,7 @@ using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.MySQL.Entities;
 
-internal class RoyaleYearQuarterEntity
+public class RoyaleYearQuarterEntity
 {
     public int Year { get; set; }
     public int Quarter { get; set; }
