@@ -8,41 +8,12 @@ using NUnit.Framework;
 namespace FantasyCritic.IntegrationTests.Tests.Auth;
 
 [TestFixture]
-public class AuthTests
+public class AuthTests : IntegrationTestBase
 {
-    private FantasyCriticWebApplicationFactory _factory = null!;
-
-    [OneTimeSetUp]
-    public void OneTimeSetUp()
-    {
-        _factory = new FantasyCriticWebApplicationFactory();
-    }
-
-    [OneTimeTearDown]
-    public void OneTimeTearDown()
-    {
-        _factory.Dispose();
-    }
-
-    /// <summary>
-    /// Produces unique credentials so tests never collide across runs.
-    /// Display name is capped at 20 chars (well within the 30-char limit).
-    /// Password satisfies: min 10 chars, min 5 unique chars.
-    /// </summary>
-    private static (string email, string password, string displayName) NewUser()
-    {
-        var id = Guid.NewGuid().ToString("N")[..12];
-        return (
-            $"u-{id}@integrationtest.local",
-            "IntegrationTestPass",
-            $"T-{id}"                         // "T-" + 12 hex chars = 14 chars
-        );
-    }
-
     [Test]
     public async Task Factory_Boots_AndHealthEndpointResponds()
     {
-        var client = _factory.CreateClient();
+        var client = Factory.CreateClient();
         var response = await client.GetAsync("/");
         Assert.That((int)response.StatusCode, Is.LessThan(500));
     }
@@ -51,7 +22,7 @@ public class AuthTests
     public async Task Register_AutoSignsIn_CurrentUser_ReturnsOk()
     {
         var (email, password, displayName) = NewUser();
-        using var session = new ApiSession(_factory);
+        using var session = new ApiSession(Factory);
 
         // Registration with RequireConfirmedAccount=false signs the user in immediately.
         await session.RegisterAsync(email, password, displayName);
@@ -66,11 +37,11 @@ public class AuthTests
         var (email, password, displayName) = NewUser();
 
         // Register from session A (creates the user in the DB).
-        using var sessionA = new ApiSession(_factory);
+        using var sessionA = new ApiSession(Factory);
         await sessionA.RegisterAsync(email, password, displayName);
 
         // Log in from session B (fresh — no carry-over auth cookie from registration).
-        using var sessionB = new ApiSession(_factory);
+        using var sessionB = new ApiSession(Factory);
         var loginSucceeded = await sessionB.LoginAsync(email, password);
         Assert.That(loginSucceeded, Is.True, "Login with correct credentials should return a redirect.");
 
@@ -83,10 +54,10 @@ public class AuthTests
     {
         var (email, password, displayName) = NewUser();
 
-        using var registerSession = new ApiSession(_factory);
+        using var registerSession = new ApiSession(Factory);
         await registerSession.RegisterAsync(email, password, displayName);
 
-        using var session = new ApiSession(_factory);
+        using var session = new ApiSession(Factory);
         var loginSucceeded = await session.LoginAsync(email, "WrongPassword!!");
         Assert.That(loginSucceeded, Is.False, "Login with wrong password should not redirect.");
     }
@@ -95,7 +66,7 @@ public class AuthTests
     public async Task UnauthenticatedRequest_ToProtectedEndpoint_Returns401()
     {
         // Fresh session — never registered or logged in.
-        using var session = new ApiSession(_factory);
+        using var session = new ApiSession(Factory);
         var response = await session.GetAsync("/api/Account/CurrentUser");
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
     }

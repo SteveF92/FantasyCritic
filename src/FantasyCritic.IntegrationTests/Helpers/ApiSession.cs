@@ -111,6 +111,24 @@ internal sealed class ApiSession : IDisposable
             new StringContent(json, Encoding.UTF8, "application/json"));
     }
 
+    /// <summary>
+    /// POSTs <paramref name="body"/> as JSON and deserializes the response body as
+    /// <typeparamref name="TResponse"/>. Throws if the response is not 2xx.
+    /// Use this for endpoints that return the created/updated resource.
+    /// </summary>
+    public async Task<TResponse> PostJsonAndDeserializeAsync<TRequest, TResponse>(string path, TRequest body)
+    {
+        var response = await PostJsonAsync(path, body);
+        var responseBody = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException(
+                $"POST {path} failed with {(int)response.StatusCode}. Body: {responseBody[..Math.Min(500, responseBody.Length)]}");
+        }
+        return JsonConvert.DeserializeObject<TResponse>(responseBody)
+               ?? throw new InvalidOperationException($"POST {path} returned null after deserialization.");
+    }
+
     private async Task<string> GetAntiForgeryTokenAsync(string path)
     {
         var response = await _client.GetAsync(path);
