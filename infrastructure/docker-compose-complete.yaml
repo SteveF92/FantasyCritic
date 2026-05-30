@@ -37,6 +37,20 @@ services:
     environment:
       ConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=anotherfantasticpassword;SslMode=required;charset=utf8;"
 
+  master-game-updater:
+    container_name: fantasycritic-master-game-updater
+    build:
+      context: ../src
+      dockerfile: FantasyCritic.MasterGameUpdater/Dockerfile
+    restart: "no"
+    depends_on:
+      database-updater:
+        condition: service_completed_successfully
+    environment:
+      localConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      baseAddress: "https://www.fantasycritic.games"
+      addedByUserIDOverride: "00000000-0000-0000-0000-000000000000"
+
   web:
     container_name: fantasycritic-web
     build:
@@ -49,6 +63,8 @@ services:
       mysql:
         condition: service_healthy
       database-updater:
+        condition: service_completed_successfully
+      master-game-updater:
         condition: service_completed_successfully
     environment:
       # Mirrors src/FantasyCritic.Web/appsettings.json (ASP.NET Core: nested keys use __).

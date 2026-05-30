@@ -40,6 +40,7 @@ public static class Program
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+            .AddEnvironmentVariables()
             .Build();
 
         _localConnectionString = configuration["localConnectionString"]!;
