@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FantasyCritic.MasterGameUpdater": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
