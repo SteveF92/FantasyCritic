@@ -36,6 +36,10 @@ services:
         condition: service_healthy
     environment:
       ConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=anotherfantasticpassword;SslMode=required;charset=utf8;"
+    volumes:
+      # Mount scripts from the host so new/changed SQL files are picked up without
+      # rebuilding the image. GetScriptsRoot() resolves /app/Scripts first.
+      - ../src/FantasyCritic.DatabaseUpdater/Scripts:/app/Scripts:ro
 
   master-game-updater:
     container_name: fantasycritic-master-game-updater
