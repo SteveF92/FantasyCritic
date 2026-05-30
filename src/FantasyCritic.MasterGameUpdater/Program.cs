@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.DapperTypeMaps;
+using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -51,6 +52,8 @@ public static class Program
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
         await UpdateMasterGames();
+        await UpdateSupportedYears();
+        await UpdateRoyaleQuarters();
     }
 
     private static async Task UpdateMasterGames()
@@ -116,4 +119,50 @@ public static class Program
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
             openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo);
     }
+
+    private static async Task UpdateSupportedYears()
+    {
+        Log.Information("Getting supported years from production");
+        HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
+        var json = await client.GetStringAsync("api/Game/SupportedYears");
+        var responses = JsonConvert.DeserializeObject<List<SupportedYearResponse>>(json)!;
+
+        var entities = responses.Select(r => new SupportedYearEntity
+        {
+            Year             = r.Year,
+            OpenForCreation  = r.OpenForCreation,
+            OpenForPlay      = r.OpenForPlay,
+            OpenForBetaUsers = false,
+            StartDate        = LocalDate.FromDateTime(r.StartDate),
+            Finished         = r.Finished
+        }).ToList();
+
+        var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
+        await syncer.UpsertSupportedYears(entities);
+    }
+
+    private static async Task UpdateRoyaleQuarters()
+    {
+        Log.Information("Getting royale year quarters from production");
+        HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
+        var json = await client.GetStringAsync("api/Royale/RoyaleQuarters");
+        var responses = JsonConvert.DeserializeObject<List<RoyaleQuarterResponse>>(json)!;
+
+        var entities = responses.Select(r => new RoyaleYearQuarterEntity
+        {
+            Year        = r.Year,
+            Quarter     = r.Quarter,
+            OpenForPlay = r.OpenForPlay,
+            Finished    = r.Finished,
+            WinningUser = null
+        }).ToList();
+
+        var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
+        await syncer.UpsertRoyaleYearQuarters(entities);
+    }
+
+    private record SupportedYearResponse(int Year, bool OpenForCreation, bool OpenForPlay,
+        DateTime StartDate, bool Finished);
+
+    private record RoyaleQuarterResponse(int Year, int Quarter, bool OpenForPlay, bool Finished);
 }
