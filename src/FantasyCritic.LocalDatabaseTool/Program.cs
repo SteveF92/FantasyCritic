@@ -21,7 +21,7 @@ using Serilog;
 using System.ComponentModel.Design;
 using System.Reflection;
 
-namespace FantasyCritic.MasterGameUpdater;
+namespace FantasyCritic.LocalDatabaseTool;
 
 public static class Program
 {
