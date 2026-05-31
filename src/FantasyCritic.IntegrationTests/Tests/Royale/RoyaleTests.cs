@@ -114,6 +114,159 @@ public class RoyaleTests : IntegrationTestBase
         Assert.That(publisher.PublisherSlogan, Is.EqualTo("Test Slogan"));
     }
 
+    [Test]
+    public async Task RoyaleLifecycle_MultiPurchaseAdvertiseSellRebuy_Succeeds()
+    {
+        // ── Setup ──────────────────────────────────────────────────────────────
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var activeQuarter = await session.GetAndDeserializeAsync<RoyaleYearQuarterJson>(
+            "/api/Royale/ActiveRoyaleQuarter");
+
+        var publisherName = $"Pub-{Guid.NewGuid():N}"[..20];
+        var publisherID = await session.PostJsonAndDeserializeAsync<CreateRoyalePublisherRequest, Guid>(
+            "/api/Royale/CreateRoyalePublisher",
+            new CreateRoyalePublisherRequest(activeQuarter.Year, activeQuarter.Quarter, publisherName));
+
+        // ── Step A: Build up to a 10-game roster ───────────────────────────────
+        // Keep $9 in reserve ($1 + $3 + $5 advertising allocated below).
+        const decimal adReserve = 9m;
+        const decimal budgetCap = 100m - adReserve;
+
+        var gameSet = await FindAffordableSetViaApiAsync(
+            session, publisherID, activeQuarter.Year, maxCount: 10, budgetCap);
+
+        Assert.That(gameSet.Count, Is.GreaterThan(0),
+            "Expected at least one purchasable game for the active quarter. "
+            + "Verify the local DB is synced from production (run LocalDatabaseTool).");
+
+        var purchasedIDs = new List<Guid>();
+        foreach (var game in gameSet)
+        {
+            var result = await session.PostJsonAndDeserializeAsync<PurchaseRoyaleGameRequest, PlayerClaimResultJson>(
+                "/api/Royale/PurchaseGame",
+                new PurchaseRoyaleGameRequest(publisherID, game.MasterGame.MasterGameID));
+            Assert.That(result.Success, Is.True,
+                $"PurchaseGame failed for {game.MasterGame.MasterGameID}: {string.Join("; ", result.Errors)}");
+            purchasedIDs.Add(game.MasterGame.MasterGameID);
+        }
+
+        var publisher = await session.GetAndDeserializeAsync<RoyalePublisherJson>(
+            $"/api/Royale/GetRoyalePublisher/{publisherID}");
+
+        Assert.That(publisher.PublisherGames.Count, Is.EqualTo(gameSet.Count),
+            "Roster count should match the number of successful purchases.");
+        Assert.That(publisher.Budget, Is.GreaterThanOrEqualTo(adReserve),
+            "Budget should have at least $9 remaining for advertising.");
+
+        // ── Step B: Advertising budgets ────────────────────────────────────────
+        Assert.That(purchasedIDs.Count, Is.GreaterThanOrEqualTo(3),
+            "Need at least 3 games to set advertising money on games 0, 1, 2.");
+
+        var game0ID = purchasedIDs[0];
+        var game1ID = purchasedIDs[1];
+        var game2ID = purchasedIDs[2];
+
+        var ad0 = await session.PostJsonAsync("/api/Royale/SetAdvertisingMoney",
+            new SetAdvertisingMoneyRequest(publisherID, game0ID, 1m));
+        Assert.That(ad0.IsSuccessStatusCode, Is.True, "SetAdvertisingMoney $1 on game0 should succeed.");
+
+        var ad1 = await session.PostJsonAsync("/api/Royale/SetAdvertisingMoney",
+            new SetAdvertisingMoneyRequest(publisherID, game1ID, 3m));
+        Assert.That(ad1.IsSuccessStatusCode, Is.True, "SetAdvertisingMoney $3 on game1 should succeed.");
+
+        var ad2 = await session.PostJsonAsync("/api/Royale/SetAdvertisingMoney",
+            new SetAdvertisingMoneyRequest(publisherID, game2ID, 5m));
+        Assert.That(ad2.IsSuccessStatusCode, Is.True, "SetAdvertisingMoney $5 on game2 should succeed.");
+
+        // Owner reloads — hidden games still have MasterGame populated for the owner.
+        publisher = await session.GetAndDeserializeAsync<RoyalePublisherJson>(
+            $"/api/Royale/GetRoyalePublisher/{publisherID}");
+
+        Assert.That(
+            publisher.PublisherGames.Single(g => g.MasterGame!.MasterGameID == game0ID).AdvertisingMoney,
+            Is.EqualTo(1m), "game0 should have $1 advertising money.");
+        Assert.That(
+            publisher.PublisherGames.Single(g => g.MasterGame!.MasterGameID == game1ID).AdvertisingMoney,
+            Is.EqualTo(3m), "game1 should have $3 advertising money.");
+        Assert.That(
+            publisher.PublisherGames.Single(g => g.MasterGame!.MasterGameID == game2ID).AdvertisingMoney,
+            Is.EqualTo(5m), "game2 should have $5 advertising money.");
+
+        // ── Step C: Sell game0 and buy a replacement ───────────────────────────
+        var budgetBeforeSell = publisher.Budget;
+
+        var sellResponse = await session.PostJsonAsync("/api/Royale/SellGame",
+            new SellRoyaleGameRequest(publisherID, game0ID));
+        Assert.That(sellResponse.IsSuccessStatusCode, Is.True, "SellGame should return 2xx.");
+
+        publisher = await session.GetAndDeserializeAsync<RoyalePublisherJson>(
+            $"/api/Royale/GetRoyalePublisher/{publisherID}");
+
+        Assert.That(
+            publisher.PublisherGames.All(g => g.MasterGame?.MasterGameID != game0ID),
+            Is.True,
+            "Sold game (game0) should not appear on the roster after selling.");
+        Assert.That(publisher.Budget, Is.GreaterThan(budgetBeforeSell),
+            "Budget should increase after selling (refund applied).");
+
+        var replacement = await FindPurchasableGameViaApiAsync(session, publisherID, activeQuarter.Year);
+        Assert.That(replacement, Is.Not.Null,
+            "A purchasable replacement game should exist after selling game0.");
+
+        var replaceResult = await session.PostJsonAndDeserializeAsync<PurchaseRoyaleGameRequest, PlayerClaimResultJson>(
+            "/api/Royale/PurchaseGame",
+            new PurchaseRoyaleGameRequest(publisherID, replacement!.MasterGame.MasterGameID));
+        Assert.That(replaceResult.Success, Is.True,
+            $"Replacement purchase failed: {string.Join("; ", replaceResult.Errors)}");
+
+        publisher = await session.GetAndDeserializeAsync<RoyalePublisherJson>(
+            $"/api/Royale/GetRoyalePublisher/{publisherID}");
+        Assert.That(
+            publisher.PublisherGames.Any(g => g.MasterGame?.MasterGameID == replacement.MasterGame.MasterGameID),
+            Is.True,
+            "Replacement game should appear on the roster.");
+
+        // ── Step D: Public visibility check ────────────────────────────────────
+        // A different authenticated user viewing this publisher sees hidden-game entries
+        // with GameHidden=true but MasterGame=null (game identity concealed).
+        // The owner, by contrast, sees MasterGame populated even for hidden games.
+        var (email2, password2, displayName2) = NewUser();
+        using var publicSession = new ApiSession(Factory);
+        await publicSession.RegisterAsync(email2, password2, displayName2);
+
+        var publicView = await publicSession.GetAndDeserializeAsync<RoyalePublisherJson>(
+            $"/api/Royale/GetRoyalePublisher/{publisherID}");
+
+        Assert.That(publicView.PublisherGames.Count, Is.GreaterThan(0),
+            "Public viewer should be able to see how many games the publisher has.");
+
+        var hiddenFromPublic = publicView.PublisherGames.Where(g => g.GameHidden).ToList();
+        Assert.That(hiddenFromPublic.Count, Is.GreaterThan(0),
+            "At least one game should be hidden from a public viewer. "
+            + "All purchased games are unreleased and unscored, so all should be hidden.");
+
+        foreach (var hidden in hiddenFromPublic)
+        {
+            Assert.That(hidden.MasterGame, Is.Null,
+                "Public viewers must not see the MasterGame identity of hidden games.");
+            Assert.That(hidden.AmountSpent, Is.Null,
+                "Public viewers must not see the AmountSpent of hidden games.");
+        }
+
+        // Owner still sees MasterGame for their own hidden games.
+        var ownerView = await session.GetAndDeserializeAsync<RoyalePublisherJson>(
+            $"/api/Royale/GetRoyalePublisher/{publisherID}");
+
+        foreach (var ownerHidden in ownerView.PublisherGames.Where(g => g.GameHidden))
+        {
+            Assert.That(ownerHidden.MasterGame, Is.Not.Null,
+                "Owner must see MasterGame even for games flagged as hidden.");
+        }
+    }
+
     /// <summary>
     /// Mirrors the purchase-game modal: list top games under each release filter until one is available.
     /// Picks the highest-hype candidate using production stats when reachable.
@@ -139,5 +292,39 @@ public class RoyaleTests : IntegrationTestBase
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Tries ExpectedToReleaseInQuarter first; falls back to All if no candidates found.
+    /// Returns up to <paramref name="maxCount"/> games whose combined cost stays within
+    /// <paramref name="budgetCap"/>, ordered by production HypeFactor descending.
+    /// </summary>
+    private static async Task<IReadOnlyList<PossibleRoyaleMasterGameJson>> FindAffordableSetViaApiAsync(
+        ApiSession session,
+        Guid publisherID,
+        int year,
+        int maxCount,
+        decimal budgetCap)
+    {
+        foreach (var releaseFilter in new[] { "ExpectedToReleaseInQuarter", "All" })
+        {
+            var possibleGames = await session.GetAndDeserializeAsync<List<PossibleRoyaleMasterGameJson>>(
+                $"/api/Royale/PossibleMasterGames?publisherID={publisherID}&releaseFilter={releaseFilter}");
+
+            var available = possibleGames.Where(g => g.IsAvailable).ToList();
+            if (available.Count == 0) continue;
+
+            var set = await ProductionGameStatsCache.FindAffordableSetAsync(
+                available,
+                g => g.MasterGame.MasterGameID,
+                g => g.Cost,
+                maxCount,
+                budgetCap,
+                year);
+
+            if (set.Count > 0) return set;
+        }
+
+        return Array.Empty<PossibleRoyaleMasterGameJson>();
     }
 }
