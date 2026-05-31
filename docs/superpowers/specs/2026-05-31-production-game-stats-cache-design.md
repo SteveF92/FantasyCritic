@@ -65,13 +65,9 @@ Using `Lazy<Task<T>>` ensures that concurrent first-callers for the same year is
 
 ### Base URL
 
-Read from configuration in priority order:
+Hard-coded constant `"https://www.fantasycritic.games"` inside the class.
 
-1. `appsettings.Testing.Local.json` key `"ProductionApiBaseUrl"`
-2. `appsettings.Testing.json` key `"ProductionApiBaseUrl"`
-3. Hard-coded default: `"https://www.fantasycritic.games"`
-
-This mirrors the `LocalDatabaseTool` `baseAddress` pattern and allows overriding in unusual CI environments.
+`ProductionGameStatsCache` is a static type outside the DI system, so threading a `ConfigurationBuilder` through its initialiser would add complexity for no practical gain — the production URL is stable. If a CI environment ever needs to override it, an environment variable check can be added at that point.
 
 ### Fetch
 
