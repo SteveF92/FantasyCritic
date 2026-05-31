@@ -20,13 +20,19 @@ internal sealed class RoyalePublisherJson
 {
     public Guid PublisherID { get; set; }
     public string PublisherName { get; set; } = "";
+    public string? PublisherIcon { get; set; }
+    public string? PublisherSlogan { get; set; }
     public RoyaleYearQuarterJson YearQuarter { get; set; } = null!;
     public List<RoyalePublisherGameJson> PublisherGames { get; set; } = [];
+    public decimal Budget { get; set; }
 }
 
 internal sealed class RoyalePublisherGameJson
 {
     public MasterGameYearJson? MasterGame { get; set; }
+    public bool GameHidden { get; set; }
+    public decimal AdvertisingMoney { get; set; }
+    public decimal? AmountSpent { get; set; }
 }
 
 internal sealed class MasterGameYearJson
@@ -38,6 +44,8 @@ internal sealed class PossibleRoyaleMasterGameJson
 {
     public MasterGameYearJson MasterGame { get; set; } = null!;
     public bool IsAvailable { get; set; }
+    public decimal Cost { get; set; }
+    public string Status { get; set; } = "";
 }
 
 internal sealed class PlayerClaimResultJson
