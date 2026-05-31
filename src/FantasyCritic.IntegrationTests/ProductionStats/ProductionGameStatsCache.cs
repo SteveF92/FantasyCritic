@@ -73,6 +73,49 @@ internal static class ProductionGameStatsCache
         }
     }
 
+    public static async Task<IReadOnlyList<T>> FindAffordableSetAsync<T>(
+        IEnumerable<T> localCandidates,
+        Func<T, Guid> masterGameIdSelector,
+        Func<T, decimal> costSelector,
+        int maxCount,
+        decimal budgetCap,
+        int year)
+    {
+        var stats = await GetStatsForYearAsync(year);
+        return SelectAffordableSet(localCandidates, masterGameIdSelector, costSelector, maxCount, budgetCap, stats);
+    }
+
+    internal static IReadOnlyList<T> SelectAffordableSet<T>(
+        IEnumerable<T> localCandidates,
+        Func<T, Guid> masterGameIdSelector,
+        Func<T, decimal> costSelector,
+        int maxCount,
+        decimal budgetCap,
+        IReadOnlyList<ProductionMasterGameYearStat> stats)
+    {
+        var hypeLookup = stats.ToDictionary(s => s.MasterGameID, s => s.HypeFactor);
+
+        var sorted = localCandidates
+            .OrderByDescending(c => hypeLookup.GetValueOrDefault(masterGameIdSelector(c), 0m))
+            .ToList();
+
+        var result = new List<T>();
+        var remainingBudget = budgetCap;
+
+        foreach (var candidate in sorted)
+        {
+            if (result.Count >= maxCount) break;
+            var cost = costSelector(candidate);
+            if (cost <= remainingBudget)
+            {
+                result.Add(candidate);
+                remainingBudget -= cost;
+            }
+        }
+
+        return result;
+    }
+
     private sealed class MasterGameYearApiJson
     {
         public Guid MasterGameID { get; set; }
