@@ -102,8 +102,13 @@ All direct `JsonSerializer` calls use these options. MVC registration uses the s
 
 // After
 .AddJsonOptions(options =>
-    options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb))
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+})
 ```
+
+> **Important:** `AddNewtonsoftJson` applies camelCase by default; `AddJsonOptions` does not — `PropertyNamingPolicy = CamelCase` must be set explicitly or the API output silently switches to PascalCase and breaks the frontend.
 
 ### Touch points
 
