@@ -267,6 +267,40 @@ public class RoyaleTests : IntegrationTestBase
         }
     }
 
+    [Test]
+    public async Task SetAdvertisingMoney_OverTenDollars_ReturnsBadRequest()
+    {
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var activeQuarter = await session.GetAndDeserializeAsync<RoyaleYearQuarterJson>(
+            "/api/Royale/ActiveRoyaleQuarter");
+
+        var publisherName = $"Pub-{Guid.NewGuid():N}"[..20];
+        var publisherID = await session.PostJsonAndDeserializeAsync<CreateRoyalePublisherRequest, Guid>(
+            "/api/Royale/CreateRoyalePublisher",
+            new CreateRoyalePublisherRequest(activeQuarter.Year, activeQuarter.Quarter, publisherName));
+
+        var game = await FindPurchasableGameViaApiAsync(session, publisherID, activeQuarter.Year);
+        Assert.That(game, Is.Not.Null,
+            "Need a purchasable game to set advertising money on. "
+            + "Verify the local DB is synced from production.");
+
+        var purchaseResult = await session.PostJsonAndDeserializeAsync<PurchaseRoyaleGameRequest, PlayerClaimResultJson>(
+            "/api/Royale/PurchaseGame",
+            new PurchaseRoyaleGameRequest(publisherID, game!.MasterGame.MasterGameID));
+        Assert.That(purchaseResult.Success, Is.True,
+            $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors)}");
+
+        // Attempt to set $10.01 — one cent above the $10 cap
+        var overCapResponse = await session.PostJsonAsync("/api/Royale/SetAdvertisingMoney",
+            new SetAdvertisingMoneyRequest(publisherID, game.MasterGame.MasterGameID, 10.01m));
+
+        Assert.That(overCapResponse.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
+            "Setting advertising money above $10 must return HTTP 400 Bad Request.");
+    }
+
     /// <summary>
     /// Mirrors the purchase-game modal: list top games under each release filter until one is available.
     /// Picks the highest-hype candidate using production stats when reachable.
