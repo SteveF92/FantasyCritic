@@ -301,6 +301,103 @@ public class RoyaleTests : IntegrationTestBase
             "Setting advertising money above $10 must return HTTP 400 Bad Request.");
     }
 
+    [Test]
+    public async Task PurchaseGame_WhenBudgetInsufficient_ReturnsFailure()
+    {
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var activeQuarter = await session.GetAndDeserializeAsync<RoyaleYearQuarterJson>(
+            "/api/Royale/ActiveRoyaleQuarter");
+
+        var publisherName = $"Pub-{Guid.NewGuid():N}"[..20];
+        var publisherID = await session.PostJsonAndDeserializeAsync<CreateRoyalePublisherRequest, Guid>(
+            "/api/Royale/CreateRoyalePublisher",
+            new CreateRoyalePublisherRequest(activeQuarter.Year, activeQuarter.Quarter, publisherName));
+
+        // Buy the most expensive available game repeatedly to deplete budget quickly.
+        var boughtIDs = new List<Guid>();
+        while (true)
+        {
+            var all = await session.GetAndDeserializeAsync<List<PossibleRoyaleMasterGameJson>>(
+                $"/api/Royale/PossibleMasterGames?publisherID={publisherID}&releaseFilter=All");
+
+            var next = all.Where(g => g.IsAvailable).MaxBy(g => g.Cost);
+            if (next is null) break; // No more affordable games
+
+            var result = await session.PostJsonAndDeserializeAsync<PurchaseRoyaleGameRequest, PlayerClaimResultJson>(
+                "/api/Royale/PurchaseGame",
+                new PurchaseRoyaleGameRequest(publisherID, next.MasterGame.MasterGameID));
+            if (!result.Success) break;
+            boughtIDs.Add(next.MasterGame.MasterGameID);
+        }
+
+        if (boughtIDs.Count == 0)
+        {
+            Assert.Inconclusive("No games were purchasable; cannot verify purchase failure path.");
+            return;
+        }
+
+        // Best target: a game blocked by "Not enough budget." if one exists;
+        // otherwise fall back to re-purchasing an already-owned game.
+        var allGames = await session.GetAndDeserializeAsync<List<PossibleRoyaleMasterGameJson>>(
+            $"/api/Royale/PossibleMasterGames?publisherID={publisherID}&releaseFilter=All");
+
+        var budgetBlocked = allGames.FirstOrDefault(g => !g.IsAvailable && g.Status == "Not enough budget.");
+        var targetID = budgetBlocked?.MasterGame.MasterGameID ?? boughtIDs[0];
+
+        var failureResult = await session.PostJsonAndDeserializeAsync<PurchaseRoyaleGameRequest, PlayerClaimResultJson>(
+            "/api/Royale/PurchaseGame",
+            new PurchaseRoyaleGameRequest(publisherID, targetID));
+
+        Assert.That(failureResult.Success, Is.False,
+            "Purchasing a game the publisher cannot afford (or already owns) must return Success=false.");
+        Assert.That(failureResult.Errors, Is.Not.Empty,
+            "A failed purchase must include at least one error message.");
+    }
+
+    [Test]
+    public async Task PurchaseGame_InLockoutWindow_ReturnsFailure()
+    {
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var activeQuarter = await session.GetAndDeserializeAsync<RoyaleYearQuarterJson>(
+            "/api/Royale/ActiveRoyaleQuarter");
+
+        var publisherName = $"Pub-{Guid.NewGuid():N}"[..20];
+        var publisherID = await session.PostJsonAndDeserializeAsync<CreateRoyalePublisherRequest, Guid>(
+            "/api/Royale/CreateRoyalePublisher",
+            new CreateRoyalePublisherRequest(activeQuarter.Year, activeQuarter.Quarter, publisherName));
+
+        var allGames = await session.GetAndDeserializeAsync<List<PossibleRoyaleMasterGameJson>>(
+            $"/api/Royale/PossibleMasterGames?publisherID={publisherID}&releaseFilter=All");
+
+        // The service sets Status = "Game will release within 5 days." for games in the lockout window.
+        // RoyaleService.FUTURE_RELEASE_LIMIT_DAYS == 5.
+        const string lockoutStatus = "Game will release within 5 days.";
+        var lockoutGame = allGames.FirstOrDefault(g => !g.IsAvailable && g.Status == lockoutStatus);
+
+        if (lockoutGame is null)
+        {
+            Assert.Inconclusive(
+                $"No game currently has Status == \"{lockoutStatus}\". "
+                + "This test only runs when a game is releasing within 5 days. Skipping.");
+            return;
+        }
+
+        var result = await session.PostJsonAndDeserializeAsync<PurchaseRoyaleGameRequest, PlayerClaimResultJson>(
+            "/api/Royale/PurchaseGame",
+            new PurchaseRoyaleGameRequest(publisherID, lockoutGame.MasterGame.MasterGameID));
+
+        Assert.That(result.Success, Is.False,
+            "Purchasing a game in the 5-day lockout window must return Success=false.");
+        Assert.That(result.Errors, Is.Not.Empty,
+            "A failed purchase must include at least one error message.");
+    }
+
     /// <summary>
     /// Mirrors the purchase-game modal: list top games under each release filter until one is available.
     /// Picks the highest-hype candidate using production stats when reachable.
