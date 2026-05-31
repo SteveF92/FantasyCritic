@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.MySQL;
@@ -162,14 +163,9 @@ public static class Program
         var json = await client.GetStringAsync("api/Royale/RoyaleQuarters");
         var responses = JsonConvert.DeserializeObject<List<RoyaleQuarterResponse>>(json)!;
 
-        var entities = responses.Select(r => new RoyaleYearQuarterEntity
-        {
-            Year        = r.Year,
-            Quarter     = r.Quarter,
-            OpenForPlay = r.OpenForPlay,
-            Finished    = r.Finished,
-            WinningUser = null
-        }).ToList();
+        var entities = responses
+            .Select(r => new RoyaleYearQuarter(new YearQuarter(r.Year, r.Quarter), r.OpenForPlay, r.Finished, null))
+            .ToList();
 
         var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
         await syncer.UpsertRoyaleYearQuarters(entities);

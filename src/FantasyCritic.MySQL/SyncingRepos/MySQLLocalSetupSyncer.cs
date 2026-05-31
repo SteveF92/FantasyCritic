@@ -1,8 +1,8 @@
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
 using Microsoft.AspNetCore.Identity;
-using NodaTime;
 using Serilog;
 
 namespace FantasyCritic.MySQL.SyncingRepos;
@@ -98,7 +98,7 @@ public class MySQLLocalSetupSyncer
         _logger.Information("Upserted {Count} supported years.", yearsList.Count);
     }
 
-    public async Task UpsertRoyaleYearQuarters(IEnumerable<RoyaleYearQuarterEntity> quarters)
+    public async Task UpsertRoyaleYearQuarters(IEnumerable<RoyaleYearQuarter> quarters)
     {
         const string sql = """
             INSERT INTO tbl_royale_supportedquarter
@@ -110,9 +110,9 @@ public class MySQLLocalSetupSyncer
                 Finished    = VALUES(Finished);
             """;
 
-        var quartersList = quarters.ToList();
+        var entities = quarters.Select(x => new RoyaleYearQuarterEntity(x)).ToList();
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(sql, quartersList);
-        _logger.Information("Upserted {Count} royale year quarters.", quartersList.Count);
+        await connection.ExecuteAsync(sql, entities);
+        _logger.Information("Upserted {Count} royale year quarters.", entities.Count);
     }
 }
