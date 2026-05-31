@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "FantasyCritic.MasterGameUpdater": {
+    "FantasyCritic.LocalDatabaseTool": {
       "commandName": "Project"
     },
     "Container (Dockerfile)": {

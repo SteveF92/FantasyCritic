@@ -44,6 +44,6 @@ With that all set up, the site should run like normal via Visual Studio or via '
 
 #### Some extra notes
 
-- In the "Utilities" Solution folder, you'll find the project "FantasyCritic.MasterGameUpdater". This will update your local database with the latest game data from the actual Fantasy Critic site. Things like new announcements, release dates, etc. Reminder: You'll need to setup "user secrets" here too.
+- In the "Utilities" Solution folder, you'll find the project "FantasyCritic.LocalDatabaseTool". This will update your local database with the latest game data from the actual Fantasy Critic site. Things like new announcements, release dates, etc. Reminder: You'll need to setup "user secrets" here too.
 
 - I use full Visual Studio for server side development, but I find that Visual Studio Code works better when I'm working on the client side (Vue.JS) code.

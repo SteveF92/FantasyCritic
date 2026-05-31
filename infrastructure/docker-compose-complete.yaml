@@ -43,11 +43,11 @@ services:
       # rebuilding the image. GetScriptsRoot() resolves /app/Scripts first.
       - ../src/FantasyCritic.DatabaseUpdater/Scripts:/app/Scripts:ro
 
-  master-game-updater:
-    container_name: fantasycritic-master-game-updater
+  local-database-tool:
+    container_name: fantasycritic-local-database-tool
     build:
       context: ../src
-      dockerfile: FantasyCritic.MasterGameUpdater/Dockerfile
+      dockerfile: FantasyCritic.LocalDatabaseTool/Dockerfile
     restart: "no"
     depends_on:
       database-updater:
