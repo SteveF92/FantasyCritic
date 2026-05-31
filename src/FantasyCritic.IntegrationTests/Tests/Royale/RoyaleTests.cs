@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -74,6 +75,43 @@ public class RoyaleTests : IntegrationTestBase
             publisher.PublisherGames.Any(g => g.MasterGame?.MasterGameID == purchasedMasterGameID),
             Is.True,
             "Purchased game should appear on the publisher roster.");
+    }
+
+    [Test]
+    public async Task ChangePublisherProfile_NameIconAndSlogan_Succeeds()
+    {
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var activeQuarter = await session.GetAndDeserializeAsync<RoyaleYearQuarterJson>(
+            "/api/Royale/ActiveRoyaleQuarter");
+
+        var initialName = $"Pub-{Guid.NewGuid():N}"[..20];
+        var publisherID = await session.PostJsonAndDeserializeAsync<CreateRoyalePublisherRequest, Guid>(
+            "/api/Royale/CreateRoyalePublisher",
+            new CreateRoyalePublisherRequest(activeQuarter.Year, activeQuarter.Quarter, initialName));
+
+        var newName = $"Pub-{Guid.NewGuid():N}"[..20];
+
+        var nameResponse = await session.PostJsonAsync("/api/Royale/ChangePublisherName",
+            new ChangeRoyalePublisherNameRequest(publisherID, newName));
+        Assert.That(nameResponse.IsSuccessStatusCode, Is.True, "ChangePublisherName should return 2xx.");
+
+        var iconResponse = await session.PostJsonAsync("/api/Royale/ChangePublisherIcon",
+            new ChangeRoyalePublisherIconRequest(publisherID, "🎮"));
+        Assert.That(iconResponse.IsSuccessStatusCode, Is.True, "ChangePublisherIcon should return 2xx.");
+
+        var sloganResponse = await session.PostJsonAsync("/api/Royale/ChangePublisherSlogan",
+            new ChangeRoyalePublisherSloganRequest(publisherID, "Test Slogan"));
+        Assert.That(sloganResponse.IsSuccessStatusCode, Is.True, "ChangePublisherSlogan should return 2xx.");
+
+        var publisher = await session.GetAndDeserializeAsync<RoyalePublisherJson>(
+            $"/api/Royale/GetRoyalePublisher/{publisherID}");
+
+        Assert.That(publisher.PublisherName, Is.EqualTo(newName));
+        Assert.That(publisher.PublisherIcon, Is.EqualTo("🎮"));
+        Assert.That(publisher.PublisherSlogan, Is.EqualTo("Test Slogan"));
     }
 
     /// <summary>
