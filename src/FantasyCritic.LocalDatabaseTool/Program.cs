@@ -51,9 +51,18 @@ public static class Program
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
-        await UpdateMasterGames();
+        await EnsureLocalAdminUser();
         await UpdateSupportedYears();
         await UpdateRoyaleQuarters();
+        await UpdateMasterGames();
+        await RefreshCaches();
+    }
+
+    private static async Task EnsureLocalAdminUser()
+    {
+        Log.Information("Ensuring local admin user exists");
+        var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
+        await syncer.EnsureLocalAdminUser(_clock);
     }
 
     private static async Task UpdateMasterGames()
@@ -62,7 +71,6 @@ public static class Program
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         MySQLMasterGameRepo localMasterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore, _clock);
         MySQLMasterGameUpdater gameUpdater = new MySQLMasterGameUpdater(_localConnectionString);
-        AdminService localAdminService = GetAdminService();
 
         Log.Information("Getting master games from production");
         var productionMasterGameTags = await GetTagsFromAPI();
@@ -70,6 +78,12 @@ public static class Program
         var localMasterGameTags = await localMasterGameRepo.GetMasterGameTags();
         var localMasterGames = await localMasterGameRepo.GetMasterGames();
         await gameUpdater.UpdateMasterGames(productionMasterGameTags, productionMasterGames, localMasterGameTags, localMasterGames, _addedByUserIDOverride);
+    }
+
+    private static async Task RefreshCaches()
+    {
+        Log.Information("Refreshing caches");
+        AdminService localAdminService = GetAdminService();
         await localAdminService.RefreshCaches();
     }
 
