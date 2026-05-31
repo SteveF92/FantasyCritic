@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.IntegrationTests.ApiModels;
 using FantasyCritic.IntegrationTests.Helpers;
+using FantasyCritic.IntegrationTests.ProductionStats;
 using FantasyCritic.Web.Models.Requests.Royale;
 using NUnit.Framework;
 
@@ -53,7 +54,7 @@ public class RoyaleTests : IntegrationTestBase
             "/api/Royale/CreateRoyalePublisher",
             new CreateRoyalePublisherRequest(activeQuarter.Year, activeQuarter.Quarter, publisherName));
 
-        var gameToBuy = await FindPurchasableGameViaApiAsync(session, publisherID);
+        var gameToBuy = await FindPurchasableGameViaApiAsync(session, publisherID, activeQuarter.Year);
         Assert.That(
             gameToBuy,
             Is.Not.Null,
@@ -77,20 +78,25 @@ public class RoyaleTests : IntegrationTestBase
 
     /// <summary>
     /// Mirrors the purchase-game modal: list top games under each release filter until one is available.
+    /// Picks the highest-hype candidate using production stats when reachable.
     /// </summary>
     private static async Task<PossibleRoyaleMasterGameJson?> FindPurchasableGameViaApiAsync(
         ApiSession session,
-        Guid publisherID)
+        Guid publisherID,
+        int year)
     {
         foreach (var releaseFilter in new[] { "All", "ExpectedToReleaseInQuarter", "ConfirmedReleaseInQuarter" })
         {
             var possibleGames = await session.GetAndDeserializeAsync<List<PossibleRoyaleMasterGameJson>>(
                 $"/api/Royale/PossibleMasterGames?publisherID={publisherID}&releaseFilter={releaseFilter}");
 
-            var available = possibleGames.FirstOrDefault(g => g.IsAvailable);
-            if (available is not null)
+            var available = possibleGames.Where(g => g.IsAvailable).ToList();
+            if (available.Count > 0)
             {
-                return available;
+                return await ProductionGameStatsCache.FindHighestHypeAvailableAsync(
+                    available,
+                    g => g.MasterGame.MasterGameID,
+                    year);
             }
         }
 
