@@ -21,18 +21,21 @@ public class GeneralController : FantasyCriticController
         _clock = clock;
     }
 
+    [HttpGet]
     public async Task<ActionResult<SiteCountsViewModel>> SiteCounts()
     {
         var counts = await _interLeagueService.GetSiteCounts();
         return Ok(new SiteCountsViewModel(counts));
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<string>>> Donors()
     {
         var donors = await _userManager.GetDonors();
         return Ok(donors);
     }
 
+    [HttpGet]
     public async Task<ActionResult<BidTimesViewModel>> BidTimes()
     {
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
@@ -40,6 +43,7 @@ public class GeneralController : FantasyCriticController
         return Ok(vm);
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<SiteAnnouncementViewModel>>> SiteAnnouncements()
     {
         var announcements = await _interLeagueService.GetSiteAnnouncements();

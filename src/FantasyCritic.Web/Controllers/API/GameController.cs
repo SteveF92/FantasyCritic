@@ -265,6 +265,7 @@ public class GameController : FantasyCriticController
         return Ok();
     }
 
+    [HttpGet]
     [Authorize]
     public async Task<ActionResult<List<MasterGameRequestViewModel>>> MyMasterGameRequests()
     {
@@ -277,6 +278,7 @@ public class GameController : FantasyCriticController
         return viewModels;
     }
 
+    [HttpGet]
     [Authorize]
     public async Task<ActionResult<List<MasterGameChangeRequestViewModel>>> MyMasterGameChangeRequests()
     {
@@ -289,6 +291,7 @@ public class GameController : FantasyCriticController
         return viewModels;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<SupportedYearViewModel>>> SupportedYears()
     {
         var supportedYears = await GetSupportedYears();
@@ -302,6 +305,7 @@ public class GameController : FantasyCriticController
         return years.ToList();
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MasterGameTagViewModel>>> GetMasterGameTags()
     {
         var domains = await _interLeagueService.GetMasterGameTags();
@@ -309,6 +313,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<CompleteMasterGameChangeViewModel>>> GetRecentMasterGameChanges()
     {
         IReadOnlyList<MasterGameChangeLogEntry> recentChanges = await _interLeagueService.GetRecentMasterGameChanges();
@@ -317,6 +322,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MostDesiredReviewViewModel>>> GetMostDesiredReviews()
     {
         var currentDate = _clock.GetToday();
@@ -325,6 +331,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<LongestTenuredGameViewModel>>> GetLongestTenuredGames([FromQuery] bool includeReleasedGames = false)
     {
         var currentDate = _clock.GetToday();
@@ -333,6 +340,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<LongestTenuredGameViewModel>>> GetMostDreamsDashedGames([FromQuery] int? year = null)
     {
         var currentDate = _clock.GetToday();
@@ -341,12 +349,14 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<LocalDate>>> GetProcessingDatesForTopBidsAndDrops()
     {
         var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
         return processingDatesWithData.ToList();
     }
 
+    [HttpGet]
     public async Task<ActionResult<TopBidsAndDropsSetViewModel>> GetTopBidsAndDrops(LocalDate? processDate)
     {
         LocalDate dateToUse;

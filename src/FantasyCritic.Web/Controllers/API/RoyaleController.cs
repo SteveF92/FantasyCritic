@@ -32,6 +32,7 @@ public class RoyaleController : FantasyCriticController
         _interLeagueService = interLeagueService;
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> RoyaleQuarters()
     {
@@ -40,6 +41,7 @@ public class RoyaleController : FantasyCriticController
         return Ok(viewModels);
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> ActiveRoyaleQuarter()
     {
@@ -48,8 +50,8 @@ public class RoyaleController : FantasyCriticController
         return Ok(viewModel);
     }
 
-    [AllowAnonymous]
     [HttpGet("{year}/{quarter}")]
+    [AllowAnonymous]
     public async Task<IActionResult> RoyaleQuarter(int year, int quarter)
     {
         var requestedQuarter = await _royaleService.GetYearQuarter(year, quarter);
@@ -195,8 +197,8 @@ public class RoyaleController : FantasyCriticController
         return Ok(viewModel);
     }
 
-    [AllowAnonymous]
     [HttpGet("{year}/{quarter}")]
+    [AllowAnonymous]
     public async Task<IActionResult> RoyaleData(int year, int quarter)
     {
         var royaleData = await _royaleService.GetRoyaleYearQuarterData(year, quarter);
@@ -388,6 +390,7 @@ public class RoyaleController : FantasyCriticController
         }
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string? gameName, Guid publisherID,
         [FromQuery] RoyalePossibleMasterGamesReleaseFilter releaseFilter = RoyalePossibleMasterGamesReleaseFilter.All)
     {

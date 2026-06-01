@@ -17,6 +17,7 @@ public class AccountController : FantasyCriticController
 
     }
 
+    [HttpGet]
     public async Task<ActionResult<FantasyCriticUserViewModel>> CurrentUser()
     {
         var currentUserResult = await GetCurrentUser();

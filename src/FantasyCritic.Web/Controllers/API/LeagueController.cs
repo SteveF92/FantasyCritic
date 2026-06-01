@@ -64,6 +64,7 @@ public class LeagueController : BaseLeagueController
         _allTimeStatsService = allTimeStatsService;
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<LeagueOptionsViewModel>> LeagueOptions()
     {
@@ -72,6 +73,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModel);
     }
 
+    [HttpGet]
     public async Task<IActionResult> MyLeagues(int? year)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -85,6 +87,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
+    [HttpGet]
     public async Task<IActionResult> MyInvites()
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -152,6 +155,7 @@ public class LeagueController : BaseLeagueController
         return Ok(leagueViewModel);
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetLeagueYear(Guid leagueID, int year, Guid? inviteCode)
     {
@@ -200,8 +204,8 @@ public class LeagueController : BaseLeagueController
         return Ok(leagueYearViewModel);
     }
 
-    [AllowAnonymous]
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetLeagueAllTimeStats(Guid id)
     {
         var leagueRecord = await GetExistingLeague(id, RequiredRelationship.AllowAnonymous);
@@ -239,8 +243,8 @@ public class LeagueController : BaseLeagueController
         return Ok(allTimeStatsViewModel);
     }
 
-    [AllowAnonymous]
     [HttpGet("{publisherID}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetLeagueYearForPublisher(Guid publisherID)
     {
         var leagueYearKey = await _fantasyCriticService.GetLeagueYearKeyForPublisherID(publisherID);
@@ -317,6 +321,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetLeagueActions(Guid leagueID, int year)
     {
@@ -345,6 +350,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetLeagueActionSets(Guid leagueID, int year)
     {
@@ -373,8 +379,8 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
-    [AllowAnonymous]
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> ExportLeagueActionSetsToCsv(Guid leagueID, int year)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
@@ -585,6 +591,7 @@ public class LeagueController : BaseLeagueController
         return Ok(publisherViewModel);
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetLeagueYearOptions(Guid leagueID, int year)
     {
@@ -1100,6 +1107,7 @@ public class LeagueController : BaseLeagueController
         return Ok();
     }
 
+    [HttpGet]
     public async Task<ActionResult<GameNewsViewModel>> MyGameNews()
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -1111,6 +1119,7 @@ public class LeagueController : BaseLeagueController
         return myGameNewsViewModel;
     }
 
+    [HttpGet]
     public async Task<IActionResult> PossibleMasterGames(string gameName, int year, Guid leagueID)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);
@@ -1130,6 +1139,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
+    [HttpGet]
     public async Task<IActionResult> TopAvailableGames(int year, Guid leagueID, Guid publisherID, string? slotInfo)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);
@@ -1170,6 +1180,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
+    [HttpGet]
     public async Task<IActionResult> ThisWeeksPublicBiddingGames(int year, Guid leagueID, Guid publisherID)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);
@@ -1194,6 +1205,7 @@ public class LeagueController : BaseLeagueController
         return Ok(viewModels);
     }
 
+    [HttpGet]
     public async Task<IActionResult> PossibleCounterPicks(Guid publisherID)
     {
         var publisherRecord = await GetExistingLeagueYearAndPublisher(publisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.Any);
@@ -1695,6 +1707,7 @@ public class LeagueController : BaseLeagueController
         return Ok();
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> TradeHistory(Guid leagueID, int year)
     {

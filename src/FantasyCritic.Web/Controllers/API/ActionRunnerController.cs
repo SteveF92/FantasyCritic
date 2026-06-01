@@ -44,6 +44,7 @@ public class ActionRunnerController : FantasyCriticController
         _discordPushService = discordPushService;
     }
 
+    [HttpGet]
     public async Task<ActionResult<ActionedGameSetViewModel>> ActionProcessingDryRun()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -84,6 +85,7 @@ public class ActionRunnerController : FantasyCriticController
         return fullSet;
     }
 
+    [HttpGet]
     public async Task<FileStreamResult> ComparableActionProcessingDryRun()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();

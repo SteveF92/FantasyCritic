@@ -29,8 +29,8 @@ public class RoyaleGroupController : FantasyCriticController
         _interLeagueService = interLeagueService;
     }
 
-    [AllowAnonymous]
     [HttpGet("{groupID}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRoyaleGroup(Guid groupID)
     {
         var group = await _royaleService.GetRoyaleGroup(groupID);
@@ -44,8 +44,8 @@ public class RoyaleGroupController : FantasyCriticController
         return Ok(vm);
     }
 
-    [AllowAnonymous]
     [HttpGet("{groupID}/{year}/{quarter}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRoyaleGroupQuarter(Guid groupID, int year, int quarter)
     {
         var group = await _royaleService.GetRoyaleGroupMemberDisplayRows(groupID, year, quarter);
@@ -199,8 +199,8 @@ public class RoyaleGroupController : FantasyCriticController
         return Ok();
     }
 
-    [AllowAnonymous]
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> SearchRoyaleGroups([FromQuery] string query)
     {
         if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
@@ -252,8 +252,8 @@ public class RoyaleGroupController : FantasyCriticController
         return Ok(viewModels);
     }
 
-    [AllowAnonymous]
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRulesBasedGroups()
     {
         var groups = await _royaleService.GetAllRoyaleGroupsByType(RoyaleGroupType.RulesBased);
@@ -266,8 +266,8 @@ public class RoyaleGroupController : FantasyCriticController
         return Ok(viewModels);
     }
 
-    [AllowAnonymous]
     [HttpGet("{groupID}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRoyaleGroupData(Guid groupID)
     {
         var stats = await _royaleService.GetRoyaleGroupMembersWithLifetimeStats(groupID);
@@ -283,8 +283,8 @@ public class RoyaleGroupController : FantasyCriticController
         return Ok(vm);
     }
 
-    [AllowAnonymous]
     [HttpGet("{leagueID}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRoyaleGroupForLeague(Guid leagueID)
     {
         var group = await _royaleService.GetRoyaleGroupForLeague(leagueID);
@@ -298,8 +298,8 @@ public class RoyaleGroupController : FantasyCriticController
         return Ok(new { HasRoyaleGroup = true, RoyaleGroup = vm });
     }
 
-    [AllowAnonymous]
     [HttpGet("{conferenceID}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRoyaleGroupForConference(Guid conferenceID)
     {
         var group = await _royaleService.GetRoyaleGroupForConference(conferenceID);

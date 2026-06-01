@@ -28,6 +28,7 @@ public class CombinedDataController : FantasyCriticController
         _clock = clock;
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> BasicData()
     {
@@ -49,6 +50,7 @@ public class CombinedDataController : FantasyCriticController
         return Ok(vm);
     }
 
+    [HttpGet]
     public async Task<IActionResult> HomePageData()
     {
         var currentUser = await GetCurrentUserOrThrow();

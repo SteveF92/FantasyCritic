@@ -33,6 +33,7 @@ public class ConferenceController : BaseLeagueController
         _environmentConfiguration = environmentConfiguration;
     }
 
+    [HttpGet]
     public async Task<IActionResult> MyConferences()
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -300,6 +301,7 @@ public class ConferenceController : BaseLeagueController
         return Ok(viewModel);
     }
 
+    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetConferenceYear(Guid conferenceID, int year)
     {
