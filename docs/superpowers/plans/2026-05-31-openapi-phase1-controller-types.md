@@ -126,13 +126,168 @@ git commit -m "Strengthen return types in GameController and GeneralController."
 
 ---
 
+## Task 2: `CombinedDataController` — replace anonymous types with named records
+
+Both actions in this controller return `Ok(new { … })` with anonymous types. The OpenAPI generator cannot produce a schema for anonymous types; they must be replaced with named types. The user has specified: use `record` types, placed in `src/FantasyCritic.Web/Models/Responses/Combined/`.
+
+**Files:**
+- Create: `src/FantasyCritic.Web/Models/Responses/Combined/BasicDataViewModel.cs`
+- Create: `src/FantasyCritic.Web/Models/Responses/Combined/HomePageDataViewModel.cs`
+- Modify: `src/FantasyCritic.Web/Controllers/API/CombinedDataController.cs`
+
+### Step 1: Create `BasicDataViewModel`
+
+Create `src/FantasyCritic.Web/Models/Responses/Combined/BasicDataViewModel.cs`:
+
+```csharp
+using FantasyCritic.Lib.SharedSerialization.API;
+
+namespace FantasyCritic.Web.Models.Responses.Combined;
+
+public record BasicDataViewModel(
+    BidTimesViewModel BidTimes,
+    List<MasterGameTagViewModel> MasterGameTags,
+    LeagueOptionsViewModel LeagueOptions,
+    List<SupportedYearViewModel> SupportedYears);
+```
+
+### Step 2: Create `HomePageDataViewModel`
+
+Create `src/FantasyCritic.Web/Models/Responses/Combined/HomePageDataViewModel.cs`:
+
+```csharp
+using FantasyCritic.Web.Models.Responses.Conferences;
+using FantasyCritic.Web.Models.Responses.Royale;
+
+namespace FantasyCritic.Web.Models.Responses.Combined;
+
+public record HomePageDataViewModel(
+    List<LeagueWithStatusViewModel> MyLeagues,
+    List<CompleteLeagueInviteViewModel> MyInvites,
+    List<MinimalConferenceViewModel> MyConferences,
+    TopBidsAndDropsSetViewModel? TopBidsAndDrops,
+    GameNewsViewModel MyGameNews,
+    List<PublicLeagueYearViewModel> PublicLeagues,
+    RoyaleYearQuarterViewModel ActiveRoyaleQuarter,
+    Guid? UserRoyalePublisherID);
+```
+
+### Step 3: Update `CombinedDataController`
+
+Replace the two `Task<IActionResult>` actions. Add the `Combined` using and change both methods.
+
+Add to usings at the top of the file:
+```csharp
+using FantasyCritic.Web.Models.Responses.Combined;
+using Microsoft.AspNetCore.Http;
+```
+
+**`BasicData` — before:**
+```csharp
+[HttpGet]
+[AllowAnonymous]
+public async Task<IActionResult> BasicData()
+{
+    // ... (body builds bidTimes, masterGameTags, leagueOptions, supportedYears)
+    var vm = new
+    {
+        BidTimes = bidTimes,
+        MasterGameTags = masterGameTags,
+        LeagueOptions = leagueOptions,
+        SupportedYears = supportedYears
+    };
+    return Ok(vm);
+}
+```
+
+**`BasicData` — after:**
+```csharp
+[HttpGet]
+[AllowAnonymous]
+[ProducesResponseType(StatusCodes.Status200OK)]
+public async Task<ActionResult<BasicDataViewModel>> BasicData()
+{
+    // ... body unchanged up to the var vm = ... line
+    var vm = new BasicDataViewModel(bidTimes, masterGameTags, leagueOptions, supportedYears);
+    return Ok(vm);
+}
+```
+
+**`HomePageData` — before:**
+```csharp
+[HttpGet]
+public async Task<IActionResult> HomePageData()
+{
+    // ...
+    var myInviteViewModels = homePageData.InvitedLeagues.Select(x => new CompleteLeagueInviteViewModel(x));
+    // ...
+    var vm = new
+    {
+        MyLeagues = myLeagueViewModels,
+        MyInvites = myInviteViewModels,
+        MyConferences = myConferenceViewModels,
+        TopBidsAndDrops = completeTopBidsAndDropsViewModel,
+        MyGameNews = myGameNewsViewModel,
+        PublicLeagues = publicLeagueViewModels,
+        ActiveRoyaleQuarter = activeRoyaleQuarterViewModel,
+        UserRoyalePublisherID = homePageData.ActiveYearQuarterRoyalePublisherID
+    };
+    return Ok(vm);
+}
+```
+
+**`HomePageData` — after:**
+```csharp
+[HttpGet]
+[ProducesResponseType(StatusCodes.Status200OK)]
+public async Task<ActionResult<HomePageDataViewModel>> HomePageData()
+{
+    // ...
+    // Add .ToList() since the record expects List<T>, not IEnumerable<T>:
+    var myInviteViewModels = homePageData.InvitedLeagues.Select(x => new CompleteLeagueInviteViewModel(x)).ToList();
+    // ... rest of body unchanged until vm construction ...
+    var vm = new HomePageDataViewModel(
+        myLeagueViewModels,
+        myInviteViewModels,
+        myConferenceViewModels,
+        completeTopBidsAndDropsViewModel,
+        myGameNewsViewModel,
+        publicLeagueViewModels,
+        activeRoyaleQuarterViewModel,
+        homePageData.ActiveYearQuarterRoyalePublisherID);
+    return Ok(vm);
+}
+```
+
+### Verify and commit
+
+- [ ] **Step 4: Build**
+
+```powershell
+cd I:\CodeProjects\FantasyCritic
+dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
+```
+
+Expected: 0 errors.
+
+- [ ] **Step 5: Commit**
+
+```powershell
+cd I:\CodeProjects\FantasyCritic
+git add src/FantasyCritic.Web/Models/Responses/Combined/BasicDataViewModel.cs `
+        src/FantasyCritic.Web/Models/Responses/Combined/HomePageDataViewModel.cs `
+        src/FantasyCritic.Web/Controllers/API/CombinedDataController.cs
+git commit -m "Replace anonymous types in CombinedDataController with named records."
+```
+
+---
+
 ## Remaining tasks (to be written)
 
 The following controllers still need the same treatment. Tasks will be written and added to this plan in subsequent sessions:
 
 | Controller | Remaining `IActionResult` count | Notes |
 |---|---|---|
-| `CombinedDataController` | 2 | Both return anonymous types — needs new ViewModel classes |
 | `ConferenceController` | 22 | Mix of typed reads and command mutations |
 | `LeagueController` | ~52 | Largest controller; mix of reads, mutations, and file downloads |
 | `LeagueManagerController` | ~40 | All command/mutation style, some return typed bodies |
