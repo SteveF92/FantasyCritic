@@ -45,6 +45,7 @@ public class GameController : FantasyCriticController
         return viewModel;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame()
     {
         IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
@@ -409,6 +410,6 @@ public class GameController : FantasyCriticController
         var leagueYearsWithMasterGame = await _interLeagueService.GetLeagueYearsWithMasterGame(currentUserResult.Value.Id, masterGameID);
         var viewModels = leagueYearsWithMasterGame.Select(l =>
             new LeagueYearWithMasterGameViewModel(l.LeagueID, l.LeagueName, l.Year, l.IsCounterPick)).ToList();
-        return Ok(viewModels);
+        return viewModels;
     }
 }
