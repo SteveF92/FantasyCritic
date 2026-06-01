@@ -282,14 +282,260 @@ git commit -m "Replace anonymous types in CombinedDataController with named reco
 
 ---
 
-## Remaining tasks (to be written)
+## Task 3: `ConferenceController`
 
-The following controllers still need the same treatment. Tasks will be written and added to this plan in subsequent sessions:
+**File:** `src/FantasyCritic.Web/Controllers/API/ConferenceController.cs`
 
-| Controller | Remaining `IActionResult` count | Notes |
+**Return style convention:** For typed reads, return the value directly — do NOT wrap in `Ok()`. For void commands, keep `return Ok();`. The controller already imports `Microsoft.AspNetCore.Mvc`; add `using Microsoft.AspNetCore.Http;` for `StatusCodes`.
+
+### FailedResult non-200 attributes
+
+Most actions in this controller delegate failure paths to `GetExistingConference*`/`GetExistingConferenceYear*`/`GetExistingLeague*` helpers whose `FailedResult` can produce **400**, **401**, or **403** depending on auth state. Any action that calls one of these helpers gets:
+
+```csharp
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
+```
+
+Actions with *additional* explicit `BadRequest(...)` calls still just need those three (BadRequest is already covered). Actions that also do explicit `StatusCode(403, "…")` are already covered by the 403 attribute.
+
+### Actions to convert to `ActionResult<T>` (return value directly, no `Ok()`)
+
+| Method | New return type | Notes |
 |---|---|---|
-| `ConferenceController` | 22 | Mix of typed reads and command mutations |
-| `LeagueController` | ~52 | Largest controller; mix of reads, mutations, and file downloads |
-| `LeagueManagerController` | ~40 | All command/mutation style, some return typed bodies |
-| `RoyaleController` | ~13 | Includes anonymous types — needs new ViewModel classes |
-| `RoyaleGroupController` | 17 | Includes one anonymous `{ GroupID }` response |
+| `MyConferences` | `ActionResult<List<MinimalConferenceViewModel>>` | No FailedResult, no non-200 |
+| `CreateConference` | `ActionResult<Guid>` | Returns `conference.Value.ConferenceID`; add `[ProducesResponseType(400)]` |
+| `AvailableYears` | `ActionResult<IEnumerable<int>>` | Has FailedResult → add 400/401/403 |
+| `GetConference` | `ActionResult<ConferenceViewModel>` | Has FailedResult → add 400/401/403 |
+| `GetConferenceYear` | `ActionResult<ConferenceYearViewModel>` | Has FailedResult → add 400/401/403 |
+| `InviteLinks` | `ActionResult<IEnumerable<ConferenceInviteLinkViewModel>>` | Has FailedResult → add 400/401/403 |
+
+### Actions that stay `IActionResult` (void success — add `[ProducesResponseType(200)]`)
+
+All remaining 16 POST mutations: `AddLeagueToConference`, `AddNewConferenceYear`, `AddNewLeagueYear`, `SetPlayerActiveStatus`, `EditConference`, `CreateInviteLink`, `DeleteInviteLink`, `JoinWithInviteLink`, `RemovePlayerFromConference`, `PromoteNewConferenceManager`, `ReassignLeagueManager`, `AssignLeaguePlayers`, `SetConferenceLeagueLockStatus`, `PostNewConferenceManagerMessage`, `DeleteConferenceManagerMessage`, `DismissManagerMessage`.
+
+Add FailedResult 400/401/403 attributes to all that use `GetExisting*` helpers (i.e., all except `DismissManagerMessage`).
+
+`DismissManagerMessage` only does explicit `BadRequest` — just add `[ProducesResponseType(200)]` and `[ProducesResponseType(400)]`.
+
+### Commit
+
+```powershell
+cd I:\CodeProjects\FantasyCritic
+git add src/FantasyCritic.Web/Controllers/API/ConferenceController.cs
+git commit -m "Strengthen return types in ConferenceController."
+```
+
+---
+
+## Task 4: `RoyaleController` + `RoyaleGroupController`
+
+These two controllers have anonymous `Ok(new { … })` returns that require new record types, plus a set of regular typed reads and void commands.
+
+### New record files to create
+
+**`src/FantasyCritic.Web/Models/Responses/Royale/RoyaleQuarterDataViewModel.cs`**
+
+Replaces the anonymous object in `RoyaleController.RoyaleData`:
+
+```csharp
+namespace FantasyCritic.Web.Models.Responses.Royale;
+
+public record RoyaleQuarterDataViewModel(
+    IEnumerable<RoyaleYearQuarterViewModel> RoyaleYearQuarters,
+    RoyaleYearQuarterViewModel RoyaleYearQuarter,
+    Guid? UserRoyalePublisherID,
+    List<RoyaleStandingsViewModel> RoyaleStandings,
+    List<RoyalePublisherViewModel> TopPublishers);
+```
+
+**`src/FantasyCritic.Web/Models/Responses/Royale/UserRoyaleHistoryViewModel.cs`**
+
+Replaces the anonymous object in `RoyaleController.UserRoyaleHistory`:
+
+```csharp
+namespace FantasyCritic.Web.Models.Responses.Royale;
+
+public record UserRoyaleHistoryViewModel(
+    Guid UserID,
+    string PlayerName,
+    List<RoyaleYearQuarterViewModel> QuartersWon,
+    List<RoyalePublisherHistoryViewModel> Publishers);
+```
+
+**`src/FantasyCritic.Web/Models/Responses/Royale/CreatedRoyaleGroupViewModel.cs`**
+
+Replaces the `new { GroupID = … }` returns in `RoyaleGroupController` create methods:
+
+```csharp
+namespace FantasyCritic.Web.Models.Responses.Royale;
+
+public record CreatedRoyaleGroupViewModel(Guid GroupID);
+```
+
+**`src/FantasyCritic.Web/Models/Responses/Royale/RoyaleGroupStatusViewModel.cs`**
+
+Replaces the discriminated anonymous objects in `GetRoyaleGroupForLeague` and `GetRoyaleGroupForConference` (currently `{ HasRoyaleGroup = false }` or `{ HasRoyaleGroup = true, RoyaleGroup = vm }`):
+
+```csharp
+namespace FantasyCritic.Web.Models.Responses.Royale;
+
+public record RoyaleGroupStatusViewModel(bool HasRoyaleGroup, RoyaleGroupViewModel? RoyaleGroup);
+```
+
+Return `new RoyaleGroupStatusViewModel(false, null)` and `new RoyaleGroupStatusViewModel(true, vm)` respectively.
+
+### `RoyaleController` — actions to convert
+
+Add `using Microsoft.AspNetCore.Http;` to the controller.
+
+**`ActionResult<T>` (return value directly):**
+
+| Method | New return type | Non-200 attributes |
+|---|---|---|
+| `RoyaleQuarters` | `ActionResult<IEnumerable<RoyaleYearQuarterViewModel>>` | none |
+| `ActiveRoyaleQuarter` | `ActionResult<RoyaleYearQuarterViewModel>` | none |
+| `RoyaleQuarter` | `ActionResult<RoyaleYearQuarterViewModel>` | `[ProducesResponseType(404)]` |
+| `CreateRoyalePublisher` | `ActionResult<Guid>` | `[ProducesResponseType(400)]` |
+| `GetRoyalePublisher` | `ActionResult<RoyalePublisherViewModel>` | `[ProducesResponseType(404)]` |
+| `RoyaleData` | `ActionResult<RoyaleQuarterDataViewModel>` | `[ProducesResponseType(404)]` |
+| `PurchaseGame` | `ActionResult<PlayerClaimResultViewModel>` | `[ProducesResponseType(400)]`, `[ProducesResponseType(403)]`, `[ProducesResponseType(404)]` |
+| `UserRoyaleHistory` | `ActionResult<UserRoyaleHistoryViewModel>` | `[ProducesResponseType(404)]` |
+
+**`IActionResult` (void commands):** `ChangePublisherName`, `ChangePublisherIcon`, `ChangePublisherSlogan`, `SellGame`, `SetAdvertisingMoney`. Each has NotFound + Forbidden + BadRequest paths: add `[ProducesResponseType(200)]`, `[ProducesResponseType(400)]`, `[ProducesResponseType(403)]`, `[ProducesResponseType(404)]`.
+
+### `RoyaleGroupController` — actions to convert
+
+Add `using Microsoft.AspNetCore.Http;` to the controller.
+
+**`ActionResult<T>` (return value directly):**
+
+| Method | New return type | Non-200 |
+|---|---|---|
+| `GetRoyaleGroup` | `ActionResult<RoyaleGroupViewModel>` | `[404]` |
+| `GetRoyaleGroupQuarter` | `ActionResult<RoyaleGroupQuarterViewModel>` | `[404]` |
+| `CreateManualRoyaleGroup` | `ActionResult<CreatedRoyaleGroupViewModel>` | `[400]` |
+| `CreateLeagueTiedRoyaleGroup` | `ActionResult<CreatedRoyaleGroupViewModel>` | `[400]`, `[403]` |
+| `CreateConferenceTiedRoyaleGroup` | `ActionResult<CreatedRoyaleGroupViewModel>` | `[400]`, `[403]` |
+| `CreateGroupInviteLink` | `ActionResult<RoyaleGroupInviteLinkViewModel>` | `[400]` |
+| `SearchRoyaleGroups` | `ActionResult<List<RoyaleGroupViewModel>>` | none |
+| `GetGroupsForUser` | `ActionResult<List<RoyaleGroupViewModel>>` | none |
+| `GetGroupInviteLinks` | `ActionResult<List<RoyaleGroupInviteLinkViewModel>>` | `[403]`, `[404]` |
+| `GetRulesBasedGroups` | `ActionResult<List<RoyaleGroupViewModel>>` | none |
+| `GetRoyaleGroupData` | `ActionResult<RoyaleGroupDataViewModel>` | `[404]` |
+| `GetRoyaleGroupForLeague` | `ActionResult<RoyaleGroupStatusViewModel>` | none |
+| `GetRoyaleGroupForConference` | `ActionResult<RoyaleGroupStatusViewModel>` | none |
+
+**`IActionResult` (void commands):** `DeactivateGroupInviteLink`, `JoinWithInviteLink`, `LeaveGroup`, `RemoveMember`. Add `[ProducesResponseType(200)]` and `[ProducesResponseType(400)]` on each.
+
+### Commit
+
+```powershell
+cd I:\CodeProjects\FantasyCritic
+git add src/FantasyCritic.Web/Models/Responses/Royale/RoyaleQuarterDataViewModel.cs `
+        src/FantasyCritic.Web/Models/Responses/Royale/UserRoyaleHistoryViewModel.cs `
+        src/FantasyCritic.Web/Models/Responses/Royale/CreatedRoyaleGroupViewModel.cs `
+        src/FantasyCritic.Web/Models/Responses/Royale/RoyaleGroupStatusViewModel.cs `
+        src/FantasyCritic.Web/Controllers/API/RoyaleController.cs `
+        src/FantasyCritic.Web/Controllers/API/RoyaleGroupController.cs
+git commit -m "Strengthen return types in RoyaleController and RoyaleGroupController."
+```
+
+---
+
+## Task 5: `LeagueManagerController`
+
+**File:** `src/FantasyCritic.Web/Controllers/API/LeagueManagerController.cs`
+
+Add `using Microsoft.AspNetCore.Http;`. Every action uses the FailedResult pattern from `GetExistingLeague*`/`GetExistingLeagueYear*` helpers (except `CreateLeague`) — add `[ProducesResponseType(400)]`, `[ProducesResponseType(401)]`, `[ProducesResponseType(403)]` to all FailedResult actions. Return values directly (no `Ok()` wrapper) for typed actions.
+
+### Actions to convert to `ActionResult<T>`
+
+| Method | New return type | Extra non-200 |
+|---|---|---|
+| `CreateLeague` | `ActionResult<Guid>` | `[400]` only (no FailedResult) |
+| `AvailableYears` | `ActionResult<IEnumerable<int>>` | FailedResult → 400/401/403 |
+| `InviteLinks` | `ActionResult<IEnumerable<LeagueInviteLinkViewModel>>` | FailedResult → 400/401/403 |
+| `RemovePlayer` | `ActionResult<string>` | FailedResult → 400/401/403 |
+| `ManagerClaimGame` | `ActionResult<ManagerClaimResultViewModel>` | FailedResult → 400/401/403 |
+| `ManagerAssociateGame` | `ActionResult<ManagerClaimResultViewModel>` | `[400]` + FailedResult → 400/401/403 |
+| `ManagerDraftGame` | `ActionResult<ManagerClaimResultViewModel>` | `[400]` + FailedResult → 400/401/403 |
+
+### All remaining actions — `IActionResult` (void commands)
+
+Add `[ProducesResponseType(200)]` and the FailedResult set `[400]`, `[401]`, `[403]` (plus any extra explicit `BadRequest` — already covered) to every other action. The full list: `AddNewLeagueYear`, `ChangeLeagueOptions`, `EditLeagueYearSettings`, `InvitePlayer`, `CreateInviteLink`, `DeleteInviteLink`, `RescindInvite`, `ReassignPublisher`, `CreatePublisherForUser`, `EditPublisher`, `RemovePublisher`, `SetPlayerActiveStatus`, `SetAutoDraft`, `RemovePublisherGame`, `ManuallyScorePublisherGame`, `RemoveManualPublisherGameScore`, `ManuallySetWillNotRelease`, `StartDraft`, `ResetDraft`, `SetDraftOrder`, `SetDraftPause`, `UndoLastDraftAction`, `SetGameEligibilityOverride`, `SetGameTagOverride`, `PromoteNewLeagueManager`, `PostNewManagerMessage`, `DeleteManagerMessage`, `RejectTrade`, `ExecuteTrade`, `CreateSpecialAuction`, `CancelSpecialAuction`, `SetUnderReviewStatus`.
+
+`RescindInvite` and `SetAutoDraft` have an extra explicit `StatusCode(403)` — already covered by the 403 attribute.
+
+### Commit
+
+```powershell
+cd I:\CodeProjects\FantasyCritic
+git add src/FantasyCritic.Web/Controllers/API/LeagueManagerController.cs
+git commit -m "Strengthen return types in LeagueManagerController."
+```
+
+---
+
+## Task 6: `LeagueController`
+
+**File:** `src/FantasyCritic.Web/Controllers/API/LeagueController.cs`
+
+The largest controller. Add `using Microsoft.AspNetCore.Http;`. FailedResult pattern → `[400]`, `[401]`, `[403]`. Many reads also call `UnauthorizedOrForbid` (→ **401** or **403**) — these are already covered. Return values directly for typed reads.
+
+### File download actions — keep `IActionResult`, add `[Produces]`
+
+| Method | `[Produces(...)]` attribute | Non-200 |
+|---|---|---|
+| `ExportLeagueActionSetsToCsv` | `[Produces("text/csv")]` | `[400]`, `[401]`, `[403]` |
+| `DownloadConsolidatedLeagueData` | `[Produces("application/zip")]` | `[400]`, `[401]`, `[403]` |
+| `DownloadConsolidatedLeagueYearData` | `[Produces("application/json")]` | `[400]`, `[401]`, `[403]` |
+
+Also add `[ProducesResponseType(200)]` to each of these.
+
+### Actions to convert to `ActionResult<T>` (return value directly)
+
+Read the controller to determine the exact ViewModel type returned by each method. The table below identifies the success model — verify the variable name in the method body:
+
+| Method | New return type | Non-200 |
+|---|---|---|
+| `MyLeagues` | `ActionResult<List<LeagueWithStatusViewModel>>` | none |
+| `MyInvites` | `ActionResult<IEnumerable<CompleteLeagueInviteViewModel>>` | none |
+| `PublicLeagues` | `ActionResult<List<PublicLeagueYearViewModel>>` | none |
+| `GetLeague` | `ActionResult<LeagueViewModel>` | FailedResult 400/401/403 + `[401]`/`[403]` from UnauthorizedOrForbid (already covered) |
+| `GetLeagueYear` | `ActionResult<LeagueYearViewModel>` | FailedResult + UnauthorizedOrForbid → 400/401/403 |
+| `GetLeagueAllTimeStats` | read the method — return type is whatever the Ok wraps | FailedResult + UnauthorizedOrForbid → 400/401/403 |
+| `GetLeagueYearForPublisher` | `ActionResult<LeagueYearViewModel>` | FailedResult + `[404]` + UnauthorizedOrForbid |
+| `GetMyPublishers` | `ActionResult<IEnumerable<LeaguePublisherViewModel>>` (read method for exact type) | FailedResult 400/401/403 |
+| `GetQueuedGameYearsForLeague` | `ActionResult<List<PossibleMasterGameYearViewModel>>` | FailedResult 400/401/403 |
+| `GetLeagueActions` | read the method — return type is what `Ok(...)` wraps | FailedResult + 401/403 |
+| `GetLeagueActionSets` | read the method | FailedResult + 401/403 |
+| `GetPublisher` | `ActionResult<PublisherViewModel>` | FailedResult + 401/403 |
+| `GetLeagueYearOptions` | `ActionResult<LeagueYearSettingsViewModel>` | FailedResult + 401/403 |
+| `MakePickupBid` | `ActionResult<PickupBidResultViewModel>` (read method) | `[400]` + FailedResult 400/401/403 |
+| `EditPickupBid` | `ActionResult<PickupBidResultViewModel>` | `[400]`, `[403]` + FailedResult |
+| `DraftGame` | `ActionResult<PlayerClaimResultViewModel>` | `[400]` + FailedResult |
+| `PossibleMasterGames` | `ActionResult<List<PossibleMasterGameYearViewModel>>` | FailedResult |
+| `TopAvailableGames` | `ActionResult<List<PossibleMasterGameYearViewModel>>` | `[400]` + FailedResult |
+| `ThisWeeksPublicBiddingGames` | `ActionResult<List<PossibleMasterGameYearViewModel>>` | `[400]` + FailedResult |
+| `PossibleCounterPicks` | `ActionResult<List<PublisherGameViewModel>>` | FailedResult |
+| `MakeDropRequest` | `ActionResult<DropGameResultViewModel>` | `[400]` + FailedResult |
+| `UseSuperDrop` | `ActionResult<DropGameResultViewModel>` | FailedResult |
+| `CurrentQueuedGameYears` | `ActionResult<List<PossibleMasterGameYearViewModel>>` | FailedResult |
+| `AddGameToQueue` | `ActionResult<QueueResultViewModel>` | `[400]` + FailedResult |
+| `TradeHistory` | `ActionResult<IEnumerable<TradeViewModel>>` | FailedResult + 401/403 |
+
+### `IActionResult` void commands — add `[ProducesResponseType(200)]` + error codes
+
+`AcceptInvite`, `JoinWithInviteLink`, `CreatePublisher`, `ChangePublisherName`, `ChangePublisherIcon`, `ChangePublisherSlogan`, `SetAutoDraft`, `DeletePickupBid`, `SetBidPriorities`, `FollowLeague`, `UnfollowLeague`, `DeleteDropRequest`, `DeleteQueuedGame`, `SetQueueRankings`, `ReorderPublisherGames`, `SetArchiveStatus`, `ProposeTrade`, `RescindTrade`, `AcceptTrade`, `RejectTrade`, `VoteOnTrade`, `DeleteTradeVote`, `DeclineInvite`, `DismissManagerMessage`.
+
+For each: add `[ProducesResponseType(200)]`. Methods that use FailedResult also get `[400]`, `[401]`, `[403]`. Methods with explicit `BadRequest` or `Forbid` without FailedResult still get `[400]`/`[403]` as applicable. `DismissManagerMessage` has only an explicit `BadRequest` — just `[200]` and `[400]`.
+
+### Commit
+
+```powershell
+cd I:\CodeProjects\FantasyCritic
+git add src/FantasyCritic.Web/Controllers/API/LeagueController.cs
+git commit -m "Strengthen return types in LeagueController."
+```
