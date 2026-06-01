@@ -288,6 +288,8 @@ git commit -m "Replace anonymous types in CombinedDataController with named reco
 
 **Return style convention:** For typed reads, return the value directly — do NOT wrap in `Ok()`. For void commands, keep `return Ok();`. The controller already imports `Microsoft.AspNetCore.Mvc`; add `using Microsoft.AspNetCore.Http;` for `StatusCodes`.
 
+**FailedResult cast:** `FailedResult` is typed as `IActionResult` (an interface). `ActionResult<T>` has an implicit conversion from the abstract `ActionResult` class but NOT from the interface. In any typed `ActionResult<T>` method that passes through a FailedResult, cast it explicitly: `return (ActionResult)record.FailedResult;`. All concrete types the helpers return (`BadRequestResult`, `UnauthorizedResult`, `ForbidResult`, `StatusCodeResult`) derive from `ActionResult`, so this cast is safe.
+
 ### FailedResult non-200 attributes
 
 Most actions in this controller delegate failure paths to `GetExistingConference*`/`GetExistingConferenceYear*`/`GetExistingLeague*` helpers whose `FailedResult` can produce **400**, **401**, or **403** depending on auth state. Any action that calls one of these helpers gets:
@@ -390,6 +392,8 @@ Return `new RoyaleGroupStatusViewModel(false, null)` and `new RoyaleGroupStatusV
 
 Add `using Microsoft.AspNetCore.Http;` to the controller.
 
+**FailedResult cast:** `FailedResult` is typed as `IActionResult`. In any `ActionResult<T>` method with a FailedResult passthrough, cast it: `return (ActionResult)record.FailedResult;`.
+
 **`ActionResult<T>` (return value directly):**
 
 | Method | New return type | Non-200 attributes |
@@ -408,6 +412,8 @@ Add `using Microsoft.AspNetCore.Http;` to the controller.
 ### `RoyaleGroupController` — actions to convert
 
 Add `using Microsoft.AspNetCore.Http;` to the controller.
+
+**FailedResult cast:** This controller does not use FailedResult helpers — no cast needed.
 
 **`ActionResult<T>` (return value directly):**
 
@@ -450,6 +456,8 @@ git commit -m "Strengthen return types in RoyaleController and RoyaleGroupContro
 
 Add `using Microsoft.AspNetCore.Http;`. Every action uses the FailedResult pattern from `GetExistingLeague*`/`GetExistingLeagueYear*` helpers (except `CreateLeague`) — add `[ProducesResponseType(400)]`, `[ProducesResponseType(401)]`, `[ProducesResponseType(403)]` to all FailedResult actions. Return values directly (no `Ok()` wrapper) for typed actions.
 
+**FailedResult cast:** `FailedResult` is typed as `IActionResult` (interface). In any `ActionResult<T>` method with a FailedResult passthrough, cast it: `return (ActionResult)record.FailedResult;`.
+
 ### Actions to convert to `ActionResult<T>`
 
 | Method | New return type | Extra non-200 |
@@ -483,6 +491,8 @@ git commit -m "Strengthen return types in LeagueManagerController."
 **File:** `src/FantasyCritic.Web/Controllers/API/LeagueController.cs`
 
 The largest controller. Add `using Microsoft.AspNetCore.Http;`. FailedResult pattern → `[400]`, `[401]`, `[403]`. Many reads also call `UnauthorizedOrForbid` (→ **401** or **403**) — these are already covered. Return values directly for typed reads.
+
+**FailedResult cast:** `FailedResult` is typed as `IActionResult` (interface). In any `ActionResult<T>` method with a FailedResult passthrough, cast it: `return (ActionResult)record.FailedResult;`.
 
 ### File download actions — keep `IActionResult`, add `[Produces]`
 
