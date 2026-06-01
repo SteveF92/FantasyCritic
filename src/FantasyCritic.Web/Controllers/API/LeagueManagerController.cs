@@ -90,7 +90,7 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<IEnumerable<int>>> AvailableYears(Guid id)
+    public async Task<ActionResult<List<int>>> AvailableYears(Guid id)
     {
         var leagueRecord = await GetExistingLeague(id, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult is not null)
@@ -353,7 +353,7 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<IEnumerable<LeagueInviteLinkViewModel>>> InviteLinks(Guid leagueID)
+    public async Task<ActionResult<List<LeagueInviteLinkViewModel>>> InviteLinks(Guid leagueID)
     {
         var leagueRecord = await GetExistingLeague(leagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult is not null)

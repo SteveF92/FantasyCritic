@@ -35,7 +35,7 @@ public class RoyaleController : FantasyCriticController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<RoyaleYearQuarterViewModel>>> RoyaleQuarters()
+    public async Task<ActionResult<List<RoyaleYearQuarterViewModel>>> RoyaleQuarters()
     {
         IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
         var viewModels = supportedQuarters.Select(x => new RoyaleYearQuarterViewModel(x));

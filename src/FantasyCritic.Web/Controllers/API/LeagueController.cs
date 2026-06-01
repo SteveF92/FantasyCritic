@@ -89,7 +89,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CompleteLeagueInviteViewModel>>> MyInvites()
+    public async Task<ActionResult<List<CompleteLeagueInviteViewModel>>> MyInvites()
     {
         var currentUser = await GetCurrentUserOrThrow();
 
@@ -306,7 +306,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpGet("{year}")]
-    public async Task<ActionResult<IEnumerable<LeaguePublisherViewModel>>> GetMyPublishers(int year)
+    public async Task<ActionResult<List<LeaguePublisherViewModel>>> GetMyPublishers(int year)
     {
         var currentUser = await GetCurrentUserOrThrow();
         var publishers = await _publisherService.GetMinimalPublishersForUser(currentUser.Id, year);
@@ -343,7 +343,7 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<IEnumerable<LeagueActionViewModel>>> GetLeagueActions(Guid leagueID, int year)
+    public async Task<ActionResult<List<LeagueActionViewModel>>> GetLeagueActions(Guid leagueID, int year)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
@@ -375,7 +375,7 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<IEnumerable<LeagueActionProcessingSetViewModel>>> GetLeagueActionSets(Guid leagueID, int year)
+    public async Task<ActionResult<List<LeagueActionProcessingSetViewModel>>> GetLeagueActionSets(Guid leagueID, int year)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
@@ -1882,7 +1882,7 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<IEnumerable<TradeViewModel>>> TradeHistory(Guid leagueID, int year)
+    public async Task<ActionResult<List<TradeViewModel>>> TradeHistory(Guid leagueID, int year)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
