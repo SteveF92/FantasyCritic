@@ -1,4 +1,5 @@
 using DiscordDotNetUtilities;
+using FantasyCritic.Lib;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain;
@@ -13,12 +14,11 @@ using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using NodaTime;
-using NodaTime.Serialization.JsonNet;
 using Serilog;
 using System.ComponentModel.Design;
 using System.Reflection;
+using System.Text.Json;
 
 namespace FantasyCritic.MasterGameUpdater;
 
@@ -46,7 +46,6 @@ public static class Program
         _baseAddress = configuration["baseAddress"]!;
         _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]!);
 
-        JsonConvert.DefaultSettings = () => new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
         await UpdateMasterGames();
@@ -73,7 +72,7 @@ public static class Program
     {
         HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
         var tagsString = await client.GetStringAsync("api/Game/GetMasterGameTags");
-        var objects = JsonConvert.DeserializeObject<List<MasterGameTagViewModel>>(tagsString)!;
+        var objects = JsonSerializer.Deserialize<List<MasterGameTagViewModel>>(tagsString)!;
         var domains = objects.Select(x => x.ToDomain()).ToList();
         return domains;
     }
@@ -83,7 +82,7 @@ public static class Program
         var tagDictionary = tags.ToDictionary(x => x.Name);
         HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
         var gamesString = await client.GetStringAsync("api/Game/MasterGame");
-        var objects = JsonConvert.DeserializeObject<List<MasterGameViewModel>>(gamesString)!;
+        var objects = JsonSerializer.Deserialize<List<MasterGameViewModel>>(gamesString, FantasyCriticJsonOptions.Default)!;
         var domains = objects.Select(x => x.ToDomain(tagDictionary)).ToList();
         return domains;
     }

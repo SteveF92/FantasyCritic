@@ -1,5 +1,3 @@
-using System.Net;
-using System.Runtime.InteropServices;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -9,6 +7,9 @@ using FantasyCritic.AWS;
 using FantasyCritic.EmailTemplates;
 using FantasyCritic.Lib.BackgroundServices;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Handlers;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -18,9 +19,10 @@ using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
+using FantasyCritic.Postmark;
+using FantasyCritic.Web.Authorization;
 using FantasyCritic.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -28,17 +30,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime.Serialization.SystemTextJson;
 using Serilog;
-using NodaTime.Serialization.JsonNet;
-using Microsoft.Extensions.Configuration;
-using FantasyCritic.Postmark;
-using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Discord.Handlers;
-using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Web.Authorization;
-
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
@@ -301,9 +301,10 @@ public static class HostingExtensions
         });
 
         services.AddControllers()
-            .AddNewtonsoftJson(options =>
+            .AddJsonOptions(options =>
             {
-                options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             })
             .AddControllersAsServices();
 

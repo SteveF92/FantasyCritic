@@ -146,7 +146,6 @@
           <li>SignalR</li>
           <li>NodaTime</li>
           <li>Dapper</li>
-          <li>Newtonsoft.JSON</li>
           <li>CSharpFunctionalExtensions</li>
           <li>Patreon.Net</li>
           <li>Razor.Templating.Core</li>

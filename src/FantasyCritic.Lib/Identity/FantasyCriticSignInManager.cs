@@ -1,12 +1,11 @@
 using System.Security.Claims;
+using System.Text.Json;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using NodaTime.Serialization.JsonNet;
 
 namespace FantasyCritic.Lib.Identity;
 public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
@@ -57,7 +56,7 @@ public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
     private void CacheUserToSession(FantasyCriticUser user)
     {
         var serializable = new FantasyCriticUserEntity(user);
-        var jsonString = JsonConvert.SerializeObject(serializable, new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+        var jsonString = JsonSerializer.Serialize(serializable, FantasyCriticJsonOptions.Default);
         Context.Session.SetString("current-user", jsonString);
     }
 

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace FantasyCritic.Lib.SharedSerialization.Database;
 
@@ -18,7 +18,7 @@ public class MasterGameTagEntity
         HasCustomCode = domain.HasCustomCode;
         SystemTagOnly = domain.SystemTagOnly;
         Description = domain.Description;
-        Examples = JsonConvert.SerializeObject(domain.Examples);
+        Examples = JsonSerializer.Serialize(domain.Examples);
         BadgeColor = domain.BadgeColor;
     }
 
@@ -34,7 +34,7 @@ public class MasterGameTagEntity
 
     public MasterGameTag ToDomain()
     {
-        var examples = JsonConvert.DeserializeObject<List<string>>(Examples)!;
+        var examples = JsonSerializer.Deserialize<List<string>>(Examples)!;
         return new MasterGameTag(Name, ReadableName, ShortName, new MasterGameTagType(TagType), HasCustomCode, SystemTagOnly, Description, examples, BadgeColor);
     }
 }
