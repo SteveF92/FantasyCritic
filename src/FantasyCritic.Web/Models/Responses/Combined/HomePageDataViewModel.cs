@@ -1,4 +1,3 @@
-using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Conferences;
 using FantasyCritic.Web.Models.Responses.Royale;
 

@@ -43,7 +43,7 @@ public class CombinedDataController : FantasyCriticController
         var supportedYears = basicData.SupportedYears.Select(x => new SupportedYearViewModel(x)).ToList();
 
         var vm = new BasicDataViewModel(bidTimes, masterGameTags, leagueOptions, supportedYears);
-        return Ok(vm);
+        return vm;
     }
 
     [HttpGet]
@@ -97,6 +97,6 @@ public class CombinedDataController : FantasyCriticController
             publicLeagueViewModels,
             activeRoyaleQuarterViewModel,
             homePageData.ActiveYearQuarterRoyalePublisherID);
-        return Ok(vm);
+        return vm;
     }
 }
