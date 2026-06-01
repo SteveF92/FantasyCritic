@@ -13,13 +13,13 @@ alwaysApply: true
 
 ## Where code belongs
 
-| Concern | Project | Naming / notes |
-|--------|---------|----------------|
-| Persistence (SQL, Dapper queries, row types owned by MySQL repos) | **FantasyCritic.MySQL** | Types under `Entities/` end in **`Entity`**. |
-| Shared wire/DB shapes across projects | **FantasyCritic.Lib** (`SharedSerialization/`) | **`Entity`** / **`ViewModel`** that **must** be referenced from more than one project—this folder is the **deliberate** home (see section below). |
-| HTTP/API JSON and MVC models | **FantasyCritic.Web** | **`ViewModel`**, **`Request`**, **`Response`** for shapes **owned by Web only**. Map domain at the edge; serialization attributes on Web types or shared types in **`SharedSerialization`**. |
-| Repository **interfaces** | **FantasyCritic.Lib** (`Interfaces/`) | Implementations live in **FantasyCritic.MySQL** (`*Repo`). Test doubles: **FantasyCritic.FakeRepo**. Automated tests: **FantasyCritic.Test**. |
-| Business rules and domain model | **FantasyCritic.Lib** (especially `Domain/`) | No coupling to DB column names, Vue/JSON property names, or other **non–compile-time** contract surfaces. |
+| Concern                                                           | Project                                        | Naming / notes                                                                                                                                                                               |
+| ----------------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Persistence (SQL, Dapper queries, row types owned by MySQL repos) | **FantasyCritic.MySQL**                        | Types under `Entities/` end in **`Entity`**.                                                                                                                                                 |
+| Shared wire/DB shapes across projects                             | **FantasyCritic.Lib** (`SharedSerialization/`) | **`Entity`** / **`ViewModel`** that **must** be referenced from more than one project—this folder is the **deliberate** home (see section below).                                            |
+| HTTP/API JSON and MVC models                                      | **FantasyCritic.Web**                          | **`ViewModel`**, **`Request`**, **`Response`** for shapes **owned by Web only**. Map domain at the edge; serialization attributes on Web types or shared types in **`SharedSerialization`**. |
+| Repository **interfaces**                                         | **FantasyCritic.Lib** (`Interfaces/`)          | Implementations live in **FantasyCritic.MySQL** (`*Repo`). Test doubles: **FantasyCritic.FakeRepo**. Automated tests: **FantasyCritic.Test**.                                                |
+| Business rules and domain model                                   | **FantasyCritic.Lib** (especially `Domain/`)   | No coupling to DB column names, Vue/JSON property names, or other **non–compile-time** contract surfaces.                                                                                    |
 
 ### `SharedSerialization` in Lib (intentional exception)
 
@@ -32,7 +32,7 @@ alwaysApply: true
 
 ## ASP.NET JSON
 
-- **FantasyCritic.Web** uses **Newtonsoft.Json** for MVC/API (`Microsoft.AspNetCore.Mvc.NewtonsoftJson`, **NodaTime.Serialization.JsonNet**). Match Newtonsoft attributes and serializers when changing API contracts—do not assume `System.Text.Json` is the default for controllers.
+- **FantasyCritic.Web** uses **System.Text.Json** for MVC/API (configured via `AddJsonOptions` with **NodaTime.Serialization.SystemTextJson**). Use `System.Text.Json.Serialization` attributes (`[JsonPropertyName]`, `[JsonConstructor]`, etc.) when changing API contracts. The shared `FantasyCriticJsonOptions` class in `FantasyCritic.Lib` provides pre-configured `JsonSerializerOptions` instances (camelCase + NodaTime) for all direct `JsonSerializer` call sites.
 
 ## Frontend
 

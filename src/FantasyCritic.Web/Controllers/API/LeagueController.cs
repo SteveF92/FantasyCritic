@@ -1,4 +1,5 @@
 using CsvHelper;
+using FantasyCritic.Lib;
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -22,12 +23,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using NodaTime.Serialization.JsonNet;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -35,13 +35,7 @@ namespace FantasyCritic.Web.Controllers.API;
 [Authorize]
 public class LeagueController : BaseLeagueController
 {
-    private static readonly JsonSerializerSettings ZipExportJsonSettings = CreateZipExportJsonSettings();
-
-    private static JsonSerializerSettings CreateZipExportJsonSettings()
-    {
-        JsonSerializerSettings settings = new JsonSerializerSettings { Formatting = Formatting.Indented };
-        return settings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-    }
+    private static readonly JsonSerializerOptions ZipExportJsonOptions = FantasyCriticJsonOptions.Indented;
 
     private readonly DraftService _draftService;
     private readonly GameSearchingService _gameSearchingService;
@@ -543,7 +537,7 @@ public class LeagueController : BaseLeagueController
 
         var yearViewModel = new ConsolidatedLeagueYearViewModel(yearData, systemWideValues, currentInstant, currentDate, masterGameYearDictionary);
 
-        string json = JsonConvert.SerializeObject(yearViewModel, ZipExportJsonSettings);
+        string json = JsonSerializer.Serialize(yearViewModel, ZipExportJsonOptions);
         byte[] bytes = Encoding.UTF8.GetBytes(json);
         string sanitizedLeagueName = league.LeagueName.SanitizeForFileName();
         string fileName = $"{sanitizedLeagueName}_{year}_ConsolidatedYear.json";
@@ -1156,7 +1150,7 @@ public class LeagueController : BaseLeagueController
         if (slotInfo is not null)
         {
             string slotInfoJSON = Encoding.UTF8.GetString(Convert.FromBase64String(slotInfo));
-            PublisherSingleSlotRequirementsViewModel? slotInfoObject = JsonConvert.DeserializeObject<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON);
+            PublisherSingleSlotRequirementsViewModel? slotInfoObject = JsonSerializer.Deserialize<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON);
             if (slotInfoObject is null)
             {
                 return BadRequest();
@@ -1731,7 +1725,7 @@ public class LeagueController : BaseLeagueController
         ZipArchiveEntry entry = zip.CreateEntry(entryName);
         using Stream entryStream = entry.Open();
         using var writer = new StreamWriter(entryStream, Encoding.UTF8);
-        string json = JsonConvert.SerializeObject(payload, ZipExportJsonSettings);
+        string json = JsonSerializer.Serialize(payload, ZipExportJsonOptions);
         writer.Write(json);
     }
 

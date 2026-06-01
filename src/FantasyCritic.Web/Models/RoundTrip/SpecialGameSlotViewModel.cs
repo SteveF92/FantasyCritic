@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace FantasyCritic.Web.Models.RoundTrip;
 

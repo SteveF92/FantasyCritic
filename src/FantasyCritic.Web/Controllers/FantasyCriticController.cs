@@ -1,3 +1,4 @@
+using FantasyCritic.Lib;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.SharedSerialization.Database;
@@ -5,8 +6,8 @@ using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using NodaTime.Serialization.JsonNet;
+using System.Text.Json;
 
 namespace FantasyCritic.Web.Controllers;
 
@@ -40,7 +41,7 @@ public abstract class FantasyCriticController : ControllerBase
         var sessionUserString = HttpContext.Session.GetString("current-user");
         if (!string.IsNullOrWhiteSpace(sessionUserString))
         {
-            var deserialized = JsonConvert.DeserializeObject<FantasyCriticUserEntity>(sessionUserString, new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+            var deserialized = JsonSerializer.Deserialize<FantasyCriticUserEntity>(sessionUserString, FantasyCriticJsonOptions.Default);
             var domain = deserialized?.ToDomain();
             if (domain is not null && domain.Id.ToString() == userID)
             {
@@ -55,7 +56,7 @@ public abstract class FantasyCriticController : ControllerBase
         }
 
         var serializable = new FantasyCriticUserEntity(currentUser);
-        var jsonString = JsonConvert.SerializeObject(serializable, new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+        var jsonString = JsonSerializer.Serialize(serializable, FantasyCriticJsonOptions.Default);
         HttpContext.Session.SetString("current-user", jsonString);
 
         _currentUser = currentUser;
