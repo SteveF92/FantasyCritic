@@ -1,8 +1,8 @@
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace FantasyCritic.Lib.GG;
 
@@ -43,7 +43,7 @@ public class GGService : IGGService
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                Content = new StringContent(JsonConvert.SerializeObject(queryObject), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonSerializer.Serialize(queryObject), Encoding.UTF8, "application/json")
             };
 
             string responseString;
@@ -53,19 +53,8 @@ public class GGService : IGGService
                 responseString = await response.Content.ReadAsStringAsync();
             }
 
-            JObject parsedGameResponse = JObject.Parse(responseString);
-            var dataSectionToken = parsedGameResponse.GetValue("data");
-            if (dataSectionToken is not JObject dataSection)
-            {
-                return null;
-            }
-            var internalSectionToken = dataSection.GetValue("getGameByToken");
-            if (internalSectionToken is not JObject internalSection)
-            {
-                return null;
-            }
-
-            var typedData = internalSection.ToObject<GGGameResponse>();
+            var parsed = JsonSerializer.Deserialize<GGGraphQLResponse>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var typedData = parsed?.Data?.GetGameByToken;
             if (typedData is null)
             {
                 return null;
