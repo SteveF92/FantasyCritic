@@ -95,7 +95,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueRecord = await GetExistingLeague(id, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueRecord.FailedResult;
+            return leagueRecord.FailedResult;
         }
         var validResult = leagueRecord.ValidResult!;
         var currentUser = validResult.CurrentUser!;
@@ -358,7 +358,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueRecord = await GetExistingLeague(leagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueRecord.FailedResult;
+            return leagueRecord.FailedResult;
         }
         var validResult = leagueRecord.ValidResult!;
         var league = validResult.League;
@@ -407,7 +407,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
         if (leagueRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueRecord.FailedResult;
+            return leagueRecord.FailedResult;
         }
         var validResult = leagueRecord.ValidResult!;
         var league = validResult.League;
@@ -434,7 +434,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, mostRecentLeagueYear, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueYearRecord.FailedResult;
+            return leagueYearRecord.FailedResult;
         }
 
         var leagueYearResult = leagueYearRecord.ValidResult!;
@@ -675,7 +675,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedOrUnderReviewDraftFinished);
         if (leagueYearPublisherRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueYearPublisherRecord.FailedResult;
+            return leagueYearPublisherRecord.FailedResult;
         }
         var validResult = leagueYearPublisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
@@ -704,7 +704,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYearPublisherGameRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedOrUnderReviewDraftFinished);
         if (leagueYearPublisherGameRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueYearPublisherGameRecord.FailedResult;
+            return leagueYearPublisherGameRecord.FailedResult;
         }
         var validResult = leagueYearPublisherGameRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
@@ -926,7 +926,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.ActiveDraft);
         if (leagueYearPublisherRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueYearPublisherRecord.FailedResult;
+            return leagueYearPublisherRecord.FailedResult;
         }
         var validResult = leagueYearPublisherRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;

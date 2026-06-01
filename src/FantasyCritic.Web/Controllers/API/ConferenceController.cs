@@ -140,7 +140,7 @@ public class ConferenceController : BaseLeagueController
         var leagueRecord = await GetExistingConference(id, ConferenceRequiredRelationship.ConferenceManager);
         if (leagueRecord.FailedResult is not null)
         {
-            return (ActionResult)leagueRecord.FailedResult;
+            return leagueRecord.FailedResult;
         }
         var validResult = leagueRecord.ValidResult!;
         var currentUser = validResult.CurrentUser!;
@@ -319,7 +319,7 @@ public class ConferenceController : BaseLeagueController
         var conferenceRecord = await GetExistingConference(id, ConferenceRequiredRelationship.AllowAnonymous);
         if (conferenceRecord.FailedResult is not null)
         {
-            return (ActionResult)conferenceRecord.FailedResult;
+            return conferenceRecord.FailedResult;
         }
 
         var validResult = conferenceRecord.ValidResult!;
@@ -339,7 +339,7 @@ public class ConferenceController : BaseLeagueController
         var conferenceYearRecord = await GetExistingConferenceYearWithSupplementalData(conferenceID, year, ConferenceRequiredRelationship.AllowAnonymous);
         if (conferenceYearRecord.FailedResult is not null)
         {
-            return (ActionResult)conferenceYearRecord.FailedResult;
+            return conferenceYearRecord.FailedResult;
         }
 
         var validResult = conferenceYearRecord.ValidResult!;
@@ -451,7 +451,7 @@ public class ConferenceController : BaseLeagueController
         var conferenceRecord = await GetExistingConference(conferenceID, ConferenceRequiredRelationship.ConferenceManager);
         if (conferenceRecord.FailedResult is not null)
         {
-            return (ActionResult)conferenceRecord.FailedResult;
+            return conferenceRecord.FailedResult;
         }
         var validResult = conferenceRecord.ValidResult!;
         var conference = validResult.Conference;
