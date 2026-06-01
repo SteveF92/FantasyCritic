@@ -35,7 +35,7 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
+    public async Task<ActionResult<MasterGameViewModel>> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
     {
         var possibleTags = await _interLeagueService.GetMasterGameTags();
         IReadOnlyList<MasterGameTag> tags = possibleTags
@@ -61,7 +61,7 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditMasterGame([FromBody] EditMasterGameRequest viewModel)
+    public async Task<ActionResult<MasterGameViewModel>> EditMasterGame([FromBody] EditMasterGameRequest viewModel)
     {
         Instant instant = _clock.GetCurrentInstant();
 
