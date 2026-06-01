@@ -15,7 +15,6 @@ using FantasyCritic.MySQL.DapperTypeMaps;
 using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
-using NodaTime.Serialization.JsonNet;
 using Serilog;
 using System.ComponentModel.Design;
 using System.Reflection;

@@ -31,7 +31,6 @@
     <PackageReference Include="Serilog.Enrichers.ClientInfo" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.1" />
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="8.3.2" />
   </ItemGroup>
 

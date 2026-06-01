@@ -6,7 +6,6 @@ using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime.Serialization.JsonNet;
 using System.Text.Json;
 
 namespace FantasyCritic.Web.Controllers;

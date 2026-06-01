@@ -34,7 +34,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NodaTime.Serialization.JsonNet;
 using NodaTime.Serialization.SystemTextJson;
 using Serilog;
 using System.Net;
