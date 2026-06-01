@@ -139,7 +139,7 @@ public static class Program
         Log.Information("Getting supported years from production");
         HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
         var json = await client.GetStringAsync("api/Game/SupportedYears");
-        var responses = JsonConvert.DeserializeObject<List<SupportedYearResponse>>(json)!;
+        var responses = JsonSerializer.Deserialize<List<SupportedYearResponse>>(json)!;
 
         var entities = responses.Select(r => new SupportedYearEntity
         {
@@ -160,7 +160,7 @@ public static class Program
         Log.Information("Getting royale year quarters from production");
         HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
         var json = await client.GetStringAsync("api/Royale/RoyaleQuarters");
-        var responses = JsonConvert.DeserializeObject<List<RoyaleQuarterResponse>>(json)!;
+        var responses = JsonSerializer.Deserialize<List<RoyaleQuarterResponse>>(json)!;
 
         var entities = responses
             .Select(r => new RoyaleYearQuarter(new YearQuarter(r.Year, r.Quarter), r.OpenForPlay, r.Finished, null))
