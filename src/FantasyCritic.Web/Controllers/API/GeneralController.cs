@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -53,6 +54,8 @@ public class GeneralController : FantasyCriticController
 
     [HttpGet]
     [HttpGet("/rss/announcements")]
+    [Produces("application/rss+xml")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> SiteAnnouncementsRss()
     {
         var announcements = await _interLeagueService.GetSiteAnnouncements();

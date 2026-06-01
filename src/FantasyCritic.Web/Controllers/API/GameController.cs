@@ -6,6 +6,7 @@ using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Requests.MasterGame;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -161,6 +162,7 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -171,6 +173,8 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateMasterGameChangeRequest([FromBody] MasterGameChangeRequestRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -186,6 +190,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteMasterGameRequest([FromBody] MasterGameRequestDeletionRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -206,6 +213,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteMasterGameChangeRequest([FromBody] MasterGameChangeRequestDeletionRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -226,6 +236,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DismissMasterGameRequest([FromBody] MasterGameRequestDismissRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -246,6 +259,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DismissMasterGameChangeRequest([FromBody] MasterGameChangeRequestDismissRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -382,7 +398,7 @@ public class GameController : FantasyCriticController
     }
 
     [HttpGet("{masterGameID}")]
-    public async Task<IActionResult> LeagueYearsWithMasterGame(Guid masterGameID)
+    public async Task<ActionResult<List<LeagueYearWithMasterGameViewModel>>> LeagueYearsWithMasterGame(Guid masterGameID)
     {
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsFailure)
