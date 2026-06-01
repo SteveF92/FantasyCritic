@@ -60,12 +60,12 @@ For any action that can return `NotFound()`, `BadRequest(...)`, `Forbid()`, `Una
 Every action gets `[HttpGet]`, `[HttpPost]`, `[HttpPut]`, or `[HttpDelete]`. Currently many read actions have no verb attribute; ASP.NET accepts any verb for them. The OpenAPI generator requires an explicit verb to produce a valid spec, and explicit verbs are a correctness improvement regardless.
 
 **Rule 5: No anonymous types in `Ok(new { … })`.**  
-The generator cannot produce a schema for an anonymous type. All anonymous response projections require a named ViewModel class. Identified occurrences:
-- `CombinedDataController.BasicData`
-- `CombinedDataController.HomePageData`
-- `RoyaleController.RoyaleData`
-- `RoyaleController.UserRoyaleHistory`
-- `RoyaleGroupController` create-response (`new { GroupID }`)
+The generator cannot produce a schema for an anonymous type. All anonymous response projections require a named ViewModel class. New classes follow the existing pattern: `src/FantasyCritic.Web/Models/Responses/` with appropriate subfolders (`Royale/`, `Conferences/`, etc.). Identified occurrences:
+- `CombinedDataController.BasicData` → new `BasicDataViewModel`
+- `CombinedDataController.HomePageData` → new `HomePageDataViewModel`
+- `RoyaleController.RoyaleData` → new `RoyaleQuarterDataViewModel` (inside `Royale/`)
+- `RoyaleController.UserRoyaleHistory` → new `UserRoyaleHistoryViewModel` (inside `Royale/`)
+- `RoyaleGroupController` create-response (`new { GroupID }`) → new `CreatedRoyaleGroupViewModel` (inside `Royale/`)
 
 **Rule 6: File and content actions keep `IActionResult` with `[Produces]`.**  
 `FileStreamResult`, `File(bytes, contentType, fileName)`, and `Content(xml, "application/rss+xml")` have no typed response body. They keep `IActionResult` and gain `[Produces("text/csv")]` / `[Produces("application/zip")]` / `[Produces("application/rss+xml")]` to document the media type in the spec.
@@ -101,7 +101,7 @@ Actions in `FactCheckerController` that return `CreatedAtAction(...)` with a mod
 <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="..." />
 ```
 
-Both packages should be the same version as the target framework SDK (currently `net10.0`).
+Use `dotnet add package Microsoft.AspNetCore.OpenApi` and `dotnet add package Microsoft.Extensions.ApiDescription.Server` at implementation time to resolve the latest stable version compatible with `net10.0`. Both packages are part of the ASP.NET Core platform and are versioned together.
 
 #### Service registration (`HostingExtensions.ConfigureServices`)
 
