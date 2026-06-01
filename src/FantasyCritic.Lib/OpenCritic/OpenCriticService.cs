@@ -1,7 +1,7 @@
-using System.Net.Http;
-using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Logging;
 using FantasyCritic.Lib.Extensions;
+using Microsoft.Extensions.Logging;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace FantasyCritic.Lib.OpenCritic;
 
@@ -21,34 +21,29 @@ public class OpenCriticService : IOpenCriticService
     {
         try
         {
-            var gameResponse = await _client.GetStringAsync($"game/{openCriticGameID}");
-            if (string.IsNullOrWhiteSpace(gameResponse))
+            var response = await _client.GetFromJsonAsync<OpenCriticGameResponse>($"game/{openCriticGameID}");
+            if (response is null)
             {
                 return null;
             }
-            JObject parsedGameResponse = JObject.Parse(gameResponse);
 
-            var gameName = parsedGameResponse.GetValue("name")?.Value<string>() ?? "Unknown Open Critic Game";
+            var gameName = response.Name ?? "Unknown Open Critic Game";
+
             LocalDate? earliestReleaseDate = null;
-            var releaseDateToken = parsedGameResponse.GetValue("firstReleaseDate");
-            var firstReleaseDateString = releaseDateToken?.Value<string>();
-            if (!string.IsNullOrWhiteSpace(firstReleaseDateString))
+            if (!string.IsNullOrWhiteSpace(response.FirstReleaseDate) &&
+                DateTime.TryParse(response.FirstReleaseDate, out var parsedDate))
             {
-                var earliestDateTime = releaseDateToken?.Value<DateTime>();
-                if (earliestDateTime.HasValue)
+                earliestReleaseDate = LocalDate.FromDateTime(parsedDate);
+                if (earliestReleaseDate == DefaultOpenCriticReleaseDate)
                 {
-                    earliestReleaseDate = LocalDate.FromDateTime(earliestDateTime.Value);
-                    if (earliestReleaseDate == DefaultOpenCriticReleaseDate)
-                    {
-                        earliestReleaseDate = null;
-                    }
+                    earliestReleaseDate = null;
                 }
             }
 
-            var score = parsedGameResponse.GetValue("topCriticScore")?.Value<decimal?>();
+            var score = response.TopCriticScore;
             if (score == -1m)
             {
-                score = parsedGameResponse.GetValue("averageScore")?.Value<decimal?>();
+                score = response.AverageScore;
                 if (score != -1m)
                 {
                     _logger.LogInformation($"Using averageScore for game: {openCriticGameID}");
@@ -59,10 +54,9 @@ public class OpenCriticService : IOpenCriticService
                 }
             }
 
-            var numReviews = parsedGameResponse.GetValue("numReviews")?.Value<int?>();
+            var numReviews = response.NumReviews;
             bool hasAnyReviews = numReviews.HasValue && numReviews > 0;
-            string? url = parsedGameResponse.GetValue("url")?.Value<string?>();
-            string? slug = url?.SubstringStartingFromLastInstanceOf("/");
+            string? slug = response.Url?.SubstringStartingFromLastInstanceOf("/");
 
             var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate, hasAnyReviews, slug);
             return openCriticGame;
