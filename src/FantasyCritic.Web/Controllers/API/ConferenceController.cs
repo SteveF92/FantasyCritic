@@ -9,6 +9,7 @@ using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models.Requests.Conferences;
 using FantasyCritic.Web.Models.Responses.Conferences;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpGet]
-    public async Task<IActionResult> MyConferences()
+    public async Task<ActionResult<List<MinimalConferenceViewModel>>> MyConferences()
     {
         var currentUser = await GetCurrentUserOrThrow();
         var conferences = await _conferenceService.GetConferencesForUser(currentUser);
@@ -44,12 +45,13 @@ public class ConferenceController : BaseLeagueController
             .OrderBy(x => x.ConferenceName)
             .ToList();
 
-        return Ok(viewModels);
+        return viewModels;
     }
 
     [HttpPost]
     [Authorize("PlusUser")]
-    public async Task<IActionResult> CreateConference([FromBody] CreateConferenceRequest request)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Guid>> CreateConference([FromBody] CreateConferenceRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
         var requestValid = request.IsValid();
@@ -78,11 +80,15 @@ public class ConferenceController : BaseLeagueController
             return BadRequest(conference.Error);
         }
 
-        return Ok(conference.Value.ConferenceID);
+        return conference.Value.ConferenceID;
     }
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddLeagueToConference([FromBody] AddLeagueToConferenceRequest request)
     {
         var requestValid = request.IsValid();
@@ -126,12 +132,15 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> AvailableYears(Guid id)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IEnumerable<int>>> AvailableYears(Guid id)
     {
         var leagueRecord = await GetExistingConference(id, ConferenceRequiredRelationship.ConferenceManager);
         if (leagueRecord.FailedResult is not null)
         {
-            return leagueRecord.FailedResult;
+            return (ActionResult)leagueRecord.FailedResult;
         }
         var validResult = leagueRecord.ValidResult!;
         var currentUser = validResult.CurrentUser!;
@@ -148,11 +157,15 @@ public class ConferenceController : BaseLeagueController
             availableYears = availableYears.Concat(betaYears).Distinct();
         }
 
-        return Ok(availableYears);
+        return availableYears.ToList();
     }
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddNewConferenceYear([FromBody] NewConferenceYearRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -190,6 +203,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddNewLeagueYear([FromBody] AddNewLeagueYearRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -239,6 +256,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> SetPlayerActiveStatus([FromBody] ConferencePlayerActiveRequest request)
     {
         var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
@@ -258,6 +279,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> EditConference([FromBody] EditConferenceRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -286,29 +311,35 @@ public class ConferenceController : BaseLeagueController
 
     [AllowAnonymous]
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetConference(Guid id)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<ConferenceViewModel>> GetConference(Guid id)
     {
         var conferenceRecord = await GetExistingConference(id, ConferenceRequiredRelationship.AllowAnonymous);
         if (conferenceRecord.FailedResult is not null)
         {
-            return conferenceRecord.FailedResult;
+            return (ActionResult)conferenceRecord.FailedResult;
         }
 
         var validResult = conferenceRecord.ValidResult!;
 
         var viewModel = new ConferenceViewModel(validResult.Conference, validResult.Relationship.ConferenceManager,
             validResult.Relationship.InConference, validResult.PlayersInConference, validResult.ConferenceLeagues);
-        return Ok(viewModel);
+        return viewModel;
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetConferenceYear(Guid conferenceID, int year)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<ConferenceYearViewModel>> GetConferenceYear(Guid conferenceID, int year)
     {
         var conferenceYearRecord = await GetExistingConferenceYearWithSupplementalData(conferenceID, year, ConferenceRequiredRelationship.AllowAnonymous);
         if (conferenceYearRecord.FailedResult is not null)
         {
-            return conferenceYearRecord.FailedResult;
+            return (ActionResult)conferenceYearRecord.FailedResult;
         }
 
         var validResult = conferenceYearRecord.ValidResult!;
@@ -319,11 +350,15 @@ public class ConferenceController : BaseLeagueController
 
         var conferenceYearViewModel = new ConferenceYearViewModel(conferenceViewModel, validResult.ConferenceYear, validResult.ConferenceLeagueYears,
             validResult.PlayersInConference, validResult.CurrentUser, validResult.ConferenceYearStandings, validResult.ManagerMessages);
-        return Ok(conferenceYearViewModel);
+        return conferenceYearViewModel;
     }
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateInviteLink([FromBody] CreateConferenceInviteLinkRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -346,6 +381,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteInviteLink([FromBody] DeleteConferenceInviteLinkRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -368,6 +407,10 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> JoinWithInviteLink([FromBody] JoinConferenceWithInviteLinkRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.AllowAnonymous);
@@ -400,12 +443,15 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpGet("{conferenceID}")]
-    public async Task<IActionResult> InviteLinks(Guid conferenceID)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IEnumerable<ConferenceInviteLinkViewModel>>> InviteLinks(Guid conferenceID)
     {
         var conferenceRecord = await GetExistingConference(conferenceID, ConferenceRequiredRelationship.ConferenceManager);
         if (conferenceRecord.FailedResult is not null)
         {
-            return conferenceRecord.FailedResult;
+            return (ActionResult)conferenceRecord.FailedResult;
         }
         var validResult = conferenceRecord.ValidResult!;
         var conference = validResult.Conference;
@@ -413,11 +459,15 @@ public class ConferenceController : BaseLeagueController
         int currentYear = conference.Years.Max(x => x.Year);
         IReadOnlyList<ConferenceInviteLink> activeLinks = await _conferenceService.GetActiveInviteLinks(conference);
         var viewModels = activeLinks.Select(x => new ConferenceInviteLinkViewModel(x, currentYear, _environmentConfiguration.BaseAddress));
-        return Ok(viewModels);
+        return viewModels.ToList();
     }
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RemovePlayerFromConference([FromBody] RemovePlayerFromConferenceRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -445,6 +495,10 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> PromoteNewConferenceManager([FromBody] PromoteNewConferenceManagerRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -479,6 +533,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ReassignLeagueManager([FromBody] PromoteNewLeagueManagerWithinConferenceRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -507,6 +565,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AssignLeaguePlayers([FromBody] AssignLeaguePlayersRequest request)
     {
         var conferenceRecord = await GetExistingConference(request.ConferenceID, ConferenceRequiredRelationship.ConferenceManager);
@@ -569,6 +631,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> SetConferenceLeagueLockStatus([FromBody] SetConferenceLeagueLockStatusRequest request)
     {
         var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
@@ -613,6 +679,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> PostNewConferenceManagerMessage([FromBody] PostNewConferenceManagerMessageRequest request)
     {
         var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
@@ -631,6 +701,10 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteConferenceManagerMessage([FromBody] DeleteConferenceManagerMessageRequest request)
     {
         var conferenceYearRecord = await GetExistingConferenceYear(request.ConferenceID, request.Year, ConferenceRequiredRelationship.ConferenceManager);
@@ -652,6 +726,8 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DismissManagerMessage([FromBody] DismissConferenceManagerMessageRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
