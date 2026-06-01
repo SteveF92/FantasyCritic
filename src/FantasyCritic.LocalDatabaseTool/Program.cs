@@ -8,10 +8,12 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.DapperTypeMaps;
+using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
@@ -20,7 +22,7 @@ using System.ComponentModel.Design;
 using System.Reflection;
 using System.Text.Json;
 
-namespace FantasyCritic.MasterGameUpdater;
+namespace FantasyCritic.LocalDatabaseTool;
 
 public static class Program
 {
@@ -40,6 +42,7 @@ public static class Program
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+            .AddEnvironmentVariables()
             .Build();
 
         _localConnectionString = configuration["localConnectionString"]!;
@@ -48,7 +51,18 @@ public static class Program
 
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
+        await EnsureLocalAdminUser();
+        await UpdateSupportedYears();
+        await UpdateRoyaleQuarters();
         await UpdateMasterGames();
+        await RefreshCaches();
+    }
+
+    private static async Task EnsureLocalAdminUser()
+    {
+        Log.Information("Ensuring local admin user exists");
+        var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
+        await syncer.EnsureLocalAdminUser(_clock);
     }
 
     private static async Task UpdateMasterGames()
@@ -57,7 +71,6 @@ public static class Program
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         MySQLMasterGameRepo localMasterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore, _clock);
         MySQLMasterGameUpdater gameUpdater = new MySQLMasterGameUpdater(_localConnectionString);
-        AdminService localAdminService = GetAdminService();
 
         Log.Information("Getting master games from production");
         var productionMasterGameTags = await GetTagsFromAPI();
@@ -65,6 +78,12 @@ public static class Program
         var localMasterGameTags = await localMasterGameRepo.GetMasterGameTags();
         var localMasterGames = await localMasterGameRepo.GetMasterGames();
         await gameUpdater.UpdateMasterGames(productionMasterGameTags, productionMasterGames, localMasterGameTags, localMasterGames, _addedByUserIDOverride);
+    }
+
+    private static async Task RefreshCaches()
+    {
+        Log.Information("Refreshing caches");
+        AdminService localAdminService = GetAdminService();
         await localAdminService.RefreshCaches();
     }
 
@@ -114,4 +133,45 @@ public static class Program
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
             openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo);
     }
+
+    private static async Task UpdateSupportedYears()
+    {
+        Log.Information("Getting supported years from production");
+        HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
+        var json = await client.GetStringAsync("api/Game/SupportedYears");
+        var responses = JsonConvert.DeserializeObject<List<SupportedYearResponse>>(json)!;
+
+        var entities = responses.Select(r => new SupportedYearEntity
+        {
+            Year             = r.Year,
+            OpenForCreation  = r.OpenForCreation,
+            OpenForPlay      = r.OpenForPlay,
+            OpenForBetaUsers = false,
+            StartDate        = LocalDate.FromDateTime(r.StartDate),
+            Finished         = r.Finished
+        }).ToList();
+
+        var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
+        await syncer.UpsertSupportedYears(entities);
+    }
+
+    private static async Task UpdateRoyaleQuarters()
+    {
+        Log.Information("Getting royale year quarters from production");
+        HttpClient client = new HttpClient() { BaseAddress = new Uri(_baseAddress) };
+        var json = await client.GetStringAsync("api/Royale/RoyaleQuarters");
+        var responses = JsonConvert.DeserializeObject<List<RoyaleQuarterResponse>>(json)!;
+
+        var entities = responses
+            .Select(r => new RoyaleYearQuarter(new YearQuarter(r.Year, r.Quarter), r.OpenForPlay, r.Finished, null))
+            .ToList();
+
+        var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
+        await syncer.UpsertRoyaleYearQuarters(entities);
+    }
+
+    private record SupportedYearResponse(int Year, bool OpenForCreation, bool OpenForPlay,
+        DateTime StartDate, bool Finished);
+
+    private record RoyaleQuarterResponse(int Year, int Quarter, bool OpenForPlay, bool Finished);
 }

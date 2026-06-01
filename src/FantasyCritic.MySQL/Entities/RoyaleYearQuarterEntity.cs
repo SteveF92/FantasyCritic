@@ -5,6 +5,21 @@ namespace FantasyCritic.MySQL.Entities;
 
 internal class RoyaleYearQuarterEntity
 {
+    public RoyaleYearQuarterEntity()
+    {
+
+    }
+
+    public RoyaleYearQuarterEntity(RoyaleYearQuarter domain)
+    {
+        Year = domain.YearQuarter.Year;
+        Quarter = domain.YearQuarter.Quarter;
+        OpenForPlay = domain.OpenForPlay;
+        Finished = domain.Finished;
+        WinningUser = domain.WinningUser?.UserID;
+        WinningUserDisplayName = domain.WinningUser?.DisplayName;
+    }
+
     public int Year { get; set; }
     public int Quarter { get; set; }
     public bool OpenForPlay { get; set; }

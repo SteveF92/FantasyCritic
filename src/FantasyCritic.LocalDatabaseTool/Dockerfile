@@ -10,21 +10,21 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj", "FantasyCritic.DatabaseUpdater/"]
-COPY ["FantasyCritic.AWS/FantasyCritic.AWS.csproj", "FantasyCritic.AWS/"]
+COPY ["FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj", "FantasyCritic.LocalDatabaseTool/"]
 COPY ["FantasyCritic.Lib/FantasyCritic.Lib.csproj", "FantasyCritic.Lib/"]
-RUN dotnet restore "./FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj"
+COPY ["FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "FantasyCritic.MySQL/"]
+RUN dotnet restore "./FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj"
 COPY . .
-WORKDIR "/src/FantasyCritic.DatabaseUpdater"
-RUN dotnet build "./FantasyCritic.DatabaseUpdater.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/FantasyCritic.LocalDatabaseTool"
+RUN dotnet build "./FantasyCritic.LocalDatabaseTool.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./FantasyCritic.DatabaseUpdater.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./FantasyCritic.LocalDatabaseTool.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "FantasyCritic.DatabaseUpdater.dll"]
+ENTRYPOINT ["dotnet", "FantasyCritic.LocalDatabaseTool.dll"]

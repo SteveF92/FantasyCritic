@@ -18,7 +18,8 @@ GRANT EXECUTE, SELECT, SHOW VIEW, DELETE, INSERT, UPDATE
   ON fantasycritic.* TO 'fantasycritic'@'%';
 
 -- fantasycritic-admin: full access on fantasycritic + minimal global read for tooling
-GRANT ALL PRIVILEGES ON fantasycritic.* TO 'fantasycritic-admin'@'%';
+-- WITH GRANT OPTION lets fantasycritic-admin run GRANT statements (e.g. in DbUp migrations).
+GRANT ALL PRIVILEGES ON fantasycritic.* TO 'fantasycritic-admin'@'%' WITH GRANT OPTION;
 GRANT SELECT, SHOW DATABASES, SHOW VIEW ON *.* TO 'fantasycritic-admin'@'%';
 
 FLUSH PRIVILEGES;
