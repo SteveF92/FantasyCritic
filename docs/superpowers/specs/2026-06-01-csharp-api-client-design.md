@@ -42,15 +42,18 @@ The spec is itself *output* of the web build (`Microsoft.Extensions.ApiDescripti
   - `Microsoft.Kiota.Serialization.Form`
   - `Microsoft.Kiota.Serialization.Multipart`
 
-**Contents** (all Kiota-generated, no handwritten code):
+**Contents:**
 
 ```
 src/FantasyCritic.ApiClient/
-  FantasyCritic.ApiClient.csproj
-  FantasyCriticApiClient.cs          ← top-level client entry point
-  Models/                            ← generated model classes (ViewModels, Request shapes)
-  Api/                               ← path-based fluent request builders
+  FantasyCritic.ApiClient.csproj     ← handwritten (never touched by kiota)
+  Generated/                         ← kiota output directory
+    FantasyCriticApiClient.cs        ← top-level client entry point
+    Models/                          ← generated model classes (ViewModels, Request shapes)
+    Api/                             ← path-based fluent request builders
 ```
+
+Kiota outputs into `Generated/` rather than the project root so that `--clean-output` (which wipes the entire output directory before regenerating) never touches the `.csproj` or any future non-generated files.
 
 **Added to solution:** `src/FantasyCritic.slnx`
 
@@ -73,14 +76,14 @@ scripts/Regenerate-ApiClient.ps1
 Which wraps:
 
 ```powershell
-kiota generate -l CSharp `
+dotnet tool run kiota -- generate -l CSharp `
   -d src/FantasyCritic.Web/wwwroot/openapi.json `
-  -o src/FantasyCritic.ApiClient `
+  -o src/FantasyCritic.ApiClient/Generated `
   -n FantasyCritic.ApiClient `
   --clean-output
 ```
 
-`--clean-output` wipes the output folder before regenerating, so removed endpoints don't leave stale files.
+`--clean-output` wipes the `Generated/` directory before regenerating, so removed endpoints don't leave stale files. Kiota is invoked via `dotnet tool run kiota` (local tool, pinned in `.config/dotnet-tools.json`) rather than a global install.
 
 ### Full workflow when an API endpoint changes
 
@@ -93,8 +96,8 @@ kiota generate -l CSharp `
 ### `scripts/Regenerate-ApiClient.ps1`
 
 - Resolves all paths relative to the repo root (works from any working directory)
-- Checks that `kiota` is available on PATH; prints `dotnet tool restore` hint if not
-- Runs `kiota generate` with the parameters above
+- Checks that `dotnet tool run kiota` succeeds; prints `dotnet tool restore` hint if not
+- Runs `dotnet tool run kiota -- generate` with the parameters above
 - Prints a brief summary on completion
 
 ## IntegrationTests Integration
