@@ -14,6 +14,7 @@
     <PackageTags>fantasyCritic;api;client;openapi;kiota</PackageTags>
     <RepositoryUrl>https://github.com/SteveF92/FantasyCritic</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <!-- Generated code produces warnings we don't own; suppress rather than fail the build. -->
@@ -21,6 +22,7 @@
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="2.0.0" />
