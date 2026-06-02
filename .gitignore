@@ -265,3 +265,6 @@ src/FantasyCritic.Web/tempkey.jwk
 *.received.*
 src/FantasyCritic.Web/ClientApp/dist/
 src/FantasyCritic.IntegrationTests/appsettings.Testing.Local.json
+
+# Kiota-generated API client — regenerate with scripts/Regenerate-ApiClient.ps1
+src/FantasyCritic.ApiClient/Generated/
