@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FantasyCritic.ApiClient</RootNamespace>
+
+    <!-- NuGet publishing metadata -->
+    <IsPackable>true</IsPackable>
+    <PackageId>FantasyCritic.ApiClient</PackageId>
+    <Authors>Steve Fallon</Authors>
+    <Company>Fantasy Critic</Company>
+    <Description>C# client for the FantasyCritic API, auto-generated from the OpenAPI spec.</Description>
+    <PackageTags>fantasyCritic;api;client;openapi;kiota</PackageTags>
+    <RepositoryUrl>https://github.com/SteveF92/FantasyCritic</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <!-- Generated code produces warnings we don't own; suppress rather than fail the build. -->
+  <PropertyGroup>
+    <WarningLevel>5</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Form" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Json" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Multipart" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Text" Version="2.0.0" />
+  </ItemGroup>
+
+</Project>
