@@ -17,7 +17,8 @@ public class AccountController : FantasyCriticController
 
     }
 
-    public async Task<ActionResult> CurrentUser()
+    [HttpGet]
+    public async Task<ActionResult<FantasyCriticUserViewModel>> CurrentUser()
     {
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsFailure)
@@ -40,6 +41,6 @@ public class AccountController : FantasyCriticController
         }
 
         FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, userRoles);
-        return Ok(vm);
+        return vm;
     }
 }

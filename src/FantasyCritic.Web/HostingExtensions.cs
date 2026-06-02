@@ -1,4 +1,5 @@
 using Discord;
+using Scalar.AspNetCore;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
@@ -328,6 +329,7 @@ public static class HostingExtensions
 
         services.AddRazorTemplating();
         services.AddSession();
+        services.AddOpenApi();
 
         return builder.Build();
     }
@@ -350,6 +352,11 @@ public static class HostingExtensions
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
+
+        app.MapScalarApiReference(options =>
+        {
+            options.OpenApiRoutePattern = "/openapi.json";
+        });
 
         if (!env.IsDevelopment())
         {

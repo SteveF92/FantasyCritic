@@ -73,7 +73,7 @@ public abstract class FantasyCriticController : ControllerBase
         return userResult.Value;
     }
 
-    protected static GenericResultRecord<T> GetFailedResult<T>(IActionResult failedResult) where T : class => new GenericResultRecord<T>(null, failedResult);
+    protected static GenericResultRecord<T> GetFailedResult<T>(ActionResult failedResult) where T : class => new GenericResultRecord<T>(null, failedResult);
     protected GenericResultRecord<T> UnauthorizedOrForbid<T>(bool hasUser) where T : class
     {
         if (hasUser)
@@ -84,7 +84,7 @@ public abstract class FantasyCriticController : ControllerBase
         return new GenericResultRecord<T>(null, Unauthorized());
     }
 
-    protected IActionResult UnauthorizedOrForbid(bool hasUser)
+    protected ActionResult UnauthorizedOrForbid(bool hasUser)
     {
         if (hasUser)
         {

@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using FantasyCritic.Lib.Extensions;
@@ -32,25 +33,28 @@ public class RoyaleController : FantasyCriticController
         _interLeagueService = interLeagueService;
     }
 
+    [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> RoyaleQuarters()
+    public async Task<ActionResult<List<RoyaleYearQuarterViewModel>>> RoyaleQuarters()
     {
         IReadOnlyList<RoyaleYearQuarter> supportedQuarters = await _royaleService.GetYearQuarters();
         var viewModels = supportedQuarters.Select(x => new RoyaleYearQuarterViewModel(x));
-        return Ok(viewModels);
+        return viewModels.ToList();
     }
 
+    [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> ActiveRoyaleQuarter()
+    public async Task<ActionResult<RoyaleYearQuarterViewModel>> ActiveRoyaleQuarter()
     {
         var activeQuarter = await _royaleService.GetActiveYearQuarter();
         var viewModel = new RoyaleYearQuarterViewModel(activeQuarter);
-        return Ok(viewModel);
+        return viewModel;
     }
 
-    [AllowAnonymous]
     [HttpGet("{year}/{quarter}")]
-    public async Task<IActionResult> RoyaleQuarter(int year, int quarter)
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RoyaleYearQuarterViewModel>> RoyaleQuarter(int year, int quarter)
     {
         var requestedQuarter = await _royaleService.GetYearQuarter(year, quarter);
         if (requestedQuarter is null)
@@ -59,11 +63,12 @@ public class RoyaleController : FantasyCriticController
         }
 
         var viewModel = new RoyaleYearQuarterViewModel(requestedQuarter);
-        return Ok(viewModel);
+        return viewModel;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Guid>> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
 
@@ -86,10 +91,14 @@ public class RoyaleController : FantasyCriticController
         }
 
         RoyalePublisher publisher = await _royaleService.CreatePublisher(selectedQuarter, currentUser.ToVeryMinimal(), request.PublisherName);
-        return Ok(publisher.PublisherID);
+        return publisher.PublisherID;
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ChangePublisherName([FromBody] ChangeRoyalePublisherNameRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -120,6 +129,10 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ChangePublisherIcon([FromBody] ChangeRoyalePublisherIconRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -145,6 +158,10 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ChangePublisherSlogan([FromBody] ChangeRoyalePublisherSloganRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -171,7 +188,8 @@ public class RoyaleController : FantasyCriticController
 
     [AllowAnonymous]
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetRoyalePublisher(Guid id)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RoyalePublisherViewModel>> GetRoyalePublisher(Guid id)
     {
         RoyalePublisherData? publisherData = await _royaleService.GetPublisherData(id);
         if (publisherData is null)
@@ -192,12 +210,13 @@ public class RoyaleController : FantasyCriticController
         }
 
         var viewModel = new RoyalePublisherViewModel(publisher, currentDate, quartersWon, publisherData.RoyaleActions, publisherData.Statistics, masterGameTags, thisPlayerIsViewing);
-        return Ok(viewModel);
+        return viewModel;
     }
 
-    [AllowAnonymous]
     [HttpGet("{year}/{quarter}")]
-    public async Task<IActionResult> RoyaleData(int year, int quarter)
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RoyaleQuarterDataViewModel>> RoyaleData(int year, int quarter)
     {
         var royaleData = await _royaleService.GetRoyaleYearQuarterData(year, quarter);
         if (royaleData is null)
@@ -247,20 +266,21 @@ public class RoyaleController : FantasyCriticController
             }
         }
 
-        var vm = new
-        {
-            RoyaleYearQuarters = allRoyaleYearQuarters,
-            RoyaleYearQuarter = royaleYearQuarterViewModel,
-            UserRoyalePublisherID = userRoyalePublisherID,
-            RoyaleStandings = publisherViewModels,
-            TopPublishers = validStatistics ? topPublishers : []
-        };
+        var vm = new RoyaleQuarterDataViewModel(
+            allRoyaleYearQuarters,
+            royaleYearQuarterViewModel,
+            userRoyalePublisherID,
+            publisherViewModels,
+            validStatistics ? topPublishers : []);
 
-        return Ok(vm);
+        return vm;
     }
 
     [HttpPost]
-    public async Task<IActionResult> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PlayerClaimResultViewModel>> PurchaseGame([FromBody] PurchaseRoyaleGameRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
 
@@ -291,7 +311,7 @@ public class RoyaleController : FantasyCriticController
         {
             var purchaseResult = await _royaleService.PurchaseGame(publisher, masterGame);
             var viewModel = new PlayerClaimResultViewModel(purchaseResult);
-            return Ok(viewModel);
+            return viewModel;
         }
         finally
         {
@@ -300,6 +320,10 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> SellGame([FromBody] SellRoyaleGameRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -344,6 +368,10 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> SetAdvertisingMoney([FromBody] SetAdvertisingMoneyRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -388,6 +416,7 @@ public class RoyaleController : FantasyCriticController
         }
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<PossibleRoyaleMasterGameViewModel>>> PossibleMasterGames(string? gameName, Guid publisherID,
         [FromQuery] RoyalePossibleMasterGamesReleaseFilter releaseFilter = RoyalePossibleMasterGamesReleaseFilter.All)
     {
@@ -435,7 +464,8 @@ public class RoyaleController : FantasyCriticController
 
     [AllowAnonymous]
     [HttpGet("{userID}")]
-    public async Task<IActionResult> UserRoyaleHistory(Guid userID)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UserRoyaleHistoryViewModel>> UserRoyaleHistory(Guid userID)
     {
         var user = await _userManager.FindByIdAsync(userID.ToString());
         if (user is null)
@@ -449,14 +479,12 @@ public class RoyaleController : FantasyCriticController
         var historyViewModels = historyEntries.Select(x => new RoyalePublisherHistoryViewModel(x)).ToList();
         var quartersWonViewModels = quartersWon.Select(x => new RoyaleYearQuarterViewModel(x)).ToList();
 
-        var vm = new
-        {
-            UserID = userID,
-            PlayerName = user.DisplayName,
-            QuartersWon = quartersWonViewModels,
-            Publishers = historyViewModels
-        };
+        var vm = new UserRoyaleHistoryViewModel(
+            userID,
+            user.DisplayName,
+            quartersWonViewModels,
+            historyViewModels);
 
-        return Ok(vm);
+        return vm;
     }
 }

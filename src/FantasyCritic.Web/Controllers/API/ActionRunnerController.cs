@@ -44,6 +44,7 @@ public class ActionRunnerController : FantasyCriticController
         _discordPushService = discordPushService;
     }
 
+    [HttpGet]
     public async Task<ActionResult<ActionedGameSetViewModel>> ActionProcessingDryRun()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -81,9 +82,10 @@ public class ActionRunnerController : FantasyCriticController
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
         var leagueActionSetViewModels = leagueActionSets.Select(x => new LeagueActionProcessingSetViewModel(x, currentDate, masterGameYearDictionary));
         ActionedGameSetViewModel fullSet = new ActionedGameSetViewModel(pickupGames, dropGames, leagueActionViewModels, leagueActionSetViewModels);
-        return Ok(fullSet);
+        return fullSet;
     }
 
+    [HttpGet]
     public async Task<FileStreamResult> ComparableActionProcessingDryRun()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
@@ -165,12 +167,12 @@ public class ActionRunnerController : FantasyCriticController
         return Ok();
     }
 
-    public async Task<IActionResult> GetRecentDatabaseSnapshots()
+    public async Task<ActionResult<List<DatabaseSnapshotInfoViewModel>>> GetRecentDatabaseSnapshots()
     {
         IReadOnlyList<DatabaseSnapshotInfo> snaps = await _adminService.GetRecentDatabaseSnapshots();
 
-        var vms = snaps.Select(x => new DatabaseSnapshotInfoViewModel(x));
-        return Ok(vms);
+        var vms = snaps.Select(x => new DatabaseSnapshotInfoViewModel(x)).ToList();
+        return vms;
     }
 
     [HttpPost]

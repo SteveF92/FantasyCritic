@@ -35,7 +35,7 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
+    public async Task<ActionResult<MasterGameViewModel>> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
     {
         var possibleTags = await _interLeagueService.GetMasterGameTags();
         IReadOnlyList<MasterGameTag> tags = possibleTags
@@ -61,7 +61,7 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditMasterGame([FromBody] EditMasterGameRequest viewModel)
+    public async Task<ActionResult<MasterGameViewModel>> EditMasterGame([FromBody] EditMasterGameRequest viewModel)
     {
         Instant instant = _clock.GetCurrentInstant();
 
@@ -175,6 +175,7 @@ public class FactCheckerController : FantasyCriticController
         return Ok();
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MasterGameRequestViewModel>>> ActiveMasterGameRequests()
     {
         IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
@@ -184,6 +185,7 @@ public class FactCheckerController : FantasyCriticController
         return viewModels;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MasterGameChangeRequestViewModel>>> ActiveMasterGameChangeRequests()
     {
         IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();
@@ -193,6 +195,7 @@ public class FactCheckerController : FantasyCriticController
         return viewModels;
     }
 
+    [HttpGet]
     public async Task<ActionResult<MasterGameRequestViewModel>> GetMasterGameRequest(Guid requestID)
     {
         IReadOnlyList<MasterGameRequest> requests = await _interLeagueService.GetAllMasterGameRequests();
@@ -233,6 +236,7 @@ public class FactCheckerController : FantasyCriticController
         return vm;
     }
 
+    [HttpGet]
     public async Task<ActionResult<MasterGameChangeRequestViewModel>> GetMasterGameChangeRequest(Guid changeRequestID)
     {
         IReadOnlyList<MasterGameChangeRequest> requests = await _interLeagueService.GetAllMasterGameChangeRequests();

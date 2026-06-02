@@ -68,6 +68,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
+      '/scalar': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
+      '/openapi.json': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
     }
   },
   resolve: {

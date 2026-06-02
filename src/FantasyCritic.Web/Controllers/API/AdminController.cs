@@ -111,7 +111,7 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SearchSupportUsers([FromBody] SupportUserSearchRequest request)
+    public async Task<ActionResult<List<SupportUserSearchMatchViewModel>>> SearchSupportUsers([FromBody] SupportUserSearchRequest request)
     {
         string searchValue = request.SearchValue ?? "";
         if (request.SearchKind == SupportUserSearchKind.Email)
@@ -134,7 +134,7 @@ public class AdminController : FantasyCriticController
             viewModels.Add(new SupportUserSearchMatchViewModel(user, rowsByUser[user.Id].ToList()));
         }
 
-        return Ok(viewModels);
+        return viewModels;
     }
 
     [HttpPost]
@@ -158,7 +158,7 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CloseSupportTicket([FromBody] CloseSupportTicketRequest request)
+    public async Task<ActionResult<SupportTicketViewModel>> CloseSupportTicket([FromBody] CloseSupportTicketRequest request)
     {
         var existingTicket = await _userManager.GetSupportTicket(request.SupportTicketID);
         if (existingTicket is null)
@@ -172,15 +172,16 @@ public class AdminController : FantasyCriticController
         }
 
         var closedTicket = await _userManager.CloseSupportTicket(existingTicket, request.ResolutionNotes);
-        return Ok(new SupportTicketViewModel(closedTicket));
+        var vm = new SupportTicketViewModel(closedTicket);
+        return vm;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetActiveSupportTickets()
+    public async Task<ActionResult<List<SupportTicketAdminListEntryViewModel>>> GetActiveSupportTickets()
     {
         var tickets = await _userManager.GetAllActiveSupportTickets();
         var viewModels = tickets.Select(t => new SupportTicketAdminListEntryViewModel(t)).ToList();
-        return Ok(viewModels);
+        return viewModels;
     }
 
     [HttpPost]

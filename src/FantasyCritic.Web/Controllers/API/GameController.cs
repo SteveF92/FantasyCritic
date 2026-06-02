@@ -6,6 +6,7 @@ using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Requests.MasterGame;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -44,6 +45,7 @@ public class GameController : FantasyCriticController
         return viewModel;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MasterGameViewModel>>> MasterGame()
     {
         IReadOnlyList<MasterGame> masterGames = await _interLeagueService.GetMasterGames();
@@ -161,6 +163,7 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -171,6 +174,8 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateMasterGameChangeRequest([FromBody] MasterGameChangeRequestRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -186,6 +191,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteMasterGameRequest([FromBody] MasterGameRequestDeletionRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -206,6 +214,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteMasterGameChangeRequest([FromBody] MasterGameChangeRequestDeletionRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -226,6 +237,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DismissMasterGameRequest([FromBody] MasterGameRequestDismissRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -246,6 +260,9 @@ public class GameController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DismissMasterGameChangeRequest([FromBody] MasterGameChangeRequestDismissRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
@@ -265,6 +282,7 @@ public class GameController : FantasyCriticController
         return Ok();
     }
 
+    [HttpGet]
     [Authorize]
     public async Task<ActionResult<List<MasterGameRequestViewModel>>> MyMasterGameRequests()
     {
@@ -277,6 +295,7 @@ public class GameController : FantasyCriticController
         return viewModels;
     }
 
+    [HttpGet]
     [Authorize]
     public async Task<ActionResult<List<MasterGameChangeRequestViewModel>>> MyMasterGameChangeRequests()
     {
@@ -289,6 +308,7 @@ public class GameController : FantasyCriticController
         return viewModels;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<SupportedYearViewModel>>> SupportedYears()
     {
         var supportedYears = await GetSupportedYears();
@@ -302,6 +322,7 @@ public class GameController : FantasyCriticController
         return years.ToList();
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MasterGameTagViewModel>>> GetMasterGameTags()
     {
         var domains = await _interLeagueService.GetMasterGameTags();
@@ -309,6 +330,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<CompleteMasterGameChangeViewModel>>> GetRecentMasterGameChanges()
     {
         IReadOnlyList<MasterGameChangeLogEntry> recentChanges = await _interLeagueService.GetRecentMasterGameChanges();
@@ -317,6 +339,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<MostDesiredReviewViewModel>>> GetMostDesiredReviews()
     {
         var currentDate = _clock.GetToday();
@@ -325,6 +348,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<LongestTenuredGameViewModel>>> GetLongestTenuredGames([FromQuery] bool includeReleasedGames = false)
     {
         var currentDate = _clock.GetToday();
@@ -333,6 +357,7 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<LongestTenuredGameViewModel>>> GetMostDreamsDashedGames([FromQuery] int? year = null)
     {
         var currentDate = _clock.GetToday();
@@ -341,12 +366,14 @@ public class GameController : FantasyCriticController
         return vms;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<LocalDate>>> GetProcessingDatesForTopBidsAndDrops()
     {
         var processingDatesWithData = await _interLeagueService.GetProcessingDatesForTopBidsAndDrops();
         return processingDatesWithData.ToList();
     }
 
+    [HttpGet]
     public async Task<ActionResult<TopBidsAndDropsSetViewModel>> GetTopBidsAndDrops(LocalDate? processDate)
     {
         LocalDate dateToUse;
@@ -372,7 +399,7 @@ public class GameController : FantasyCriticController
     }
 
     [HttpGet("{masterGameID}")]
-    public async Task<IActionResult> LeagueYearsWithMasterGame(Guid masterGameID)
+    public async Task<ActionResult<List<LeagueYearWithMasterGameViewModel>>> LeagueYearsWithMasterGame(Guid masterGameID)
     {
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsFailure)
@@ -383,6 +410,6 @@ public class GameController : FantasyCriticController
         var leagueYearsWithMasterGame = await _interLeagueService.GetLeagueYearsWithMasterGame(currentUserResult.Value.Id, masterGameID);
         var viewModels = leagueYearsWithMasterGame.Select(l =>
             new LeagueYearWithMasterGameViewModel(l.LeagueID, l.LeagueName, l.Year, l.IsCounterPick)).ToList();
-        return Ok(viewModels);
+        return viewModels;
     }
 }
