@@ -12,8 +12,8 @@ public class RoyaleYearQuarterViewModel
         Finished = domain.Finished;
     }
 
-    public int Year { get; set; }
-    public int Quarter { get; set; }
-    public bool OpenForPlay { get; set; }
-    public bool Finished { get; set; }
+    public int Year { get; }
+    public int Quarter { get; }
+    public bool OpenForPlay { get; }
+    public bool Finished { get; }
 }
