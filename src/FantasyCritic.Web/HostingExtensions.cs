@@ -329,7 +329,10 @@ public static class HostingExtensions
 
         services.AddRazorTemplating();
         services.AddSession();
-        services.AddOpenApiDocument();
+        services.AddOpenApiDocument(settings =>
+        {
+            settings.Title = "Fantasy Critic API";
+        });
 
         return builder.Build();
     }
