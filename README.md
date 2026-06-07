@@ -1,6 +1,6 @@
 # Fantasy Critic
 
-Fantasy Critic is like fantasy football...but for video games! You and several friends will create your own virtual video game “Publishers”,
+Fantasy Critic is like fantasy football...but for video games! You and several friends will create your own virtual video game "Publishers",
 and then you will assemble a roster of the games you believe will review the best. Similar to fantasy football, the players will alternate
 picking games in a snake draft style to start the year. At the end of the year, the winner is the team with the best lineup of video games
 based on scores from <a href="https://opencritic.com/">opencritic.com</a>.
@@ -25,25 +25,65 @@ app can also be run via webpack dev server, instead of the ASP.NET core app. Not
 You'll need to install a few things:
 
 - .NET 10
-- A C# IDE (I use Visual Studio 2026)
-- MySQL
+- Docker Desktop
+- A C# IDE (Visual Studio 2022+ or JetBrains Rider)
 
-Once you have everything installed, you'll need to run the MySQL scripts to get your database set up. You can find them in "Database" folder. Start with the folder in "SchemaCreates" with the highest version number. Run "FCTableCreate.sql" and then "FCDataInsert.sql" on your local MySQL server. Then check the "SchemaUpdates" folder. If there are any files with a version number higher than the SchemaCreate that you ran, you'll need to run those too. The naming scheme is:
+#### 1. Start the database
 
-    FC_{FromVersion}-{ToVersion}_{Description}.sql
+From the repo root, bring up MySQL and run all database migrations in one step:
 
-You're looking for any file with a {ToVersion} higher than your "SchemaCreate" folder version.
+```sh
+docker compose -f infrastructure/docker-compose-mysql.yaml up
+```
 
-Once your database is setup, next up is to get the code running. The best way to make sure the code is at least building is to run the unit tests. Assuming they pass, you can move onto running the web site. You'll need to set up "User Secrets", which you can find documentation on here:
+This will:
+- Start a MySQL 8.4 instance on **port 3307** (to avoid conflicting with a local MySQL installation).
+- Create the `fantasycritic` database and the required users automatically.
+- Run **FantasyCritic.DatabaseUpdater** (DbUp), which applies all schema migrations under `src/FantasyCritic.DatabaseUpdater/Scripts/`.
+- Run **FantasyCritic.LocalDatabaseTool**, which seeds your local database with the latest game data (announcements, release dates, scores, etc.) pulled from the live Fantasy Critic site.
 
-https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows
+The last two services exit on their own when done. You can re-run the compose command at any time to pick up new migrations or refresh game data; it is safe to run repeatedly.
 
-For most use cases, the only user secret you'll need to set is the MySQL connection string, which will be to your local MySQL server.
+#### 2. Run the web app
 
-With that all set up, the site should run like normal via Visual Studio or via 'dotnet run' on the command line.
+The `appsettings.json` for `FantasyCritic.Web` is already pre-configured to connect to the Docker MySQL instance, so no additional configuration is required for a basic setup. Open the solution in your IDE and run `FantasyCritic.Web`, or use the CLI:
 
-#### Some extra notes
+```sh
+dotnet run --project src/FantasyCritic.Web/FantasyCritic.Web.csproj
+```
 
-- In the "Utilities" Solution folder, you'll find the project "FantasyCritic.LocalDatabaseTool". This will update your local database with the latest game data from the actual Fantasy Critic site. Things like new announcements, release dates, etc. Reminder: You'll need to setup "user secrets" here too.
+The site will be available at `https://localhost:44477` by default.
 
-- I use full Visual Studio for server side development, but I find that Visual Studio Code works better when I'm working on the client side (Vue.JS) code.
+#### 3. Running the integration tests
+
+The integration tests (`FantasyCritic.IntegrationTests`) drive the app through a generated typed HTTP client. That client must be regenerated any time the API changes. The generation requires the Web project to have been built first.
+
+**First time (or after a `dotnet tool restore` is needed):**
+
+```sh
+dotnet tool restore
+```
+
+**Regenerate the API client, then run the tests:**
+
+On Windows (PowerShell):
+```powershell
+dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
+scripts/Regenerate-ApiClient.ps1
+dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj
+```
+
+On Linux/macOS:
+```sh
+dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
+scripts/regenerate-api-client.sh
+dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj
+```
+
+The integration tests spin up the full ASP.NET Core stack in-process and talk to the Docker MySQL database, so the database must be running (step 1) before running the tests.
+
+#### Extra notes
+
+- If you need social login (Google, Discord, Twitch, etc.) you will need to configure the relevant OAuth credentials via [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). For day-to-day backend development these are optional.
+- Database migrations are managed by **FantasyCritic.DatabaseUpdater** (DbUp). New migration scripts go under `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/` following the existing date-based naming convention. Do **not** hand-edit the database directly.
+- I use full Visual Studio for server-side development, but Visual Studio Code works better when working on the client-side (Vue.js) code.
