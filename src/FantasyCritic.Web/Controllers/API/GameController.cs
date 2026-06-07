@@ -162,6 +162,7 @@ public class GameController : FantasyCriticController
         return viewModels;
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateMasterGameRequest([FromBody] MasterGameRequestRequest request)
@@ -173,6 +174,7 @@ public class GameController : FantasyCriticController
         return Ok();
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -190,6 +192,7 @@ public class GameController : FantasyCriticController
         return Ok();
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -213,6 +216,7 @@ public class GameController : FantasyCriticController
         return Ok();
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -236,6 +240,7 @@ public class GameController : FantasyCriticController
         return Ok();
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -259,6 +264,7 @@ public class GameController : FantasyCriticController
         return Ok();
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
