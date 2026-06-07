@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -35,6 +36,7 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType<MasterGameViewModel>(StatusCodes.Status201Created)]
     public async Task<ActionResult<MasterGameViewModel>> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
     {
         var possibleTags = await _interLeagueService.GetMasterGameTags();

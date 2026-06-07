@@ -4,11 +4,13 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -347,6 +349,54 @@ public class AdminController : FantasyCriticController
         }
 
         await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
+        return Ok();
+    }
+
+    [HttpGet]
+    [ProducesResponseType<FantasyCriticUserViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FantasyCriticUserViewModel>> GetUserInfo([FromQuery] Guid userID)
+    {
+        var user = await _userManager.FindByIdAsync(userID.ToString());
+        if (user is null)
+            return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        return new FantasyCriticUserViewModel(user, roles);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GrantRole([FromBody] UserRoleRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (user is null)
+            return NotFound();
+
+        try
+        {
+            await _userManager.AddToRoleAsync(user, request.RoleName);
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest($"Role '{request.RoleName}' does not exist.");
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveRole([FromBody] UserRoleRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (user is null)
+            return NotFound();
+
+        await _userManager.RemoveFromRoleAsync(user, request.RoleName);
         return Ok();
     }
 }
