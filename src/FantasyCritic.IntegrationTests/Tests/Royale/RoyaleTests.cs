@@ -21,15 +21,15 @@ public class RoyaleTests : IntegrationTestBase
 
         var activeQuarter = await session.Royale.ActiveRoyaleQuarterAsync();
         Assert.That(activeQuarter, Is.Not.Null);
-        Assert.That(activeQuarter!.OpenForPlay, Is.True, "Active quarter must be open for play.");
-        Assert.That(activeQuarter!.Finished, Is.False, "Active quarter must not be finished.");
+        Assert.That(activeQuarter.OpenForPlay, Is.True, "Active quarter must be open for play.");
+        Assert.That(activeQuarter.Finished, Is.False, "Active quarter must not be finished.");
 
         var publisherName = $"Pub-{Guid.NewGuid():N}"[..20];
         var publisherID = await session.Royale.CreateRoyalePublisherAsync(
             new CreateRoyalePublisherRequest
             {
-                Year = activeQuarter!.Year,
-                Quarter = activeQuarter!.Quarter,
+                Year = activeQuarter.Year,
+                Quarter = activeQuarter.Quarter,
                 PublisherName = publisherName,
             });
 
@@ -37,9 +37,9 @@ public class RoyaleTests : IntegrationTestBase
 
         var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);
-        Assert.That(publisher!.PublisherName, Is.EqualTo(publisherName));
-        Assert.That(publisher!.YearQuarter!.Year, Is.EqualTo(activeQuarter!.Year));
-        Assert.That(publisher!.YearQuarter!.Quarter, Is.EqualTo(activeQuarter!.Quarter));
+        Assert.That(publisher.PublisherName, Is.EqualTo(publisherName));
+        Assert.That(publisher.YearQuarter.Year, Is.EqualTo(activeQuarter.Year));
+        Assert.That(publisher.YearQuarter.Quarter, Is.EqualTo(activeQuarter.Quarter));
     }
 
     [Test]
@@ -100,8 +100,8 @@ public class RoyaleTests : IntegrationTestBase
         var publisherID = await session.Royale.CreateRoyalePublisherAsync(
             new CreateRoyalePublisherRequest
             {
-                Year = activeQuarter!.Year,
-                Quarter = activeQuarter!.Quarter,
+                Year = activeQuarter.Year,
+                Quarter = activeQuarter.Quarter,
                 PublisherName = initialName,
             });
 
@@ -128,9 +128,9 @@ public class RoyaleTests : IntegrationTestBase
         var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);
 
-        Assert.That(publisher!.PublisherName, Is.EqualTo(newName));
-        Assert.That(publisher!.PublisherIcon, Is.EqualTo("🎮"));
-        Assert.That(publisher!.PublisherSlogan, Is.EqualTo("Test Slogan"));
+        Assert.That(publisher.PublisherName, Is.EqualTo(newName));
+        Assert.That(publisher.PublisherIcon, Is.EqualTo("🎮"));
+        Assert.That(publisher.PublisherSlogan, Is.EqualTo("Test Slogan"));
     }
 
     [Test]
@@ -355,8 +355,8 @@ public class RoyaleTests : IntegrationTestBase
         var publisherID = await session.Royale.CreateRoyalePublisherAsync(
             new CreateRoyalePublisherRequest
             {
-                Year = activeQuarter!.Year,
-                Quarter = activeQuarter!.Quarter,
+                Year = activeQuarter.Year,
+                Quarter = activeQuarter.Quarter,
                 PublisherName = publisherName,
             });
 
@@ -379,7 +379,7 @@ public class RoyaleTests : IntegrationTestBase
                     MasterGameID = next.MasterGame.MasterGameID,
                 });
             if (result?.Success != true) break;
-            boughtIDs.Add(next.MasterGame!.MasterGameID);
+            boughtIDs.Add(next.MasterGame.MasterGameID);
         }
 
         if (boughtIDs.Count == 0)
@@ -406,9 +406,9 @@ public class RoyaleTests : IntegrationTestBase
             });
 
         Assert.That(failureResult, Is.Not.Null);
-        Assert.That(failureResult!.Success, Is.False,
+        Assert.That(failureResult.Success, Is.False,
             "Purchasing a game the publisher cannot afford (or already owns) must return Success=false.");
-        Assert.That(failureResult!.Errors, Is.Not.Null.And.Not.Empty,
+        Assert.That(failureResult.Errors, Is.Not.Null.And.Not.Empty,
             "A failed purchase must include at least one error message.");
     }
 
@@ -426,8 +426,8 @@ public class RoyaleTests : IntegrationTestBase
         var publisherID = await session.Royale.CreateRoyalePublisherAsync(
             new CreateRoyalePublisherRequest
             {
-                Year = activeQuarter!.Year,
-                Quarter = activeQuarter!.Quarter,
+                Year = activeQuarter.Year,
+                Quarter = activeQuarter.Quarter,
                 PublisherName = publisherName,
             });
 
@@ -457,9 +457,9 @@ public class RoyaleTests : IntegrationTestBase
             });
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Success, Is.False,
+        Assert.That(result.Success, Is.False,
             "Purchasing a game in the 5-day lockout window must return Success=false.");
-        Assert.That(result!.Errors, Is.Not.Null.And.Not.Empty,
+        Assert.That(result.Errors, Is.Not.Null.And.Not.Empty,
             "A failed purchase must include at least one error message.");
     }
 
@@ -485,7 +485,7 @@ public class RoyaleTests : IntegrationTestBase
             {
                 return await ProductionGameStatsCache.FindHighestHypeAvailableAsync(
                     available,
-                    g => g.MasterGame!.MasterGameID,
+                    g => g.MasterGame.MasterGameID,
                     year);
             }
         }
@@ -518,7 +518,7 @@ public class RoyaleTests : IntegrationTestBase
 
             var set = await ProductionGameStatsCache.FindAffordableSetAsync(
                 available,
-                g => g.MasterGame!.MasterGameID,
+                g => g.MasterGame.MasterGameID,
                 g => g.Cost,
                 maxCount,
                 budgetCap,
