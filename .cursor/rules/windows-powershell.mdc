@@ -1,11 +1,16 @@
 ---
-description: Use PowerShell syntax for all shell commands on this Windows machine
+description: Use PowerShell syntax for shell commands when the current OS is Windows
 alwaysApply: true
 ---
 
-# Shell Commands: PowerShell Only
+# Shell Commands: Match the Developer's OS
 
-This workspace runs on **Windows**. Always write shell commands in PowerShell syntax.
+Check `OS Version` in the user info at the top of the conversation.
+
+- **Windows** (`win32`) → use **PowerShell** syntax for all interactive shell commands.
+- **Linux / macOS** → use **bash/sh** syntax as normal.
+
+> This rule exists because the AI defaults to bash and needs a reminder to switch on Windows. It does **not** mean project scripts must be PowerShell-only — cross-platform scripts (`.sh`, bash, etc.) are fine as source files.
 
 ## Common Pitfalls
 
