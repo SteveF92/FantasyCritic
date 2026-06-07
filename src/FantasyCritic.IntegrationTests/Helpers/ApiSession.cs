@@ -19,8 +19,11 @@ internal sealed class ApiSession : IDisposable
 {
     private readonly HttpClient _client;
 
+    private readonly FantasyCriticWebApplicationFactory _factory;
+
     public ApiSession(FantasyCriticWebApplicationFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false,
@@ -56,9 +59,9 @@ internal sealed class ApiSession : IDisposable
     public ActionRunnerClient ActionRunner { get; }
 
     /// <summary>
-    /// POSTs to the /Account/Register Razor Page.
-    /// Because RequireConfirmedAccount=false, a successful registration
-    /// also signs the user in and sets the auth cookie on this session.
+    /// POSTs to the /Account/Register Razor Page and then follows the confirmation
+    /// link captured by <see cref="CapturingEmailSender"/> so that
+    /// <c>EmailConfirmed</c> is <c>true</c> before any invite-acceptance calls.
     /// </summary>
     public async Task RegisterAsync(string email, string password, string displayName)
     {
@@ -81,6 +84,28 @@ internal sealed class ApiSession : IDisposable
             throw new InvalidOperationException(
                 $"RegisterAsync failed. Status: {response.StatusCode}. " +
                 $"Body snippet: {body[..Math.Min(500, body.Length)]}");
+        }
+
+        await ConfirmEmailAsync(email);
+    }
+
+    /// <summary>
+    /// Follows the email-confirmation link captured in <see cref="CapturingEmailSender"/>
+    /// for <paramref name="email"/>, setting <c>EmailConfirmed = true</c> on the user.
+    /// Called automatically by <see cref="RegisterAsync"/>.
+    /// </summary>
+    public async Task ConfirmEmailAsync(string email)
+    {
+        var path = _factory.CapturingEmailSender.GetConfirmEmailPath(email)
+            ?? throw new InvalidOperationException(
+                $"No confirmation email was captured for '{email}'. " +
+                "Did RegisterAsync complete successfully?");
+
+        var confirmResponse = await _client.GetAsync(path);
+        if (!confirmResponse.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException(
+                $"ConfirmEmail GET {path} failed with {(int)confirmResponse.StatusCode}.");
         }
     }
 

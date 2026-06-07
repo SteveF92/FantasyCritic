@@ -17,6 +17,11 @@ namespace FantasyCritic.IntegrationTests;
 
 public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<Program>
 {
+    /// <summary>
+    /// Singleton capturing sender that stores confirmation-email bodies so tests can
+    /// extract the confirmation link and call <see cref="ApiSession.ConfirmEmailAsync"/>.
+    /// </summary>
+    public CapturingEmailSender CapturingEmailSender { get; } = new CapturingEmailSender();
     // Called once before any instance is created — safe to call repeatedly (idempotent).
     static FantasyCriticWebApplicationFactory()
     {
@@ -63,9 +68,10 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
 
         builder.ConfigureTestServices(services =>
         {
-            // Replace the Postmark sender with a no-op so registration doesn't call external APIs.
+            // Replace the Postmark sender with a capturing sender so tests can
+            // extract confirmation links and follow them.
             services.RemoveAll<IEmailSender>();
-            services.AddScoped<IEmailSender, NullEmailSender>();
+            services.AddSingleton<IEmailSender>(CapturingEmailSender);
 
             // Program.GetConfiguration() builds its own IConfigurationRoot (including user
             // secrets) and passes it directly into ConfigureServices. That means config values

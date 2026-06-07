@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
@@ -44,5 +45,78 @@ internal static class LeagueTestHelpers
             });
 
         return leagueID;
+    }
+
+    /// <summary>
+    /// Manager invites <paramref name="playerSession"/>'s user by email, then
+    /// the player accepts the invite for the given league.
+    /// </summary>
+    public static async Task InviteAndAcceptAsync(
+        ApiSession managerSession,
+        ApiSession playerSession,
+        Guid leagueID)
+    {
+        var playerUser = await playerSession.Account.CurrentUserAsync();
+
+        await managerSession.LeagueManager.InvitePlayerAsync(new CreateInviteRequest
+        {
+            LeagueID = leagueID,
+            InviteEmail = playerUser.EmailAddress,
+        });
+
+        var pendingInvites = await playerSession.League.MyInvitesAsync();
+        var invite = pendingInvites.SingleOrDefault(i => i.LeagueID == leagueID)
+            ?? throw new InvalidOperationException(
+                $"Player {playerUser.DisplayName} does not see a pending invite for league {leagueID}.");
+
+        await playerSession.League.AcceptInviteAsync(new AcceptInviteRequest
+        {
+            LeagueID = leagueID,
+        });
+    }
+
+    /// <summary>
+    /// Creates a publisher for <paramref name="playerSession"/> in the given league/year.
+    /// Returns the new publisher's GUID.
+    /// </summary>
+    public static async Task<Guid> CreatePublisherAsync(
+        ApiSession playerSession,
+        Guid leagueID,
+        int year,
+        string publisherName)
+    {
+        var currentUser = await playerSession.Account.CurrentUserAsync();
+
+        await playerSession.League.CreatePublisherAsync(new CreatePublisherRequest
+        {
+            LeagueID = leagueID,
+            Year = year,
+            PublisherName = publisherName,
+        });
+
+        var leagueYear = await playerSession.League.GetLeagueYearAsync(leagueID, year, null);
+        var publisher = leagueYear.Publishers.SingleOrDefault(p => p.UserID == currentUser.UserID)
+            ?? throw new InvalidOperationException(
+                $"Publisher not found for user {currentUser.UserID} after CreatePublisher.");
+
+        return publisher.PublisherID;
+    }
+
+    /// <summary>
+    /// Sets the draft order to the supplied publisher order using the "Manual" type.
+    /// </summary>
+    public static async Task SetDraftOrderAsync(
+        ApiSession managerSession,
+        Guid leagueID,
+        int year,
+        IReadOnlyList<Guid> publisherIDsInOrder)
+    {
+        await managerSession.LeagueManager.SetDraftOrderAsync(new DraftOrderRequest
+        {
+            LeagueID = leagueID,
+            Year = year,
+            DraftOrderType = "Manual",
+            ManualPublisherDraftPositions = publisherIDsInOrder.ToList(),
+        });
     }
 }
