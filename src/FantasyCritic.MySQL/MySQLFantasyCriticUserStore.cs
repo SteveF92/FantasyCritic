@@ -352,12 +352,12 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         await using (var connection = new MySqlConnection(_connectionString))
         {
-            const string retrieveSQL = "select ID from tbl_user_role where Name = @Name";
+            const string retrieveSQL = "select RoleID from tbl_user_role where Name = @Name";
 
             await connection.OpenAsync(cancellationToken);
-            var roleID = await connection.QueryAsync<int>(retrieveSQL, new { Name = roleName });
+            var roleID = await connection.QuerySingleAsync<int>(retrieveSQL, new { Name = roleName });
 
-            const string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID)";
+            const string deleteSQL = "delete from tbl_user_hasrole where UserID = @UserID and RoleID = @RoleID";
             await connection.ExecuteAsync(deleteSQL, new { UserID = user.Id, RoleID = roleID });
         }
 
