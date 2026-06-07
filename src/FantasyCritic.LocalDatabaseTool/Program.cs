@@ -128,7 +128,7 @@ public static class Program
         PatreonService patreonService = null!;
         IRDSManager rdsManager = null!;
         RoyaleService royaleService = new RoyaleService(royaleRepo, _clock, masterGameRepo);
-        IHypeFactorService hypeFactorService = new DefaultHypeFactorService();
+        IHypeFactorService hypeFactorService = new HypeFactorService(masterGameRepo, interLeagueService);
 
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
             openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo);

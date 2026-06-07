@@ -99,15 +99,7 @@ public static class HostingExtensions
         services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
 
         services.AddScoped<PatreonService>();
-
-        if (environment.IsProduction() || environment.IsStaging())
-        {
-            services.AddScoped<IHypeFactorService, HypeFactorService>();
-        }
-        else
-        {
-            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
-        }
+        services.AddScoped<IHypeFactorService, HypeFactorService>();
 
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
