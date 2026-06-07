@@ -16,6 +16,7 @@
 |---|---|
 | `src/FantasyCritic.Web/Models/Requests/Admin/UserRoleRequest.cs` | **Create** |
 | `src/FantasyCritic.Web/Controllers/API/AdminController.cs` | **Modify** – add 3 endpoints |
+| `src/FantasyCritic.Web/Controllers/API/FactCheckerController.cs` | **Modify** – add `[ProducesResponseType]` to `CreateMasterGame` |
 | `src/FantasyCritic.ApiClient/Generated/FantasyCriticClients.cs` | **Regenerate** (do not edit by hand) |
 | `src/FantasyCritic.IntegrationTests/IntegrationTestBase.cs` | **Modify** – add admin constants + helper |
 | `src/FantasyCritic.IntegrationTests/Tests/Admin/AdminTests.cs` | **Create** |
@@ -61,6 +62,7 @@ git commit -m "Add UserRoleRequest type for Admin role management endpoints."
 
 **Files:**
 - Modify: `src/FantasyCritic.Web/Controllers/API/AdminController.cs`
+- Modify: `src/FantasyCritic.Web/Controllers/API/FactCheckerController.cs`
 
 These three endpoints live at the bottom of `AdminController`, before the closing `}` of the class. The controller is already `[Authorize("Admin")]` so no additional auth attributes are needed.
 
@@ -144,11 +146,34 @@ dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
 
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Add `[ProducesResponseType]` to `FactCheckerController.CreateMasterGame`**
+
+`CreateMasterGame` returns `CreatedAtAction` (HTTP 201). Without an explicit annotation NSwag generates `Task` (void) instead of `Task<MasterGameViewModel>`, which would break Test 2 in Task 6.
+
+In `src/FantasyCritic.Web/Controllers/API/FactCheckerController.cs`, find the `CreateMasterGame` action and add the attribute:
+
+```csharp
+[HttpPost]
+[ProducesResponseType<MasterGameViewModel>(StatusCodes.Status201Created)]
+public async Task<ActionResult<MasterGameViewModel>> CreateMasterGame([FromBody] CreateMasterGameRequest viewModel)
+```
+
+`StatusCodes` and `MasterGameViewModel` are already in scope (`Microsoft.AspNetCore.Http` and `FantasyCritic.Lib.SharedSerialization.API` are imported at the top of the file).
+
+- [ ] **Step 6: Build**
+
+```powershell
+dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
+```
+
+Expected: Build succeeded, 0 errors.
+
+- [ ] **Step 7: Commit**
 
 ```powershell
 git add src/FantasyCritic.Web/Controllers/API/AdminController.cs
-git commit -m "Add GetUserInfo, GrantRole, RemoveRole endpoints to AdminController."
+git add src/FantasyCritic.Web/Controllers/API/FactCheckerController.cs
+git commit -m "Add GetUserInfo, GrantRole, RemoveRole to AdminController; add ProducesResponseType to FactCheckerController.CreateMasterGame."
 ```
 
 ---
