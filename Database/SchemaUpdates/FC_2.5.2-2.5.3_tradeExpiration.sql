@@ -1,1 +1,0 @@
-INSERT INTO `fantasycritic`.`tbl_meta_tradestatus` (`Status`) VALUES ('Expired');

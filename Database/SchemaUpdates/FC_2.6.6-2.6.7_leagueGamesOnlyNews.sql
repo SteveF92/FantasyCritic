@@ -1,1 +1,0 @@
-INSERT INTO `fantasycritic`.`tbl_discord_gamenewsoptions` (`Name`) VALUES ('LeagueGamesOnly');
