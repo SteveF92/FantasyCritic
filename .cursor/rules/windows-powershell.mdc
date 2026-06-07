@@ -1,0 +1,28 @@
+---
+description: Use PowerShell syntax for all shell commands on this Windows machine
+alwaysApply: true
+---
+
+# Shell Commands: PowerShell Only
+
+This workspace runs on **Windows**. Always write shell commands in PowerShell syntax.
+
+## Common Pitfalls
+
+| ❌ Bash | ✅ PowerShell |
+|--------|--------------|
+| `export FOO=bar` | `$env:FOO = "bar"` |
+| `FOO=bar ./script.sh` | `$env:FOO = "bar"; .\script.ps1` |
+| `&&` to chain | `;` or separate calls (or `&&` in PS 7+, but prefer `;`) |
+| `./script.sh` | `.\script.ps1` |
+| `mkdir -p foo/bar` | `New-Item -ItemType Directory -Force foo\bar` or `mkdir foo\bar` |
+| `rm -rf foo` | `Remove-Item -Recurse -Force foo` |
+| `cat file.txt` | `Get-Content file.txt` |
+| `grep pattern file` | `Select-String pattern file` |
+| `which dotnet` | `Get-Command dotnet` |
+
+## Notes
+
+- The shell is **PowerShell** (`pwsh` / `powershell`), not `bash`, `sh`, or `zsh`.
+- Path separators are backslashes (`\`) in PowerShell, though forward slashes often work too.
+- Never emit a bash shebang (`#!/bin/bash`) in a script meant to be run here.
