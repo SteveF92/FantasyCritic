@@ -68,12 +68,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
-      '/scalar': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/openapi.json': {
+      '/swagger': {
         target: target,
         changeOrigin: true,
         secure: false

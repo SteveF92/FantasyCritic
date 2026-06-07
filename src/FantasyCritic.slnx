@@ -17,7 +17,6 @@
     <Project Path="FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj" />
     <Project Path="FantasyCritic.TestDataScrubber/FantasyCritic.TestDataScrubber.csproj" />
   </Folder>
-  <Project Path="FantasyCritic.ApiClient/FantasyCritic.ApiClient.csproj" />
   <Project Path="FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" />
   <Project Path="FantasyCritic.DiscordBot/FantasyCritic.DiscordBot.csproj" />
   <Project Path="FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj" />

@@ -1,5 +1,4 @@
 using Discord;
-using Scalar.AspNetCore;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
@@ -36,6 +35,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NodaTime.Serialization.SystemTextJson;
+using NSwag;
 using Serilog;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -71,11 +71,11 @@ public static class HostingExtensions
 
         var repoConfiguration = new RepositoryConfiguration(connectionString, clock);
         var patreonConfig = new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!);
-        var emailSendingConfig = new EnvironmentConfiguration(baseAddress, environment.IsProduction());
+        var environmentConfig = new EnvironmentConfiguration(baseAddress, environment.IsProduction());
         var discordConfiguration = new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId"));
         services.AddSingleton<RepositoryConfiguration>(_ => repoConfiguration);
         services.AddSingleton<PatreonConfig>(_ => patreonConfig);
-        services.AddSingleton<EnvironmentConfiguration>(_ => emailSendingConfig);
+        services.AddSingleton<EnvironmentConfiguration>(_ => environmentConfig);
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
         services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
         services.AddSingleton<RoleHandler>();
@@ -329,13 +329,15 @@ public static class HostingExtensions
 
         services.AddRazorTemplating();
         services.AddSession();
-        services.AddOpenApi();
+        services.AddOpenApiDocument();
 
         return builder.Build();
     }
 
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
+        var environmentConfig = app.Services.GetService<EnvironmentConfiguration>()!;
+
         var env = app.Environment;
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !env.IsDevelopment())
         {
@@ -353,10 +355,17 @@ public static class HostingExtensions
             app.UseHsts();
         }
 
-        app.MapScalarApiReference(options =>
+        // Add OpenAPI/Swagger middlewares
+        app.UseOpenApi(settings =>
         {
-            options.OpenApiRoutePattern = "/openapi.json";
+            settings.PostProcess = (document, httpRequest) =>
+            {
+                document.Servers.Clear();
+                document.Servers.Add(new OpenApiServer { Url = environmentConfig.BaseAddress });
+            };
         });
+
+        app.UseSwaggerUi();
 
         if (!env.IsDevelopment())
         {
