@@ -40,6 +40,28 @@ All request and response types come from the `FantasyCritic.ApiClient` namespace
 
 Never use raw URL strings, anonymous objects, or `JObject` — compile-time breakage on contract changes is the goal.
 
+## Keeping the generated client typed
+
+NSwag generates a typed return value only when the controller action declares an explicit success response type. When a generated client method returns `Task` (void) instead of `Task<T>`, the fix is almost always to add a `[ProducesResponseType]` attribute to the controller action:
+
+```csharp
+// Before — NSwag generates Task (void), tests can't use the return value
+[HttpPost]
+public async Task<IActionResult> CreateThing([FromBody] CreateThingRequest request) { ... }
+
+// After — NSwag generates Task<ThingViewModel>, tests can assert on the result
+[HttpPost]
+[ProducesResponseType<ThingViewModel>(StatusCodes.Status200OK)]
+public async Task<IActionResult> CreateThing([FromBody] CreateThingRequest request) { ... }
+```
+
+**Rule:** Always prefer adding a `[ProducesResponseType]` annotation over accepting an untyped client method. If making the response typed requires anything more than adding the attribute (e.g., restructuring the return path), flag it and decide together.
+
+Common cases that need annotations:
+- `IActionResult` return types with a meaningful body (the annotation tells NSwag what the body is)
+- `CreatedAtAction` / `CreatedAtRoute` responses (NSwag needs `[ProducesResponseType<T>(Status201Created)]` to generate `Task<T>`)
+- Actions that return different types on different status codes
+
 ## Regenerating the API client
 
 Run this after any API change before running tests:

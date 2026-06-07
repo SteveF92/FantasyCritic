@@ -49,11 +49,32 @@ src/FantasyCritic.ApiClient/
 
 All request and response types used by these clients come from the `FantasyCritic.ApiClient` namespace (the generated file). Do **not** reference `FantasyCritic.Web.Models.Requests.*` or `FantasyCritic.Lib.SharedSerialization.API.*` in test files.
 
-## Step 1 – Find the right typed client method
+## Step 1 – Check (and fix) the controller's response type annotations
+
+Before writing any test code, check that every action you want to call has an explicit `[ProducesResponseType]` attribute for its success response. NSwag only generates a typed `Task<T>` return when it can see the response type in the OpenAPI spec — without the annotation it falls back to `Task` (void).
+
+**If the generated method returns `Task` but you need a value back:**
+
+Add `[ProducesResponseType<YourViewModel>(StatusCodes.Status200OK)]` (or `Status201Created`, etc.) to the controller action, then regenerate.
+
+```csharp
+// Generates Task (void) — can't use the return value in tests
+[HttpPost]
+public async Task<IActionResult> CreateThing([FromBody] CreateThingRequest request) { ... }
+
+// Generates Task<ThingViewModel> — tests can assert on result
+[HttpPost]
+[ProducesResponseType<ThingViewModel>(StatusCodes.Status200OK)]
+public async Task<IActionResult> CreateThing([FromBody] CreateThingRequest request) { ... }
+```
+
+If fixing the annotation would require more than just adding the attribute (restructuring the return path, etc.), **flag it and move on** — decide together how to handle it.
+
+## Step 2 – Find the right typed client method
 
 Look at the controller you want to test (e.g. `GameController.cs`), then check the corresponding generated client in `Generated/FantasyCriticClients.cs` for the method names. They follow the pattern `<ActionName>Async(...)`.
 
-## Step 2 – Create the fixture
+## Step 3 – Create the fixture
 
 ```csharp
 using System;
@@ -103,7 +124,7 @@ var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
 Assert.That(publisher.PublisherName, Is.Not.Null);
 ```
 
-## Step 3 – Regenerate the client (if you added/changed an endpoint)
+## Step 4 – Regenerate the client (if you added/changed an endpoint)
 
 ```powershell
 # From repo root
@@ -112,7 +133,7 @@ scripts/Regenerate-ApiClient.ps1
 dotnet build
 ```
 
-## Step 4 – Run
+## Step 5 – Run
 
 ```powershell
 # From repo root — confirm Docker is running first
