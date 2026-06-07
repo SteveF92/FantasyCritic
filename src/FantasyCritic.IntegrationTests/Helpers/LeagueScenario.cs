@@ -10,7 +10,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// Pass an instance to <see cref="LeagueTestHelpers.CreateLeagueAsync"/> and use the
 /// scenario's expected counts in test assertions.
 /// </summary>
-internal sealed class LeagueScenario
+public sealed class LeagueScenario
 {
     public required string Name { get; init; }
 
@@ -95,7 +95,7 @@ internal sealed class LeagueScenario
 /// <summary>
 /// Pre-defined scenarios used across test fixtures.
 /// </summary>
-internal static class LeagueScenarios
+public static class LeagueScenarios
 {
     /// <summary>
     /// A simple 4-player league: 6 standard games + 1 counter-pick per publisher,

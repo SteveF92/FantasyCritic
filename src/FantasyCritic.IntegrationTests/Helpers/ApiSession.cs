@@ -15,7 +15,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// a single test user's session (register → login → API calls) stays together.
 /// Create one per test (or per test class when setup is shared).
 /// </summary>
-internal sealed class ApiSession : IDisposable
+public sealed class ApiSession : IDisposable
 {
     private readonly HttpClient _client;
 
