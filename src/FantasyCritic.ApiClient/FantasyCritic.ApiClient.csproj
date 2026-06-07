@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FantasyCritic.ApiClient</RootNamespace>
+
+    <!-- NuGet publishing metadata -->
+    <IsPackable>true</IsPackable>
+    <PackageId>FantasyCritic.ApiClient</PackageId>
+    <Authors>Steve Fallon</Authors>
+    <Company>Fantasy Critic</Company>
+    <Description>C# client for the FantasyCritic API, auto-generated from the OpenAPI spec.</Description>
+    <PackageTags>fantasyCritic;api;client;openapi;nswag</PackageTags>
+    <RepositoryUrl>https://github.com/SteveF92/FantasyCritic</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <!-- Generated code produces warnings we don't own; suppress rather than fail the build. -->
+  <PropertyGroup>
+    <WarningLevel>5</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>
