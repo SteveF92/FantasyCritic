@@ -42,7 +42,7 @@ The new endpoints always write `ProgrammaticallyAssigned = 0`.
 
 ## Part 1 — New Admin endpoints
 
-### Request type
+### Request types
 
 **New file:** `src/FantasyCritic.Web/Models/Requests/Admin/UserRoleRequest.cs`
 
@@ -54,16 +54,23 @@ public class UserRoleRequest
 }
 ```
 
-One type shared by both endpoints (identical shape).
+One type shared by both mutation endpoints (identical shape).
 
 ### Endpoints added to `AdminController`
 
 ```
+GET  /api/Admin/GetUserInfo?userID={guid}
 POST /api/Admin/GrantRole
 POST /api/Admin/RemoveRole
 ```
 
-Both require the `Admin` role (inherited from the controller-level `[Authorize("Admin")]`).
+All three require the `Admin` role (inherited from the controller-level `[Authorize("Admin")]`).
+
+**`GetUserInfo` logic:**
+1. Accept `userID` as a `[FromQuery] Guid` parameter.
+2. Look up user via `_userManager.FindByIdAsync(userID.ToString())` — 404 if not found.
+3. Fetch roles via `_userManager.GetRolesAsync(user)`.
+4. Return `new FantasyCriticUserViewModel(user, roles)` (existing type in `FantasyCritic.Lib.SharedSerialization.API` — already has a `Roles` property and a constructor that takes `IEnumerable<string>`).
 
 **`GrantRole` logic:**
 1. Look up user by `UserID` — 404 if not found.
@@ -101,22 +108,21 @@ These are known seed constants, not arbitrary user data, so defining them here i
 
 **New file:** `src/FantasyCritic.IntegrationTests/Tests/Admin/AdminTests.cs`
 
-### Test 1 — `GrantRole_FactChecker_Returns200`
+### Test 1 — `GrantRole_FactChecker_RoleAppearsInGetUserInfo`
 
-1. Register a new user.
+1. Register a new user; note their `UserID` from `Account.CurrentUserAsync()`.
 2. Admin session logs in via `LoginAsLocalAdminAsync`.
-3. Admin calls `session.Admin.GrantRoleAsync({ UserID: newUser.UserID, RoleName: "FactChecker" })`.
-4. Assert 200.
-5. To verify the role is effective: new user's session calls a FactChecker endpoint (e.g., `ParseEstimatedDate`) — assert 200 (not 403).
+3. Admin calls `session.Admin.GetUserInfoAsync(userID)` — assert `FactChecker` is **not** in `Roles`.
+4. Admin calls `session.Admin.GrantRoleAsync({ UserID, RoleName: "FactChecker" })`.
+5. Admin calls `GetUserInfoAsync(userID)` again — assert `FactChecker` **is** now in `Roles`.
 
-### Test 2 — `RemoveRole_FactChecker_Returns200`
+### Test 2 — `RemoveRole_FactChecker_RoleDisappearsFromGetUserInfo`
 
 1. Register a new user.
-2. Admin grants `FactChecker` to that user.
-3. Verify FactChecker endpoint returns 200 for that user.
-4. Admin calls `RemoveRole`.
-5. Create a fresh session for that user and re-login.
-6. Verify FactChecker endpoint returns 403.
+2. Admin grants `FactChecker`.
+3. Admin calls `GetUserInfoAsync` — assert role is present.
+4. Admin calls `RemoveRoleAsync({ UserID, RoleName: "FactChecker" })`.
+5. Admin calls `GetUserInfoAsync` — assert `FactChecker` is gone from `Roles`.
 
 ### Test 3 — `GrantRole_UnknownUser_Returns404`
 
@@ -215,7 +221,7 @@ This ensures `session.Admin.GrantRoleAsync(...)` and `session.Admin.RemoveRoleAs
 | File | Change |
 |---|---|
 | `src/FantasyCritic.Web/Models/Requests/Admin/UserRoleRequest.cs` | New |
-| `src/FantasyCritic.Web/Controllers/API/AdminController.cs` | Add `GrantRole` + `RemoveRole` |
+| `src/FantasyCritic.Web/Controllers/API/AdminController.cs` | Add `GetUserInfo`, `GrantRole`, `RemoveRole` |
 | `src/FantasyCritic.ApiClient/Generated/FantasyCriticClients.cs` | Regenerated |
 | `src/FantasyCritic.IntegrationTests/IntegrationTestBase.cs` | Add admin login helper + constants |
 | `src/FantasyCritic.IntegrationTests/Tests/Admin/AdminTests.cs` | New |
