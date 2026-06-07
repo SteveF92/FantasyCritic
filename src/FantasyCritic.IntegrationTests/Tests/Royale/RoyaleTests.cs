@@ -413,6 +413,60 @@ public class RoyaleTests : IntegrationTestBase
     }
 
     [Test]
+    public async Task RoyaleData_ForActiveQuarter_ReturnsLeaderboard()
+    {
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var activeQuarter = await session.Royale.ActiveRoyaleQuarterAsync();
+        Assert.That(activeQuarter, Is.Not.Null);
+
+        var data = await session.Royale.RoyaleDataAsync(activeQuarter.Year, activeQuarter.Quarter);
+
+        Assert.That(data, Is.Not.Null);
+        Assert.That(data.RoyaleYearQuarter, Is.Not.Null);
+        Assert.That(data.RoyaleYearQuarter.Year, Is.EqualTo(activeQuarter.Year));
+        Assert.That(data.RoyaleYearQuarter.Quarter, Is.EqualTo(activeQuarter.Quarter));
+        Assert.That(data.RoyaleYearQuarters, Is.Not.Null.And.Not.Empty,
+            "All year quarters should be populated.");
+    }
+
+    [Test]
+    public async Task UserRoyaleHistory_ForKnownUser_ReturnsUserInfo()
+    {
+        // History entries only appear when a publisher has scored fantasy points (released games),
+        // so we can't assert specific publishers for a brand-new test user. Instead we verify
+        // the endpoint is reachable, returns the correct user, and the response is well-formed.
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var activeQuarter = await session.Royale.ActiveRoyaleQuarterAsync();
+        Assert.That(activeQuarter, Is.Not.Null);
+
+        var publisherID = await session.Royale.CreateRoyalePublisherAsync(
+            new CreateRoyalePublisherRequest
+            {
+                Year = activeQuarter.Year,
+                Quarter = activeQuarter.Quarter,
+                PublisherName = $"Pub-{Guid.NewGuid():N}"[..20],
+            });
+
+        var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        Assert.That(publisher, Is.Not.Null);
+
+        var history = await session.Royale.UserRoyaleHistoryAsync(publisher.UserID);
+        Assert.That(history, Is.Not.Null);
+        Assert.That(history.UserID, Is.EqualTo(publisher.UserID));
+        Assert.That(history.PlayerName, Is.Not.Null.And.Not.Empty);
+        Assert.That(history.Publishers, Is.Not.Null,
+            "Publishers collection must not be null (may be empty for a brand-new user).");
+        Assert.That(history.QuartersWon, Is.Not.Null,
+            "QuartersWon collection must not be null.");
+    }
+
+    [Test]
     public async Task PurchaseGame_InLockoutWindow_ReturnsFailure()
     {
         var (email, password, displayName) = NewUser();

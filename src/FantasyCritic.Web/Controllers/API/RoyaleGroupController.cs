@@ -32,6 +32,7 @@ public class RoyaleGroupController : FantasyCriticController
 
     [HttpGet("{groupID}")]
     [AllowAnonymous]
+    [ProducesResponseType<RoyaleGroupViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoyaleGroupViewModel>> GetRoyaleGroup(Guid groupID)
     {
@@ -48,6 +49,7 @@ public class RoyaleGroupController : FantasyCriticController
 
     [HttpGet("{groupID}/{year}/{quarter}")]
     [AllowAnonymous]
+    [ProducesResponseType<RoyaleGroupQuarterViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoyaleGroupQuarterViewModel>> GetRoyaleGroupQuarter(Guid groupID, int year, int quarter)
     {
@@ -63,6 +65,7 @@ public class RoyaleGroupController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType<CreatedRoyaleGroupViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CreatedRoyaleGroupViewModel>> CreateManualRoyaleGroup([FromBody] CreateManualRoyaleGroupRequest request)
     {
@@ -78,6 +81,7 @@ public class RoyaleGroupController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType<CreatedRoyaleGroupViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CreatedRoyaleGroupViewModel>> CreateLeagueTiedRoyaleGroup([FromBody] CreateLeagueTiedRoyaleGroupRequest request)
@@ -110,6 +114,7 @@ public class RoyaleGroupController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType<CreatedRoyaleGroupViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CreatedRoyaleGroupViewModel>> CreateConferenceTiedRoyaleGroup([FromBody] CreateConferenceTiedRoyaleGroupRequest request)
@@ -142,6 +147,7 @@ public class RoyaleGroupController : FantasyCriticController
     }
 
     [HttpPost("{groupID}")]
+    [ProducesResponseType<RoyaleGroupInviteLinkViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RoyaleGroupInviteLinkViewModel>> CreateGroupInviteLink(Guid groupID)
     {
@@ -250,6 +256,7 @@ public class RoyaleGroupController : FantasyCriticController
     }
 
     [HttpGet("{groupID}")]
+    [ProducesResponseType<List<RoyaleGroupInviteLinkViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<RoyaleGroupInviteLinkViewModel>>> GetGroupInviteLinks(Guid groupID)
@@ -287,6 +294,7 @@ public class RoyaleGroupController : FantasyCriticController
 
     [HttpGet("{groupID}")]
     [AllowAnonymous]
+    [ProducesResponseType<RoyaleGroupDataViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoyaleGroupDataViewModel>> GetRoyaleGroupData(Guid groupID)
     {
