@@ -1,0 +1,433 @@
+# League / League Manager Integration Tests — Design
+
+**Date:** 2026-06-07
+
+## Goal
+
+Add integration test coverage for `LeagueController` and `LeagueManagerController` — the
+largest and most important block in the test suite. The work covers four areas:
+
+1. League creation and settings management
+2. Member and publisher management (invites, publishers, player removal)
+3. The draft — both player-driven (`DraftGame`) and manager-driven (`ManagerDraftGame`)
+4. Post-draft operations (deferred; noted in "Out of scope")
+
+A secondary goal is a reusable test framework that makes it easy to add new league
+configurations (special slots, bidding leagues, etc.) with minimal duplicated code.
+
+---
+
+## New files
+
+```
+src/FantasyCritic.IntegrationTests/
+  Helpers/
+    LeagueTestHelpers.cs          # Static helpers: CreateLeague, InviteAndAccept, etc.
+    MockedLivePlayer.cs           # MockedLivePlayer + DraftSimulator
+    LeagueScenario.cs             # Configuration class for draft test subclasses
+  Tests/
+    League/
+      LeagueSetupTests.cs         # Self-contained league creation / settings tests
+      LeagueMemberTests.cs        # Self-contained invite / publisher / membership tests
+      LeagueDraftTestBase.cs      # Abstract base: OneTimeSetUp + shared [Test] methods
+      Scenarios/
+        StandardLeagueDraftTests.cs   # First concrete subclass (4p, 6+1 slots, no drops)
+    LeagueManager/
+      ManagerDraftTests.cs        # Extends LeagueDraftTestBase; manager-driven draft
+```
+
+---
+
+## `LeagueScenario`
+
+Lives in `Helpers/LeagueScenario.cs`. A pure configuration object — no test logic.
+Concrete `LeagueDraftTestBase` subclasses point at a static instance of this class.
+
+```csharp
+public sealed class LeagueScenario
+{
+    // Identity
+    public required string Name { get; init; }
+
+    // Composition
+    public int PlayerCount          { get; init; } = 4;
+    public int StandardGames        { get; init; } = 6;
+    public int GamesToDraft         { get; init; } = 6;
+    public int CounterPicks         { get; init; } = 1;
+    public int CounterPicksToDraft  { get; init; } = 1;
+
+    // System settings (all default to frontend defaults)
+    public string DraftSystem          { get; init; } = "Flexible";
+    public string PickupSystem         { get; init; } = "SemiPublicBiddingSecretCounterPicks";
+    public string ScoringSystem        { get; init; } = "LinearPositive";
+    public string TradingSystem        { get; init; } = "Standard";
+    public string TiebreakSystem       { get; init; } = "LowestProjectedPoints";
+    public string ReleaseSystem        { get; init; } = "MustBeReleased";
+    public string IneligibleGameSystem { get; init; } = "DroppableAsWillNotRelease";
+
+    // Drop rules
+    public int  UnrestrictedReleaseStatusDroppableGames { get; init; } = 0;
+    public int  WillNotReleaseDroppableGames            { get; init; } = 0;
+    public int  WillReleaseDroppableGames               { get; init; } = 0;
+    public bool DropOnlyDraftGames                      { get; init; } = true;
+    public bool GrantSuperDrops                         { get; init; } = false;
+    public bool CounterPicksBlockDrops                  { get; init; } = true;
+    public bool AllowMoveIntoIneligible                 { get; init; } = false;
+    public int  MinimumBidAmount                        { get; init; } = 0;
+
+    // Special slots
+    public bool HasSpecialSlots { get; init; } = false;
+    public IReadOnlyList<SpecialGameSlotViewModel> SpecialGameSlots { get; init; } = [];
+
+    // Builds the LeagueYearSettingsViewModel for CreateLeague / EditLeagueYearSettings
+    public LeagueYearSettingsViewModel BuildSettings(int year) { … }
+
+    public override string ToString() => Name;
+}
+```
+
+The catalog of scenario instances lives in a companion static class:
+
+```csharp
+public static class LeagueScenarios
+{
+    public static readonly LeagueScenario Standard = new()
+    {
+        Name = "Standard",
+        // All other properties use defaults above — 4 players, 6+1 slots, no drops.
+        // This is the simplest "one-shot" league: draft is final.
+    };
+
+    // Future entries added here as new concrete subclasses are created:
+    // public static readonly LeagueScenario SpecialSlots = new() { … };
+    // public static readonly LeagueScenario BiddingLeague = new() { … };
+}
+```
+
+---
+
+## `LeagueTestHelpers`
+
+Lives in `Helpers/LeagueTestHelpers.cs`. Static methods used by `[OneTimeSetUp]` implementations.
+
+```csharp
+internal static class LeagueTestHelpers
+{
+    /// Gets the first year where OpenForCreation == true via the anonymous LeagueOptions endpoint.
+    static Task<int> GetOpenYearAsync(ApiSession anySession);
+
+    /// Creates a league using Scenario.BuildSettings(year). Returns (leagueID, year).
+    static Task<(Guid leagueID, int year)> CreateLeagueAsync(
+        ApiSession managerSession, LeagueScenario scenario, int year);
+
+    /// Manager invites each player by email; each player accepts and joins.
+    static Task InviteAndAcceptAsync(
+        ApiSession managerSession,
+        IReadOnlyList<ApiSession> playerSessions,
+        Guid leagueID);
+
+    /// Each session (manager first, then players) creates a publisher.
+    /// Returns publisher IDs in the order created.
+    static Task<IReadOnlyList<Guid>> CreatePublishersAsync(
+        IReadOnlyList<ApiSession> allSessions,   // [0] = manager, [1..n] = players
+        Guid leagueID, int year);
+
+    /// Calls SetDraftOrder with DraftOrderType = "Random".
+    static Task SetDraftOrderAsync(
+        ApiSession managerSession, Guid leagueID, int year,
+        IReadOnlyList<Guid> publisherIDs);
+}
+```
+
+Year discovery note: `LeagueOptionsAsync()` is on `LeagueClient` and is anonymous —
+any session (even unauthenticated) can call it to find the open year.
+
+---
+
+## `MockedLivePlayer` and `DraftSimulator`
+
+Both live in `Helpers/MockedLivePlayer.cs`.
+
+**`MockedLivePlayer`** represents one human player in the simulation. Knows its session and
+publisher ID; picks games dynamically when asked. Named to distinguish it clearly from the
+real site's `AutoDraft` feature (which fires when a live player is absent).
+
+```csharp
+internal class MockedLivePlayer
+{
+    private readonly ApiSession _session;
+    public Guid PublisherID { get; }
+
+    public MockedLivePlayer(ApiSession session, Guid publisherID) { … }
+
+    public virtual async Task DraftStandardGameAsync(int year)
+    {
+        var options = await _session.League.TopAvailableGamesAsync(year, PublisherID);
+        var pick = options?.FirstOrDefault()
+            ?? throw new InvalidOperationException(
+                $"No available games for publisher {PublisherID}. Is the DB seeded?");
+
+        var result = await _session.League.DraftGameAsync(new DraftGameRequest
+        {
+            PublisherID = PublisherID,
+            MasterGameID = pick.MasterGame!.MasterGameID,
+            CounterPick = false,
+        });
+        Assert.That(result.Success, Is.True,
+            $"Standard pick failed for {PublisherID}: {string.Join("; ", result.Errors ?? [])}");
+    }
+
+    public virtual async Task DraftCounterPickAsync()
+    {
+        var options = await _session.League.PossibleCounterPicksAsync(PublisherID);
+        var pick = options?.FirstOrDefault()
+            ?? throw new InvalidOperationException(
+                $"No counter-pick candidates for publisher {PublisherID}.");
+
+        var result = await _session.League.DraftGameAsync(new DraftGameRequest
+        {
+            PublisherID = PublisherID,
+            MasterGameID = pick.MasterGame!.MasterGameID,
+            CounterPick = true,
+        });
+        Assert.That(result.Success, Is.True,
+            $"Counter-pick failed for {PublisherID}: {string.Join("; ", result.Errors ?? [])}");
+    }
+}
+```
+
+`DraftStandardGameAsync` and `DraftCounterPickAsync` are `virtual` to allow subclasses
+(e.g., `SpecificGameMockedPlayer`) to override pick selection for error-path tests later.
+
+**`DraftSimulator`** drives the loop. Reads league year state after each pick, finds the
+next publisher, calls the appropriate method on their `MockedLivePlayer`.
+
+```csharp
+internal sealed class DraftSimulator
+{
+    private readonly ApiSession _observerSession;
+    private readonly IReadOnlyDictionary<Guid, MockedLivePlayer> _players;
+
+    public DraftSimulator(ApiSession observerSession, IEnumerable<MockedLivePlayer> players)
+    {
+        _observerSession = observerSession;
+        _players = players.ToDictionary(p => p.PublisherID);
+    }
+
+    public async Task RunAsync(Guid leagueID, int year)
+    {
+        const int maxPicks = 500; // safety guard against infinite loop
+        for (var i = 0; i < maxPicks; i++)
+        {
+            var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
+
+            if (/* draft complete — play status is post-draft */)
+                return;
+
+            var nextPublisher = leagueYear.Publishers!.Single(p => p.NextToDraft == true);
+            var player = _players[nextPublisher.PublisherID];
+            var isCounterPickPhase = leagueYear.DraftPhase == "CounterPicks";
+
+            if (isCounterPickPhase)
+                await player.DraftCounterPickAsync();
+            else
+                await player.DraftStandardGameAsync(year);
+        }
+
+        Assert.Fail($"Draft did not complete within {maxPicks} picks.");
+    }
+}
+```
+
+**Implementation note:** the exact field names for `NextToDraft`, `DraftPhase`, and the
+post-draft play-status check must be confirmed against the generated `LeagueYearViewModel`
+and `PublisherViewModel` when implementing. The spec intentionally uses comments as
+placeholders rather than guessing generated property names.
+
+---
+
+## `LeagueDraftTestBase`
+
+Abstract base fixture. All concrete draft subclasses inherit from it.
+
+```csharp
+public abstract class LeagueDraftTestBase : IntegrationTestBase
+{
+    // ── Configuration (subclass provides) ────────────────────────────────────
+    protected abstract LeagueScenario Scenario { get; }
+
+    // ── State populated by OneTimeSetUp ───────────────────────────────────────
+    protected int Year;
+    protected Guid LeagueID;
+    protected IReadOnlyList<Guid> PublisherIDs = [];
+    protected LeagueYearViewModel LeagueYearSnapshot = null!; // captured after draft
+
+    // Sessions — [0] is manager, [1..n] are players
+    protected ApiSession ManagerSession = null!;
+    protected IReadOnlyList<ApiSession> PlayerSessions = [];
+
+    // ── Setup ─────────────────────────────────────────────────────────────────
+    [OneTimeSetUp]
+    public async Task SetUpLeagueAndDraft()
+    {
+        // 1. Create Scenario.PlayerCount sessions (register fresh users)
+        // 2. Get open year via LeagueTestHelpers.GetOpenYearAsync
+        // 3. LeagueTestHelpers.CreateLeagueAsync   → LeagueID, Year
+        // 4. LeagueTestHelpers.InviteAndAcceptAsync
+        // 5. LeagueTestHelpers.CreatePublishersAsync → PublisherIDs
+        // 6. LeagueTestHelpers.SetDraftOrderAsync
+        // 7. ManagerSession.LeagueManager.StartDraftAsync(…)
+        // 8. await SimulateDraftAsync(…)
+        // 9. LeagueYearSnapshot = await ManagerSession.League.GetLeagueYearAsync(…)
+    }
+
+    // Hook that subclasses can override to drive the draft differently
+    protected virtual async Task SimulateDraftAsync(
+        IReadOnlyDictionary<Guid, ApiSession> publisherSessionMap,
+        Guid leagueID, int year)
+    {
+        var players = publisherSessionMap
+            .Select(kvp => new MockedLivePlayer(kvp.Value, kvp.Key));
+        var simulator = new DraftSimulator(ManagerSession, players);
+        await simulator.RunAsync(leagueID, year);
+    }
+
+    // ── Shared tests (run for every subclass) ─────────────────────────────────
+
+    [Test]
+    public void AllPublishers_HaveCorrectNumberOfStandardGames() { … }
+
+    [Test]
+    public void AllPublishers_HaveCorrectNumberOfCounterPicks() { … }
+
+    [Test]
+    public void AllDraftedGames_HaveMasterGameAssociated() { … }
+
+    [Test]
+    public void NoDuplicateGames_AcrossPublisherStandardPicks() { … }
+
+    [Test]
+    public void CounterPicks_AreFromOtherPublishersRosters() { … }
+
+    [Test]
+    public void LeagueYear_IsInPostDraftStatus() { … }
+
+    [Test]
+    public void DraftOrder_IsSetForAllPublishers() { … }
+}
+```
+
+---
+
+## Concrete draft subclasses
+
+### `StandardLeagueDraftTests`
+
+```csharp
+[TestFixture]
+public class StandardLeagueDraftTests : LeagueDraftTestBase
+{
+    protected override LeagueScenario Scenario => LeagueScenarios.Standard;
+    // No additional tests — all shared tests cover the standard scenario.
+}
+```
+
+### `ManagerDraftTests`
+
+Inherits all seven shared tests. Overrides `SimulateDraftAsync` to drive every pick via
+`LeagueManagerClient.ManagerDraftGameAsync` instead of player sessions. Also adds one
+manager-specific test.
+
+```csharp
+[TestFixture]
+public class ManagerDraftTests : LeagueDraftTestBase
+{
+    protected override LeagueScenario Scenario => LeagueScenarios.Standard;
+
+    protected override async Task SimulateDraftAsync(
+        IReadOnlyDictionary<Guid, ApiSession> publisherSessionMap,
+        Guid leagueID, int year)
+    {
+        // Same loop structure as DraftSimulator, but all picks go through
+        // ManagerSession.LeagueManager.ManagerDraftGameAsync(…) instead of
+        // each player's own DraftGameAsync(…). Uses TopAvailableGamesAsync
+        // and PossibleCounterPicksAsync called via ManagerSession.
+    }
+
+    [Test]
+    public void SetDraftOrder_DraftPositionsAreSetCorrectly()
+    {
+        // Verify each publisher in LeagueYearSnapshot has a non-zero DraftPosition
+        // and that positions 1..N are all present with no duplicates.
+    }
+}
+```
+
+---
+
+## `LeagueSetupTests`
+
+`Tests/League/LeagueSetupTests.cs` — self-contained, every test creates its own league.
+
+| Test | What it verifies |
+|---|---|
+| `LeagueOptions_ReturnsAtLeastOneOpenYear` | Anonymous `LeagueOptionsAsync()` returns a non-empty year list with at least one `OpenForCreation == true` entry |
+| `CreateLeague_WithValidSettings_ReturnsLeagueID` | `CreateLeagueAsync` returns a non-empty GUID |
+| `CreateLeague_LeagueIsRetrievable` | `GetLeagueAsync(id)` returns a league whose name and manager match the creation request |
+| `CreateLeague_SettingsRoundTrip` | `GetLeagueYearOptionsAsync(leagueID, year)` returns settings matching the creation request |
+| `ChangeLeagueOptions_UpdatesName` | `ChangeLeagueOptionsAsync` with a new name → `GetLeagueAsync` returns the updated name |
+| `EditLeagueYearSettings_ChangedSettingsPersist` | `EditLeagueYearSettingsAsync` with a changed `MinimumBidAmount` → `GetLeagueYearOptionsAsync` reflects the change |
+| `EditLeagueYearSettings_AsNonManager_Returns403` | Another user calling `EditLeagueYearSettingsAsync` on a league they don't manage → 403 |
+
+---
+
+## `LeagueMemberTests`
+
+`Tests/League/LeagueMemberTests.cs` — self-contained, every test creates its own league.
+
+| Test | What it verifies |
+|---|---|
+| `InvitePlayer_ByEmail_AppearsInRecipientMyInvites` | Manager invites user B → B's `MyInvitesAsync()` contains an invite for the league |
+| `AcceptInvite_PlayerAppearsInLeagueYear` | B accepts → `GetLeagueYearAsync` shows B in the player list |
+| `DeclineInvite_InviteGoneFromMyInvites` | B declines → B's `MyInvitesAsync()` no longer contains the invite |
+| `RescindInvite_InviteRemovedBeforeAccept` | Manager rescinds → B's `MyInvitesAsync()` no longer contains the invite |
+| `CreatePublisher_AppearsInLeagueYear` | Accepted user creates a publisher → `GetLeagueYearAsync` shows the publisher with the correct name |
+| `ChangePublisherName_PersistsInLeagueYear` | `ChangePublisherNameAsync` → `GetLeagueYearAsync` reflects the new name |
+| `RemovePlayer_PlayerGoneFromLeague` | Manager removes player → `GetLeagueAsync` no longer lists that player |
+| `CreateInviteLink_ThenJoinWithLink_PlayerAppearsInLeague` | Manager creates invite link → user B joins using the link → B appears in the league |
+
+---
+
+## Test data strategy
+
+- All user accounts created via `NewUser()` + `RegisterAsync` — never hardcoded credentials.
+- The open year is always discovered dynamically via `LeagueOptionsAsync()` — never hardcoded.
+- Games for draft picks are chosen dynamically via `TopAvailableGamesAsync` /
+  `PossibleCounterPicksAsync` — no game names or IDs are hardcoded.
+- No direct DB access; all state is built and read through the API.
+- GUID-based unique identifiers for league names, publisher names, and user accounts ensure
+  no collisions across parallel or repeated test runs.
+
+---
+
+## Controller changes (if any)
+
+To be confirmed during implementation by inspecting the generated `LeagueManagerClient` and
+`LeagueClient` methods. If any actions return `Task` (void) instead of `Task<T>`, the fix
+is to add `[ProducesResponseType<T>]` to the controller action per the existing convention.
+`CreateLeague` already returns `ActionResult<Guid>` so the client is typed for that call.
+
+---
+
+## Out of scope
+
+- **Post-draft pickup bids and drops** — deferred to a `BiddingLeagueDraftTests` scenario and
+  a future `PostDraftTests` fixture once the admin action-processing pipeline is reachable
+  from tests.
+- **Draft edge cases** (`SetDraftPause`, `UndoLastDraftAction`, `DraftGame` wrong-turn 400) —
+  deferred to a follow-up `DraftEdgeCaseTests` fixture; these require a partially in-progress
+  draft state and are better tackled once the main lifecycle is proven.
+- **Special slots** — the `LeagueScenario` / `LeagueDraftTestBase` framework is designed to
+  support this as a future `SpecialSlotsLeagueDraftTests` concrete subclass. Deferred.
+- **Conferences** — out of scope for this pass.
+- **Trades** — out of scope for this pass.
