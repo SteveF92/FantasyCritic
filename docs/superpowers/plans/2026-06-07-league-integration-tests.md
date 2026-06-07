@@ -623,6 +623,20 @@ git commit -m "Add LeagueSetupTests: league creation and settings round-trip"
 
 ---
 
+## ✋ Review Gate 1 — After Task 3
+
+> **STOP. Do not proceed to Task 4 until the human has reviewed and approved.**
+>
+> **What to verify before continuing:**
+> - All 5 `LeagueSetupTests` pass locally (`dotnet test --filter "FullyQualifiedName~LeagueSetupTests"`)
+> - The generated client's typed return signatures look correct (spot-check `GetLeagueYearAsync`, `CreateLeagueAsync` in `FantasyCriticClients.cs`)
+> - `LeagueScenario.BuildSettings` compiles and produces a valid request body (no runtime 400s in the setup test)
+> - No pre-existing tests were broken (`dotnet test src/FantasyCritic.IntegrationTests`)
+>
+> **Signal to continue:** Reply "looks good, continue" (or equivalent).
+
+---
+
 ## Task 4: `LeagueTestHelpers` (invite/accept/publisher/draft-order) + `LeagueMemberTests`
 
 **Files:**
@@ -1118,6 +1132,20 @@ Expected: Build succeeded, 0 errors.
 git add src/FantasyCritic.IntegrationTests/Helpers/MockedLivePlayer.cs
 git commit -m "Add MockedLivePlayer and DraftSimulator draft helpers"
 ```
+
+---
+
+## ✋ Review Gate 2 — After Task 5
+
+> **STOP. Do not proceed to Task 6 until the human has reviewed and approved.**
+>
+> **What to verify before continuing:**
+> - All `LeagueMemberTests` pass locally (`dotnet test --filter "FullyQualifiedName~LeagueMemberTests"`)
+> - `MockedLivePlayer` and `DraftSimulator` compile cleanly (no errors in the test project build)
+> - The draft helper logic looks correct: `DraftSimulator.RunAsync` polls `PlayStatus.DraftFinished`, delegates standard vs counter-pick via `DraftingCounterPicks`, and maps `NextToDraft` to the right player
+> - No pre-existing tests were broken (`dotnet test src/FantasyCritic.IntegrationTests`)
+>
+> **Signal to continue:** Reply "looks good, continue" (or equivalent).
 
 ---
 
