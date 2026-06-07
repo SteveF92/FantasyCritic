@@ -1,11 +1,12 @@
+using FantasyCritic.ApiClient;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 
 namespace FantasyCritic.IntegrationTests.Helpers;
 
@@ -25,7 +26,34 @@ internal sealed class ApiSession : IDisposable
             AllowAutoRedirect = false,
             HandleCookies = true,
         });
+
+        var baseUrl = _client.BaseAddress!.ToString().TrimEnd('/');
+        Royale = new RoyaleClient(baseUrl, _client);
+        League = new LeagueClient(baseUrl, _client);
+        LeagueManager = new LeagueManagerClient(baseUrl, _client);
+        Account = new AccountClient(baseUrl, _client);
+        Game = new GameClient(baseUrl, _client);
+        Admin = new AdminClient(baseUrl, _client);
+        General = new GeneralClient(baseUrl, _client);
+        CombinedData = new CombinedDataClient(baseUrl, _client);
+        Conference = new ConferenceClient(baseUrl, _client);
+        RoyaleGroup = new RoyaleGroupClient(baseUrl, _client);
+        FactChecker = new FactCheckerClient(baseUrl, _client);
+        ActionRunner = new ActionRunnerClient(baseUrl, _client);
     }
+
+    public RoyaleClient Royale { get; }
+    public LeagueClient League { get; }
+    public LeagueManagerClient LeagueManager { get; }
+    public AccountClient Account { get; }
+    public GameClient Game { get; }
+    public AdminClient Admin { get; }
+    public GeneralClient General { get; }
+    public CombinedDataClient CombinedData { get; }
+    public ConferenceClient Conference { get; }
+    public RoyaleGroupClient RoyaleGroup { get; }
+    public FactCheckerClient FactChecker { get; }
+    public ActionRunnerClient ActionRunner { get; }
 
     /// <summary>
     /// POSTs to the /Account/Register Razor Page.
@@ -47,7 +75,6 @@ internal sealed class ApiSession : IDisposable
                 ["__RequestVerificationToken"] = token,
             }));
 
-        // Success = 302 redirect (to home or RegisterConfirmation)
         if (response.StatusCode is not (HttpStatusCode.Redirect or HttpStatusCode.Found))
         {
             var body = await response.Content.ReadAsStringAsync();
@@ -83,8 +110,6 @@ internal sealed class ApiSession : IDisposable
     /// <summary>
     /// GETs <paramref name="path"/> and deserializes the JSON body as
     /// <typeparamref name="T"/>. Throws if the response is not 200 OK.
-    /// Use the concrete ViewModel/response type from <c>FantasyCritic.Lib</c> or
-    /// <c>FantasyCritic.Web</c> so that property renames break this at compile time.
     /// </summary>
     public async Task<T> GetAndDeserializeAsync<T>(string path)
     {
@@ -101,8 +126,6 @@ internal sealed class ApiSession : IDisposable
 
     /// <summary>
     /// POSTs <paramref name="body"/> as JSON to <paramref name="path"/>.
-    /// Pass the concrete request type from <c>FantasyCritic.Web</c> so that
-    /// property renames break this at compile time.
     /// </summary>
     public Task<HttpResponseMessage> PostJsonAsync<T>(string path, T body)
     {
@@ -112,9 +135,8 @@ internal sealed class ApiSession : IDisposable
     }
 
     /// <summary>
-    /// POSTs <paramref name="body"/> as JSON and deserializes the response body as
-    /// <typeparamref name="TResponse"/>. Throws if the response is not 2xx.
-    /// Use this for endpoints that return the created/updated resource.
+    /// POSTs <paramref name="body"/> as JSON and deserializes the response body.
+    /// Throws if the response is not 2xx.
     /// </summary>
     public async Task<TResponse> PostJsonAndDeserializeAsync<TRequest, TResponse>(string path, TRequest body)
     {
