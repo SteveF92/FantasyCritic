@@ -119,6 +119,7 @@ public class LeagueController : BaseLeagueController
 
     [AllowAnonymous]
     [HttpGet("{id}")]
+    [ProducesResponseType<LeagueViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -161,6 +162,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType<LeagueYearViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -634,6 +636,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType<LeagueYearSettingsViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -1096,6 +1099,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType<PlayerClaimResultViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -1243,6 +1247,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpGet]
+    [ProducesResponseType<List<PossibleMasterGameYearViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -1316,6 +1321,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpGet]
+    [ProducesResponseType<List<PublisherGameViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

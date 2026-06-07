@@ -50,6 +50,7 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType<Guid>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Guid>> CreateLeague([FromBody] CreateLeagueRequest request)
     {
@@ -350,6 +351,7 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpGet("{leagueID}")]
+    [ProducesResponseType<List<LeagueInviteLinkViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -918,6 +920,7 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType<ManagerClaimResultViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
