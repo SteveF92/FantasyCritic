@@ -167,6 +167,7 @@ public class ActionRunnerController : FantasyCriticController
         return Ok();
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<DatabaseSnapshotInfoViewModel>>> GetRecentDatabaseSnapshots()
     {
         IReadOnlyList<DatabaseSnapshotInfo> snaps = await _adminService.GetRecentDatabaseSnapshots();
