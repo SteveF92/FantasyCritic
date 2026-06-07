@@ -22,6 +22,7 @@ using FantasyCritic.MySQL;
 using FantasyCritic.Postmark;
 using FantasyCritic.Web.Authorization;
 using FantasyCritic.Web.Hubs;
+using FantasyCritic.Web.OpenApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -332,6 +333,9 @@ public static class HostingExtensions
         services.AddOpenApiDocument(settings =>
         {
             settings.Title = "Fantasy Critic API";
+            settings.DocumentName = "FantasyCriticAPI";
+            settings.OperationProcessors.Add(new FantasyCriticOperationProcessor());
+            settings.SchemaSettings.SchemaProcessors.Add(new RequireNonNullablePropertiesSchemaProcessor());
         });
 
         return builder.Build();

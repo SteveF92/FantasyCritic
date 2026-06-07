@@ -53,6 +53,7 @@ public class RoyaleController : FantasyCriticController
 
     [HttpGet("{year}/{quarter}")]
     [AllowAnonymous]
+    [ProducesResponseType<RoyaleYearQuarterViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoyaleYearQuarterViewModel>> RoyaleQuarter(int year, int quarter)
     {
@@ -67,6 +68,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType<Guid>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Guid>> CreateRoyalePublisher([FromBody] CreateRoyalePublisherRequest request)
     {
@@ -188,6 +190,7 @@ public class RoyaleController : FantasyCriticController
 
     [AllowAnonymous]
     [HttpGet("{id}")]
+    [ProducesResponseType<RoyalePublisherViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoyalePublisherViewModel>> GetRoyalePublisher(Guid id)
     {
@@ -215,6 +218,7 @@ public class RoyaleController : FantasyCriticController
 
     [HttpGet("{year}/{quarter}")]
     [AllowAnonymous]
+    [ProducesResponseType<RoyaleQuarterDataViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoyaleQuarterDataViewModel>> RoyaleData(int year, int quarter)
     {
@@ -277,6 +281,7 @@ public class RoyaleController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType<PlayerClaimResultViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -464,6 +469,7 @@ public class RoyaleController : FantasyCriticController
 
     [AllowAnonymous]
     [HttpGet("{userID}")]
+    [ProducesResponseType<UserRoyaleHistoryViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserRoyaleHistoryViewModel>> UserRoyaleHistory(Guid userID)
     {

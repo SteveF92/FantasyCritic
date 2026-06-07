@@ -3,6 +3,7 @@
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
       "project": "../FantasyCritic.Web/FantasyCritic.Web.csproj",
+      "documentName": "FantasyCriticAPI",
       "noBuild": true,
       "output": null
     }
