@@ -427,9 +427,16 @@ is to add `[ProducesResponseType<T>]` to the controller action per the existing 
 - **Post-draft pickup bids and drops** — deferred to a `BiddingLeagueDraftTests` scenario and
   a future `PostDraftTests` fixture once the admin action-processing pipeline is reachable
   from tests.
-- **Draft edge cases** (`SetDraftPause`, `UndoLastDraftAction`, `DraftGame` wrong-turn 400) —
-  deferred to a follow-up `DraftEdgeCaseTests` fixture; these require a partially in-progress
-  draft state and are better tackled once the main lifecycle is proven.
+- **Draft edge cases** — deferred to a follow-up `DraftEdgeCaseTests` fixture; these require
+  a partially in-progress draft state and are better tackled once the main lifecycle is proven.
+  Known cases to cover:
+  - `SetDraftPause` and `UndoLastDraftAction`
+  - Player attempts to pick out of turn → 400
+  - Player attempts to draft an ineligible game → failure result
+  - Player attempts to draft a game already on another publisher's roster → failure result
+  - Player attempts to counter-pick a game that no publisher has drafted → failure result
+  - Player attempts to counter-pick during the standard-games phase → 400
+  - Player attempts to draft a standard game after the counter-pick phase has started → 400
 - **Special slots** — the `LeagueScenario` / `LeagueDraftTestBase` framework is designed to
   support this as a future `SpecialSlotsLeagueDraftTests` concrete subclass. Deferred.
 - **Conferences** — out of scope for this pass.
