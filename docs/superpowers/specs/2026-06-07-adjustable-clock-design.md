@@ -106,13 +106,13 @@ services.RemoveAll<IClock>();
 services.AddSingleton<IClock>(adjustableClock);
 ```
 
-**Update `RepositoryConfiguration`** to use the same instance (it currently hardcodes `SystemClock.Instance`):
+**Update the existing `RepositoryConfiguration` replacement** — the factory already removes and re-adds it. Update that existing block to pass `adjustableClock` instead of `SystemClock.Instance`:
 
 ```csharp
 services.RemoveAll<RepositoryConfiguration>();
 services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(
-    "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;",
-    adjustableClock));
+    "..same connection string already in the factory..",
+    adjustableClock));  // was SystemClock.Instance
 ```
 
 **Enable the endpoints** via the in-memory config overrides:
