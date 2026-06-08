@@ -1,5 +1,4 @@
 using System;
-using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
 using NUnit.Framework;
@@ -14,9 +13,9 @@ public class AdjustableClockTests
     {
         var clock = new AdjustableClock();
         var realNow = SystemClock.Instance.GetCurrentInstant();
-        var fakNow = clock.GetCurrentInstant();
+        var fakeNow = clock.GetCurrentInstant();
         // Allow a 5-second window to account for slow test runners.
-        Assert.That(Math.Abs((fakNow - realNow).TotalSeconds), Is.LessThanOrEqualTo(5));
+        Assert.That(Math.Abs((fakeNow - realNow).TotalSeconds), Is.LessThanOrEqualTo(5));
     }
 
     [Test]
@@ -27,9 +26,9 @@ public class AdjustableClockTests
 
         clock.SetInitialTime(target);
 
-        var fakNow = clock.GetCurrentInstant();
+        var fakeNow = clock.GetCurrentInstant();
         // Allow a 5-second window for elapsed real time after the Set call.
-        Assert.That(Math.Abs((fakNow - target).TotalSeconds), Is.LessThanOrEqualTo(5));
+        Assert.That(Math.Abs((fakeNow - target).TotalSeconds), Is.LessThanOrEqualTo(5));
     }
 
     [Test]
@@ -42,8 +41,8 @@ public class AdjustableClockTests
         var past = Instant.FromUtc(2020, 1, 1, 0, 0, 0);
         clock.SetInitialTime(past);
 
-        var fakNow = clock.GetCurrentInstant();
-        Assert.That(Math.Abs((fakNow - past).TotalSeconds), Is.LessThanOrEqualTo(5));
+        var fakeNow = clock.GetCurrentInstant();
+        Assert.That(Math.Abs((fakeNow - past).TotalSeconds), Is.LessThanOrEqualTo(5));
     }
 
     [Test]
@@ -57,8 +56,8 @@ public class AdjustableClockTests
         var result = clock.SetTime(later);
 
         Assert.That(result.IsSuccess, Is.True);
-        var fakNow = clock.GetCurrentInstant();
-        Assert.That(Math.Abs((fakNow - later).TotalSeconds), Is.LessThanOrEqualTo(5));
+        var fakeNow = clock.GetCurrentInstant();
+        Assert.That(Math.Abs((fakeNow - later).TotalSeconds), Is.LessThanOrEqualTo(5));
     }
 
     [Test]
