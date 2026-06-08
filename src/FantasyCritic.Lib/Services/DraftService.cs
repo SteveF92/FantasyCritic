@@ -216,18 +216,15 @@ public class DraftService
                     return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
                 }
 
-                var otherPublisherGames = updatedLeagueYear.GetAllPublishersExcept(nextPublisher)
-                    .SelectMany(x => x.PublisherGames)
-                    .Where(x => !x.CounterPick)
-                    .Where(x => x.MasterGame is not null);
-                var possibleGames = otherPublisherGames.Select(x => x.MasterGame!)
-                    .Where(x => x.AdjustedPercentCounterPick.HasValue)
-                    .OrderByDescending(x => x.AdjustedPercentCounterPick);
+                var availableCounterPicks = GetAvailableCounterPicks(updatedLeagueYear, nextPublisher)
+                    .Where(x => x.MasterGame is not null)
+                    .OrderByDescending(x => x.MasterGame!.AdjustedPercentCounterPick ?? 0);
 
                 bool addedAGame = false;
-                foreach (var possibleGame in possibleGames)
+                foreach (var publisherGame in availableCounterPicks)
                 {
-                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.MasterGame.GameName, true, false, false, true, possibleGame.MasterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var masterGame = publisherGame.MasterGame!.MasterGame;
+                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, masterGame.GameName, true, false, false, true, masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true, false);
                     if (autoDraftResult.Success)
                     {
