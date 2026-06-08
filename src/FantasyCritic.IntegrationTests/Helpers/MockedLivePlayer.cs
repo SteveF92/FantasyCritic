@@ -123,12 +123,42 @@ internal sealed class DraftSimulator
             if (!_players.TryGetValue(nextPublisher.PublisherID, out var player))
                 throw new InvalidOperationException(
                     $"No MockedLivePlayer registered for publisher {nextPublisher.PublisherID} "
-                    + $"({nextPublisher.PublisherName}).");
+                    + $"({nextPublisher.PublisherName}). "
+                    + "If this publisher has auto-draft enabled, their auto-draft may have failed "
+                    + "(e.g. no available games found for the slot). "
+                    + "Check TopAvailableGames for this publisher.");
 
             if (leagueYear.PlayStatus.DraftingCounterPicks)
                 await player.DraftCounterPickAsync(year);
             else
                 await player.DraftStandardGameAsync(year);
+        }
+    }
+
+    /// <summary>
+    /// Runs the draft loop until the counter-pick phase begins, then returns without picking
+    /// any counter-picks. Use this to set up shared state for counter-pick-phase error tests.
+    /// </summary>
+    public async Task RunUntilCounterPickPhaseAsync(Guid leagueID, int year)
+    {
+        while (true)
+        {
+            var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
+
+            if (leagueYear.PlayStatus.DraftFinished || leagueYear.PlayStatus.DraftingCounterPicks)
+                return;
+
+            var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
+                ?? throw new InvalidOperationException(
+                    "Draft is active, not finished, and not yet in the counter-pick phase, "
+                    + "but no publisher has NextToDraft = true.");
+
+            if (!_players.TryGetValue(nextPublisher.PublisherID, out var player))
+                throw new InvalidOperationException(
+                    $"No MockedLivePlayer registered for publisher {nextPublisher.PublisherID} "
+                    + $"({nextPublisher.PublisherName}).");
+
+            await player.DraftStandardGameAsync(year);
         }
     }
 }
