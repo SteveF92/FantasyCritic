@@ -1,3 +1,4 @@
+using NodaTime;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
@@ -424,7 +425,7 @@ public class AdminController : FantasyCriticController
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
         }
 
-        adjustableClock.SetInitialTime(request.NewTime);
+        adjustableClock.SetInitialTime(Instant.FromDateTimeOffset(request.NewTime));
         return Ok();
     }
 
@@ -447,7 +448,7 @@ public class AdminController : FantasyCriticController
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
         }
 
-        var result = adjustableClock.SetTime(request.NewTime);
+        var result = adjustableClock.SetTime(Instant.FromDateTimeOffset(request.NewTime));
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

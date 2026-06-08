@@ -119,4 +119,63 @@ public class AdminTests : IntegrationTestBase
         Assert.That(ex, Is.Not.Null, "Expected ApiException to be thrown for non-admin user.");
         Assert.That(ex!.StatusCode, Is.EqualTo(403));
     }
+
+    [Test]
+    public async Task SetInitialTime_AsAdmin_Returns200()
+    {
+        using var adminSession = new ApiSession(Factory);
+        await LoginAsLocalAdminAsync(adminSession);
+
+        await adminSession.Admin.SetInitialTimeAsync(new SetTimeRequest
+        {
+            NewTime = new DateTimeOffset(2025, 1, 6, 0, 0, 0, TimeSpan.Zero)
+        });
+        // No exception thrown means the endpoint returned 200.
+    }
+
+    [Test]
+    public async Task SetTime_Forward_Returns200()
+    {
+        using var adminSession = new ApiSession(Factory);
+        await LoginAsLocalAdminAsync(adminSession);
+
+        await adminSession.Admin.SetInitialTimeAsync(new SetTimeRequest
+        {
+            NewTime = new DateTimeOffset(2025, 1, 6, 0, 0, 0, TimeSpan.Zero)
+        });
+
+        await adminSession.Admin.SetTimeAsync(new SetTimeRequest
+        {
+            NewTime = new DateTimeOffset(2025, 1, 13, 0, 0, 0, TimeSpan.Zero)
+        });
+        // No exception thrown means the endpoint returned 200.
+    }
+
+    [Test]
+    public async Task SetTime_Backwards_Returns400()
+    {
+        using var adminSession = new ApiSession(Factory);
+        await LoginAsLocalAdminAsync(adminSession);
+
+        await adminSession.Admin.SetInitialTimeAsync(new SetTimeRequest
+        {
+            NewTime = new DateTimeOffset(2025, 6, 1, 0, 0, 0, TimeSpan.Zero)
+        });
+
+        ApiException? ex = null;
+        try
+        {
+            await adminSession.Admin.SetTimeAsync(new SetTimeRequest
+            {
+                NewTime = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero)
+            });
+        }
+        catch (ApiException caught)
+        {
+            ex = caught;
+        }
+
+        Assert.That(ex, Is.Not.Null, "Expected ApiException for backwards time travel.");
+        Assert.That(ex!.StatusCode, Is.EqualTo(400));
+    }
 }
