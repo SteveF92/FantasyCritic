@@ -1,4 +1,3 @@
-using NodaTime;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
@@ -10,6 +9,7 @@ using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
+using NodaTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
