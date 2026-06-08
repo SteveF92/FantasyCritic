@@ -35,6 +35,8 @@ public class AdminController : FantasyCriticController
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IConfiguration _configuration;
 
+    private const string IntegrationTestModeConfigKey = "IntegrationTestMode";
+
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
@@ -406,9 +408,10 @@ public class AdminController : FantasyCriticController
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult SetInitialTime([FromBody] SetTimeRequest request)
     {
-        var integrationTestMode = _configuration.GetValue<bool>("IntegrationTestMode");
+        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
         if (!integrationTestMode)
         {
             return NotFound();
@@ -427,9 +430,11 @@ public class AdminController : FantasyCriticController
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult SetTime([FromBody] SetTimeRequest request)
     {
-        var integrationTestMode = _configuration.GetValue<bool>("IntegrationTestMode");
+        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
         if (!integrationTestMode)
         {
             return NotFound();
