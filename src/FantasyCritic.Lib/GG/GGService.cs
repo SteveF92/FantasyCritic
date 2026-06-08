@@ -52,7 +52,7 @@ public class GGService : IGGService
                 responseString = await response.Content.ReadAsStringAsync();
             }
 
-            var parsed = JsonSerializer.Deserialize<GGGraphQLResponse>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var parsed = JsonSerializer.Deserialize<GGGraphQLResponse>(responseString, FantasyCriticJsonOptions.Default);
             var typedData = parsed?.Data?.GetGameByToken;
             if (typedData is null)
             {

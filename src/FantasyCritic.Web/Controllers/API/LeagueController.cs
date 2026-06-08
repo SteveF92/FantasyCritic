@@ -1266,7 +1266,8 @@ public class LeagueController : BaseLeagueController
         if (slotInfo is not null)
         {
             string slotInfoJSON = Encoding.UTF8.GetString(Convert.FromBase64String(slotInfo));
-            PublisherSingleSlotRequirementsViewModel? slotInfoObject = JsonSerializer.Deserialize<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON);
+            PublisherSingleSlotRequirementsViewModel? slotInfoObject = JsonSerializer.Deserialize<PublisherSingleSlotRequirementsViewModel>(slotInfoJSON, FantasyCriticJsonOptions.Default);
+
             if (slotInfoObject is null)
             {
                 return BadRequest();
