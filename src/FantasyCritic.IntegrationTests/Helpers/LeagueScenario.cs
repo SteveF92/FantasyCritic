@@ -125,4 +125,33 @@ public static class LeagueScenarios
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
     };
+
+    /// <summary>
+    /// A minimal 2-player league used by error-case and edge-case test fixtures.
+    /// 2 standard games + 1 counter-pick per publisher. Fast to set up and exhaust.
+    /// </summary>
+    public static readonly LeagueScenario TwoPlayerSmall = new()
+    {
+        Name = "TwoPlayerSmall",
+        PlayerCount = 2,
+        StandardGames = 2,
+        GamesToDraft = 2,
+        CounterPicks = 1,
+        CounterPicksToDraft = 1,
+        DraftSystem = "Flexible",
+        PickupSystem = "SemiPublicBiddingSecretCounterPicks",
+        ScoringSystem = "LinearPositive",
+        TradingSystem = "Standard",
+        TiebreakSystem = "LowestProjectedPoints",
+        ReleaseSystem = "MustBeReleased",
+        IneligibleGameSystem = "DroppableAsWillNotRelease",
+        UnrestrictedReleaseStatusDroppableGames = 0,
+        WillNotReleaseDroppableGames = 0,
+        WillReleaseDroppableGames = 0,
+        DropOnlyDraftGames = true,
+        GrantSuperDrops = false,
+        CounterPicksBlockDrops = true,
+        AllowMoveIntoIneligible = false,
+        MinimumBidAmount = 0,
+    };
 }
