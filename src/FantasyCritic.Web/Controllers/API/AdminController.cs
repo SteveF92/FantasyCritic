@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -31,11 +33,12 @@ public class AdminController : FantasyCriticController
     private readonly DiscordPushService _discordPushService;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IConfiguration _configuration;
 
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo)
+        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration)
         : base(userManager)
     {
         _adminService = adminService;
@@ -49,6 +52,7 @@ public class AdminController : FantasyCriticController
         _discordPushService = discordPushService;
         _masterGameRepo = masterGameRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -397,6 +401,53 @@ public class AdminController : FantasyCriticController
             return NotFound();
 
         await _userManager.RemoveFromRoleAsync(user, request.RoleName);
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult SetInitialTime([FromBody] SetTimeRequest request)
+    {
+        var integrationTestMode = _configuration.GetValue<bool>("IntegrationTestMode");
+        if (!integrationTestMode)
+        {
+            return NotFound();
+        }
+
+        var adjustableClock = _clock as AdjustableClock;
+        if (adjustableClock is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
+        }
+
+        adjustableClock.SetInitialTime(request.NewTime);
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult SetTime([FromBody] SetTimeRequest request)
+    {
+        var integrationTestMode = _configuration.GetValue<bool>("IntegrationTestMode");
+        if (!integrationTestMode)
+        {
+            return NotFound();
+        }
+
+        var adjustableClock = _clock as AdjustableClock;
+        if (adjustableClock is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
+        }
+
+        var result = adjustableClock.SetTime(request.NewTime);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
         return Ok();
     }
 }
