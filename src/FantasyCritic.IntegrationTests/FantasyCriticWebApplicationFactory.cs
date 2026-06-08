@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using FantasyCritic.Web;
 using Microsoft.AspNetCore.Hosting;
@@ -63,11 +64,17 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
                 ["BotToken"] = "secret",
                 // Always use local Docker MySQL, never any real database from user secrets.
                 ["ConnectionStrings:DefaultConnection"] = "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;",
+                ["IntegrationTestMode"] = "true",
             });
         });
 
         builder.ConfigureTestServices(services =>
         {
+            // Replace IClock with a controllable fake so tests can advance time via the API.
+            var adjustableClock = new AdjustableClock();
+            services.RemoveAll<IClock>();
+            services.AddSingleton<IClock>(adjustableClock);
+
             // Replace the Postmark sender with a capturing sender so tests can
             // extract confirmation links and follow them.
             services.RemoveAll<IEmailSender>();
@@ -79,10 +86,11 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
             // real infrastructure. We fix that here at the DI level.
 
             // Force the local Docker MySQL connection string, regardless of user secrets.
+            // Also use the same AdjustableClock so the repo sees the same fake time.
             services.RemoveAll<RepositoryConfiguration>();
             services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(
                 "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;",
-                SystemClock.Instance));
+                adjustableClock));
 
             // Remove all IHostedService registrations. In Development mode the schedulers are
             // already not registered (gated by !IsDevelopment()), but the Discord bot may still
