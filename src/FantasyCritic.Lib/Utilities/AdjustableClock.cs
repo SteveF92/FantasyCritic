@@ -70,4 +70,18 @@ public sealed class AdjustableClock : IClock
             return Result.Success();
         }
     }
+
+    /// <summary>
+    /// Resets the clock back to real time, clearing any test-imposed offset.
+    /// After this call, <see cref="GetCurrentInstant"/> returns the actual system time.
+    /// </summary>
+    public void ResetTime()
+    {
+        lock (_lock)
+        {
+            var now = SystemClock.Instance.GetCurrentInstant();
+            _setAt = now;
+            _targetAt = now;
+        }
+    }
 }

@@ -456,4 +456,26 @@ public class AdminController : FantasyCriticController
 
         return Ok();
     }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult ResetTime()
+    {
+        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
+        if (!integrationTestMode)
+        {
+            return NotFound();
+        }
+
+        var adjustableClock = _clock as AdjustableClock;
+        if (adjustableClock is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
+        }
+
+        adjustableClock.ResetTime();
+        return Ok();
+    }
 }
