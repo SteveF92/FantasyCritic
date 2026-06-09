@@ -146,9 +146,13 @@ public class BidProcessingTests : IntegrationTestBase
             && g.MasterGame.MasterGameID != _gameBMasterGameID);
         _gameCMasterGameID = gameC.MasterGame.MasterGameID;
 
-        // Counter-pick target: P1's first drafted standard game
-        var p1PostDraft = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _p1PublisherID);
-        _p1CounterPickTargetID = p1PostDraft.Games.First(g => !g.CounterPick).MasterGame!.MasterGameID;
+        // Counter-pick target: ask the server for games P2 can currently counter-pick, then pick one
+        // that is not in delay contention (delay-contention games cannot be counter-picked via a bid,
+        // only via the draft) and is not already released (released games cannot be picked up).
+        var possibleCounterPicks = await _p2Session.League.PossibleCounterPicksAsync(_p2PublisherID);
+        _p1CounterPickTargetID = possibleCounterPicks
+            .First(g => g.MasterGame != null && !g.MasterGame.DelayContention && !g.MasterGame.IsReleased)
+            .MasterGame!.MasterGameID;
 
         // ── Phase 3: Place six bids ────────────────────────────────────────────
 
@@ -183,8 +187,12 @@ public class BidProcessingTests : IntegrationTestBase
     }
 
     [OneTimeTearDown]
-    public void TearDown()
+    public async Task TearDown()
     {
+        if (_adminSession != null)
+        {
+            await _adminSession.Admin.ResetTimeAsync();
+        }
         _adminSession?.Dispose();
         _managerSession?.Dispose();
         _p2Session?.Dispose();
