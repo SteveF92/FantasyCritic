@@ -59,12 +59,10 @@ public class DraftEdgeCaseTests : IntegrationTestBase
         _p1DraftedGameID = p1Publisher.Games
             .Single(g => !g.CounterPick).MasterGame!.MasterGameID;
 
-        // Record the first ineligible-but-available game for P2 (null if none found).
-        // Games with IsEligible == false are ineligible under the league's ReleaseSystem =
-        // "MustBeReleased" setting — typically unreleased titles not expected this year.
-        var available = await _playerSession.League.TopAvailableGamesAsync(
-            _year, _leagueID, _p2PublisherID, slotInfo: null);
-        _ineligibleGame = available.FirstOrDefault(g => !g.IsEligible && !g.Taken);
+        // TopAvailableGames only returns eligible games (IsAvailable requires IsEligible).
+        // Search via PossibleMasterGames to find an ineligible, untaken candidate for P2.
+        var searchResults = await _playerSession.League.PossibleMasterGamesAsync("a", _year, _leagueID);
+        _ineligibleGame = searchResults.FirstOrDefault(g => !g.IsEligible && !g.Taken && !g.AlreadyOwned);
     }
 
     [OneTimeTearDown]
@@ -157,13 +155,13 @@ public class DraftEdgeCaseTests : IntegrationTestBase
     /// <summary>
     /// P2 tries to draft a game that is ineligible in this league's slot (IsEligible = false).
     /// The service returns Success = false (HTTP 200 with an error body).
-    /// Skipped if no ineligible games appear in TopAvailableGames for P2's publisher.
+    /// Skipped if no ineligible games appear in PossibleMasterGames search results.
     /// </summary>
     [Test]
     public async Task DraftGame_IneligibleGame_ReturnsFailureResult()
     {
         Assume.That(_ineligibleGame, Is.Not.Null,
-            "No ineligible game found in TopAvailableGames for P2; test skipped.");
+            "No ineligible game found via PossibleMasterGames search; test skipped.");
 
         var result = await _playerSession.League.DraftGameAsync(new DraftGameRequest
         {
