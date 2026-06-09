@@ -191,6 +191,7 @@ public class BidProcessingTests : IntegrationTestBase
     {
         if (_adminSession != null)
         {
+            await _adminSession.ActionRunner.TurnOffActionProcessingModeAsync();
             await _adminSession.Admin.ResetTimeAsync();
         }
         _adminSession?.Dispose();
