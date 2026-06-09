@@ -157,7 +157,7 @@ public static class LeagueScenarios
 
     /// <summary>
     /// A 4-player league configured for bid-processing tests: 6 standard slots (3 drafted, 3 open for bids)
-    /// and 2 counter-pick slots (1 drafted, 1 open for counter-pick bids). LowestProjectedPoints tiebreaker.
+    /// and 2 counter-pick slots (1 drafted, 1 open for counter-pick bids).
     /// </summary>
     public static readonly LeagueScenario FourPlayerBidding = new()
     {
