@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
@@ -129,6 +128,7 @@ public class BidProcessingTests : IntegrationTestBase
         // ── Phase 2: Select game targets ──────────────────────────────────────
 
         // Game A — only P1 bids (uncontested)
+        // Exclude already-released games: bids on them are rejected at processing time.
         var p1Available = await _managerSession.League.TopAvailableGamesAsync(_year, _leagueID, _p1PublisherID, null);
         var gameA = p1Available.First(g => g.IsAvailable && !g.Taken && !g.IsReleased);
         _gameAMasterGameID = gameA.MasterGame.MasterGameID;
