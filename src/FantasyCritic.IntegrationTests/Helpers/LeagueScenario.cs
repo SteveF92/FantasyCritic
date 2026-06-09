@@ -154,4 +154,33 @@ public static class LeagueScenarios
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
     };
+
+    /// <summary>
+    /// A 4-player league configured for bid-processing tests: 6 standard slots (3 drafted, 3 open for bids)
+    /// and 2 counter-pick slots (1 drafted, 1 open for counter-pick bids). LowestProjectedPoints tiebreaker.
+    /// </summary>
+    public static readonly LeagueScenario FourPlayerBidding = new()
+    {
+        Name = "FourPlayerBidding",
+        PlayerCount = 4,
+        StandardGames = 6,
+        GamesToDraft = 3,
+        CounterPicks = 2,
+        CounterPicksToDraft = 1,
+        DraftSystem = "Flexible",
+        PickupSystem = "SemiPublicBiddingSecretCounterPicks",
+        ScoringSystem = "LinearPositive",
+        TradingSystem = "Standard",
+        TiebreakSystem = "LowestProjectedPoints",
+        ReleaseSystem = "MustBeReleased",
+        IneligibleGameSystem = "DroppableAsWillNotRelease",
+        UnrestrictedReleaseStatusDroppableGames = 0,
+        WillNotReleaseDroppableGames = 0,
+        WillReleaseDroppableGames = 0,
+        DropOnlyDraftGames = true,
+        GrantSuperDrops = false,
+        CounterPicksBlockDrops = true,
+        AllowMoveIntoIneligible = false,
+        MinimumBidAmount = 0,
+    };
 }
