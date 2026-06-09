@@ -9,6 +9,7 @@ using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -104,6 +105,8 @@ public class ActionRunnerController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ProcessActions()
     {
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
@@ -147,6 +150,7 @@ public class ActionRunnerController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> TurnOnActionProcessingMode()
     {
         await _interLeagueService.SetActionProcessingMode(true);
@@ -154,6 +158,7 @@ public class ActionRunnerController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> TurnOffActionProcessingMode()
     {
         await _interLeagueService.SetActionProcessingMode(false);
