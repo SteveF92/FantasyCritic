@@ -958,6 +958,7 @@ public class DiscordPushService
 
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
+        var userStore = scope.ServiceProvider.GetRequiredService<IFantasyCriticUserStore>();
 
         var channels = await GetSocketChannelsForLeague(trade.LeagueYear.League.LeagueID);
         if (!channels.Any())
@@ -965,12 +966,26 @@ public class DiscordPushService
             return;
         }
 
+        IUser? proposerDiscordUser = null;
+        var proposerDiscordUserId = await GetDiscordUserIdForFantasyCriticUser(trade.Proposer.User.ToMinimal(), userStore);
+        if (proposerDiscordUserId != null)
+        {
+            proposerDiscordUser = await _client.GetUserAsync(proposerDiscordUserId.Value);
+        }
+
+        IUser? counterPartyDiscordUser = null;
+        var counterPartyDiscordUserId = await GetDiscordUserIdForFantasyCriticUser(trade.CounterParty.User.ToMinimal(), userStore);
+        if (counterPartyDiscordUserId != null)
+        {
+            counterPartyDiscordUser = await _client.GetUserAsync(counterPartyDiscordUserId.Value);
+        }
+
         var header = $"The following trade has been **{trade.Status.ReadableName.ToUpper()}**";
 
         var embedFieldBuilder = new EmbedFieldBuilder
         {
             Name = "Trade Details",
-            Value = BuildTradeMessage(trade, trade.Status.Equals(TradeStatus.Proposed)),
+            Value = BuildTradeMessage(trade, trade.Status.Equals(TradeStatus.Proposed), proposerDiscordUser, counterPartyDiscordUser),
             IsInline = false
         };
         var embedFieldBuilders = new List<EmbedFieldBuilder>
@@ -1136,9 +1151,21 @@ public class DiscordPushService
         return null;
     }
 
-    private static string BuildTradeMessage(Trade trade, bool includeMessage)
+    private static string BuildTradeMessage(Trade trade, bool includeMessage, IUser? proposerDiscordUser = null, IUser? counterPartyDiscordUser = null)
     {
-        var message = $"**{trade.Proposer.GetPublisherAndUserDisplayName()}** will receive:";
+        var proposerName = $"**{trade.Proposer.GetPublisherAndUserDisplayName()}**";
+        if (proposerDiscordUser != null)
+        {
+            proposerName += $" ({proposerDiscordUser.Mention})";
+        }
+
+        var counterPartyName = $"**{trade.CounterParty.GetPublisherAndUserDisplayName()}**";
+        if (counterPartyDiscordUser != null)
+        {
+            counterPartyName += $" ({counterPartyDiscordUser.Mention})";
+        }
+
+        var message = $"{proposerName} will receive:";
 
         var counterPartySendGames = BuildGameListText(trade.CounterPartyMasterGames);
         var hasCounterPartySendGames = !string.IsNullOrEmpty(counterPartySendGames);
@@ -1153,7 +1180,7 @@ public class DiscordPushService
             message += $"\n- **${trade.CounterPartyBudgetSendAmount}** of budget";
         }
 
-        message += $"\n**{trade.CounterParty.GetPublisherAndUserDisplayName()}** will receive:";
+        message += $"\n{counterPartyName} will receive:";
 
         var proposerSendGames = BuildGameListText(trade.ProposerMasterGames);
         var hasProposerSendGames = !string.IsNullOrEmpty(proposerSendGames);
@@ -1169,7 +1196,7 @@ public class DiscordPushService
 
         if (includeMessage)
         {
-            message += $"\nMessage from **{trade.Proposer.GetPublisherAndUserDisplayName()}**:\n**\"{trade.Message}\"**";
+            message += $"\nMessage from {proposerName}:\n**\"{trade.Message}\"**";
         }
 
         return message;
