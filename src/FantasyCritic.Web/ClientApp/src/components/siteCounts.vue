@@ -24,26 +24,20 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { generalClient } from '@/api/clients';
 
 export default {
   data() {
     return {
-      siteCounts: null,
-      error: ''
+      siteCounts: null
     };
   },
-  created() {
-    this.fetchSiteCounts();
+  async created() {
+    await this.fetchSiteCounts();
   },
   methods: {
-    fetchSiteCounts() {
-      axios
-        .get('/api/general/sitecounts')
-        .then((response) => {
-          this.siteCounts = response.data;
-        })
-        .catch((returnedError) => (this.error = returnedError));
+    async fetchSiteCounts() {
+      this.siteCounts = await generalClient.siteCounts();
     }
   }
 };

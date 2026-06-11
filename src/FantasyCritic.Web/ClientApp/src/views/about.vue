@@ -210,8 +210,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 import SiteCounts from '@/components/siteCounts.vue';
+import { generalClient } from '@/api/clients';
 
 export default {
   components: {
@@ -228,12 +228,7 @@ export default {
   },
   methods: {
     async fetchDonors() {
-      try {
-        const response = await axios.get('/api/general/donors');
-        this.donors = response.data;
-      } catch (error) {
-        this.error = error.response.data;
-      }
+      this.donors = await generalClient.donors();
     }
   }
 };
