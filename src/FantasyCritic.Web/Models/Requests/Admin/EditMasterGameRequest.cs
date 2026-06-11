@@ -21,6 +21,7 @@ public class EditMasterGameRequest
     public bool DelayContention { get; init; }
     public bool ShowNote { get; init; }
     public bool ClearCriticScore { get; init; }
+    public decimal? CriticScore { get; init; }
 
     public LocalDate? MaximumReleaseDate { get; init; }
     public LocalDate? EarlyAccessReleaseDate { get; init; }
@@ -34,7 +35,7 @@ public class EditMasterGameRequest
 
     public Lib.Domain.MasterGame ToDomain(Lib.Domain.MasterGame existingMasterGame, Instant timestamp, IEnumerable<MasterGameTag> tags)
     {
-        var criticScore = ClearCriticScore ? null : existingMasterGame.RawCriticScore;
+        var criticScore = ClearCriticScore ? null : (CriticScore ?? existingMasterGame.RawCriticScore);
         var masterGame = new Lib.Domain.MasterGame(MasterGameID, GameName.Trim(), EstimatedReleaseDate.Trim(), MinimumReleaseDate, MaximumReleaseDate,
             EarlyAccessReleaseDate, InternationalReleaseDate, AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, existingMasterGame.GGSlug, criticScore,
             existingMasterGame.HasAnyReviews, existingMasterGame.OpenCriticSlug,
