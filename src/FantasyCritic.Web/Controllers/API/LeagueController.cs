@@ -377,6 +377,7 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<List<LeagueActionProcessingSetViewModel>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<LeagueActionProcessingSetViewModel>>> GetLeagueActionSets(Guid leagueID, int year)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
