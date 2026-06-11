@@ -183,4 +183,34 @@ public static class LeagueScenarios
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
     };
+
+    /// <summary>
+    /// A 4-player league configured for drop and conditional-drop processing tests:
+    /// full post-draft rosters (4 standard + 1 counter-pick per publisher) with droppable-game
+    /// limits enabled so standalone drops, drop-then-bid, and conditional-drop bids can run.
+    /// </summary>
+    public static readonly LeagueScenario FourPlayerDrops = new()
+    {
+        Name = "FourPlayerDrops",
+        PlayerCount = 4,
+        StandardGames = 4,
+        GamesToDraft = 4,
+        CounterPicks = 1,
+        CounterPicksToDraft = 1,
+        DraftSystem = "Flexible",
+        PickupSystem = "SemiPublicBiddingSecretCounterPicks",
+        ScoringSystem = "LinearPositive",
+        TradingSystem = "Standard",
+        TiebreakSystem = "LowestProjectedPoints",
+        ReleaseSystem = "MustBeReleased",
+        IneligibleGameSystem = "DroppableAsWillNotRelease",
+        UnrestrictedReleaseStatusDroppableGames = 0,
+        WillNotReleaseDroppableGames = 3,
+        WillReleaseDroppableGames = 1,
+        DropOnlyDraftGames = true,
+        GrantSuperDrops = false,
+        CounterPicksBlockDrops = true,
+        AllowMoveIntoIneligible = false,
+        MinimumBidAmount = 0,
+    };
 }
