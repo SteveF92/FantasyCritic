@@ -51,7 +51,7 @@ This allows NSwag to generate `Task<ICollection<LeagueActionProcessingSetViewMod
 | `GamesToDraft` | 3 | Leaves 3 open standard bid slots per player |
 | `CounterPicks` | 2 | 1 drafted, 1 open for CP bid |
 | `CounterPicksToDraft` | 1 | |
-| `WillReleaseDroppableGames` | 1 | One drop allowance per player |
+| `WillReleaseDroppableGames` | 2 | Two drop allowances per player — P3 uses both (standalone drop + conditional-drop bid both succeed) |
 | `WillNotReleaseDroppableGames` | 0 | |
 | `DropOnlyDraftGames` | `true` | Drops must be of drafted games |
 | `CounterPicksBlockDrops` | `true` | Standard behavior |
