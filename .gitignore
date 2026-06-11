@@ -268,3 +268,6 @@ src/FantasyCritic.IntegrationTests/appsettings.Testing.Local.json
 
 # NSwag-generated API client — regenerate with scripts/Regenerate-ApiClient.ps1
 src/FantasyCritic.ApiClient/Generated/
+
+# Git worktrees (isolated feature branches)
+.worktrees/
