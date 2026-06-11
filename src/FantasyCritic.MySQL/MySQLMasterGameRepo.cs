@@ -245,6 +245,30 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                                "ShowNote = @ShowNote " +
                                "WHERE MasterGameID = @MasterGameID;";
 
+        // Keep tbl_caching_mastergameyear consistent with tbl_mastergame for editable fields.
+        // Action processing reads publisher-game MasterGame objects from the cache table, so
+        // eligibility checks (e.g. score-blocks-drop) must see the current values.
+        const string editCacheSQL = "UPDATE tbl_caching_mastergameyear SET " +
+                                    "GameName = @GameName, " +
+                                    "EstimatedReleaseDate = @EstimatedReleaseDate, " +
+                                    "MinimumReleaseDate = @MinimumReleaseDate, " +
+                                    "MaximumReleaseDate = @MaximumReleaseDate, " +
+                                    "EarlyAccessReleaseDate = @EarlyAccessReleaseDate, " +
+                                    "InternationalReleaseDate = @InternationalReleaseDate, " +
+                                    "AnnouncementDate = @AnnouncementDate, " +
+                                    "ReleaseDate = @ReleaseDate, " +
+                                    "OpenCriticID = @OpenCriticID, " +
+                                    "GGToken = @GGToken, " +
+                                    "CriticScore = @CriticScore, " +
+                                    "Notes = @Notes, " +
+                                    "BoxartFileName = @BoxartFileName, " +
+                                    "GGCoverArtFileName = @GGCoverArtFileName, " +
+                                    "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
+                                    "UseSimpleEligibility = @UseSimpleEligibility, " +
+                                    "DelayContention = @DelayContention, " +
+                                    "ShowNote = @ShowNote " +
+                                    "WHERE MasterGameID = @MasterGameID;";
+
         const string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";
 
         var entity = new MasterGameEntity(masterGame);
@@ -256,10 +280,13 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(editSQL, entity, transaction);
+        await connection.ExecuteAsync(editCacheSQL, entity, transaction);
         await connection.ExecuteAsync(deleteTagsSQL, new { masterGame.MasterGameID }, transaction);
         await connection.BulkInsertAsync<MasterGameChangeLogEntity>(changeLogEntities, "tbl_mastergame_changelog", 500, transaction);
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
         await transaction.CommitAsync();
+        ClearMasterGameCache();
+        ClearMasterGameYearCache();
     }
 
     public async Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year)

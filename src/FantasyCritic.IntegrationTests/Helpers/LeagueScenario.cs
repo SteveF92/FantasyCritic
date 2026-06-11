@@ -220,6 +220,8 @@ public static class LeagueScenarios
     /// counter-pick bids). Each player gets 2 will-release drop allowances so that
     /// P3 can successfully complete both a standalone drop and a conditional-drop bid
     /// in the same processing run.
+    /// CounterPicksBlockDrops is false so that all drafted standard games are
+    /// droppable regardless of which games other players chose as counter-picks.
     /// </summary>
     public static readonly LeagueScenario FourPlayerEligibilityChange = new()
     {
@@ -234,14 +236,14 @@ public static class LeagueScenarios
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",
         TiebreakSystem = "LowestProjectedPoints",
-        ReleaseSystem = "MustBeReleased",
+        ReleaseSystem = "OnlyNeedsScore",
         IneligibleGameSystem = "DroppableAsWillNotRelease",
         UnrestrictedReleaseStatusDroppableGames = 0,
         WillNotReleaseDroppableGames = 0,
         WillReleaseDroppableGames = 2,
         DropOnlyDraftGames = true,
         GrantSuperDrops = false,
-        CounterPicksBlockDrops = true,
+        CounterPicksBlockDrops = false,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
     };

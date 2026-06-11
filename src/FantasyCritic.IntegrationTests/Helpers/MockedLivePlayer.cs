@@ -29,29 +29,37 @@ internal class MockedLivePlayer
 
     /// <summary>
     /// Picks the first available, un-taken eligible game from TopAvailableGames.
+    /// Iterates past any games the server rejects (e.g. games that gained a score
+    /// from a prior test run and persist in the DB).
     /// </summary>
     public virtual async Task DraftStandardGameAsync(int year)
     {
         var available = await _session.League.TopAvailableGamesAsync(
             year, LeagueID, PublisherID, slotInfo: null);
 
-        var pick = available.FirstOrDefault(g => g.IsAvailable && !g.Taken)
-            ?? throw new InvalidOperationException(
+        var candidates = available.Where(g => g.IsAvailable && !g.Taken).ToList();
+        if (candidates.Count == 0)
+            throw new InvalidOperationException(
                 $"TopAvailableGames returned no available games for publisher {PublisherID}.");
 
-        var result = await _session.League.DraftGameAsync(new DraftGameRequest
+        foreach (var pick in candidates)
         {
-            PublisherID = PublisherID,
-            MasterGameID = pick.MasterGame.MasterGameID,
-            GameName = pick.MasterGame.GameName,
-            CounterPick = false,
-            AllowIneligibleSlot = false,
-        });
+            var result = await _session.League.DraftGameAsync(new DraftGameRequest
+            {
+                PublisherID = PublisherID,
+                MasterGameID = pick.MasterGame.MasterGameID,
+                GameName = pick.MasterGame.GameName,
+                CounterPick = false,
+                AllowIneligibleSlot = false,
+            });
 
-        if (!result.Success)
-            throw new InvalidOperationException(
-                $"DraftGame (standard) failed for publisher {PublisherID}: "
-                + string.Join("; ", result.Errors));
+            if (result.Success)
+                return;
+        }
+
+        throw new InvalidOperationException(
+            $"DraftGame (standard) failed for publisher {PublisherID}: "
+            + "no candidate from TopAvailableGames could be successfully drafted.");
     }
 
     /// <summary>
