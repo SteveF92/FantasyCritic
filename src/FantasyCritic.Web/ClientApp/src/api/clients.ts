@@ -16,7 +16,11 @@ import {
 export { ApiException } from './generated/FantasyCriticClients';
 export type * from './generated/FantasyCriticClients';
 
-const http = {
+type FetchLike = {
+  fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+};
+
+const http: FetchLike = {
   fetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
     return window.fetch(url, {
       credentials: 'include',
@@ -25,7 +29,7 @@ const http = {
   }
 };
 
-function createClient<T>(Client: new (baseUrl?: string, http?: typeof http) => T): T {
+function createClient<T>(Client: new (baseUrl?: string, http?: FetchLike) => T): T {
   return new Client('', http);
 }
 

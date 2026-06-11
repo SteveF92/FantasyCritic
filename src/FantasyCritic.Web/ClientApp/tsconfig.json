@@ -17,6 +17,10 @@
     "lib": ["dom", "esnext"], // Adds DOM and modern JS features
     "types": ["vite/client"] // Ensures Vite-specific typings are available
   },
+  "vueCompilerOptions": {
+    "target": 2.7,
+    "strictTemplates": false
+  },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",

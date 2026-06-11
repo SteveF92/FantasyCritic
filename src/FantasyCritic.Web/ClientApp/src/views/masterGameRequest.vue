@@ -127,7 +127,7 @@
                 <span v-else>&lt;Pending&gt;</span>
               </td>
               <td>
-                <span v-if="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                <span v-if="request.responseTimestamp">{{ formatDateTime(request.responseTimestamp) }}</span>
                 <span v-else>&lt;Pending&gt;</span>
               </td>
               <td class="select-cell">
@@ -141,18 +141,19 @@
     </div>
   </div>
 </template>
-<script>
-import { gameClient } from '@/api/clients';
-
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { ApiException, gameClient, type MasterGameRequestDismissRequest, type MasterGameRequestDeletionRequest, type MasterGameRequestRequest, type MasterGameRequestViewModel } from '@/api/clients';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatDateTime } from '@/globalFunctions';
 
-export default {
+export default defineComponent({
   components: {
     MasterGamePopover
   },
   data() {
     return {
-      myRequests: [],
+      myRequests: [] as MasterGameRequestViewModel[],
       showSent: false,
       showDeleted: false,
       errorInfo: '',
@@ -161,7 +162,7 @@ export default {
       steamLink: '',
       openCriticLink: '',
       ggLink: '',
-      releaseDate: new Date(),
+      releaseDate: '' as string | Date,
       estimatedReleaseDate: '',
       hasReleaseDate: false,
       wantToPickup: false,
@@ -171,7 +172,7 @@ export default {
     };
   },
   computed: {
-    validRequest() {
+    validRequest(): boolean {
       if (!this.estimatedReleaseDate && !this.releaseDate) {
         return false;
       }
@@ -182,7 +183,7 @@ export default {
 
       return true;
     },
-    showUnannouncedWarning() {
+    showUnannouncedWarning(): boolean {
       const fieldsToCheck = [this.gameName, this.estimatedReleaseDate, this.requestNote];
       const keywords = ['unannounced', 'rumor'];
 
@@ -194,23 +195,23 @@ export default {
         }
       }
       return false;
-    },
-    validUnannounced() {}
+    }
   },
   async created() {
     await this.fetchMyRequests();
   },
   methods: {
+    formatDateTime,
     async fetchMyRequests() {
       this.myRequests = await gameClient.myMasterGameRequests();
     },
     async sendMasterGameRequestRequest() {
-      let request = {
+      const request: MasterGameRequestRequest = {
         gameName: this.gameName,
         requestNote: this.requestNote,
-        steamLink: this.steamLink,
-        openCriticLink: this.openCriticLink,
-        ggLink: this.ggLink,
+        steamLink: this.steamLink || undefined,
+        openCriticLink: this.openCriticLink || undefined,
+        ggLink: this.ggLink || undefined,
         estimatedReleaseDate: this.estimatedReleaseDate
       };
 
@@ -218,8 +219,8 @@ export default {
         request.estimatedReleaseDate = this.estimatedReleaseDate;
       }
       if (this.hasReleaseDate && this.releaseDate) {
-        request.releaseDate = this.releaseDate;
-        request.estimatedReleaseDate = this.releaseDate;
+        request.releaseDate = String(this.releaseDate);
+        request.estimatedReleaseDate = String(this.releaseDate);
       }
 
       try {
@@ -234,7 +235,7 @@ export default {
         this.clearData();
         await this.fetchMyRequests();
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = ApiException.isApiException(error) ? error.response : String(error);
       } finally {
         this.isBusy = false;
       }
@@ -249,23 +250,23 @@ export default {
       this.estimatedReleaseDate = '';
       this.$validator.reset();
     },
-    async cancelRequest(request) {
-      let model = {
+    async cancelRequest(request: MasterGameRequestViewModel) {
+      const model: MasterGameRequestDeletionRequest = {
         requestID: request.requestID
       };
       await gameClient.deleteMasterGameRequest(model);
       this.showDeleted = true;
       await this.fetchMyRequests();
     },
-    async dismissRequest(request) {
-      let model = {
+    async dismissRequest(request: MasterGameRequestViewModel) {
+      const model: MasterGameRequestDismissRequest = {
         requestID: request.requestID
       };
       await gameClient.dismissMasterGameRequest(model);
       await this.fetchMyRequests();
     }
   }
-};
+});
 </script>
 <style scoped>
 .select-cell {

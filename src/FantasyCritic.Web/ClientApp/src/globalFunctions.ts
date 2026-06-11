@@ -74,6 +74,14 @@ export function formatLongDateTime(dateTime: string): string {
   return DateTime.fromISO(dateTime).toFormat('MMMM dd, yyyy, h:mm:ss a');
 }
 
+/** Matches the Vue `dateTime` filter in filters.js. */
+export function formatDateTime(value: string | undefined): string {
+  if (value) {
+    return DateTime.fromISO(String(value)).toLocaleString(DateTime.DATETIME_FULL);
+  }
+  return '';
+}
+
 export function formatLongDate(date: string) {
   return DateTime.fromISO(date).toFormat('MMMM dd, yyyy');
 }
