@@ -1,10 +1,12 @@
 <#
 .SYNOPSIS
-    Regenerates the FantasyCritic.ApiClient from the Web project's OpenAPI metadata.
+    Regenerates the FantasyCritic C# and TypeScript API clients from the Web project's OpenAPI metadata.
 
 .DESCRIPTION
     Runs `nswag run` using the pinned local tool from .config/dotnet-tools.json.
-    The Web project must have been built first.
+    The Web project must have been built first. Outputs:
+      - src/FantasyCritic.ApiClient/Generated/FantasyCriticClients.cs
+      - src/FantasyCritic.Web/ClientApp/src/api/generated/FantasyCriticClients.ts
 
 .EXAMPLE
     # From repo root:
@@ -27,7 +29,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "NSwag version: $($toolCheck | Select-Object -First 1)"
-Write-Host "Output: $clientDir\Generated\FantasyCriticClients.cs"
+Write-Host "Output:"
+Write-Host "  $clientDir\Generated\FantasyCriticClients.cs"
+Write-Host "  $repoRoot\src\FantasyCritic.Web\ClientApp\src\api\generated\FantasyCriticClients.ts"
 Write-Host ""
 Write-Host "Generating..."
 
