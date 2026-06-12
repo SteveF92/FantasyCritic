@@ -77,7 +77,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         if (_masterGameYearsCache.ContainsKey(year))
         {
-            return _masterGameYearsCache[year].Values.ToList();
+            return await OverlayFreshMasterGames(_masterGameYearsCache[year].Values.ToList());
         }
 
         await using var connection = new MySqlConnection(_connectionString);
@@ -102,7 +102,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         _masterGameYearsCache[year] = masterGames.ToDictionary(x => x.MasterGame.MasterGameID, y => y);
 
-        return masterGames;
+        return await OverlayFreshMasterGames(masterGames);
     }
 
     public async Task<MasterGame?> GetMasterGame(Guid masterGameID)
@@ -122,7 +122,55 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             await GetMasterGameYears(year);
         }
 
-        return _masterGameYearsCache[year].GetValueOrDefault(masterGameID);
+        var masterGameYear = _masterGameYearsCache[year].GetValueOrDefault(masterGameID);
+        if (masterGameYear == null)
+        {
+            return null;
+        }
+
+        return await OverlayFreshMasterGame(masterGameYear);
+    }
+
+    /// <summary>
+    /// Replaces the inner MasterGame on a MasterGameYear with the current tbl_mastergame row
+    /// so eligibility-sensitive fields (e.g. CriticScore) stay authoritative when
+    /// tbl_caching_mastergameyear is stale.
+    /// </summary>
+    private async Task<MasterGameYear> OverlayFreshMasterGame(MasterGameYear masterGameYear)
+    {
+        var freshMasterGame = await GetMasterGame(masterGameYear.MasterGame.MasterGameID);
+        return freshMasterGame != null
+            ? masterGameYear.WithNewMasterGame(freshMasterGame)
+            : masterGameYear;
+    }
+
+    private async Task<IReadOnlyList<MasterGameYear>> OverlayFreshMasterGames(IReadOnlyList<MasterGameYear> masterGameYears)
+    {
+        if (masterGameYears.Count == 0)
+        {
+            return masterGameYears;
+        }
+
+        if (_masterGamesCache is null)
+        {
+            await GetMasterGames();
+        }
+
+        var overlaid = new List<MasterGameYear>(masterGameYears.Count);
+        foreach (var masterGameYear in masterGameYears)
+        {
+            var masterGameID = masterGameYear.MasterGame.MasterGameID;
+            if (_masterGamesCache!.TryGetValue(masterGameID, out var freshMasterGame))
+            {
+                overlaid.Add(masterGameYear.WithNewMasterGame(freshMasterGame));
+            }
+            else
+            {
+                overlaid.Add(masterGameYear);
+            }
+        }
+
+        return overlaid;
     }
 
     public async Task<MasterGameYearWithStatistics?> GetMasterGameYearWithStatistics(Guid masterGameID, int year)
@@ -245,30 +293,6 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                                "ShowNote = @ShowNote " +
                                "WHERE MasterGameID = @MasterGameID;";
 
-        // Keep tbl_caching_mastergameyear consistent with tbl_mastergame for editable fields.
-        // Action processing reads publisher-game MasterGame objects from the cache table, so
-        // eligibility checks (e.g. score-blocks-drop) must see the current values.
-        const string editCacheSQL = "UPDATE tbl_caching_mastergameyear SET " +
-                                    "GameName = @GameName, " +
-                                    "EstimatedReleaseDate = @EstimatedReleaseDate, " +
-                                    "MinimumReleaseDate = @MinimumReleaseDate, " +
-                                    "MaximumReleaseDate = @MaximumReleaseDate, " +
-                                    "EarlyAccessReleaseDate = @EarlyAccessReleaseDate, " +
-                                    "InternationalReleaseDate = @InternationalReleaseDate, " +
-                                    "AnnouncementDate = @AnnouncementDate, " +
-                                    "ReleaseDate = @ReleaseDate, " +
-                                    "OpenCriticID = @OpenCriticID, " +
-                                    "GGToken = @GGToken, " +
-                                    "CriticScore = @CriticScore, " +
-                                    "Notes = @Notes, " +
-                                    "BoxartFileName = @BoxartFileName, " +
-                                    "GGCoverArtFileName = @GGCoverArtFileName, " +
-                                    "FirstCriticScoreTimestamp = @FirstCriticScoreTimestamp, " +
-                                    "UseSimpleEligibility = @UseSimpleEligibility, " +
-                                    "DelayContention = @DelayContention, " +
-                                    "ShowNote = @ShowNote " +
-                                    "WHERE MasterGameID = @MasterGameID;";
-
         const string deleteTagsSQL = "delete from tbl_mastergame_hastag where MasterGameID = @MasterGameID;";
 
         var entity = new MasterGameEntity(masterGame);
@@ -280,7 +304,6 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(editSQL, entity, transaction);
-        await connection.ExecuteAsync(editCacheSQL, entity, transaction);
         await connection.ExecuteAsync(deleteTagsSQL, new { masterGame.MasterGameID }, transaction);
         await connection.BulkInsertAsync<MasterGameChangeLogEntity>(changeLogEntities, "tbl_mastergame_changelog", 500, transaction);
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
