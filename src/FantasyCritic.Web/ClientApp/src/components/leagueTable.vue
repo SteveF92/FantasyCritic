@@ -43,6 +43,9 @@
             icon="thumbtack"
             @click="setArchive(data.item, false)" />
         </div>
+        <div v-show="showUnfollow" class="unfollow-button-section">
+          <b-button size="sm" variant="secondary" @click="confirmUnfollow(data.item)">Unfollow</b-button>
+        </div>
       </div>
     </template>
   </b-table>
@@ -55,7 +58,8 @@ export default {
     leagues: { type: Array, required: true },
     leagueIcon: { type: String, required: true },
     showArchive: { type: Boolean },
-    showUnArchive: { type: Boolean }
+    showUnArchive: { type: Boolean },
+    showUnfollow: { type: Boolean }
   },
   data() {
     return {
@@ -72,6 +76,28 @@ export default {
       axios
         .post('/api/league/SetArchiveStatus', model)
         .then(() => {})
+        .catch(() => {});
+    },
+    async confirmUnfollow(league) {
+      const leagueName = league.activeYearLeagueYearName || league.leagueName;
+      const confirmed = await this.$bvModal.msgBoxConfirm(`Are you sure you want to unfollow ${leagueName}?`, {
+        title: 'Unfollow League',
+        okTitle: 'Unfollow',
+        okVariant: 'danger',
+        cancelTitle: 'Cancel'
+      });
+      if (!confirmed) {
+        return;
+      }
+
+      const model = {
+        leagueID: league.leagueID
+      };
+      axios
+        .post('/api/league/UnfollowLeague', model)
+        .then(() => {
+          this.$emit('league-unfollowed', league.leagueID);
+        })
         .catch(() => {});
     }
   }
@@ -111,7 +137,8 @@ table >>> .hidden_header {
   font-size: 14px;
 }
 
-.archive-button-section {
+.archive-button-section,
+.unfollow-button-section {
   margin-left: auto;
   align-self: flex-end;
 }

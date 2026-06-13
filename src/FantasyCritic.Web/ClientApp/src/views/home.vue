@@ -52,7 +52,7 @@
               </b-tab>
               <b-tab title="Followed Leagues" title-item-class="tab-header">
                 <div v-if="myFollowedLeagues && myFollowedLeagues.length > 0">
-                  <leagueTable :leagues="myFollowedLeagues" :league-icon="'users'"></leagueTable>
+                  <leagueTable :leagues="myFollowedLeagues" :league-icon="'users'" :show-unfollow="true" @league-unfollowed="onLeagueUnfollowed"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not following any public leagues!</label>
@@ -166,6 +166,9 @@ export default {
       } catch {
         this.siteAnnouncements = [];
       }
+    },
+    onLeagueUnfollowed(leagueID) {
+      this.myFollowedLeagues = this.myFollowedLeagues.filter((x) => x.leagueID !== leagueID);
     },
     async fetchHomePageData() {
       try {
