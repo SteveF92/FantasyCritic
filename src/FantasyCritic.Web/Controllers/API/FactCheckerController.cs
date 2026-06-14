@@ -63,6 +63,8 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
+    [ProducesResponseType<MasterGameViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<MasterGameViewModel>> EditMasterGame([FromBody] EditMasterGameRequest viewModel)
     {
         Instant instant = _clock.GetCurrentInstant();
@@ -89,7 +91,7 @@ public class FactCheckerController : FantasyCriticController
         var vm = new MasterGameViewModel(editedMasterGame, currentDate);
 
         _logger.LogInformation($"Edited master game: {editedMasterGame.MasterGameID}");
-        return CreatedAtAction("MasterGame", "Game", new { id = editedMasterGame.MasterGameID }, vm);
+        return vm;
     }
 
     [HttpPost]
