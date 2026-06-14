@@ -101,7 +101,7 @@ public async Task SetUp()
 public async Task TearDown() => await _league.DisposeAsync();
 ```
 
-Access publishers by draft order: `_league.Publishers[0]` is the manager.
+Use `_league.Manager` for the league manager's session (e.g. `LeagueManager`, draft pause). Index `_league.Publishers` by draft order when you need a specific player's publisher — do not assume a fixed list index is the manager.
 
 For full-draft completion with shared assertions, inherit `LeagueDraftTestBase`
 in `Tests/League/Draft/` instead.

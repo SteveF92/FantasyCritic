@@ -33,13 +33,9 @@
       Copy the web project's appsettings.json to the test output directory so the
       WebApplicationFactory can find it when it sets the content root to the output dir.
     -->
-    <Content Include="..\FantasyCritic.Web\appsettings.json"
-             CopyToOutputDirectory="PreserveNewest"
-             Link="appsettings.json" />
+    <Content Include="..\FantasyCritic.Web\appsettings.json" CopyToOutputDirectory="PreserveNewest" Link="appsettings.json" />
     <Content Include="appsettings.Testing.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="appsettings.Testing.Local.json"
-             CopyToOutputDirectory="PreserveNewest"
-             Condition="Exists('appsettings.Testing.Local.json')" />
+    <Content Include="appsettings.Testing.Local.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('appsettings.Testing.Local.json')" />
   </ItemGroup>
 
 </Project>

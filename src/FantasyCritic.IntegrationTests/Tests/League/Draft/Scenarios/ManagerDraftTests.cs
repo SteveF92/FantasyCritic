@@ -1,19 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
-using FantasyCritic.IntegrationTests.Tests.League.Draft;
 using NUnit.Framework;
 
-namespace FantasyCritic.IntegrationTests.Tests.LeagueManager;
+namespace FantasyCritic.IntegrationTests.Tests.League.Draft.Scenarios;
 
 /// <summary>
 /// Exercises a full draft using the manager-side <c>ManagerDraftGame</c> endpoint.
 /// Inherits all shared post-draft assertions from <see cref="LeagueDraftTestBase"/>.
 /// Uses the same <see cref="LeagueScenarios.Standard"/> scenario as
-/// <see cref="Scenarios.StandardLeagueDraftTests"/> so both endpoints are verified to
+/// <see cref="StandardLeagueDraftTests"/> so both endpoints are verified to
 /// produce the same outcome.
 /// </summary>
 [TestFixture]
