@@ -47,16 +47,10 @@ public class DropProcessingTests : IntegrationTestBase
         await _league.DraftToCompletionAsync();
 
         var postDraftSnapshot = await _league.GetLeagueYearAsync();
+        _league.CapturePublisherState(postDraftSnapshot);
         var p1 = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID);
         var p2 = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID);
         var p3 = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID);
-
-        _league.Publishers[0].StartingBudget = p1.Budget;
-        _league.Publishers[1].StartingBudget = p2.Budget;
-        _league.Publishers[2].StartingBudget = p3.Budget;
-        _league.Publishers[0].WillReleaseDroppableBefore = p1.WillReleaseGamesDropped;
-        _league.Publishers[1].WillReleaseDroppableBefore = p2.WillReleaseGamesDropped;
-        _league.Publishers[2].WillReleaseDroppableBefore = p3.WillReleaseGamesDropped;
 
         var p1DropGame = FindDroppableDraftedGame(p1);
         var p2DropGame = FindDroppableDraftedGame(p2);

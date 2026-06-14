@@ -45,10 +45,7 @@ public class BidProcessingTests : IntegrationTestBase
         await _league.DraftToCompletionAsync();
 
         var postDraftSnapshot = await _league.GetLeagueYearAsync();
-        _league.Publishers[0].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID).Budget;
-        _league.Publishers[1].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID).Budget;
-        _league.Publishers[2].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID).Budget;
-        _league.Publishers[3].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[3].PublisherID).Budget;
+        _league.CapturePublisherState(postDraftSnapshot);
 
         var p1Available = await _league.Publishers[0].Session.League.TopAvailableGamesAsync(
             _league.Year, _league.LeagueID, _league.Publishers[0].PublisherID, null);
