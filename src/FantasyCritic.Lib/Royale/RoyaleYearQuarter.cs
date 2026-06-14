@@ -41,6 +41,12 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
         return bannedTags;
     }
 
+    public static bool YearQuarter2026Q3FeatureSupported(YearQuarter yearQuarterToCheck)
+    {
+        var yearQuarterToCheckAgainst = new YearQuarter(2026, 3);
+        return yearQuarterToCheck.CompareTo(yearQuarterToCheckAgainst) >= 0;
+    }
+
     public override string ToString()
     {
         return YearQuarter.ToString();

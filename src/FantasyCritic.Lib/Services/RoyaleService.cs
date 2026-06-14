@@ -207,14 +207,28 @@ public class RoyaleService
             }
         }
 
-        var marketCost = publisherGame.MasterGame.GetRoyaleGameCost();
-        var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags);
+        if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(publisher.YearQuarter.YearQuarter))
+        {
+            var marketCost = publisherGame.MasterGame.GetRoyaleGameCost();
+            var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags);
 
-        var now = _clock.GetCurrentInstant();
-        RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
-            "Sold Game", $"Sold '{publisherGame.MasterGame.MasterGame.GameName}' for ${finalRefund:F2} (Market Cost: ${marketCost:F2}).", now);
-        await _royaleRepo.SellGame(publisherGame, finalRefund, action);
-        return Result.Success();
+            var now = _clock.GetCurrentInstant();
+            RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
+                "Sold Game", $"Sold '{publisherGame.MasterGame.MasterGame.GameName}' for ${finalRefund:F2} (Market Cost: ${marketCost:F2}).", now);
+            await _royaleRepo.SellGame(publisherGame, finalRefund, action);
+            return Result.Success();
+        }
+        else
+        {
+            var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags);
+
+            var now = _clock.GetCurrentInstant();
+            RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
+                "Sold Game", $"Sold '{publisherGame.MasterGame.MasterGame.GameName}' for ${finalRefund:F2} (Amount Spent: ${publisherGame.AmountSpent:F2}).", now);
+            await _royaleRepo.SellGame(publisherGame, finalRefund, action);
+            return Result.Success();
+        }
+
     }
 
     public async Task<Result> SetAdvertisingMoney(RoyalePublisher publisher, RoyalePublisherGame publisherGame, decimal advertisingMoney)

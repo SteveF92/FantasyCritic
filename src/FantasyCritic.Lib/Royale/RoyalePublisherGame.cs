@@ -46,7 +46,16 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
     public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags)
     {
         var currentlyIneligible = CalculateIsCurrentlyIneligible(masterGameTags);
-        var baseRefund = MasterGame.GetRoyaleGameCost();
+
+        decimal baseRefund;
+        if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
+        {
+            baseRefund = MasterGame.GetRoyaleGameCost();
+        }
+        else
+        {
+            baseRefund = AmountSpent;
+        }
 
         decimal refundMultiplier = 0.5m;
         if (currentlyIneligible)
