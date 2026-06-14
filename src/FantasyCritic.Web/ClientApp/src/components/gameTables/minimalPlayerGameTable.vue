@@ -26,6 +26,40 @@
         </div>
       </div>
     </div>
+      <div class="publisher-stats-container">
+      <div class="publisher-stats">
+        <span class="publisher-stat">
+          <span class="stat-value">{{ publisher.budget | money(0) }}</span>
+          <span class="stat-label">Budget</span>
+        </span>
+        <span class="publisher-stat">
+          <span class="stat-value">{{ publisher.gamesReleased }}</span>
+          <span class="stat-label">Released</span>
+        </span>
+        <span class="publisher-stat">
+          <span class="stat-value">{{ publisher.gamesWillRelease }}</span>
+          <span class="stat-label">Expecting</span>
+        </span>
+      </div>
+      <div v-if="hasAnyDrops" class="publisher-stats publisher-stats-drops">
+        <span v-if="publisher.willReleaseDroppableGames !== 0" class="publisher-stat">
+          <span class="stat-value">{{ dropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames) }}</span>
+          <span class="stat-label">Will Release Drops</span>
+        </span>
+        <span v-if="publisher.willNotReleaseDroppableGames !== 0" class="publisher-stat">
+          <span class="stat-value">{{ dropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames) }}</span>
+          <span class="stat-label">Won't Release Drops</span>
+        </span>
+        <span v-if="publisher.unrestrictedReleaseStatusDroppableGames !== 0" class="publisher-stat">
+          <span class="stat-value">{{ dropStatus(publisher.unrestrictedReleaseStatusGamesDropped, publisher.unrestrictedReleaseStatusDroppableGames) }}</span>
+          <span class="stat-label">Any Unreleased Drops</span>
+        </span>
+        <span v-if="leagueYear.settings.grantSuperDrops" class="publisher-stat">
+          <span class="stat-value">{{ publisher.superDropsAvailable }}</span>
+          <span class="stat-label">Super Drops</span>
+        </span>
+      </div>
+    </div>
     <table class="table table-striped">
       <thead>
         <tr class="bg-secondary">
@@ -91,6 +125,14 @@ export default {
     iconIsValid() {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },
+    hasAnyDrops() {
+      return (
+        this.publisher.willReleaseDroppableGames !== 0 ||
+        this.publisher.willNotReleaseDroppableGames !== 0 ||
+        this.publisher.unrestrictedReleaseStatusDroppableGames !== 0 ||
+        this.leagueYear.settings.grantSuperDrops
+      );
+    },
     showRoundingWarning() {
       if (this.userInfo?.showDecimalPlaces) {
         return false;
@@ -130,6 +172,12 @@ export default {
     }
   },
   methods: {
+    dropStatus(dropped, droppable) {
+      if (droppable === -1) {
+        return dropped + '/\u221E';
+      }
+      return (droppable - dropped) + '/' + droppable;
+    },
     prepareSnapshot() {
       this.renderingSnapshot = true;
       setTimeout(this.sharePublisher, 1);
@@ -209,6 +257,63 @@ export default {
 .player-name {
   color: white;
   font-weight: bold;
+}
+
+.publisher-stats-container {
+  margin-top: 6px;
+  padding: 5px 10px;
+  /* background-color: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
+}
+
+.publisher-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.publisher-stats-drops {
+  margin-top: 2px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.publisher-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 60px;
+  padding: 2px 4px;
+  position: relative;
+}
+
+.publisher-stat + .publisher-stat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.stat-label {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 80px;
+}
+
+.stat-value {
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
 }
 
 .publisher-slogan {
