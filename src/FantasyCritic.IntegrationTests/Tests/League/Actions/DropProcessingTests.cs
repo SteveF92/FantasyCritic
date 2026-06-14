@@ -78,10 +78,10 @@ public class DropProcessingTests : IntegrationTestBase
             p3DropGame.PublisherGameID,
             p3BidTargetMasterGameID);
 
-        await PlaceDropAsync(_league.Publishers[0], _targets.P1DropPublisherGameID);
-        await PlaceDropAsync(_league.Publishers[1], _targets.P2DropPublisherGameID);
-        await PlaceBidAsync(_league.Publishers[1], _targets.P2BidTargetMasterGameID, 10, false, null);
-        await PlaceBidAsync(_league.Publishers[2], _targets.P3BidTargetMasterGameID, 15, false, _targets.P3ConditionalDropPublisherGameID);
+        await LeaguePickupActions.PlaceDropAsync(_league.Publishers[0], _targets.P1DropPublisherGameID);
+        await LeaguePickupActions.PlaceDropAsync(_league.Publishers[1], _targets.P2DropPublisherGameID);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[1], _targets.P2BidTargetMasterGameID, 10, false);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[2], _targets.P3BidTargetMasterGameID, 15, false, _targets.P3ConditionalDropPublisherGameID);
 
         await _adminSession.Admin.SetTimeAsync(new SetTimeRequest
         {
@@ -132,49 +132,6 @@ public class DropProcessingTests : IntegrationTestBase
             && !excluded.Contains(g.MasterGame.MasterGameID));
 
         return target.MasterGame!.MasterGameID;
-    }
-
-    private static async Task PlaceDropAsync(TestPublisher publisher, Guid publisherGameID)
-    {
-        var result = await publisher.Session.League.MakeDropRequestAsync(new DropGameRequestRequest
-        {
-            PublisherID = publisher.PublisherID,
-            PublisherGameID = publisherGameID,
-        });
-
-        if (!result.Success)
-        {
-            var errors = string.Join("; ", result.Errors ?? []);
-            throw new InvalidOperationException(
-                $"MakeDropRequest failed for publisher {publisher.PublisherID}, publisherGame {publisherGameID}. Errors: {errors}");
-        }
-    }
-
-    private static async Task PlaceBidAsync(
-        TestPublisher publisher,
-        Guid masterGameID,
-        int bidAmount,
-        bool counterPick,
-        Guid? conditionalDropPublisherGameID)
-    {
-        var result = await publisher.Session.League.MakePickupBidAsync(new PickupBidRequest
-        {
-            PublisherID = publisher.PublisherID,
-            MasterGameID = masterGameID,
-            CounterPick = counterPick,
-            BidAmount = bidAmount,
-            AllowIneligibleSlot = false,
-            ConditionalDropPublisherGameID = conditionalDropPublisherGameID,
-        });
-
-        if (!result.Success)
-        {
-            var errors = string.Join("; ", result.Errors ?? []);
-            throw new InvalidOperationException(
-                $"MakePickupBid failed for publisher {publisher.PublisherID}, game {masterGameID}, " +
-                $"amount {bidAmount}, counterPick {counterPick}, conditionalDrop {conditionalDropPublisherGameID}. " +
-                $"Errors: {errors}");
-        }
     }
 
     [Test]

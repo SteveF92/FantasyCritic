@@ -73,12 +73,12 @@ public class BidProcessingTests : IntegrationTestBase
 
         _targets = new BidTargets(gameAMasterGameID, gameBMasterGameID, gameCMasterGameID, counterPickTargetID);
 
-        await PlaceBidAsync(_league.Publishers[0], _targets.GameA, 10, false);
-        await PlaceBidAsync(_league.Publishers[1], _targets.GameB, 20, false);
-        await PlaceBidAsync(_league.Publishers[2], _targets.GameB, 10, false);
-        await PlaceBidAsync(_league.Publishers[2], _targets.GameC, 15, false);
-        await PlaceBidAsync(_league.Publishers[3], _targets.GameC, 15, false);
-        await PlaceBidAsync(_league.Publishers[1], _targets.CounterPickTarget, 5, true);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[0], _targets.GameA, 10, false);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[1], _targets.GameB, 20, false);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[2], _targets.GameB, 10, false);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[2], _targets.GameC, 15, false);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[3], _targets.GameC, 15, false);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[1], _targets.CounterPickTarget, 5, true);
 
         await _adminSession.Admin.SetTimeAsync(new SetTimeRequest
         {
@@ -108,31 +108,6 @@ public class BidProcessingTests : IntegrationTestBase
         _adminSession?.Dispose();
         if (_league != null)
             await _league.DisposeAsync();
-    }
-
-    private static async Task PlaceBidAsync(
-        TestPublisher publisher,
-        Guid masterGameID,
-        int bidAmount,
-        bool counterPick)
-    {
-        var result = await publisher.Session.League.MakePickupBidAsync(new PickupBidRequest
-        {
-            PublisherID = publisher.PublisherID,
-            MasterGameID = masterGameID,
-            CounterPick = counterPick,
-            BidAmount = bidAmount,
-            AllowIneligibleSlot = false,
-            ConditionalDropPublisherGameID = null,
-        });
-
-        if (!result.Success)
-        {
-            var errors = string.Join("; ", result.Errors ?? []);
-            throw new InvalidOperationException(
-                $"MakePickupBid failed for publisher {publisher.PublisherID}, game {masterGameID}, " +
-                $"amount {bidAmount}, counterPick {counterPick}. Errors: {errors}");
-        }
     }
 
     [Test]

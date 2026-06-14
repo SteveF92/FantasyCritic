@@ -115,13 +115,13 @@ public class EligibilityChangeTests : IntegrationTestBase
             P4ConditionalDropPublisherGameID: p4DroppableGames[1].PublisherGameID,
             P4ConditionalDropMasterGameID: p4DroppableGames[1].MasterGame!.MasterGameID);
 
-        await PlaceBidAsync(_league.Publishers[0], _targets.GameA, 10, false, null);
-        await PlaceBidAsync(_league.Publishers[1], _targets.GameB, 10, false, null);
-        await PlaceDropAsync(_league.Publishers[2], _targets.P3StandaloneDropPublisherGameID);
-        await PlaceBidAsync(_league.Publishers[2], _targets.GameE, 10, false, _targets.P3ConditionalDropPublisherGameID);
-        await PlaceDropAsync(_league.Publishers[3], _targets.P4StandaloneDropPublisherGameID);
-        await PlaceBidAsync(_league.Publishers[3], _targets.GameG, 10, false, _targets.P4ConditionalDropPublisherGameID);
-        await PlaceBidAsync(_league.Publishers[1], _targets.P2CounterPickTarget, 5, true, null);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[0], _targets.GameA, 10, false);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[1], _targets.GameB, 10, false);
+        await LeaguePickupActions.PlaceDropAsync(_league.Publishers[2], _targets.P3StandaloneDropPublisherGameID);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[2], _targets.GameE, 10, false, _targets.P3ConditionalDropPublisherGameID);
+        await LeaguePickupActions.PlaceDropAsync(_league.Publishers[3], _targets.P4StandaloneDropPublisherGameID);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[3], _targets.GameG, 10, false, _targets.P4ConditionalDropPublisherGameID);
+        await LeaguePickupActions.PlaceBidAsync(_league.Publishers[1], _targets.P2CounterPickTarget, 5, true);
 
         await _adminSession.Admin.SetTimeAsync(new SetTimeRequest
         {
@@ -267,47 +267,6 @@ public class EligibilityChangeTests : IntegrationTestBase
         }
         throw new InvalidOperationException(
             "No suitable counter-pick target found — all candidates already have a live critic score.");
-    }
-
-    private static async Task PlaceBidAsync(
-        TestPublisher publisher,
-        Guid masterGameID,
-        int bidAmount,
-        bool counterPick,
-        Guid? conditionalDropPublisherGameID)
-    {
-        var result = await publisher.Session.League.MakePickupBidAsync(new PickupBidRequest
-        {
-            PublisherID = publisher.PublisherID,
-            MasterGameID = masterGameID,
-            CounterPick = counterPick,
-            BidAmount = bidAmount,
-            AllowIneligibleSlot = false,
-            ConditionalDropPublisherGameID = conditionalDropPublisherGameID,
-        });
-        if (!result.Success)
-        {
-            var errors = string.Join("; ", result.Errors ?? []);
-            throw new InvalidOperationException(
-                $"MakePickupBid failed for publisher {publisher.PublisherID}, game {masterGameID}, " +
-                $"amount {bidAmount}, counterPick {counterPick}. Errors: {errors}");
-        }
-    }
-
-    private static async Task PlaceDropAsync(TestPublisher publisher, Guid publisherGameID)
-    {
-        var result = await publisher.Session.League.MakeDropRequestAsync(new DropGameRequestRequest
-        {
-            PublisherID = publisher.PublisherID,
-            PublisherGameID = publisherGameID,
-        });
-        if (!result.Success)
-        {
-            var errors = string.Join("; ", result.Errors ?? []);
-            throw new InvalidOperationException(
-                $"MakeDropRequest failed for publisher {publisher.PublisherID}, " +
-                $"publisherGame {publisherGameID}. Errors: {errors}");
-        }
     }
 
     [Test]
