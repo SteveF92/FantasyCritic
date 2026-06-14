@@ -41,6 +41,20 @@ public sealed class LeagueFixture : IAsyncDisposable
     public Task<LeagueYearViewModel> GetLeagueYearAsync() =>
         Manager.League.GetLeagueYearAsync(LeagueID, Year, null);
 
+    /// <summary>
+    /// Copies post-draft budget and will-release drop counts from <paramref name="snapshot"/>
+    /// onto matching <see cref="TestPublisher"/> instances for use in assertions.
+    /// </summary>
+    public void CapturePublisherState(LeagueYearViewModel snapshot)
+    {
+        foreach (var testPublisher in Publishers)
+        {
+            var vm = snapshot.Publishers.Single(p => p.PublisherID == testPublisher.PublisherID);
+            testPublisher.StartingBudget = vm.Budget;
+            testPublisher.WillReleaseDroppableBefore = vm.WillReleaseGamesDropped;
+        }
+    }
+
     public Task DraftToCompletionAsync(IReadOnlyDictionary<Guid, ApiSession>? activePublishers = null)
     {
         var simulator = new DraftSimulator(Manager, ResolvePlayers(activePublishers));

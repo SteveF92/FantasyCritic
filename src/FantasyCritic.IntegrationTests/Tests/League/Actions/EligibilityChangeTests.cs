@@ -54,8 +54,7 @@ public class EligibilityChangeTests : IntegrationTestBase
         await _league.DraftToCompletionAsync();
 
         var postDraftSnapshot = await _league.GetLeagueYearAsync();
-        _league.Publishers[0].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID).Budget;
-        _league.Publishers[1].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID).Budget;
+        _league.CapturePublisherState(postDraftSnapshot);
 
         var p3Publisher = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID);
         var p4Publisher = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[3].PublisherID);
