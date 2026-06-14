@@ -19,10 +19,16 @@ src/FantasyCritic.IntegrationTests/
   Helpers/
     ApiSession.cs                 ← HTTP client wrapper + typed client properties
     AntiForgeryHelper.cs
+    LeagueFixture.cs              ← LeagueFixture + LeagueFixtureBuilder for league scenarios
+    LeagueScenario.cs             ← league configuration presets
   Tests/
     Auth/AuthTests.cs             ← existing example
     Royale/RoyaleTests.cs         ← existing example (typed client pattern)
-    <FeatureArea>/                ← add yours here
+    League/
+      Setup/                      ← league creation + member management
+      Draft/                      ← draft scenarios (LeagueDraftTestBase)
+      Actions/                    ← post-draft bid/drop processing
+    <FeatureArea>/                ← add other areas here
 src/FantasyCritic.ApiClient/
   Generated/FantasyCriticClients.cs  ← NSwag-generated typed clients + DTOs (do not edit)
   nswag.json                     ← NSwag config
@@ -75,6 +81,30 @@ If fixing the annotation would require more than just adding the attribute (rest
 Look at the controller you want to test (e.g. `GameController.cs`), then check the corresponding generated client in `Generated/FantasyCriticClients.cs` for the method names. They follow the pattern `<ActionName>Async(...)`.
 
 ## Step 3 – Create the fixture
+
+For simple API smoke tests, inherit `IntegrationTestBase` directly.
+
+For league scenarios (draft, bids, drops), use `LeagueFixtureBuilder`:
+
+```csharp
+private LeagueFixture _league = null!;
+
+[OneTimeSetUp]
+public async Task SetUp()
+{
+    _league = await LeagueFixtureBuilder.CreateAndStartDraftAsync(
+        Factory, LeagueScenarios.Standard, NewUser);
+    await _league.DraftToCompletionAsync();
+}
+
+[OneTimeTearDown]
+public async Task TearDown() => await _league.DisposeAsync();
+```
+
+Access publishers by draft order: `_league.Publishers[0]` is the manager.
+
+For full-draft completion with shared assertions, inherit `LeagueDraftTestBase`
+in `Tests/League/Draft/` instead.
 
 ```csharp
 using System;

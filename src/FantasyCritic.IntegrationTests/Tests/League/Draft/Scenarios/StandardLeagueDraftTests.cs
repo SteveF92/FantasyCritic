@@ -1,7 +1,7 @@
 using FantasyCritic.IntegrationTests.Helpers;
 using NUnit.Framework;
 
-namespace FantasyCritic.IntegrationTests.Tests.League.Scenarios;
+namespace FantasyCritic.IntegrationTests.Tests.League.Draft.Scenarios;
 
 /// <summary>
 /// Exercises a full draft using the player-side <c>DraftGame</c> endpoint.
