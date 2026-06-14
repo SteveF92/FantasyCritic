@@ -1,5 +1,5 @@
 // auth.js
-import axios from 'axios';
+import { accountClient } from '@/api/clients';
 
 export default {
   state: {
@@ -20,11 +20,11 @@ export default {
     async getUserInfo(context) {
       context.commit('setBusy', true);
       try {
-        const response = await axios.get('/api/account/CurrentUser');
-        if (!response.data.userID) {
+        const userInfo = await accountClient.currentUser();
+        if (!userInfo.userID) {
           context.commit('clearUserInfo');
         } else {
-          context.commit('setUserInfo', response.data);
+          context.commit('setUserInfo', userInfo);
         }
       } catch (error) {
         context.commit('clearUserInfo');

@@ -142,7 +142,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import { gameClient } from '@/api/clients';
+
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
@@ -201,8 +202,7 @@ export default {
   },
   methods: {
     async fetchMyRequests() {
-      const response = await axios.get('/api/game/MyMasterGameRequests');
-      this.myRequests = response.data;
+      this.myRequests = await gameClient.myMasterGameRequests();
     },
     async sendMasterGameRequestRequest() {
       let request = {
@@ -224,7 +224,7 @@ export default {
 
       try {
         this.isBusy = true;
-        await axios.post('/api/game/CreateMasterGameRequest', request);
+        await gameClient.createMasterGameRequest(request);
         this.showSent = true;
         window.scroll({
           top: 0,
@@ -253,7 +253,7 @@ export default {
       let model = {
         requestID: request.requestID
       };
-      await axios.post('/api/game/DeleteMasterGameRequest', model);
+      await gameClient.deleteMasterGameRequest(model);
       this.showDeleted = true;
       await this.fetchMyRequests();
     },
@@ -261,7 +261,7 @@ export default {
       let model = {
         requestID: request.requestID
       };
-      await axios.post('/api/game/DismissMasterGameRequest', model);
+      await gameClient.dismissMasterGameRequest(model);
       await this.fetchMyRequests();
     }
   }

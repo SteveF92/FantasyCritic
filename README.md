@@ -54,9 +54,16 @@ dotnet run --project src/FantasyCritic.Web/FantasyCritic.Web.csproj
 
 The site will be available at `https://localhost:44477` by default.
 
-#### 3. Running the integration tests
+#### 3. Regenerating the API clients
 
-The integration tests (`FantasyCritic.IntegrationTests`) drive the app through a generated typed HTTP client. That client must be regenerated any time the API changes. The generation requires the Web project to have been built first.
+Integration tests and the Vue client both use typed HTTP clients generated from the OpenAPI spec by NSwag. Regenerate them any time the API changes. The Web project must be built first.
+
+Generated output (gitignored — not committed):
+
+- **C#** — `src/FantasyCritic.ApiClient/Generated/FantasyCriticClients.cs` (integration tests)
+- **TypeScript** — `src/FantasyCritic.Web/ClientApp/src/api/generated/FantasyCriticClients.ts` (frontend)
+
+The hand-written wrapper at `ClientApp/src/api/clients.ts` exports ready-to-use client singletons for Vue code.
 
 **First time (or after a `dotnet tool restore` is needed):**
 
@@ -64,19 +71,25 @@ The integration tests (`FantasyCritic.IntegrationTests`) drive the app through a
 dotnet tool restore
 ```
 
-**Regenerate the API client, then run the tests:**
+**Regenerate both clients:**
 
 On Windows (PowerShell):
 ```powershell
 dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
 scripts/Regenerate-ApiClient.ps1
-dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj
 ```
 
 On Linux/macOS:
 ```sh
 dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
 scripts/regenerate-api-client.sh
+```
+
+#### 4. Running the integration tests
+
+After regenerating the C# client:
+
+```sh
 dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj
 ```
 

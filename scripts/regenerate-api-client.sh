@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerates the FantasyCritic.ApiClient from the Web project's OpenAPI metadata.
+# Regenerates the FantasyCritic C# and TypeScript API clients from the Web project's OpenAPI metadata.
 #
 # Usage:
 #   # From repo root:
@@ -25,7 +25,9 @@ fi
 
 NSWAG_VERSION=$(dotnet tool run nswag -- version 2>&1 | head -1)
 echo "NSwag version: $NSWAG_VERSION"
-echo "Output: $CLIENT_DIR/Generated/FantasyCriticClients.cs"
+echo "Output:"
+echo "  $CLIENT_DIR/Generated/FantasyCriticClients.cs"
+echo "  $REPO_ROOT/src/FantasyCritic.Web/ClientApp/src/api/generated/FantasyCriticClients.ts"
 echo ""
 echo "Generating..."
 
