@@ -38,7 +38,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return null;
         }
 
-        var fiveDaysFromReleaseDate = MasterGame.MasterGame.ReleaseDate.Value.Minus(Period.FromDays(RoyaleService.FUTURE_RELEASE_LIMIT_DAYS));
+        var fiveDaysFromReleaseDate = MasterGame.MasterGame.ReleaseDate.Value.Minus(Period.FromDays(RoyaleService.GetFutureReleaseLimitDays(YearQuarter.YearQuarter)));
         var lockDateTime = fiveDaysFromReleaseDate.AtStartOfDayInZone(TimeExtensions.EasternTimeZone);
         return lockDateTime.ToInstant();
     }

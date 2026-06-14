@@ -12,7 +12,7 @@ public class RoyaleService
     private readonly IClock _clock;
     private readonly IMasterGameRepo _masterGameRepo;
 
-    public const int FUTURE_RELEASE_LIMIT_DAYS = 5;
+    //public const int FUTURE_RELEASE_LIMIT_DAYS = 5;
     public const int POST_QUARTER_GRACE_DAYS = 7;
 
     public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
@@ -20,6 +20,17 @@ public class RoyaleService
         _royaleRepo = royaleRepo;
         _clock = clock;
         _masterGameRepo = masterGameRepo;
+    }
+
+    public static int GetFutureReleaseLimitDays(YearQuarter yearQuarter)
+    {
+        //This can go back to a constant once Q2 is fully over.
+        if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(yearQuarter))
+        {
+            return 5;
+        }
+
+        return 7;
     }
 
     public Task<IReadOnlyList<RoyaleYearQuarter>> GetYearQuarters()
@@ -132,10 +143,10 @@ public class RoyaleService
             return RoyalePurchaseGameValidation.Invalid("At least one bidding cycle must complete before this game is eligible in Royale.");
         }
 
-        var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+        var fiveDaysFuture = currentDate.PlusDays(GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter));
         if (masterGame.MasterGame.IsReleased(fiveDaysFuture))
         {
-            return RoyalePurchaseGameValidation.Invalid($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+            return RoyalePurchaseGameValidation.Invalid($"Game will release within {GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter)} days.");
         }
 
         if (masterGame.MasterGame.CriticScore.HasValue)
@@ -195,10 +206,10 @@ public class RoyaleService
                 return Result.Failure("That game has already been released.");
             }
 
-            var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+            var fiveDaysFuture = currentDate.PlusDays(GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter));
             if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
             {
-                return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+                return Result.Failure($"Game will release within {GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter)} days.");
             }
 
             if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
@@ -244,10 +255,10 @@ public class RoyaleService
             return Result.Failure("That game has already been released.");
         }
 
-        var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
+        var fiveDaysFuture = currentDate.PlusDays(GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter));
         if (publisherGame.MasterGame.MasterGame.IsReleased(fiveDaysFuture))
         {
-            return Result.Failure($"Game will release within {FUTURE_RELEASE_LIMIT_DAYS} days.");
+            return Result.Failure($"Game will release within {GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter)} days.");
         }
 
         if (publisherGame.MasterGame.MasterGame.CriticScore.HasValue)
