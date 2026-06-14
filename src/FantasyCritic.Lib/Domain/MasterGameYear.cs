@@ -127,12 +127,19 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(yearQuarter))
         {
             projectedPoints *= 1.5m;
+            if (projectedPoints < 2m)
+            {
+                projectedPoints = 2m;
+            }
         }
-        if (projectedPoints < 2m)
+        else
         {
-            projectedPoints = 2m;
+            if (projectedPoints < 3m)
+            {
+                projectedPoints = 3m;
+            }
         }
-
+  
         return projectedPoints;
     }
 
