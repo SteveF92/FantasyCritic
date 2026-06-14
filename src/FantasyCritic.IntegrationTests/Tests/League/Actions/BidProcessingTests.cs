@@ -209,7 +209,7 @@ public class BidProcessingTests : IntegrationTestBase
     [Test]
     public void Bid_Tiebreaker_Loser_BudgetUnchanged()
     {
-        var loserBudgetStart = _tiebreakerLoserID == _league.Publishers[2].PublisherID ? _league.Publishers[3].StartingBudget : _league.Publishers[4].StartingBudget;
+        var loserBudgetStart = _tiebreakerLoserID == _league.Publishers[2].PublisherID ? _league.Publishers[2].StartingBudget : _league.Publishers[3].StartingBudget;
         var loser = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _tiebreakerLoserID);
         Assert.That(loser.Budget, Is.EqualTo(loserBudgetStart),
             "Tiebreaker loser's budget should be unchanged (losing bids are not charged).");
