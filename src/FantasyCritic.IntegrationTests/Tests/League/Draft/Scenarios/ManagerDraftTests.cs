@@ -1,19 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
-using FantasyCritic.IntegrationTests.Tests.League;
 using NUnit.Framework;
 
-namespace FantasyCritic.IntegrationTests.Tests.LeagueManager;
+namespace FantasyCritic.IntegrationTests.Tests.League.Draft.Scenarios;
 
 /// <summary>
 /// Exercises a full draft using the manager-side <c>ManagerDraftGame</c> endpoint.
 /// Inherits all shared post-draft assertions from <see cref="LeagueDraftTestBase"/>.
 /// Uses the same <see cref="LeagueScenarios.Standard"/> scenario as
-/// <see cref="Scenarios.StandardLeagueDraftTests"/> so both endpoints are verified to
+/// <see cref="StandardLeagueDraftTests"/> so both endpoints are verified to
 /// produce the same outcome.
 /// </summary>
 [TestFixture]
@@ -21,19 +19,11 @@ public class ManagerDraftTests : LeagueDraftTestBase
 {
     protected override LeagueScenario Scenario => LeagueScenarios.Standard;
 
-    /// <summary>
-    /// Overrides the default player-side draft with manager-controlled picks
-    /// using <c>ManagerDraftGame</c>. The manager session polls league-year state
-    /// and makes every pick on behalf of whoever is next.
-    /// </summary>
-    protected override async Task SimulateDraftAsync(
-        IReadOnlyDictionary<Guid, ApiSession> publisherSessionMap,
-        Guid leagueID,
-        int year)
+    protected override async Task SimulateDraftAsync()
     {
         while (true)
         {
-            var leagueYear = await ManagerSession.League.GetLeagueYearAsync(leagueID, year, null);
+            var leagueYear = await League.GetLeagueYearAsync();
 
             if (leagueYear.PlayStatus.DraftFinished)
                 return;
@@ -44,14 +34,14 @@ public class ManagerDraftTests : LeagueDraftTestBase
 
             if (leagueYear.PlayStatus.DraftingCounterPicks)
             {
-                var options = await ManagerSession.League.PossibleCounterPicksAsync(
+                var options = await League.Manager.League.PossibleCounterPicksAsync(
                     nextPublisher.PublisherID);
 
                 var pick = options.FirstOrDefault()
                     ?? throw new InvalidOperationException(
                         $"PossibleCounterPicks returned no options for publisher {nextPublisher.PublisherID}.");
 
-                var result = await ManagerSession.LeagueManager.ManagerDraftGameAsync(
+                var result = await League.Manager.LeagueManager.ManagerDraftGameAsync(
                     new ManagerDraftGameRequest
                     {
                         PublisherID = nextPublisher.PublisherID,
@@ -69,14 +59,14 @@ public class ManagerDraftTests : LeagueDraftTestBase
             }
             else
             {
-                var available = await ManagerSession.League.TopAvailableGamesAsync(
-                    year, leagueID, nextPublisher.PublisherID, slotInfo: null);
+                var available = await League.Manager.League.TopAvailableGamesAsync(
+                    League.Year, League.LeagueID, nextPublisher.PublisherID, slotInfo: null);
 
                 var game = available.FirstOrDefault(g => g.IsAvailable && !g.Taken)
                     ?? throw new InvalidOperationException(
                         $"TopAvailableGames returned no available games for publisher {nextPublisher.PublisherID}.");
 
-                var result = await ManagerSession.LeagueManager.ManagerDraftGameAsync(
+                var result = await League.Manager.LeagueManager.ManagerDraftGameAsync(
                     new ManagerDraftGameRequest
                     {
                         PublisherID = nextPublisher.PublisherID,

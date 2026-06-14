@@ -3,15 +3,11 @@ using System.Threading.Tasks;
 using FantasyCritic.IntegrationTests.Helpers;
 using NUnit.Framework;
 
-namespace FantasyCritic.IntegrationTests.Tests.League;
+namespace FantasyCritic.IntegrationTests.Tests.League.Setup;
 
 [TestFixture]
 public class LeagueSetupTests : IntegrationTestBase
 {
-    // ---------------------------------------------------------------------------
-    // LeagueOptions (no auth required)
-    // ---------------------------------------------------------------------------
-
     [Test]
     public async Task LeagueOptions_ReturnsAtLeastOneOpenYear()
     {
@@ -31,10 +27,6 @@ public class LeagueSetupTests : IntegrationTestBase
         Assert.That(options.DraftSystems, Contains.Item("Flexible"),
             "DraftSystems must include 'Flexible'.");
     }
-
-    // ---------------------------------------------------------------------------
-    // CreateLeague
-    // ---------------------------------------------------------------------------
 
     [Test]
     public async Task CreateLeague_WithValidSettings_ReturnsNonEmptyGuid()

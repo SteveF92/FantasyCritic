@@ -29,29 +29,37 @@ internal class MockedLivePlayer
 
     /// <summary>
     /// Picks the first available, un-taken eligible game from TopAvailableGames.
+    /// Iterates past any games the server rejects (e.g. games that gained a score
+    /// from a prior test run and persist in the DB).
     /// </summary>
     public virtual async Task DraftStandardGameAsync(int year)
     {
         var available = await _session.League.TopAvailableGamesAsync(
             year, LeagueID, PublisherID, slotInfo: null);
 
-        var pick = available.FirstOrDefault(g => g.IsAvailable && !g.Taken)
-            ?? throw new InvalidOperationException(
+        var candidates = available.Where(g => g.IsAvailable && !g.Taken).ToList();
+        if (candidates.Count == 0)
+            throw new InvalidOperationException(
                 $"TopAvailableGames returned no available games for publisher {PublisherID}.");
 
-        var result = await _session.League.DraftGameAsync(new DraftGameRequest
+        foreach (var pick in candidates)
         {
-            PublisherID = PublisherID,
-            MasterGameID = pick.MasterGame.MasterGameID,
-            GameName = pick.MasterGame.GameName,
-            CounterPick = false,
-            AllowIneligibleSlot = false,
-        });
+            var result = await _session.League.DraftGameAsync(new DraftGameRequest
+            {
+                PublisherID = PublisherID,
+                MasterGameID = pick.MasterGame.MasterGameID,
+                GameName = pick.MasterGame.GameName,
+                CounterPick = false,
+                AllowIneligibleSlot = false,
+            });
 
-        if (!result.Success)
-            throw new InvalidOperationException(
-                $"DraftGame (standard) failed for publisher {PublisherID}: "
-                + string.Join("; ", result.Errors));
+            if (result.Success)
+                return;
+        }
+
+        throw new InvalidOperationException(
+            $"DraftGame (standard) failed for publisher {PublisherID}: "
+            + "no candidate from TopAvailableGames could be successfully drafted.");
     }
 
     /// <summary>
@@ -132,6 +140,32 @@ internal sealed class DraftSimulator
                 await player.DraftCounterPickAsync(year);
             else
                 await player.DraftStandardGameAsync(year);
+        }
+    }
+
+    /// <summary>
+    /// Runs exactly <paramref name="count"/> standard-game picks, then returns.
+    /// </summary>
+    public async Task RunStandardPickCountAsync(Guid leagueID, int year, int count)
+    {
+        for (var pick = 0; pick < count; pick++)
+        {
+            var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
+
+            if (leagueYear.PlayStatus.DraftFinished || leagueYear.PlayStatus.DraftingCounterPicks)
+                throw new InvalidOperationException(
+                    $"Cannot run standard pick {pick + 1} of {count}: draft is finished or in counter-pick phase.");
+
+            var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
+                ?? throw new InvalidOperationException(
+                    "Draft is active but no publisher has NextToDraft = true.");
+
+            if (!_players.TryGetValue(nextPublisher.PublisherID, out var player))
+                throw new InvalidOperationException(
+                    $"No MockedLivePlayer registered for publisher {nextPublisher.PublisherID} "
+                    + $"({nextPublisher.PublisherName}).");
+
+            await player.DraftStandardGameAsync(year);
         }
     }
 

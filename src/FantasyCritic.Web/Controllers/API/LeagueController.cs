@@ -374,6 +374,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType<List<LeagueActionProcessingSetViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

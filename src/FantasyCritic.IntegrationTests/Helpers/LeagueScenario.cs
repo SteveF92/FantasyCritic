@@ -213,4 +213,38 @@ public static class LeagueScenarios
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
     };
+
+    /// <summary>
+    /// A 4-player league configured for eligibility-change tests: 6 standard slots
+    /// (3 drafted, 3 open for bids) and 2 counter-pick slots (1 drafted, 1 open for
+    /// counter-pick bids). Each player gets 2 will-release drop allowances so that
+    /// P3 can successfully complete both a standalone drop and a conditional-drop bid
+    /// in the same processing run.
+    /// CounterPicksBlockDrops is false so that all drafted standard games are
+    /// droppable regardless of which games other players chose as counter-picks.
+    /// </summary>
+    public static readonly LeagueScenario FourPlayerEligibilityChange = new()
+    {
+        Name = "FourPlayerEligibilityChange",
+        PlayerCount = 4,
+        StandardGames = 6,
+        GamesToDraft = 3,
+        CounterPicks = 2,
+        CounterPicksToDraft = 1,
+        DraftSystem = "Flexible",
+        PickupSystem = "SemiPublicBiddingSecretCounterPicks",
+        ScoringSystem = "LinearPositive",
+        TradingSystem = "Standard",
+        TiebreakSystem = "LowestProjectedPoints",
+        ReleaseSystem = "OnlyNeedsScore",
+        IneligibleGameSystem = "DroppableAsWillNotRelease",
+        UnrestrictedReleaseStatusDroppableGames = 0,
+        WillNotReleaseDroppableGames = 0,
+        WillReleaseDroppableGames = 2,
+        DropOnlyDraftGames = true,
+        GrantSuperDrops = false,
+        CounterPicksBlockDrops = false,
+        AllowMoveIntoIneligible = false,
+        MinimumBidAmount = 0,
+    };
 }
