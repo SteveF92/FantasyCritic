@@ -29,14 +29,6 @@ public class DropProcessingTests : IntegrationTestBase
     private LeagueFixture _league = null!;
     private DropTargets _targets = null!;
 
-    private int _p1StartBudget;
-    private int _p2StartBudget;
-    private int _p3StartBudget;
-
-    private int _p1WillReleaseDroppedBefore;
-    private int _p2WillReleaseDroppedBefore;
-    private int _p3WillReleaseDroppedBefore;
-
     private LeagueYearViewModel _postProcessingSnapshot = null!;
 
     [OneTimeSetUp]
@@ -59,13 +51,12 @@ public class DropProcessingTests : IntegrationTestBase
         var p2 = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID);
         var p3 = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID);
 
-        _p1StartBudget = p1.Budget;
-        _p2StartBudget = p2.Budget;
-        _p3StartBudget = p3.Budget;
-
-        _p1WillReleaseDroppedBefore = p1.WillReleaseGamesDropped;
-        _p2WillReleaseDroppedBefore = p2.WillReleaseGamesDropped;
-        _p3WillReleaseDroppedBefore = p3.WillReleaseGamesDropped;
+        _league.Publishers[0].StartingBudget = p1.Budget;
+        _league.Publishers[1].StartingBudget = p2.Budget;
+        _league.Publishers[2].StartingBudget = p3.Budget;
+        _league.Publishers[0].WillReleaseDroppableBefore = p1.WillReleaseGamesDropped;
+        _league.Publishers[1].WillReleaseDroppableBefore = p2.WillReleaseGamesDropped;
+        _league.Publishers[2].WillReleaseDroppableBefore = p3.WillReleaseGamesDropped;
 
         var p1DropGame = FindDroppableDraftedGame(p1);
         var p2DropGame = FindDroppableDraftedGame(p2);
@@ -218,7 +209,7 @@ public class DropProcessingTests : IntegrationTestBase
         var p1 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID);
         Assert.That(
             p1.WillReleaseGamesDropped,
-            Is.EqualTo(_p1WillReleaseDroppedBefore + 1),
+            Is.EqualTo(_league.Publishers[0].WillReleaseDroppableBefore + 1),
             "P1 should consume one will-release drop allowance.");
     }
 
@@ -246,7 +237,7 @@ public class DropProcessingTests : IntegrationTestBase
     public void DropAndBid_P2_BudgetDeductedBy10()
     {
         var p2 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID);
-        Assert.That(p2.Budget, Is.EqualTo(_p2StartBudget - 10),
+        Assert.That(p2.Budget, Is.EqualTo(_league.Publishers[1].StartingBudget - 10),
             "P2's budget should be reduced by the uncontested bid amount.");
     }
 
@@ -284,7 +275,7 @@ public class DropProcessingTests : IntegrationTestBase
     public void ConditionalDrop_P3_BudgetDeductedBy15()
     {
         var p3 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID);
-        Assert.That(p3.Budget, Is.EqualTo(_p3StartBudget - 15),
+        Assert.That(p3.Budget, Is.EqualTo(_league.Publishers[2].StartingBudget - 15),
             "P3's budget should be reduced by the conditional-drop bid amount.");
     }
 
@@ -294,7 +285,7 @@ public class DropProcessingTests : IntegrationTestBase
         var p3 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID);
         Assert.That(
             p3.WillReleaseGamesDropped,
-            Is.EqualTo(_p3WillReleaseDroppedBefore + 1),
+            Is.EqualTo(_league.Publishers[2].WillReleaseDroppableBefore + 1),
             "P3 should consume one will-release drop allowance via conditional drop.");
     }
 
@@ -304,7 +295,7 @@ public class DropProcessingTests : IntegrationTestBase
         var p2 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID);
         Assert.That(
             p2.WillReleaseGamesDropped,
-            Is.EqualTo(_p2WillReleaseDroppedBefore + 1),
+            Is.EqualTo(_league.Publishers[1].WillReleaseDroppableBefore + 1),
             "P2 should consume one will-release drop allowance for the explicit drop.");
     }
 }

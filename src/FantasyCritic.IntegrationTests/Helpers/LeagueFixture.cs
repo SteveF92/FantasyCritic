@@ -7,16 +7,6 @@ using FantasyCritic.ApiClient;
 namespace FantasyCritic.IntegrationTests.Helpers;
 
 /// <summary>
-/// A test-harness binding between an authenticated session and a publisher in draft order.
-/// Not the domain roster-slot type.
-/// </summary>
-public sealed record TestPublisher(
-    int DraftPosition,
-    ApiSession Session,
-    Guid PublisherID,
-    string PublisherName);
-
-/// <summary>
 /// Immutable league state for integration test scenarios. Owns all <see cref="ApiSession"/>
 /// instances it created; call <see cref="DisposeAsync"/> when the fixture is done.
 /// </summary>
