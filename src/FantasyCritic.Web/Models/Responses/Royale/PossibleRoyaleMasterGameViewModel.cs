@@ -8,9 +8,9 @@ public class PossibleRoyaleMasterGameViewModel
 {
     private readonly RoyalePurchaseGameValidation _purchaseValidation;
 
-    public PossibleRoyaleMasterGameViewModel(MasterGameYear masterGame, LocalDate currentDate, RoyalePublisher publisher, IEnumerable<MasterGameTag> masterGameTags)
+    public PossibleRoyaleMasterGameViewModel(MasterGameYear masterGame, LocalDate currentDate, RoyalePublisher publisher, IEnumerable<MasterGameTag> masterGameTags, IClock clock)
     {
-        _purchaseValidation = RoyaleService.ValidatePurchaseGame(publisher, masterGame, masterGameTags, currentDate);
+        _purchaseValidation = RoyaleService.ValidatePurchaseGame(publisher, masterGame, masterGameTags, currentDate, clock);
         MasterGame = new MasterGameYearViewModel(masterGame, currentDate);
         WillReleaseInQuarter = masterGame.CouldReleaseInQuarter(publisher.YearQuarter.YearQuarter);
         AlreadyOwned = publisher.PublisherGames.Any(y => y.MasterGame.MasterGame.Equals(masterGame.MasterGame));

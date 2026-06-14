@@ -4,7 +4,6 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
-using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Models.Requests.Royale;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.Royale;
@@ -482,7 +481,7 @@ public class RoyaleController : FantasyCriticController
         }
         
         var viewModels = masterGameYears.Select(masterGame =>
-            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher, masterGameTags)).ToList();
+            new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher, masterGameTags, _clock)).ToList();
         return viewModels;
     }
 

@@ -184,11 +184,12 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return null;
         }
 
-        var advertisingBudgetMultiplier = 0.1m;
-        if (!SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
+        var advertisingBudgetMultiplier = 0.05m;
+        if (RoyaleYearQuarter.YearQuarter2026Q1AndQ2FeatureSupported(YearQuarter.YearQuarter))
         {
-            advertisingBudgetMultiplier = 0.05m;
+            advertisingBudgetMultiplier = 0.1m;
         }
+
         var extraPoints = basePoints * AdvertisingMoney * advertisingBudgetMultiplier;
         var modifiedPoints = basePoints + extraPoints;
 
