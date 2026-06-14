@@ -25,11 +25,6 @@ public class BidProcessingTests : IntegrationTestBase
     private LeagueFixture _league = null!;
     private BidTargets _targets = null!;
 
-    private int _p1StartBudget;
-    private int _p2StartBudget;
-    private int _p3StartBudget;
-    private int _p4StartBudget;
-
     private LeagueYearViewModel _postProcessingSnapshot = null!;
     private Guid _tiebreakerWinnerID;
     private Guid _tiebreakerLoserID;
@@ -50,10 +45,10 @@ public class BidProcessingTests : IntegrationTestBase
         await _league.DraftToCompletionAsync();
 
         var postDraftSnapshot = await _league.GetLeagueYearAsync();
-        _p1StartBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID).Budget;
-        _p2StartBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID).Budget;
-        _p3StartBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID).Budget;
-        _p4StartBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[3].PublisherID).Budget;
+        _league.Publishers[0].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID).Budget;
+        _league.Publishers[1].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID).Budget;
+        _league.Publishers[2].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID).Budget;
+        _league.Publishers[3].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[3].PublisherID).Budget;
 
         var p1Available = await _league.Publishers[0].Session.League.TopAvailableGamesAsync(
             _league.Year, _league.LeagueID, _league.Publishers[0].PublisherID, null);
@@ -155,7 +150,7 @@ public class BidProcessingTests : IntegrationTestBase
     public void Bid_Uncontested_P1_BudgetDeductedBy10()
     {
         var p1 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID);
-        Assert.That(p1.Budget, Is.EqualTo(_p1StartBudget - 10),
+        Assert.That(p1.Budget, Is.EqualTo(_league.Publishers[0].StartingBudget - 10),
             "P1's budget should be reduced by $10 (uncontested bid amount).");
     }
 
@@ -171,7 +166,7 @@ public class BidProcessingTests : IntegrationTestBase
     public void Bid_Contested_P2_BudgetDeductedBy25()
     {
         var p2 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID);
-        Assert.That(p2.Budget, Is.EqualTo(_p2StartBudget - 25),
+        Assert.That(p2.Budget, Is.EqualTo(_league.Publishers[1].StartingBudget - 25),
             "P2's budget should be reduced by $25 ($20 for Game B + $5 for counter-pick).");
     }
 
@@ -205,7 +200,7 @@ public class BidProcessingTests : IntegrationTestBase
     [Test]
     public void Bid_Tiebreaker_Winner_BudgetDeductedBy15()
     {
-        var winnerBudgetStart = _tiebreakerWinnerID == _league.Publishers[2].PublisherID ? _p3StartBudget : _p4StartBudget;
+        var winnerBudgetStart = _tiebreakerWinnerID == _league.Publishers[2].PublisherID ? _league.Publishers[2].StartingBudget : _league.Publishers[3].StartingBudget;
         var winner = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _tiebreakerWinnerID);
         Assert.That(winner.Budget, Is.EqualTo(winnerBudgetStart - 15),
             "Tiebreaker winner's budget should be reduced by $15.");
@@ -214,7 +209,7 @@ public class BidProcessingTests : IntegrationTestBase
     [Test]
     public void Bid_Tiebreaker_Loser_BudgetUnchanged()
     {
-        var loserBudgetStart = _tiebreakerLoserID == _league.Publishers[2].PublisherID ? _p3StartBudget : _p4StartBudget;
+        var loserBudgetStart = _tiebreakerLoserID == _league.Publishers[2].PublisherID ? _league.Publishers[3].StartingBudget : _league.Publishers[4].StartingBudget;
         var loser = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _tiebreakerLoserID);
         Assert.That(loser.Budget, Is.EqualTo(loserBudgetStart),
             "Tiebreaker loser's budget should be unchanged (losing bids are not charged).");

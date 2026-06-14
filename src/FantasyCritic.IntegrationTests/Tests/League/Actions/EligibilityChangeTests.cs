@@ -35,9 +35,6 @@ public class EligibilityChangeTests : IntegrationTestBase
     private LeagueFixture _league = null!;
     private EligibilityTargets _targets = null!;
 
-    private int _p1StartBudget;
-    private int _p2StartBudget;
-
     private LeagueYearViewModel _postProcessingSnapshot = null!;
     private LeagueActionProcessingSetViewModel _actionSet = null!;
 
@@ -57,8 +54,8 @@ public class EligibilityChangeTests : IntegrationTestBase
         await _league.DraftToCompletionAsync();
 
         var postDraftSnapshot = await _league.GetLeagueYearAsync();
-        _p1StartBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID).Budget;
-        _p2StartBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID).Budget;
+        _league.Publishers[0].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID).Budget;
+        _league.Publishers[1].StartingBudget = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID).Budget;
 
         var p3Publisher = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[2].PublisherID);
         var p4Publisher = postDraftSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[3].PublisherID);
@@ -328,7 +325,7 @@ public class EligibilityChangeTests : IntegrationTestBase
     public void Bid_EligibleGame_BudgetDeducted()
     {
         var p1 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID);
-        Assert.That(p1.Budget, Is.EqualTo(_p1StartBudget - 10),
+        Assert.That(p1.Budget, Is.EqualTo(_league.Publishers[0].StartingBudget - 10),
             "P1's budget should be reduced by $10.");
     }
 
@@ -346,7 +343,7 @@ public class EligibilityChangeTests : IntegrationTestBase
     public void Bid_ScoredGame_Fails_BudgetUnchanged()
     {
         var p2 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID);
-        Assert.That(p2.Budget, Is.EqualTo(_p2StartBudget),
+        Assert.That(p2.Budget, Is.EqualTo(_league.Publishers[1].StartingBudget),
             "P2's budget should be unchanged — all P2 bids failed.");
     }
 
