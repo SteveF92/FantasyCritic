@@ -215,7 +215,7 @@ public class RoyaleService
         if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(publisher.YearQuarter.YearQuarter))
         {
             var marketCost = publisherGame.MasterGame.GetRoyaleGameCost(publisher.YearQuarter.YearQuarter);
-            var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags);
+            var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags, _clock);
 
             var now = _clock.GetCurrentInstant();
             RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
@@ -225,7 +225,7 @@ public class RoyaleService
         }
         else
         {
-            var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags);
+            var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags, _clock);
 
             var now = _clock.GetCurrentInstant();
             RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,

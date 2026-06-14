@@ -43,8 +43,18 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
         return lockDateTime.ToInstant();
     }
 
-    public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags)
+    public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags, IClock clock)
     {
+        if (RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
+        {
+            var currentInstant = clock.GetCurrentInstant();
+            var timeSincePurchase = currentInstant - Timestamp;
+            if (timeSincePurchase < Duration.FromMinutes(10))
+            {
+                return AmountSpent;
+            }
+        }
+
         var currentlyIneligible = CalculateIsCurrentlyIneligible(masterGameTags);
 
         decimal baseRefund;

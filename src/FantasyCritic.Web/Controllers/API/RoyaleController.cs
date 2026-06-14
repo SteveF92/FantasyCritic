@@ -212,7 +212,7 @@ public class RoyaleController : FantasyCriticController
             thisPlayerIsViewing = currentUserResult.Value.Id == publisher.User.UserID;
         }
 
-        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, quartersWon, publisherData.RoyaleActions, publisherData.Statistics, masterGameTags, thisPlayerIsViewing);
+        var viewModel = new RoyalePublisherViewModel(publisher, currentDate, quartersWon, publisherData.RoyaleActions, publisherData.Statistics, masterGameTags, thisPlayerIsViewing, _clock);
         return viewModel;
     }
 
@@ -265,7 +265,7 @@ public class RoyaleController : FantasyCriticController
                     validStatistics = false;
                     continue;
                 }
-                var topPublisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, winningQuarters, [], statistics, [], false);
+                var topPublisherViewModel = new RoyalePublisherViewModel(publisher, currentDate, winningQuarters, [], statistics, [], false, _clock);
                 topPublishers.Add(topPublisherViewModel);
             }
         }

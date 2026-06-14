@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 
 public class RoyalePublisherGameViewModel
 {
-    public RoyalePublisherGameViewModel(RoyalePublisherGame domain, RoyaleYearQuarter yearQuarter, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing)
+    public RoyalePublisherGameViewModel(RoyalePublisherGame domain, RoyaleYearQuarter yearQuarter, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing, IClock clock)
     {
         PublisherID = domain.PublisherID;
         Locked = domain.IsLocked(currentDate, allMasterGameTags);
@@ -17,7 +17,7 @@ public class RoyalePublisherGameViewModel
         {
             MasterGame = new MasterGameYearViewModel(domain.MasterGame, currentDate);
             AmountSpent = domain.AmountSpent;
-            RefundAmount = domain.CalculateRefundAmount(allMasterGameTags);
+            RefundAmount = domain.CalculateRefundAmount(allMasterGameTags, clock);
             LockDateTime = domain.GetLockDateTime();
         }
     }
