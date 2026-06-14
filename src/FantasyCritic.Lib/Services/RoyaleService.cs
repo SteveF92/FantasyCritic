@@ -105,7 +105,7 @@ public class RoyaleService
     }
 
     public static RoyalePurchaseGameValidation ValidatePurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame,
-        IEnumerable<MasterGameTag> masterGameTags, LocalDate currentDate)
+        IEnumerable<MasterGameTag> masterGameTags, LocalDate currentDate, IClock clock)
     {
         if (publisher.PublisherGames.Count >= GetMaxGames(publisher.YearQuarter))
         {
@@ -125,6 +125,11 @@ public class RoyaleService
         if (masterGame.MasterGame.IsReleased(currentDate))
         {
             return RoyalePurchaseGameValidation.Invalid("Game has been released.");
+        }
+
+        if (masterGame.MasterGame.AddedTimestamp > clock.GetPreviousBidTime())
+        {
+            return RoyalePurchaseGameValidation.Invalid("At least one bidding cycle must complete before this game is eligible in Royale.");
         }
 
         var fiveDaysFuture = currentDate.PlusDays(FUTURE_RELEASE_LIMIT_DAYS);
@@ -164,7 +169,7 @@ public class RoyaleService
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
-        var validation = ValidatePurchaseGame(publisher, masterGame, masterGameTags, currentDate);
+        var validation = ValidatePurchaseGame(publisher, masterGame, masterGameTags, currentDate, _clock);
         if (!validation.CanPurchase)
         {
             return new ClaimResult(validation.BlockingReason!);

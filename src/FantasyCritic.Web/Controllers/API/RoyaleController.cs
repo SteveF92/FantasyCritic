@@ -1,16 +1,17 @@
+using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
+using FantasyCritic.Web.Helpers;
+using FantasyCritic.Web.Models.Requests.Royale;
+using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Models.Responses.Royale;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Royale;
-using FantasyCritic.Lib.Utilities;
-using FantasyCritic.Web.Models.Requests.Royale;
-using FantasyCritic.Web.Models.Responses;
-using FantasyCritic.Web.Models.Responses.Royale;
-using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -289,6 +290,12 @@ public class RoyaleController : FantasyCriticController
     {
         var currentUser = await GetCurrentUserOrThrow();
 
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (systemWideSettings.ActionProcessingMode)
+        {
+            return BadRequest("Site is in read-only mode while actions process.");
+        }
+
         RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
         if (publisher is null)
         {
@@ -332,6 +339,12 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> SellGame([FromBody] SellRoyaleGameRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
+
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (systemWideSettings.ActionProcessingMode)
+        {
+            return BadRequest("Site is in read-only mode while actions process.");
+        }
 
         RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
         if (publisher is null)
@@ -380,6 +393,12 @@ public class RoyaleController : FantasyCriticController
     public async Task<IActionResult> SetAdvertisingMoney([FromBody] SetAdvertisingMoneyRequest request)
     {
         var currentUser = await GetCurrentUserOrThrow();
+
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (systemWideSettings.ActionProcessingMode)
+        {
+            return BadRequest("Site is in read-only mode while actions process.");
+        }
 
         RoyalePublisher? publisher = await _royaleService.GetPublisher(request.PublisherID);
         if (publisher is null)
