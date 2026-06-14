@@ -155,7 +155,7 @@ public class RoyaleService
         }
 
         var currentBudget = publisher.Budget;
-        var gameCost = masterGame.GetRoyaleGameCost();
+        var gameCost = masterGame.GetRoyaleGameCost(publisher.YearQuarter.YearQuarter);
         if (currentBudget < gameCost)
         {
             return RoyalePurchaseGameValidation.Invalid("Not enough budget.");
@@ -175,7 +175,7 @@ public class RoyaleService
             return new ClaimResult(validation.BlockingReason!);
         }
 
-        var gameCost = masterGame.GetRoyaleGameCost();
+        var gameCost = masterGame.GetRoyaleGameCost(publisher.YearQuarter.YearQuarter);
         RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
         RoyaleAction action = new RoyaleAction(publisher, masterGame, "Purchased Game", $"Purchased '{masterGame.MasterGame.GameName}' at a cost of ${gameCost:F2}.", now);
         await _royaleRepo.PurchaseGame(game, action);
@@ -214,7 +214,7 @@ public class RoyaleService
 
         if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(publisher.YearQuarter.YearQuarter))
         {
-            var marketCost = publisherGame.MasterGame.GetRoyaleGameCost();
+            var marketCost = publisherGame.MasterGame.GetRoyaleGameCost(publisher.YearQuarter.YearQuarter);
             var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags);
 
             var now = _clock.GetCurrentInstant();

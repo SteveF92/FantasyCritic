@@ -50,7 +50,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
         decimal baseRefund;
         if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
         {
-            baseRefund = MasterGame.GetRoyaleGameCost();
+            baseRefund = MasterGame.GetRoyaleGameCost(YearQuarter.YearQuarter);
         }
         else
         {

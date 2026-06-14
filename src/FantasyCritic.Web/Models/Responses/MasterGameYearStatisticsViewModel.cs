@@ -1,10 +1,11 @@
 using FantasyCritic.Lib.Domain.ScoringSystems;
+using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.Web.Models.Responses;
 
 public class MasterGameYearStatisticsViewModel
 {
-    public MasterGameYearStatisticsViewModel(MasterGameYearStatistics domain, int year)
+    public MasterGameYearStatisticsViewModel(MasterGameYearStatistics domain, int year, RoyaleYearQuarter activeRoyaleYearQuarter)
     {
         Date = domain.Date;
         PercentStandardGame = domain.PercentStandardGame;
@@ -21,7 +22,7 @@ public class MasterGameYearStatisticsViewModel
         PeakHypeFactor = domain.PeakHypeFactor;
         LinearRegressionHypeFactor = domain.LinearRegressionHypeFactor;
         ProjectedFantasyPoints = ScoringSystem.GetDefaultScoringSystem(year).GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), false);
-        RoyaleCost = MasterGameYear.GetRoyaleGameCostFromValues(year, LinearRegressionHypeFactor);
+        RoyaleCost = MasterGameYear.GetRoyaleGameCostFromValues(activeRoyaleYearQuarter.YearQuarter, LinearRegressionHypeFactor);
     }
 
     public LocalDate Date { get; }

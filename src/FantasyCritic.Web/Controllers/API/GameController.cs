@@ -17,15 +17,17 @@ public class GameController : FantasyCriticController
     private readonly InterLeagueService _interLeagueService;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly GameSearchingService _gameSearchingService;
+    private readonly RoyaleService _royaleService;
     private readonly IClock _clock;
 
     public GameController(FantasyCriticUserManager userManager, InterLeagueService interLeagueService,
-        FantasyCriticService fantasyCriticService, GameSearchingService gameSearchingService, IClock clock)
+        FantasyCriticService fantasyCriticService, GameSearchingService gameSearchingService, RoyaleService royaleService, IClock clock)
         : base(userManager)
     {
         _interLeagueService = interLeagueService;
         _fantasyCriticService = fantasyCriticService;
         _gameSearchingService = gameSearchingService;
+        _royaleService = royaleService;
         _clock = clock;
     }
 
@@ -93,7 +95,8 @@ public class GameController : FantasyCriticController
         }
 
         var currentDate = _clock.GetToday();
-        var viewModel = new MasterGameYearWithStatisticsViewModel(masterGameYearWithStatistics.MasterGameYear, masterGameYearWithStatistics.Statistics, currentDate);
+        var activeRoyaleYearQuarter = await _royaleService.GetActiveYearQuarter();
+        var viewModel = new MasterGameYearWithStatisticsViewModel(masterGameYearWithStatistics.MasterGameYear, masterGameYearWithStatistics.Statistics, currentDate, activeRoyaleYearQuarter);
         return viewModel;
     }
 

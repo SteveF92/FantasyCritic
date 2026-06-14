@@ -116,15 +116,18 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return scoringSystem.GetPointsForScore(Convert.ToDecimal(LinearRegressionHypeFactor), counterPick);
     }
 
-    public decimal GetRoyaleGameCost()
+    public decimal GetRoyaleGameCost(YearQuarter yearQuarter)
     {
-        return GetRoyaleGameCostFromValues(Year, LinearRegressionHypeFactor);
+        return GetRoyaleGameCostFromValues(yearQuarter, LinearRegressionHypeFactor);
     }
 
-    public static decimal GetRoyaleGameCostFromValues(int year, double linearRegressionHypeFactor)
+    public static decimal GetRoyaleGameCostFromValues(YearQuarter yearQuarter, double linearRegressionHypeFactor)
     {
-        decimal projectedPoints = ScoringSystem.GetDefaultScoringSystem(year).GetPointsForScore(Convert.ToDecimal(linearRegressionHypeFactor), false);
-        projectedPoints *= 1.5m;
+        decimal projectedPoints = ScoringSystem.GetDefaultScoringSystem(yearQuarter.Year).GetPointsForScore(Convert.ToDecimal(linearRegressionHypeFactor), false);
+        if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(yearQuarter))
+        {
+            projectedPoints *= 1.5m;
+        }
         if (projectedPoints < 2m)
         {
             projectedPoints = 2m;

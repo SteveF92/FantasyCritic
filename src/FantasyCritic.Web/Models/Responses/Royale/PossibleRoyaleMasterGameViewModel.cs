@@ -17,7 +17,7 @@ public class PossibleRoyaleMasterGameViewModel
         IsEligible = !LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, publisher.YearQuarter).Any();
         IsReleased = masterGame.MasterGame.IsReleased(currentDate);
         HasScore = masterGame.MasterGame.CriticScore.HasValue;
-        Cost = masterGame.GetRoyaleGameCost();
+        Cost = masterGame.GetRoyaleGameCost(publisher.YearQuarter.YearQuarter);
     }
 
     public MasterGameYearViewModel MasterGame { get; }
