@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-      <div class="publisher-stats-container">
+    <div class="publisher-stats-container">
       <div class="publisher-stats">
         <span class="publisher-stat">
           <span class="stat-value">{{ publisher.budget | money(0) }}</span>
@@ -54,7 +54,7 @@
           <span class="stat-value">{{ dropStatus(publisher.unrestrictedReleaseStatusGamesDropped, publisher.unrestrictedReleaseStatusDroppableGames) }}</span>
           <span class="stat-label">Any Unreleased Drops</span>
         </span>
-        <span v-if="leagueYear.settings.grantSuperDrops" class="publisher-stat">
+        <span v-if="publisher.superDropsAvailable !== 0" class="publisher-stat">
           <span class="stat-value">{{ publisher.superDropsAvailable }}</span>
           <span class="stat-label">Super Drops</span>
         </span>
@@ -130,7 +130,7 @@ export default {
         this.publisher.willReleaseDroppableGames !== 0 ||
         this.publisher.willNotReleaseDroppableGames !== 0 ||
         this.publisher.unrestrictedReleaseStatusDroppableGames !== 0 ||
-        this.leagueYear.settings.grantSuperDrops
+        this.publisher.superDropsAvailable !== 0
       );
     },
     showRoundingWarning() {
@@ -176,7 +176,7 @@ export default {
       if (droppable === -1) {
         return dropped + '/\u221E';
       }
-      return (droppable - dropped) + '/' + droppable;
+      return droppable - dropped + '/' + droppable;
     },
     prepareSnapshot() {
       this.renderingSnapshot = true;
