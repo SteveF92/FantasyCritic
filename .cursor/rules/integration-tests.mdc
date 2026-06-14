@@ -12,6 +12,29 @@ alwaysApply: false
 - Place in `Tests/<FeatureArea>/` mirroring the request folder structure (`Tests/League/`, `Tests/LeagueManager/`, `Tests/Royale/`, etc.)
 - One `[TestFixture]` class per feature area
 
+## League scenario tests
+
+League multi-step fixtures use `LeagueFixture` + `LeagueFixtureBuilder` (see `Helpers/LeagueFixture.cs`):
+
+```
+Tests/League/
+  Setup/              ← smoke + member management (no draft)
+  Draft/
+    LeagueDraftTestBase.cs
+    Scenarios/        ← full draft completion
+    EdgeCases/        ← mid-draft error tests
+  Actions/            ← post-draft bid/drop/eligibility
+```
+
+- `LeagueFixtureBuilder.CreateAndStartDraftAsync(Factory, scenario, NewUser)` — league ready at draft start
+- `LeagueFixtureBuilder.CreateLeagueWithMembersAsync(...)` — stops before `StartDraft` (member tests)
+- `League.Publishers[0]` is always the manager; index by draft order
+- Scenario-specific game IDs stay in a private record on the fixture class
+- Admin/clock calls use `ApiSession.Admin` and `ActionRunner` directly — no wrapper helpers
+- Dispose the fixture in `[OneTimeTearDown]`: `await League.DisposeAsync()`
+
+For full-draft shared assertions, inherit `LeagueDraftTestBase` in `Tests/League/Draft/`.
+
 ## Test data
 
 - Always use `NewUser()` for user credentials — never hardcode emails or display names

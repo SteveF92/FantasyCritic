@@ -144,6 +144,32 @@ internal sealed class DraftSimulator
     }
 
     /// <summary>
+    /// Runs exactly <paramref name="count"/> standard-game picks, then returns.
+    /// </summary>
+    public async Task RunStandardPickCountAsync(Guid leagueID, int year, int count)
+    {
+        for (var pick = 0; pick < count; pick++)
+        {
+            var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
+
+            if (leagueYear.PlayStatus.DraftFinished || leagueYear.PlayStatus.DraftingCounterPicks)
+                throw new InvalidOperationException(
+                    $"Cannot run standard pick {pick + 1} of {count}: draft is finished or in counter-pick phase.");
+
+            var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
+                ?? throw new InvalidOperationException(
+                    "Draft is active but no publisher has NextToDraft = true.");
+
+            if (!_players.TryGetValue(nextPublisher.PublisherID, out var player))
+                throw new InvalidOperationException(
+                    $"No MockedLivePlayer registered for publisher {nextPublisher.PublisherID} "
+                    + $"({nextPublisher.PublisherName}).");
+
+            await player.DraftStandardGameAsync(year);
+        }
+    }
+
+    /// <summary>
     /// Runs the draft loop until the counter-pick phase begins, then returns without picking
     /// any counter-picks. Use this to set up shared state for counter-pick-phase error tests.
     /// </summary>
