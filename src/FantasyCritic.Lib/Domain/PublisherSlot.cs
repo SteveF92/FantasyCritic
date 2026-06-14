@@ -55,7 +55,7 @@ public class PublisherSlot
             return fantasyPoints.Value;
         }
 
-        return GetProjectedFantasyPoints(supportedYear, scoringSystem, systemWideValues, standardGamesTaken, numberOfStandardGames);
+        return GetProjectedFantasyPoints(supportedYear, scoringSystem, systemWideValues, standardGamesTaken, numberOfStandardGames, true);
     }
 
     public decimal? GetFantasyPoints(bool gameIsValidInSlot, ReleaseSystem releaseSystem, ScoringSystem scoringSystem, LocalDate currentDate)
@@ -123,9 +123,9 @@ public class PublisherSlot
     }
 
     public decimal GetProjectedFantasyPoints(SupportedYear supportedYear, ScoringSystem scoringSystem, SystemWideValues systemWideValues,
-        int standardGamesTaken, int numberOfStandardGames)
+        int standardGamesTaken, int numberOfStandardGames, bool zeroIfYearFinished)
     {
-        if (supportedYear.Finished)
+        if (supportedYear.Finished && zeroIfYearFinished)
         {
             return 0;
         }
