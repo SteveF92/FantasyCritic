@@ -81,8 +81,10 @@ public sealed record TestPublisher(
     string PublisherName);
 ```
 
-**Indexing:** `LeagueFixture.Publishers[0]` is always the manager (draft position 1).
-This replaces paired fields like `_p2Session` + `_p2PublisherID`.
+**Publisher access:** Use `LeagueFixture.Manager` for the manager session. Use
+`LeagueFixture.Publishers` indexed by draft order for player publishers — do not assume
+a fixed list index is the manager. This replaces paired fields like `_p2Session` +
+`_p2PublisherID`.
 
 ### `LeagueFixture`
 
@@ -95,7 +97,7 @@ public sealed class LeagueFixture : IAsyncDisposable
     public LeagueScenario Scenario { get; }
     public Guid LeagueID { get; }
     public int Year { get; }
-    public ApiSession Manager { get; }   // same session as Publishers[0]
+    public ApiSession Manager { get; }
     public IReadOnlyList<TestPublisher> Publishers { get; }
     public IReadOnlyDictionary<Guid, ApiSession> PublisherSessionMap { get; }
 

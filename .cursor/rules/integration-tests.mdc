@@ -28,7 +28,9 @@ Tests/League/
 
 - `LeagueFixtureBuilder.CreateAndStartDraftAsync(Factory, scenario, NewUser)` — league ready at draft start
 - `LeagueFixtureBuilder.CreateLeagueWithMembersAsync(...)` — stops before `StartDraft` (member tests)
-- `League.Publishers[0]` is always the manager; index by draft order
+- Use `League.Manager` for the manager session; use `League.Publishers` indexed by draft order for player publishers (no fixed index for the manager)
+- `League.CapturePublisherState(snapshot)` — copy post-draft budget/drop counts onto `TestPublisher` instances
+- `LeaguePickupActions.PlaceBidAsync` / `PlaceDropAsync` — shared bid/drop placement in action fixtures
 - Scenario-specific game IDs stay in a private record on the fixture class
 - Admin/clock calls use `ApiSession.Admin` and `ActionRunner` directly — no wrapper helpers
 - Dispose the fixture in `[OneTimeTearDown]`: `await League.DisposeAsync()`
