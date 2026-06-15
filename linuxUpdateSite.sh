@@ -25,7 +25,7 @@ if [ $BUILD_EXIT_CODE -ne 0 ]; then
   echo "Web project build failed (exit code: $BUILD_EXIT_CODE). Not restarting site."
   exit $BUILD_EXIT_CODE
 fi
-bash scripts/regenerate-api-client.sh
+NSWAG_CONFIGURATION=Release bash scripts/regenerate-api-client.sh
 NSWAG_EXIT_CODE=$?
 if [ $NSWAG_EXIT_CODE -ne 0 ]; then
   echo "API client generation failed (exit code: $NSWAG_EXIT_CODE). Not restarting site."

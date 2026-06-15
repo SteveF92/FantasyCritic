@@ -31,13 +31,15 @@ echo "  $REPO_ROOT/src/FantasyCritic.Web/ClientApp/src/api/generated/FantasyCrit
 echo ""
 echo "Generating..."
 
+NSWAG_CONFIGURATION="${NSWAG_CONFIGURATION:-Debug}"
+
 # NSwag bootstraps the Web host without launchSettings.json; force Development so
 # Program.cs skips AWS Secrets Manager (some machines set ASPNETCORE_ENVIRONMENT globally).
 export ASPNETCORE_ENVIRONMENT=Development
 export DOTNET_ENVIRONMENT=Development
 
 cd "$CLIENT_DIR"
-dotnet tool run nswag -- run nswag.json
+dotnet tool run nswag -- run nswag.json "/variables:Configuration=$NSWAG_CONFIGURATION"
 
 echo ""
 echo "Done. Build the solution to verify, then run your tests:"

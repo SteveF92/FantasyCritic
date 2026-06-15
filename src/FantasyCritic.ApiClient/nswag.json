@@ -4,6 +4,7 @@
     "aspNetCoreToOpenApi": {
       "project": "../FantasyCritic.Web/FantasyCritic.Web.csproj",
       "documentName": "FantasyCriticAPI",
+      "configuration": "$(Configuration)",
       "noBuild": true,
       "output": null
     }

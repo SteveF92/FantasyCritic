@@ -35,6 +35,8 @@ Write-Host "  $repoRoot\src\FantasyCritic.Web\ClientApp\src\api\generated\Fantas
 Write-Host ""
 Write-Host "Generating..."
 
+$nswagConfiguration = if ($env:NSWAG_CONFIGURATION) { $env:NSWAG_CONFIGURATION } else { "Debug" }
+
 # NSwag bootstraps the Web host without launchSettings.json; force Development so
 # Program.cs skips AWS Secrets Manager (some machines set ASPNETCORE_ENVIRONMENT globally).
 $env:ASPNETCORE_ENVIRONMENT = "Development"
@@ -42,7 +44,7 @@ $env:DOTNET_ENVIRONMENT = "Development"
 
 Push-Location $clientDir
 try {
-    dotnet tool run nswag -- run nswag.json
+    dotnet tool run nswag -- run nswag.json "/variables:Configuration=$nswagConfiguration"
     if ($LASTEXITCODE -ne 0) {
         Write-Error "nswag run failed (exit code $LASTEXITCODE)."
         exit 1
