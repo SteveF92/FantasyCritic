@@ -138,9 +138,12 @@ public class RoyaleService
             return RoyalePurchaseGameValidation.Invalid("Game has been released.");
         }
 
-        if (masterGame.MasterGame.AddedTimestamp > clock.GetPreviousBidTime())
+        if (RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(publisher.YearQuarter.YearQuarter))
         {
-            return RoyalePurchaseGameValidation.Invalid("Game will become eligible after bids process this week.");
+            if (masterGame.MasterGame.AddedTimestamp > clock.GetPreviousBidTime())
+            {
+                return RoyalePurchaseGameValidation.Invalid("Game will become eligible after bids process this week.");
+            }
         }
 
         var fiveDaysFuture = currentDate.PlusDays(GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter));
