@@ -35,6 +35,11 @@ Write-Host "  $repoRoot\src\FantasyCritic.Web\ClientApp\src\api\generated\Fantas
 Write-Host ""
 Write-Host "Generating..."
 
+# NSwag bootstraps the Web host without launchSettings.json; force Development so
+# Program.cs skips AWS Secrets Manager (some machines set ASPNETCORE_ENVIRONMENT globally).
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+$env:DOTNET_ENVIRONMENT = "Development"
+
 Push-Location $clientDir
 try {
     dotnet tool run nswag -- run nswag.json
