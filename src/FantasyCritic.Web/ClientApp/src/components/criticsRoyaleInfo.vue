@@ -8,20 +8,21 @@
         you can.
       </p>
     </div>
-    <h3>Changes for 2026!</h3>
+    <h3>Changes for Quarter 3 of 2026!</h3>
     <div class="text-well">
       <p>
-        There have been several changes for the 2026 seasons. All of the information here is also elsewhere on this page, but here's a short summary of what's changed this year:
+        We are continuing to refine the rule set for Critic's Royale. Here's a list of this quarter's changes.
         <ul>
-          <li>Maximum roster size is now 15 games, down from 25.</li>
-          <li>The following tags are now banned, in addition to previously banned tags: Remake, Partial Remake, and Planned for Early Access.</li>
-          <li>The 5 day lockout for both buying games now also applies to selling games and changing advertising budget.</li>
-          <li>When you sell a game, you get back 50% of it's current market value, instead of 50% of what you bought it for.</li>
-          <li>If a game won't release in the quarter, you get back 75% of market value when you sell.</li>
-          <li>Marketing budget bonus is now 10% per dollar, up from 5% per dollar.</li>
-          <li>There is a one week grace period after a quarter ends where scores can still change.</li>
+          <li>Ad budget is back to giving a 5% boost per dollar, for a total possible boost of 50%.</li>
+          <li>The rules for selling a game have been reverted to be closer to what they were pre-2026. Now, selling a game gets you back 50% of what you spent (plus any advertising budget assigned). If a game has been delayed out of the quarter, you instead get 75%, and if a game has been deemed ineligble in Royale, you get a full refund.</li>
+          <li>You now cannot buy a game that was added to the site until a normal bidding cycle has passed.</li>
+          <li>Game prices used to be calculated as (Projected Points * 1.5), but now that 1.5 multiplier has been removed. This has the effect of making the most expensive games less costly.</li>
+          <li>The minimum price of a game is now $3, up from 2</li>
+          <li>The "lockout window" where you cannot buy/sell/change advertising budget on a game has been raised from 5 days to 7 days.</li>
+          <li>There is now a 10 minute "regret window" where you can sell a game back for exactly what you bought it for.</li>
         </ul>
       </p>
+      <p>Note that these rule changes <em>do not</em> affect Q2 of 2026. Those rules are locked in.</p>
     </div>
     <h3>How's it work?</h3>
     <div class="text-well">
@@ -31,8 +32,8 @@
         before it comes out. More on that below.
       </p>
       <p>
-        If you lose confidence in a game, you can choose to "sell" it, and get back half of the current sell price of the game. If a game is confirmed to not release in the quarter, you get back 75%
-        of the current value. You can't sell a game that has come out, or one that has reviews already.
+        If you lose confidence in a game, you can choose to "sell" it, and get back half of what you paid for it. If a game is confirmed to not release in the quarter, you get back 75%
+        of you paid for it. You can't sell a game that has come out, or one that has reviews already.
       </p>
     </div>
 
@@ -54,7 +55,7 @@
         You can choose to assign some of your budget (the same one you use to buy games) to boost the score you get for a game. Every
         <strong>$1</strong>
         assigned to a game will increase it's points received by
-        <strong>10%</strong>
+        <strong>5%</strong>
         .
       </p>
       <p>
@@ -65,9 +66,9 @@
         points. But, with an advertising budget of
         <strong>$5</strong>
         , it will be boosted by
-        <strong>50%</strong>
+        <strong>25%</strong>
         , giving you
-        <strong>15</strong>
+        <strong>12.5</strong>
         points. You don't need to spend even dollars to get a bonus, every cent counts.
       </p>
       <p>
