@@ -140,7 +140,7 @@ public class RoyaleService
 
         if (masterGame.MasterGame.AddedTimestamp > clock.GetPreviousBidTime())
         {
-            return RoyalePurchaseGameValidation.Invalid("At least one bidding cycle must complete before this game is eligible in Royale.");
+            return RoyalePurchaseGameValidation.Invalid("Game will become eligible after bids process this week.");
         }
 
         var fiveDaysFuture = currentDate.PlusDays(GetFutureReleaseLimitDays(publisher.YearQuarter.YearQuarter));
@@ -156,7 +156,7 @@ public class RoyaleService
 
         if (masterGame.MasterGame.HasAnyReviews)
         {
-            return RoyalePurchaseGameValidation.Invalid("That game already has reviews.");
+            return RoyalePurchaseGameValidation.Invalid("Game already has reviews.");
         }
 
         var eligibilityErrors = LeagueTagExtensions.GetRoyaleClaimErrors(masterGameTags, masterGame.MasterGame, currentDate, publisher.YearQuarter);

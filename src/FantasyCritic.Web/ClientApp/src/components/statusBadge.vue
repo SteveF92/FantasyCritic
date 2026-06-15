@@ -9,11 +9,19 @@
 <script>
 export default {
   props: {
-    possibleMasterGame: { type: Object, required: true }
+    possibleMasterGame: { type: Object, required: true },
+    stripThat: { type: Boolean, required: false }
   },
   computed: {
     status() {
-      return this.possibleMasterGame.status;
+      const status = this.possibleMasterGame.status;
+
+      if (this.stripThat) {
+        // If string starts with "That game", change to just "Game"
+        return status.replace(/^That game/, 'Game');
+      }
+
+      return status;
     },
     isAvailable() {
       return this.possibleMasterGame.isAvailable;
