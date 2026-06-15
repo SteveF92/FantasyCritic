@@ -12,7 +12,7 @@
             <p>Since you are still within the 10 minute "regret window", you can sell this game back for a full refund.</p>
           </template>
           <template v-else>
-            <p>You will get back half of the what you spent on the game, plus any advertising money currently assigned to it.</p>
+            <p>You will get back half of what you spent on the game, plus any advertising money currently assigned to it.</p>
             <p>If the games is confirmed to not release in the quarter, you get back 75% of what you spent on it instead.</p>
           </template>
         </template>
@@ -21,7 +21,7 @@
           <p>If the games is confirmed to not release in the quarter, you get back 75% of market value instead.</p>
         </template>
         <p>
-          Money to recieve:
+          Money to receive:
           <strong>{{ (publisherGame.refundAmount + publisherGame.advertisingMoney) | money }}</strong>
         </p>
       </div>

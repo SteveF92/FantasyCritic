@@ -8,6 +8,10 @@ export interface YearQuarter {
   quarter: number;
 }
 
+export function yearQuarter2026Q1AndQ2FeatureSupported(yearQuarterToCheck: YearQuarter): boolean {
+  return yearQuarterToCheck.year === 2026 && yearQuarterToCheck.quarter <= 2;
+}
+
 export function yearQuarter2026Q3FeatureSupported(yearQuarterToCheck: YearQuarter): boolean {
   const yearQuarterToCheckAgainst: YearQuarter = { year: 2026, quarter: 3 };
 

@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
-using Microsoft.AspNetCore.Localization;
 
 namespace FantasyCritic.Lib.Royale;
 
@@ -250,7 +249,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((RoyalePublisherGame) obj);
+        return Equals((RoyalePublisherGame)obj);
     }
 
     public override int GetHashCode()

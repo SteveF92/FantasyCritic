@@ -116,11 +116,10 @@
           <strong>{{ gameToModify.masterGame.gameName }}</strong>
           ?
         </p>
-        <p>Each dollar allocated will increase your fantasy points received by {{ publisher.yearQuarter.quarter === 2 ? '10%' : '5%' }}</p>
-        <p>You can spend up to $10 for a bonus of {{ publisher.yearQuarter.quarter === 2 ? '100%' : '50%' }}.</p>
+        <p>Each dollar allocated will increase your fantasy points received by {{ advertisingBudgetPercentPerDollar }}</p>
+        <p>You can spend up to $10 for a bonus of {{ advertisingBudgetMaxBonus }}.</p>
         <p>
-          You can adjust this up until the game is locked, which happens when the game is {{ publisher.yearQuarter.quarter === 2 ? 5 : 7 }} days away from release, or when it gets its first review on
-          OpenCritic.
+          You can adjust this up until the game is locked, which happens when the game is {{ advertisingBudgetLockoutDays }} days away from release, or when it gets its first review on OpenCritic.
         </p>
         <div class="form-group row">
           <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
@@ -177,6 +176,7 @@ import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
+import { yearQuarter2026Q1AndQ2FeatureSupported, yearQuarter2026Q3FeatureSupported } from '@/models/royale/RoyaleYearQuarter';
 
 export default {
   components: {
@@ -248,6 +248,18 @@ export default {
     },
     quarterIsFinished() {
       return this.publisher.yearQuarter.finished;
+    },
+    is2026Q1Q2() {
+      return yearQuarter2026Q1AndQ2FeatureSupported(this.publisher.yearQuarter);
+    },
+    advertisingBudgetPercentPerDollar() {
+      return this.is2026Q1Q2 ? '10%' : '5%';
+    },
+    advertisingBudgetMaxBonus() {
+      return this.is2026Q1Q2 ? '100%' : '50%';
+    },
+    advertisingBudgetLockoutDays() {
+      return yearQuarter2026Q3FeatureSupported(this.publisher.yearQuarter) ? 7 : 5;
     }
   },
   watch: {

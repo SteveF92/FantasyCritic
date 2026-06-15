@@ -30,7 +30,7 @@ export default {
       return this.possibleMasterGame.alreadyOwned;
     },
     locked() {
-      return this.possibleMasterGame.status === 'Game will release within 5 days.';
+      return /^Game will release within \d+ days\.$/.test(this.possibleMasterGame.status);
     }
   }
 };
