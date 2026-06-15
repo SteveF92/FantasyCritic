@@ -45,7 +45,7 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
     {
         var yearQuarterToCheckAgainst1 = new YearQuarter(2026, 1);
         var yearQuarterToCheckAgainst2 = new YearQuarter(2026, 2);
-        return yearQuarterToCheck == yearQuarterToCheckAgainst1 || yearQuarterToCheck == yearQuarterToCheckAgainst2;
+        return yearQuarterToCheck.Equals(yearQuarterToCheckAgainst1) || yearQuarterToCheck.Equals(yearQuarterToCheckAgainst2);
     }
 
     public static bool YearQuarter2026Q3FeatureSupported(YearQuarter yearQuarterToCheck)
