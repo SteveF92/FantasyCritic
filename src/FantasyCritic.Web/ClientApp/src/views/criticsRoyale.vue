@@ -106,7 +106,7 @@
       </div>
     </b-modal>
 
-    <CriticsRoyaleInfo class="critics-royale-info" />
+    <CriticsRoyaleInfo class="critics-royale-info" :year="year" :quarter="quarter" />
   </div>
 </template>
 

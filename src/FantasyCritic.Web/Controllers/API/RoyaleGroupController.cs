@@ -60,7 +60,7 @@ public class RoyaleGroupController : FantasyCriticController
         }
 
         var allMasterGameTags = await _interLeagueService.GetMasterGameTags();
-        var vm = new RoyaleGroupQuarterViewModel(group.RoyaleGroup, year, quarter, group.DisplayRows, _clock.GetToday(), allMasterGameTags);
+        var vm = new RoyaleGroupQuarterViewModel(group.RoyaleGroup, year, quarter, group.DisplayRows, _clock.GetToday(), allMasterGameTags, _clock);
         return vm;
     }
 

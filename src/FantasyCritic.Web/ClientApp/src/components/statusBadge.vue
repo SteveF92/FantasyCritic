@@ -9,11 +9,19 @@
 <script>
 export default {
   props: {
-    possibleMasterGame: { type: Object, required: true }
+    possibleMasterGame: { type: Object, required: true },
+    stripThat: { type: Boolean, required: false }
   },
   computed: {
     status() {
-      return this.possibleMasterGame.status;
+      const status = this.possibleMasterGame.status;
+
+      if (this.stripThat) {
+        // If string starts with "That game", change to just "Game"
+        return status.replace(/^That game/, 'Game');
+      }
+
+      return status;
     },
     isAvailable() {
       return this.possibleMasterGame.isAvailable;
@@ -22,7 +30,7 @@ export default {
       return this.possibleMasterGame.alreadyOwned;
     },
     locked() {
-      return this.possibleMasterGame.status === 'Game will release within 5 days.';
+      return /^Game will release within \d+ days\.$/.test(this.possibleMasterGame.status);
     }
   }
 };

@@ -5,7 +5,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 public class RoyaleGroupQuarterViewModel
 {
     public RoyaleGroupQuarterViewModel(RoyaleGroup group, int year, int quarter, IReadOnlyList<RoyaleGroupMemberDisplayRow> memberRows,
-        LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
+        LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, IClock clock)
     {
         GroupID = group.GroupID;
         GroupName = group.GroupName;
@@ -32,7 +32,7 @@ public class RoyaleGroupQuarterViewModel
                 rank = ranking;
                 ranking++;
             }
-            members.Add(new RoyaleGroupMemberRankedViewModel(row, rank, currentDate, allMasterGameTags));
+            members.Add(new RoyaleGroupMemberRankedViewModel(row, rank, currentDate, allMasterGameTags, clock));
         }
 
         Members = members;
@@ -53,7 +53,7 @@ public class RoyaleGroupQuarterViewModel
 
 public class RoyaleGroupMemberRankedViewModel
 {
-    public RoyaleGroupMemberRankedViewModel(RoyaleGroupMemberDisplayRow row, int? ranking, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags)
+    public RoyaleGroupMemberRankedViewModel(RoyaleGroupMemberDisplayRow row, int? ranking, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, IClock clock)
     {
         UserID = row.User.UserID;
         DisplayName = row.User.DisplayName;
@@ -66,7 +66,7 @@ public class RoyaleGroupMemberRankedViewModel
         GamesPurchased = row.Publisher?.PublisherGames.Count;
         GamesReleased = row.Publisher?.PublisherGames.Count(x => x.MasterGame.IsReleasedAndReleasedInQuarter(currentDate, row.Publisher.YearQuarter.YearQuarter));
 
-        PublisherGames = (row.Publisher?.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, row.Publisher.YearQuarter, currentDate, allMasterGameTags, false)).ToList()) ?? new List<RoyalePublisherGameViewModel>();
+        PublisherGames = (row.Publisher?.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, row.Publisher.YearQuarter, currentDate, allMasterGameTags, false, clock)).ToList()) ?? new List<RoyalePublisherGameViewModel>();
         Statistics = row.Statistics.Select(x => new RoyalePublisherStatisticsViewModel(x)).ToList();
     }
 

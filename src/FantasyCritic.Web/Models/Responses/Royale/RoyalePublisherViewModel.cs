@@ -5,7 +5,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 public class RoyalePublisherViewModel
 {
     public RoyalePublisherViewModel(RoyalePublisher domain, LocalDate currentDate, IEnumerable<RoyaleYearQuarter> quartersWon,
-        IEnumerable<RoyaleAction> royaleActions, IEnumerable<RoyalePublisherStatistics> statistics, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing)
+        IEnumerable<RoyaleAction> royaleActions, IEnumerable<RoyalePublisherStatistics> statistics, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing, IClock clock)
     {
         PublisherID = domain.PublisherID;
         YearQuarter = new RoyaleYearQuarterViewModel(domain.YearQuarter);
@@ -14,7 +14,7 @@ public class RoyalePublisherViewModel
         PublisherName = domain.PublisherName;
         PublisherIcon = domain.PublisherIcon;
         PublisherSlogan = domain.PublisherSlogan;
-        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, domain.YearQuarter, currentDate, allMasterGameTags, thisPlayerIsViewing)).ToList();
+        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, domain.YearQuarter, currentDate, allMasterGameTags, thisPlayerIsViewing, clock)).ToList();
         PublisherActions = royaleActions.Select(x => new RoyaleActionViewModel(x, currentDate, thisPlayerIsViewing)).ToList();
         Statistics = statistics.Select(x => new RoyalePublisherStatisticsViewModel(x)).ToList();
         Budget = domain.Budget;

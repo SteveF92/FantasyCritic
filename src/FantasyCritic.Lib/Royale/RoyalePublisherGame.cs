@@ -38,15 +38,44 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return null;
         }
 
-        var fiveDaysFromReleaseDate = MasterGame.MasterGame.ReleaseDate.Value.Minus(Period.FromDays(RoyaleService.FUTURE_RELEASE_LIMIT_DAYS));
-        var lockDateTime = fiveDaysFromReleaseDate.AtStartOfDayInZone(TimeExtensions.EasternTimeZone);
+        var lockDate = MasterGame.MasterGame.ReleaseDate.Value.Minus(Period.FromDays(RoyaleService.GetFutureReleaseLimitDays(YearQuarter.YearQuarter)));
+        var lockDateTime = lockDate.AtStartOfDayInZone(TimeExtensions.EasternTimeZone);
         return lockDateTime.ToInstant();
     }
 
-    public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags)
+    public bool IsInRegretWindow(IClock clock)
     {
+        if (RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
+        {
+            var currentInstant = clock.GetCurrentInstant();
+            var timeSincePurchase = currentInstant - Timestamp;
+            if (timeSincePurchase < Duration.FromMinutes(10))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags, IClock clock)
+    {
+        if (IsInRegretWindow(clock))
+        {
+            return AmountSpent;
+        }
+
         var currentlyIneligible = CalculateIsCurrentlyIneligible(masterGameTags);
-        var baseRefund = MasterGame.GetRoyaleGameCost();
+
+        decimal baseRefund;
+        if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
+        {
+            baseRefund = MasterGame.GetRoyaleGameCost(YearQuarter.YearQuarter);
+        }
+        else
+        {
+            baseRefund = AmountSpent;
+        }
 
         decimal refundMultiplier = 0.5m;
         if (currentlyIneligible)
@@ -175,11 +204,12 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return null;
         }
 
-        var advertisingBudgetMultiplier = 0.1m;
-        if (!SupportedYear.Year2026FeatureSupported(YearQuarter.YearQuarter.Year))
+        var advertisingBudgetMultiplier = 0.05m;
+        if (RoyaleYearQuarter.YearQuarter2026Q1AndQ2FeatureSupported(YearQuarter.YearQuarter))
         {
-            advertisingBudgetMultiplier = 0.05m;
+            advertisingBudgetMultiplier = 0.1m;
         }
+
         var extraPoints = basePoints * AdvertisingMoney * advertisingBudgetMultiplier;
         var modifiedPoints = basePoints + extraPoints;
 
@@ -219,7 +249,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((RoyalePublisherGame) obj);
+        return Equals((RoyalePublisherGame)obj);
     }
 
     public override int GetHashCode()
