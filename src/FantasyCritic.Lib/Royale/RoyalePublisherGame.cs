@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
+using Microsoft.AspNetCore.Localization;
 
 namespace FantasyCritic.Lib.Royale;
 
@@ -43,7 +44,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
         return lockDateTime.ToInstant();
     }
 
-    public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags, IClock clock)
+    public bool IsInRegretWindow(IClock clock)
     {
         if (RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
         {
@@ -51,8 +52,18 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             var timeSincePurchase = currentInstant - Timestamp;
             if (timeSincePurchase < Duration.FromMinutes(10))
             {
-                return AmountSpent;
+                return true;
             }
+        }
+
+        return false;
+    }
+
+    public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags, IClock clock)
+    {
+        if (IsInRegretWindow(clock))
+        {
+            return AmountSpent;
         }
 
         var currentlyIneligible = CalculateIsCurrentlyIneligible(masterGameTags);

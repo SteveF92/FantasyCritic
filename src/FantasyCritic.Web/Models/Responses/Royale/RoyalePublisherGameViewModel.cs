@@ -20,6 +20,8 @@ public class RoyalePublisherGameViewModel
             RefundAmount = domain.CalculateRefundAmount(allMasterGameTags, clock);
             LockDateTime = domain.GetLockDateTime();
         }
+
+        InRegretWindow = domain.IsInRegretWindow(clock);
     }
 
     public Guid PublisherID { get; }
@@ -33,4 +35,5 @@ public class RoyalePublisherGameViewModel
     public decimal? FantasyPoints { get; }
     public bool CurrentlyIneligible { get; }
     public decimal? RefundAmount { get; }
+    public bool InRegretWindow { get; }
 }
