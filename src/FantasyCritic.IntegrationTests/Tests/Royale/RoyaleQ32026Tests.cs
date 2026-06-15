@@ -14,6 +14,7 @@ namespace FantasyCritic.IntegrationTests.Tests.Royale;
 ///   - Selling a game refunds half of the purchase price (instead of half market value)
 ///   - A 10-minute regret window allows a full refund immediately after buying
 ///   - The buy/sell/advertising lockout window is 7 days (up from 5)
+///   - Games added since the last bid cycle cannot be purchased until bids process
 ///
 /// The clock is pinned to July 6, 2026 12:00 UTC via the test-only Admin API —
 /// safely after the first Q3 bid cycle (July 4, 20:00 ET = July 5, 00:00 UTC).
@@ -26,6 +27,8 @@ namespace FantasyCritic.IntegrationTests.Tests.Royale;
 [TestFixture]
 public class RoyaleQ32026Tests : IntegrationTestBase
 {
+    private const string BiddingCycleStatus = "Game will become eligible after bids process this week.";
+
     // Q3 2026 starts July 1. First Saturday bid processing: July 4, 20:00 ET = July 5, 00:00 UTC.
     // We pin to July 6 12:00 UTC — after the first bid cycle, safely in mid-Q3.
     private static readonly DateTimeOffset Q3TestBase =
@@ -409,5 +412,214 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             purchaseResult.Errors!.Any(e => e.Contains("7")),
             Is.True,
             "The failure message must reference the 7-day lockout window.");
+    }
+
+    [Test]
+    public async Task InRegretWindow_IsTrueImmediatelyAfterPurchase()
+    {
+        await ResetClockAsync();
+
+        var result = await TryCreateQ3PublisherAsync();
+        if (result is null)
+        {
+            Assert.Inconclusive("Q3 2026 is not open for play. Run LocalDatabaseTool to sync.");
+            return;
+        }
+
+        using var session = result.Value.Session;
+        var publisherID = result.Value.PublisherID;
+
+        var game = await FindPurchasableQ3GameAsync(session, publisherID);
+        if (game is null)
+        {
+            Assert.Inconclusive("No purchasable Q3 2026 games found.");
+            return;
+        }
+
+        var purchaseResult = await session.Royale.PurchaseGameAsync(
+            new PurchaseRoyaleGameRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = game.MasterGame.MasterGameID,
+            });
+        Assert.That(purchaseResult!.Success, Is.True,
+            $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
+
+        var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var purchased = publisher!.PublisherGames!
+            .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
+
+        Assert.That(purchased.InRegretWindow, Is.True,
+            "InRegretWindow must be true immediately after purchase.");
+    }
+
+    [Test]
+    public async Task InRegretWindow_IsFalseAfterRegretWindowExpires()
+    {
+        await ResetClockAsync();
+
+        var result = await TryCreateQ3PublisherAsync();
+        if (result is null)
+        {
+            Assert.Inconclusive("Q3 2026 is not open for play. Run LocalDatabaseTool to sync.");
+            return;
+        }
+
+        using var session = result.Value.Session;
+        var publisherID = result.Value.PublisherID;
+
+        var game = await FindPurchasableQ3GameAsync(session, publisherID);
+        if (game is null)
+        {
+            Assert.Inconclusive("No purchasable Q3 2026 games found.");
+            return;
+        }
+
+        var purchaseResult = await session.Royale.PurchaseGameAsync(
+            new PurchaseRoyaleGameRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = game.MasterGame.MasterGameID,
+            });
+        Assert.That(purchaseResult!.Success, Is.True,
+            $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
+
+        await AdvanceClockByAsync(TimeSpan.FromMinutes(15));
+
+        var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var purchased = publisher!.PublisherGames!
+            .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
+
+        Assert.That(purchased.InRegretWindow, Is.False,
+            "InRegretWindow must be false once the 10-minute window has expired.");
+    }
+
+    [Test]
+    public async Task PossibleGames_BiddingCycleBlockedGamesAreNotAvailable()
+    {
+        await ResetClockAsync();
+
+        var result = await TryCreateQ3PublisherAsync();
+        if (result is null)
+        {
+            Assert.Inconclusive("Q3 2026 is not open for play. Run LocalDatabaseTool to sync.");
+            return;
+        }
+
+        using var session = result.Value.Session;
+        var publisherID = result.Value.PublisherID;
+
+        var allGames = await session.Royale.PossibleMasterGamesAsync(
+            gameName: null, publisherID: publisherID,
+            releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All);
+
+        var biddingCycleBlocked = (allGames ?? [])
+            .Where(g => g.Status == BiddingCycleStatus)
+            .ToList();
+
+        if (biddingCycleBlocked.Count == 0)
+        {
+            Assert.Inconclusive(
+                $"No game has Status == \"{BiddingCycleStatus}\". " +
+                "This test only runs when a game was added after the most recent bid cycle. Skipping.");
+            return;
+        }
+
+        Assert.That(
+            biddingCycleBlocked.All(g => g.IsAvailable != true),
+            Is.True,
+            "Games blocked by the bidding-cycle rule must not be marked available.");
+    }
+
+    [Test]
+    public async Task PurchaseGame_BiddingCycleBlocked_ReturnsFailure()
+    {
+        await ResetClockAsync();
+
+        var result = await TryCreateQ3PublisherAsync();
+        if (result is null)
+        {
+            Assert.Inconclusive("Q3 2026 is not open for play. Run LocalDatabaseTool to sync.");
+            return;
+        }
+
+        using var session = result.Value.Session;
+        var publisherID = result.Value.PublisherID;
+
+        var allGames = await session.Royale.PossibleMasterGamesAsync(
+            gameName: null, publisherID: publisherID,
+            releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All);
+
+        var biddingCycleBlocked = (allGames ?? [])
+            .FirstOrDefault(g => g.IsAvailable != true && g.Status == BiddingCycleStatus);
+
+        if (biddingCycleBlocked is null)
+        {
+            Assert.Inconclusive(
+                $"No game has Status == \"{BiddingCycleStatus}\". " +
+                "This test only runs when a game was added after the most recent bid cycle. Skipping.");
+            return;
+        }
+
+        var purchaseResult = await session.Royale.PurchaseGameAsync(
+            new PurchaseRoyaleGameRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = biddingCycleBlocked.MasterGame.MasterGameID,
+            });
+
+        Assert.That(purchaseResult!.Success, Is.False,
+            "Purchasing a game blocked by the bidding-cycle rule must return Success=false.");
+        Assert.That(
+            purchaseResult.Errors!.Any(e => e.Contains("bids process", StringComparison.OrdinalIgnoreCase)),
+            Is.True,
+            "The failure message must reference the bidding-cycle restriction.");
+    }
+
+    [Test]
+    public async Task SetAdvertisingMoney_AfterPurchase_UpdatesAdvertisingBudget()
+    {
+        await ResetClockAsync();
+
+        var result = await TryCreateQ3PublisherAsync();
+        if (result is null)
+        {
+            Assert.Inconclusive("Q3 2026 is not open for play. Run LocalDatabaseTool to sync.");
+            return;
+        }
+
+        using var session = result.Value.Session;
+        var publisherID = result.Value.PublisherID;
+
+        var game = await FindPurchasableQ3GameAsync(session, publisherID);
+        if (game is null)
+        {
+            Assert.Inconclusive("No purchasable Q3 2026 games found.");
+            return;
+        }
+
+        var purchaseResult = await session.Royale.PurchaseGameAsync(
+            new PurchaseRoyaleGameRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = game.MasterGame.MasterGameID,
+            });
+        Assert.That(purchaseResult!.Success, Is.True,
+            $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
+
+        await session.Royale.SetAdvertisingMoneyAsync(
+            new SetAdvertisingMoneyRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = game.MasterGame.MasterGameID,
+                AdvertisingMoney = 4.0m,
+            });
+
+        var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var purchased = publisher!.PublisherGames!
+            .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
+
+        Assert.That(purchased.AdvertisingMoney, Is.EqualTo(4.0m),
+            "Advertising budget must reflect the assigned amount.");
     }
 }

@@ -490,9 +490,9 @@ public class RoyaleTests : IntegrationTestBase
             publisherID: publisherID,
             releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All);
 
-        // The service sets Status = "Game will release within 5 days." for games in the lockout window.
-        // RoyaleService.FUTURE_RELEASE_LIMIT_DAYS == 5.
-        const string lockoutStatus = "Game will release within 5 days.";
+        // Lockout status depends on the active quarter's rules (5 days pre-Q3 2026, 7 days from Q3 2026 onward).
+        var lockoutDays = activeQuarter.Year == 2026 && activeQuarter.Quarter >= 3 ? 7 : 5;
+        var lockoutStatus = $"Game will release within {lockoutDays} days.";
         var lockoutGame = (allGames ?? []).FirstOrDefault(g => g.IsAvailable != true && g.Status == lockoutStatus);
 
         if (lockoutGame is null)
@@ -511,10 +511,14 @@ public class RoyaleTests : IntegrationTestBase
             });
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Success, Is.False,
-            "Purchasing a game in the 5-day lockout window must return Success=false.");
+        Assert.That(result!.Success, Is.False,
+            $"Purchasing a game in the {lockoutDays}-day lockout window must return Success=false.");
         Assert.That(result.Errors, Is.Not.Null.And.Not.Empty,
             "A failed purchase must include at least one error message.");
+        Assert.That(
+            result.Errors!.Any(e => e.Contains(lockoutDays.ToString())),
+            Is.True,
+            $"The failure message must reference the {lockoutDays}-day lockout window.");
     }
 
     /// <summary>
