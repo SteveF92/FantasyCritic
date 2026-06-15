@@ -182,7 +182,7 @@ export default {
       return matchingQuarters;
     },
     showTopRankedChart() {
-      return true;
+      return this.topPublishers && this.topPublishers.length > 0;
     }
   },
   watch: {
