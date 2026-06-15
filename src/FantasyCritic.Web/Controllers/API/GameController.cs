@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Requests.MasterGame;
@@ -95,8 +96,27 @@ public class GameController : FantasyCriticController
         }
 
         var currentDate = _clock.GetToday();
-        var activeRoyaleYearQuarter = await _royaleService.GetActiveYearQuarter();
-        var viewModel = new MasterGameYearWithStatisticsViewModel(masterGameYearWithStatistics.MasterGameYear, masterGameYearWithStatistics.Statistics, currentDate, activeRoyaleYearQuarter);
+        RoyaleYearQuarter royaleYearQuarterToUse;
+        if (currentDate.Year == year)
+        {
+            royaleYearQuarterToUse = await _royaleService.GetActiveYearQuarter();
+        }
+        else
+        {
+            var royaleYearQuarters = await _royaleService.GetYearQuarters();
+            var quartersForYear = royaleYearQuarters.Where(x => x.YearQuarter.Year == year).ToList();
+            if (quartersForYear.Any())
+            {
+                //Use the final quarter of any given historical year
+                royaleYearQuarterToUse = quartersForYear.MaxBy(x => x.YearQuarter.Quarter)!;
+            }
+            else
+            {
+                //Royale didn't exist before 2019, so just using the earliest year quarter is good enough.
+                royaleYearQuarterToUse = royaleYearQuarters.MinBy(x => x.YearQuarter)!;
+            }
+        }
+        var viewModel = new MasterGameYearWithStatisticsViewModel(masterGameYearWithStatistics.MasterGameYear, masterGameYearWithStatistics.Statistics, currentDate, royaleYearQuarterToUse);
         return viewModel;
     }
 
