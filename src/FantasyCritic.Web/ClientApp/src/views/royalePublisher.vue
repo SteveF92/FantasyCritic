@@ -116,9 +116,12 @@
           <strong>{{ gameToModify.masterGame.gameName }}</strong>
           ?
         </p>
-        <p>Each dollar allocated will increase your fantasy points received by 10%</p>
-        <p>You can spend up to $10 for a bonus of 100% (thereby doubling the points you get from the game).</p>
-        <p>You can adjust this up until the game is locked, which happens when the game is 5 days away from release, or when it gets its first review on OpenCritic.</p>
+        <p>Each dollar allocated will increase your fantasy points received by {{ publisher.yearQuarter.quarter === 2 ? '10%' : '5%' }}</p>
+        <p>You can spend up to $10 for a bonus of {{ publisher.yearQuarter.quarter === 2 ? '100%' : '50%' }}.</p>
+        <p>
+          You can adjust this up until the game is locked, which happens when the game is {{ publisher.yearQuarter.quarter === 2 ? 5 : 7 }} days away from release, or when it gets its first review on
+          OpenCritic.
+        </p>
         <div class="form-group row">
           <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
           <div class="col-sm-10">
