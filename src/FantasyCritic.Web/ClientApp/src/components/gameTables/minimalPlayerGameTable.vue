@@ -262,32 +262,38 @@ export default {
 
 .publisher-stats-container {
   margin-top: 6px;
-  padding: 5px 10px;
-  /* background-color: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(0, 0, 0, 0.25);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .publisher-stats {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+  padding: 5px 10px;
 }
 
 .publisher-stats-drops {
-  margin-top: 2px;
-  padding-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin-top: 0;
+  padding: 5px 10px;
   flex-wrap: wrap;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .drops-remaining-label {
   width: 100%;
-  font-size: 9px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   margin-bottom: 2px;
+  text-align: center;
+  font-weight: bold;
 }
 
 .publisher-stat {
