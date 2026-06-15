@@ -42,6 +42,7 @@
         </span>
       </div>
       <div v-if="hasAnyDrops" class="publisher-stats publisher-stats-drops">
+        <span class="drops-remaining-label">Available Drops</span>
         <span v-if="publisher.willReleaseDroppableGames !== 0" class="publisher-stat">
           <span class="stat-value">{{ dropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames) }}</span>
           <span class="stat-label">Will Release Drops</span>
@@ -174,7 +175,7 @@ export default {
   methods: {
     dropStatus(dropped, droppable) {
       if (droppable === -1) {
-        return dropped + '/\u221E';
+        return '\u221E';
       }
       return droppable - dropped + '/' + droppable;
     },
@@ -277,6 +278,16 @@ export default {
   margin-top: 2px;
   padding-top: 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
+  flex-wrap: wrap;
+}
+
+.drops-remaining-label {
+  width: 100%;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
 }
 
 .publisher-stat {
