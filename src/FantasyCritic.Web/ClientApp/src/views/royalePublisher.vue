@@ -105,9 +105,9 @@
         <template v-if="userIsPublisher">You have not bought any games yet!</template>
         <template v-else>This publisher has not bought any games yet.</template>
       </div>
-    </div>
 
-    <sellRoyaleGameModal v-if="gameToModify" :publisher-game="gameToModify" @sellGame="sellGame"></sellRoyaleGameModal>
+      <sellRoyaleGameModal :publisher-game="gameToModify" :year-quarter="publisher.yearQuarter" @sellGame="sellGame"></sellRoyaleGameModal>
+    </div>
 
     <b-modal id="setAdvertisingMoneyModal" ref="setAdvertisingMoneyModalRef" title="Set Advertising Budget" @ok="setBudget">
       <div v-if="gameToModify">
@@ -286,7 +286,6 @@ export default {
     },
     setGameToSell(publisherGame) {
       this.gameToModify = publisherGame;
-      this.$refs.sellRoyaleGameModalRef.show();
     },
     async sellGame() {
       const request = {
