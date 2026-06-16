@@ -127,12 +127,13 @@ export default {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },
     hasAnyDrops() {
-      return (
-        this.publisher.willReleaseDroppableGames > 0 ||
-        this.publisher.willNotReleaseDroppableGames > 0 ||
-        this.publisher.unrestrictedReleaseStatusDroppableGames > 0 ||
-        this.publisher.superDropsAvailable > 0
-      );
+      if (this.publisher.superDropsAvailable > 0) {
+        return true;
+      }
+      if ((this.publisher.willReleaseDroppableGames === -1 && this.publisher.willNotReleaseDroppableGames === -1) || this.publisher.unrestrictedReleaseStatusDroppableGames === -1) {
+        return false;
+      }
+      return this.publisher.willReleaseDroppableGames > 0 || this.publisher.willNotReleaseDroppableGames > 0 || this.publisher.unrestrictedReleaseStatusDroppableGames > 0;
     },
     showRoundingWarning() {
       if (this.userInfo?.showDecimalPlaces) {
