@@ -45,15 +45,15 @@
         <span class="drops-remaining-label">Available Drops</span>
         <span v-if="publisher.willReleaseDroppableGames !== 0" class="publisher-stat">
           <span class="stat-value">{{ dropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames) }}</span>
-          <span class="stat-label">Will Release Drops</span>
+          <span class="stat-label">Will Release</span>
         </span>
         <span v-if="publisher.willNotReleaseDroppableGames !== 0" class="publisher-stat">
           <span class="stat-value">{{ dropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames) }}</span>
-          <span class="stat-label">Won't Release Drops</span>
+          <span class="stat-label">Won't Release</span>
         </span>
         <span v-if="publisher.unrestrictedReleaseStatusDroppableGames !== 0" class="publisher-stat">
           <span class="stat-value">{{ dropStatus(publisher.unrestrictedReleaseStatusGamesDropped, publisher.unrestrictedReleaseStatusDroppableGames) }}</span>
-          <span class="stat-label">Any Unreleased Drops</span>
+          <span class="stat-label">Any Unreleased</span>
         </span>
         <span v-if="publisher.superDropsAvailable !== 0" class="publisher-stat">
           <span class="stat-value">{{ publisher.superDropsAvailable }}</span>
@@ -128,10 +128,10 @@ export default {
     },
     hasAnyDrops() {
       return (
-        this.publisher.willReleaseDroppableGames !== 0 ||
-        this.publisher.willNotReleaseDroppableGames !== 0 ||
-        this.publisher.unrestrictedReleaseStatusDroppableGames !== 0 ||
-        this.publisher.superDropsAvailable !== 0
+        this.publisher.willReleaseDroppableGames > 0 ||
+        this.publisher.willNotReleaseDroppableGames > 0 ||
+        this.publisher.unrestrictedReleaseStatusDroppableGames > 0 ||
+        this.publisher.superDropsAvailable > 0
       );
     },
     showRoundingWarning() {
@@ -278,7 +278,7 @@ export default {
 
 .publisher-stats-drops {
   margin-top: 0;
-  padding: 5px 10px;
+  padding: 4px 10px 8px;
   flex-wrap: wrap;
   background-color: rgba(0, 0, 0, 0.2);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -287,13 +287,22 @@ export default {
 
 .drops-remaining-label {
   width: 100%;
-  font-size: 11px;
+  font-size: 10px;
   color: rgba(255, 255, 255, 0.75);
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 2px;
+  margin-bottom: 0;
   text-align: center;
   font-weight: bold;
+}
+
+.publisher-stats-drops .publisher-stat {
+  padding: 0px 4px;
+  min-width: 80px;
+}
+
+.publisher-stats-drops .stat-label {
+  max-width: 100px;
 }
 
 .publisher-stat {
@@ -328,7 +337,7 @@ export default {
 }
 
 .stat-value {
-  font-size: 15px;
+  font-size: 12px;
   font-weight: bold;
   color: white;
 }
