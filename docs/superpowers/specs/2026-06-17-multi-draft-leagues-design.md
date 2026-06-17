@@ -169,11 +169,11 @@ When the league has 2+ drafts, `GamesToDraft` and `CounterPicksToDraft` are igno
 
 ### `POST /api/League/SetDraftOrder`
 
-Routes to `CurrentDraft` instead of `FirstDraft`. Request shape unchanged. "Inverse Standings" option computes the order from current league year standings at the moment the endpoint is called.
+Gains an explicit `draftID` parameter. The server validates that the supplied `DraftID` matches `CurrentDraft` and rejects the request if not. The UI always passes the correct `DraftID` behind the scenes — users never choose it themselves. "Inverse Standings" option computes the order from current league year standings at the moment the endpoint is called.
 
 ### `POST /api/League/ResetDraft`
 
-Resets `CurrentDraft` (not always Draft 1). Resetting allows a commissioner to then edit or delete a second draft that had already been started.
+Gains an explicit `draftID` parameter. The server validates that the supplied `DraftID` matches `CurrentDraft`. Resetting allows a commissioner to then edit or delete a second draft that had already been started. The UI passes the `DraftID` behind the scenes.
 
 ---
 
@@ -218,6 +218,9 @@ When the draft engine advances to a publisher's turn:
    - Advance to the next publisher without waiting for input
    - Repeat until a publisher with an open slot is found, or all remaining turns are exhausted (draft completes)
 3. The UI reads the contiguous run of `SkippedDraftTurn` actions immediately preceding the current pick to display "Players B and C were skipped before Player D's turn"
+
+**Snake-draft double-skip edge case:**
+In a snake draft, the same publisher can appear at the end of one round and the start of the next (turns N and N+1 consecutively). If that publisher has no open slots, both turns are correctly emitted as separate `SkippedDraftTurn` actions by the backend — the skip-and-advance loop naturally handles this. The UI must deduplicate when rendering: if the same publisher appears more than once in the contiguous skipped-turn run, collapse them into a single "Player A was skipped (×2)" rather than listing Player A twice.
 
 No additional DB columns are needed; the league action history is the source of truth.
 
