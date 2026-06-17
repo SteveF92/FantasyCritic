@@ -715,7 +715,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                 var existingPublisherIDsInLeagueYear = existingPublishersInLeagueYear.Select(x => x.PublisherID).ToHashSet();
 
                 // Only the first draft is relevant; publishers move before any draft starts.
-                var draftID = existingPublishersInLeagueYear.Select(x => x.DraftID).FirstOrDefault(x => x.HasValue)?.Value;
+                var draftID = existingPublishersInLeagueYear.Select(x => x.DraftID).FirstOrDefault(x => x.HasValue);
                 if (!draftID.HasValue)
                 {
                     continue;
