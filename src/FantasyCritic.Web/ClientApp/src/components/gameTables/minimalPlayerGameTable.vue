@@ -130,10 +130,15 @@ export default {
       if (this.publisher.superDropsAvailable > 0) {
         return true;
       }
-      if ((this.publisher.willReleaseDroppableGames === -1 && this.publisher.willNotReleaseDroppableGames === -1) || this.publisher.unrestrictedReleaseStatusDroppableGames === -1) {
+      if (
+        (this.leagueYear.settings.willReleaseDroppableGames === -1 && this.leagueYear.settings.willNotReleaseDroppableGames === -1) ||
+        this.leagueYear.settings.unrestrictedReleaseStatusDroppableGames === -1
+      ) {
         return false;
       }
-      return this.publisher.willReleaseDroppableGames > 0 || this.publisher.willNotReleaseDroppableGames > 0 || this.publisher.unrestrictedReleaseStatusDroppableGames > 0;
+      return (
+        this.leagueYear.settings.willReleaseDroppableGames > 0 || this.leagueYear.settings.willNotReleaseDroppableGames > 0 || this.leagueYear.settings.unrestrictedReleaseStatusDroppableGames > 0
+      );
     },
     showRoundingWarning() {
       if (this.userInfo?.showDecimalPlaces) {
