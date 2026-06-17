@@ -10,6 +10,15 @@
       <br />
       Drop requests are processed on Saturday Nights. See the FAQ for more info.
     </p>
+    <div v-if="userPublisher" class="drop-counts">
+      <strong>Drops Remaining:</strong>
+      <ul>
+        <li v-if="userPublisher.willReleaseDroppableGames !== 0">Will Release: {{ dropStatus(userPublisher.willReleaseGamesDropped, userPublisher.willReleaseDroppableGames) }}</li>
+        <li v-if="userPublisher.willNotReleaseDroppableGames !== 0">Will Not Release: {{ dropStatus(userPublisher.willNotReleaseGamesDropped, userPublisher.willNotReleaseDroppableGames) }}</li>
+        <li v-if="userPublisher.unrestrictedReleaseStatusDroppableGames !== 0">Any Unreleased: {{ dropStatus(userPublisher.unrestrictedReleaseStatusGamesDropped, userPublisher.unrestrictedReleaseStatusDroppableGames) }}</li>
+        <li v-if="userPublisher.superDropsAvailable !== undefined">Super Drops: {{ userPublisher.superDropsAvailable }}</li>
+      </ul>
+    </div>
     <form class="form-horizontal" hide-footer @submit.prevent="dropGame">
       <div class="form-group">
         <label for="gameToDrop" class="control-label">Game</label>
@@ -57,6 +66,12 @@ export default {
     }
   },
   methods: {
+    dropStatus(dropped, droppable) {
+      if (droppable === -1) {
+        return '\u221E';
+      }
+      return droppable - dropped;
+    },
     dropGame() {
       const request = {
         publisherID: this.userPublisher.publisherID,

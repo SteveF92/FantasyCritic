@@ -44,7 +44,7 @@ public class PublisherSlotViewModel
         CounterPickedGameIsInvalid = slot.CounterPickedGameIsValid.HasValue && !slot.CounterPickedGameIsValid.Value;
 
         ProjectedFantasyPoints = slot.GetProjectedFantasyPoints(leagueYear.SupportedYear, leagueYear.Options.ScoringSystem, systemWideValues,
-            leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames);
+            leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames, false);
     }
 
     public int SlotNumber { get; }

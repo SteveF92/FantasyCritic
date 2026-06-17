@@ -4,12 +4,17 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.SharedSerialization.API;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
+using NodaTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -29,11 +34,14 @@ public class AdminController : FantasyCriticController
     private readonly DiscordPushService _discordPushService;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IConfiguration _configuration;
+
+    private const string IntegrationTestModeConfigKey = "IntegrationTestMode";
 
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo)
+        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration)
         : base(userManager)
     {
         _adminService = adminService;
@@ -47,6 +55,7 @@ public class AdminController : FantasyCriticController
         _discordPushService = discordPushService;
         _masterGameRepo = masterGameRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -111,7 +120,7 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SearchSupportUsers([FromBody] SupportUserSearchRequest request)
+    public async Task<ActionResult<List<SupportUserSearchMatchViewModel>>> SearchSupportUsers([FromBody] SupportUserSearchRequest request)
     {
         string searchValue = request.SearchValue ?? "";
         if (request.SearchKind == SupportUserSearchKind.Email)
@@ -134,7 +143,7 @@ public class AdminController : FantasyCriticController
             viewModels.Add(new SupportUserSearchMatchViewModel(user, rowsByUser[user.Id].ToList()));
         }
 
-        return Ok(viewModels);
+        return viewModels;
     }
 
     [HttpPost]
@@ -158,7 +167,7 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CloseSupportTicket([FromBody] CloseSupportTicketRequest request)
+    public async Task<ActionResult<SupportTicketViewModel>> CloseSupportTicket([FromBody] CloseSupportTicketRequest request)
     {
         var existingTicket = await _userManager.GetSupportTicket(request.SupportTicketID);
         if (existingTicket is null)
@@ -172,15 +181,16 @@ public class AdminController : FantasyCriticController
         }
 
         var closedTicket = await _userManager.CloseSupportTicket(existingTicket, request.ResolutionNotes);
-        return Ok(new SupportTicketViewModel(closedTicket));
+        var vm = new SupportTicketViewModel(closedTicket);
+        return vm;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetActiveSupportTickets()
+    public async Task<ActionResult<List<SupportTicketAdminListEntryViewModel>>> GetActiveSupportTickets()
     {
         var tickets = await _userManager.GetAllActiveSupportTickets();
         var viewModels = tickets.Select(t => new SupportTicketAdminListEntryViewModel(t)).ToList();
-        return Ok(viewModels);
+        return viewModels;
     }
 
     [HttpPost]
@@ -346,6 +356,126 @@ public class AdminController : FantasyCriticController
         }
 
         await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
+        return Ok();
+    }
+
+    [HttpGet]
+    [ProducesResponseType<FantasyCriticUserViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FantasyCriticUserViewModel>> GetUserInfo([FromQuery] Guid userID)
+    {
+        var user = await _userManager.FindByIdAsync(userID.ToString());
+        if (user is null)
+            return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        return new FantasyCriticUserViewModel(user, roles);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GrantRole([FromBody] UserRoleRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (user is null)
+            return NotFound();
+
+        try
+        {
+            await _userManager.AddToRoleAsync(user, request.RoleName);
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest($"Role '{request.RoleName}' does not exist.");
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveRole([FromBody] UserRoleRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (user is null)
+            return NotFound();
+
+        await _userManager.RemoveFromRoleAsync(user, request.RoleName);
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult SetInitialTime([FromBody] SetTimeRequest request)
+    {
+        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
+        if (!integrationTestMode)
+        {
+            return NotFound();
+        }
+
+        var adjustableClock = _clock as AdjustableClock;
+        if (adjustableClock is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
+        }
+
+        adjustableClock.SetInitialTime(Instant.FromDateTimeOffset(request.NewTime));
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult SetTime([FromBody] SetTimeRequest request)
+    {
+        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
+        if (!integrationTestMode)
+        {
+            return NotFound();
+        }
+
+        var adjustableClock = _clock as AdjustableClock;
+        if (adjustableClock is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
+        }
+
+        var result = adjustableClock.SetTime(Instant.FromDateTimeOffset(request.NewTime));
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult ResetTime()
+    {
+        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
+        if (!integrationTestMode)
+        {
+            return NotFound();
+        }
+
+        var adjustableClock = _clock as AdjustableClock;
+        if (adjustableClock is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
+        }
+
+        adjustableClock.ResetTime();
         return Ok();
     }
 }

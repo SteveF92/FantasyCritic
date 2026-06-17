@@ -1,0 +1,62 @@
+{
+  "runtime": "Net100",
+  "documentGenerator": {
+    "aspNetCoreToOpenApi": {
+      "project": "../FantasyCritic.Web/FantasyCritic.Web.csproj",
+      "documentName": "FantasyCriticAPI",
+      "configuration": "$(Configuration)",
+      "noBuild": true,
+      "output": null
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "generateClientClasses": true,
+      "generateClientInterfaces": true,
+      "injectHttpClient": true,
+      "disposeHttpClient": false,
+      "generateExceptionClasses": true,
+      "exceptionClass": "ApiException",
+      "wrapDtoExceptions": true,
+      "throwExceptionOnResponseNotOk": true,
+      "useHttpClientCreationMethod": false,
+      "httpClientType": "System.Net.Http.HttpClient",
+      "useBaseUrl": true,
+      "generateUpdateJsonSerializerSettingsCode": true,
+      "clientClassAccessModifier": "public",
+      "typeAccessModifier": "public",
+      "className": "{controller}Client",
+      "operationGenerationMode": "MultipleClientsFromOperationId",
+      "jsonLibrary": "SystemTextJson",
+      "generateDtoTypes": true,
+      "generateNullableReferenceTypes": true,
+      "generateOptionalPropertiesAsNullable": false,
+      "classStyle": "Poco",
+      "generateDataAnnotations": false,
+      "namespace": "FantasyCritic.ApiClient",
+      "output": "Generated/FantasyCriticClients.cs"
+    },
+    "openApiToTypeScriptClient": {
+      "className": "{controller}Client",
+      "moduleName": "",
+      "namespace": "",
+      "typeScriptVersion": 4.7,
+      "template": "Fetch",
+      "promiseType": "Promise",
+      "withCredentials": true,
+      "generateClientClasses": true,
+      "generateClientInterfaces": true,
+      "generateDtoTypes": true,
+      "generateExceptionClasses": true,
+      "exceptionClass": "ApiException",
+      "wrapDtoExceptions": true,
+      "operationGenerationMode": "MultipleClientsFromOperationId",
+      "dateTimeType": "String",
+      "markOptionalProperties": true,
+      "typeStyle": "Interface",
+      "exportTypes": true,
+      "importRequiredTypes": true,
+      "output": "../FantasyCritic.Web/ClientApp/src/api/generated/FantasyCriticClients.ts"
+    }
+  }
+}

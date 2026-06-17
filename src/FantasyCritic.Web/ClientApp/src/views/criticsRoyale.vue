@@ -106,7 +106,7 @@
       </div>
     </b-modal>
 
-    <CriticsRoyaleInfo class="critics-royale-info" />
+    <CriticsRoyaleInfo class="critics-royale-info" :year="year" :quarter="quarter" />
   </div>
 </template>
 
@@ -182,7 +182,7 @@ export default {
       return matchingQuarters;
     },
     showTopRankedChart() {
-      return true;
+      return this.topPublishers && this.topPublishers.length > 0;
     }
   },
   watch: {

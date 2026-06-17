@@ -3,10 +3,12 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Models.Responses.Combined;
 using FantasyCritic.Web.Models.Responses.Conferences;
 using FantasyCritic.Web.Models.Responses.Royale;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -28,8 +30,10 @@ public class CombinedDataController : FantasyCriticController
         _clock = clock;
     }
 
+    [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> BasicData()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<BasicDataViewModel>> BasicData()
     {
         var basicData = await _interLeagueService.GetBasicData();
 
@@ -38,18 +42,13 @@ public class CombinedDataController : FantasyCriticController
         var leagueOptions = BuildLeagueOptionsViewModel(basicData.SupportedYears);
         var supportedYears = basicData.SupportedYears.Select(x => new SupportedYearViewModel(x)).ToList();
 
-        var vm = new
-        {
-            BidTimes = bidTimes,
-            MasterGameTags = masterGameTags,
-            LeagueOptions = leagueOptions,
-            SupportedYears = supportedYears
-        };
-
-        return Ok(vm);
+        var vm = new BasicDataViewModel(bidTimes, masterGameTags, leagueOptions, supportedYears);
+        return vm;
     }
 
-    public async Task<IActionResult> HomePageData()
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<HomePageDataViewModel>> HomePageData()
     {
         var currentUser = await GetCurrentUserOrThrow();
         var homePageData = await _fantasyCriticService.GetHomePageData(currentUser);
@@ -63,7 +62,7 @@ public class CombinedDataController : FantasyCriticController
             .ToList();
 
         //My Invites
-        var myInviteViewModels = homePageData.InvitedLeagues.Select(x => new CompleteLeagueInviteViewModel(x));
+        var myInviteViewModels = homePageData.InvitedLeagues.Select(x => new CompleteLeagueInviteViewModel(x)).ToList();
 
         //My Conferences
         var myConferenceViewModels = homePageData.MyConferences
@@ -89,18 +88,15 @@ public class CombinedDataController : FantasyCriticController
         //Active Royale Quarter
         var activeRoyaleQuarterViewModel = new RoyaleYearQuarterViewModel(homePageData.ActiveRoyaleYearQuarter);
 
-        var vm = new
-        {
-            MyLeagues = myLeagueViewModels,
-            MyInvites = myInviteViewModels,
-            MyConferences = myConferenceViewModels,
-            TopBidsAndDrops = completeTopBidsAndDropsViewModel,
-            MyGameNews = myGameNewsViewModel,
-            PublicLeagues = publicLeagueViewModels,
-            ActiveRoyaleQuarter = activeRoyaleQuarterViewModel,
-            UserRoyalePublisherID = homePageData.ActiveYearQuarterRoyalePublisherID
-        };
-
-        return Ok(vm);
+        var vm = new HomePageDataViewModel(
+            myLeagueViewModels,
+            myInviteViewModels,
+            myConferenceViewModels,
+            completeTopBidsAndDropsViewModel,
+            myGameNewsViewModel,
+            publicLeagueViewModels,
+            activeRoyaleQuarterViewModel,
+            homePageData.ActiveYearQuarterRoyalePublisherID);
+        return vm;
     }
 }

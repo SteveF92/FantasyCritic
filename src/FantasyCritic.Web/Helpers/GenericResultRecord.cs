@@ -4,9 +4,9 @@ namespace FantasyCritic.Web.Helpers;
 public class GenericResultRecord<TValidResult> where TValidResult : class
 {
     public TValidResult? ValidResult { get; }
-    public IActionResult? FailedResult { get; }
+    public ActionResult? FailedResult { get; }
 
-    public GenericResultRecord(TValidResult? validResult, IActionResult? failedResult)
+    public GenericResultRecord(TValidResult? validResult, ActionResult? failedResult)
     {
         if (validResult is null && failedResult is null)
         {

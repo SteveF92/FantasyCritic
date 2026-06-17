@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FantasyCritic.LocalDatabaseTool": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

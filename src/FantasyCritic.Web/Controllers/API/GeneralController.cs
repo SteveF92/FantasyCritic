@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -21,18 +22,21 @@ public class GeneralController : FantasyCriticController
         _clock = clock;
     }
 
+    [HttpGet]
     public async Task<ActionResult<SiteCountsViewModel>> SiteCounts()
     {
         var counts = await _interLeagueService.GetSiteCounts();
         return Ok(new SiteCountsViewModel(counts));
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<string>>> Donors()
     {
         var donors = await _userManager.GetDonors();
         return Ok(donors);
     }
 
+    [HttpGet]
     public async Task<ActionResult<BidTimesViewModel>> BidTimes()
     {
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
@@ -40,6 +44,7 @@ public class GeneralController : FantasyCriticController
         return Ok(vm);
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<SiteAnnouncementViewModel>>> SiteAnnouncements()
     {
         var announcements = await _interLeagueService.GetSiteAnnouncements();
@@ -49,6 +54,8 @@ public class GeneralController : FantasyCriticController
 
     [HttpGet]
     [HttpGet("/rss/announcements")]
+    [Produces("application/rss+xml")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> SiteAnnouncementsRss()
     {
         var announcements = await _interLeagueService.GetSiteAnnouncements();

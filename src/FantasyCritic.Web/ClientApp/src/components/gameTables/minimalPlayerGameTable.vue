@@ -26,6 +26,41 @@
         </div>
       </div>
     </div>
+    <div class="publisher-stats-container">
+      <div class="publisher-stats">
+        <span class="publisher-stat">
+          <span class="stat-value">{{ publisher.budget | money(0) }}</span>
+          <span class="stat-label">Budget</span>
+        </span>
+        <span class="publisher-stat">
+          <span class="stat-value">{{ publisher.gamesReleased }}</span>
+          <span class="stat-label">Released</span>
+        </span>
+        <span class="publisher-stat">
+          <span class="stat-value">{{ publisher.gamesWillRelease }}</span>
+          <span class="stat-label">Expecting</span>
+        </span>
+      </div>
+      <div v-if="hasAnyDrops" class="publisher-stats publisher-stats-drops">
+        <span class="drops-remaining-label">Available Drops</span>
+        <span v-if="publisher.willReleaseDroppableGames !== 0" class="publisher-stat">
+          <span class="stat-value">{{ dropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames) }}</span>
+          <span class="stat-label">Will Release</span>
+        </span>
+        <span v-if="publisher.willNotReleaseDroppableGames !== 0" class="publisher-stat">
+          <span class="stat-value">{{ dropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames) }}</span>
+          <span class="stat-label">Won't Release</span>
+        </span>
+        <span v-if="publisher.unrestrictedReleaseStatusDroppableGames !== 0" class="publisher-stat">
+          <span class="stat-value">{{ dropStatus(publisher.unrestrictedReleaseStatusGamesDropped, publisher.unrestrictedReleaseStatusDroppableGames) }}</span>
+          <span class="stat-label">Any Unreleased</span>
+        </span>
+        <span v-if="publisher.superDropsAvailable !== 0" class="publisher-stat">
+          <span class="stat-value">{{ publisher.superDropsAvailable }}</span>
+          <span class="stat-label">Super Drops</span>
+        </span>
+      </div>
+    </div>
     <table class="table table-striped">
       <thead>
         <tr class="bg-secondary">
@@ -91,6 +126,20 @@ export default {
     iconIsValid() {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },
+    hasAnyDrops() {
+      if (this.publisher.superDropsAvailable > 0) {
+        return true;
+      }
+      if (
+        (this.leagueYear.settings.willReleaseDroppableGames === -1 && this.leagueYear.settings.willNotReleaseDroppableGames === -1) ||
+        this.leagueYear.settings.unrestrictedReleaseStatusDroppableGames === -1
+      ) {
+        return false;
+      }
+      return (
+        this.leagueYear.settings.willReleaseDroppableGames > 0 || this.leagueYear.settings.willNotReleaseDroppableGames > 0 || this.leagueYear.settings.unrestrictedReleaseStatusDroppableGames > 0
+      );
+    },
     showRoundingWarning() {
       if (this.userInfo?.showDecimalPlaces) {
         return false;
@@ -130,6 +179,12 @@ export default {
     }
   },
   methods: {
+    dropStatus(dropped, droppable) {
+      if (droppable === -1) {
+        return '\u221E';
+      }
+      return droppable - dropped + '/' + droppable;
+    },
     prepareSnapshot() {
       this.renderingSnapshot = true;
       setTimeout(this.sharePublisher, 1);
@@ -209,6 +264,88 @@ export default {
 .player-name {
   color: white;
   font-weight: bold;
+}
+
+.publisher-stats-container {
+  margin-top: 3px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.publisher-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.publisher-stats-drops {
+  margin-top: 0;
+  flex-wrap: wrap;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.drops-remaining-label {
+  width: 100%;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.publisher-stats-drops .publisher-stat {
+  padding: 0px 4px;
+  min-width: 80px;
+}
+
+.publisher-stats-drops .stat-label {
+  max-width: 100px;
+}
+
+.publisher-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 60px;
+  padding: 2px 4px;
+  position: relative;
+}
+
+.publisher-stat + .publisher-stat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.stat-label {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 80px;
+}
+
+.stat-value {
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
 }
 
 .publisher-slogan {

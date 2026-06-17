@@ -16,6 +16,7 @@
       <font-awesome-icon v-if="game.linked && game.willReleaseEarlyAccessOnly" v-b-popover.hover.focus="willReleaseEarlyAccessOnlyText" color="white" size="lg" icon="calendar-days" />
       <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" v-b-popover.hover.focus="delayContentionText" color="white" size="lg" icon="balance-scale" />
       <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" v-b-popover.hover.focus="counterPickedText" color="white" size="lg" icon="crosshairs" />
+      <font-awesome-icon v-if="gameSlot.counterPick && counterPickSourcePublisher" v-b-popover.hover.focus="counterPickSourceText" color="white" size="lg" icon="user" />
       <font-awesome-icon v-if="game.dropBlocked" v-b-popover.hover.focus="gameDropBlockedText" color="white" size="lg" icon="lock" />
       <font-awesome-icon v-if="game.linked && game.masterGame.showNote && game.masterGame.notes" v-b-popover.hover.focus="game.masterGame.notes" color="white" size="lg" icon="flag" />
       <template v-if="game.released && game.linked && !supportedYear.finished && !game.criticScore">
@@ -60,11 +61,28 @@ export default {
     game() {
       return this.gameSlot.publisherGame;
     },
+    leagueYear() {
+      return this.$store.state.league.leagueYear;
+    },
     moveMode() {
       return this.$store.getters.moveMode;
     },
     holdingGame() {
       return this.$store.getters.holdingGame;
+    },
+    counterPickSourcePublisher() {
+      if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear?.publishers) {
+        return null;
+      }
+      const masterGameID = this.game.masterGame.masterGameID;
+      for (const publisher of this.leagueYear.publishers) {
+        for (const slot of publisher.gameSlots) {
+          if (!slot.counterPick && slot.publisherGame?.masterGame?.masterGameID === masterGameID) {
+            return publisher;
+          }
+        }
+      }
+      return null;
     },
     inEligibleText() {
       return {
@@ -266,6 +284,13 @@ export default {
           finalString += finalPart;
           return finalString;
         }
+      };
+    },
+    counterPickSourceText() {
+      return {
+        html: true,
+        title: () => 'Publisher With Game',
+        content: () => `This game is in ${this.counterPickSourcePublisher.publisherName}'s roster.`
       };
     },
     emptyCounterpickFinalText() {

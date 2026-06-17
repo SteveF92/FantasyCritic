@@ -17,9 +17,29 @@ if [ $DBUP_EXIT_CODE -ne 0 ]; then
   exit $DBUP_EXIT_CODE
 fi
 
+echo Restoring dotnet tools and regenerating API client
+dotnet tool restore
+dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj -c Release
+BUILD_EXIT_CODE=$?
+if [ $BUILD_EXIT_CODE -ne 0 ]; then
+  echo "Web project build failed (exit code: $BUILD_EXIT_CODE). Not restarting site."
+  exit $BUILD_EXIT_CODE
+fi
+NSWAG_CONFIGURATION=Release bash scripts/regenerate-api-client.sh
+NSWAG_EXIT_CODE=$?
+if [ $NSWAG_EXIT_CODE -ne 0 ]; then
+  echo "API client generation failed (exit code: $NSWAG_EXIT_CODE). Not restarting site."
+  exit $NSWAG_EXIT_CODE
+fi
+
 echo Building
 rm -rf folderName ../BuildArea
 dotnet publish src/FantasyCritic.Web/FantasyCritic.Web.csproj -c Release -o ../BuildArea
+PUBLISH_EXIT_CODE=$?
+if [ $PUBLISH_EXIT_CODE -ne 0 ]; then
+  echo "Web publish failed (exit code: $PUBLISH_EXIT_CODE). Not restarting site."
+  exit $PUBLISH_EXIT_CODE
+fi
 
 echo Deleting and moving files
 rm -rf /var/www/fantasy-critic/*

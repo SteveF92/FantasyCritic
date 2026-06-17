@@ -16,7 +16,7 @@
         {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
       </template>
       <template #cell(status)="data">
-        <statusBadge :possible-master-game="data.item"></statusBadge>
+        <statusBadge :possible-master-game="data.item" strip-that></statusBadge>
       </template>
       <template #cell(cost)="data">
         {{ data.item.cost | money }}

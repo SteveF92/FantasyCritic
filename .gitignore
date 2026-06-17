@@ -264,3 +264,11 @@ src/FantasyCritic.Web/tempkey.jwk
 
 *.received.*
 src/FantasyCritic.Web/ClientApp/dist/
+src/FantasyCritic.IntegrationTests/appsettings.Testing.Local.json
+
+# NSwag-generated API client — regenerate with scripts/Regenerate-ApiClient.ps1
+src/FantasyCritic.ApiClient/Generated/
+src/FantasyCritic.Web/ClientApp/src/api/generated/
+
+# Git worktrees (isolated feature branches)
+.worktrees/

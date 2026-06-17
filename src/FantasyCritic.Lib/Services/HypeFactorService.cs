@@ -44,6 +44,10 @@ public class HypeFactorService : IHypeFactorService
     private static HypeConstants RunRegression(IReadOnlyList<MasterGameYear> allMasterGameYears)
     {
         var models = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x)).Where(x => x.CriticScore.HasValue).ToList();
+        if (!models.Any())
+        {
+            return HypeConstants.DefaultValues;
+        }
 
         var xData = models.Select(d => new[]
         {

@@ -1,5 +1,3 @@
-using System.Net;
-using System.Runtime.InteropServices;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -9,6 +7,9 @@ using FantasyCritic.AWS;
 using FantasyCritic.EmailTemplates;
 using FantasyCritic.Lib.BackgroundServices;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Handlers;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -18,9 +19,11 @@ using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
+using FantasyCritic.Postmark;
+using FantasyCritic.Web.Authorization;
 using FantasyCritic.Web.Hubs;
+using FantasyCritic.Web.OpenApi;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -28,17 +31,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime.Serialization.SystemTextJson;
+using NSwag;
 using Serilog;
-using NodaTime.Serialization.JsonNet;
-using Microsoft.Extensions.Configuration;
-using FantasyCritic.Postmark;
-using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Discord.Handlers;
-using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Web.Authorization;
-
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
@@ -70,11 +72,11 @@ public static class HostingExtensions
 
         var repoConfiguration = new RepositoryConfiguration(connectionString, clock);
         var patreonConfig = new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!);
-        var emailSendingConfig = new EnvironmentConfiguration(baseAddress, environment.IsProduction());
+        var environmentConfig = new EnvironmentConfiguration(baseAddress, environment.IsProduction());
         var discordConfiguration = new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId"));
         services.AddSingleton<RepositoryConfiguration>(_ => repoConfiguration);
         services.AddSingleton<PatreonConfig>(_ => patreonConfig);
-        services.AddSingleton<EnvironmentConfiguration>(_ => emailSendingConfig);
+        services.AddSingleton<EnvironmentConfiguration>(_ => environmentConfig);
         services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
         services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
         services.AddSingleton<RoleHandler>();
@@ -97,15 +99,7 @@ public static class HostingExtensions
         services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
 
         services.AddScoped<PatreonService>();
-
-        if (environment.IsProduction() || environment.IsStaging())
-        {
-            services.AddScoped<IHypeFactorService, HypeFactorService>();
-        }
-        else
-        {
-            services.AddScoped<IHypeFactorService>(_ => new DefaultHypeFactorService());
-        }
+        services.AddScoped<IHypeFactorService, HypeFactorService>();
 
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
         services.AddScoped<FantasyCriticUserManager>();
@@ -301,9 +295,10 @@ public static class HostingExtensions
         });
 
         services.AddControllers()
-            .AddNewtonsoftJson(options =>
+            .AddJsonOptions(options =>
             {
-                options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             })
             .AddControllersAsServices();
 
@@ -327,12 +322,21 @@ public static class HostingExtensions
 
         services.AddRazorTemplating();
         services.AddSession();
+        services.AddOpenApiDocument(settings =>
+        {
+            settings.Title = "Fantasy Critic API";
+            settings.DocumentName = "FantasyCriticAPI";
+            settings.OperationProcessors.Add(new FantasyCriticOperationProcessor());
+            settings.SchemaSettings.SchemaProcessors.Add(new RequireNonNullablePropertiesSchemaProcessor());
+        });
 
         return builder.Build();
     }
 
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
+        var environmentConfig = app.Services.GetService<EnvironmentConfiguration>()!;
+
         var env = app.Environment;
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !env.IsDevelopment())
         {
@@ -349,6 +353,18 @@ public static class HostingExtensions
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
+
+        // Add OpenAPI/Swagger middlewares
+        app.UseOpenApi(settings =>
+        {
+            settings.PostProcess = (document, httpRequest) =>
+            {
+                document.Servers.Clear();
+                document.Servers.Add(new OpenApiServer { Url = environmentConfig.BaseAddress });
+            };
+        });
+
+        app.UseSwaggerUi();
 
         if (!env.IsDevelopment())
         {

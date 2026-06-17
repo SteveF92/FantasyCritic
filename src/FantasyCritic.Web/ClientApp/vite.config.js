@@ -68,6 +68,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
+      '/swagger': {
+        target: target,
+        changeOrigin: true,
+        secure: false
+      },
     }
   },
   resolve: {

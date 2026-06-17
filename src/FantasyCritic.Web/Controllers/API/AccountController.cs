@@ -3,7 +3,7 @@ using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace FantasyCritic.Web.Controllers.API;
 
@@ -17,7 +17,8 @@ public class AccountController : FantasyCriticController
 
     }
 
-    public async Task<ActionResult> CurrentUser()
+    [HttpGet]
+    public async Task<ActionResult<FantasyCriticUserViewModel>> CurrentUser()
     {
         var currentUserResult = await GetCurrentUser();
         if (currentUserResult.IsFailure)
@@ -30,16 +31,16 @@ public class AccountController : FantasyCriticController
         var sessionUserRoles = HttpContext.Session.GetString("current-user-roles");
         if (!string.IsNullOrWhiteSpace(sessionUserRoles))
         {
-            userRoles = JsonConvert.DeserializeObject<string[]>(sessionUserRoles)!;
+            userRoles = JsonSerializer.Deserialize<string[]>(sessionUserRoles)!;
         }
         else
         {
             userRoles = await _userManager.GetRolesAsync(currentUser);
-            var jsonString = JsonConvert.SerializeObject(userRoles);
+            var jsonString = JsonSerializer.Serialize(userRoles);
             HttpContext.Session.SetString("current-user-roles", jsonString);
         }
 
         FantasyCriticUserViewModel vm = new FantasyCriticUserViewModel(currentUser, userRoles);
-        return Ok(vm);
+        return vm;
     }
 }
