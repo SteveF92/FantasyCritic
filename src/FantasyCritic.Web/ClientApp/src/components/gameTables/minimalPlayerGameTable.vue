@@ -262,7 +262,7 @@ export default {
 }
 
 .publisher-stats-container {
-  margin-top: 6px;
+  margin-top: 3px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   background-color: rgba(0, 0, 0, 0.25);
@@ -274,12 +274,12 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  padding: 5px 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .publisher-stats-drops {
   margin-top: 0;
-  padding: 4px 10px 8px;
   flex-wrap: wrap;
   background-color: rgba(0, 0, 0, 0.2);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
