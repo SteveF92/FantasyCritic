@@ -1,14 +1,12 @@
 # Multi-Draft Leagues — Community Preview
 
-> This document describes an upcoming feature for FantasyCritic. It is a preview shared with the community before implementation begins. Details may change.
+> This document describes an upcoming feature for FantasyCritic. Details may change either due to feedback, or because I think of something new while implementing. Both are likely, let's be honest.
 
 ---
 
 ## What Are Multi-Draft Leagues?
 
-Multi-draft leagues let you run more than one draft within a single league year. Instead of picking all your games in one sitting at the start of the year, you can schedule a second (or third) draft later in the year — giving your league a fresh injection of excitement mid-season.
-
-This has always been one of the most-requested features, and it opens up a lot of creative league formats.
+Multi-draft leagues let you run more than one draft within a single league year. Instead of picking all your games in one sitting at the start of the year, you can schedule a second (or third, or as many as you want) draft later in the year.
 
 ---
 
@@ -20,7 +18,7 @@ When you create a new league, you'll choose from three presets:
 
 - **Standard League** — same as always. One draft, bids and pickups enabled between picks.
 - **One Shot League** — same as always. One draft, no bids or pickups.
-- **Multi-Draft League** — schedules two drafts from the start. You configure both right on the creation page. Bids are off by default (everyone's roster is "full" between drafts), but you can turn them on if you want.
+- **Multi-Draft League** — schedules two drafts from the start. You configure both right on the creation page. Bids are off by default (everyone's roster is "full" between drafts), but you can turn them on if you want. You can always add more than two, but I want to start you with at least two to get the league in the right mindset and UI from the get go.
 
 You can also build a multi-draft league manually after creation — presets are just shortcuts.
 
@@ -37,7 +35,7 @@ When adding a new draft, the commissioner can also **expand the league's total r
 
 ### Roster Strategy
 
-This is where it gets interesting. The system is flexible by design, so your league can choose its own philosophy:
+The system is flexible by design, so your league can choose its own philosophy:
 
 **Option 1 — Plan the whole year upfront.** Set your total roster size and schedule all your drafts before the first one happens. Everyone knows exactly what's coming.
 
@@ -47,7 +45,7 @@ This is where it gets interesting. The system is flexible by design, so your lea
 
 ### Forcing Draft Themes
 
-By adding the right slots just before a draft, a commissioner can effectively theme a draft. For example: "In this draft, everyone must pick at least one RPG" — by giving everyone one open RPG special slot and two open standard slots, and running a three-game draft. The system doesn't need a special "themed draft" feature; it falls out naturally from slot management.
+By adding the right slots just before a draft, you can force things like "this draft must be one NGF, one expansion pack, and one Re-Something". Just add exactly those three slots so those are the only slot available at draft time, and set the draft for 3 games.
 
 ---
 
@@ -59,7 +57,9 @@ Each draft gets its own draft order. The commissioner sets it the same way as th
 
 - **Random** — the system picks randomly
 - **Manual** — the commissioner sets the order
-- **Inverse of current standings** — the player in last place picks first
+- **Inverse of current standings** — the player in last place picks first, by projected points
+
+The main league UI will reorder itself so that the publishers are ordered by the next draft once it's order is set, and stay at the previous draft before the order is set for the next.
 
 ### Starting a Draft
 
@@ -69,7 +69,7 @@ If a scheduled draft's date has passed without being started, the league page wi
 
 ### Skipped Turns
 
-If a player's roster fills up partway through a later draft (say, they won a bid between drafts and used one of their open slots), their remaining turns in that draft are automatically skipped. The league page will clearly show when and why a player was skipped, so there's no confusion.
+If a player's roster fills up partway through a later draft (say, they won a bid between drafts and used one of their open slots), their remaining turns in that draft are automatically skipped. The league page will clearly show when and why a player was skipped, and it will be recorded on the league history page, so there's no confusion.
 
 ---
 
@@ -83,6 +83,8 @@ Leagues can choose whether to allow bids and pickups in between drafts:
 Either way, **bids and drops are always blocked while a draft is in progress or paused**. You can't place or win a bid during an active draft.
 
 If you want to block drops between drafts but don't want to block bids, you simply give players zero drop allowances. The system doesn't need a separate setting for that.
+
+These settings can be changed any time a draft is NOT in progress. Special auctions also cannot be created while a draft is in progress, but they CAN be created if bids are not enabled. Players can ONLY bid on that special auction game. If you want no bids period, you wouldn't make a special auction.
 
 ---
 
@@ -121,7 +123,7 @@ Yes, as long as it hasn't started and it isn't the first draft. Every league mus
 Their turns in the second draft are automatically skipped. The page will show this clearly.
 
 **Does this work with One Shot mode?**  
-One Shot mode is unchanged for leagues that use it. Multi-draft is its own separate option.
+One Shot mode is unchanged for leagues that use it. Multi-draft is its own separate option. The system is flexible enough that you can add a second draft to what started as a one shot league though. It'll just be considered a multi draft league once you've added that second draft.
 
 **Can I turn bids on or off after my league is already created?**  
 Yes. The commissioner can change the bids setting from the league year settings page at any time. The change is recorded in the league's history.
