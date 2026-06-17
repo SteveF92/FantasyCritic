@@ -38,11 +38,15 @@ The first draft (by `DraftNumber`) whose `PlayStatus` is not `DraftFinal`. This 
 
 **`IsAnyDraftInProgress`** (`bool`)  
 `CurrentDraft != null && CurrentDraft.PlayStatus != NotStartedDraft`.  
-Used as the primary gate for bid and drop blocking.
+Used as the primary gate for bid, drop, and special auction blocking.
 
-**Bid / drop blocking rules** (replaces the old `OneShotMode` checks):
-- Bid allowed: `leagueYear.Options.EnableBids && !leagueYear.IsAnyDraftInProgress`
+**One-shot → multi-draft conversion:**  
+Adding a second draft to a league that started in one-shot mode is fully supported by the existing design. `OneShotMode` is a computed property on `LeagueYear`; once a second draft exists, the condition that made the league one-shot is no longer met and `OneShotMode` returns `false` automatically. No special migration or flag is needed.
+
+**Bid / drop / special auction blocking rules** (replaces the old `OneShotMode` checks):
+- Regular bid allowed: `leagueYear.Options.EnableBids && !leagueYear.IsAnyDraftInProgress`
 - Drop allowed: `!leagueYear.IsAnyDraftInProgress`
+- Special auction creation allowed: `!leagueYear.IsAnyDraftInProgress` (EnableBids is irrelevant — special auctions are commissioner-initiated and independent of the regular bid toggle; players can only bid on the specific special-auction game, so commissioners who want zero bids simply don't create special auctions)
 
 (EnableBids is irrelevant to drops; if a commissioner wants to block drops between drafts they simply give players zero drop allowances.)
 
@@ -169,7 +173,7 @@ When the league has 2+ drafts, `GamesToDraft` and `CounterPicksToDraft` are igno
 
 ### `POST /api/League/SetDraftOrder`
 
-Gains an explicit `draftID` parameter. The server validates that the supplied `DraftID` matches `CurrentDraft` and rejects the request if not. The UI always passes the correct `DraftID` behind the scenes — users never choose it themselves. "Inverse Standings" option computes the order from current league year standings at the moment the endpoint is called.
+Gains an explicit `draftID` parameter. The server validates that the supplied `DraftID` matches `CurrentDraft` and rejects the request if not. The UI always passes the correct `DraftID` behind the scenes — users never choose it themselves. "Inverse Standings" option computes the order from current league year standings (by projected points) at the moment the endpoint is called.
 
 ### `POST /api/League/ResetDraft`
 
@@ -249,6 +253,7 @@ Commissioner actions:
 - **Imminent draft** (scheduled within 7 days, OR draft order already set): surfaces a callout/banner at the top of the page, visible to all players
 - **Overdue draft** (`ScheduledDate` passed, still `NotStartedDraft`): soft informational warning visible to all players
 - Existing "Start Draft" / "Set Draft Order" buttons naturally target `CurrentDraft`
+- **Publisher list ordering**: once the next scheduled draft's order is set, the publishers panel reorders to reflect that draft's order. Before the next draft's order is set, the panel stays in the previous draft's order. The frontend derives this by scanning `Drafts` for the first `NotStartedDraft` entry with `DraftOrderSet = true`; if none, it uses the most recent draft that has an order set.
 
 ### Modified: Create League page
 
