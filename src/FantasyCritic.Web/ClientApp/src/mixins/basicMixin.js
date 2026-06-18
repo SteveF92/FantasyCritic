@@ -6,7 +6,8 @@ let basicMixin = {
     ...mapGetters(['interLeagueDataLoaded', 'isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'authIsBusy']),
     ...mapState({
       possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions,
-      supportedYears: (state) => state.interLeague.supportedYears
+      supportedYears: (state) => state.interLeague.supportedYears,
+      activeRoyaleQuarter: (state) => state.interLeague.activeRoyaleQuarter
     }),
     displayName() {
       if (!this.$store.getters.userInfo) {

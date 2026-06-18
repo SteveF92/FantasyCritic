@@ -22,6 +22,15 @@ BEGIN
   select * from tbl_meta_systemwidesettings;
   select * from tbl_mastergame_tag;
   select * from tbl_meta_supportedyear;
+
+  -- Active Royale Quarter
+  SELECT tbl_royale_supportedquarter.*,
+         tbl_user.DisplayName AS WinningUserDisplayName
+  FROM tbl_royale_supportedquarter
+  LEFT JOIN tbl_user ON tbl_royale_supportedquarter.WinningUser = tbl_user.UserID
+  WHERE tbl_royale_supportedquarter.OpenForPlay = 1
+  ORDER BY tbl_royale_supportedquarter.YEAR DESC, tbl_royale_supportedquarter.QUARTER DESC
+  LIMIT 1;
 END//
 DELIMITER ;
 

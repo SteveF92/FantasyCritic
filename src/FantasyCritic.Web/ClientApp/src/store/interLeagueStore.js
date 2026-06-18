@@ -7,6 +7,7 @@ export default {
     possibleLeagueOptions: null,
     bidTimes: null,
     supportedYears: null,
+    activeRoyaleQuarter: null,
     dataLoaded: false
   },
   getters: {
@@ -25,6 +26,7 @@ export default {
         context.commit('setPossibleLeagueOptions', response.data.leagueOptions);
         context.commit('setBidTimes', response.data.bidTimes);
         context.commit('setSupportedYears', response.data.supportedYears);
+        context.commit('setActiveRoyaleQuarter', response.data.activeRoyaleQuarter);
         context.commit('setDataLoaded', true);
       } catch (error) {
         console.log(error);
@@ -51,6 +53,9 @@ export default {
     },
     setBidTimes(state, bidTimes) {
       state.bidTimes = bidTimes;
+    },
+    setActiveRoyaleQuarter(state, activeRoyaleQuarter) {
+      state.activeRoyaleQuarter = activeRoyaleQuarter;
     }
   }
 };

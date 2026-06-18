@@ -10,7 +10,7 @@
       </div>
 
       <div class="nav-area">
-        <router-link :to="{ name: 'royaleGroup', params: { groupid: groupid } }">Back to Group</router-link>
+        <router-link :to="{ name: 'royaleGroup', params: { groupid: groupid } }">Group Overview</router-link>
       </div>
 
       <div v-if="allQuarters && selectedYear" class="quarter-selection">
