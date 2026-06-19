@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "FantasyCritic.BetaSync": {
+    "FantasyCritic.RdsSnapshotManager": {
       "commandName": "Project",
       "commandLineArgs": "--clean"
     }

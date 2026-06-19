@@ -5,75 +5,67 @@ using Amazon.RDS;
 using Amazon.RDS.Model;
 using Serilog;
 
-namespace FantasyCritic.BetaSync;
+namespace FantasyCritic.AWS;
 
-public class RDSRefresher
+public class RdsRestoreService
 {
     private readonly AmazonRDSClient _rdsClient;
-    private readonly string _sourceRdsName;
-    private readonly string _destinationRdsName;
 
-    public RDSRefresher(string sourceRDSName, string destinationRDSName)
+    public RdsRestoreService()
     {
-        _sourceRdsName = sourceRDSName;
-        _destinationRdsName = destinationRDSName;
         _rdsClient = new AmazonRDSClient();
     }
 
-    public async Task CopySourceToDestination()
+    public RdsRestoreService(AmazonRDSClient rdsClient)
     {
-        Log.Information("Starting up copy process.");
+        _rdsClient = rdsClient;
+    }
 
-        DBSnapshot snapshotChosen = await SelectDBSnapshot(_sourceRdsName);
-        Log.Information($"Source Snapshot: {snapshotChosen.DBSnapshotIdentifier}");
+    public async Task CopySnapshotToInstance(string snapshotIdentifier, string destinationInstanceIdentifier)
+    {
+        Log.Information("Starting restore of {Snapshot} to {Destination}", snapshotIdentifier, destinationInstanceIdentifier);
 
-        DBInstance? destinationDB = await GetDBInstanceByIdentifier(_destinationRdsName);
+        DBSnapshot snapshot = await AssertDBSnapshotByIdentifier(snapshotIdentifier);
+        DBInstance? destinationDB = await GetDBInstanceByIdentifier(destinationInstanceIdentifier);
+
         if (destinationDB is not null)
         {
-            Log.Information($"Destination Database: {destinationDB.DBInstanceIdentifier}");
+            Log.Information("Destination database: {Destination}", destinationDB.DBInstanceIdentifier);
             string newNameForOldServer = await RenameOldInstance(destinationDB);
-
-            await RestoreFromSnapshot(destinationDB, snapshotChosen);
-
+            await RestoreFromSnapshot(destinationDB, snapshot);
             DBInstance oldServer = await AssertDBInstanceByIdentifier(newNameForOldServer);
             await DeleteInstance(oldServer);
         }
         else
         {
-            Log.Information($"Restoring Snapshot without deleting an instance: {snapshotChosen.DBSnapshotIdentifier}");
-            DBInstance productionDB = await AssertDBInstanceByIdentifier(_sourceRdsName);
-            await RestoreFromSnapshot(productionDB, snapshotChosen, _destinationRdsName);
+            Log.Information("Restoring snapshot to new instance {Destination}", destinationInstanceIdentifier);
+            DBInstance productionDB = await AssertDBInstanceByIdentifier(snapshot.DBInstanceIdentifier);
+            await RestoreFromSnapshot(productionDB, snapshot, destinationInstanceIdentifier);
         }
 
-        Log.Information("Process Complete.");
+        Log.Information("Restore complete.");
     }
 
-    private async Task<DBSnapshot> SelectDBSnapshot(string sourceRDSName)
+    private async Task<DBSnapshot> AssertDBSnapshotByIdentifier(string snapshotIdentifier)
     {
-        var snapshotResponses = await _rdsClient.DescribeDBSnapshotsAsync();
-        Console.WriteLine("Select a snapshot");
-        var snapshotsForInstance = snapshotResponses.DBSnapshots.Where(x => x.DBInstanceIdentifier == sourceRDSName).OrderByDescending(x => x.OriginalSnapshotCreateTime).Take(10).ToList();
-        for (int index = 0; index < snapshotsForInstance.Count; index++)
+        var response = await _rdsClient.DescribeDBSnapshotsAsync(new DescribeDBSnapshotsRequest
         {
-            DBSnapshot snapshot = snapshotsForInstance[index];
-            Console.WriteLine($"{index}: {snapshot.DBInstanceIdentifier}|{snapshot.DBSnapshotIdentifier}");
+            DBSnapshotIdentifier = snapshotIdentifier
+        });
+
+        DBSnapshot? snapshot = response.DBSnapshots.SingleOrDefault();
+        if (snapshot is null)
+        {
+            throw new InvalidOperationException($"RDS snapshot not found: {snapshotIdentifier}");
         }
 
-        string? snapshotSelection = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(snapshotSelection))
-        {
-            throw new Exception("Invalid selection.");
-        }
-
-        DBSnapshot snapshotChosen = snapshotsForInstance[Convert.ToInt32(snapshotSelection)];
-        Log.Information($"Selected snapshot: {snapshotChosen.DBSnapshotIdentifier}");
-        return snapshotChosen;
+        return snapshot;
     }
 
     private async Task<string> RenameOldInstance(DBInstance instance)
     {
         string newName = instance.DBInstanceIdentifier + "-old";
-        Log.Information($"Renaming {instance.DBInstanceIdentifier} to {newName}");
+        Log.Information("Renaming {Instance} to {NewName}", instance.DBInstanceIdentifier, newName);
         ModifyDBInstanceRequest modifyDBInstanceRequest = new ModifyDBInstanceRequest()
         {
             DBInstanceIdentifier = instance.DBInstanceIdentifier,
@@ -90,7 +82,7 @@ public class RDSRefresher
 
     private async Task<DBInstance> RestoreFromSnapshot(DBInstance instance, DBSnapshot snapshot, string? newDBName = null)
     {
-        if (newDBName == null)
+        if (newDBName is null)
         {
             newDBName = instance.DBInstanceIdentifier;
         }
@@ -117,14 +109,14 @@ public class RDSRefresher
 
         await WaitForDBToBeAvailable(restoreResponse.DBInstance.DbiResourceId);
 
-        Log.Information("Creation Successful.");
+        Log.Information("Creation successful.");
 
         return restoreResponse.DBInstance;
     }
 
     private async Task DeleteInstance(DBInstance instance)
     {
-        Log.Information("Deleting old instance.");
+        Log.Information("Deleting old instance {Instance}.", instance.DBInstanceIdentifier);
 
         var deleteRequest = new DeleteDBInstanceRequest()
         {
@@ -141,7 +133,7 @@ public class RDSRefresher
         DBInstance? instanceChosen = instanceResponse.DBInstances.SingleOrDefault(x => x.DBInstanceIdentifier == identifier);
         if (instanceChosen is null)
         {
-            throw new Exception($"RDS instance not found: {identifier}");
+            throw new InvalidOperationException($"RDS instance not found: {identifier}");
         }
 
         return instanceChosen;

@@ -12,7 +12,7 @@
     <Project Path="FantasyCritic.Test/FantasyCritic.Test.csproj" />
   </Folder>
   <Folder Name="/Utilities/">
-    <Project Path="FantasyCritic.BetaSync/FantasyCritic.BetaSync.csproj" />
+    <Project Path="FantasyCritic.RdsSnapshotManager/FantasyCritic.RdsSnapshotManager.csproj" />
     <Project Path="FantasyCritic.DBUtility/FantasyCritic.DBUtility.csproj" />
     <Project Path="FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj" />
     <Project Path="FantasyCritic.TestDataScrubber/FantasyCritic.TestDataScrubber.csproj" />

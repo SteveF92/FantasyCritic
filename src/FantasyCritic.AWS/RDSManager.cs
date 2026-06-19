@@ -22,16 +22,32 @@ public class RDSManager : IRDSManager
         _instanceName = instanceName;
     }
 
-    public async Task SnapshotRDS(Instant snapshotTime)
+    public async Task<string> SnapshotRDS(Instant snapshotTime, string? snapshotIdentifier = null)
     {
         using AmazonRDSClient rdsClient = new AmazonRDSClient();
-        var date = snapshotTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
-        var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        var random = Guid.NewGuid().ToString().Substring(0, 1);
-        string snapName = "AdminSnap-" + dateString + "-" + random;
+
+        string snapName;
+        if (snapshotIdentifier is null)
+        {
+            var date = snapshotTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
+            var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var random = Guid.NewGuid().ToString()[..1];
+            snapName = "adminsnap-" + dateString + "-" + random;
+        }
+        else
+        {
+            var validation = RdsSnapshotIdentifierValidator.Validate(snapshotIdentifier);
+            if (validation.IsFailure)
+            {
+                throw new InvalidOperationException(validation.Error);
+            }
+
+            snapName = snapshotIdentifier;
+        }
 
         CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapName, _instanceName);
         await rdsClient.CreateDBSnapshotAsync(request, CancellationToken.None);
+        return snapName;
     }
 
     public async Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentSnapshots()
