@@ -5,6 +5,7 @@ public class PublisherDraftInfo
     public PublisherDraftInfo(Guid draftID, int draftNumber, Guid publisherID, int draftPosition)
     {
         DraftID = draftID;
+        DraftNumber = draftNumber;
         PublisherID = publisherID;
         DraftPosition = draftPosition;
     }

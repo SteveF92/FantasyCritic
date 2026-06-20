@@ -15,7 +15,7 @@ public class LeagueDraft
         CounterPicksToDraft = counterPicksToDraft;
         DraftOrderSet = draftOrderSet;
         PlayStatus = playStatus;
-        PublisherDraftInfos = publisherDraftInfos.ToList();
+        PublisherDraftInfo = publisherDraftInfos.ToList();
         DraftStartedTimestamp = draftStartedTimestamp;
     }
 
@@ -28,7 +28,7 @@ public class LeagueDraft
     public int CounterPicksToDraft { get; }
     public bool DraftOrderSet { get; }
     public PlayStatus PlayStatus { get; }
-    public IReadOnlyList<PublisherDraftInfo> PublisherDraftInfos { get; }
+    public IReadOnlyList<PublisherDraftInfo> PublisherDraftInfo { get; }
     public Instant? DraftStartedTimestamp { get; }
 
     public static Result ValidateDraftCounts(int gamesToDraft, int counterPicksToDraft, int standardGames, int counterPicks)
@@ -54,6 +54,6 @@ public class LeagueDraft
     public LeagueDraft UpdateDraft(int gamesToDraft, int counterPicksToDraft)
     {
         return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, Name, ScheduledDate, gamesToDraft, counterPicksToDraft,
-            DraftOrderSet, PlayStatus, PublisherDraftInfos, DraftStartedTimestamp);
+            DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
     }
 }

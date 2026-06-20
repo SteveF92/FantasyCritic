@@ -920,6 +920,36 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public Task<IActionResult> CreateLeagueDraft([FromBody] CreateLeagueDraftRequest request)
+    {
+        return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public Task<IActionResult> EditLeagueDraft([FromBody] EditLeagueDraftRequest request)
+    {
+        return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public Task<IActionResult> DeleteLeagueDraft([FromBody] DeleteLeagueDraftRequest request)
+    {
+        return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+    }
+
+    [HttpPost]
     [ProducesResponseType<ManagerClaimResultViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -105,6 +105,8 @@ public class LeagueYearViewModel
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
         SlotInfo = new PublisherSlotRequirementsViewModel(leagueYear.Options);
+        Drafts = leagueYear.Drafts.Select(d => new LeagueDraftViewModel(d)).ToList();
+        EnableBids = leagueYear.Options.EnableBids;
 
         ManagerMessages = supplementalData.ManagerMessages.Select(x => new ManagerMessageViewModel(x, x.IsDismissed(accessingUser))).OrderBy(x => x.Timestamp).ToList();
         if (!userIsInLeague)
@@ -143,6 +145,8 @@ public class LeagueYearViewModel
     public SupportedYearViewModel SupportedYear { get; }
     public LeagueYearSettingsViewModel Settings { get; }
     public PublisherSlotRequirementsViewModel SlotInfo { get; }
+    public IReadOnlyList<LeagueDraftViewModel> Drafts { get; }
+    public bool EnableBids { get; }
     public bool UnlinkedGameExists { get; }
     public bool UserIsActive { get; }
     public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
