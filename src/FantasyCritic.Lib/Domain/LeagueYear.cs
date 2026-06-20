@@ -50,6 +50,10 @@ public class LeagueYear : IEquatable<LeagueYear>
     public bool DraftOrderSet => FirstDraft.DraftOrderSet;
     public Instant? DraftStartedTimestamp => FirstDraft.DraftStartedTimestamp;
 
+    public LeagueDraft? ActiveDraft => Drafts.First(x => x.PlayStatus.DraftIsActiveOrPaused);
+    public bool IsAnyDraftStarted => Drafts.Any(d => d.PlayStatus.PlayStarted);
+    public bool IsAnyDraftInProgress => Drafts.Any(d => d.PlayStatus.DraftIsActiveOrPaused);
+
     public bool OneShotMode => !Options.EnableBids
                                && Options.StandardGames == Drafts.Sum(d => d.GamesToDraft)
                                && Options.CounterPicks == Drafts.Sum(d => d.CounterPicksToDraft)

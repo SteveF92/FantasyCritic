@@ -40,7 +40,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (leagueYear.Drafts.Any(x => x.PlayStatus.PlayStarted))
+                if (leagueYear.IsAnyDraftStarted)
                 {
                     return Result.Failure("That action can only be taken before the draft starts.");
                 }
@@ -54,7 +54,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is not open for drafting yet.");
                 }
-                if (leagueYear.Drafts.Any(x => x.PlayStatus.PlayStarted))
+                if (leagueYear.IsAnyDraftStarted)
                 {
                     return Result.Failure("That action can only be taken before the draft starts.");
                 }
@@ -64,7 +64,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (leagueYear.PlayStatus.Equals(PlayStatus.NotStartedDraft) || leagueYear.PlayStatus.Equals(PlayStatus.DraftFinal))
+                if (!(leagueYear.ActiveDraft?.PlayStatus.DraftIsActive ?? false))
                 {
                     return Result.Failure("That action can only be taken during the draft is active.");
                 }
@@ -74,7 +74,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (!leagueYear.PlayStatus.DraftIsPaused)
+                if (!(leagueYear.ActiveDraft?.PlayStatus.DraftIsPaused ?? false))
                 {
                     return Result.Failure("That action can only be taken while the draft is paused.");
                 }
@@ -94,7 +94,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (!leagueYear.Drafts.Any(x => x.PlayStatus.DraftIsActiveOrPaused))
+                if (leagueYear.IsAnyDraftInProgress)
                 {
                     return Result.Failure("That action can't be taken while there is a draft active.");
                 }
@@ -104,7 +104,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (!leagueYear.Drafts.Any(x => x.PlayStatus.DraftIsActiveOrPaused))
+                if (leagueYear.IsAnyDraftInProgress)
                 {
                     return Result.Failure("That action can't be taken while there is a draft active.");
                 }
@@ -114,7 +114,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is not finished.");
                 }
-                if (!leagueYear.Drafts.Any(x => x.PlayStatus.DraftIsActiveOrPaused))
+                if (leagueYear.IsAnyDraftInProgress)
                 {
                     return Result.Failure("That action can't be taken while there is a draft active.");
                 }
