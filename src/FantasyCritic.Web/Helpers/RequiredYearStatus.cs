@@ -64,7 +64,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (!(leagueYear.ActiveDraft?.PlayStatus.DraftIsActive ?? false))
+                if (!(leagueYear.ActiveDraft?.PlayStatus.DraftIsActiveOrPaused ?? false))
                 {
                     return Result.Failure("That action can only be taken during the draft is active.");
                 }
@@ -84,7 +84,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (!leagueYear.PlayStatus.DraftIsActive)
+                if (!(leagueYear.ActiveDraft?.PlayStatus.DraftIsActive ?? false))
                 {
                     return Result.Failure("That action can only be taken while the draft is active.");
                 }

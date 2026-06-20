@@ -43,6 +43,7 @@ public class Publisher : IEquatable<Publisher>
     public string? PublisherSlogan { get; }
     public IReadOnlyList<PublisherDraftInfo> DraftInfos { get; }
     public PublisherDraftInfo FirstDraftInfo => DraftInfos.First();
+    public PublisherDraftInfo LastDraftInfo => DraftInfos.Last();
     public IReadOnlyList<PublisherGame> PublisherGames { get; }
 
     public int? GetDraftPosition(Guid draftID) => DraftInfos.FirstOrDefault(x => x.DraftID == draftID)?.DraftPosition;

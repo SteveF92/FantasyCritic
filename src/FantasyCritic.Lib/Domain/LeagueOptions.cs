@@ -285,17 +285,17 @@ public class LeagueOptions
         return options;
     }
 
-    public LeagueOptions WithNewDraftOptions(CreateLeagueDraftParameters newParameters)
+    public (LeagueOptions fullOptions, NewDraftLeagueSettingsChange settingsToChange) WithNewDraftOptions(CreateLeagueDraftParameters newParameters)
     {
         var totalStandardGames = StandardGames + newParameters.AdditionalStandardGames;
         var totalCounterPicks = CounterPicks + newParameters.AdditionalCounterPicks;
-        var totalSpecialGameSlots = SpecialGameSlots.Concat(newParameters.NewSpecialSlots).ToList();
+        var totalSpecialGameSlots = SpecialGameSlots.Concat(newParameters.NewSpecialGameSlots).ToList();
 
         LeagueOptions options = new LeagueOptions(totalStandardGames, totalCounterPicks, UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
             AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, totalSpecialGameSlots, DraftSystem,
             PickupSystem, ScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate);
-        return options;
+        return (options, new NewDraftLeagueSettingsChange(totalStandardGames, totalCounterPicks, newParameters.NewSpecialGameSlots));
     }
 }

@@ -313,7 +313,7 @@ public class DraftService
         var newPublisherDraftInfo = new List<PublisherDraftInfo>();
         foreach (var publisher in leagueYear.Publishers)
         {
-            var startingDraftPosition = publisher.DraftInfos.MaxBy(x => x.DraftNumber)!.DraftPosition;
+            var startingDraftPosition = publisher.LastDraftInfo.DraftPosition;
             var draftInfoForPublisher = new PublisherDraftInfo(Guid.NewGuid(), nextDraftNumber, publisher.PublisherID, startingDraftPosition);
             newPublisherDraftInfo.Add(draftInfoForPublisher);
         }
@@ -325,7 +325,7 @@ public class DraftService
         string description = $"Scheduled new draft: {domainRequest.Name}";
         var newDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Create Draft", description);
 
-        LeagueOptions? newLeagueOptions = leagueYear.Options.WithNewDraftOptions(domainRequest);
+        (LeagueOptions newLeagueOptions, NewDraftLeagueSettingsChange? settingsToChange) = leagueYear.Options.WithNewDraftOptions(domainRequest);
         var differenceString = newLeagueOptions.GetDifferenceString(leagueYear.Options);
         LeagueManagerAction? settingsChangeAction = null;
         if (differenceString is not null)
@@ -334,10 +334,10 @@ public class DraftService
         }
         else
         {
-            newLeagueOptions = null;
+            settingsToChange = null;
         }
 
-        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, newLeagueOptions, settingsChangeAction);
+        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, settingsToChange, settingsChangeAction);
         return Result.Success();
     }
 

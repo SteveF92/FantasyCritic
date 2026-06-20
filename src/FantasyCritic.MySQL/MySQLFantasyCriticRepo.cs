@@ -1184,6 +1184,22 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+
+    public Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction, NewDraftLeagueSettingsChange? settingsToChange, LeagueManagerAction? settingsChangeAction)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task EditLeagueDraft(LeagueDraft updatedDraft, LeagueManagerAction managerAction)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteLeagueDraft(LeagueDraft draft, LeagueManagerAction managerAction)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, LeagueDraft initialDraft)
     {
         await using var connection = new MySqlConnection(_connectionString);
