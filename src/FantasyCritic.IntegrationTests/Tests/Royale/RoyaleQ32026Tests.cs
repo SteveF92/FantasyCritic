@@ -19,7 +19,8 @@ namespace FantasyCritic.IntegrationTests.Tests.Royale;
 /// The clock is pinned to July 6, 2026 12:00 UTC via the test-only Admin API —
 /// safely after the first Q3 bid cycle (July 4, 20:00 ET = July 5, 00:00 UTC).
 /// Individual tests advance the clock with SetTimeAsync when time-sensitive
-/// behaviour (e.g. regret-window expiry) needs to be verified.
+/// behaviour (e.g. regret-window expiry) needs to be verified. SetInitialTime
+/// re-pins the scenario start between tests; SetTime moves forward only within a test.
 ///
 /// All tests require Q3 2026 to be open for play in the local database.
 /// If it is not, the test is marked Inconclusive — run LocalDatabaseTool to sync.
@@ -57,10 +58,17 @@ public class RoyaleQ32026Tests : IntegrationTestBase
     // ── Clock helpers ─────────────────────────────────────────────────────────
 
     private Task ResetClockAsync() =>
-        _adminSession.Admin.SetTimeAsync(new SetTimeRequest { NewTime = Q3TestBase });
+        _adminSession.Admin.SetInitialTimeAsync(new SetTimeRequest { NewTime = Q3TestBase });
 
-    private Task AdvanceClockByAsync(TimeSpan offset) =>
-        _adminSession.Admin.SetTimeAsync(new SetTimeRequest { NewTime = Q3TestBase + offset });
+    /// <summary>
+    /// Moves the clock forward past the 10-minute regret window, relative to when
+    /// the game was purchased. Uses SetTime (forward-only) per AdjustableClock design.
+    /// </summary>
+    private Task AdvancePastRegretWindowAsync(DateTimeOffset purchaseTimestamp) =>
+        _adminSession.Admin.SetTimeAsync(new SetTimeRequest
+        {
+            NewTime = purchaseTimestamp.AddMinutes(11),
+        });
 
     // ── Test-publisher factory ────────────────────────────────────────────────
 
@@ -230,8 +238,11 @@ public class RoyaleQ32026Tests : IntegrationTestBase
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
 
-        // Advance the clock 15 minutes past the purchase timestamp — regret window (10 min) has expired.
-        await AdvanceClockByAsync(TimeSpan.FromMinutes(15));
+        var publisherAfterBuy = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var purchasedAfterBuy = publisherAfterBuy!.PublisherGames!
+            .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
+
+        await AdvancePastRegretWindowAsync(purchasedAfterBuy.Timestamp);
 
         var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         var purchased = publisher!.PublisherGames!
@@ -285,7 +296,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
         var budgetAfterBuy = publisherAfterBuy.Budget;
 
         // Advance past regret window, then sell.
-        await AdvanceClockByAsync(TimeSpan.FromMinutes(15));
+        await AdvancePastRegretWindowAsync(purchased.Timestamp);
 
         await session.Royale.SellGameAsync(
             new SellRoyaleGameRequest
@@ -484,7 +495,11 @@ public class RoyaleQ32026Tests : IntegrationTestBase
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
 
-        await AdvanceClockByAsync(TimeSpan.FromMinutes(15));
+        var publisherAfterBuy = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var purchasedAfterBuy = publisherAfterBuy!.PublisherGames!
+            .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
+
+        await AdvancePastRegretWindowAsync(purchasedAfterBuy.Timestamp);
 
         var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         var purchased = publisher!.PublisherGames!

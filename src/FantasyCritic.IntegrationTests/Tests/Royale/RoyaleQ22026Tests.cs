@@ -44,7 +44,7 @@ public class RoyaleQ22026Tests : IntegrationTestBase
     }
 
     private Task ResetClockAsync() =>
-        _adminSession.Admin.SetTimeAsync(new SetTimeRequest { NewTime = Q2TestBase });
+        _adminSession.Admin.SetInitialTimeAsync(new SetTimeRequest { NewTime = Q2TestBase });
 
     private async Task<(ApiSession Session, Guid PublisherID)?> TryCreateQ2PublisherAsync()
     {
