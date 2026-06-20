@@ -42,6 +42,7 @@ public class MySQLBetaCleaner
 
         await CleanExternalLogins(connection, transaction, nonBetaUsers);
         await CleanDiscordData(connection, transaction, betaUserIds);
+        await CleanUnprocessedActionsInNonTestLeagues(connection, transaction);
 
         await transaction.CommitAsync();
     }
@@ -115,5 +116,35 @@ public class MySQLBetaCleaner
                 new { leagueIds = leaguesToKeepDiscord.ToList() },
                 transaction);
         }
+    }
+
+    private static async Task CleanUnprocessedActionsInNonTestLeagues(MySqlConnection connection, MySqlTransaction transaction)
+    {
+        _logger.Information("Cleaning unprocessed bids and drop requests in non-test leagues.");
+
+        var deletedBidCount = await connection.ExecuteAsync(
+            """
+            DELETE pb FROM tbl_league_pickupbid pb
+            JOIN tbl_league_publisher pub ON pb.PublisherID = pub.PublisherID
+            JOIN tbl_league l ON pub.LeagueID = l.LeagueID
+            WHERE pb.Successful IS NULL
+            AND l.TestLeague = 0
+            """,
+            transaction: transaction, commandTimeout: 300);
+
+        var deletedDropCount = await connection.ExecuteAsync(
+            """
+            DELETE dr FROM tbl_league_droprequest dr
+            JOIN tbl_league_publisher pub ON dr.PublisherID = pub.PublisherID
+            JOIN tbl_league l ON pub.LeagueID = l.LeagueID
+            WHERE dr.Successful IS NULL
+            AND l.TestLeague = 0
+            """,
+            transaction: transaction, commandTimeout: 300);
+
+        _logger.Information(
+            "Deleted {BidCount} unprocessed bids and {DropCount} unprocessed drop requests from non-test leagues.",
+            deletedBidCount,
+            deletedDropCount);
     }
 }

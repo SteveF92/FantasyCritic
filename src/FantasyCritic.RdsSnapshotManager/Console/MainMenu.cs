@@ -229,7 +229,7 @@ public sealed class MainMenu
     private async Task CleanLocalDatabase(CancellationToken cancellationToken)
     {
         System.Console.WriteLine();
-        System.Console.WriteLine("This scrubs emails, passwords, external logins, and Discord data.");
+        System.Console.WriteLine("This scrubs emails, passwords, external logins, Discord data, and unprocessed bids/drops in non-test leagues.");
         System.Console.WriteLine("It only runs against the configured local Docker MySQL instance (localhost:3307).");
         System.Console.Write("Continue? (y/N): ");
         var confirmation = System.Console.ReadLine();
