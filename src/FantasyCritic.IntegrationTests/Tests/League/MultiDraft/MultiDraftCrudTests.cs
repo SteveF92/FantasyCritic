@@ -82,12 +82,26 @@ public class MultiDraftCrudTests : IntegrationTestBase
     [Test]
     public async Task CreateLeagueDraft_WithAdditionalStandardGames_IncreasesLeagueSlotCount()
     {
-        var before = await _league.GetLeagueYearAsync();
+        await using var freshLeague = await LeagueFixtureBuilder.CreateLeagueWithMembersAsync(
+            Factory, LeagueScenarios.Standard, NewUser);
+
+        var before = await freshLeague.GetLeagueYearAsync();
         var originalStandardGames = before.Settings.StandardGames;
 
-        await CreateSecondDraftAsync("Expansion Draft", additionalStandardGames: 3);
+        await freshLeague.Manager.LeagueManager.CreateLeagueDraftAsync(new CreateLeagueDraftRequest
+        {
+            LeagueID = freshLeague.LeagueID,
+            Year = freshLeague.Year,
+            Name = "Expansion Draft",
+            ScheduledDate = null,
+            GamesToDraft = 2,
+            CounterPicksToDraft = 0,
+            AdditionalStandardGames = 3,
+            AdditionalCounterPicks = 0,
+            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+        });
 
-        var after = await _league.GetLeagueYearAsync();
+        var after = await freshLeague.GetLeagueYearAsync();
         Assert.That(after.Settings.StandardGames, Is.EqualTo(originalStandardGames + 3));
     }
 
@@ -214,8 +228,11 @@ public class MultiDraftCrudTests : IntegrationTestBase
     [Test]
     public async Task GetLeagueYear_SingleDraftLeague_DraftsListHasExactlyOneEntry()
     {
-        // A brand-new Standard league always has exactly one draft (the initial one).
-        var snapshot = await _league.GetLeagueYearAsync();
+        // Uses its own isolated league so shared-fixture mutations don't interfere.
+        await using var freshLeague = await LeagueFixtureBuilder.CreateLeagueWithMembersAsync(
+            Factory, LeagueScenarios.Standard, NewUser);
+
+        var snapshot = await freshLeague.GetLeagueYearAsync();
         Assert.That(snapshot.Drafts, Is.Not.Null);
         Assert.That(snapshot.Drafts.Count, Is.EqualTo(1),
             "Single-draft leagues must still expose a one-entry Drafts list.");

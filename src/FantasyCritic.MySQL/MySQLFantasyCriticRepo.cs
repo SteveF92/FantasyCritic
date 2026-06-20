@@ -1184,7 +1184,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-
     public async Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction,
         NewDraftLeagueSettingsChanges? settingsToChange)
     {
