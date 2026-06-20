@@ -5,15 +5,14 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
     // Define values here.
     public static readonly RequiredYearStatus Any = new RequiredYearStatus("Any");
     public static readonly RequiredYearStatus AnyYearNotFinished = new RequiredYearStatus("AnyYearNotFinished");
-    public static readonly RequiredYearStatus YearNotFinishedDraftNotStarted = new RequiredYearStatus("YearNotFinishedDraftNotStarted");
-    public static readonly RequiredYearStatus PlayOpenDraftNotStarted = new RequiredYearStatus("PlayOpenDraftNotStarted");
+    public static readonly RequiredYearStatus YearNotFinishedNoDraftsStarted = new RequiredYearStatus("YearNotFinishedNoDraftsStarted");
+    public static readonly RequiredYearStatus PlayOpenNoDraftsStarted = new RequiredYearStatus("PlayOpenNoDraftsStarted");
     public static readonly RequiredYearStatus DuringDraft = new RequiredYearStatus("DuringDraft");
     public static readonly RequiredYearStatus DraftPaused = new RequiredYearStatus("DraftPaused");
     public static readonly RequiredYearStatus ActiveDraft = new RequiredYearStatus("ActiveDraft");
-    public static readonly RequiredYearStatus YearNotFinishedDraftNotFinished = new RequiredYearStatus("YearNotFinishedDraftNotFinished");
-    public static readonly RequiredYearStatus YearNotFinishedDraftFinished = new RequiredYearStatus("YearNotFinishedDraftFinished");
-    public static readonly RequiredYearStatus YearNotFinishedOrUnderReviewDraftFinished = new RequiredYearStatus("YearNotFinishedOrUnderReviewDraftFinished");
-    public static readonly RequiredYearStatus YearFinishedDraftFinished = new RequiredYearStatus("YearFinishedDraftFinished");
+    public static readonly RequiredYearStatus YearNotFinishedNoDraftsActive = new RequiredYearStatus("YearNotFinishedNoDraftsActive");
+    public static readonly RequiredYearStatus YearNotFinishedOrUnderReviewNoDraftsActive = new RequiredYearStatus("YearNotFinishedOrUnderReviewNoDraftsActive");
+    public static readonly RequiredYearStatus YearFinishedNoDraftsActive = new RequiredYearStatus("YearFinishedNoDraftsActive");
 
     // Constructor is private: values are defined within this class only!
     private RequiredYearStatus(string value)
@@ -36,17 +35,17 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                     return Result.Failure("That year is finished.");
                 }
                 break;
-            case { } status when YearNotFinishedDraftNotStarted.Equals(status):
+            case { } status when YearNotFinishedNoDraftsStarted.Equals(status):
                 if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (leagueYear.PlayStatus.PlayStarted)
+                if (leagueYear.Drafts.Any(x => x.PlayStatus.PlayStarted))
                 {
                     return Result.Failure("That action can only be taken before the draft starts.");
                 }
                 break;
-            case { } status when PlayOpenDraftNotStarted.Equals(status):
+            case { } status when PlayOpenNoDraftsStarted.Equals(status):
                 if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
@@ -55,19 +54,9 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 {
                     return Result.Failure("That year is not open for drafting yet.");
                 }
-                if (leagueYear.PlayStatus.PlayStarted)
+                if (leagueYear.Drafts.Any(x => x.PlayStatus.PlayStarted))
                 {
                     return Result.Failure("That action can only be taken before the draft starts.");
-                }
-                break;
-            case { } status when YearNotFinishedDraftNotFinished.Equals(status):
-                if (leagueYear.SupportedYear.Finished)
-                {
-                    return Result.Failure("That year is finished.");
-                }
-                if (leagueYear.PlayStatus.DraftFinished)
-                {
-                    return Result.Failure("That action cannot be taken after the draft is finished.");
                 }
                 break;
             case { } status when DuringDraft.Equals(status):
@@ -80,16 +69,6 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                     return Result.Failure("That action can only be taken during the draft is active.");
                 }
                 break;
-            case { } status when ActiveDraft.Equals(status):
-                if (leagueYear.SupportedYear.Finished)
-                {
-                    return Result.Failure("That year is finished.");
-                }
-                if (!leagueYear.PlayStatus.DraftIsActive)
-                {
-                    return Result.Failure("That action can only be taken while the draft is active.");
-                }
-                break;
             case { } status when DraftPaused.Equals(status):
                 if (leagueYear.SupportedYear.Finished)
                 {
@@ -100,34 +79,44 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                     return Result.Failure("That action can only be taken while the draft is paused.");
                 }
                 break;
-            case { } status when YearNotFinishedDraftFinished.Equals(status):
+            case { } status when ActiveDraft.Equals(status):
                 if (leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (!leagueYear.PlayStatus.DraftFinished)
+                if (!leagueYear.PlayStatus.DraftIsActive)
                 {
-                    return Result.Failure("That action can't be taken until the draft is finished.");
+                    return Result.Failure("That action can only be taken while the draft is active.");
                 }
                 break;
-            case { } status when YearNotFinishedOrUnderReviewDraftFinished.Equals(status):
+            case { } status when YearNotFinishedNoDraftsActive.Equals(status):
+                if (leagueYear.SupportedYear.Finished)
+                {
+                    return Result.Failure("That year is finished.");
+                }
+                if (!leagueYear.Drafts.Any(x => x.PlayStatus.DraftIsActiveOrPaused))
+                {
+                    return Result.Failure("That action can't be taken while there is a draft active.");
+                }
+                break;
+            case { } status when YearNotFinishedOrUnderReviewNoDraftsActive.Equals(status):
                 if (leagueYear.SupportedYear.Finished && !leagueYear.UnderReview)
                 {
                     return Result.Failure("That year is finished.");
                 }
-                if (!leagueYear.PlayStatus.DraftFinished)
+                if (!leagueYear.Drafts.Any(x => x.PlayStatus.DraftIsActiveOrPaused))
                 {
-                    return Result.Failure("That action can't be taken until the draft is finished.");
+                    return Result.Failure("That action can't be taken while there is a draft active.");
                 }
                 break;
-            case { } status when YearFinishedDraftFinished.Equals(status):
+            case { } status when YearFinishedNoDraftsActive.Equals(status):
                 if (!leagueYear.SupportedYear.Finished)
                 {
                     return Result.Failure("That year is not finished.");
                 }
-                if (!leagueYear.PlayStatus.DraftFinished)
+                if (!leagueYear.Drafts.Any(x => x.PlayStatus.DraftIsActiveOrPaused))
                 {
-                    return Result.Failure("That action can't be taken until the draft is finished.");
+                    return Result.Failure("That action can't be taken while there is a draft active.");
                 }
                 break;
             default:
