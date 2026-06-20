@@ -304,16 +304,98 @@ public class DraftService
 
     public async Task<Result> CreateDraft(LeagueYear leagueYear, CreateLeagueDraftParameters domainRequest)
     {
-        throw new NotImplementedException();
+        if (leagueYear.IsAnyDraftInProgress)
+        {
+            return Result.Failure("Cannot create a draft while one is in progress.");
+        }
+
+        int nextDraftNumber = leagueYear.Drafts.Max(d => d.DraftNumber) + 1;
+        var newPublisherDraftInfo = new List<PublisherDraftInfo>();
+        foreach (var publisher in leagueYear.Publishers)
+        {
+            var startingDraftPosition = publisher.DraftInfos.MaxBy(x => x.DraftNumber)!.DraftPosition;
+            var draftInfoForPublisher = new PublisherDraftInfo(Guid.NewGuid(), nextDraftNumber, publisher.PublisherID, startingDraftPosition);
+            newPublisherDraftInfo.Add(draftInfoForPublisher);
+        }
+
+        var draft = new LeagueDraft(Guid.NewGuid(), leagueYear.Key, nextDraftNumber, domainRequest.Name, domainRequest.ScheduledDate,
+            domainRequest.GamesToDraft, domainRequest.CounterPicksToDraft, false, PlayStatus.NotStartedDraft, newPublisherDraftInfo, null);
+
+        var timestamp = _clock.GetCurrentInstant();
+        string description = $"Scheduled new draft: {domainRequest.Name}";
+        var newDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Create Draft", description);
+
+        LeagueOptions? newLeagueOptions = leagueYear.Options.WithNewDraftOptions(domainRequest);
+        var differenceString = newLeagueOptions.GetDifferenceString(leagueYear.Options);
+        LeagueManagerAction? settingsChangeAction = null;
+        if (differenceString is not null)
+        {
+            settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed While Adding New Draft", differenceString);
+        }
+        else
+        {
+            newLeagueOptions = null;
+        }
+
+        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, newLeagueOptions, settingsChangeAction);
+        return Result.Success();
     }
 
     public async Task<Result> EditDraft(LeagueYear leagueYear, Guid draftID, EditLeagueDraftParameters domainRequest)
     {
-        throw new NotImplementedException();
+        var draft = leagueYear.Drafts.SingleOrDefault(d => d.DraftID == draftID);
+        if (draft is null)
+        {
+            return Result.Failure("Draft not found.");
+        }
+
+        bool isStarted = draft.PlayStatus.PlayStarted;
+
+        // Name is always editable; other fields only if not started
+        if (isStarted && (
+                (domainRequest.ScheduledDate != draft.ScheduledDate) ||
+                (domainRequest.GamesToDraft != draft.GamesToDraft) ||
+                (domainRequest.CounterPicksToDraft != draft.CounterPicksToDraft)
+            ))
+        {
+            return Result.Failure("Cannot edit draft settings once a draft has started. Reset the draft first.");
+        }
+
+        var updatedDraft = new LeagueDraft(draft.DraftID, draft.LeagueYearKey, draft.DraftNumber, domainRequest.Name,
+            domainRequest.ScheduledDate,
+            domainRequest.GamesToDraft,
+            domainRequest.CounterPicksToDraft,
+            draft.DraftOrderSet, draft.PlayStatus, draft.PublisherDraftInfo, draft.DraftStartedTimestamp);
+
+        var timestamp = _clock.GetCurrentInstant();
+        string description = $"Edited draft: {domainRequest.Name}";
+        var managerAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Edit Draft", description);
+        await _fantasyCriticRepo.EditLeagueDraft(updatedDraft, managerAction);
+        return Result.Success();
     }
 
     public async Task<Result> DeleteDraft(LeagueYear leagueYear, Guid draftID)
     {
-        throw new NotImplementedException();
+        var draft = leagueYear.Drafts.SingleOrDefault(d => d.DraftID == draftID);
+        if (draft is null)
+        {
+            return Result.Failure("Draft not found.");
+        }
+
+        if (draft.DraftNumber == 1)
+        {
+            return Result.Failure("Cannot delete the first draft. Every league must have at least one draft.");
+        }
+
+        if (!draft.PlayStatus.Equals(PlayStatus.NotStartedDraft))
+        {
+            return Result.Failure("Cannot delete a draft that has already started. Reset the draft first.");
+        }
+
+        var timestamp = _clock.GetCurrentInstant();
+        string description = $"Deleted draft: {draft.Name}";
+        var managerAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Delete Draft", description);
+        await _fantasyCriticRepo.DeleteLeagueDraft(draft, managerAction);
+        return Result.Success();
     }
 }

@@ -4,7 +4,7 @@ public class LeagueDraft
 {
     public LeagueDraft(Guid draftID, LeagueYearKey leagueYearKey, int draftNumber, string name, LocalDate? scheduledDate,
         int gamesToDraft, int counterPicksToDraft, bool draftOrderSet, PlayStatus playStatus,
-        IEnumerable<PublisherDraftInfo> publisherDraftInfos, Instant? draftStartedTimestamp)
+        IEnumerable<PublisherDraftInfo> publisherDraftInfo, Instant? draftStartedTimestamp)
     {
         DraftID = draftID;
         LeagueYearKey = leagueYearKey;
@@ -15,7 +15,7 @@ public class LeagueDraft
         CounterPicksToDraft = counterPicksToDraft;
         DraftOrderSet = draftOrderSet;
         PlayStatus = playStatus;
-        PublisherDraftInfo = publisherDraftInfos.ToList();
+        PublisherDraftInfo = publisherDraftInfo.ToList();
         DraftStartedTimestamp = draftStartedTimestamp;
     }
 

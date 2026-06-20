@@ -15,6 +15,10 @@ public interface IFantasyCriticRepo
     Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, LeagueDraft initialDraft);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction);
 
+    Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction, LeagueOptions? newLeagueOptions, LeagueManagerAction? settingsChangeAction);
+    Task EditLeagueDraft(LeagueDraft updatedDraft, LeagueManagerAction managerAction);
+    Task DeleteLeagueDraft(LeagueDraft draft, LeagueManagerAction managerAction);
+
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league);
     Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year);
