@@ -12,6 +12,7 @@ public sealed class MainMenu
     private readonly BetaSyncService _betaSyncService;
     private readonly DumpAndPublishService _dumpAndPublishService;
     private readonly LocalImportService _localImportService;
+    private readonly LocalDatabaseCleanService _localDatabaseCleanService;
     private readonly RdsSnapshotManagerOptions _options;
 
     public MainMenu(
@@ -20,6 +21,7 @@ public sealed class MainMenu
         BetaSyncService betaSyncService,
         DumpAndPublishService dumpAndPublishService,
         LocalImportService localImportService,
+        LocalDatabaseCleanService localDatabaseCleanService,
         RdsSnapshotManagerOptions options)
     {
         _snapshotCreateService = snapshotCreateService;
@@ -27,6 +29,7 @@ public sealed class MainMenu
         _betaSyncService = betaSyncService;
         _dumpAndPublishService = dumpAndPublishService;
         _localImportService = localImportService;
+        _localDatabaseCleanService = localDatabaseCleanService;
         _options = options;
     }
 
@@ -40,6 +43,7 @@ public sealed class MainMenu
             System.Console.WriteLine("2. Beta sync from snapshot");
             System.Console.WriteLine("3. Dump and publish from instance");
             System.Console.WriteLine("4. Import local dump to Docker MySQL");
+            System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
             System.Console.WriteLine("0. Exit");
             System.Console.Write("Select option: ");
 
@@ -57,6 +61,9 @@ public sealed class MainMenu
                     break;
                 case "4":
                     await ImportLocalDump(cancellationToken);
+                    break;
+                case "5":
+                    await CleanLocalDatabase(cancellationToken);
                     break;
                 case "0":
                     return;
@@ -216,6 +223,39 @@ public sealed class MainMenu
         {
             Log.Error(ex, "Import failed.");
             System.Console.WriteLine($"Import failed: {ex.Message}");
+        }
+    }
+
+    private async Task CleanLocalDatabase(CancellationToken cancellationToken)
+    {
+        System.Console.WriteLine();
+        System.Console.WriteLine("This scrubs emails, passwords, external logins, and Discord data.");
+        System.Console.WriteLine("It only runs against the configured local Docker MySQL instance (localhost:3307).");
+        System.Console.Write("Continue? (y/N): ");
+        var confirmation = System.Console.ReadLine();
+        if (!string.Equals(confirmation, "y", StringComparison.OrdinalIgnoreCase))
+        {
+            System.Console.WriteLine("Cancelled.");
+            return;
+        }
+
+        try
+        {
+            Log.Information("Starting local database clean.");
+            var result = await _localDatabaseCleanService.Clean(cancellationToken);
+            if (result.IsSuccess)
+            {
+                System.Console.WriteLine("Local database clean complete.");
+            }
+            else
+            {
+                System.Console.WriteLine($"Local database clean failed: {result.Error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Local database clean failed.");
+            System.Console.WriteLine($"Local database clean failed: {ex.Message}");
         }
     }
 }

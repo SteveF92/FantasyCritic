@@ -61,6 +61,11 @@ public static class Program
             mysqldumpRunner,
             localCleaner,
             localUserStore);
+        LocalDatabaseCleanService localDatabaseCleanService = new LocalDatabaseCleanService(
+            options,
+            dockerHealthChecker,
+            localCleaner,
+            localUserStore);
 
         Console.MainMenu mainMenu = new Console.MainMenu(
             snapshotCreateService,
@@ -68,6 +73,7 @@ public static class Program
             betaSyncService,
             dumpAndPublishService,
             localImportService,
+            localDatabaseCleanService,
             options);
 
         await mainMenu.Run(CancellationToken.None);

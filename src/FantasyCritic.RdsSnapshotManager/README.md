@@ -35,8 +35,9 @@ dotnet run --project src/FantasyCritic.RdsSnapshotManager/FantasyCritic.RdsSnaps
 2. **Beta sync from snapshot** — Restore selected production snapshot to beta RDS, then scrub non-BetaTester users.
 3. **Dump and publish from instance** — mysqldump to local staging, then upload to all enabled destinations (local archive, S3, GCS).
 4. **Import local dump to Docker MySQL** — Import a staging `.sql.gz` into local Docker MySQL, then scrub. Refuses if the database already has tables unless you force.
+5. **Clean local Docker database** — Run the scrub step only against the configured local Docker MySQL instance. Refuses remote hosts, non-3307 ports, or connection strings that match beta/dump settings. Requires confirmation.
 
-**Scrubbing policy:** Exports are full-fidelity. Scrubbing runs on **load** into beta RDS or local Docker only.
+**Scrubbing policy:** Exports are full-fidelity. Scrubbing runs on **load** into beta RDS or local Docker only. Option 5 is local Docker only and cannot target production or beta RDS.
 
 ## Local Docker MySQL (snapshot import)
 
@@ -60,6 +61,7 @@ Do not run this tool in CI or automated agents against production AWS resources.
 6. `docker compose -f infrastructure/docker-compose-mysql-snapshot.yaml up -d`
 7. Import dump; confirm app can connect on port 3307 and users scrubbed.
 8. Run import again without force; confirm refusal when DB has tables.
+9. Run option 5 on the imported database; confirm scrub runs and refuses if `localDocker.connectionString` is pointed at a remote host.
 
 Optional unit tests:
 
