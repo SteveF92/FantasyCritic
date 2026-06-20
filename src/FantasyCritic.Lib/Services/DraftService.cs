@@ -325,19 +325,9 @@ public class DraftService
         string description = $"Scheduled new draft: {domainRequest.Name}";
         var newDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Create Draft", description);
 
-        (LeagueOptions newLeagueOptions, NewDraftLeagueSettingsChange? settingsToChange) = leagueYear.Options.WithNewDraftOptions(domainRequest);
-        var differenceString = newLeagueOptions.GetDifferenceString(leagueYear.Options);
-        LeagueManagerAction? settingsChangeAction = null;
-        if (differenceString is not null)
-        {
-            settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed While Adding New Draft", differenceString);
-        }
-        else
-        {
-            settingsToChange = null;
-        }
+        NewDraftLeagueSettingsChanges? settingsToChange = leagueYear.Options.WithNewDraftOptions(domainRequest, timestamp);
+        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, settingsToChange);
 
-        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, settingsToChange, settingsChangeAction);
         return Result.Success();
     }
 

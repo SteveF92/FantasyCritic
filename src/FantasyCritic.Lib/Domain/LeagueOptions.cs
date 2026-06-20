@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
@@ -285,17 +286,26 @@ public class LeagueOptions
         return options;
     }
 
-    public (LeagueOptions fullOptions, NewDraftLeagueSettingsChange settingsToChange) WithNewDraftOptions(CreateLeagueDraftParameters newParameters)
+    public NewDraftLeagueSettingsChanges? WithNewDraftOptions(CreateLeagueDraftParameters newParameters, Instant currentTimestamp)
     {
         var totalStandardGames = StandardGames + newParameters.AdditionalStandardGames;
         var totalCounterPicks = CounterPicks + newParameters.AdditionalCounterPicks;
         var totalSpecialGameSlots = SpecialGameSlots.Concat(newParameters.NewSpecialGameSlots).ToList();
 
-        LeagueOptions options = new LeagueOptions(totalStandardGames, totalCounterPicks, UnrestrictedReleaseStatusDroppableGames,
+        LeagueOptions newOptions = new LeagueOptions(totalStandardGames, totalCounterPicks, UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
             AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, totalSpecialGameSlots, DraftSystem,
             PickupSystem, ScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate);
-        return (options, new NewDraftLeagueSettingsChange(totalStandardGames, totalCounterPicks, newParameters.NewSpecialGameSlots));
+
+        var differenceString = newOptions.GetDifferenceString(this);
+        if (differenceString is null)
+        {
+            return null;
+        }
+
+        var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differenceString);
+        var settingsChanges = new NewDraftLeagueSettingsChanges(totalStandardGames, totalCounterPicks, newParameters.NewSpecialGameSlots, settingsChangeAction);
+        return settingsChanges;
     }
 }

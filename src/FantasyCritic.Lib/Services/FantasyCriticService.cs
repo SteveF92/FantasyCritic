@@ -319,9 +319,7 @@ public class FantasyCriticService
 
         return new YearCalculatedStatsSet(publisherGameCalculatedStats, winningUsers);
     }
-
-
-
+    
     public async Task UpdatePublisherGameCalculatedStats(LeagueYear leagueYear)
     {
         Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();

@@ -1185,19 +1185,118 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     }
 
 
-    public Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction, NewDraftLeagueSettingsChange? settingsToChange, LeagueManagerAction? settingsChangeAction)
+    public async Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction,
+        NewDraftLeagueSettingsChanges? settingsToChange)
     {
-        throw new NotImplementedException();
+        const string insertDraftSQL =
+            """
+            INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
+            VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@DraftOrderSet,@PlayStatus,NULL);
+            """;
+        const string insertDraftPublisherSQL =
+            "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
+        const string updateLeagueYearSQL =
+            "UPDATE tbl_league_year SET StandardGames = @standardGames, CounterPicks = @counterPicks WHERE LeagueID = @leagueID AND Year = @year;";
+
+        var draftRow = new
+        {
+            DraftID = draft.DraftID,
+            LeagueID = draft.LeagueYearKey.LeagueID,
+            Year = draft.LeagueYearKey.Year,
+            DraftNumber = draft.DraftNumber,
+            Name = draft.Name,
+            ScheduledDate = draft.ScheduledDate,
+            GamesToDraft = draft.GamesToDraft,
+            CounterPicksToDraft = draft.CounterPicksToDraft,
+            DraftOrderSet = false,
+            PlayStatus = PlayStatus.NotStartedDraft.Value,
+        };
+
+        var publisherRows = draft.PublisherDraftInfo.Select(x => new
+        {
+            draftID = draft.DraftID,
+            publisherID = x.PublisherID,
+            draftPosition = x.DraftPosition,
+        });
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(insertDraftSQL, draftRow, transaction);
+        await connection.ExecuteAsync(insertDraftPublisherSQL, publisherRows, transaction);
+
+        if (settingsToChange is not null)
+        {
+            await connection.ExecuteAsync(updateLeagueYearSQL, new
+            {
+                standardGames = settingsToChange.StandardGames,
+                counterPicks = settingsToChange.CounterPicks,
+                leagueID = draft.LeagueYearKey.LeagueID,
+                year = draft.LeagueYearKey.Year,
+            }, transaction);
+
+            if (settingsToChange.NewSpecialGameSlots.Count > 0)
+            {
+                var slotEntities = settingsToChange.NewSpecialGameSlots
+                    .SelectMany(slot => slot.Tags, (slot, tag) => new SpecialGameSlotEntity
+                    {
+                        SpecialSlotID = Guid.NewGuid(),
+                        LeagueID = draft.LeagueYearKey.LeagueID,
+                        Year = draft.LeagueYearKey.Year,
+                        SpecialSlotPosition = slot.SpecialSlotPosition,
+                        Tag = tag.Name,
+                    })
+                    .ToList();
+                await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
+            }
+
+            await AddLeagueManagerAction(settingsToChange.LeagueManagerAction, connection, transaction);
+        }
+
+        await AddLeagueManagerAction(newDraftAction, connection, transaction);
+        await transaction.CommitAsync();
     }
 
-    public Task EditLeagueDraft(LeagueDraft updatedDraft, LeagueManagerAction managerAction)
+    public async Task EditLeagueDraft(LeagueDraft updatedDraft, LeagueManagerAction managerAction)
     {
-        throw new NotImplementedException();
+        const string updateDraftSQL =
+            """
+            UPDATE tbl_league_draft
+            SET Name = @name, ScheduledDate = @scheduledDate, GamesToDraft = @gamesToDraft, CounterPicksToDraft = @counterPicksToDraft
+            WHERE DraftID = @draftID;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(updateDraftSQL, new
+        {
+            name = updatedDraft.Name,
+            scheduledDate = updatedDraft.ScheduledDate?.ToDateTimeUnspecified(),
+            gamesToDraft = updatedDraft.GamesToDraft,
+            counterPicksToDraft = updatedDraft.CounterPicksToDraft,
+            draftID = updatedDraft.DraftID,
+        }, transaction);
+
+        await AddLeagueManagerAction(managerAction, connection, transaction);
+        await transaction.CommitAsync();
     }
 
-    public Task DeleteLeagueDraft(LeagueDraft draft, LeagueManagerAction managerAction)
+    public async Task DeleteLeagueDraft(LeagueDraft draft, LeagueManagerAction managerAction)
     {
-        throw new NotImplementedException();
+        const string deleteDraftPublishersSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID;";
+        const string deleteDraftSQL = "DELETE FROM tbl_league_draft WHERE DraftID = @draftID;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(deleteDraftPublishersSQL, new { draftID = draft.DraftID }, transaction);
+        await connection.ExecuteAsync(deleteDraftSQL, new { draftID = draft.DraftID }, transaction);
+        await AddLeagueManagerAction(managerAction, connection, transaction);
+        await transaction.CommitAsync();
     }
 
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, LeagueDraft initialDraft)
