@@ -12,11 +12,11 @@ public record CreateLeagueDraftRequest(
     int CounterPicksToDraft,
     int AdditionalStandardGames,
     int AdditionalCounterPicks,
-    List<SpecialGameSlotViewModel> NewSpecialSlots)
+    List<SpecialGameSlotViewModel> NewSpecialGameSlots)
 {
     public CreateLeagueDraftParameters ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        var specialGameSlots = NewSpecialSlots.Select(x => x.ToDomain(tagDictionary)).ToList();
+        var specialGameSlots = NewSpecialGameSlots.Select(x => x.ToDomain(tagDictionary)).ToList();
         
         return new CreateLeagueDraftParameters(new LeagueYearKey(LeagueID, Year), Name, ScheduledDate,
             GamesToDraft, CounterPicksToDraft, AdditionalStandardGames, AdditionalCounterPicks, 

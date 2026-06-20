@@ -254,10 +254,10 @@ public class LeagueOptions
         }
 
         var orderedExistingSpecialSlots = existingOptions.SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
-        var orderedNewSpecialSlots = SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
-        if (!orderedNewSpecialSlots.SequenceEqual(orderedExistingSpecialSlots))
+        var orderedNewSpecialGameSlots = SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
+        if (!orderedNewSpecialGameSlots.SequenceEqual(orderedExistingSpecialSlots))
         {
-            differences.Add($"Special slots changed from \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", orderedNewSpecialSlots.Select(x => x.ToString()))}");
+            differences.Add($"Special slots changed from \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", orderedNewSpecialGameSlots.Select(x => x.ToString()))}");
         }
 
         if (!differences.Any())

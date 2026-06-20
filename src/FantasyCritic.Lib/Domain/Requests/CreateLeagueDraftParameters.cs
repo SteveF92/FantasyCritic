@@ -3,7 +3,7 @@ namespace FantasyCritic.Lib.Domain.Requests;
 public class CreateLeagueDraftParameters
 {
     public CreateLeagueDraftParameters(LeagueYearKey leagueYearKey, string name, LocalDate? scheduledDate,
-        int gamesToDraft, int counterPicksToDraft, int additionalStandardGames, int additionalCounterPicks, IEnumerable<SpecialGameSlot> newSpecialSlots)
+        int gamesToDraft, int counterPicksToDraft, int additionalStandardGames, int additionalCounterPicks, IEnumerable<SpecialGameSlot> newSpecialGameSlots)
     {
         LeagueYearKey = leagueYearKey;
         Name = name;
@@ -12,7 +12,7 @@ public class CreateLeagueDraftParameters
         CounterPicksToDraft = counterPicksToDraft;
         AdditionalStandardGames = additionalStandardGames;
         AdditionalCounterPicks = additionalCounterPicks;
-        NewSpecialSlots = newSpecialSlots.ToList();
+        NewSpecialGameSlots = newSpecialGameSlots.ToList();
     }
 
     public LeagueYearKey LeagueYearKey { get; }
@@ -22,5 +22,5 @@ public class CreateLeagueDraftParameters
     public int CounterPicksToDraft { get; }
     public int AdditionalStandardGames { get; }
     public int AdditionalCounterPicks { get; }
-    public List<SpecialGameSlot> NewSpecialSlots { get; }
+    public IReadOnlyList<SpecialGameSlot> NewSpecialGameSlots { get; }
 }

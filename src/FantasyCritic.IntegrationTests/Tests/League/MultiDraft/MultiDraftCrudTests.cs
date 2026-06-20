@@ -55,7 +55,7 @@ public class MultiDraftCrudTests : IntegrationTestBase
             CounterPicksToDraft = counterPicksToDraft,
             AdditionalStandardGames = additionalStandardGames,
             AdditionalCounterPicks = additionalCounterPicks,
-            NewSpecialSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
         });
 
         return await _league.GetLeagueYearAsync();
