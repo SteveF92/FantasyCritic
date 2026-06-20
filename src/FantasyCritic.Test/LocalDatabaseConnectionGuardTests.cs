@@ -7,7 +7,7 @@ namespace FantasyCritic.Test;
 public class LocalDatabaseConnectionGuardTests
 {
     private const string LocalConnectionString =
-        "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=secret;SslMode=Required;charset=utf8;";
+        "Server=localhost;Port=3307;Database=fantasycritic-fromsnapshot;Uid=fantasycritic-admin;Pwd=secret;SslMode=Required;charset=utf8;";
 
     private const string BetaConnectionString =
         "Server=example-beta-db.abc123.us-east-1.rds.amazonaws.com;Database=fantasycritic;Uid=fantasycritic;Pwd=secret;SslMode=Required;charset=utf8;";
@@ -26,8 +26,8 @@ public class LocalDatabaseConnectionGuardTests
         Assert.That(result.IsSuccess, Is.True);
     }
 
-    [TestCase("Server=127.0.0.1;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=secret;")]
-    [TestCase("Server=::1;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=secret;")]
+    [TestCase("Server=127.0.0.1;Port=3307;Database=fantasycritic-fromsnapshot;Uid=fantasycritic;Pwd=secret;")]
+    [TestCase("Server=::1;Port=3307;Database=fantasycritic-fromsnapshot;Uid=fantasycritic;Pwd=secret;")]
     public void ValidateForClean_AcceptsLocalhostVariants(string connectionString)
     {
         var result = LocalDatabaseConnectionGuard.ValidateForClean(
@@ -84,5 +84,29 @@ public class LocalDatabaseConnectionGuardTests
 
         Assert.That(result.IsFailure, Is.True);
         Assert.That(result.Error, Does.Contain("dump connection string"));
+    }
+
+    [Test]
+    public void ValidateForClean_RejectsSeededDatabaseName()
+    {
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(
+            "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=secret;SslMode=Required;charset=utf8;",
+            BetaConnectionString,
+            DumpConnectionString);
+
+        Assert.That(result.IsFailure, Is.True);
+        Assert.That(result.Error, Does.Contain("fantasycritic"));
+        Assert.That(result.Error, Does.Contain("seeded").IgnoreCase);
+    }
+
+    [Test]
+    public void ValidateForClean_AcceptsSnapshotDatabaseName()
+    {
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(
+            LocalConnectionString,
+            BetaConnectionString,
+            DumpConnectionString);
+
+        Assert.That(result.IsSuccess, Is.True);
     }
 }

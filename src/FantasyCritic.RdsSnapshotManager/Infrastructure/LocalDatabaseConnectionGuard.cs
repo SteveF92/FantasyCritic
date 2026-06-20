@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using FantasyCritic.RdsSnapshotManager.Configuration;
 using MySqlConnector;
 
 namespace FantasyCritic.RdsSnapshotManager.Infrastructure;
@@ -40,6 +41,18 @@ public static class LocalDatabaseConnectionGuard
         if (builder.Port != LocalDockerPort)
         {
             return Result.Failure($"Refusing to clean: port must be {LocalDockerPort} (local Docker), got {builder.Port}.");
+        }
+
+        if (string.Equals(builder.Database, LocalSnapshotDatabaseNames.SeededDatabase, StringComparison.OrdinalIgnoreCase))
+        {
+            return Result.Failure(
+                $"Refusing to clean: database must not be the seeded local database '{LocalSnapshotDatabaseNames.SeededDatabase}'.");
+        }
+
+        if (!string.Equals(builder.Database, LocalSnapshotDatabaseNames.SnapshotDatabase, StringComparison.OrdinalIgnoreCase))
+        {
+            return Result.Failure(
+                $"Refusing to clean: database must be '{LocalSnapshotDatabaseNames.SnapshotDatabase}', got '{builder.Database}'.");
         }
 
         return Result.Success();

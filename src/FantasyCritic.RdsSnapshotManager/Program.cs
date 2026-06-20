@@ -47,9 +47,12 @@ public static class Program
         MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
         MySQLBetaCleaner betaCleaner = new MySQLBetaCleaner(options.BetaConnectionString);
 
-        RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(options.LocalDocker.ConnectionString, clock);
+        string localSnapshotConnectionString = LocalSnapshotConnectionString.BuildSnapshotConnectionString(
+            options.LocalDocker.ConnectionString);
+
+        RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(localSnapshotConnectionString, clock);
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
-        MySQLBetaCleaner localCleaner = new MySQLBetaCleaner(options.LocalDocker.ConnectionString);
+        MySQLBetaCleaner localCleaner = new MySQLBetaCleaner(localSnapshotConnectionString);
 
         SnapshotCreateService snapshotCreateService = new SnapshotCreateService(productionRdsManager, clock);
         BetaSyncService betaSyncService = new BetaSyncService(restoreService, options, betaCleaner, betaUserStore);

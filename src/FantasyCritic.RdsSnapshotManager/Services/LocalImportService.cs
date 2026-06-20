@@ -33,6 +33,18 @@ public sealed class LocalImportService
 
     public async Task<Result> Import(string gzipFilePath, bool force, CancellationToken cancellationToken)
     {
+        string snapshotConnectionString = LocalSnapshotConnectionString.BuildSnapshotConnectionString(
+            _options.LocalDocker.ConnectionString);
+
+        var guard = LocalDatabaseConnectionGuard.ValidateForClean(
+            snapshotConnectionString,
+            _options.BetaConnectionString,
+            _options.DumpConnectionString);
+        if (guard.IsFailure)
+        {
+            return guard;
+        }
+
         var health = await _dockerHealthChecker.EnsureHealthy(_options.LocalDocker.ContainerName, cancellationToken);
         if (health.IsFailure)
         {
@@ -41,14 +53,17 @@ public sealed class LocalImportService
 
         if (!force)
         {
-            var empty = await _emptyChecker.EnsureEmptyOrFailure(_options.LocalDocker.ConnectionString, "fantasycritic", cancellationToken);
+            var empty = await _emptyChecker.EnsureEmptyOrFailure(
+                snapshotConnectionString,
+                LocalSnapshotDatabaseNames.SnapshotDatabase,
+                cancellationToken);
             if (empty.IsFailure)
             {
                 return empty;
             }
         }
 
-        var import = await _mysqldumpRunner.ImportGzipFile(_options.LocalDocker.ConnectionString, gzipFilePath, cancellationToken);
+        var import = await _mysqldumpRunner.ImportGzipFile(snapshotConnectionString, gzipFilePath, cancellationToken);
         if (import.IsFailure)
         {
             return import;

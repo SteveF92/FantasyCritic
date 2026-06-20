@@ -39,12 +39,23 @@ dotnet run --project src/FantasyCritic.RdsSnapshotManager/FantasyCritic.RdsSnaps
 
 **Scrubbing policy:** Exports are full-fidelity. Scrubbing runs on **load** into beta RDS or local Docker only. Option 5 is local Docker only and cannot target production or beta RDS. Scrubbing removes non-beta user credentials, external logins, most Discord config, and unprocessed pickup bids and drop requests in non-test leagues.
 
-## Local Docker MySQL (snapshot import)
+## Local Docker MySQL (two databases)
 
-Use the minimal compose file (MySQL only — no database-updater or local-database-tool):
+One MySQL instance (`docker compose -f infrastructure/docker-compose-mysql.yaml up -d`) hosts two databases:
 
-```powershell
-docker compose -f infrastructure/docker-compose-mysql-snapshot.yaml up -d
+| Database | Purpose |
+|----------|---------|
+| `fantasycritic` | Seeded by DatabaseUpdater + LocalDatabaseTool — used by integration tests and default Web dev |
+| `fantasycritic-fromsnapshot` | Import target for menu options 4 and 5 — never touched by migrations or seeding |
+
+Import and clean **always** target `fantasycritic-fromsnapshot` and refuse the seeded `fantasycritic` database.
+
+To develop against imported snapshot data, set Web user secrets:
+
+```json
+{
+  "ConnectionStrings:DefaultConnection": "Server=localhost;Port=3307;Database=fantasycritic-fromsnapshot;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+}
 ```
 
 The dump is assumed schema-complete; no post-import migration step is required.
@@ -58,7 +69,7 @@ Do not run this tool in CI or automated agents against production AWS resources.
 3. Beta sync from latest snapshot; confirm beta DB reachable and non-beta users scrubbed.
 4. Dump from beta; confirm `.sql.gz` in staging + S3 + local archive paths.
 5. Enable GCS in config; confirm object appears in GCS bucket.
-6. `docker compose -f infrastructure/docker-compose-mysql-snapshot.yaml up -d`
+6. `docker compose -f infrastructure/docker-compose-mysql.yaml up -d`
 7. Import dump; confirm app can connect on port 3307 and users scrubbed.
 8. Run import again without force; confirm refusal when DB has tables.
 9. Run option 5 on the imported database; confirm scrub runs and refuses if `localDocker.connectionString` is pointed at a remote host.

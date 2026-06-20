@@ -13,7 +13,6 @@ public sealed class RdsSnapshotManagerOptions
 
 public sealed class LocalDockerOptions
 {
-    public string ComposeFile { get; set; } = null!;
     public string ConnectionString { get; set; } = null!;
     public string ContainerName { get; set; } = "fantasycritic-mysql";
 }

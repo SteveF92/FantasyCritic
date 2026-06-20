@@ -27,8 +27,11 @@ public sealed class LocalDatabaseCleanService
 
     public async Task<Result> Clean(CancellationToken cancellationToken)
     {
+        string snapshotConnectionString = LocalSnapshotConnectionString.BuildSnapshotConnectionString(
+            _options.LocalDocker.ConnectionString);
+
         var guard = LocalDatabaseConnectionGuard.ValidateForClean(
-            _options.LocalDocker.ConnectionString,
+            snapshotConnectionString,
             _options.BetaConnectionString,
             _options.DumpConnectionString);
         if (guard.IsFailure)
