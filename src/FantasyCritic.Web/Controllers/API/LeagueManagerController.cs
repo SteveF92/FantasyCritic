@@ -948,7 +948,16 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
+        var domainRequest = request.ToDomain(tagDictionary);
+
+        var result = await _draftService.CreateDraft(leagueYear, domainRequest);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]
@@ -956,9 +965,25 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public Task<IActionResult> EditLeagueDraft([FromBody] EditLeagueDraftRequest request)
+    public async Task<IActionResult> EditLeagueDraft([FromBody] EditLeagueDraftRequest request)
     {
-        return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+
+        var domainRequest = request.ToDomain();
+        var result = await _draftService.EditDraft(leagueYear, request.DraftID, domainRequest);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]
@@ -966,9 +991,24 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public Task<IActionResult> DeleteLeagueDraft([FromBody] DeleteLeagueDraftRequest request)
+    public async Task<IActionResult> DeleteLeagueDraft([FromBody] DeleteLeagueDraftRequest request)
     {
-        return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+
+        var result = await _draftService.DeleteDraft(leagueYear, request.DraftID);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
     }
 
     [HttpPost]

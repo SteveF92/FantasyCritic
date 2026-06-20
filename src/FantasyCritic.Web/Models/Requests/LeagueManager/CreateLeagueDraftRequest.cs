@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Requests.LeagueManager;
@@ -11,4 +12,14 @@ public record CreateLeagueDraftRequest(
     int CounterPicksToDraft,
     int AdditionalStandardGames,
     int AdditionalCounterPicks,
-    List<SpecialGameSlotViewModel> NewSpecialSlots);
+    List<SpecialGameSlotViewModel> NewSpecialSlots)
+{
+    public CreateLeagueDraftParameters ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    {
+        var specialGameSlots = NewSpecialSlots.Select(x => x.ToDomain(tagDictionary)).ToList();
+        
+        return new CreateLeagueDraftParameters(new LeagueYearKey(LeagueID, Year), Name, ScheduledDate,
+            GamesToDraft, CounterPicksToDraft, AdditionalStandardGames, AdditionalCounterPicks, 
+            specialGameSlots);
+    }
+}

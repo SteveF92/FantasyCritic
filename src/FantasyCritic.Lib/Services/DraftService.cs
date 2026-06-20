@@ -301,4 +301,19 @@ public class DraftService
     {
         return _fantasyCriticRepo.ResetDraft(leagueYear, _clock.GetCurrentInstant());
     }
+
+    public async Task<Result> CreateDraft(LeagueYear leagueYear, CreateLeagueDraftParameters domainRequest)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result> EditDraft(LeagueYear leagueYear, Guid draftID, EditLeagueDraftParameters domainRequest)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result> DeleteDraft(LeagueYear leagueYear, Guid draftID)
+    {
+        throw new NotImplementedException();
+    }
 }
