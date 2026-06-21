@@ -71,7 +71,7 @@ All service methods that currently hard-code `leagueYear.FirstDraft` for lifecyc
 - `EditLeagueYear` (draft count update)
 - `CreatePublisher`, `DeletePublisher` (draft position rows)
 - `AddNewLeagueYear`, `AddNewConferenceYear`
-- All stored procedures that use `AND ld.DraftNumber = 1` replace this filter with the appropriate current-draft logic
+- All stored procedures that use `AND ld.DraftNumber = 1` remove the filter; each site maps to one of the three primitives in **Database Schema Changes** below (`AnyDraftStarted`, most-recent-year league type, or `IsAnyDraftInProgress`)
 
 ---
 
@@ -79,9 +79,62 @@ All service methods that currently hard-code `leagueYear.FirstDraft` for lifecyc
 
 Phase 1 already contains all required schema. No new migrations needed for Phase 2.
 
-The only SQL change is updating stored procedures to replace `AND ld.DraftNumber = 1` filters with either:
-- A join to the current (first non-DraftFinal) draft where applicable, or
-- An aggregate or ordered subquery where the procedure needs summary data across all drafts
+The SQL changes update stored procedures (and a few inline repo queries) to remove `AND ld.DraftNumber = 1` filters. **The filter is doing three semantically distinct jobs, not one** — so there is no single replacement pattern. Each `DraftNumber = 1` site maps to one of three primitives below.
+
+### Why not a single "current draft" subquery
+
+The original instinct was to replace every `DraftNumber = 1` with "the first non-`DraftFinal` draft." That is wrong for most sites:
+
+- The `DraftNumber = 1` queries in the full-`LeagueYear` procedures do **not** build `LeagueYear.Drafts` (that is a separate result set that already returns all drafts). They build the lightweight **`MinimalLeagueYearInfo`** summary (`(Year, Finished, PlayStatus)`) for **every year** of the league.
+- Every consumer of `MinimalLeagueYearInfo.PlayStatus` reads only `.PlayStarted` (to find the most recent year a draft started). A "first non-final draft" status would regress the case where draft 1 is `DraftFinal` and draft 2 is `NotStartedDraft` (that year would report not-started).
+- One site (`sp_getleaguesforuser`) uses draft 1's `GamesToDraft`/`CounterPicksToDraft` to compute one-shot status, which needs a **SUM across drafts**, not a single draft.
+
+### Primitive A — `AnyDraftStarted` (per-league-year boolean)
+
+Definition: `EXISTS (draft WHERE PlayStatus <> 'NotStartedDraft')` — equivalent to the existing `LeagueYear.IsAnyDraftStarted`.
+
+Domain/data shape changes:
+- **`MinimalLeagueYearInfo`**: replace `PlayStatus PlayStatus` with `bool AnyDraftStarted`. Update all read sites (`ConsolidatedLeagueDataViewModel`, `LeagueViewModel`, `LeagueWithStatusViewModel`, `MySQLCombinedDataRepo`, `MySQLFantasyCriticRepo`, `LeagueController`) from `x.PlayStatus.PlayStarted` → `x.AnyDraftStarted`, and construction sites (`TestDataService`, `ConferenceService`).
+- **`PublicLeagueYearStats`** / **`PublicLeagueYearViewModel`**: replace `PlayStatus` with `bool AnyDraftStarted`.
+
+Applies to: `sp_getleagueyear`, `sp_getleague`, `sp_getusersinleague`, `sp_getcombinedleagueyearuserstatus`, `sp_getleagueyearsforconferenceyear`, the 2nd result set of `sp_getleaguesforuser`, the public-leagues list in `sp_gethomepagedata`, and the inline repo queries in `MySQLFantasyCriticRepo` (the `firstDraftStatuses` read and `GetPublicLeagueYears`).
+
+`sp_getconferenceyeardata` already computes this boolean correctly for the conference rollup — its only fix is **deleting** the leftover `AND ld.DraftNumber = 1`.
+
+### Primitive B — most-recent-year league type (`sp_getleaguesforuser` only)
+
+Replace the `MostRecentYearOneShot` bool with a category string `'Standard' | 'OneShot' | 'MultiDraft'`, computed in SQL for the most recent year, hierarchically:
+1. draft count > 1 → `'MultiDraft'`
+2. else the full existing `OneShotMode` predicate (bids off + games=total + counterpicks=total + no droppables + no superdrops + `NoTrades`) **and** exactly one draft → `'OneShot'`
+3. else → `'Standard'`
+
+Carried through `LeagueWithMostRecentYearStatus` → `LeagueWithStatusViewModel` (replacing `OneShotMode`) → frontend `leagueTable.vue` (new Multi Draft icon branch).
+
+### Primitive C — `IsAnyDraftInProgress`
+
+`DraftIsActiveOrPaused` → `COUNT(*) WHERE PlayStatus IN ('Drafting','DraftPaused')` (matches `LeagueYear.IsAnyDraftInProgress`). No subquery; this primitive is unchanged from the prior plan.
+
+### Per-SP map
+
+| SP / read site | Primitive |
+|---|---|
+| `sp_getleagueyear` | A |
+| `sp_getleaguesforuser` | B (most-recent-year category) + A (2nd result set) |
+| `sp_getleague` | A |
+| `sp_getusersinleague` | A |
+| `sp_gethomepagedata` | A (public-leagues list) + inherits #2 |
+| `sp_getcombinedleagueyearuserstatus` | A |
+| `sp_getleagueyearsforconferenceyear` | A |
+| `sp_getconferenceyeardata` | A (just delete the `DraftNumber = 1` line) |
+| `MySQLFantasyCriticRepo` `firstDraftStatuses` | A |
+| `MySQLFantasyCriticRepo.GetPublicLeagueYears` | A |
+| `MySQLFantasyCriticRepo.DraftIsActiveOrPaused` | C |
+
+### Frontend changes (Slice 2)
+
+- `leagueTable.vue`: replace the `oneShotMode` bool branch with the 3-way category; add a Multi Draft icon (specific icon chosen during implementation).
+- `publicLeagues.vue`: drop the raw "Play Status" column (it exposed enum values like `NotStartedDraft`); add a "no draft started yet" flag/icon next to the league name, driven by `AnyDraftStarted`.
+- Home-page top-10 public leagues (also from `sp_gethomepagedata`): align with the same `AnyDraftStarted` treatment.
 
 ---
 

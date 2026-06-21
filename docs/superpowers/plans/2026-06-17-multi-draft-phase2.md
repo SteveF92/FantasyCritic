@@ -46,14 +46,19 @@
 | `src/FantasyCritic.Web/Models/Requests/LeagueManager/CreateLeagueRequest.cs` | Add optional `SecondDraft` block |
 | `src/FantasyCritic.Web/Models/Responses/LeagueYearViewModel.cs` | Add `Drafts`, `EnableBids` |
 | `src/FantasyCritic.Web/Models/RoundTrip/LeagueYearSettingsViewModel.cs` | Hide `GamesToDraft`/`CounterPicksToDraft` when multiple drafts exist |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleagueyear.sql` | Remove `DraftNumber = 1` filter |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleaguesforuser.sql` | Remove `DraftNumber = 1` filter |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleague.sql` | Remove `DraftNumber = 1` filter |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getusersinleague.sql` | Remove `DraftNumber = 1` filter |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_gethomepagedata.sql` | Remove `DraftNumber = 1` filter |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getcombinedleagueyearuserstatus.sql` | Remove `DraftNumber = 1` filter |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleagueyearsforconferenceyear.sql` | Remove `DraftNumber = 1` filter |
-| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getconferenceyeardata.sql` | Remove `DraftNumber = 1` filter |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleagueyear.sql` | Drop `DraftNumber = 1`; emit `AnyDraftStarted` (Primitive A) |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleaguesforuser.sql` | Drop `DraftNumber = 1`; 2nd result set → `AnyDraftStarted` (A); `MostRecentYearOneShot` → `MostRecentYearType` (Primitive B) |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleague.sql` | Drop `DraftNumber = 1`; emit `AnyDraftStarted` (A) |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getusersinleague.sql` | Drop `DraftNumber = 1`; emit `AnyDraftStarted` (A) |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_gethomepagedata.sql` | Drop `DraftNumber = 1`; public list → `AnyDraftStarted` (A) |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getcombinedleagueyearuserstatus.sql` | Drop `DraftNumber = 1`; emit `AnyDraftStarted` (A) |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getleagueyearsforconferenceyear.sql` | Drop `DraftNumber = 1`; emit `AnyDraftStarted` (A) |
+| `src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/sp_getconferenceyeardata.sql` | **Delete** the leftover `AND ld.DraftNumber = 1` (rollup already correct) |
+| `src/FantasyCritic.Lib/Domain/MinimalLeagueYearInfo.cs` | `PlayStatus` → `bool AnyDraftStarted` |
+| `src/FantasyCritic.Lib/Domain/PublicLeagueYearStats.cs` (+ entity + `PublicLeagueYearViewModel`) | `PlayStatus` → `bool AnyDraftStarted` |
+| `src/FantasyCritic.Lib/Domain/Combinations/LeagueWithMostRecentYearStatus.cs` (+ `LeagueEntity`, `LeagueWithStatusViewModel`) | `MostRecentYearOneShot` → `MostRecentYearType` |
+| `src/FantasyCritic.Web/ClientApp/src/components/leagueTable.vue` | `oneShotMode` branch → 3-way `mostRecentYearType`; add Multi Draft icon |
+| `src/FantasyCritic.Web/ClientApp/src/views/publicLeagues.vue` | Drop "Play Status" column; add "no draft started yet" flag |
 | `src/FantasyCritic.IntegrationTests/Helpers/LeagueScenario.cs` | Add `EnableBids` field |
 
 ---
@@ -764,76 +769,131 @@ git commit -m "Wire real CreateLeagueDraft, EditLeagueDraft, DeleteLeagueDraft c
 
 ---
 
-### Task 2.1: Fix Stored Procedures
+### Task 2.1: Fix Stored Procedures (and the domain shapes they feed)
 
-The eight stored procedures listed below all have a `-- TODO(Phase2-MultiDraft)` comment and join `tbl_league_draft` with `AND ld.DraftNumber = 1`. Replace that filter with logic that selects the "current" draft — the first non-DraftFinal draft — using a subquery or `MIN`/`CASE` pattern.
+> **Reframed after design review.** The `AND ld.DraftNumber = 1` filter is doing **three semantically distinct jobs**, not one. There is no single replacement pattern. See the spec's **Database Schema Changes** section for the full rationale. Do **not** apply a blanket "current draft" subquery — it regresses the common case where draft 1 is `DraftFinal` and draft 2 is `NotStartedDraft`.
 
-**Pattern to apply in every SP:**
+The three primitives:
 
-Replace:
+- **Primitive A — `AnyDraftStarted`** (per-league-year bool): `EXISTS (draft WHERE PlayStatus <> 'NotStartedDraft')`. This is what the `MinimalLeagueYearInfo` per-year summaries and the public-league listings actually need (every consumer reads only `.PlayStarted`).
+- **Primitive B — most-recent-year league type** (`'Standard' | 'OneShot' | 'MultiDraft'`): only in `sp_getleaguesforuser`, replacing the `MostRecentYearOneShot` bool.
+- **Primitive C — `IsAnyDraftInProgress`**: `COUNT(*) WHERE PlayStatus IN ('Drafting','DraftPaused')`. Only in the repo (handled in Task 2.2); unchanged from prior plan.
+
+---
+
+#### Step group 1: Domain & entity shape changes (do first so SQL changes compile)
+
+- [ ] **Step 1: `MinimalLeagueYearInfo`** — replace `PlayStatus PlayStatus` with `bool AnyDraftStarted`.
+
+```csharp
+// src/FantasyCritic.Lib/Domain/MinimalLeagueYearInfo.cs
+public record MinimalLeagueYearInfo(int Year, bool Finished, bool AnyDraftStarted);
+```
+
+- [ ] **Step 2: Update all read sites** from `x.PlayStatus.PlayStarted` → `x.AnyDraftStarted`:
+  - `src/FantasyCritic.Web/Models/Responses/ConsolidatedLeagueDataViewModel.cs` (~line 19)
+  - `src/FantasyCritic.Web/Models/Responses/LeagueViewModel.cs` (~lines 17, 40)
+  - `src/FantasyCritic.Web/Models/Responses/LeagueWithStatusViewModel.cs` (~line 20)
+  - `src/FantasyCritic.MySQL/MySQLCombinedDataRepo.cs` (~line 84)
+  - `src/FantasyCritic.MySQL/MySQLFantasyCriticRepo.cs` (~lines 1509, 3466)
+  - `src/FantasyCritic.Web/Controllers/API/LeagueController.cs` (~lines 499, 728)
+
+- [ ] **Step 3: Update construction sites** to pass the bool instead of a `PlayStatus`:
+  - `src/FantasyCritic.FakeRepo/TestUtilities/TestDataService.cs` (~line 160)
+  - `src/FantasyCritic.Lib/Services/ConferenceService.cs` (~lines 49, 80) — `PlayStatus.NotStartedDraft` → `false`
+
+- [ ] **Step 4: Entities** that carry the per-year summary — replace the `PlayStatus` string column with a `bool AnyDraftStarted` (matching the new SQL column alias). The entity read by `sp_getleagueyear`/`sp_getleague` is `LeagueYearKeyWithDetailsEntity` (and the equivalent shapes read by the other Primitive-A SPs). Update their `ToDomain`/mapping accordingly.
+
+- [ ] **Step 5: Public leagues** — `PublicLeagueYearStats`, `PublicLeagueYearStatsEntity`, and `PublicLeagueYearViewModel`: replace `PlayStatus` with `bool AnyDraftStarted`.
+
+```csharp
+// src/FantasyCritic.Lib/Domain/PublicLeagueYearStats.cs
+public record PublicLeagueYearStats(Guid LeagueID, string LeagueName, int NumberOfFollowers, bool AnyDraftStarted);
+```
+
+- [ ] **Step 6: Primitive B plumbing** — `LeagueWithMostRecentYearStatus.MostRecentYearOneShot` (bool) → `MostRecentYearType` (string), `LeagueEntity.MostRecentYearOneShot` → `MostRecentYearType`, and `LeagueWithStatusViewModel.OneShotMode` → `MostRecentYearType`.
+
+#### Step group 2: Primitive A SQL (uniform transformation)
+
+For each SP below: **delete the `JOIN tbl_league_draft ld ... AND ld.DraftNumber = 1`** and replace the selected `ld.PlayStatus` column with a correlated subquery, keeping all other selected columns identical:
+
 ```sql
-JOIN tbl_league_draft ld
-  ON ld.LeagueID = tbl_league_year.LeagueID
- AND ld.Year     = tbl_league_year.Year
- AND ld.DraftNumber = 1
+EXISTS (
+  SELECT 1 FROM tbl_league_draft d
+  WHERE d.LeagueID = tbl_league_year.LeagueID
+    AND d.Year     = tbl_league_year.Year
+    AND d.PlayStatus <> 'NotStartedDraft'
+) AS AnyDraftStarted
 ```
 
-With:
-```sql
-JOIN tbl_league_draft ld
-  ON ld.LeagueID     = tbl_league_year.LeagueID
- AND ld.Year         = tbl_league_year.Year
- AND ld.DraftNumber  = (
-     SELECT MIN(d2.DraftNumber)
-     FROM tbl_league_draft d2
-     WHERE d2.LeagueID = tbl_league_year.LeagueID
-       AND d2.Year     = tbl_league_year.Year
-       AND d2.PlayStatus <> 'DraftFinal'
-     -- fallback to highest DraftNumber if all are DraftFinal
-     UNION ALL
-     SELECT MAX(d3.DraftNumber)
-     FROM tbl_league_draft d3
-     WHERE d3.LeagueID = tbl_league_year.LeagueID
-       AND d3.Year     = tbl_league_year.Year
-     LIMIT 1
- )
-```
+(Adjust the outer table alias per SP — e.g. `cy`/`l` in the conference SPs.)
 
-For SPs that only need the `PlayStatus` from the current draft (e.g. `sp_getleaguesforuser`), a cleaner approach is:
+- [ ] **Step 7: `sp_getleagueyear.sql`** — result set at ~lines 40-47. Remove TODO.
+- [ ] **Step 8: `sp_getleague.sql`** — result set at ~lines 33-40. Remove TODO.
+- [ ] **Step 9: `sp_getusersinleague.sql`** — result set at ~lines 27-31. Remove TODO.
+- [ ] **Step 10: `sp_getcombinedleagueyearuserstatus.sql`** — result set at ~lines 32-36. Remove TODO.
+- [ ] **Step 11: `sp_getleagueyearsforconferenceyear.sql`** — result set at ~lines 33-41 (correlate on `tbl_league_year.LeagueID`/`.Year`). Remove TODO.
+- [ ] **Step 12: `sp_getleaguesforuser.sql` 2nd result set** — ~lines 95-115 (both UNION halves). Remove TODO.
+- [ ] **Step 13: `sp_gethomepagedata.sql` public-leagues list** — ~lines 154-164. Replace `ld.PlayStatus` with the `EXISTS(...) AS AnyDraftStarted` subquery; drop the draft join. Remove TODO.
+- [ ] **Step 14: `sp_getconferenceyeardata.sql`** — the rollup at ~lines 33-55 **already** computes `AtLeastOneDraftStarted` correctly across all drafts. The only fix is to **delete line 53** (`AND ld.DraftNumber = 1`) so the aggregate sees every draft. Remove TODO.
+
+#### Step group 3: Primitive B SQL (`sp_getleaguesforuser`)
+
+- [ ] **Step 15:** Rewrite the `most_recent_ly` subquery (~lines 70-87) to compute a 3-way category instead of `OneShotMode`, and replace the main-query `MostRecentYearOneShot` CASE (~lines 30-33) with `most_recent_ly.MostRecentYearType`:
 
 ```sql
-JOIN tbl_league_draft ld
-  ON ld.LeagueID    = tbl_league_year.LeagueID
- AND ld.Year        = tbl_league_year.Year
- AND ld.DraftID     = (
-     SELECT COALESCE(
-         (SELECT DraftID FROM tbl_league_draft
-          WHERE LeagueID = tbl_league_year.LeagueID AND Year = tbl_league_year.Year
-            AND PlayStatus <> 'DraftFinal'
-          ORDER BY DraftNumber ASC LIMIT 1),
-         (SELECT DraftID FROM tbl_league_draft
-          WHERE LeagueID = tbl_league_year.LeagueID AND Year = tbl_league_year.Year
-          ORDER BY DraftNumber DESC LIMIT 1)
-     )
- )
+LEFT JOIN (
+  SELECT ly.LeagueID,
+         CASE
+           WHEN COUNT(ld.DraftID) > 1 THEN 'MultiDraft'
+           WHEN ly.EnableBids = 0
+                AND ly.StandardGames = COALESCE(SUM(ld.GamesToDraft), 0)
+                AND ly.CounterPicks  = COALESCE(SUM(ld.CounterPicksToDraft), 0)
+                AND ly.UnrestrictedReleaseStatusDroppableGames = 0
+                AND ly.WillNotReleaseDroppableGames = 0
+                AND ly.WillReleaseDroppableGames = 0
+                AND ly.GrantSuperDrops = 0
+                AND ly.TradingSystem = 'NoTrades'
+                AND COUNT(ld.DraftID) = 1
+             THEN 'OneShot'
+           ELSE 'Standard'
+         END AS MostRecentYearType,
+         ROW_NUMBER() OVER (PARTITION BY ly.LeagueID ORDER BY ly.Year DESC) AS rn
+  FROM tbl_league_year ly
+  LEFT JOIN tbl_league_draft ld ON ld.LeagueID = ly.LeagueID AND ld.Year = ly.Year
+  GROUP BY ly.LeagueID, ly.Year, ly.EnableBids, ly.StandardGames, ly.CounterPicks,
+           ly.UnrestrictedReleaseStatusDroppableGames, ly.WillNotReleaseDroppableGames,
+           ly.WillReleaseDroppableGames, ly.GrantSuperDrops, ly.TradingSystem
+) AS most_recent_ly ON vw_league.LeagueID = most_recent_ly.LeagueID AND most_recent_ly.rn = 1
 ```
 
-**Files to update (one `[Test]` step per file):**
+> Verify the exact `tbl_league_year` column names while editing; the snippet above assumes the one-shot columns live on `tbl_league_year`.
 
-- [ ] **Step 1: Update `sp_getleagueyear.sql`** — remove `TODO` comment, apply pattern
-- [ ] **Step 2: Update `sp_getleaguesforuser.sql`** — same
-- [ ] **Step 3: Update `sp_getleague.sql`** — same
-- [ ] **Step 4: Update `sp_getusersinleague.sql`** — same
-- [ ] **Step 5: Update `sp_gethomepagedata.sql`** — same
-- [ ] **Step 6: Update `sp_getcombinedleagueyearuserstatus.sql`** — same
-- [ ] **Step 7: Update `sp_getleagueyearsforconferenceyear.sql`** — same
-- [ ] **Step 8: Update `sp_getconferenceyeardata.sql`** — same
+#### Step group 4: Frontend
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 16: `leagueTable.vue`** — replace the `data.item.oneShotMode` branches (~lines 11-12) with the 3-way `mostRecentYearType` category; add a Multi Draft icon branch (choose a fitting font-awesome icon, e.g. mirroring the `1` used for one-shot).
+- [ ] **Step 17: `publicLeagues.vue`** — remove the `playStatus` column (~line 54); add a "no draft started yet" flag/icon next to the league name driven by `anyDraftStarted`. Apply the same treatment to the home-page top-10 public leagues list if it surfaces play status.
+
+#### Step group 5: Verify & commit
+
+- [ ] **Step 18: Regenerate the API client** (`PublicLeagueYearViewModel` and `LeagueWithStatusViewModel` shapes changed)
 
 ```
-git add "src/FantasyCritic.DatabaseUpdater/Scripts/Idempotent/Stored Procedures/"
-git commit -m "Fix all stored procedures to use CurrentDraft instead of DraftNumber=1."
+bash scripts/regenerate-api-client.sh
+```
+
+- [ ] **Step 19: Build**
+
+```
+dotnet build src/FantasyCritic.sln
+```
+Expected: 0 errors.
+
+- [ ] **Step 20: Commit**
+
+```
+git add -A
+git commit -m "Fix DraftNumber=1 reads: AnyDraftStarted + most-recent-year league type primitives."
 ```
 
 ---
@@ -843,11 +903,22 @@ git commit -m "Fix all stored procedures to use CurrentDraft instead of DraftNum
 **Files:**
 - Modify: `src/FantasyCritic.MySQL/MySQLFantasyCriticRepo.cs`
 
-The two `TODO(Phase2-MultiDraft)` markers at lines 76 and 208 (in `MinimalLeagueYearInfo` / similar reads) reference `DraftNumber = 1` in inline SQL. Apply the same current-draft subquery pattern.
+Three `TODO(Phase2-MultiDraft)` markers in inline SQL. These use the same primitives as Task 2.1 (the C# shape changes in Task 2.1 Step group 1 already cover `MinimalLeagueYearInfo` / `PublicLeagueYearStats`; here we fix the inline queries that populate them).
 
-- [ ] **Step 1: Fix line-76 TODO** — find the inline SQL at line 76, apply current-draft subquery
-- [ ] **Step 2: Fix line-208 TODO** — find the inline SQL at line 208, apply current-draft subquery
-- [ ] **Step 3: Fix line-3594 TODO** — `DraftIsActiveOrPaused` check; update to check any draft
+- [ ] **Step 1: Fix the `firstDraftStatuses` read (~line 76, Primitive A)** — this builds `MinimalLeagueYearInfo` for all years. Replace the `DraftNumber = 1` `PlayStatus` query with a per-(LeagueID, Year) boolean.
+
+```csharp
+// Replace the firstDraftStatuses query + playStatusByLeagueYear dictionary with:
+var startedDraftYears = await connection.QueryAsync<(Guid LeagueID, int Year)>(
+    "SELECT DISTINCT LeagueID, Year FROM tbl_league_draft WHERE PlayStatus <> 'NotStartedDraft'");
+var anyDraftStartedByLeagueYear = startedDraftYears.Select(x => (x.LeagueID, x.Year)).ToHashSet();
+// ...then: new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished,
+//             anyDraftStartedByLeagueYear.Contains((leagueEntity.LeagueID, x.Year)))
+```
+
+- [ ] **Step 2: Fix `GetPublicLeagueYears` (~line 208, Primitive A)** — replace the `DraftNumber = 1` join + `ld.PlayStatus` with the `EXISTS(...) AS AnyDraftStarted` subquery; update `PublicLeagueYearStatsEntity` to a `bool AnyDraftStarted` (paired with the `PublicLeagueYearStats` change in Task 2.1 Step 5).
+
+- [ ] **Step 3: Fix `DraftIsActiveOrPaused` (~line 3594, Primitive C)** — already the intended fix; no subquery needed:
 
 ```csharp
 public async Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year)
@@ -864,7 +935,7 @@ public async Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year)
 
 ```
 git add src/FantasyCritic.MySQL/MySQLFantasyCriticRepo.cs
-git commit -m "Fix MySQLFantasyCriticRepo PlayStatus reads to use CurrentDraft."
+git commit -m "Fix MySQLFantasyCriticRepo reads: AnyDraftStarted + DraftIsActiveOrPaused."
 ```
 
 ---
