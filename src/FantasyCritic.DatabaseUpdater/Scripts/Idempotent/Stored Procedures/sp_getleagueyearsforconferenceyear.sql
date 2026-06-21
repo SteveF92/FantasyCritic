@@ -29,15 +29,18 @@ BEGIN
   WHERE ConferenceID = P_ConferenceID
     AND IsDeleted = 0;
   
-  -- TODO(Phase2-MultiDraft): Any implicit use of DraftNumber = 1 needs to be updated to something more robust once multi-draft is implemented.
   SELECT tbl_league.LeagueID, 
   tbl_league_year.`YEAR`,
   tbl_meta_supportedyear.Finished AS "SupportedYearIsFinished",
-  ld.PlayStatus
+  EXISTS (
+    SELECT 1 FROM tbl_league_draft ld
+    WHERE ld.LeagueID = tbl_league_year.LeagueID
+      AND ld.Year = tbl_league_year.Year
+      AND ld.PlayStatus <> 'NotStartedDraft'
+  ) AS AnyDraftStarted
   FROM tbl_league_year
   JOIN tbl_league ON tbl_league.LeagueID = tbl_league_year.LeagueID
   JOIN tbl_meta_supportedyear ON tbl_meta_supportedyear.`Year` = tbl_league_year.`Year`
-  JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year AND ld.DraftNumber = 1
   WHERE ConferenceID = P_ConferenceID;
   
   -- League Year

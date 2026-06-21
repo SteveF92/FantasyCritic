@@ -157,7 +157,7 @@ public class TestDataService
 
             var playStatus = PlayStatus.FromValue(leagueDraftEntity.PlayStatus);
             var league = new League(leagueYearEntity.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser().ToMinimal(), null, null,
-                new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(leagueYearEntity.Year, false, playStatus) },
+                new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(leagueYearEntity.Year, false, playStatus.PlayStarted) },
                 false, false, false, false, 0);
             var supportedYear = new SupportedYear(leagueYearEntity.Year, true, true, true, new LocalDate(leagueYearEntity.Year, 1, 1), false);
 

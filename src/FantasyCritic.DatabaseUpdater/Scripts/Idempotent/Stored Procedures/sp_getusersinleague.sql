@@ -23,11 +23,14 @@ CREATE PROCEDURE `sp_getusersinleague`(
 BEGIN
   SELECT tbl_user.* from tbl_user join tbl_league_hasuser on (tbl_user.UserID = tbl_league_hasuser.UserID) where tbl_league_hasuser.LeagueID = P_LeagueID;
   
-  -- TODO(Phase2-MultiDraft): Any implicit use of DraftNumber = 1 needs to be updated to something more robust once multi-draft is implemented.
   SELECT tbl_league_year.YEAR,
-         ld.PlayStatus
+         EXISTS (
+           SELECT 1 FROM tbl_league_draft ld
+           WHERE ld.LeagueID = tbl_league_year.LeagueID
+             AND ld.Year = tbl_league_year.Year
+             AND ld.PlayStatus <> 'NotStartedDraft'
+         ) AS AnyDraftStarted
   FROM tbl_league_year
-  JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year AND ld.DraftNumber = 1
   WHERE tbl_league_year.LeagueID = P_LeagueID;
   
   SELECT UserID, Year from tbl_league_publisher where LeagueID = P_LeagueID;

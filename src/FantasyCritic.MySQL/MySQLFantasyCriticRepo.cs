@@ -54,7 +54,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         var years = await resultSets.ReadAsync<LeagueYearKeyWithDetailsEntity>();
-        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
+        League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.AnyDraftStarted)));
         return league;
     }
 
@@ -73,10 +73,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var supportedYearDictionary = supportedYears.ToDictionary(x => x.Year);
 
         IEnumerable<LeagueYearEntity> yearEntities = await connection.QueryAsync<LeagueYearEntity>("select * from tbl_league_year");
-        // TODO(Phase2-MultiDraft): PlayStatus comes from the first draft only.
-        var firstDraftStatuses = await connection.QueryAsync<(Guid LeagueID, int Year, string PlayStatus)>(
-            "SELECT LeagueID, Year, PlayStatus FROM tbl_league_draft WHERE DraftNumber = 1");
-        var playStatusByLeagueYear = firstDraftStatuses.ToDictionary(x => (x.LeagueID, x.Year), x => x.PlayStatus);
+        var startedDraftYears = await connection.QueryAsync<(Guid LeagueID, int Year)>(
+            "SELECT DISTINCT LeagueID, Year FROM tbl_league_draft WHERE PlayStatus <> 'NotStartedDraft'");
+        var anyDraftStartedByLeagueYear = startedDraftYears.Select(x => (x.LeagueID, x.Year)).ToHashSet();
         var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
         List<League> leagues = new List<League>();
         var allUsers = await _userStore.GetAllUsers();
@@ -89,7 +88,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
             var leagueYears = leagueYearLookup[leagueEntity.LeagueID];
             League league = leagueEntity.ToDomain(leagueYears.Select(x => new MinimalLeagueYearInfo(x.Year, supportedYearDictionary[x.Year].Finished,
-                PlayStatus.FromValue(playStatusByLeagueYear[(leagueEntity.LeagueID, x.Year)]))));
+                anyDraftStartedByLeagueYear.Contains((leagueEntity.LeagueID, x.Year)))));
             leagues.Add(league);
         }
 
@@ -205,12 +204,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<PublicLeagueYearStats>> GetPublicLeagueYears(int year, int? count)
     {
-        // TODO(Phase2-MultiDraft): Uses only the first draft's PlayStatus.
         string sql = """
-                     SELECT vw_league.LeagueID, vw_league.LeagueName, vw_league.NumberOfFollowers, ld.PlayStatus
+                     SELECT vw_league.LeagueID, vw_league.LeagueName, vw_league.NumberOfFollowers,
+                            EXISTS (SELECT 1 FROM tbl_league_draft ld
+                                    WHERE ld.LeagueID = tbl_league_year.LeagueID
+                                      AND ld.Year = tbl_league_year.Year
+                                      AND ld.PlayStatus <> 'NotStartedDraft') AS AnyDraftStarted
                      FROM vw_league
                      JOIN tbl_league_year ON vw_league.LeagueID = tbl_league_year.LeagueID
-                     JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year AND ld.DraftNumber = 1
                      WHERE vw_league.PublicLeague = 1
                      AND tbl_league_year.`Year` = @year
                      ORDER BY NumberOfFollowers DESC
@@ -1495,10 +1496,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var leagueEntity in leagueEntities)
         {
             var years = leagueYearLookup[leagueEntity.LeagueID].ToList();
-            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, PlayStatus.FromValue(x.PlayStatus))));
+            League league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.AnyDraftStarted)));
             var activeYearLeagueYearName = GetActiveYearLeagueYearName(years, league);
             leaguesWithStatus.Add(new LeagueWithMostRecentYearStatus(league, leagueEntity.UserIsInLeague, leagueEntity.UserIsActiveInMostRecentYearForLeague,
-                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearOneShot, activeYearLeagueYearName, leagueEntity.LeagueRoyaleGroupID));
+                leagueEntity.LeagueIsActiveInActiveYear, leagueEntity.UserIsFollowingLeague, leagueEntity.MostRecentYearType, activeYearLeagueYearName, leagueEntity.LeagueRoyaleGroupID));
         }
 
         return leaguesWithStatus;
@@ -1506,7 +1507,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private static string? GetActiveYearLeagueYearName(IReadOnlyList<LeagueYearKeyWithDetailsEntity> years, League league)
     {
-        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var latestDraftStartedYear = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         var activeYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? league.Years.Max(x => x.Year);
         return years.FirstOrDefault(x => x.Year == activeYear)?.LeagueYearName;
@@ -3705,17 +3706,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<bool> DraftIsActiveOrPaused(Guid leagueID, int year)
     {
-        // TODO(Phase2-MultiDraft): Checks only the first draft's status.
-        const string sql = "SELECT PlayStatus FROM tbl_league_draft WHERE LeagueID = @leagueID AND Year = @year AND DraftNumber = 1;";
+        const string sql = "SELECT COUNT(*) FROM tbl_league_draft WHERE LeagueID = @leagueID AND Year = @year AND PlayStatus IN ('Drafting', 'DraftPaused');";
 
         await using var connection = new MySqlConnection(_connectionString);
-        var playStatus = await connection.QuerySingleOrDefaultAsync<string?>(sql, new { leagueID, year });
-        if (playStatus is null)
-        {
-            return false;
-        }
-
-        return playStatus == "Drafting" || playStatus == "DraftPaused";
+        var count = await connection.ExecuteScalarAsync<int>(sql, new { leagueID, year });
+        return count > 0;
     }
 
     public async Task SetUnderReview(LeagueYear leagueYear, bool underReview, LeagueManagerAction action)

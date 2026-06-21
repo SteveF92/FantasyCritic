@@ -102,7 +102,7 @@ public class FantasyCriticService
             return Result.Failure<League>("That scoring mode is no longer supported.");
         }
 
-        IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, PlayStatus.NotStartedDraft) };
+        IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager.ToMinimal(), null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
         var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(newLeague.LeagueID, parameters.LeagueYearParameters.Year), 1,
             "InitialDraft", null, parameters.LeagueYearParameters.GamesToDraft, parameters.LeagueYearParameters.CounterPicksToDraft,

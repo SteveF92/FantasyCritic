@@ -16,7 +16,7 @@ public class ConsolidatedLeagueDataViewModel
         var typedManager = new VeryMinimalFantasyCriticUserViewModel(league.LeagueManager);
         var typedPlayersInLeague = playersInLeague.Select(x => new VeryMinimalFantasyCriticUserViewModel(x.User)).ToList();
 
-        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var latestDraftStartedYear = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         var years = league.Years.Select(x => x.Year).ToList();
         var activeYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? years.Max();

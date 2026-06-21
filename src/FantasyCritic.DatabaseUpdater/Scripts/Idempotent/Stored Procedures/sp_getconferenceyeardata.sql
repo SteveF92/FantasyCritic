@@ -30,7 +30,6 @@ BEGIN
   WHERE ConferenceID = P_ConferenceID
     AND tbl_conference.IsDeleted = 0;
   
-  -- TODO(Phase2-MultiDraft): Any implicit use of DraftNumber = 1 needs to be updated to something more robust once multi-draft is implemented.
   SELECT 
     cy.Year,
     sy.Finished AS SupportedYearIsFinished,
@@ -50,7 +49,6 @@ BEGIN
   LEFT JOIN tbl_league_draft ld
       ON ld.LeagueID = l.LeagueID
       AND ld.Year = cy.Year
-      AND ld.DraftNumber = 1
   WHERE cy.ConferenceID = P_ConferenceID
   GROUP BY cy.Year, sy.Finished;
   

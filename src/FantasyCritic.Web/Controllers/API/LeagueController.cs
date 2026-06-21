@@ -496,7 +496,7 @@ public class LeagueController : BaseLeagueController
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
-        MinimalLeagueYearInfo? latestDraftStartedYearInfo = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        MinimalLeagueYearInfo? latestDraftStartedYearInfo = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         MinimalLeagueYearInfo? highestNonFinishedYearInfo = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         List<int> leagueYearNumbers = league.Years.Select(x => x.Year).ToList();
         if (leagueYearNumbers.Count == 0)
