@@ -308,7 +308,7 @@ internal static class DomainConversionUtilities
         }
 
         var startedYears = playStatuses
-            .Where(x => x.PlayStatus != PlayStatus.NotStartedDraft.Value)
+            .Where(x => x.AnyDraftStarted)
             .Select(x => x.Year)
             .ToList();
 

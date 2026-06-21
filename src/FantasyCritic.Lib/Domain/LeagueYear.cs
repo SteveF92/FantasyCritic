@@ -58,7 +58,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     {
         get
         {
-            var lastCompletedDraft = Drafts.FirstOrDefault(x => x.PlayStatus.DraftFinished);
+            var lastCompletedDraft = Drafts.LastOrDefault(x => x.PlayStatus.DraftFinished);
             if (lastCompletedDraft is null)
             {
                 //If you haven't completed a single draft, just use first draft for order

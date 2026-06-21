@@ -3,15 +3,15 @@ internal class LeagueYearStatusEntity
 {
     public LeagueYearStatusEntity()
     {
-        
+
     }
 
-    public LeagueYearStatusEntity(int year, string playStatus)
+    public LeagueYearStatusEntity(int year, bool anyDraftStarted)
     {
         Year = year;
-        PlayStatus = playStatus;
+        AnyDraftStarted = anyDraftStarted;
     }
 
     public int Year { get; set; }
-    public string PlayStatus { get; set; } = null!;
+    public bool AnyDraftStarted { get; set; }
 }
