@@ -933,6 +933,12 @@ public class LeagueController : BaseLeagueController
             return BadRequest("This league is in 'one shot mode', which doesn't support bids.");
         }
 
+        var gameIsSpecialAuctionGame = activeSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.MasterGameID == request.MasterGameID);
+        if (!leagueYear.Options.EnableBids && !gameIsSpecialAuctionGame)
+        {
+            return BadRequest("This league does not have bids enabled.");
+        }
+
         PublisherGame? conditionalDropPublisherGame = null;
         if (request.ConditionalDropPublisherGameID.HasValue)
         {

@@ -208,6 +208,16 @@ public class ActionProcessor
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
         PublisherStateSet publisherStateSet, bool specialAuctions, IReadOnlyList<PublisherGame> conditionalDropsThatHaveSucceeded)
     {
+        if (!leagueYear.Options.EnableBids && !specialAuctions)
+        {
+            //Only special auctions are processed if bids are not enabled for a league.
+            var allFailedBids = activeBidsForLeague
+                .Select(x => new FailedPickupBid(x, "Bids are not enabled in your league.", _systemWideValues, _currentDate))
+                .ToList();
+            var allFailSet = new ProcessedBidSet([], allFailedBids);
+            return allFailSet;
+        }
+
         LeagueYear updatedLeagueYear = publisherStateSet.GetUpdatedLeagueYear(leagueYear);
         var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
         var duplicateBidGroups = gamesGroupedByPublisherAndGame.Where(x => x.Count() > 1).ToList();
