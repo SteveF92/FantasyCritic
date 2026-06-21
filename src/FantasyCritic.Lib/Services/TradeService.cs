@@ -104,7 +104,7 @@ public class TradeService
         }
 
         await _fantasyCriticRepo.CreateTrade(trade);
-        await _discordPushService.SendTradeMessage(trade);
+        await SendPublicTradeMessageIfVisible(trade);
 
         return Result.Success();
     }
@@ -129,7 +129,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var rescindedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Rescinded, null, now);
-        await _discordPushService.SendTradeMessage(rescindedTrade);
+        await SendPublicTradeMessageIfVisible(rescindedTrade);
         return Result.Success();
     }
 
@@ -142,7 +142,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var updatedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.Accepted, now, null);
-        await _discordPushService.SendTradeMessage(updatedTrade);
+        await SendPublicTradeMessageIfVisible(updatedTrade);
         return Result.Success();
     }
 
@@ -155,7 +155,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var rejectedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByCounterParty, null, now);
-        await _discordPushService.SendTradeMessage(rejectedTrade);
+        await SendPublicTradeMessageIfVisible(rejectedTrade);
         return Result.Success();
     }
 
@@ -168,7 +168,7 @@ public class TradeService
 
         var now = _clock.GetCurrentInstant();
         var rejectedTrade = await _fantasyCriticRepo.EditTradeStatus(trade, TradeStatus.RejectedByManager, null, now);
-        await _discordPushService.SendTradeMessage(rejectedTrade);
+        await SendPublicTradeMessageIfVisible(rejectedTrade);
         return Result.Success();
     }
 
@@ -220,7 +220,23 @@ public class TradeService
 
         var executedTrade = new ExecutedTrade(trade, completionTime, newPublisherGamesResult.Value);
         var finalizedTrade = await _fantasyCriticRepo.ExecuteTrade(executedTrade);
-        await _discordPushService.SendTradeMessage(finalizedTrade);
+        await SendPublicTradeMessageIfVisible(finalizedTrade);
         return Result.Success();
+    }
+
+    private Task SendPublicTradeMessageIfVisible(Trade trade)
+    {
+        if (ShouldSuppressPublicTradeMessage(trade))
+        {
+            return Task.CompletedTask;
+        }
+
+        return _discordPushService.SendTradeMessage(trade);
+    }
+
+    private static bool ShouldSuppressPublicTradeMessage(Trade trade)
+    {
+        return trade.LeagueYear.Options.TradingSystem.Equals(TradingSystem.PrivateUntilAccepted) &&
+               !trade.AcceptedTimestamp.HasValue;
     }
 }
