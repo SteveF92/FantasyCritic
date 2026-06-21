@@ -174,7 +174,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         await connection.BulkInsertAsync(newActivePlayersToAdd, "tbl_conference_activeplayer", 500, transaction, insertIgnore: true);
         // TODO(Phase2-MultiDraft): Creates a single initial draft for the new conference year.
         var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(primaryLeaguePreviousLeagueYear.League.LeagueID, year), 1,
-            "InitialDraft", null, primaryLeaguePreviousLeagueYear.FirstDraft.GamesToDraft, primaryLeaguePreviousLeagueYear.FirstDraft.CounterPicksToDraft,
+            "Initial Draft", null, primaryLeaguePreviousLeagueYear.FirstDraft.GamesToDraft, primaryLeaguePreviousLeagueYear.FirstDraft.CounterPicksToDraft,
             false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
         await _fantasyCriticRepo.AddNewLeagueYearInTransaction(primaryLeaguePreviousLeagueYear.League, year, primaryLeaguePreviousLeagueYear.Options, mostRecentActivePrimaryLeaguePlayers, initialDraft, connection, transaction);
         await transaction.CommitAsync();

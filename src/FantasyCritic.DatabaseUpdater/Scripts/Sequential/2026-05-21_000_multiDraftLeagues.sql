@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `tbl_league_draft` (
   `LeagueID` char(36) NOT NULL,
   `Year` year NOT NULL,
   `DraftNumber` tinyint NOT NULL,
-  `Name` varchar(255) NOT NULL DEFAULT 'InitialDraft',
+  `Name` varchar(255) NOT NULL DEFAULT 'Initial Draft',
   `ScheduledDate` date NULL,
   `GamesToDraft` tinyint NOT NULL,
   `CounterPicksToDraft` tinyint NOT NULL,
@@ -45,7 +45,7 @@ ALTER TABLE `tbl_league_year`
   MODIFY COLUMN `EnableBids` bit(1) NOT NULL;
 
 INSERT INTO `tbl_league_draft` (`DraftID`, `LeagueID`, `Year`, `DraftNumber`, `Name`, `ScheduledDate`, `GamesToDraft`, `CounterPicksToDraft`, `DraftOrderSet`, `PlayStatus`, `DraftStartedTimestamp`)
-SELECT UUID(), `LeagueID`, `Year`, 1, 'InitialDraft', DATE(`DraftStartedTimestamp`), `GamesToDraft`, `CounterPicksToDraft`, `DraftOrderSet`, `PlayStatus`, `DraftStartedTimestamp`
+SELECT UUID(), `LeagueID`, `Year`, 1, 'Initial Draft', DATE(`DraftStartedTimestamp`), `GamesToDraft`, `CounterPicksToDraft`, `DraftOrderSet`, `PlayStatus`, `DraftStartedTimestamp`
 FROM `tbl_league_year`;
 
 ALTER TABLE `tbl_league_draft`

@@ -24,7 +24,7 @@ public sealed class LeagueDraftEntityMap : ClassMap<LeagueDraftEntity>
             return TestLeagueDraftIds.For(leagueID, year);
         });
         Map(m => m.DraftNumber).Constant(1);
-        Map(m => m.Name).Constant("InitialDraft");
+        Map(m => m.Name).Constant("Initial Draft");
         Map(m => m.ScheduledDate).Constant(null);
         Map(m => m.DraftOrderSet).Convert(args => args.Row.GetField("DraftOrderSet") == "1");
         Map(m => m.DraftStartedTimestamp).Convert(args =>
