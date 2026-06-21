@@ -52,6 +52,52 @@ public class Trade
         };
     }
 
+    public bool UserIsInvolved(Guid userID)
+    {
+        return Proposer.User.Id == userID || CounterParty.User.Id == userID;
+    }
+
+    public bool IsPrivateProposal()
+    {
+        return LeagueYear.Options.TradingSystem.Equals(TradingSystem.PrivateUntilAccepted) &&
+               Status.Equals(TradeStatus.Proposed);
+    }
+
+    public bool IsVisibleToUser(Guid? userID)
+    {
+        if (!IsPrivateProposal())
+        {
+            return true;
+        }
+
+        return userID.HasValue && UserIsInvolved(userID.Value);
+    }
+
+    public bool IsVisibleInLeagueHistory()
+    {
+        if (Status.IsActive)
+        {
+            return false;
+        }
+
+        if (!LeagueYear.Options.TradingSystem.Equals(TradingSystem.PrivateUntilAccepted))
+        {
+            return true;
+        }
+
+        return AcceptedTimestamp.HasValue;
+    }
+
+    public bool IsVisibleInConsolidatedExport()
+    {
+        if (!LeagueYear.Options.TradingSystem.Equals(TradingSystem.PrivateUntilAccepted))
+        {
+            return true;
+        }
+
+        return AcceptedTimestamp.HasValue;
+    }
+
     public Instant? GetExpirationTime()
     {
         if (!Status.IsActive)

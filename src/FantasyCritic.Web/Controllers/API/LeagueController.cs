@@ -1832,6 +1832,11 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
+        if (trade.IsPrivateProposal())
+        {
+            return StatusCode(403);
+        }
+
         var validUserIDs = leagueYear.Publishers.Select(x => x.User.Id).Except(new List<Guid>()
             {trade.Proposer.User.Id, trade.CounterParty.User.Id}).ToHashSet();
         bool userIsInLeagueButNotInTrade = validUserIDs.Contains(currentUser.Id);
@@ -1869,6 +1874,11 @@ public class LeagueController : BaseLeagueController
         if (trade is null)
         {
             return BadRequest();
+        }
+
+        if (trade.IsPrivateProposal())
+        {
+            return StatusCode(403);
         }
 
         var validUserIDs = leagueYear.Publishers.Select(x => x.User.Id).Except(new List<Guid>()
@@ -1912,7 +1922,7 @@ public class LeagueController : BaseLeagueController
 
         var currentDate = _clock.GetToday();
         var trades = await _tradeService.GetTradesForLeague(leagueYear);
-        var inactiveTrades = trades.Where(x => !x.Status.IsActive);
+        var inactiveTrades = trades.Where(x => x.IsVisibleInLeagueHistory());
         var viewModels = inactiveTrades.Select(x => new TradeViewModel(x, currentDate));
         return viewModels.ToList();
     }

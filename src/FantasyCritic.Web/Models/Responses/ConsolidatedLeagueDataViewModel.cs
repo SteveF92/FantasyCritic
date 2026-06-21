@@ -102,7 +102,11 @@ public class ConsolidatedLeagueYearViewModel
 
         ManagerMessages = domain.ManagerMessages.Select(x => new ManagerMessageViewModel(x, false)).OrderBy(x => x.Timestamp).ToList();
 
-        Trades = domain.Trades.Select(x => new TradeViewModel(x, currentDate)).OrderByDescending(x => x.ProposedTimestamp).ToList();
+        Trades = domain.Trades
+            .Where(x => x.IsVisibleInConsolidatedExport())
+            .Select(x => new TradeViewModel(x, currentDate))
+            .OrderByDescending(x => x.ProposedTimestamp)
+            .ToList();
 
         SpecialAuctions = domain.SpecialAuctions.Select(x => new SpecialAuctionViewModel(x, currentInstant)).ToList();
 

@@ -117,7 +117,10 @@ public class LeagueYearViewModel
             PublicBiddingGames = new PublicBiddingSetViewModel(supplementalData.PublicBiddingGames, currentDate);
         }
 
-        ActiveTrades = supplementalData.ActiveTrades.Select(x => new TradeViewModel(x, currentDate)).ToList();
+        ActiveTrades = supplementalData.ActiveTrades
+            .Where(x => x.IsVisibleToUser(accessingUser?.Id))
+            .Select(x => new TradeViewModel(x, currentDate))
+            .ToList();
         ActiveSpecialAuctions = supplementalData.ActiveSpecialAuctions.Select(x => new SpecialAuctionViewModel(x, currentInstant)).ToList();
         GameNews = gameNews;
         AllPublishersForUser = supplementalData.AllPublishersForUser.Select(p => new LeaguePublisherViewModel(p.PublisherID, p.PublisherName, p.LeagueID, p.LeagueName, p.Year)).ToList();
