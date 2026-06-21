@@ -12,7 +12,7 @@ public class PlayerPublisherViewModel
         LeagueName = leagueYear.League.LeagueName;
         PlayerName = publisher.User.UserName;
         Year = leagueYear.Year;
-        DraftPosition = publisher.FirstDraftInfo.DraftPosition;
+        DraftPosition = publisher.GetDraftPosition(leagueYear.DraftForPublisherDisplayOrder.DraftID);
         AutoDraftMode = publisher.AutoDraftMode.Value;
         OnlyAutoDraftFromWatchlist = publisher.AutoDraftSettings.OnlyDraftFromWatchlist;
 

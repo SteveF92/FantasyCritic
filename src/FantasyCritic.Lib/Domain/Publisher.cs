@@ -46,7 +46,17 @@ public class Publisher : IEquatable<Publisher>
     public PublisherDraftInfo LastDraftInfo => DraftInfos.Last();
     public IReadOnlyList<PublisherGame> PublisherGames { get; }
 
-    public int? GetDraftPosition(Guid draftID) => DraftInfos.FirstOrDefault(x => x.DraftID == draftID)?.DraftPosition;
+    public int GetDraftPosition(Guid draftID)
+    {
+        var matchingDraft = DraftInfos.FirstOrDefault(x => x.DraftID == draftID);
+        if (matchingDraft is null)
+        {
+            throw new Exception($"Could not find draft {draftID} for publisher {PublisherID}");
+        }
+
+        return matchingDraft.DraftPosition;
+    }
+
     public IReadOnlyList<FormerPublisherGame> FormerPublisherGames { get; }
     public uint Budget { get; }
     public int UnrestrictedReleaseStatusGamesDropped { get; }

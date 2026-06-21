@@ -54,6 +54,29 @@ public class LeagueYear : IEquatable<LeagueYear>
     public bool IsAnyDraftStarted => Drafts.Any(d => d.PlayStatus.PlayStarted);
     public bool IsAnyDraftInProgress => Drafts.Any(d => d.PlayStatus.DraftIsActiveOrPaused);
 
+    public LeagueDraft DraftForPublisherDisplayOrder
+    {
+        get
+        {
+            var lastCompletedDraft = Drafts.FirstOrDefault(x => x.PlayStatus.DraftFinished);
+            if (lastCompletedDraft is null)
+            {
+                //If you haven't completed a single draft, just use first draft for order
+                return Drafts.First();
+            }
+
+            var nextUncompletedDraftWithOrderSet = Drafts.FirstOrDefault(x => x.DraftOrderSet && !x.PlayStatus.DraftFinished);
+            if (nextUncompletedDraftWithOrderSet is not null)
+            {
+                //Use the next draft if we have one
+                return nextUncompletedDraftWithOrderSet;
+            }
+
+            //Otherwise use the most recent complete draft
+            return lastCompletedDraft;
+        }
+    }
+
     public bool OneShotMode => !Options.EnableBids
                                && Options.StandardGames == Drafts.Sum(d => d.GamesToDraft)
                                && Options.CounterPicks == Drafts.Sum(d => d.CounterPicksToDraft)

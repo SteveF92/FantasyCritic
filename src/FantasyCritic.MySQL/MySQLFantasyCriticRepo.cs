@@ -1789,7 +1789,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var firstDraft = leagueYear.FirstDraft;
         var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher)
-            .OrderBy(x => x.GetDraftPosition(firstDraft.DraftID) ?? int.MaxValue).ToList();
+            .OrderBy(x => x.GetDraftPosition(firstDraft.DraftID)).ToList();
         var reinsertRows = remainingOrderedPublishers.Select((publisher, index) => new { draftID = firstDraft.DraftID, publisherID = publisher.PublisherID, draftPosition = index + 1 });
 
         var deleteObject = new { publisherID = deletePublisher.PublisherID };

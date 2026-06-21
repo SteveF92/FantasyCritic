@@ -54,7 +54,7 @@ public class ConsolidatedLeagueYearViewModel
         CompletePlayStatus completePlayStatus = new CompletePlayStatus(leagueYear, activePublisherUsers, false, conferenceDraftsNotEnabled);
 
         Publishers = leagueYear.Publishers
-            .OrderBy(x => x.FirstDraftInfo.DraftPosition)
+            .OrderBy(x => x.GetDraftPosition(leagueYear.DraftForPublisherDisplayOrder.DraftID))
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher,
                 userIsInLeague: false, outstandingInvite: false, systemWideValues, counterPickedByDictionary))
             .ToList();
