@@ -41,8 +41,8 @@ public class CombinedDataController : FantasyCriticController
         var masterGameTags = basicData.MasterGameTags.Select(x => new MasterGameTagViewModel(x)).ToList();
         var leagueOptions = BuildLeagueOptionsViewModel(basicData.SupportedYears);
         var supportedYears = basicData.SupportedYears.Select(x => new SupportedYearViewModel(x)).ToList();
-
-        var vm = new BasicDataViewModel(bidTimes, masterGameTags, leagueOptions, supportedYears);
+        var activeRoyaleQuarter = new RoyaleYearQuarterViewModel(basicData.ActiveRoyaleYearQuarter);
+        var vm = new BasicDataViewModel(bidTimes, masterGameTags, leagueOptions, supportedYears, activeRoyaleQuarter);
         return vm;
     }
 

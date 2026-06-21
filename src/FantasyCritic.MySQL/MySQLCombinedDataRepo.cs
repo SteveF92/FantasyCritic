@@ -35,14 +35,16 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var systemWideSettingsEntity = resultSets.ReadSingle<SystemWideSettingsEntity>();
         var tagEntities = resultSets.Read<MasterGameTagEntity>();
         var supportedYearEntities = resultSets.Read<SupportedYearEntity>();
+        var activeRoyaleYearQuarterEntity = resultSets.ReadSingle<RoyaleYearQuarterEntity>();
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
 
         var systemWideSettings = new SystemWideSettings(systemWideSettingsEntity.ActionProcessingMode, systemWideSettingsEntity.RefreshOpenCritic);
         var tags = tagEntities.Select(x => x.ToDomain()).ToList();
         var supportedYears = supportedYearEntities.Select(x => x.ToDomain()).ToList();
+        var activeRoyaleYearQuarter = activeRoyaleYearQuarterEntity.ToDomain();
 
-        return new BasicData(systemWideSettings, tags, supportedYears);
+        return new BasicData(systemWideSettings, tags, supportedYears, activeRoyaleYearQuarter);
     }
 
     public async Task<HomePageData> GetHomePageData(FantasyCriticUser currentUser)

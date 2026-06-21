@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
+    <ProjectReference Include="..\FantasyCritic.RdsSnapshotManager\FantasyCritic.RdsSnapshotManager.csproj" />
   </ItemGroup>
 
 </Project>

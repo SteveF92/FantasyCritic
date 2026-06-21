@@ -5,6 +5,7 @@ using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MySqlConnector;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -37,6 +38,7 @@ public class Program
         var awsRegion = preliminaryConfig["AWS:region"] ?? "";
         var configuration = await GetConfiguration(environmentName, awsRegion);
         _connectionString = configuration.GetConnectionString("AdminConnection")!;
+        MySqlConnectionStringBuilder mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder(_connectionString);
 
         if (environmentName != "Development")
         {
@@ -54,7 +56,7 @@ public class Program
             var upgrader =
                 DeployChanges.To
                     .MySqlDatabase(_connectionString)
-                    .JournalToMySqlTable("fantasycritic", "_schemaversion")
+                    .JournalToMySqlTable(mySqlConnectionStringBuilder.Database, "_schemaversion")
                     // Run-once, journaled scripts
                     .WithScriptsFromFileSystem(sequentialScriptsPath)
                     // Run-always scripts (e.g., views / stored procedures)

@@ -39,10 +39,15 @@ docker compose -f infrastructure/docker-compose-mysql.yaml up
 This will:
 - Start a MySQL 8.4 instance on **port 3307** (to avoid conflicting with a local MySQL installation).
 - Create the `fantasycritic` database and the required users automatically.
+- Create both `fantasycritic` (seeded) and `fantasycritic-fromsnapshot` (empty until you import a dump) databases.
 - Run **FantasyCritic.DatabaseUpdater** (DbUp), which applies all schema migrations under `src/FantasyCritic.DatabaseUpdater/Scripts/`.
 - Run **FantasyCritic.LocalDatabaseTool**, which seeds your local database with the latest game data (announcements, release dates, scores, etc.) pulled from the live Fantasy Critic site.
 
 The last two services exit on their own when done. You can re-run the compose command at any time to pick up new migrations or refresh game data; it is safe to run repeatedly.
+
+#### Optional: develop against a production snapshot
+
+Import a dump with `FantasyCritic.RdsSnapshotManager` (menu option 4), then point `FantasyCritic.Web` user secrets at `Database=fantasycritic-fromsnapshot`. Integration tests always use the seeded `fantasycritic` database and are unaffected.
 
 #### 2. Run the web app
 

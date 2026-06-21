@@ -29,8 +29,11 @@
             </span>
             <span v-else>{{ data.item.leagueManager.displayName }}</span>
           </div>
-          <div v-if="data.item.royaleGroupID" class="league-detail">
-            <router-link :to="{ name: 'royaleGroup', params: { groupid: data.item.royaleGroupID } }">View Royale Group</router-link>
+          <div v-if="data.item.royaleGroupID && activeRoyaleQuarter" class="league-detail">
+            <router-link
+              :to="{ name: 'royaleGroupQuarter', params: { groupid: data.item.royaleGroupID, year: activeRoyaleQuarter.year, quarter: activeRoyaleQuarter.quarter } }">
+              View Royale Group
+            </router-link>
           </div>
         </div>
         <div v-show="showArchive" class="archive-button-section">

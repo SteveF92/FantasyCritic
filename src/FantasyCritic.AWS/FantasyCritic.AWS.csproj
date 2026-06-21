@@ -16,6 +16,7 @@
     <PackageReference Include="AWSSDK.S3" Version="4.0.19.4" />
     <PackageReference Include="AWSSDK.SecretsManager" Version="4.0.4.12" />
     <PackageReference Include="AWSSDK.SimpleEmailV2" Version="4.0.12.5" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,7 +16,9 @@ public class MySQLBetaCleaner
 
     public async Task CleanEmailsAndPasswords(IEnumerable<FantasyCriticUser> allUsers, IEnumerable<FantasyCriticUser> betaUsers)
     {
-        var nonBetaUsers = allUsers.Except(betaUsers).ToList();
+        var betaUserList = betaUsers.ToList();
+        var betaUserIds = betaUserList.Select(u => u.Id).ToHashSet();
+        var nonBetaUsers = allUsers.Except(betaUserList).ToList();
         List<string> updateStatements = new List<string>();
         foreach (var nonBetaUser in nonBetaUsers)
         {
@@ -38,6 +40,111 @@ public class MySQLBetaCleaner
             await connection.ExecuteAsync(joinedSQL, transaction: transaction);
         }
 
+        await CleanExternalLogins(connection, transaction, nonBetaUsers);
+        await CleanDiscordData(connection, transaction, betaUserIds);
+        await CleanUnprocessedActionsInNonTestLeagues(connection, transaction);
+
         await transaction.CommitAsync();
+    }
+
+    private static async Task CleanExternalLogins(MySqlConnection connection, MySqlTransaction transaction, IReadOnlyList<FantasyCriticUser> nonBetaUsers)
+    {
+        if (nonBetaUsers.Count == 0)
+        {
+            return;
+        }
+
+        _logger.Information("Cleaning external logins for {Count} non-beta users.", nonBetaUsers.Count);
+        var nonBetaUserIds = nonBetaUsers.Select(u => u.Id).ToList();
+        foreach (var batch in nonBetaUserIds.Chunk(500))
+        {
+            await connection.ExecuteAsync(
+                "DELETE FROM tbl_user_externallogin WHERE UserID IN @userIds",
+                new { userIds = batch.ToList() },
+                transaction);
+        }
+    }
+
+    private static async Task CleanDiscordData(MySqlConnection connection, MySqlTransaction transaction, HashSet<Guid> betaUserIds)
+    {
+        _logger.Information("Cleaning Discord data.");
+
+        IReadOnlyList<Guid> leaguesToKeepDiscord;
+        if (betaUserIds.Count == 0)
+        {
+            leaguesToKeepDiscord = [];
+        }
+        else
+        {
+            leaguesToKeepDiscord = (await connection.QueryAsync<Guid>(
+                """
+                SELECT DISTINCT l.LeagueID
+                FROM tbl_league l
+                JOIN tbl_league_hasuser lhu ON l.LeagueID = lhu.LeagueID
+                WHERE l.TestLeague = 1
+                AND lhu.UserID IN @betaUserIds
+                """,
+                new { betaUserIds = betaUserIds.ToList() },
+                transaction)).ToList();
+        }
+
+        _logger.Information("Keeping Discord data for {Count} test leagues with beta users.", leaguesToKeepDiscord.Count);
+
+        await connection.ExecuteAsync("DELETE FROM tbl_discord_gamenewschannelskiptag", transaction: transaction);
+        await connection.ExecuteAsync("DELETE FROM tbl_discord_gamenewschannel", transaction: transaction);
+
+        if (leaguesToKeepDiscord.Count == 0)
+        {
+            await connection.ExecuteAsync("DELETE FROM tbl_discord_leaguechannel", transaction: transaction);
+            await connection.ExecuteAsync("DELETE FROM tbl_discord_conferencechannel", transaction: transaction);
+        }
+        else
+        {
+            await connection.ExecuteAsync(
+                "DELETE FROM tbl_discord_leaguechannel WHERE LeagueID NOT IN @leagueIds",
+                new { leagueIds = leaguesToKeepDiscord.ToList() },
+                transaction);
+
+            await connection.ExecuteAsync(
+                """
+                DELETE FROM tbl_discord_conferencechannel
+                WHERE ConferenceID NOT IN (
+                    SELECT ConferenceID FROM tbl_league
+                    WHERE LeagueID IN @leagueIds AND ConferenceID IS NOT NULL
+                )
+                """,
+                new { leagueIds = leaguesToKeepDiscord.ToList() },
+                transaction);
+        }
+    }
+
+    private static async Task CleanUnprocessedActionsInNonTestLeagues(MySqlConnection connection, MySqlTransaction transaction)
+    {
+        _logger.Information("Cleaning unprocessed bids and drop requests in non-test leagues.");
+
+        var deletedBidCount = await connection.ExecuteAsync(
+            """
+            DELETE pb FROM tbl_league_pickupbid pb
+            JOIN tbl_league_publisher pub ON pb.PublisherID = pub.PublisherID
+            JOIN tbl_league l ON pub.LeagueID = l.LeagueID
+            WHERE pb.Successful IS NULL
+            AND l.TestLeague = 0
+            """,
+            transaction: transaction, commandTimeout: 300);
+
+        var deletedDropCount = await connection.ExecuteAsync(
+            """
+            DELETE dr FROM tbl_league_droprequest dr
+            JOIN tbl_league_publisher pub ON dr.PublisherID = pub.PublisherID
+            JOIN tbl_league l ON pub.LeagueID = l.LeagueID
+            WHERE dr.Successful IS NULL
+            AND l.TestLeague = 0
+            """,
+            transaction: transaction, commandTimeout: 300);
+
+        _logger.Information(
+            "Deleted {BidCount} unprocessed bids and {DropCount} unprocessed drop requests from non-test leagues.",
+            deletedBidCount,
+            deletedDropCount);
     }
 }
