@@ -121,7 +121,12 @@ internal sealed class DraftSimulator
         {
             var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
 
-            if (leagueYear.PlayStatus.DraftFinished)
+            // Stop when no draft is actively running (handles both single-draft and multi-draft).
+            // PlayStatus.DraftFinished can be misleading in multi-draft leagues because it reflects
+            // only the first draft; instead, check the per-draft statuses directly.
+            bool anyDraftActive = leagueYear.Drafts.Any(d =>
+                d.PlayStatus == "Drafting" || d.PlayStatus == "DraftPaused");
+            if (!anyDraftActive)
                 return;
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)

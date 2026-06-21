@@ -39,8 +39,11 @@ public class GameAcquisitionService
             return claimResult;
         }
 
+        // Set DraftID when this is a draft pick (draftPosition non-null means it originated in a draft).
+        Guid? draftID = request.DraftPosition.HasValue ? request.LeagueYear.ActiveDraft?.DraftID : null;
+
         PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-            masterGameYear, claimResult.BestSlotNumber!.Value, request.DraftPosition, request.OverallDraftPosition, null, null);
+            masterGameYear, claimResult.BestSlotNumber!.Value, request.DraftPosition, request.OverallDraftPosition, null, null, draftID);
 
         LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);

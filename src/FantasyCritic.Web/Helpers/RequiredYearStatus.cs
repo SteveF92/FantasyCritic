@@ -7,6 +7,7 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
     public static readonly RequiredYearStatus AnyYearNotFinished = new RequiredYearStatus("AnyYearNotFinished");
     public static readonly RequiredYearStatus YearNotFinishedNoDraftsStarted = new RequiredYearStatus("YearNotFinishedNoDraftsStarted");
     public static readonly RequiredYearStatus PlayOpenNoDraftsStarted = new RequiredYearStatus("PlayOpenNoDraftsStarted");
+    public static readonly RequiredYearStatus PlayOpenWithPendingDraft = new RequiredYearStatus("PlayOpenWithPendingDraft");
     public static readonly RequiredYearStatus DuringDraft = new RequiredYearStatus("DuringDraft");
     public static readonly RequiredYearStatus DraftPaused = new RequiredYearStatus("DraftPaused");
     public static readonly RequiredYearStatus ActiveDraft = new RequiredYearStatus("ActiveDraft");
@@ -57,6 +58,24 @@ public class RequiredYearStatus : TypeSafeEnum<RequiredYearStatus>
                 if (leagueYear.IsAnyDraftStarted)
                 {
                     return Result.Failure("That action can only be taken before the draft starts.");
+                }
+                break;
+            case { } status when PlayOpenWithPendingDraft.Equals(status):
+                if (leagueYear.SupportedYear.Finished)
+                {
+                    return Result.Failure("That year is finished.");
+                }
+                if (!leagueYear.SupportedYear.OpenForPlay)
+                {
+                    return Result.Failure("That year is not open for drafting yet.");
+                }
+                if (leagueYear.IsAnyDraftInProgress)
+                {
+                    return Result.Failure("That action can't be taken while there is a draft active.");
+                }
+                if (leagueYear.PendingDraft is null)
+                {
+                    return Result.Failure("There is no pending draft to start.");
                 }
                 break;
             case { } status when DuringDraft.Equals(status):

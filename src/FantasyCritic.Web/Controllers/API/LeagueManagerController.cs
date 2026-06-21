@@ -830,7 +830,7 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> StartDraft([FromBody] StartDraftRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
-            RequiredRelationship.LeagueManager, RequiredYearStatus.PlayOpenNoDraftsStarted);
+            RequiredRelationship.LeagueManager, RequiredYearStatus.PlayOpenWithPendingDraft);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -874,6 +874,11 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
+        if (leagueYear.ActiveDraft is null || leagueYear.ActiveDraft.DraftID != request.DraftID)
+        {
+            return BadRequest("DraftID does not match the active draft.");
+        }
+
         await _draftService.ResetDraft(leagueYear);
         await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
 
@@ -888,7 +893,7 @@ public class LeagueManagerController : BaseLeagueController
     public async Task<IActionResult> SetDraftOrder([FromBody] DraftOrderRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
-            RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedNoDraftsStarted);
+            RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -923,7 +928,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest(draftPositions.Error);
         }
 
-        var result = await _draftService.SetDraftOrder(leagueYear, draftOrderType, draftPositions.Value);
+        var result = await _draftService.SetDraftOrder(leagueYear, request.DraftID, draftOrderType, draftPositions.Value);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

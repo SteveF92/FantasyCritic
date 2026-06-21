@@ -104,6 +104,7 @@ internal static class LeagueTestHelpers
 
     /// <summary>
     /// Sets the draft order to the supplied publisher order using the "Manual" type.
+    /// Fetches the current pending draft to obtain its DraftID automatically.
     /// </summary>
     public static async Task SetDraftOrderAsync(
         ApiSession managerSession,
@@ -111,10 +112,13 @@ internal static class LeagueTestHelpers
         int year,
         IReadOnlyList<Guid> publisherIDsInOrder)
     {
+        var snapshot = await managerSession.League.GetLeagueYearAsync(leagueID, year, null);
+        var pendingDraft = snapshot.Drafts.First(d => d.PlayStatus == "NotStartedDraft");
         await managerSession.LeagueManager.SetDraftOrderAsync(new DraftOrderRequest
         {
             LeagueID = leagueID,
             Year = year,
+            DraftID = pendingDraft.DraftID,
             DraftOrderType = "Manual",
             ManualPublisherDraftPositions = publisherIDsInOrder.ToList(),
         });

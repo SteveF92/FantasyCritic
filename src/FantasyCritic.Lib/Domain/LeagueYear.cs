@@ -51,6 +51,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public Instant? DraftStartedTimestamp => FirstDraft.DraftStartedTimestamp;
 
     public LeagueDraft? ActiveDraft => Drafts.FirstOrDefault(x => x.PlayStatus.DraftIsActiveOrPaused);
+    public LeagueDraft? PendingDraft => Drafts.FirstOrDefault(d => d.PlayStatus.Equals(PlayStatus.NotStartedDraft));
     public bool IsAnyDraftStarted => Drafts.Any(d => d.PlayStatus.PlayStarted);
     public bool IsAnyDraftInProgress => Drafts.Any(d => d.PlayStatus.DraftIsActiveOrPaused);
 

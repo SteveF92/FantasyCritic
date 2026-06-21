@@ -85,8 +85,14 @@ public class DraftService
         return Result.Success();
     }
 
-    public async Task<Result> SetDraftOrder(LeagueYear leagueYear, DraftOrderType draftOrderType, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
+    public async Task<Result> SetDraftOrder(LeagueYear leagueYear, Guid draftID, DraftOrderType draftOrderType, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
     {
+        var draft = leagueYear.Drafts.SingleOrDefault(d => d.DraftID == draftID);
+        if (draft is null)
+        {
+            return Result.Failure("Draft not found.");
+        }
+
         int publishersCount = leagueYear.Publishers.Count;
         if (publishersCount != draftPositions.Count)
         {
@@ -106,8 +112,7 @@ public class DraftService
         LeagueManagerAction draftSetAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription);
         await _discordPushService.SendLeagueActionMessage(draftSetAction);
 
-        // TODO(Phase2-MultiDraft): Always sets draft order for the first draft only.
-        await _fantasyCriticRepo.SetDraftOrder(draftPositions, leagueYear.FirstDraft, draftSetAction);
+        await _fantasyCriticRepo.SetDraftOrder(draftPositions, draft, draftSetAction);
         return Result.Success();
     }
 
@@ -157,12 +162,29 @@ public class DraftService
             }
 
             var nextPublisher = draftStatus.NextDraftPublisher;
-            if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
+
+            if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
             {
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
-            if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
+            // Auto-skip publishers who have no open slots in the active draft (e.g. filled via bids between drafts).
+            var activeDraft = updatedLeagueYear.ActiveDraft!;
+            bool isCounterPickPhase = draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks);
+            int gamesInActiveDraft = nextPublisher.PublisherGames.Count(g =>
+                g.DraftID == activeDraft.DraftID && g.CounterPick == isCounterPickPhase);
+            int slotsInActiveDraft = isCounterPickPhase ? activeDraft.CounterPicksToDraft : activeDraft.GamesToDraft;
+            if (gamesInActiveDraft >= slotsInActiveDraft)
+            {
+                string slotType = isCounterPickPhase ? "counter-pick" : "standard game";
+                string description = $"{nextPublisher.GetPublisherAndUserDisplayName()} was skipped (no open {slotType} slots in {activeDraft.Name}).";
+                var skipAction = new LeagueManagerAction(updatedLeagueYear.Key, _clock.GetCurrentInstant(), "SkippedDraftTurn", description);
+                await _fantasyCriticRepo.AddLeagueManagerAction(skipAction);
+                depth++;
+                continue;
+            }
+
+            if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
             {
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
@@ -274,9 +296,15 @@ public class DraftService
 
     private async Task<bool> CompleteDraft(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
     {
+        var activeDraft = leagueYear.ActiveDraft;
+        if (activeDraft is null)
+        {
+            return false;
+        }
+
         var publishers = leagueYear.Publishers;
-        int numberOfStandardGamesToDraft = leagueYear.FirstDraft.GamesToDraft * publishers.Count;
-        int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
+        int numberOfStandardGamesToDraft = activeDraft.GamesToDraft * publishers.Count;
+        int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick && x.DraftID == activeDraft.DraftID);
         standardGamesDrafted += standardGamesAdded;
 
         if (standardGamesDrafted < numberOfStandardGamesToDraft)
@@ -284,8 +312,8 @@ public class DraftService
             return false;
         }
 
-        int numberOfCounterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft * publishers.Count;
-        int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
+        int numberOfCounterPicksToDraft = activeDraft.CounterPicksToDraft * publishers.Count;
+        int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick && x.DraftID == activeDraft.DraftID);
         counterPicksDrafted += counterPicksAdded;
 
         if (counterPicksDrafted < numberOfCounterPicksToDraft)
