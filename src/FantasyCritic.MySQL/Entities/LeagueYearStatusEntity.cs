@@ -1,2 +1,17 @@
 namespace FantasyCritic.MySQL.Entities;
-internal record LeagueYearStatusEntity(int Year, string PlayStatus);
+internal class LeagueYearStatusEntity
+{
+    public LeagueYearStatusEntity()
+    {
+        
+    }
+
+    public LeagueYearStatusEntity(int year, string playStatus)
+    {
+        Year = year;
+        PlayStatus = playStatus;
+    }
+
+    public int Year { get; set; }
+    public string PlayStatus { get; set; } = null!;
+}
