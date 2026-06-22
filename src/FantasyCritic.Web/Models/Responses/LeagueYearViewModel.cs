@@ -137,7 +137,7 @@ public class LeagueYearViewModel
         }
 
         UnderReview = leagueYear.UnderReview;
-        SuperDropPointCutoff = leagueYear.Options.GrantSuperDrops ? leagueYear.GetSuperDropPointCuttoff(supplementalData.SystemWideValues) : null;
+        SuperDropPointCutoff = leagueYear.Options.GrantSuperDrops && leagueYear.GetSuperDropPointCuttoff(supplementalData.SystemWideValues).HasValue ? leagueYear.GetSuperDropPointCuttoff(supplementalData.SystemWideValues) : null;
     }
 
     public LeagueViewModel League { get; }

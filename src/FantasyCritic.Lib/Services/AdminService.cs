@@ -679,6 +679,11 @@ public class AdminService
             }
 
             var superDropPointCutoff = leagueYear.GetSuperDropPointCuttoff(systemWideValues);
+            if (!superDropPointCutoff.HasValue)
+            {
+                continue;
+            }
+
             var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues));
             var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < superDropPointCutoff).ToList();
             List<LeagueAction> actions = new List<LeagueAction>();
