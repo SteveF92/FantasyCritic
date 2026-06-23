@@ -24,7 +24,7 @@ public class GameAcquisitionService
         _discordPushService = discordPushService;
     }
 
-    public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, bool drafting, bool allowIneligibleSlot)
+    public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, Guid? draftID, bool allowIneligibleSlot)
     {
         MasterGameYear? masterGameYear = null;
         if (request.MasterGame is not null)
@@ -33,19 +33,16 @@ public class GameAcquisitionService
         }
 
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, drafting, false, false, _clock.GetToday(), allowIneligibleSlot, allTags);
+        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, draftID.HasValue, false, false, _clock.GetToday(), allowIneligibleSlot, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
         }
 
-        // Set DraftID when this is a draft pick (draftPosition non-null means it originated in a draft).
-        Guid? draftID = request.DraftPosition.HasValue ? request.LeagueYear.ActiveDraft?.DraftID : null;
-
         PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
             masterGameYear, claimResult.BestSlotNumber!.Value, request.DraftPosition, request.OverallDraftPosition, null, null, draftID);
 
-        LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
+        LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draftID.HasValue, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);
         await _fantasyCriticRepo.AddPublisherGame(playerGame);
         if (managerAction)

@@ -37,7 +37,11 @@ public class DraftService
 
     public async Task<StartDraftResult> StartDraft(LeagueYear leagueYear)
     {
-        await _fantasyCriticRepo.StartDraft(leagueYear);
+        if (leagueYear.PendingDraft is null)
+        {
+            throw new Exception($"No pending draft found for league: {leagueYear.Key}");
+        }
+        await _fantasyCriticRepo.StartDraft(leagueYear, leagueYear.PendingDraft);
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
         var draftComplete = await CompleteDraft(updatedLeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
@@ -46,7 +50,11 @@ public class DraftService
 
     public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
     {
-        await _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
+        if (leagueYear.ActiveDraft is null)
+        {
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
+        }
+        await _fantasyCriticRepo.SetDraftPause(leagueYear, leagueYear.ActiveDraft, pause);
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         if (!pause)
         {
@@ -116,9 +124,9 @@ public class DraftService
         return Result.Success();
     }
 
-    public async Task<DraftResult> DraftGame(ClaimGameDomainRequest request, bool managerAction, bool allowIneligibleSlot)
+    public async Task<DraftResult> DraftGame(ClaimGameDomainRequest request, LeagueDraft draft, bool managerAction, bool allowIneligibleSlot)
     {
-        var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, true, allowIneligibleSlot);
+        var result = await _gameAcquisitionService.ClaimGame(request, managerAction, draft.DraftID, allowIneligibleSlot);
         int standardGamesAdded = 0;
         if (result.Success && !request.CounterPick)
         {
@@ -169,7 +177,12 @@ public class DraftService
             }
 
             // Auto-skip publishers who have no open slots in the active draft (e.g. filled via bids between drafts).
-            var activeDraft = updatedLeagueYear.ActiveDraft!;
+            var activeDraft = updatedLeagueYear.ActiveDraft;
+            if (activeDraft is null)
+            {
+                throw new Exception($"Draft is not active for league: {leagueYear.Key}");
+            }
+
             bool isCounterPickPhase = draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks);
             int gamesInActiveDraft = nextPublisher.PublisherGames.Count(g =>
                 g.DraftID == activeDraft.DraftID && g.CounterPick == isCounterPickPhase);
@@ -218,7 +231,7 @@ public class DraftService
                 foreach (var possibleGame in gamesToTake)
                 {
                     var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true, false);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, draftStatus.Draft.DraftID, false);
                     if (autoDraftResult.Success)
                     {
                         standardGamesAdded++;
@@ -248,7 +261,7 @@ public class DraftService
                 {
                     var masterGame = publisherGame.MasterGame!.MasterGame;
                     var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, masterGame.GameName, true, false, false, true, masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true, false);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, draftStatus.Draft.DraftID, false);
                     if (autoDraftResult.Success)
                     {
                         counterPicksAdded++;
@@ -321,13 +334,17 @@ public class DraftService
             return false;
         }
 
-        await _fantasyCriticRepo.CompleteDraft(leagueYear);
+        await _fantasyCriticRepo.CompleteDraft(leagueYear, activeDraft);
         return true;
     }
 
     public Task ResetDraft(LeagueYear leagueYear)
     {
-        return _fantasyCriticRepo.ResetDraft(leagueYear, _clock.GetCurrentInstant());
+        if (leagueYear.ActiveDraft is null)
+        {
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
+        }
+        return _fantasyCriticRepo.ResetDraft(leagueYear, leagueYear.ActiveDraft, _clock.GetCurrentInstant());
     }
 
     public async Task<Result> CreateDraft(LeagueYear leagueYear, CreateLeagueDraftParameters domainRequest)

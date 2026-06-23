@@ -1007,48 +1007,45 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(sql, param);
     }
 
-    public async Task StartDraft(LeagueYear leagueYear)
+    public async Task StartDraft(LeagueYear leagueYear, LeagueDraft draftToStart)
     {
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
             $"UPDATE tbl_league_draft SET PlayStatus = '{PlayStatus.Drafting.Value}', DraftStartedTimestamp = CURRENT_TIMESTAMP WHERE DraftID = @draftID",
-            new { draftID = leagueYear.PendingDraft!.DraftID });
+            new { draftID = draftToStart.DraftID });
     }
 
-    public async Task CompleteDraft(LeagueYear leagueYear)
+    public async Task CompleteDraft(LeagueYear leagueYear, LeagueDraft draftToComplete)
     {
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
             $"UPDATE tbl_league_draft SET PlayStatus = '{PlayStatus.DraftFinal.Value}' WHERE DraftID = @draftID",
-            new { draftID = leagueYear.ActiveDraft!.DraftID });
+            new { draftID = draftToComplete.DraftID });
     }
 
-    public async Task ResetDraft(LeagueYear leagueYear, Instant timestamp)
+    public async Task ResetDraft(LeagueYear leagueYear, LeagueDraft draftToReset, Instant timestamp)
     {
-        var activeDraft = leagueYear.ActiveDraft
-            ?? throw new InvalidOperationException($"No active draft to reset for league {leagueYear.League.LeagueID}.");
-
         const string gameDeleteSQL = "DELETE FROM tbl_league_publishergame WHERE PublisherID IN @publisherIDs AND DraftID = @draftID";
         string draftResetSQL = $"UPDATE tbl_league_draft SET PlayStatus = '{PlayStatus.NotStartedDraft.Value}', DraftStartedTimestamp = NULL WHERE DraftID = @draftID";
 
-        LeagueManagerAction resetDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Draft Reset", $"Draft '{activeDraft.Name}' was reset.");
+        LeagueManagerAction resetDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Draft Reset", $"Draft '{draftToReset.Name}' was reset.");
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await connection.ExecuteAsync(gameDeleteSQL, new { publisherIDs = leagueYear.Publishers.Select(x => x.PublisherID), draftID = activeDraft.DraftID }, transaction);
-        await connection.ExecuteAsync(draftResetSQL, new { draftID = activeDraft.DraftID }, transaction);
+        await connection.ExecuteAsync(gameDeleteSQL, new { publisherIDs = leagueYear.Publishers.Select(x => x.PublisherID), draftID = draftToReset.DraftID }, transaction);
+        await connection.ExecuteAsync(draftResetSQL, new { draftID = draftToReset.DraftID }, transaction);
         await AddLeagueManagerAction(resetDraftAction, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
+    public async Task SetDraftPause(LeagueYear leagueYear, LeagueDraft draftToPause, bool pause)
     {
         var newStatus = pause ? PlayStatus.DraftPaused.Value : PlayStatus.Drafting.Value;
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(
             $"UPDATE tbl_league_draft SET PlayStatus = '{newStatus}' WHERE DraftID = @draftID",
-            new { draftID = leagueYear.ActiveDraft!.DraftID });
+            new { draftID = draftToPause.DraftID });
     }
 
     public async Task<PickupBid?> GetPickupBid(Guid bidID)
@@ -1142,7 +1139,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction)
     {
-        // TODO(Phase2-MultiDraft): EditLeagueYear updates only the first draft's game counts.
+        // TODO(Phase2-MultiDraft): EditLeagueYear updates only the first draft's game counts. We should ONLY be updating in this manner if it is a single draft league.
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.ConferenceLocked, leagueYear.UnderReview, leagueYear.LeagueYearName);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
 
@@ -1848,7 +1845,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task CreatePublisher(Publisher publisher)
     {
-        // TODO(Phase2-MultiDraft): Inserts draft info rows for all drafts (currently always just one).
         const string publisherCreateSQL =
             "INSERT INTO tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,PublisherSlogan,LeagueID,Year,UserID,Budget,UnrestrictedReleaseStatusGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped,SuperDropsAvailable,AutoDraftMode,OnlyAutoDraftFromWatchlist) VALUES " +
             "(@PublisherID,@PublisherName,@PublisherIcon,@PublisherSlogan,@LeagueID,@Year,@UserID,@Budget,@UnrestrictedReleaseStatusGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped,@SuperDropsAvailable,@AutoDraftMode,@OnlyAutoDraftFromWatchlist);";
@@ -2840,23 +2836,22 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domainGames;
     }
 
-    public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft draft, LeagueManagerAction leagueAction)
+    public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft pendingDraft, LeagueManagerAction leagueAction)
     {
-        // TODO(Phase2-MultiDraft): Always sets draft order for the provided draft (currently always FirstDraft).
         const string deleteDraftPublishersSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID;";
         const string insertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
         const string setFlagSQL = "UPDATE tbl_league_draft SET DraftOrderSet = 1 WHERE DraftID = @draftID;";
 
-        var insertRows = draftPositions.Select(x => new { draftID = draft.DraftID, publisherID = x.Key.PublisherID, draftPosition = x.Value });
+        var insertRows = draftPositions.Select(x => new { draftID = pendingDraft.DraftID, publisherID = x.Key.PublisherID, draftPosition = x.Value });
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        await connection.ExecuteAsync(deleteDraftPublishersSQL, new { draftID = draft.DraftID }, transaction);
+        await connection.ExecuteAsync(deleteDraftPublishersSQL, new { draftID = pendingDraft.DraftID }, transaction);
         await connection.ExecuteAsync(insertDraftPublisherSQL, insertRows, transaction);
         await AddLeagueManagerAction(leagueAction, connection, transaction);
-        await connection.ExecuteAsync(setFlagSQL, new { draftID = draft.DraftID }, transaction);
+        await connection.ExecuteAsync(setFlagSQL, new { draftID = pendingDraft.DraftID }, transaction);
 
         await transaction.CommitAsync();
     }

@@ -1164,7 +1164,7 @@ public class LeagueController : BaseLeagueController
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, false, false, false, masterGame,
             draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
 
-        var draftResult = await _draftService.DraftGame(domainRequest, false, request.AllowIneligibleSlot);
+        var draftResult = await _draftService.DraftGame(domainRequest, draftStatus.Draft, false, request.AllowIneligibleSlot);
         var viewModel = new PlayerClaimResultViewModel(draftResult.Result);
 
         if (draftResult.Result.Success)

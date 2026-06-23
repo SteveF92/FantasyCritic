@@ -112,12 +112,13 @@ public interface IFantasyCriticRepo
     Task ChangePublisherIcon(Publisher publisher, string? publisherIcon);
     Task ChangePublisherSlogan(Publisher publisher, string? publisherSlogan);
     Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague);
-    Task StartDraft(LeagueYear leagueYear);
-    Task CompleteDraft(LeagueYear leagueYear);
-    Task ResetDraft(LeagueYear leagueYear, Instant timestamp);
 
-    Task SetDraftPause(LeagueYear leagueYear, bool pause);
-    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft draft, LeagueManagerAction draftSetAction);
+    Task StartDraft(LeagueYear leagueYear, LeagueDraft draftToStart);
+    Task CompleteDraft(LeagueYear leagueYear, LeagueDraft draftToComplete);
+    Task ResetDraft(LeagueYear leagueYear, LeagueDraft draftToReset, Instant timestamp);
+    Task SetDraftPause(LeagueYear leagueYear, LeagueDraft draftToPause, bool pause);
+    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft pendingDraft, LeagueManagerAction draftSetAction);
+
     Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
     Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
     Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags);
