@@ -19,11 +19,11 @@ public static class DraftFunctions
         return true;
     }
 
-    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
+    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, LeagueDraft leagueDraft, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
-        if (leagueYear.PlayStatus.PlayStarted)
+        if (leagueDraft.PlayStatus.PlayStarted)
         {
-            return new List<string>();
+            return ["Draft is already started."];
         }
 
         var supportedYear = leagueYear.SupportedYear;
@@ -49,7 +49,7 @@ public static class DraftFunctions
             errors.Add($"This year is not yet open for play. It will become available on {supportedYear.StartDate}.");
         }
 
-        if (!leagueYear.DraftOrderSet)
+        if (!leagueDraft.DraftOrderSet)
         {
             errors.Add(isManager ? "You must set the draft order." : "Your league manager must set the draft order.");
         }
@@ -119,7 +119,7 @@ public static class DraftFunctions
                 return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("There is no previous year to use for standings.");
             }
 
-            if (!previousLeagueYear.PlayStatus.DraftFinished)
+            if (!previousLeagueYear.IsFirstDraftFinished)
             {
                 return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("The previous league year was not completed.");
             }

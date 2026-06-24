@@ -45,14 +45,14 @@ public class LeagueYear : IEquatable<LeagueYear>
     public LeagueOptions Options { get; }
     public IReadOnlyList<LeagueDraft> Drafts { get; }
 
+    //These helpers are identical, but the first is the bandaid, the second is for instances that I truly think should stay as "FirstDraft" permanently. I'll condense them down once everything is migrated.
     public LeagueDraft FirstDraft => Drafts.First();
-    public PlayStatus PlayStatus => FirstDraft.PlayStatus;
-    public bool DraftOrderSet => FirstDraft.DraftOrderSet;
-    public Instant? DraftStartedTimestamp => FirstDraft.DraftStartedTimestamp;
+    public LeagueDraft FirstOfTheDrafts => Drafts.First();
 
     public LeagueDraft? ActiveDraft => Drafts.FirstOrDefault(x => x.PlayStatus.DraftIsActiveOrPaused);
     public LeagueDraft? PendingDraft => Drafts.FirstOrDefault(d => d.PlayStatus.Equals(PlayStatus.NotStartedDraft));
     public bool IsAnyDraftStarted => Drafts.Any(d => d.PlayStatus.PlayStarted);
+    public bool IsFirstDraftFinished => FirstOfTheDrafts.PlayStatus.DraftFinished;
     public bool IsAnyDraftInProgress => Drafts.Any(d => d.PlayStatus.DraftIsActiveOrPaused);
 
     public LeagueDraft DraftForPublisherDisplayOrder
@@ -99,6 +99,34 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public LocalDate CounterPickDeadline => Options.CounterPickDeadline.InYear(Year);
     public LocalDate? MightReleaseDroppableDate => Options.MightReleaseDroppableDate?.InYear(Year);
+
+    public bool IsPublicBiddingValid
+    {
+        get
+        {
+            if (!FirstOfTheDrafts.PlayStatus.DraftFinished)
+            {
+                return false;
+            }
+
+            if (IsAnyDraftInProgress)
+            {
+                return false;
+            }
+
+            if (!Options.EnableBids)
+            {
+                return false;
+            }
+
+            if (!Options.PickupSystem.HasPublicBiddingWindow)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
 
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 

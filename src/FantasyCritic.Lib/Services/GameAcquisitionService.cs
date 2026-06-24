@@ -456,7 +456,7 @@ public class GameAcquisitionService
         List<LeagueYearPublicBiddingSet> publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
         foreach (var activeBidsForLeague in activeBidsByLeague)
         {
-            if (!activeBidsForLeague.Key.PlayStatus.DraftFinished || !activeBidsForLeague.Key.Options.PickupSystem.HasPublicBiddingWindow)
+            if (!activeBidsForLeague.Key.IsPublicBiddingValid)
             {
                 continue;
             }
@@ -485,12 +485,7 @@ public class GameAcquisitionService
 
     public bool IsInPublicBiddingWindow(LeagueYear leagueYear)
     {
-        if (!leagueYear.Options.PickupSystem.HasPublicBiddingWindow)
-        {
-            return false;
-        }
-
-        if (!leagueYear.PlayStatus.DraftFinished)
+        if (!leagueYear.IsPublicBiddingValid)
         {
             return false;
         }
@@ -503,12 +498,7 @@ public class GameAcquisitionService
 
     public bool WasBidPlacedDuringPublicBiddingWindow(LeagueYear leagueYear, Instant bidTimestamp)
     {
-        if (!leagueYear.Options.PickupSystem.HasPublicBiddingWindow)
-        {
-            return false;
-        }
-
-        if (!leagueYear.PlayStatus.DraftFinished)
+        if (!leagueYear.IsPublicBiddingValid)
         {
             return false;
         }

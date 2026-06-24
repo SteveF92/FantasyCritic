@@ -725,7 +725,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        bool mostRecentYearIsStarted = mostRecentYear.PlayStatus.PlayStarted;
+        bool mostRecentYearIsStarted = mostRecentYear.IsAnyDraftStarted;
         if (mostRecentYearIsStarted)
         {
             return BadRequest();
@@ -762,7 +762,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest("You cannot have a blank name.");
         }
 
-        if (leagueYear.PlayStatus.PlayStarted)
+        if (leagueYear.IsAnyDraftStarted)
         {
             return BadRequest();
         }

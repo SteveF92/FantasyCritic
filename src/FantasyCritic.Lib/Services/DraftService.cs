@@ -64,8 +64,13 @@ public class DraftService
 
     public async Task<Result> UndoLastDraftAction(LeagueYear leagueYear)
     {
+        if (leagueYear.ActiveDraft is null)
+        {
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
+        }
+
         var publisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
-        if (!leagueYear.PlayStatus.PlayStarted || leagueYear.PlayStatus.DraftFinished)
+        if (!leagueYear.ActiveDraft.PlayStatus.PlayStarted || leagueYear.ActiveDraft.PlayStatus.DraftFinished)
         {
             return Result.Failure("Cannot undo a draft game when the draft is not active.");
         }
@@ -145,7 +150,7 @@ public class DraftService
 
     public async Task<bool> RunAutoDraftAndCheckIfComplete(LeagueYear leagueYear)
     {
-        if (!leagueYear.PlayStatus.DraftIsActive)
+        if (leagueYear.ActiveDraft is null)
         {
             return false;
         }

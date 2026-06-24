@@ -575,7 +575,7 @@ public class LeagueManagerController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        if (leagueYear.PlayStatus.PlayStarted)
+        if (leagueYear.IsAnyDraftStarted)
         {
             return BadRequest("""Once the draft is started, you need to use "Remove Player".""");
         }
