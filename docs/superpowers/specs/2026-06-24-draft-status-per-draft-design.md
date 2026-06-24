@@ -77,9 +77,14 @@ if (startDraftErrors.Any()) { return BadRequest(); }
 if (!DraftFunctions.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers)) { return BadRequest(); }
 ```
 
-### Backend: `ConsolidatedLeagueDataViewModel`
+### Backend: `ConsolidatedLeagueYearViewModel`
 
-Currently constructs `CompleteFirstDraftPlayStatus` to get draft status for summary display. Replace by calling `DraftFunctions` directly or deriving from the enriched `LeagueDraftViewModel` construction.
+**File:** `src/FantasyCritic.Web/Models/Responses/ConsolidatedLeagueDataViewModel.cs`
+
+`ConsolidatedLeagueYearViewModel` follows the same pattern as `LeagueYearViewModel`:
+- Remove `CompleteFirstDraftPlayStatus` construction and `PlayStatus` property
+- Add a `Drafts` property (`IReadOnlyList<LeagueDraftViewModel>`) built with the enriched constructor (passing `activePublisherUsers`, `isManager: false`, `conferenceDraftsNotEnabled`)
+- Replace `completePlayStatus.DraftStatus?.NextDraftPublisher` (used when building `PublisherViewModel` instances) with `DraftFunctions.GetDraftStatus(leagueYear)?.NextDraftPublisher`
 
 ## Frontend
 
