@@ -144,29 +144,33 @@ public class FantasyCriticService
             return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
         }
 
-        if (leagueYear.PlayStatus.DraftIsActive)
+        // These are checks that only apply to single draft leagues. Multi drafts must go through the edit draft flow.
+        if (leagueYear.Drafts.Count == 1)
         {
-            if (leagueYear.FirstDraft.GamesToDraft > parameters.GamesToDraft)
+            if (leagueYear.FirstOfTheDrafts.PlayStatus.DraftIsActive)
             {
-                return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
+                if (leagueYear.FirstDraft.GamesToDraft > parameters.GamesToDraft)
+                {
+                    return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
+                }
+
+                if (leagueYear.FirstDraft.CounterPicksToDraft > parameters.CounterPicksToDraft)
+                {
+                    return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
+                }
             }
 
-            if (leagueYear.FirstDraft.CounterPicksToDraft > parameters.CounterPicksToDraft)
+            if (leagueYear.FirstOfTheDrafts.PlayStatus.DraftFinished)
             {
-                return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
-            }
-        }
+                if (leagueYear.FirstDraft.GamesToDraft != parameters.GamesToDraft)
+                {
+                    return Result.Failure("Cannot change the number of drafted games after the draft.");
+                }
 
-        if (leagueYear.PlayStatus.DraftFinished)
-        {
-            if (leagueYear.FirstDraft.GamesToDraft != parameters.GamesToDraft)
-            {
-                return Result.Failure("Cannot change the number of drafted games after the draft.");
-            }
-
-            if (leagueYear.FirstDraft.CounterPicksToDraft != parameters.CounterPicksToDraft)
-            {
-                return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
+                if (leagueYear.FirstDraft.CounterPicksToDraft != parameters.CounterPicksToDraft)
+                {
+                    return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
+                }
             }
         }
 

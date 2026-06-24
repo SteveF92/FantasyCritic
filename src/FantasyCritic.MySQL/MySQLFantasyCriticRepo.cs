@@ -1140,6 +1140,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction)
     {
         // TODO(Phase2-MultiDraft): EditLeagueYear updates only the first draft's game counts. We should ONLY be updating in this manner if it is a single draft league.
+        // Doubling down on this todo because it is NOT done!
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.ConferenceLocked, leagueYear.UnderReview, leagueYear.LeagueYearName);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
 
@@ -3458,7 +3459,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task AddPlayerToLeague(League league, FantasyCriticUser user)
     {
         var mostRecentYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, league.Years.Max(x => x.Year));
-        bool mostRecentYearNotStarted = !mostRecentYear.PlayStatus.PlayStarted;
+        bool mostRecentYearNotStarted = !mostRecentYear.IsAnyDraftStarted;
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
