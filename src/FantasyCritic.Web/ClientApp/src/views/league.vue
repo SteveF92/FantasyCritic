@@ -68,7 +68,7 @@
         <p v-else>The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!</p>
       </b-modal>
 
-      <div v-if="inviteCode && !league.userIsInLeague && !leagueYear.playStatus.playStarted" class="alert alert-secondary">
+      <div v-if="inviteCode && !league.userIsInLeague && !firstDraft?.playStarted" class="alert alert-secondary">
         You have been invited to join this league.
         <b-button v-if="isAuth" variant="primary" class="mx-2" @click="joinWithInviteLink()">Join League</b-button>
         <template v-else>
@@ -102,7 +102,7 @@
         <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
       </b-alert>
       <specialAuctionInfo v-for="activeSpecialAuction in leagueYear.activeSpecialAuctions" :key="activeSpecialAuction.masterGameID" :special-auction="activeSpecialAuction"></specialAuctionInfo>
-      <div v-if="leagueYear.playStatus.playStarted && leagueYear.supportedYear.finished">
+      <div v-if="firstDraft?.playStarted && leagueYear.supportedYear.finished">
         <div v-if="leagueYear.underReview" class="alert alert-danger" role="alert">
           This league has been set to "under review", which allows the league manager to make changes after the year is over.
         </div>
@@ -117,10 +117,10 @@
         <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
       </div>
 
-      <div v-if="(leagueYear.userIsActive || league.isManager) && !leagueYear.playStatus.readyToDraft" class="alert alert-warning">
+      <div v-if="(leagueYear.userIsActive || league.isManager) && !pendingDraft?.readyToDraft" class="alert alert-warning">
         <h2>This year is not active yet!</h2>
         <ul>
-          <li v-for="error in leagueYear.playStatus.startDraftErrors" :key="error">{{ error }}</li>
+          <li v-for="error in (pendingDraft?.startDraftErrors ?? [])" :key="error">{{ error }}</li>
         </ul>
         <p>Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.</p>
         <b-button v-if="mustSetDraftOrder" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
@@ -136,9 +136,9 @@
         Alternatively, if you want to manage this league without playing in it, you will need to set yourself as "inactive" by going to "Manager Active Players" in the Manage League menu.
       </div>
 
-      <div v-if="league.isManager && !leagueYear.playStatus.playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
+      <div v-if="league.isManager && !firstDraft?.playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
 
-      <div v-if="!leagueYear.playStatus.playStarted && leagueYear.playStatus.readyToDraft && !league.outstandingInvite">
+      <div v-if="!firstDraft?.playStarted && pendingDraft?.readyToDraft && !league.outstandingInvite">
         <div class="alert alert-success">
           <span v-if="league.isManager">
             <p>Things are all set to get started!</p>
@@ -150,7 +150,7 @@
         <startDraftModal @draftStarted="startDraft"></startDraftModal>
       </div>
 
-      <div v-if="leagueYear.playStatus.draftIsPaused">
+      <div v-if="activeDraft?.draftIsPaused">
         <div class="alert alert-danger">
           <div v-if="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
           <div v-else>
@@ -159,11 +159,11 @@
           </div>
         </div>
       </div>
-      <div v-if="leagueYear.playStatus.draftIsActive && nextPublisherUp">
+      <div v-if="activeDraft?.draftIsActive && nextPublisherUp">
         <div v-if="!userIsNextInDraft">
           <div class="alert alert-info">
-            <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
-            <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft Counter Picks!</div>
+            <div v-show="!activeDraft?.draftingCounterPicks">The draft is currently in progress!</div>
+            <div v-show="activeDraft?.draftingCounterPicks">It's time to draft Counter Picks!</div>
             <div>
               Next to draft:
               <strong>{{ nextPublisherUp.publisherName }}</strong>
@@ -174,11 +174,11 @@
         <div v-else>
           <div class="alert alert-success draft-header">
             <div>
-              <div v-show="!leagueYear.playStatus.draftingCounterPicks">The draft is currently in progress!</div>
-              <div v-show="leagueYear.playStatus.draftingCounterPicks">It's time to draft counter picks!</div>
+              <div v-show="!activeDraft?.draftingCounterPicks">The draft is currently in progress!</div>
+              <div v-show="activeDraft?.draftingCounterPicks">It's time to draft counter picks!</div>
               <div><strong>It is your turn to draft!</strong></div>
             </div>
-            <div v-if="!leagueYear.playStatus.draftingCounterPicks">
+            <div v-if="!activeDraft?.draftingCounterPicks">
               <b-button v-b-modal="'playerDraftGameForm'" variant="primary">Draft Game</b-button>
             </div>
             <div v-else>
@@ -194,7 +194,7 @@
         </div>
         <div class="col-xl-9 col-lg-8 col-md-12">
           <leagueYearStandings></leagueYearStandings>
-          <div v-if="leagueYear.playStatus.draftFinished && !leagueYear.supportedYear.finished">
+          <div v-if="firstDraft?.draftFinished && !leagueYear.supportedYear.finished">
             <gameNews :game-news="gameNews" mode="league" />
             <br />
             <div v-if="!oneShotMode">
@@ -294,7 +294,7 @@ export default {
       return false;
     },
     mustSetDraftOrder() {
-      return this.leagueYear.playStatus.readyToSetDraftOrder && this.leagueYear.playStatus.startDraftErrors.includes('You must set the draft order.');
+      return (this.pendingDraft?.readyToSetDraftOrder ?? false) && (this.pendingDraft?.startDraftErrors ?? []).includes('You must set the draft order.');
     },
     royaleGroupLink() {
       if (!this.royaleGroupData?.hasRoyaleGroup) return null;
@@ -422,7 +422,7 @@ export default {
       this.refreshLeagueYear();
     },
     async startHubConnection() {
-      if (!this.leagueYear || !this.leagueYear.playStatus.playStarted || this.leagueYear.playStatus.draftFinished) {
+      if (!this.leagueYear || !this.firstDraft?.playStarted || this.firstDraft?.draftFinished) {
         return;
       }
 
