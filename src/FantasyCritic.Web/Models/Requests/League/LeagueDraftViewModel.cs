@@ -1,10 +1,12 @@
+using FantasyCritic.Lib.Domain.Draft;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueDraftViewModel
 {
-    public LeagueDraftViewModel(LeagueDraft domain)
+    public LeagueDraftViewModel(LeagueDraft domain, LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
         DraftID = domain.DraftID;
         DraftNumber = domain.DraftNumber;
@@ -16,6 +18,28 @@ public class LeagueDraftViewModel
         DraftStartedTimestamp = domain.DraftStartedTimestamp;
         DraftOrderSet = domain.DraftOrderSet;
         PublisherDraftInfo = domain.PublisherDraftInfo.Select(x => new PublisherDraftInfoViewModel(x)).ToList();
+
+        PlayStarted = domain.PlayStatus.PlayStarted;
+        DraftIsActive = domain.PlayStatus.DraftIsActive;
+        DraftIsPaused = domain.PlayStatus.DraftIsPaused;
+        DraftFinished = domain.PlayStatus.DraftFinished;
+
+        if (domain.PlayStatus.DraftIsActiveOrPaused)
+        {
+            var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+            DraftingCounterPicks = DraftPhase.CounterPicks.Equals(draftStatus?.DraftPhase);
+        }
+
+        if (!domain.PlayStatus.PlayStarted)
+        {
+            ReadyToSetDraftOrder = DraftFunctions.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers);
+            StartDraftErrors = DraftFunctions.GetStartDraftResult(leagueYear, domain, activeUsers, isManager, conferenceDraftsNotEnabled);
+            ReadyToDraft = !StartDraftErrors.Any();
+        }
+        else
+        {
+            StartDraftErrors = [];
+        }
     }
 
     public Guid DraftID { get; }
@@ -28,4 +52,12 @@ public class LeagueDraftViewModel
     public Instant? DraftStartedTimestamp { get; }
     public bool DraftOrderSet { get; }
     public List<PublisherDraftInfoViewModel> PublisherDraftInfo { get; }
+    public bool PlayStarted { get; }
+    public bool DraftIsActive { get; }
+    public bool DraftIsPaused { get; }
+    public bool DraftFinished { get; }
+    public bool DraftingCounterPicks { get; }
+    public bool ReadyToSetDraftOrder { get; }
+    public IReadOnlyList<string> StartDraftErrors { get; }
+    public bool ReadyToDraft { get; }
 }
