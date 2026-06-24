@@ -959,8 +959,8 @@ public class AdminService
             if (scoreOrReleaseTime.HasValue && !hadScoreBeforeYear)
             {
                 timeAdjustedLeagues = leaguesWhereEligible.Where(x =>
-                        x.FirstOfTheDrafts.DraftStartedTimestamp.HasValue &&
-                        x.FirstOfTheDrafts.DraftStartedTimestamp <= scoreOrReleaseTime)
+                        x.FirstDraft.DraftStartedTimestamp.HasValue &&
+                        x.FirstDraft.DraftStartedTimestamp <= scoreOrReleaseTime)
                     .ToList();
             }
             else

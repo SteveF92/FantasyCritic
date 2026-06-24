@@ -20,8 +20,8 @@ public class ConferenceLeagueYearViewModel
         IsPrimaryLeague = isPrimaryLeague;
 
         ConferenceLocked = domain.ConferenceLocked.HasValue && domain.ConferenceLocked.Value;
-        DraftStarted = domain.FirstOfTheDrafts.PlayStatus.PlayStarted;
-        DraftFinished = domain.FirstOfTheDrafts.PlayStatus.DraftFinished;
+        DraftStarted = domain.FirstDraft.PlayStatus.PlayStarted;
+        DraftFinished = domain.FirstDraft.PlayStatus.DraftFinished;
     }
 
     public Guid LeagueID { get; }

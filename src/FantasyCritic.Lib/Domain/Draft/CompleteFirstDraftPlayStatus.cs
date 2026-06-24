@@ -5,10 +5,10 @@ public class CompleteFirstDraftPlayStatus
 {
     public CompleteFirstDraftPlayStatus(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
-        PlayStatus = leagueYear.FirstOfTheDrafts.PlayStatus;
-        DraftOrderSet = leagueYear.FirstOfTheDrafts.DraftOrderSet;
+        PlayStatus = leagueYear.FirstDraft.PlayStatus;
+        DraftOrderSet = leagueYear.FirstDraft.DraftOrderSet;
         ReadyToSetDraftOrder = DraftFunctions.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers);
-        StartDraftErrors = DraftFunctions.GetStartDraftResult(leagueYear, leagueYear.FirstOfTheDrafts, activeUsers, isManager, conferenceDraftsNotEnabled);
+        StartDraftErrors = DraftFunctions.GetStartDraftResult(leagueYear, leagueYear.FirstDraft, activeUsers, isManager, conferenceDraftsNotEnabled);
         DraftStatus = DraftFunctions.GetDraftStatus(leagueYear);
     }
 

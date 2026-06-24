@@ -45,14 +45,12 @@ public class LeagueYear : IEquatable<LeagueYear>
     public LeagueOptions Options { get; }
     public IReadOnlyList<LeagueDraft> Drafts { get; }
 
-    //These helpers are identical, but the first is the bandaid, the second is for instances that I truly think should stay as "FirstDraft" permanently. I'll condense them down once everything is migrated.
     public LeagueDraft FirstDraft => Drafts.First();
-    public LeagueDraft FirstOfTheDrafts => Drafts.First();
 
     public LeagueDraft? ActiveDraft => Drafts.FirstOrDefault(x => x.PlayStatus.DraftIsActiveOrPaused);
     public LeagueDraft? PendingDraft => Drafts.FirstOrDefault(d => d.PlayStatus.Equals(PlayStatus.NotStartedDraft));
     public bool IsAnyDraftStarted => Drafts.Any(d => d.PlayStatus.PlayStarted);
-    public bool IsFirstDraftFinished => FirstOfTheDrafts.PlayStatus.DraftFinished;
+    public bool IsFirstDraftFinished => FirstDraft.PlayStatus.DraftFinished;
     public bool IsAnyDraftInProgress => Drafts.Any(d => d.PlayStatus.DraftIsActiveOrPaused);
 
     public LeagueDraft DraftForPublisherDisplayOrder
@@ -104,7 +102,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     {
         get
         {
-            if (!FirstOfTheDrafts.PlayStatus.DraftFinished)
+            if (!FirstDraft.PlayStatus.DraftFinished)
             {
                 return false;
             }

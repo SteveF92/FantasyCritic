@@ -147,7 +147,7 @@ public class FantasyCriticService
         // These are checks that only apply to single draft leagues. Multi drafts must go through the edit draft flow.
         if (leagueYear.Drafts.Count == 1)
         {
-            if (leagueYear.FirstOfTheDrafts.PlayStatus.DraftIsActive)
+            if (leagueYear.FirstDraft.PlayStatus.DraftIsActive)
             {
                 if (leagueYear.FirstDraft.GamesToDraft > parameters.GamesToDraft)
                 {
@@ -160,7 +160,7 @@ public class FantasyCriticService
                 }
             }
 
-            if (leagueYear.FirstOfTheDrafts.PlayStatus.DraftFinished)
+            if (leagueYear.FirstDraft.PlayStatus.DraftFinished)
             {
                 if (leagueYear.FirstDraft.GamesToDraft != parameters.GamesToDraft)
                 {
