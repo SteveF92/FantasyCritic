@@ -33,6 +33,15 @@ let leagueMixin = {
     supportedYear() {
       return this.leagueYear.supportedYear;
     },
+    firstDraft() {
+      return this.leagueYear?.drafts?.[0] ?? null;
+    },
+    pendingDraft() {
+      return this.leagueYear?.drafts?.find((d) => d.playStatus === 'NotStartedDraft') ?? null;
+    },
+    activeDraft() {
+      return this.leagueYear?.drafts?.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
+    },
     nextPublisherUp() {
       if (!this.leagueYear || !this.leagueYear.publishers) {
         return null;
@@ -48,7 +57,7 @@ let leagueMixin = {
       return false;
     },
     draftIsPaused() {
-      return this.leagueYear.playStatus.draftIsPaused;
+      return this.activeDraft?.draftIsPaused ?? false;
     },
     isManager() {
       return this.league && this.league.isManager;
@@ -91,19 +100,19 @@ let leagueMixin = {
       return this.leagueYear.settings.oneShotMode;
     },
     playStarted() {
-      return this.leagueYear.playStatus.playStarted;
+      return this.firstDraft?.playStarted ?? false;
     },
     readyToSetDraftOrder() {
-      return this.leagueYear.playStatus.readyToSetDraftOrder;
+      return this.pendingDraft?.readyToSetDraftOrder ?? false;
     },
     draftFinished() {
-      return this.leagueYear.playStatus.draftFinished;
+      return this.firstDraft?.draftFinished ?? false;
     },
     postDraftPlayable() {
-      return this.leagueYear.playStatus.draftFinished && !this.leagueYear.supportedYear.finished;
+      return (this.firstDraft?.draftFinished ?? false) && !this.leagueYear.supportedYear.finished;
     },
     postDraftEditable() {
-      return this.leagueYear.playStatus.draftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
+      return (this.firstDraft?.draftFinished ?? false) && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
     },
     decimalsToShow() {
       if (this.userInfo?.showDecimalPoints) {
