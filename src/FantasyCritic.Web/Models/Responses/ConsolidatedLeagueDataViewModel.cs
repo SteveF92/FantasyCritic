@@ -51,7 +51,7 @@ public class ConsolidatedLeagueYearViewModel
         List<FantasyCriticUser> activePublisherUsers = leagueYear.Publishers.Select(x => x.User).ToList();
         List<MinimalFantasyCriticUser> activeUsersMinimal = activePublisherUsers.Select(x => x.ToMinimal()).ToList();
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
-        CompletePlayStatus completePlayStatus = new CompletePlayStatus(leagueYear, activePublisherUsers, false, conferenceDraftsNotEnabled);
+        CompleteFirstDraftPlayStatus completePlayStatus = new CompleteFirstDraftPlayStatus(leagueYear, activePublisherUsers, false, conferenceDraftsNotEnabled);
 
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.GetDraftPosition(leagueYear.DraftForPublisherDisplayOrder.DraftID))

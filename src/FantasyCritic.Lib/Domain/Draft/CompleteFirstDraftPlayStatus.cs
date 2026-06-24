@@ -1,14 +1,14 @@
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Draft;
-public class CompletePlayStatus
+public class CompleteFirstDraftPlayStatus
 {
-    public CompletePlayStatus(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
+    public CompleteFirstDraftPlayStatus(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
-        PlayStatus = leagueYear.PlayStatus;
-        DraftOrderSet = leagueYear.DraftOrderSet;
+        PlayStatus = leagueYear.FirstOfTheDrafts.PlayStatus;
+        DraftOrderSet = leagueYear.FirstOfTheDrafts.DraftOrderSet;
         ReadyToSetDraftOrder = DraftFunctions.LeagueIsReadyToSetDraftOrder(leagueYear.Publishers, activeUsers);
-        StartDraftErrors = DraftFunctions.GetStartDraftResult(leagueYear, activeUsers, isManager, conferenceDraftsNotEnabled);
+        StartDraftErrors = DraftFunctions.GetStartDraftResult(leagueYear, leagueYear.FirstOfTheDrafts, activeUsers, isManager, conferenceDraftsNotEnabled);
         DraftStatus = DraftFunctions.GetDraftStatus(leagueYear);
     }
 

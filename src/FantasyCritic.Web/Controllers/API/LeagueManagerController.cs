@@ -844,7 +844,7 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager, false);
+        var completePlayStatus = new CompleteFirstDraftPlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager, false);
         if (!completePlayStatus.ReadyToDraft)
         {
             return BadRequest();
@@ -904,7 +904,7 @@ public class LeagueManagerController : BaseLeagueController
         var activeUsers = await _leagueMemberService.GetActivePlayersForLeagueYear(leagueYear.League, request.Year);
 
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
-        var completePlayStatus = new CompletePlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager, conferenceDraftsNotEnabled);
+        var completePlayStatus = new CompleteFirstDraftPlayStatus(leagueYear, activeUsers, validResult.Relationship.LeagueManager, conferenceDraftsNotEnabled);
         if (!completePlayStatus.ReadyToSetDraftOrder)
         {
             return BadRequest();

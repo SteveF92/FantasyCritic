@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses;
 public class LeagueYearViewModel
 {
     public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear, Instant currentInstant, IReadOnlyList<MinimalFantasyCriticUser> activeUsers,
-        CompletePlayStatus completePlayStatus, IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
+        CompleteFirstDraftPlayStatus completePlayStatus, IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, LeagueYearSupplementalData supplementalData, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary,
         GameNewsViewModel gameNews)
     {

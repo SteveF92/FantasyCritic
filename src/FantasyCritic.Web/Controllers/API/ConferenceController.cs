@@ -658,7 +658,7 @@ public class ConferenceController : BaseLeagueController
             return StatusCode(403, "That league is not in that conference.");
         }
 
-        if (validLeagueYearResult.LeagueYear.PlayStatus.PlayStarted && !request.Locked)
+        if (validLeagueYearResult.LeagueYear.IsAnyDraftStarted && !request.Locked)
         {
             return BadRequest("You cannot unlock a league that has already started their draft.");
         }

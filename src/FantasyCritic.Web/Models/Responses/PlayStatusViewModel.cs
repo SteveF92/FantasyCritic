@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class PlayStatusViewModel
 {
-    public PlayStatusViewModel(CompletePlayStatus completePlayStatus)
+    public PlayStatusViewModel(CompleteFirstDraftPlayStatus completePlayStatus)
     {
         PlayStatus = completePlayStatus.PlayStatus.Value;
         ReadyToSetDraftOrder = completePlayStatus.ReadyToSetDraftOrder;

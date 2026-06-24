@@ -201,7 +201,7 @@ public class LeagueController : BaseLeagueController
         var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false, 50)).ToList();
         var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true, 50)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
+        var completePlayStatus = new CompleteFirstDraftPlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
         var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
@@ -295,7 +295,7 @@ public class LeagueController : BaseLeagueController
         var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false, 50)).ToList();
         var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true, 50)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
+        var completePlayStatus = new CompleteFirstDraftPlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
         var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
