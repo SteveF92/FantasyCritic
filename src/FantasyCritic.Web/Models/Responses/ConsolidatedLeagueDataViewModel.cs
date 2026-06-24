@@ -51,11 +51,11 @@ public class ConsolidatedLeagueYearViewModel
         List<FantasyCriticUser> activePublisherUsers = leagueYear.Publishers.Select(x => x.User).ToList();
         List<MinimalFantasyCriticUser> activeUsersMinimal = activePublisherUsers.Select(x => x.ToMinimal()).ToList();
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
-        CompleteFirstDraftPlayStatus completePlayStatus = new CompleteFirstDraftPlayStatus(leagueYear, activePublisherUsers, false, conferenceDraftsNotEnabled);
+        var activeDraftNextPublisher = DraftFunctions.GetDraftStatus(leagueYear)?.NextDraftPublisher;
 
         Publishers = leagueYear.Publishers
             .OrderBy(x => x.GetDraftPosition(leagueYear.DraftForPublisherDisplayOrder.DraftID))
-            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher,
+            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, activeDraftNextPublisher,
                 userIsInLeague: false, outstandingInvite: false, systemWideValues, counterPickedByDictionary))
             .ToList();
 
@@ -95,7 +95,7 @@ public class ConsolidatedLeagueYearViewModel
 
         Players = playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList();
 
-        PlayStatus = new PlayStatusViewModel(completePlayStatus);
+        Drafts = leagueYear.Drafts.Select(d => new LeagueDraftViewModel(d, leagueYear, activePublisherUsers, isManager: false, conferenceDraftsNotEnabled)).ToList();
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
         SlotInfo = new PublisherSlotRequirementsViewModel(leagueYear.Options);
@@ -128,7 +128,7 @@ public class ConsolidatedLeagueYearViewModel
     public IReadOnlyList<PublisherViewModel> Publishers { get; }
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
-    public PlayStatusViewModel PlayStatus { get; }
+    public IReadOnlyList<LeagueDraftViewModel> Drafts { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
     public IReadOnlyList<TradeViewModel> Trades { get; }
     public IReadOnlyList<SpecialAuctionViewModel> SpecialAuctions { get; }
