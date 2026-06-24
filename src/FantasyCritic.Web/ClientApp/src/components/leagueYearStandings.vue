@@ -11,8 +11,8 @@
       <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
           <router-link :to="{ hash: `#${data.item.publisher.publisherID}` }">{{ data.item.publisher.publisherName }}</router-link>
-          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraftMode === 'All'" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
-          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge badge-pill badge-primary badge-info">
+          <span v-show="!firstDraft?.draftFinished && data.item.publisher.autoDraftMode === 'All'" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
+          <span v-show="!firstDraft?.draftFinished && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge badge-pill badge-primary badge-info">
             Auto Draft (No CPKs)
           </span>
         </span>
@@ -80,14 +80,14 @@ export default {
     };
   },
   created() {
-    if (!this.leagueYear.playStatus.draftFinished) {
+    if (!this.firstDraft?.draftFinished) {
       this.sortBy = 'draftPosition';
       this.sortDesc = false;
     }
   },
   computed: {
     standingFields() {
-      if (!this.leagueYear.playStatus.draftFinished) {
+      if (!this.firstDraft?.draftFinished) {
         return this.draftNotFinishedStandingsFields;
       }
 
