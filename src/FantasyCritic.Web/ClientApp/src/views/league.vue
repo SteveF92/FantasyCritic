@@ -117,7 +117,7 @@
         <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
       </div>
 
-      <div v-if="(leagueYear.userIsActive || league.isManager) && !pendingDraft?.readyToDraft" class="alert alert-warning">
+      <div v-if="(leagueYear.userIsActive || league.isManager) && !firstDraft.playStarted && !firstDraft.readyToDraft" class="alert alert-warning">
         <h2>This year is not active yet!</h2>
         <ul>
           <li v-for="error in pendingDraft?.startDraftErrors ?? []" :key="error">{{ error }}</li>

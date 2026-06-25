@@ -85,6 +85,7 @@ export default {
       const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
+        draftID: this.pendingDraft.draftID,
         draftOrderType: draftOrderType
       };
       if (draftOrderType === 'Manual') {
