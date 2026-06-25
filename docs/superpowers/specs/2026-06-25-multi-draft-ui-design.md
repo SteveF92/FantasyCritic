@@ -127,11 +127,11 @@ Alert variant: `success`.
   - `draftNumber === 1`: *"Things are all set! Your league manager can choose when to begin the draft."*
   - `draftNumber > 1`: *"**[Name]** is ready to go! Your league manager can choose when to begin."*
 
-**State 4 — No scheduled date set** (soft nudge, any state)
+**State 4 — No scheduled date set** (soft nudge)
 
-When `pendingDraft.scheduledDate` is null, append a soft line inside the banner:
+When `pendingDraft.scheduledDate` is null AND State 2 is not active (i.e. the draft isn't already imminent via order-set), append a soft line inside the banner:
 *"No scheduled date set — [set one on the Manage Drafts page] to help your players plan ahead."*
-The bracketed text is a router-link (shown to all users).
+The bracketed text is a router-link (shown to all users). This nudge is suppressed when State 2 is active because scheduling context is already covered there.
 
 ### `leagueActions.vue` additions
 
