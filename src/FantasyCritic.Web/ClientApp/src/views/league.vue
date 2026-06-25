@@ -252,8 +252,7 @@ export default {
       selectedYear: null,
       errorInfo: null,
       oneShotText: "This is a 'one shot' league, meaning there are no bids or drops. The draft is final.",
-      royaleGroupData: null,
-      activeRoyaleQuarter: null
+      royaleGroupData: null
     };
   },
   computed: {
@@ -454,9 +453,8 @@ export default {
     },
     async fetchRoyaleGroupForLeague() {
       try {
-        const [groupResponse, quarterResponse] = await Promise.all([axios.get(`/api/RoyaleGroup/GetRoyaleGroupForLeague/${this.leagueid}`), axios.get('/api/Royale/ActiveRoyaleQuarter')]);
-        this.royaleGroupData = groupResponse.data;
-        this.activeRoyaleQuarter = quarterResponse.data;
+        const response = await axios.get(`/api/RoyaleGroup/GetRoyaleGroupForLeague/${this.leagueid}`);
+        this.royaleGroupData = response.data;
       } catch {
         this.royaleGroupData = null;
       }

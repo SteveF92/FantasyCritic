@@ -490,7 +490,7 @@
     <collapseCard>
       <template #header>How do trades work?</template>
       <template #body>
-        Your league can chose whether or not to allow trades. If allowed, trades become available after the draft is over. The following rules apply:
+        Your league can choose whether or not to allow trades. If allowed, trades become available after the draft is over. The following rules apply:
         <ul>
           <li>Trades are always between 2 players.</li>
           <li>Each side can include any number of games as well as any budget ($) they have available.</li>
@@ -508,6 +508,23 @@
         </ul>
         Note that the "votes" by the league members are not "votes" in the democracy sense. League managers should weigh them when deciding what to do with the trade, but ultimately, they have full
         control.
+      </template>
+    </collapseCard>
+    <collapseCard>
+      <template #header>What are the trade system options?</template>
+      <template #body>
+        <p>League managers choose a trade system when creating or editing a league year.</p>
+        <ul>
+          <li><strong>No Trades:</strong> Trades are disabled for the league year.</li>
+          <li>
+            <strong>Standard:</strong> Trade proposals are visible to the league as soon as they are proposed. Other league members can see active proposals, and public trade notifications can be sent
+            to Discord if the league has Discord integration enabled.
+          </li>
+          <li>
+            <strong>Private Until Accepted:</strong> New proposals are visible only to the two players involved. If the counterparty accepts the trade, it becomes visible to the rest of the league for
+            the normal review and voting process. Proposals that are rescinded, rejected, or expire before being accepted stay private and do not appear in trade history.
+          </li>
+        </ul>
       </template>
     </collapseCard>
     <collapseCard>

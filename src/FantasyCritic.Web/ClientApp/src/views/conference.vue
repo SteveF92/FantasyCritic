@@ -21,7 +21,9 @@
                 </span>
               </h1>
               <div class="conference-extra-links">
-                <router-link v-if="conferenceYear.managerMessages.length > 0" :to="{ name: 'conferenceHistory', params: { conferenceid: conference.conferenceID, year: conferenceYear.year } }">Conference History</router-link>
+                <router-link v-if="conferenceYear.managerMessages.length > 0" :to="{ name: 'conferenceHistory', params: { conferenceid: conference.conferenceID, year: conferenceYear.year } }">
+                  Conference History
+                </router-link>
                 <router-link v-if="royaleGroupData && royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink">View Royale Group</router-link>
                 <a v-else-if="royaleGroupData && !royaleGroupData.hasRoyaleGroup && isConferenceManager" href="#" @click.prevent="enableRoyale">Enable Royale</a>
               </div>
@@ -142,7 +144,6 @@ export default {
       selectedYear: null,
       errorInfo: null,
       royaleGroupData: null,
-      activeRoyaleQuarter: null,
       leagueYearFields: [
         { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
         { key: 'leagueManager', label: 'League Manager', thClass: 'bg-primary' }
@@ -169,11 +170,15 @@ export default {
       if (!this.conferenceYear || !this.conferenceYear.leagueYears) {
         return [];
       }
-      
+
       return [...this.conferenceYear.leagueYears].sort((a, b) => {
-        if (a.isPrimaryLeague) { return -1; }
-        if (b.isPrimaryLeague) { return 1; }
-        
+        if (a.isPrimaryLeague) {
+          return -1;
+        }
+        if (b.isPrimaryLeague) {
+          return 1;
+        }
+
         return a.leagueName.localeCompare(b.leagueName);
       });
     },
@@ -248,12 +253,8 @@ export default {
     },
     async fetchRoyaleGroupForConference() {
       try {
-        const [groupResponse, quarterResponse] = await Promise.all([
-          axios.get(`/api/RoyaleGroup/GetRoyaleGroupForConference/${this.conferenceid}`),
-          axios.get('/api/Royale/ActiveRoyaleQuarter')
-        ]);
-        this.royaleGroupData = groupResponse.data;
-        this.activeRoyaleQuarter = quarterResponse.data;
+        const response = await axios.get(`/api/RoyaleGroup/GetRoyaleGroupForConference/${this.conferenceid}`);
+        this.royaleGroupData = response.data;
       } catch {
         this.royaleGroupData = null;
       }
@@ -322,5 +323,4 @@ export default {
   max-width: 100%;
   word-wrap: break-word;
 }
-
 </style>

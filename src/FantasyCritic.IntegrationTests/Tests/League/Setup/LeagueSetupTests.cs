@@ -79,4 +79,22 @@ public class LeagueSetupTests : IntegrationTestBase
         Assert.That(settings.ScoringSystem, Is.EqualTo(LeagueScenarios.Standard.ScoringSystem));
         Assert.That(settings.IneligibleGameSystem, Is.EqualTo(LeagueScenarios.Standard.IneligibleGameSystem));
     }
+
+    [Test]
+    public async Task GetLeagueYear_WithGrantSuperDrops_BeforeDraft_ReturnsNullSuperDropPointCutoff()
+    {
+        var (email, password, displayName) = NewUser();
+        using var session = new ApiSession(Factory);
+        await session.RegisterAsync(email, password, displayName);
+
+        var year = await LeagueTestHelpers.GetOpenYearAsync(session);
+        var leagueID = await LeagueTestHelpers.CreateLeagueAsync(
+            session, LeagueScenarios.StandardWithSuperDrops, year);
+
+        var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
+
+        Assert.That(leagueYear.Settings.GrantSuperDrops, Is.True);
+        Assert.That(leagueYear.SuperDropPointCutoff, Is.Null,
+            "Super drop cutoff must not be computed until the draft has finished.");
+    }
 }

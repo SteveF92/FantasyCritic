@@ -129,6 +129,34 @@ public static class LeagueScenarios
     };
 
     /// <summary>
+    /// Same as <see cref="Standard"/> but with automatic super drops enabled.
+    /// </summary>
+    public static readonly LeagueScenario StandardWithSuperDrops = new()
+    {
+        Name = "StandardWithSuperDrops",
+        PlayerCount = Standard.PlayerCount,
+        StandardGames = Standard.StandardGames,
+        GamesToDraft = Standard.GamesToDraft,
+        CounterPicks = Standard.CounterPicks,
+        CounterPicksToDraft = Standard.CounterPicksToDraft,
+        DraftSystem = Standard.DraftSystem,
+        PickupSystem = Standard.PickupSystem,
+        ScoringSystem = Standard.ScoringSystem,
+        TradingSystem = Standard.TradingSystem,
+        TiebreakSystem = Standard.TiebreakSystem,
+        ReleaseSystem = Standard.ReleaseSystem,
+        IneligibleGameSystem = Standard.IneligibleGameSystem,
+        UnrestrictedReleaseStatusDroppableGames = Standard.UnrestrictedReleaseStatusDroppableGames,
+        WillNotReleaseDroppableGames = Standard.WillNotReleaseDroppableGames,
+        WillReleaseDroppableGames = Standard.WillReleaseDroppableGames,
+        DropOnlyDraftGames = Standard.DropOnlyDraftGames,
+        GrantSuperDrops = true,
+        CounterPicksBlockDrops = Standard.CounterPicksBlockDrops,
+        AllowMoveIntoIneligible = Standard.AllowMoveIntoIneligible,
+        MinimumBidAmount = Standard.MinimumBidAmount,
+    };
+
+    /// <summary>
     /// A minimal 2-player league used by error-case and edge-case test fixtures.
     /// 2 standard games + 1 counter-pick per publisher. Fast to set up and exhaust.
     /// </summary>

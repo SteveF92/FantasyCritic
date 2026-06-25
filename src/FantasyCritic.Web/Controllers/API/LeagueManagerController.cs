@@ -1312,11 +1312,18 @@ public class LeagueManagerController : BaseLeagueController
         {
             return leagueYearRecord.FailedResult;
         }
+        var validResult = leagueYearRecord.ValidResult!;
+        var currentUser = validResult.CurrentUser!;
 
         var trade = await _tradeService.GetTrade(request.TradeID);
         if (trade is null)
         {
             return BadRequest();
+        }
+
+        if (trade.IsPrivateProposal() && !trade.UserIsInvolved(currentUser.Id))
+        {
+            return StatusCode(403);
         }
 
         Result result = await _tradeService.RejectTradeByManager(trade);
