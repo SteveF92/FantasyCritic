@@ -34,13 +34,16 @@ let leagueMixin = {
       return this.leagueYear.supportedYear;
     },
     firstDraft() {
-      return this.leagueYear?.drafts?.[0] ?? null;
+      if (!this.leagueYear?.drafts || this.leagueYear.drafts.length === 0) {
+        throw new Error('Could not load drafts for this league.');
+      }
+      return this.leagueYear.drafts[0];
     },
     pendingDraft() {
-      return this.leagueYear?.drafts?.find((d) => d.playStatus === 'NotStartedDraft') ?? null;
+      return this.leagueYear.drafts.find((d) => d.playStatus === 'NotStartedDraft') ?? null;
     },
     activeDraft() {
-      return this.leagueYear?.drafts?.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
+      return this.leagueYear.drafts.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
     },
     nextPublisherUp() {
       if (!this.leagueYear || !this.leagueYear.publishers) {
