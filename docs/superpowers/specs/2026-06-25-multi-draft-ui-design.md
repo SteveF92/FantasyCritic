@@ -193,14 +193,31 @@ if (!this.leagueYear || !this.activeDraft) {
 
 This connects SignalR whenever any draft is actively running or paused, regardless of draft number, and disconnects between drafts when `activeDraft` is null.
 
-### `DraftFinished` modal in `league.vue`
+### New component: `draftCompleteModal.vue`
 
-The modal currently has static text. After the `DraftFinished` SignalR event fires, the page refreshes and `pendingDraft` reflects the updated state. The modal reads `pendingDraft` at the moment it is shown:
+**File:** `src/.../components/modals/draftCompleteModal.vue`
 
-- **Final draft** (`pendingDraft` is null after refresh): keep existing text — *"The draft is complete! From here you can make bids for games that were not drafted..."*
-- **Non-final draft** (`pendingDraft` exists after refresh): placeholder text — *[Commissioner-authored text to be written separately before implementation.]*
+Replaces the inline `b-modal#draftFinishedModal` in `league.vue`. Uses `LeagueMixin`. Triggered the same way — `this.$refs.draftCompleteModalRef.show()` in the SignalR `DraftFinished` handler after the page refreshes.
 
-The modal's `v-if` condition stays the same; only the body text branches.
+Title: **"Draft Complete!"** (always).
+
+The body text is determined by the combination of league type and draft position at the moment the modal is shown. `pendingDraft` reflects the post-refresh state, so it is null when the just-finished draft was the final one.
+
+**Decision table** (`oneShotMode` and `enableBids` from `leagueYear.settings`; `isFinalDraft = pendingDraft === null`):
+
+| League shape | `enableBids` | `isFinalDraft` | Body text |
+|---|---|---|---|
+| Single draft, not one-shot | `true` | — | *[Lorem ipsum — bids now open.]* |
+| Single draft, not one-shot | `false` | — | *[Lorem ipsum — draft done, no bids.]* |
+| One-shot (`oneShotMode`) | `false` | — | *[Lorem ipsum — year complete, locked.]* |
+| Multi-draft | `true` | `false` | *[Lorem ipsum — draft N done, bids may open, next draft coming.]* |
+| Multi-draft | `false` | `false` | *[Lorem ipsum — draft N done, no bids between drafts, next draft coming.]* |
+| Multi-draft | `true` | `true` | *[Lorem ipsum — all drafts done, bids now open for rest of year.]* |
+| Multi-draft | `false` | `true` | *[Lorem ipsum — all drafts done, year locked.]* |
+
+One-shot + `enableBids = true` is not a valid combination and is not handled.
+
+The `userIsInLeague` guard from the original modal is preserved: when the viewing user is not in the league, show a short fallback line (*"The draft is complete!"*) regardless of league shape.
 
 ### `editDraftOrderForm.vue`
 
@@ -220,7 +237,8 @@ The `ResetDraft` API call must include `draftID`. The modal sources this from `a
 | `components/draftReadinessBanner.vue` | **New** — replaces inline draft-readiness blocks |
 | `components/modals/draftScheduleModal.vue` | **New** — read-only draft list modal |
 | `router/routes.js` | Add `manageDrafts` route |
-| `views/league.vue` | Replace inline draft-readiness blocks with `<draftReadinessBanner>`; fix `startHubConnection`; update `DraftFinished` modal text; register new components |
+| `components/modals/draftCompleteModal.vue` | **New** — replaces inline `draftFinishedModal` with full league-shape-aware text |
+| `views/league.vue` | Replace inline draft-readiness blocks with `<draftReadinessBanner>`; replace inline modal with `<draftCompleteModal>`; fix `startHubConnection`; register new components |
 | `components/leagueActions.vue` | Add "See Draft Schedule" (public) + "Manage Drafts" link (commissioner) |
 | `components/leagueYearSettings.vue` | Add `isMultiDraft` + `manageDraftsRoute` props; hide games/CPs fields when multi-draft |
 | `views/editLeague.vue` | Compute `isMultiDraft`; pass props to `leagueYearSettings` |
