@@ -206,10 +206,15 @@ public class FantasyCriticService
             leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
             leagueYear.UnderReview, parameters.LeagueYearName);
 
-        var differenceString = options.GetDifferenceString(leagueYear.Options);
-        if (differenceString is not null)
+        var optionsDiff = options.GetDifferences(leagueYear.Options);
+        var draftDiff = leagueYear.Drafts.Count == 1
+            ? newFirstDraft.GetDifferences(leagueYear.FirstDraft)
+            : new LeagueOptionsDifferences([]);
+        var combined = optionsDiff.Combine(draftDiff);
+
+        if (combined.HasChanges)
         {
-            LeagueManagerAction settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString);
+            LeagueManagerAction settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed", combined.ToString());
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
             await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
         }

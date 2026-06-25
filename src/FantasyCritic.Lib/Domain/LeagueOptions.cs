@@ -143,7 +143,7 @@ public class LeagueOptions
         return Result.Success();
     }
 
-    public string? GetDifferenceString(LeagueOptions existingOptions)
+    public LeagueOptionsDifferences GetDifferences(LeagueOptions existingOptions)
     {
         List<string> differences = new List<string>();
 
@@ -261,18 +261,7 @@ public class LeagueOptions
             differences.Add($"Special slots changed from \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", orderedNewSpecialGameSlots.Select(x => x.ToString()))}");
         }
 
-        if (!differences.Any())
-        {
-            return null;
-        }
-
-        if (differences.Count == 1)
-        {
-            return differences.Single();
-        }
-
-        string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
-        return finalString;
+        return new LeagueOptionsDifferences(differences);
     }
 
     public LeagueOptions UpdateOptionsForYear(int requestYear)
@@ -298,13 +287,13 @@ public class LeagueOptions
             PickupSystem, ScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate);
 
-        var differenceString = newOptions.GetDifferenceString(this);
-        if (differenceString is null)
+        var differences = newOptions.GetDifferences(this);
+        if (!differences.HasChanges)
         {
             return null;
         }
 
-        var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differenceString);
+        var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differences.ToString());
         var settingsChanges = new NewDraftLeagueSettingsChanges(totalStandardGames, totalCounterPicks, newParameters.NewSpecialGameSlots, settingsChangeAction);
         return settingsChanges;
     }

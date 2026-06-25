@@ -407,9 +407,14 @@ public class DraftService
             domainRequest.CounterPicksToDraft,
             draft.DraftOrderSet, draft.PlayStatus, draft.PublisherDraftInfo, draft.DraftStartedTimestamp);
 
+        var differences = updatedDraft.GetDifferences(draft);
+        if (!differences.HasChanges)
+        {
+            return Result.Success();
+        }
+
         var timestamp = _clock.GetCurrentInstant();
-        string description = $"Edited draft: {domainRequest.Name}";
-        var managerAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Edit Draft", description);
+        var managerAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Edit Draft", differences.ToString());
         await _fantasyCriticRepo.EditLeagueDraft(updatedDraft, managerAction);
         return Result.Success();
     }
