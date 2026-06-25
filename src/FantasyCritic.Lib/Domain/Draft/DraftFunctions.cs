@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Identity;
 namespace FantasyCritic.Lib.Domain.Draft;
 public static class DraftFunctions
 {
-    public static bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> activeUsers)
+    public static bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<IMinimalFantasyCriticUser> activeUsers)
     {
         if (publishersInLeague.Count() != activeUsers.Count())
         {
@@ -19,7 +19,7 @@ public static class DraftFunctions
         return true;
     }
 
-    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, LeagueDraft leagueDraft, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
+    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, LeagueDraft leagueDraft, IEnumerable<IMinimalFantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
         if (leagueDraft.PlayStatus.PlayStarted)
         {

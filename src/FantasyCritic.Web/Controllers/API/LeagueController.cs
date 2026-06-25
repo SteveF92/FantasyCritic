@@ -207,7 +207,7 @@ public class LeagueController : BaseLeagueController
             relationship.LeagueInvite, currentUser, relationship.InLeague, supplementalData.UserIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
-            activeUsers, validResult.ActiveUsers, conferenceDraftsNotEnabled, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
+            activeUsers, conferenceDraftsNotEnabled, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, supplementalData, counterPickedByDictionary, gameNewsViewModel);
         return leagueYearViewModel;
     }
@@ -300,7 +300,7 @@ public class LeagueController : BaseLeagueController
             relationship.LeagueInvite, currentUser, relationship.InLeague, supplementalData.UserIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
-            activeUsers, validResult.ActiveUsers, conferenceDraftsNotEnabled, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
+            activeUsers, conferenceDraftsNotEnabled, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, supplementalData, counterPickedByDictionary, gameNewsViewModel);
         return leagueYearViewModel;
     }

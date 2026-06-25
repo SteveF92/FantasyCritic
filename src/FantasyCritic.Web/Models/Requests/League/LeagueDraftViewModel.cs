@@ -6,7 +6,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class LeagueDraftViewModel
 {
-    public LeagueDraftViewModel(LeagueDraft domain, LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
+    public LeagueDraftViewModel(LeagueDraft domain, LeagueYear leagueYear, IEnumerable<IMinimalFantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
         DraftID = domain.DraftID;
         DraftNumber = domain.DraftNumber;

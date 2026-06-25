@@ -9,7 +9,7 @@ namespace FantasyCritic.Web.Models.Responses;
 public class LeagueYearViewModel
 {
     public LeagueYearViewModel(LeagueViewModel leagueViewModel, LeagueYear leagueYear, Instant currentInstant, IReadOnlyList<MinimalFantasyCriticUser> activeUsers,
-        IEnumerable<FantasyCriticUser> fullActiveUsers, bool conferenceDraftsNotEnabled, IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
+        bool conferenceDraftsNotEnabled, IEnumerable<LeagueInvite> invitedPlayers, bool userIsInLeague, bool userIsInvitedToLeague, bool userIsManager,
         FantasyCriticUser? accessingUser, LeagueYearSupplementalData supplementalData, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary,
         GameNewsViewModel gameNews)
     {
@@ -105,7 +105,7 @@ public class LeagueYearViewModel
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
         SlotInfo = new PublisherSlotRequirementsViewModel(leagueYear.Options);
-        Drafts = leagueYear.Drafts.Select(d => new LeagueDraftViewModel(d, leagueYear, fullActiveUsers, userIsManager, conferenceDraftsNotEnabled)).ToList();
+        Drafts = leagueYear.Drafts.Select(d => new LeagueDraftViewModel(d, leagueYear, activeUsers, userIsManager, conferenceDraftsNotEnabled)).ToList();
         EnableBids = leagueYear.Options.EnableBids;
 
         ManagerMessages = supplementalData.ManagerMessages.Select(x => new ManagerMessageViewModel(x, x.IsDismissed(accessingUser))).OrderBy(x => x.Timestamp).ToList();
