@@ -5,23 +5,16 @@
       <p>The draft is complete!</p>
     </template>
 
-    <!-- Multi-draft: non-final draft -->
-    <template v-else-if="isMultiDraft && !isFinalDraft">
+    <!-- Multi-draft -->
+    <template v-else-if="isMultiDraft">
       <template v-if="leagueYear.enableBids">
-        <p>[Lorem ipsum — draft N done, bids may be open between drafts, next draft coming up.]</p>
+        <p>
+          This draft is complete! Your league is set up as a multi-draft league that allows bids between drafts, so think carefully about how you want to use your budget vs what games you might want
+          to grab in the next draft!
+        </p>
       </template>
       <template v-else>
-        <p>[Lorem ipsum — draft N done, no bids between drafts, sit tight for the next draft.]</p>
-      </template>
-    </template>
-
-    <!-- Multi-draft: final draft -->
-    <template v-else-if="isMultiDraft && isFinalDraft">
-      <template v-if="leagueYear.enableBids">
-        <p>[Lorem ipsum — all drafts done, bids now open for the rest of the year.]</p>
-      </template>
-      <template v-else>
-        <p>[Lorem ipsum — all drafts done, rosters locked for the year.]</p>
+        <p>This draft is complete! Your league is set up as a multi-draft league with no bids in between drafts, so you're good to sit tight until the next draft is scheduled!</p>
       </template>
     </template>
 
@@ -49,9 +42,6 @@ export default {
   computed: {
     isMultiDraft() {
       return (this.leagueYear?.drafts?.length ?? 0) >= 2;
-    },
-    isFinalDraft() {
-      return this.pendingDraft === null;
     }
   },
   methods: {
