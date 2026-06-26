@@ -30,6 +30,21 @@
                   @click="startEdit(draft)">
                   Edit
                 </b-button>
+                <b-button
+                  v-if="editingDraftId === null && deletingDraftId === null && draft.draftNumber > 1 && draft.playStatus === 'NotStartedDraft'"
+                  size="sm"
+                  variant="danger"
+                  class="ml-2"
+                  @click="confirmDelete(draft)">
+                  Delete
+                </b-button>
+
+                <div v-if="deletingDraftId === draft.draftID" class="alert alert-warning mt-2">
+                  <div v-if="deleteError" class="alert alert-danger">{{ deleteError }}</div>
+                  <p>Are you sure you want to delete <strong>{{ draft.name }}</strong>? This cannot be undone.</p>
+                  <b-button size="sm" variant="danger" @click="submitDelete(draft)">Confirm Delete</b-button>
+                  <b-button size="sm" variant="secondary" class="ml-2" @click="cancelDelete()">Cancel</b-button>
+                </div>
               </div>
             </div>
 
@@ -94,7 +109,8 @@ export default {
         counterPicksToDraft: 0
       },
       editError: null,
-      deletingDraftId: null
+      deletingDraftId: null,
+      deleteError: null
     };
   },
   computed: {
@@ -164,6 +180,29 @@ export default {
         await this.fetchLeagueYear();
       } catch (error) {
         this.editError = error.response?.data || 'An error occurred saving the draft.';
+      }
+    },
+    confirmDelete(draft) {
+      this.deletingDraftId = draft.draftID;
+      this.editingDraftId = null;
+      this.deleteError = null;
+    },
+    cancelDelete() {
+      this.deletingDraftId = null;
+      this.deleteError = null;
+    },
+    async submitDelete(draft) {
+      const model = {
+        draftID: draft.draftID,
+        leagueID: this.leagueid,
+        year: this.year
+      };
+      try {
+        await axios.post('/api/leagueManager/DeleteLeagueDraft', model);
+        this.deletingDraftId = null;
+        await this.fetchLeagueYear();
+      } catch (error) {
+        this.deleteError = error.response?.data || 'An error occurred deleting the draft.';
       }
     }
   }
