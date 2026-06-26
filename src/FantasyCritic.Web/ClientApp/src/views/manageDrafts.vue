@@ -81,6 +81,48 @@
             </div>
           </b-card>
         </div>
+
+        <hr />
+
+        <div v-if="!activeDraft">
+          <h3>Add Another Draft</h3>
+          <div v-if="newDraftError" class="alert alert-danger">{{ newDraftError }}</div>
+          <b-card>
+            <div class="form-group">
+              <label>Draft Name</label>
+              <input v-model="newDraft.name" type="text" class="form-control" placeholder="e.g. Summer Draft" />
+            </div>
+            <div class="form-group">
+              <label>Scheduled Date (optional)</label>
+              <input v-model="newDraft.scheduledDate" type="date" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Games to Draft</label>
+              <input v-model.number="newDraft.gamesToDraft" type="number" min="0" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Counter Picks to Draft</label>
+              <input v-model.number="newDraft.counterPicksToDraft" type="number" min="0" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Additional Standard Games</label>
+              <p class="form-text text-muted">Expand the total roster size to make room for this draft's picks. Set to 0 if existing slots are already available.</p>
+              <input v-model.number="newDraft.additionalStandardGames" type="number" min="0" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Additional Counter Picks</label>
+              <input v-model.number="newDraft.additionalCounterPicks" type="number" min="0" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>New Special Slots (optional)</label>
+              <specialGameSlotSelector v-model="newDraft.newSpecialGameSlots"></specialGameSlotSelector>
+            </div>
+            <b-button variant="success" :disabled="!newDraft.name" @click="submitNewDraft()">Add Draft</b-button>
+          </b-card>
+        </div>
+        <div v-else class="alert alert-info">
+          You cannot add a draft while one is in progress.
+        </div>
       </template>
     </div>
 
@@ -91,8 +133,12 @@
 </template>
 <script>
 import axios from 'axios';
+import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
 
 export default {
+  components: {
+    SpecialGameSlotSelector
+  },
   props: {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -110,12 +156,25 @@ export default {
       },
       editError: null,
       deletingDraftId: null,
-      deleteError: null
+      deleteError: null,
+      newDraft: {
+        name: '',
+        scheduledDate: null,
+        gamesToDraft: 1,
+        counterPicksToDraft: 0,
+        additionalStandardGames: 0,
+        additionalCounterPicks: 0,
+        newSpecialGameSlots: []
+      },
+      newDraftError: null
     };
   },
   computed: {
     isManager() {
       return this.leagueYear?.league?.isManager ?? false;
+    },
+    activeDraft() {
+      return this.leagueYear?.drafts?.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
     }
   },
   async created() {
@@ -203,6 +262,38 @@ export default {
         await this.fetchLeagueYear();
       } catch (error) {
         this.deleteError = error.response?.data || 'An error occurred deleting the draft.';
+      }
+    },
+    resetNewDraftForm() {
+      this.newDraft = {
+        name: '',
+        scheduledDate: null,
+        gamesToDraft: 1,
+        counterPicksToDraft: 0,
+        additionalStandardGames: 0,
+        additionalCounterPicks: 0,
+        newSpecialGameSlots: []
+      };
+      this.newDraftError = null;
+    },
+    async submitNewDraft() {
+      const model = {
+        leagueID: this.leagueid,
+        year: this.year,
+        name: this.newDraft.name,
+        scheduledDate: this.newDraft.scheduledDate || null,
+        gamesToDraft: this.newDraft.gamesToDraft,
+        counterPicksToDraft: this.newDraft.counterPicksToDraft,
+        additionalStandardGames: this.newDraft.additionalStandardGames,
+        additionalCounterPicks: this.newDraft.additionalCounterPicks,
+        newSpecialGameSlots: this.newDraft.newSpecialGameSlots
+      };
+      try {
+        await axios.post('/api/leagueManager/CreateLeagueDraft', model);
+        this.resetNewDraftForm();
+        await this.fetchLeagueYear();
+      } catch (error) {
+        this.newDraftError = error.response?.data || 'An error occurred adding the draft.';
       }
     }
   }
