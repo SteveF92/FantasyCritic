@@ -108,14 +108,29 @@ let leagueMixin = {
     readyToSetDraftOrder() {
       return this.pendingDraft?.readyToSetDraftOrder ?? false;
     },
-    draftFinished() {
+    firstDraftFinished() {
       return this.firstDraft.draftFinished;
     },
+    hasPendingOrActiveDraft() {
+      return this.pendingDraft !== null || this.activeDraft !== null;
+    },
+    draftIsActiveOrPaused() {
+      return this.activeDraft !== null;
+    },
+    biddingAllowed() {
+      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.enableBids;
+    },
+    tradesAllowed() {
+      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.settings.tradingSystem !== 'NoTrades';
+    },
+    dropsAllowed() {
+      return this.firstDraftFinished && !this.activeDraft && !this.oneShotMode;
+    },
     postDraftPlayable() {
-      return this.firstDraft.draftFinished && !this.leagueYear.supportedYear.finished;
+      return this.firstDraftFinished && !this.leagueYear.supportedYear.finished;
     },
     postDraftEditable() {
-      return this.firstDraft.draftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
+      return this.firstDraftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
     },
     decimalsToShow() {
       if (this.userInfo?.showDecimalPoints) {
