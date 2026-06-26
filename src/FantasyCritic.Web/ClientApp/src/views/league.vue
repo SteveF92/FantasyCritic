@@ -173,14 +173,12 @@
         </div>
         <div class="col-xl-9 col-lg-8 col-md-12">
           <leagueYearStandings></leagueYearStandings>
-          <div v-if="firstDraft.draftFinished && !leagueYear.supportedYear.finished">
+          <div v-if="postDraftPlayable">
             <gameNews :game-news="gameNews" mode="league" />
             <br />
-            <div v-if="!oneShotMode">
-              <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" @publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
-              <bidCountdowns v-if="!showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
-            </div>
-            <div v-if="leagueYear.publicBiddingGames">
+            <bidCountdowns v-if="biddingAllowed && showPublicRevealCountdown" mode="NextPublic" @publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
+            <bidCountdowns v-if="biddingAllowed && !showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
+            <div v-if="biddingAllowed && leagueYear.publicBiddingGames">
               <h2>This week's bids</h2>
               <activeBids />
             </div>
