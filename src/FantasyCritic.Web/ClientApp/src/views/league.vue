@@ -176,12 +176,14 @@
           <div v-if="postDraftPlayable">
             <gameNews :game-news="gameNews" mode="league" />
             <br />
-            <bidCountdowns v-if="biddingAllowed && showPublicRevealCountdown" mode="NextPublic" @publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
-            <bidCountdowns v-if="biddingAllowed && !showPublicRevealCountdown" mode="NextBid"></bidCountdowns>
-            <div v-if="biddingAllowed && leagueYear.publicBiddingGames">
-              <h2>This week's bids</h2>
-              <activeBids />
-            </div>
+            <template v-if="biddingAllowed">
+              <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" @publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
+              <bidCountdowns v-else mode="NextBid"></bidCountdowns>
+              <div v-if="leagueYear.publicBiddingGames">
+                <h2>This week's bids</h2>
+                <activeBids />
+              </div>
+            </template>
           </div>
           <br />
           <leagueGameSummary></leagueGameSummary>
