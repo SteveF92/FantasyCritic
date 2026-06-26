@@ -63,10 +63,7 @@
 
       <div v-if="!league.publicLeague && !(league.userIsInLeague || league.outstandingInvite || inviteCode)" class="alert alert-warning" role="info">You are viewing a private league.</div>
 
-      <b-modal id="draftFinishedModal" ref="draftFinishedModalRef" title="Draft Complete!" ok-only>
-        <p v-if="!league.userIsInLeague || oneShotMode">The draft is complete!</p>
-        <p v-else>The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!</p>
-      </b-modal>
+      <draftCompleteModal ref="draftCompleteModalRef"></draftCompleteModal>
       <startDraftModal @draftStarted="startDraft"></startDraftModal>
 
       <div v-if="inviteCode && !league.userIsInLeague && !firstDraft.playStarted" class="alert alert-secondary">
@@ -206,6 +203,7 @@ import LeagueYearStandings from '@/components/leagueYearStandings.vue';
 import LeagueActions from '@/components/leagueActions.vue';
 import CreatePublisherForm from '@/components/modals/createPublisherForm.vue';
 import StartDraftModal from '@/components/modals/startDraftModal.vue';
+import DraftCompleteModal from '@/components/modals/draftCompleteModal.vue';
 import GameNews from '@/components/gameNews.vue';
 import ActiveBids from '@/components/activeBids.vue';
 import BidCountdowns from '@/components/bidCountdowns.vue';
@@ -219,6 +217,7 @@ export default {
     LeagueYearStandings,
     CreatePublisherForm,
     StartDraftModal,
+    DraftCompleteModal,
     LeagueActions,
     GameNews,
     ActiveBids,
@@ -425,7 +424,7 @@ export default {
       });
 
       hubConnection.on('DraftFinished', () => {
-        this.$refs.draftFinishedModalRef.show();
+        this.$refs.draftCompleteModalRef.show();
       });
 
       hubConnection.onclose(async () => {
