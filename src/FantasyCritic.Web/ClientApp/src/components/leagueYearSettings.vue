@@ -46,7 +46,7 @@
         </ValidationProvider>
       </div>
 
-      <div v-show="!oneShotMode" class="form-group">
+      <div v-show="!oneShotMode && !isMultiDraft" class="form-group">
         <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
         <p>
           This is the number of games that will be chosen by each player at the draft. If this number is lower than the "Total Number of Games", the remainder will be
@@ -72,7 +72,7 @@
         </ValidationProvider>
       </div>
 
-      <div v-show="!oneShotMode" class="form-group">
+      <div v-show="!oneShotMode && !isMultiDraft" class="form-group">
         <label for="counterPicksToDraft" class="control-label">Number of Counter Picks to Draft</label>
         <p>
           This is the number of games that will be chosen by each player at the draft. If this number is lower than the "Total Number of Counter Picks", the remainder will be
@@ -83,6 +83,13 @@
           <input id="counterPicksToDraft" v-model="internalValue.counterPicksToDraft" name="Counter picks to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
+      </div>
+
+      <div v-if="isMultiDraft" class="alert alert-info">
+        This league has multiple drafts.
+        <router-link v-if="manageDraftsRoute" :to="manageDraftsRoute">Visit the Manage Drafts page</router-link>
+        <span v-else>Visit the Manage Drafts page</span>
+        to configure draft settings (games to draft, counter picks, etc.).
       </div>
 
       <div v-show="!oneShotMode" class="form-group">
@@ -327,7 +334,9 @@ export default {
     editMode: { type: Boolean },
     currentNumberOfPlayers: { type: Number, default: null },
     freshSettings: { type: Boolean, required: true },
-    conferenceMode: { type: Boolean }
+    conferenceMode: { type: Boolean },
+    isMultiDraft: { type: Boolean, default: false },
+    manageDraftsRoute: { type: Object, default: null }
   },
   data() {
     return {
