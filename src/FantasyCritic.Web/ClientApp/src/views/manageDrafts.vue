@@ -16,10 +16,53 @@
               <span class="h5">Draft {{ draft.draftNumber }}: {{ draft.name }}</span>
               <b-badge :variant="statusVariant(draft)" class="ml-2">{{ statusLabel(draft) }}</b-badge>
             </div>
-            <div class="mt-2">
+
+            <!-- Read view -->
+            <div v-if="editingDraftId !== draft.draftID" class="mt-2">
               <div><strong>Scheduled Date:</strong> {{ draft.scheduledDate || '—' }}</div>
               <div><strong>Games to Draft:</strong> {{ draft.gamesToDraft }}</div>
               <div><strong>Counter Picks to Draft:</strong> {{ draft.counterPicksToDraft }}</div>
+              <div class="mt-2">
+                <b-button
+                  v-if="editingDraftId === null"
+                  size="sm"
+                  variant="secondary"
+                  @click="startEdit(draft)">
+                  Edit
+                </b-button>
+              </div>
+            </div>
+
+            <!-- Edit form -->
+            <div v-else class="mt-2">
+              <div v-if="editError" class="alert alert-danger">{{ editError }}</div>
+              <div class="form-group">
+                <label>Draft Name</label>
+                <input v-model="editForm.name" type="text" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Scheduled Date (optional)</label>
+                <input v-model="editForm.scheduledDate" type="date" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Games to Draft</label>
+                <input
+                  v-model.number="editForm.gamesToDraft"
+                  type="number"
+                  class="form-control"
+                  :disabled="draft.playStatus !== 'NotStartedDraft'" />
+                <small v-if="draft.playStatus !== 'NotStartedDraft'" class="text-muted">Cannot change after draft has started.</small>
+              </div>
+              <div class="form-group">
+                <label>Counter Picks to Draft</label>
+                <input
+                  v-model.number="editForm.counterPicksToDraft"
+                  type="number"
+                  class="form-control"
+                  :disabled="draft.playStatus !== 'NotStartedDraft'" />
+              </div>
+              <b-button size="sm" variant="primary" @click="submitEdit(draft)">Save</b-button>
+              <b-button size="sm" variant="secondary" class="ml-2" @click="cancelEdit()">Cancel</b-button>
             </div>
           </b-card>
         </div>
@@ -42,7 +85,16 @@ export default {
   data() {
     return {
       leagueYear: null,
-      errorInfo: null
+      errorInfo: null,
+      editingDraftId: null,
+      editForm: {
+        name: '',
+        scheduledDate: null,
+        gamesToDraft: 1,
+        counterPicksToDraft: 0
+      },
+      editError: null,
+      deletingDraftId: null
     };
   },
   computed: {
@@ -79,6 +131,40 @@ export default {
         DraftFinal: 'info'
       };
       return map[draft.playStatus] ?? 'secondary';
+    },
+    startEdit(draft) {
+      this.editingDraftId = draft.draftID;
+      this.editForm = {
+        name: draft.name,
+        scheduledDate: draft.scheduledDate,
+        gamesToDraft: draft.gamesToDraft,
+        counterPicksToDraft: draft.counterPicksToDraft
+      };
+      this.deletingDraftId = null;
+      this.editError = null;
+    },
+    cancelEdit() {
+      this.editingDraftId = null;
+      this.editError = null;
+    },
+    async submitEdit(draft) {
+      const model = {
+        draftID: draft.draftID,
+        leagueID: this.leagueid,
+        year: this.year,
+        name: this.editForm.name,
+        scheduledDate: this.editForm.scheduledDate || null,
+        gamesToDraft: this.editForm.gamesToDraft,
+        counterPicksToDraft: this.editForm.counterPicksToDraft
+      };
+      try {
+        await axios.post('/api/leagueManager/EditLeagueDraft', model);
+        this.editingDraftId = null;
+        this.editError = null;
+        await this.fetchLeagueYear();
+      } catch (error) {
+        this.editError = error.response?.data || 'An error occurred saving the draft.';
+      }
     }
   }
 };
