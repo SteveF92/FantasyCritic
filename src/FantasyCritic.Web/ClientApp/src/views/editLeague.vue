@@ -14,7 +14,14 @@
           <input id="leagueYearName" v-model="leagueYearName" name="League Year Name" type="text" class="form-control input" placeholder="Leave blank to use the league name" />
           <p>If set, this name will be displayed instead of the league name for this specific year only.</p>
         </div>
-        <leagueYearSettings v-model="leagueYearSettings" :year="year" edit-mode :current-number-of-players="activePlayersInLeague" :fresh-settings="freshSettings"></leagueYearSettings>
+        <leagueYearSettings
+          v-model="leagueYearSettings"
+          :year="year"
+          edit-mode
+          :current-number-of-players="activePlayersInLeague"
+          :fresh-settings="freshSettings"
+          :is-multi-draft="isMultiDraft"
+          :manage-drafts-route="manageDraftsRoute"></leagueYearSettings>
       </div>
 
       <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
@@ -65,6 +72,13 @@ export default {
         return null;
       }
       return this.leagueYear.players.length;
+    },
+    isMultiDraft() {
+      return (this.leagueYear?.drafts?.length ?? 0) >= 2;
+    },
+    manageDraftsRoute() {
+      if (!this.leagueYear) return null;
+      return { name: 'manageDrafts', params: { leagueid: this.leagueid, year: this.year } };
     }
   },
   created() {
