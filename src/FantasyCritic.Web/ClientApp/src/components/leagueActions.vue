@@ -22,6 +22,7 @@
           <li v-b-modal="`leagueOptionsModal_${league.leagueID}-${leagueYear.year}`" class="fake-link action">See League Options</li>
           <li v-b-modal="'eligibilityOverridesModal'" class="fake-link action">See Eligibility Overrides</li>
           <li v-b-modal="'tagOverridesModal'" class="fake-link action">See Tag Overrides</li>
+          <li v-if="leagueYear.drafts.length >= 2" v-b-modal="'draftScheduleModal'" class="fake-link action">See Draft Schedule</li>
         </ul>
       </div>
       <div v-if="userPublisher">
@@ -154,6 +155,7 @@
         :supported-year="supportedYear"></leagueOptionsModal>
       <eligibilityOverridesModal></eligibilityOverridesModal>
       <tagOverridesModal></tagOverridesModal>
+      <draftScheduleModal></draftScheduleModal>
 
       <template v-if="userPublisher">
         <playerDraftGameForm></playerDraftGameForm>
@@ -257,6 +259,7 @@ import ManagerMessageModal from '@/components/modals/managerMessageModal.vue';
 import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal.vue';
 import UnderReviewModal from '@/components/modals/underReviewModal.vue';
+import DraftScheduleModal from '@/components/modals/draftScheduleModal.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
 
@@ -306,7 +309,8 @@ export default {
     ProposeTradeForm,
     ActiveTradesModal,
     SpecialAuctionsModal,
-    UnderReviewModal
+    UnderReviewModal,
+    DraftScheduleModal
   },
   mixins: [LeagueMixin],
   computed: {
