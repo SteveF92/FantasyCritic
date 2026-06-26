@@ -53,28 +53,26 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      draftNotFinishedStandingsFields: [
+      leadingFields: [
         { key: 'userName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' }
+      ],
+      preDraftFields: [
         { key: 'draftPosition', label: 'Draft Position', thClass: 'bg-primary', sortable: true },
         { key: 'gamesWillRelease', label: 'Games Drafted', thClass: 'bg-primary', sortable: true }
       ],
-      midYearStandingsFields: [
-        { key: 'userName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+      nextDraftOrderField: { key: 'draftPosition', label: 'Next Draft Order', thClass: 'bg-primary', sortable: true },
+      midYearFields: [
         { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
         { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
         { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
-        { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
-        { key: 'budget', label: 'Budget', thClass: 'bg-primary' }
+        { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' }
       ],
-      yearFinishedStandingsFields: [
-        { key: 'userName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+      yearFinishedFields: [
         { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
-        { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
-        { key: 'budget', label: 'Budget', thClass: 'bg-primary' }
+        { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' }
       ],
+      budgetField: { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
       sortBy: 'totalFantasyPoints',
       sortDesc: true
     };
@@ -88,25 +86,17 @@ export default {
   computed: {
     standingFields() {
       if (!this.firstDraftFinished) {
-        return this.draftNotFinishedStandingsFields;
+        return [...this.leadingFields, ...this.preDraftFields];
       }
 
-      let baseFields;
+      const nextDraftOrder = this.pendingDraft?.draftOrderSet ? [this.nextDraftOrderField] : [];
+      const budget = this.oneShotMode ? [] : [this.budgetField];
+
       if (this.leagueYear.supportedYear.finished) {
-        baseFields = this.oneShotMode ? this.yearFinishedStandingsFields.slice(0, -1) : this.yearFinishedStandingsFields;
-      } else {
-        baseFields = this.oneShotMode ? this.midYearStandingsFields.slice(0, -1) : this.midYearStandingsFields;
+        return [...this.leadingFields, ...nextDraftOrder, ...this.yearFinishedFields, ...budget];
       }
 
-      if (this.pendingDraft?.draftOrderSet) {
-        return [
-          ...baseFields.slice(0, 2),
-          { key: 'draftPosition', label: 'Next Draft Order', thClass: 'bg-primary', sortable: true },
-          ...baseFields.slice(2)
-        ];
-      }
-
-      return baseFields;
+      return [...this.leadingFields, ...nextDraftOrder, ...this.midYearFields, ...budget];
     },
     standings() {
       let standings = this.leagueYear.players;
