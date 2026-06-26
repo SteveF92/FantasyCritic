@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
@@ -95,7 +96,8 @@ public static class DraftFunctions
         return draftStatus;
     }
 
-    public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType, IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear)
+    public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType,
+        IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear, SystemWideValues? systemWideValues, int targetDraftNumber)
     {
         if (draftOrderType.Equals(DraftOrderType.Manual))
         {
@@ -144,6 +146,35 @@ public static class DraftFunctions
             currentYearPublishersInOrder.InsertRange(midpoint, notInLastYearPublishers);
 
             return GetDraftPositionsInternal(leagueYear, currentYearPublishersInOrder.Select(x => x.PublisherID).ToList());
+        }
+
+        if (draftOrderType.Equals(DraftOrderType.InverseProjectedPoints))
+        {
+            if (targetDraftNumber <= 1)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Inverse projected points is only available for drafts after the first.");
+            }
+
+            if (systemWideValues is null)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+            }
+
+            var previousDraft = leagueYear.Drafts.SingleOrDefault(x => x.DraftNumber == targetDraftNumber - 1);
+            if (previousDraft is null)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+            }
+
+            var previousDraftID = previousDraft.DraftID;
+            var orderedPublishers = leagueYear.Publishers
+                .OrderBy(x => x.GetProjectedFantasyPoints(leagueYear, systemWideValues))
+                .ThenBy(x => x.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options))
+                .ThenByDescending(x => x.GetDraftPosition(previousDraftID))
+                .ThenBy(x => x.PublisherID)
+                .ToList();
+
+            return GetDraftPositionsInternal(leagueYear, orderedPublishers.Select(x => x.PublisherID).ToList());
         }
 
         return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");

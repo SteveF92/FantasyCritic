@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;
@@ -919,13 +920,31 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest();
         }
 
+        var targetDraft = leagueYear.Drafts.SingleOrDefault(d => d.DraftID == request.DraftID);
+        if (targetDraft is null || leagueYear.PendingDraft?.DraftID != request.DraftID)
+        {
+            return BadRequest("Draft order can only be set for the next pending draft.");
+        }
+
+        if (draftOrderType.Equals(DraftOrderType.InverseProjectedPoints) && targetDraft.DraftNumber <= 1)
+        {
+            return BadRequest("Inverse projected points is only available for drafts after the first.");
+        }
+
         LeagueYear? previousLeagueYear = null;
         if (draftOrderType.Equals(DraftOrderType.InverseStandings))
         {
             previousLeagueYear = await _fantasyCriticService.GetLeagueYear(request.LeagueID, request.Year - 1);
         }
 
-        var draftPositions = DraftFunctions.GetDraftPositions(leagueYear, draftOrderType, request.ManualPublisherDraftPositions, previousLeagueYear);
+        SystemWideValues? systemWideValues = null;
+        if (draftOrderType.Equals(DraftOrderType.InverseProjectedPoints))
+        {
+            systemWideValues = await _interLeagueService.GetSystemWideValues();
+        }
+
+        var draftPositions = DraftFunctions.GetDraftPositions(leagueYear, draftOrderType, request.ManualPublisherDraftPositions,
+            previousLeagueYear, systemWideValues, targetDraft.DraftNumber);
         if (draftPositions.IsFailure)
         {
             return BadRequest(draftPositions.Error);
