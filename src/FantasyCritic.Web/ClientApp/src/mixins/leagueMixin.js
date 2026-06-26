@@ -103,19 +103,19 @@ let leagueMixin = {
       return this.leagueYear.settings.oneShotMode;
     },
     playStarted() {
-      return this.firstDraft?.playStarted ?? false;
+      return this.firstDraft.playStarted ?? false;
     },
     readyToSetDraftOrder() {
       return this.pendingDraft?.readyToSetDraftOrder ?? false;
     },
     draftFinished() {
-      return this.firstDraft?.draftFinished ?? false;
+      return this.firstDraft.draftFinished;
     },
     postDraftPlayable() {
-      return (this.firstDraft?.draftFinished ?? false) && !this.leagueYear.supportedYear.finished;
+      return this.firstDraft.draftFinished && !this.leagueYear.supportedYear.finished;
     },
     postDraftEditable() {
-      return (this.firstDraft?.draftFinished ?? false) && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
+      return this.firstDraft.draftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
     },
     decimalsToShow() {
       if (this.userInfo?.showDecimalPoints) {
