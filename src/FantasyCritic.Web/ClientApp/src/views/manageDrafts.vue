@@ -105,7 +105,9 @@
             </div>
             <div class="form-group">
               <label>Additional Standard Games</label>
-              <p class="form-text text-muted">Expand the total roster size to make room for this draft's picks. Set to 0 if existing slots are already available.</p>
+              <b-alert show variant="info">
+                If you want, you can expand the total roster size to make room for this draft's picks. If you already all the slots you want set up, you can leave this at 0.
+              </b-alert>
               <input v-model.number="newDraft.additionalStandardGames" type="number" min="0" class="form-control" />
             </div>
             <div class="form-group">
@@ -115,8 +117,13 @@
             <div class="form-group">
               <label>New Special Slots (optional)</label>
               <specialGameSlotSelector v-model="newDraft.newSpecialGameSlots"></specialGameSlotSelector>
+              <b-alert show variant="warning" v-if="specialSlotsExceedStandardGames" class="mt-2">
+                You are adding {{ newSpecialSlotCount }} special slot{{ newSpecialSlotCount !== 1 ? 's' : '' }} but only {{ newDraft.additionalStandardGames }} additional standard game{{
+                  newDraft.additionalStandardGames !== 1 ? 's' : ''
+                }}. You must add at least as many 'Additional Standard Games' as new special slots, otherwise the new special slots would convert existing standard slots into special slots.
+              </b-alert>
             </div>
-            <b-button variant="success" :disabled="!newDraft.name" @click="submitNewDraft()">Add Draft</b-button>
+            <b-button variant="success" :disabled="!newDraft.name || specialSlotsExceedStandardGames" @click="submitNewDraft()">Add Draft</b-button>
           </b-card>
         </div>
         <div v-else class="alert alert-info">You cannot add a draft while one is in progress.</div>
@@ -172,6 +179,12 @@ export default {
     },
     activeDraft() {
       return this.leagueYear?.drafts?.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
+    },
+    newSpecialSlotCount() {
+      return this.newDraft.newSpecialGameSlots?.length ?? 0;
+    },
+    specialSlotsExceedStandardGames() {
+      return this.newSpecialSlotCount > this.newDraft.additionalStandardGames;
     }
   },
   async created() {

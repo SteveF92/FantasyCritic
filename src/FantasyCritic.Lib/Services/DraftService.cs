@@ -359,6 +359,12 @@ public class DraftService
             return Result.Failure("Cannot create a draft while one is in progress.");
         }
 
+        if (domainRequest.NewSpecialGameSlots.Count > domainRequest.AdditionalStandardGames)
+        {
+            return Result.Failure("You must add at least as many 'Additional Standard Games' as new special slots. " +
+                                  "Otherwise the new special slots would convert existing standard slots into special slots.");
+        }
+
         int nextDraftNumber = leagueYear.Drafts.Max(d => d.DraftNumber) + 1;
         var newPublisherDraftInfo = new List<PublisherDraftInfo>();
         foreach (var publisher in leagueYear.Publishers)
