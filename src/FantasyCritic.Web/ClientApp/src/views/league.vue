@@ -67,6 +67,7 @@
         <p v-if="!league.userIsInLeague || oneShotMode">The draft is complete!</p>
         <p v-else>The draft is complete! From here you can make bids for games that were not drafted, however, you may want to hold onto your available budget until later in the year!</p>
       </b-modal>
+      <startDraftModal @draftStarted="startDraft"></startDraftModal>
 
       <div v-if="inviteCode && !league.userIsInLeague && !firstDraft.playStarted" class="alert alert-secondary">
         You have been invited to join this league.
@@ -117,14 +118,7 @@
         <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
       </div>
 
-      <div v-if="(leagueYear.userIsActive || league.isManager) && !firstDraft.playStarted && !firstDraft.readyToDraft" class="alert alert-warning">
-        <h2>This year is not active yet!</h2>
-        <ul>
-          <li v-for="error in pendingDraft?.startDraftErrors ?? []" :key="error">{{ error }}</li>
-        </ul>
-        <p>Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.</p>
-        <b-button v-if="mustSetDraftOrder" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
-      </div>
+      <draftReadinessBanner></draftReadinessBanner>
 
       <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
         <p>You need to create your publisher for this year.</p>
@@ -137,18 +131,6 @@
       </div>
 
       <div v-if="league.isManager && !firstDraft.playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
-
-      <div v-if="!firstDraft.playStarted && firstDraft.readyToDraft && !league.outstandingInvite">
-        <div class="alert alert-success">
-          <span v-if="league.isManager">
-            <p>Things are all set to get started!</p>
-            <p>Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.</p>
-            <b-button v-b-modal="'startDraft'" variant="primary" class="mx-2">Start Drafting!</b-button>
-          </span>
-          <span v-if="!league.isManager">Things are all set to get started! Your league manager can choose when to begin the draft.</span>
-        </div>
-        <startDraftModal @draftStarted="startDraft"></startDraftModal>
-      </div>
 
       <div v-if="activeDraft?.draftIsPaused">
         <div class="alert alert-danger">
@@ -229,6 +211,7 @@ import ActiveBids from '@/components/activeBids.vue';
 import BidCountdowns from '@/components/bidCountdowns.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
+import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
 
 export default {
   components: {
@@ -240,7 +223,8 @@ export default {
     GameNews,
     ActiveBids,
     BidCountdowns,
-    SpecialAuctionInfo
+    SpecialAuctionInfo,
+    DraftReadinessBanner
   },
   mixins: [LeagueMixin],
   props: {
