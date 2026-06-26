@@ -405,7 +405,7 @@ export default {
       this.refreshLeagueYear();
     },
     async startHubConnection() {
-      if (!this.leagueYear || !this.firstDraft.playStarted || this.firstDraft.draftFinished) {
+      if (!this.leagueYear || !this.activeDraft) {
         return;
       }
 
