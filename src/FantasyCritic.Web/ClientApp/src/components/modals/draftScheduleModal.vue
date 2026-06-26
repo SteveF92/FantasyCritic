@@ -7,9 +7,7 @@
       <template #cell(scheduledDate)="data">
         {{ data.value || '—' }}
       </template>
-      <template #cell(gamesAndCPs)="data">
-        {{ data.item.gamesToDraft }} / {{ data.item.counterPicksToDraft }}
-      </template>
+      <template #cell(gamesAndCPKs)="data">{{ data.item.gamesToDraft }} / {{ data.item.counterPicksToDraft }}</template>
     </b-table>
   </b-modal>
 </template>
@@ -24,7 +22,7 @@ export default {
         { key: 'draftNumber', label: '#' },
         { key: 'name', label: 'Name' },
         { key: 'scheduledDate', label: 'Scheduled Date' },
-        { key: 'gamesAndCPs', label: 'Games / CPs' },
+        { key: 'gamesAndCPKs', label: 'Games / CPKs' },
         { key: 'playStatus', label: 'Status' }
       ]
     };

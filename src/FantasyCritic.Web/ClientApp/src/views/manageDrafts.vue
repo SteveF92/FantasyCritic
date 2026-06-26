@@ -19,17 +19,20 @@
 
             <!-- Read view -->
             <div v-if="editingDraftId !== draft.draftID" class="mt-2">
-              <div><strong>Scheduled Date:</strong> {{ draft.scheduledDate || '—' }}</div>
-              <div><strong>Games to Draft:</strong> {{ draft.gamesToDraft }}</div>
-              <div><strong>Counter Picks to Draft:</strong> {{ draft.counterPicksToDraft }}</div>
+              <div>
+                <strong>Scheduled Date:</strong>
+                {{ draft.scheduledDate || '—' }}
+              </div>
+              <div>
+                <strong>Games to Draft:</strong>
+                {{ draft.gamesToDraft }}
+              </div>
+              <div>
+                <strong>Counter Picks to Draft:</strong>
+                {{ draft.counterPicksToDraft }}
+              </div>
               <div class="mt-2">
-                <b-button
-                  v-if="editingDraftId === null"
-                  size="sm"
-                  variant="secondary"
-                  @click="startEdit(draft)">
-                  Edit
-                </b-button>
+                <b-button v-if="editingDraftId === null" size="sm" variant="info" @click="startEdit(draft)">Edit</b-button>
                 <b-button
                   v-if="editingDraftId === null && deletingDraftId === null && draft.draftNumber > 1 && draft.playStatus === 'NotStartedDraft'"
                   size="sm"
@@ -41,7 +44,11 @@
 
                 <div v-if="deletingDraftId === draft.draftID" class="alert alert-warning mt-2">
                   <div v-if="deleteError" class="alert alert-danger">{{ deleteError }}</div>
-                  <p>Are you sure you want to delete <strong>{{ draft.name }}</strong>? This cannot be undone.</p>
+                  <p>
+                    Are you sure you want to delete
+                    <strong>{{ draft.name }}</strong>
+                    ? This cannot be undone.
+                  </p>
                   <b-button size="sm" variant="danger" @click="submitDelete(draft)">Confirm Delete</b-button>
                   <b-button size="sm" variant="secondary" class="ml-2" @click="cancelDelete()">Cancel</b-button>
                 </div>
@@ -61,20 +68,12 @@
               </div>
               <div class="form-group">
                 <label>Games to Draft</label>
-                <input
-                  v-model.number="editForm.gamesToDraft"
-                  type="number"
-                  class="form-control"
-                  :disabled="draft.playStatus !== 'NotStartedDraft'" />
+                <input v-model.number="editForm.gamesToDraft" type="number" class="form-control" :disabled="draft.playStatus !== 'NotStartedDraft'" />
                 <small v-if="draft.playStatus !== 'NotStartedDraft'" class="text-muted">Cannot change after draft has started.</small>
               </div>
               <div class="form-group">
                 <label>Counter Picks to Draft</label>
-                <input
-                  v-model.number="editForm.counterPicksToDraft"
-                  type="number"
-                  class="form-control"
-                  :disabled="draft.playStatus !== 'NotStartedDraft'" />
+                <input v-model.number="editForm.counterPicksToDraft" type="number" class="form-control" :disabled="draft.playStatus !== 'NotStartedDraft'" />
               </div>
               <b-button size="sm" variant="primary" @click="submitEdit(draft)">Save</b-button>
               <b-button size="sm" variant="secondary" class="ml-2" @click="cancelEdit()">Cancel</b-button>
@@ -120,9 +119,7 @@
             <b-button variant="success" :disabled="!newDraft.name" @click="submitNewDraft()">Add Draft</b-button>
           </b-card>
         </div>
-        <div v-else class="alert alert-info">
-          You cannot add a draft while one is in progress.
-        </div>
+        <div v-else class="alert alert-info">You cannot add a draft while one is in progress.</div>
       </template>
     </div>
 

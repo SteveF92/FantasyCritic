@@ -336,7 +336,7 @@ export default {
     freshSettings: { type: Boolean, required: true },
     conferenceMode: { type: Boolean },
     isMultiDraft: { type: Boolean, default: false },
-    manageDraftsRoute: { type: Object, default: null }
+    leagueId: { type: String, default: null }
   },
   data() {
     return {
@@ -350,6 +350,12 @@ export default {
   computed: {
     oneShotMode() {
       return this.gameMode === 'One Shot';
+    },
+    manageDraftsRoute() {
+      if (!this.leagueId) {
+        return null;
+      }
+      return { name: 'manageDrafts', params: { leagueid: this.leagueId, year: this.year } };
     }
   },
   watch: {
