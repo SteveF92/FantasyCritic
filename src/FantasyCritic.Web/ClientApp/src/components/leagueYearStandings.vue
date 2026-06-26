@@ -80,29 +80,33 @@ export default {
     };
   },
   created() {
-    if (this.hasPendingOrActiveDraft) {
+    if (!this.firstDraftFinished) {
       this.sortBy = 'draftPosition';
       this.sortDesc = false;
     }
   },
   computed: {
     standingFields() {
-      if (this.hasPendingOrActiveDraft) {
+      if (!this.firstDraftFinished) {
         return this.draftNotFinishedStandingsFields;
       }
 
-      if (!this.leagueYear.supportedYear.finished) {
-        if (this.oneShotMode) {
-          return this.midYearStandingsFields.slice(0, -1);
-        }
-        return this.midYearStandingsFields;
+      let baseFields;
+      if (this.leagueYear.supportedYear.finished) {
+        baseFields = this.oneShotMode ? this.yearFinishedStandingsFields.slice(0, -1) : this.yearFinishedStandingsFields;
+      } else {
+        baseFields = this.oneShotMode ? this.midYearStandingsFields.slice(0, -1) : this.midYearStandingsFields;
       }
 
-      if (this.oneShotMode) {
-        return this.yearFinishedStandingsFields.slice(0, -1);
+      if (this.pendingDraft?.draftOrderSet) {
+        return [
+          ...baseFields.slice(0, 2),
+          { key: 'draftPosition', label: 'Next Draft Order', thClass: 'bg-primary', sortable: true },
+          ...baseFields.slice(2)
+        ];
       }
 
-      return this.yearFinishedStandingsFields;
+      return baseFields;
     },
     standings() {
       let standings = this.leagueYear.players;
