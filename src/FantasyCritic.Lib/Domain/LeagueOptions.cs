@@ -279,7 +279,15 @@ public class LeagueOptions
     {
         var totalStandardGames = StandardGames + newParameters.AdditionalStandardGames;
         var totalCounterPicks = CounterPicks + newParameters.AdditionalCounterPicks;
-        var totalSpecialGameSlots = SpecialGameSlots.Concat(newParameters.NewSpecialGameSlots).ToList();
+
+        // The incoming NewSpecialGameSlots carry positions relative to their own sub-list (0-based within
+        // the selector component). Re-number them so they follow the existing slots.
+        var existingSlotCount = SpecialGameSlots.Count;
+        var renumberedNewSlots = newParameters.NewSpecialGameSlots
+            .OrderBy(s => s.SpecialSlotPosition)
+            .Select((s, i) => new SpecialGameSlot(existingSlotCount + i, s.Tags))
+            .ToList();
+        var totalSpecialGameSlots = SpecialGameSlots.Concat(renumberedNewSlots).ToList();
 
         LeagueOptions newOptions = new LeagueOptions(totalStandardGames, totalCounterPicks, UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
@@ -294,7 +302,7 @@ public class LeagueOptions
         }
 
         var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differences.ToString());
-        var settingsChanges = new NewDraftLeagueSettingsChanges(totalStandardGames, totalCounterPicks, newParameters.NewSpecialGameSlots, settingsChangeAction);
+        var settingsChanges = new NewDraftLeagueSettingsChanges(totalStandardGames, totalCounterPicks, renumberedNewSlots, settingsChangeAction);
         return settingsChanges;
     }
 }
