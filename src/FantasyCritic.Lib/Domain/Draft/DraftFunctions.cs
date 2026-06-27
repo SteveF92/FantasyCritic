@@ -69,8 +69,28 @@ public static class DraftFunctions
         }
 
         var draftTurns = GetDraftTurns(leagueYear, leagueYear.ActiveDraft);
-        var draftStatus = DraftStatus.BuildDraftStatus(leagueYear.ActiveDraft, draftTurns);
+        var processedTurns = ProcessTurns(leagueYear, leagueYear.ActiveDraft, draftTurns);
+        if (processedTurns.NextTurn is null)
+        {
+            return null;
+        }
+
+        var draftStatus = new DraftStatus(leagueYear.ActiveDraft, processedTurns.NextTurn, processedTurns.PreviousTurn, processedTurns.TurnsToSkip);
         return draftStatus;
+    }
+
+    private static TurnProcessingResult ProcessTurns(LeagueYear leagueYear, LeagueDraft activeDraft, IReadOnlyList<DraftTurn> draftTurns)
+    {
+        DraftTurn? nextTurn = null;
+        DraftTurn? previousTurn = null;
+        List<DraftTurn> turnsToSkip = new List<DraftTurn>();
+
+        foreach (var draftTurn in draftTurns)
+        {
+            //TODO Go through the turns, find what is previous, actually do the skipping logic based on slots, and determine what is to be skipped, and what is next.
+        }
+
+        return new TurnProcessingResult(nextTurn, previousTurn, turnsToSkip);
     }
 
     public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType,
