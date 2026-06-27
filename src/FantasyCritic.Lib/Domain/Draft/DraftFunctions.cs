@@ -191,8 +191,6 @@ public static class DraftFunctions
             return [];
         }
 
-        var publisherDictionary = leagueYear.Publishers.ToDictionary(x => x.PublisherID);
-
         var draftedGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.DraftID == draft.DraftID)
@@ -226,17 +224,18 @@ public static class DraftFunctions
             {
                 if (skipLookup.Contains((publisher.PublisherID, false, roundNumber)))
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, overallPickNumber, null));
+                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null, null));
                     // overallPickNumber does NOT advance — skip holds the position without consuming it
                     continue;
                 }
 
-                if (!gameDictionary.TryGetValue((false, overallPickNumber), out var game))
+                var pickedGame = gameDictionary.GetValueOrDefault((true, overallPickNumber));
+                if (pickedGame is null)
                 {
-                    return draftPicks; // frontier reached, remaining turns are future
+                    return draftPicks;  // frontier reached, remaining turns are future
                 }
 
-                draftPicks.Add(new PastDraftPick(publisherDictionary[game.PublisherID], false, roundNumber, overallPickNumber, game));
+                draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, overallPickNumber, pickedGame));
                 overallPickNumber++;
             }
         }
@@ -253,16 +252,17 @@ public static class DraftFunctions
             {
                 if (skipLookup.Contains((publisher.PublisherID, true, roundNumber)))
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, overallPickNumber, null));
+                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null, null));
                     continue;
                 }
 
-                if (!gameDictionary.TryGetValue((true, overallPickNumber), out var game))
+                var pickedGame = gameDictionary.GetValueOrDefault((true, overallPickNumber));
+                if (pickedGame is null)
                 {
-                    return draftPicks;
+                    return draftPicks;  // frontier reached, remaining turns are future
                 }
 
-                draftPicks.Add(new PastDraftPick(publisherDictionary[game.PublisherID], true, roundNumber, overallPickNumber, game));
+                draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, overallPickNumber, pickedGame));
                 overallPickNumber++;
             }
         }
