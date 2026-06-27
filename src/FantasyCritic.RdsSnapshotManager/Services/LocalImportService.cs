@@ -51,6 +51,15 @@ public sealed class LocalImportService
             return health;
         }
 
+        var ensureDatabase = await _emptyChecker.EnsureDatabaseExistsOrFailure(
+            snapshotConnectionString,
+            LocalSnapshotDatabaseNames.SnapshotDatabase,
+            cancellationToken);
+        if (ensureDatabase.IsFailure)
+        {
+            return ensureDatabase;
+        }
+
         if (!force)
         {
             var empty = await _emptyChecker.EnsureEmptyOrFailure(
