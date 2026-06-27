@@ -20,7 +20,8 @@ export default {
       this.$refs.undoLastDraftActionModalRef.hide();
       const model = {
         leagueID: this.league.leagueID,
-        year: this.leagueYear.year
+        year: this.leagueYear.year,
+        draftID: this.activeDraft.draftID
       };
       axios
         .post('/api/leagueManager/UndoLastDraftAction', model)

@@ -1137,10 +1137,9 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
-        bool hasGames = leagueYear.Publishers.Any(x => x.PublisherGames.Any());
-        if (!hasGames)
+        if (leagueYear.ActiveDraft is null || leagueYear.ActiveDraft.DraftID != request.DraftID)
         {
-            return BadRequest("Can't undo a drafted game if no games have been drafted.");
+            return BadRequest("DraftID does not match the active draft.");
         }
 
         var result = await _draftService.UndoLastDraftAction(leagueYear);

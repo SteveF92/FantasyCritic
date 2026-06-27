@@ -43,6 +43,7 @@ public class DraftPauseUndoTests : IntegrationTestBase
         {
             LeagueID = _league.LeagueID,
             Year = _league.Year,
+            DraftID = _pausedSnapshot.Drafts.First(x => x.DraftIsPaused).DraftID
         });
         _afterUndoSnapshot = await _league.GetLeagueYearAsync();
 

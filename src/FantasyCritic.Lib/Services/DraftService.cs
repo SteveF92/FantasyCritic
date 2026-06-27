@@ -69,23 +69,23 @@ public class DraftService
             throw new Exception($"No active draft found for league: {leagueYear.Key}");
         }
 
-        var publisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
+        var publisherGamesForDraft = leagueYear.Publishers.SelectMany(x => x.PublisherGames.Where(x => x.DraftID == leagueYear.ActiveDraft.DraftID)).ToList();
         if (!leagueYear.ActiveDraft.PlayStatus.PlayStarted || leagueYear.ActiveDraft.PlayStatus.DraftFinished)
         {
             return Result.Failure("Cannot undo a draft game when the draft is not active.");
         }
 
-        if (!publisherGames.Any())
+        if (!publisherGamesForDraft.Any())
         {
             return Result.Failure("Cannot undo a draft game when no games have been drafted yet.");
         }
 
-        var counterPicks = publisherGames.Where(x => x.CounterPick).ToList();
+        var counterPicks = publisherGamesForDraft.Where(x => x.CounterPick).ToList();
 
         PublisherGame publisherGameToUndo;
         if (!counterPicks.Any())
         {
-            publisherGameToUndo = publisherGames.MaxBy(x => x.OverallDraftPosition)!;
+            publisherGameToUndo = publisherGamesForDraft.MaxBy(x => x.OverallDraftPosition)!;
         }
         else
         {
