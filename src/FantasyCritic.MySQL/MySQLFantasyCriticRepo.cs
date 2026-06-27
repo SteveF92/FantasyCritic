@@ -1123,10 +1123,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var draftRow = new
         {
-            DraftID = initialDraft.DraftID, LeagueID = initialDraft.LeagueYearKey.LeagueID, Year = initialDraft.LeagueYearKey.Year,
-            DraftNumber = initialDraft.DraftNumber, Name = initialDraft.Name, ScheduledDate = (DateTime?)null,
-            GamesToDraft = initialDraft.GamesToDraft, CounterPicksToDraft = initialDraft.CounterPicksToDraft,
-            DraftOrderSet = false, PlayStatus = PlayStatus.NotStartedDraft.Value, DraftStartedTimestamp = (Instant?)null
+            DraftID = initialDraft.DraftID,
+            LeagueID = initialDraft.LeagueYearKey.LeagueID,
+            Year = initialDraft.LeagueYearKey.Year,
+            DraftNumber = initialDraft.DraftNumber,
+            Name = initialDraft.Name,
+            ScheduledDate = (DateTime?)null,
+            GamesToDraft = initialDraft.GamesToDraft,
+            CounterPicksToDraft = initialDraft.CounterPicksToDraft,
+            DraftOrderSet = false,
+            PlayStatus = PlayStatus.NotStartedDraft.Value,
+            DraftStartedTimestamp = (Instant?)null
         };
 
         await connection.ExecuteAsync(createLeagueSQL, entity, transaction);
@@ -1191,7 +1198,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@DraftOrderSet,@PlayStatus,NULL);
             """;
         const string insertDraftPublisherSQL =
-            "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
+            "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
         const string updateLeagueYearSQL =
             "UPDATE tbl_league_year SET StandardGames = @standardGames, CounterPicks = @counterPicks WHERE LeagueID = @leagueID AND Year = @year;";
 
@@ -1209,12 +1216,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             PlayStatus = PlayStatus.NotStartedDraft.Value,
         };
 
-        var publisherRows = draft.PublisherDraftInfo.Select(x => new
-        {
-            draftID = draft.DraftID,
-            publisherID = x.PublisherID,
-            draftPosition = x.DraftPosition,
-        });
+        var publisherRows = draft.PublisherDraftInfo.Select(x => new LeagueDraftPublisherEntity(draft, x.PublisherID, x.DraftPosition));
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -1345,10 +1347,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var draftRow = new
         {
-            DraftID = initialDraft.DraftID, LeagueID = initialDraft.LeagueYearKey.LeagueID, Year = initialDraft.LeagueYearKey.Year,
-            DraftNumber = initialDraft.DraftNumber, Name = initialDraft.Name, ScheduledDate = (DateTime?)null,
-            GamesToDraft = initialDraft.GamesToDraft, CounterPicksToDraft = initialDraft.CounterPicksToDraft,
-            DraftOrderSet = false, PlayStatus = PlayStatus.NotStartedDraft.Value, DraftStartedTimestamp = (Instant?)null
+            DraftID = initialDraft.DraftID,
+            LeagueID = initialDraft.LeagueYearKey.LeagueID,
+            Year = initialDraft.LeagueYearKey.Year,
+            DraftNumber = initialDraft.DraftNumber,
+            Name = initialDraft.Name,
+            ScheduledDate = (DateTime?)null,
+            GamesToDraft = initialDraft.GamesToDraft,
+            CounterPicksToDraft = initialDraft.CounterPicksToDraft,
+            DraftOrderSet = false,
+            PlayStatus = PlayStatus.NotStartedDraft.Value,
+            DraftStartedTimestamp = (Instant?)null
         };
 
         await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
@@ -1782,12 +1791,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string deleteDraftPublisherSQL = "DELETE FROM tbl_league_draftpublisher WHERE PublisherID = @publisherID;";
         // TODO(Phase2-MultiDraft): Only renumbers draft order for the first draft.
         const string deleteDraftPublisherFromFirstDraftSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID AND PublisherID != @deletedPublisherID;";
-        const string reinsertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
+        const string reinsertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
 
         var firstDraft = leagueYear.FirstDraft;
         var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher)
             .OrderBy(x => x.GetDraftPosition(firstDraft.DraftID)).ToList();
-        var reinsertRows = remainingOrderedPublishers.Select((publisher, index) => new { draftID = firstDraft.DraftID, publisherID = publisher.PublisherID, draftPosition = index + 1 });
+        var reinsertRows = remainingOrderedPublishers.Select((publisher, index) => new LeagueDraftPublisherEntity(firstDraft.LeagueYearKey, firstDraft.DraftID, publisher.PublisherID, index + 1));
 
         var deleteObject = new { publisherID = deletePublisher.PublisherID };
 
@@ -1849,11 +1858,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string publisherCreateSQL =
             "INSERT INTO tbl_league_publisher(PublisherID,PublisherName,PublisherIcon,PublisherSlogan,LeagueID,Year,UserID,Budget,UnrestrictedReleaseStatusGamesDropped,WillNotReleaseGamesDropped,WillReleaseGamesDropped,SuperDropsAvailable,AutoDraftMode,OnlyAutoDraftFromWatchlist) VALUES " +
             "(@PublisherID,@PublisherName,@PublisherIcon,@PublisherSlogan,@LeagueID,@Year,@UserID,@Budget,@UnrestrictedReleaseStatusGamesDropped,@WillNotReleaseGamesDropped,@WillReleaseGamesDropped,@SuperDropsAvailable,@AutoDraftMode,@OnlyAutoDraftFromWatchlist);";
-        const string insertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
+        const string insertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
         const string clearDraftOrderFlagSQL = "UPDATE tbl_league_draft SET DraftOrderSet = 0 WHERE DraftID = @draftID;";
 
         var entity = new PublisherEntity(publisher);
-        var draftInfoRows = publisher.DraftInfos.Select(di => new { draftID = di.DraftID, publisherID = publisher.PublisherID, draftPosition = di.DraftPosition });
+        var draftInfoRows = publisher.DraftInfos.Select(di => new LeagueDraftPublisherEntity(publisher.LeagueYearKey, di.DraftID, publisher.PublisherID, di.DraftPosition));
         var draftIDsToReset = publisher.DraftInfos.Select(di => new { draftID = di.DraftID });
 
         await using var connection = new MySqlConnection(_connectionString);
@@ -2840,10 +2849,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft pendingDraft, LeagueManagerAction leagueAction)
     {
         const string deleteDraftPublishersSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID;";
-        const string insertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
+        const string insertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
         const string setFlagSQL = "UPDATE tbl_league_draft SET DraftOrderSet = 1 WHERE DraftID = @draftID;";
 
-        var insertRows = draftPositions.Select(x => new { draftID = pendingDraft.DraftID, publisherID = x.Key.PublisherID, draftPosition = x.Value });
+        var insertRows = draftPositions
+        .Select(x => new LeagueDraftPublisherEntity(pendingDraft, x.Key.PublisherID, x.Value));
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();

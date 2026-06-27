@@ -588,7 +588,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         // Clears and re-inserts positions for the first draft of an affected league year.
         // Since publishers can only move prior to the first draft starting, DraftNumber = 1 is always the right target.
         const string clearDraftPositionsSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID;";
-        const string insertDraftPositionSQL = "INSERT INTO tbl_league_draftpublisher (DraftID, PublisherID, DraftPosition) VALUES (@draftID, @publisherID, @draftPosition);";
+        const string insertDraftPositionSQL = "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
 
         var conferenceParam = new
         {
@@ -736,7 +736,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                     .Concat(publishersMovedIn)
                     .Where(x => !publishersMovedOutIDs.Contains(x.PublisherID))
                     .OrderBy(x => x.DraftPosition)
-                    .Select((pub, index) => new { draftID = draftID.Value, publisherID = pub.PublisherID, draftPosition = index + 1 });
+                    .Select((pub, index) => new LeagueDraftPublisherEntity(leagueYearKey, draftID.Value, pub.PublisherID, index + 1));
                 draftPositionInserts.AddRange(finalPublishers);
             }
 
