@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Draft;
@@ -70,29 +69,7 @@ public static class DraftFunctions
         }
 
         var draftTurns = GetDraftTurns(leagueYear, leagueYear.ActiveDraft);
-        var draftPhase = GetDraftPhase(leagueYear);
-        if (draftPhase.Equals(DraftPhase.Complete))
-        {
-            return null;
-        }
-
-        var nextDraftPublisher = GetNextDraftPublisher(leagueYear);
-        Publisher? previousDraftPublisher = null;
-        var gamesInActiveDraft = leagueYear.Publishers.SelectMany(x => x.PublisherGames)
-            .Where(g => g.DraftID == leagueYear.ActiveDraft.DraftID)
-            .ToList();
-        if (gamesInActiveDraft.Any())
-        {
-            var mostRecentGame = gamesInActiveDraft.MaxBy(x => x.OverallDraftPosition);
-            if (mostRecentGame is not null)
-            {
-                previousDraftPublisher = leagueYear.Publishers.Single(x => x.PublisherID == mostRecentGame.PublisherID);
-            }
-        }
-
-        var draftPositionStatus = GetDraftPositionStatus(leagueYear, draftPhase, nextDraftPublisher);
-
-        DraftStatus draftStatus = new DraftStatus(leagueYear.ActiveDraft, draftPhase, nextDraftPublisher, previousDraftPublisher, draftPositionStatus.DraftPosition, draftPositionStatus.OverallDraftPosition, draftTurns);
+        var draftStatus = DraftStatus.BuildDraftStatus(leagueYear.ActiveDraft, draftTurns);
         return draftStatus;
     }
 
@@ -197,89 +174,6 @@ public static class DraftFunctions
         return draftPositions;
     }
 
-    private static DraftPhase GetDraftPhase(LeagueYear leagueYear)
-    {
-        if (leagueYear.ActiveDraft is null)
-        {
-            throw new Exception($"Draft is not active for league: {leagueYear.Key}");
-        }
-
-        var activeDraft = leagueYear.ActiveDraft;
-        int numberOfStandardGamesToDraft = activeDraft.GamesToDraft * leagueYear.Publishers.Count;
-        var gamesInActiveDraft = leagueYear.Publishers.SelectMany(x => x.PublisherGames)
-            .Where(x => x.DraftID == activeDraft.DraftID)
-            .ToList();
-        int standardGamesDrafted = gamesInActiveDraft.Count(x => !x.CounterPick);
-        if (standardGamesDrafted < numberOfStandardGamesToDraft)
-        {
-            return DraftPhase.StandardGames;
-        }
-
-        int numberOfCounterPicksToDraft = activeDraft.CounterPicksToDraft * leagueYear.Publishers.Count;
-        int counterPicksDrafted = gamesInActiveDraft.Count(x => x.CounterPick);
-        if (counterPicksDrafted < numberOfCounterPicksToDraft)
-        {
-            return DraftPhase.CounterPicks;
-        }
-
-        return DraftPhase.Complete;
-    }
-
-    private static Publisher GetNextDraftPublisher(LeagueYear leagueYear)
-    {
-        if (leagueYear.ActiveDraft is null)
-        {
-            throw new Exception($"Draft is not active for league: {leagueYear.Key}");
-        }
-
-        var activeDraft = leagueYear.ActiveDraft;
-        var phase = GetDraftPhase(leagueYear);
-        if (phase.Equals(DraftPhase.StandardGames))
-        {
-            var publishersWithLowestNumberOfGames = leagueYear.Publishers.WhereMin(x => x.PublisherGames.Count(y => !y.CounterPick && y.DraftID == activeDraft.DraftID));
-            var allPlayersHaveSameNumberOfGames = leagueYear.Publishers.Select(x => x.PublisherGames.Count(y => !y.CounterPick && y.DraftID == activeDraft.DraftID)).Distinct().Count() == 1;
-            var maxNumberOfGames = leagueYear.Publishers.Max(x => x.PublisherGames.Count(y => !y.CounterPick && y.DraftID == activeDraft.DraftID));
-            var roundNumber = maxNumberOfGames;
-            if (allPlayersHaveSameNumberOfGames)
-            {
-                roundNumber++;
-            }
-
-            bool roundNumberIsOdd = (roundNumber % 2 != 0);
-            if (roundNumberIsOdd)
-            {
-                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.GetDraftPosition(activeDraft.DraftID));
-                return sortedPublishersOdd.First();
-            }
-            //Else round is even
-            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.GetDraftPosition(activeDraft.DraftID));
-            return sortedPublishersEven.First();
-        }
-        if (phase.Equals(DraftPhase.CounterPicks))
-        {
-            var publishersWithLowestNumberOfGames = leagueYear.Publishers.WhereMin(x => x.PublisherGames.Count(y => y.CounterPick && y.DraftID == activeDraft.DraftID));
-            var allPlayersHaveSameNumberOfGames = leagueYear.Publishers.Select(x => x.PublisherGames.Count(y => y.CounterPick && y.DraftID == activeDraft.DraftID)).Distinct().Count() == 1;
-            var maxNumberOfGames = leagueYear.Publishers.Max(x => x.PublisherGames.Count(y => y.CounterPick && y.DraftID == activeDraft.DraftID));
-            var roundNumber = maxNumberOfGames;
-            if (allPlayersHaveSameNumberOfGames)
-            {
-                roundNumber++;
-            }
-
-            bool roundNumberIsOdd = (roundNumber % 2 != 0);
-            if (roundNumberIsOdd)
-            {
-                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.GetDraftPosition(activeDraft.DraftID));
-                return sortedPublishersOdd.First();
-            }
-            //Else round is even
-            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.GetDraftPosition(activeDraft.DraftID));
-            return sortedPublishersEven.First();
-        }
-
-        throw new Exception($"Invalid draft state: {leagueYear.League.LeagueID}");
-    }
-
     private static IReadOnlyList<DraftTurn> GetDraftTurns(LeagueYear leagueYear, LeagueDraft draft)
     {
         if (draft.GamesToDraft == 0 && draft.CounterPicksToDraft == 0)
@@ -379,30 +273,4 @@ public static class DraftFunctions
 
         return draftTurns;
     }
-
-    private static DraftPositionStatus GetDraftPositionStatus(LeagueYear leagueYear, DraftPhase draftPhase, Publisher nextDraftPublisher)
-    {
-        if (leagueYear.ActiveDraft is null)
-        {
-            throw new Exception($"Draft is not active for league: {leagueYear.Key}");
-        }
-
-        var activeDraft = leagueYear.ActiveDraft;
-        if (draftPhase.Equals(DraftPhase.StandardGames))
-        {
-            var publisherPosition = nextDraftPublisher.PublisherGames.Count(x => !x.CounterPick && x.DraftID == activeDraft.DraftID) + 1;
-            var overallPosition = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick && x.DraftID == activeDraft.DraftID) + 1;
-            return new DraftPositionStatus(publisherPosition, overallPosition);
-        }
-        if (draftPhase.Equals(DraftPhase.CounterPicks))
-        {
-            var publisherPosition = nextDraftPublisher.PublisherGames.Count(x => x.CounterPick && x.DraftID == activeDraft.DraftID) + 1;
-            var overallPosition = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick && x.DraftID == activeDraft.DraftID) + 1;
-            return new DraftPositionStatus(publisherPosition, overallPosition);
-        }
-
-        throw new Exception($"Invalid draft state: {leagueYear.League.LeagueID}");
-    }
-
-    private record DraftPositionStatus(int DraftPosition, int OverallDraftPosition);
 }
