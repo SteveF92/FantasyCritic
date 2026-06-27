@@ -229,7 +229,7 @@ public static class DraftFunctions
                     continue;
                 }
 
-                var pickedGame = gameDictionary.GetValueOrDefault((true, overallPickNumber));
+                var pickedGame = gameDictionary.GetValueOrDefault((false, overallPickNumber));
                 if (pickedGame is null)
                 {
                     return draftPicks;  // frontier reached, remaining turns are future
