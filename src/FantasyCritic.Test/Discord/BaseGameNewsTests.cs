@@ -72,7 +72,7 @@ internal abstract class BaseGameNewsTests
             var gameYear = new MasterGameYear(game, 2025);
             games.Add(new PublisherGame(Guid.Empty, Guid.Empty, "Game", Instant.MinValue, false, null, false, null, gameYear, 1, 1, 1, null, null));
         }
-        var draftInfos = new[] { new PublisherDraftInfo(draftID, 1, Guid.Empty, 1) };
+        var draftInfos = new[] { new PublisherDraftInfo(draftID, 1, Guid.Empty, 1, new List<PublisherDraftPickSkip>()) };
         var publishers = new List<Publisher>
         {
             new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "Publisher", null, null, draftInfos, games, new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false))

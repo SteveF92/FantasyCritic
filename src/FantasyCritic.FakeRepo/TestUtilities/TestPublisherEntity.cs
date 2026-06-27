@@ -21,7 +21,7 @@ public class TestPublisherEntity
     {
         var leagueYearKey = new LeagueYearKey(LeagueID, Year);
         var draftID = TestLeagueDraftIds.For(leagueYearKey);
-        var draftInfos = new[] { new PublisherDraftInfo(draftID, 1, PublisherID, DraftPosition) };
+        var draftInfos = new[] { new PublisherDraftInfo(draftID, 1, PublisherID, DraftPosition, new List<PublisherDraftPickSkip>()) };
         return new Publisher(PublisherID, leagueYearKey, FantasyCriticUser.GetFakeUser(), PublisherID.ToString(), null, null, draftInfos,
             publisherGames, formerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, new AutoDraftSettings(AutoDraftMode.Off, false));
     }

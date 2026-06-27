@@ -22,6 +22,6 @@ public class PublisherDraftInfoViewModel
 
     public PublisherDraftInfo ToDomain()
     {
-        return new PublisherDraftInfo(DraftID, DraftNumber, PublisherID, DraftPosition);
+        return new PublisherDraftInfo(DraftID, DraftNumber, PublisherID, DraftPosition, new List<PublisherDraftPickSkip>());
     }
 }

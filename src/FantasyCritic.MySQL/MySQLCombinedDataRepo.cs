@@ -177,6 +177,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         var leagueDraftEntities = resultSets.Read<LeagueDraftEntity>().ToList();
         var leagueDraftPublisherEntities = resultSets.Read<LeagueDraftPublisherEntity>().ToList();
+        var draftPickSkipEntities = resultSets.Read<DraftPickSkipEntity>().ToList();
         var leagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
         var specialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
         var eligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
@@ -235,11 +236,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         var draftPublisherLookupByDraftID = leagueDraftPublisherEntities.ToLookup(x => x.DraftID);
         var draftNumberByDraftID = leagueDraftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
+        var pickSkipLookup = draftPickSkipEntities.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfosByPublisherID = leagueDraftPublisherEntities
-            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition));
+            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition,
+                pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
         var leagueDrafts = leagueDraftEntities
             .Select(d => d.ToDomain(draftPublisherLookupByDraftID[d.DraftID]
-                .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition))))
+                .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition,
+                    pickSkipLookup[(dp.DraftID, dp.PublisherID)].Select(s => s.ToDomain()).ToList()))))
             .ToList();
 
         var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary, draftInfosByPublisherID);
@@ -278,6 +282,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         //League Year Results
         var leagueDraftEntities = resultSets.Read<LeagueDraftEntity>().ToList();
         var leagueDraftPublisherEntities = resultSets.Read<LeagueDraftPublisherEntity>().ToList();
+        var draftPickSkipEntities = resultSets.Read<DraftPickSkipEntity>().ToList();
         var leagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
         var specialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
         var eligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
@@ -343,11 +348,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, possibleTags);
         var draftPublisherLookupByDraftID = leagueDraftPublisherEntities.ToLookup(x => x.DraftID);
         var draftNumberByDraftID = leagueDraftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
+        var pickSkipLookup = draftPickSkipEntities.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfosByPublisherID = leagueDraftPublisherEntities
-            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition));
+            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition,
+                pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
         var leagueDrafts = leagueDraftEntities
             .Select(d => d.ToDomain(draftPublisherLookupByDraftID[d.DraftID]
-                .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition))))
+                .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition,
+                    pickSkipLookup[(dp.DraftID, dp.PublisherID)].Select(s => s.ToDomain()).ToList()))))
             .ToList();
 
         var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary, draftInfosByPublisherID);
@@ -399,6 +407,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         //League Year Results
         var leagueDraftEntities = resultSets.Read<LeagueDraftEntity>().ToList();
         var leagueDraftPublisherEntities3 = resultSets.Read<LeagueDraftPublisherEntity>().ToList();
+        var draftPickSkipEntities3 = resultSets.Read<DraftPickSkipEntity>().ToList();
         var leagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
         var specialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
         var eligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
@@ -481,11 +490,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var domainTagOverrides = DomainConversionUtilities.ConvertTagOverrideEntities(tagOverrideEntities, masterGameDictionary, possibleTags);
         var draftPublisherLookupByDraftID = leagueDraftPublisherEntities3.ToLookup(x => x.DraftID);
         var draftNumberByDraftID = leagueDraftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
+        var pickSkipLookup = draftPickSkipEntities3.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfosByPublisherID = leagueDraftPublisherEntities3
-            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition));
+            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition,
+                pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
         var leagueDrafts = leagueDraftEntities
             .Select(d => d.ToDomain(draftPublisherLookupByDraftID[d.DraftID]
-                .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition))))
+                .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition,
+                    pickSkipLookup[(dp.DraftID, dp.PublisherID)].Select(s => s.ToDomain()).ToList()))))
             .ToList();
 
         var publishers = DomainConversionUtilities.ConvertPublisherEntities(userDictionary, publisherEntities, publisherGameEntities, formerPublisherGameEntities, masterGameYearDictionary, draftInfosByPublisherID);
@@ -574,6 +586,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var leagueYearEntities = resultSets.Read<LeagueYearEntity>();
         var allLeagueDraftEntities = resultSets.Read<LeagueDraftEntity>().ToList();
         var allLeagueDraftPublisherEntities = resultSets.Read<LeagueDraftPublisherEntity>().ToList();
+        var allDraftPickSkipEntities = resultSets.Read<DraftPickSkipEntity>().ToList();
         var allLeagueTagEntities = resultSets.Read<LeagueYearTagEntity>();
         var allSpecialGameSlotEntities = resultSets.Read<SpecialGameSlotEntity>();
         var allEligibilityOverrideEntities = resultSets.Read<EligibilityOverrideEntity>();
@@ -654,8 +667,10 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var draftLookupByLeagueID = allLeagueDraftEntities.ToLookup(x => x.LeagueID);
         var draftPublisherLookupByDraftIDConf = allLeagueDraftPublisherEntities.ToLookup(x => x.DraftID);
         var draftNumberByDraftIDConf = allLeagueDraftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
+        var pickSkipLookupConf = allDraftPickSkipEntities.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfosByPublisherIDConf = allLeagueDraftPublisherEntities
-            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftIDConf[x.DraftID], x.PublisherID, x.DraftPosition));
+            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftIDConf[x.DraftID], x.PublisherID, x.DraftPosition,
+                pickSkipLookupConf[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
 
         var leagueYears = new List<LeagueYear>();
         foreach (var leagueYearEntity in leagueYearEntities)
@@ -676,7 +691,8 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
             var leagueDraftsForLeague = draftLookupByLeagueID[leagueYearEntity.LeagueID]
                 .Select(d => d.ToDomain(draftPublisherLookupByDraftIDConf[d.DraftID]
-                    .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition))))
+                    .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition,
+                        pickSkipLookupConf[(dp.DraftID, dp.PublisherID)].Select(s => s.ToDomain()).ToList()))))
                 .ToList();
 
             var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.AnyDraftStarted)));

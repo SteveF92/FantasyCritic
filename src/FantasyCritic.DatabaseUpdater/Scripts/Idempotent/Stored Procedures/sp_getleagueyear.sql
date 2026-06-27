@@ -70,6 +70,12 @@ BEGIN
   WHERE d.LeagueID = P_LeagueID
     AND d.Year = P_Year;
   
+  SELECT ps.*
+  FROM tbl_league_draftpickskip ps
+  JOIN tbl_league_draft d ON ps.DraftID = d.DraftID
+  WHERE d.LeagueID = P_LeagueID
+    AND d.Year = P_Year;
+  
   
   SELECT *
   FROM tbl_league_yearusestag

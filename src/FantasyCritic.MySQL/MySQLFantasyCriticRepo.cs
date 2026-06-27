@@ -139,12 +139,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var draftEntities = await connection.QueryAsync<LeagueDraftEntity>("SELECT * FROM tbl_league_draft WHERE Year = @year", queryObject);
         var draftPublisherEntities = await connection.QueryAsync<LeagueDraftPublisherEntity>(
             "SELECT dp.* FROM tbl_league_draftpublisher dp JOIN tbl_league_draft d ON dp.DraftID = d.DraftID WHERE d.Year = @year", queryObject);
+        var draftPickSkipEntities = await connection.QueryAsync<DraftPickSkipEntity>(
+            "SELECT ps.* FROM tbl_league_draftpickskip ps JOIN tbl_league_draft d ON ps.DraftID = d.DraftID WHERE d.Year = @year", queryObject);
 
         var draftsByLeagueID = draftEntities.ToLookup(x => x.LeagueID);
         var draftPublisherLookupByDraftID = draftPublisherEntities.ToLookup(x => x.DraftID);
         var draftNumberByDraftID = draftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
+        var pickSkipLookup = draftPickSkipEntities.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfosByPublisherID = draftPublisherEntities
-            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition));
+            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition,
+                pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
 
         List<LeagueYear> leagueYears = new List<LeagueYear>();
 
@@ -172,7 +176,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
             var leagueDrafts = draftsByLeagueID[entity.LeagueID]
                 .Select(d => d.ToDomain(draftPublisherLookupByDraftID[d.DraftID]
-                    .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition))))
+                    .Select(dp => new PublisherDraftInfo(dp.DraftID, d.DraftNumber, dp.PublisherID, dp.DraftPosition,
+                        pickSkipLookup[(dp.DraftID, dp.PublisherID)].Select(s => s.ToDomain()).ToList()))))
                 .ToList();
 
             var winningUser = await _userStore.GetUserThatMightExist(entity.WinningUserID);
@@ -1920,9 +1925,20 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var draftEntities = await connection.QueryAsync<LeagueDraftEntity>(draftSql, query);
         var draftPublisherEntities = await connection.QueryAsync<LeagueDraftPublisherEntity>(draftPublisherSql, query);
+        const string draftPickSkipSql =
+            """
+            SELECT ps.* FROM tbl_league_draftpickskip ps
+            JOIN tbl_league_draft d ON ps.DraftID = d.DraftID
+            JOIN tbl_league_publisher p ON p.PublisherID = ps.PublisherID
+            JOIN tbl_league ON tbl_league.LeagueID = p.LeagueID
+            WHERE p.Year = @year AND tbl_league.IsDeleted = 0;
+            """;
+        var draftPickSkipEntities = await connection.QueryAsync<DraftPickSkipEntity>(draftPickSkipSql, query);
         var draftNumberByDraftID = draftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
+        var pickSkipLookup = draftPickSkipEntities.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfosByPublisherID = draftPublisherEntities
-            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition));
+            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition,
+                pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
 
         var allUsers = await _userStore.GetAllUsers();
         var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
@@ -2067,8 +2083,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             JOIN tbl_league_draft d ON dp.DraftID = d.DraftID
             WHERE dp.PublisherID = @publisherID
             """;
+        const string draftPickSkipSql =
+            """
+            SELECT DraftID, PublisherID, CounterPick, PickNumber
+            FROM tbl_league_draftpickskip
+            WHERE PublisherID = @publisherID
+            """;
         var draftPublisherRows = await connection.QueryAsync<(Guid DraftID, int DraftNumber, Guid PublisherID, int DraftPosition)>(draftPublisherSql, query);
-        var draftInfos = draftPublisherRows.Select(x => new PublisherDraftInfo(x.DraftID, x.DraftNumber, x.PublisherID, x.DraftPosition)).ToList();
+        var draftPickSkipRows = await connection.QueryAsync<DraftPickSkipEntity>(draftPickSkipSql, query);
+        var pickSkipLookup = draftPickSkipRows.ToLookup(x => (x.DraftID, x.PublisherID));
+        var draftInfos = draftPublisherRows.Select(x => new PublisherDraftInfo(x.DraftID, x.DraftNumber, x.PublisherID, x.DraftPosition,
+            pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList())).ToList();
         var user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID, CancellationToken.None);
         var domainPublisher = publisherEntity.ToDomain(user, draftInfos, domainGames, domainFormerGames);
         return domainPublisher;

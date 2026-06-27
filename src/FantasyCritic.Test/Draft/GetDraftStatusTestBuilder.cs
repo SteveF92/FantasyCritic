@@ -71,7 +71,8 @@ internal sealed class GetDraftStatusTestBuilder
                         DraftIDFor(draftSpec.DraftNumber),
                         draftSpec.DraftNumber,
                         publisherSpec.PublisherID,
-                        publisherSpec.DraftPosition))
+                        publisherSpec.DraftPosition,
+                        new List<PublisherDraftPickSkip>()))
                     .ToList();
 
                 var games = publisherSpec.Games
@@ -174,7 +175,7 @@ internal sealed class GetDraftStatusTestBuilder
         }
 
         var publisherDraftInfo = publisherSpecs
-            .Select(publisher => new PublisherDraftInfo(draftID, draftSpec.DraftNumber, publisher.PublisherID, publisher.DraftPosition))
+            .Select(publisher => new PublisherDraftInfo(draftID, draftSpec.DraftNumber, publisher.PublisherID, publisher.DraftPosition, new List<PublisherDraftPickSkip>()))
             .ToList();
 
         return new LeagueDraft(
