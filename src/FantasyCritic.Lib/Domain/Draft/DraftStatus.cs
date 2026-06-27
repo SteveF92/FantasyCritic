@@ -36,7 +36,7 @@ public class DraftStatus
     public int OverallPickNumber => NextPick.OverallPickNumber;
 }
 
-public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, int OverallPickNumber, PublisherGame? GameSelected)
+public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, int? OverallPickNumber, PublisherGame? GameSelected)
 {
     public bool Skipped => GameSelected is null;
 }

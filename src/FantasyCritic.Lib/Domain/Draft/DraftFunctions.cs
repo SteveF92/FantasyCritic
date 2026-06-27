@@ -82,15 +82,6 @@ public static class DraftFunctions
         return draftStatus;
     }
 
-    private static PickProcessingResult GetFutureDraftPicks(LeagueYear leagueYear, LeagueDraft activeDraft, IReadOnlyList<PastDraftPick> pastDraftPicks)
-    {
-        FutureDraftPick? nextPick = null;
-        List<FutureDraftPick> picksToSkip = new List<FutureDraftPick>();
-
-        //TODO Go through the turns, actually do the skipping logic based on slots, and determine what is to be skipped, and what is next.
-
-        return new PickProcessingResult(nextPick, picksToSkip);
-    }
 
     public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType,
         IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear, SystemWideValues? systemWideValues, int targetDraftNumber)
@@ -200,98 +191,38 @@ public static class DraftFunctions
             return new List<PastDraftPick>();
         }
 
-        var gameDictionary = leagueYear.Publishers
+        //TODO explicit state checking. ALL drafted games MUST have DraftPosition and OverallDraftPosition
+        //If one doesn't, fail loudly. I am fine if the route being called returns 500, rather than doubling down on bad state.
+
+        IReadOnlyList<PastDraftPick> draftPicks = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.DraftID == draft.DraftID)
-            .ToDictionary(x => (x.CounterPick, x.OverallDraftPosition), y => y);
+            .OrderBy(x => x.CounterPick)
+            .ThenBy(x => x.OverallDraftPosition)
+            .Select(x => new PastDraftPick(leagueYear.Publishers.Single(y => y.PublisherID == x.PublisherID), x.CounterPick, x.DraftPosition!.Value, x.OverallDraftPosition!.Value, x))
+            .ToList();
 
-        var draftPicks = new List<PastDraftPick>();
+        IReadOnlyList<PastDraftPick> draftSkips = draft.PublisherDraftInfo
+            .SelectMany(x => x.PickSkips)
+            .Select(x => new PastDraftPick(leagueYear.Publishers.Single(y => y.PublisherID == x.PublisherID), x.CounterPick, x.PickNumber, null, null))
+            .ToList();
 
-        //TODO this needs to be rewritten
+        var completePastPicks = draftPicks
+            .Concat(draftSkips)
+            .OrderBy(x => x.CounterPick)
+            .ThenBy(x => x.OverallPickNumber)
+            .ToList();
 
-        var draftPhase = DraftPhase.StandardGames;
-        if (draft.GamesToDraft > 0)
-        {
-            int overallDraftPosition = 1;
-            for (int roundNumber = 1; roundNumber <= draft.GamesToDraft; roundNumber++)
-            {
-                bool roundNumberIsOdd = (roundNumber % 2 != 0);
-                var sortedPublishers = roundNumberIsOdd ?
-                    leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList() :
-                    leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList();
+        return completePastPicks;
+    }
 
-                foreach (var publisher in sortedPublishers)
-                {
-                    var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((false, overallDraftPosition));
-                    PublisherGame? gameSelectedOnThisPublisherTurn = null;
-                    bool? skipped;
-                    if (gameSelectedAtOverallDraftPosition is null)
-                    {
-                        skipped = null;
-                    }
-                    else
-                    {
-                        var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
-                        skipped = !thisPublisherDraftedThisGame;
-                        if (thisPublisherDraftedThisGame)
-                        {
-                            gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
-                        }
-                    }
+    private static PickProcessingResult GetFutureDraftPicks(LeagueYear leagueYear, LeagueDraft activeDraft, IReadOnlyList<PastDraftPick> pastDraftPicks)
+    {
+        FutureDraftPick? nextPick = null;
+        List<FutureDraftPick> picksToSkip = new List<FutureDraftPick>();
 
-                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
-                    draftTurns.Add(draftTurn);
+        //TODO Go through the turns, actually do the skipping logic based on slots, and determine what is to be skipped, and what is next.
 
-                    if (!skipped.HasValue || !skipped.Value)
-                    {
-                        overallDraftPosition++;
-                    }
-                }
-            }
-        }
-
-
-        if (draft.CounterPicksToDraft > 0)
-        {
-            draftPhase = DraftPhase.CounterPicks;
-            int overallDraftPosition = 1;
-            for (int roundNumber = 1; roundNumber <= draft.CounterPicksToDraft; roundNumber++)
-            {
-                bool roundNumberIsOdd = (roundNumber % 2 != 0);
-                var sortedPublishers = roundNumberIsOdd ?
-                    leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList() :
-                    leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
-
-                foreach (var publisher in sortedPublishers)
-                {
-                    var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((true, overallDraftPosition));
-                    PublisherGame? gameSelectedOnThisPublisherTurn = null;
-                    bool? skipped;
-                    if (gameSelectedAtOverallDraftPosition is null)
-                    {
-                        skipped = null;
-                    }
-                    else
-                    {
-                        var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
-                        skipped = !thisPublisherDraftedThisGame;
-                        if (thisPublisherDraftedThisGame)
-                        {
-                            gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
-                        }
-                    }
-
-                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
-                    draftTurns.Add(draftTurn);
-
-                    if (!skipped.HasValue || !skipped.Value)
-                    {
-                        overallDraftPosition++;
-                    }
-                }
-            }
-        }
-
-        return draftPicks;
+        return new PickProcessingResult(nextPick, picksToSkip);
     }
 }
