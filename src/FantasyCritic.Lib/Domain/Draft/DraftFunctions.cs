@@ -287,14 +287,42 @@ public static class DraftFunctions
             return new List<DraftTurn>();
         }
 
+        var gameDictionary = leagueYear.Publishers
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => x.DraftID == draft.DraftID)
+            .ToDictionary(x => (x.CounterPick, x.OverallDraftPosition), y => y);
+
         var draftTurns = new List<DraftTurn>();
 
         var draftPhase = DraftPhase.StandardGames;
         if (draft.GamesToDraft > 0)
         {
-            for (int currentRound = 1; currentRound <= draft.GamesToDraft; currentRound++)
+            int overallDraftPosition = 1;
+            for (int roundNumber = 1; roundNumber <= draft.GamesToDraft; roundNumber++)
             {
+                bool roundNumberIsOdd = (roundNumber % 2 != 0);
+                var sortedPublishers = roundNumberIsOdd ?
+                    leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList() :
+                    leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList();
 
+                foreach (var publisher in sortedPublishers)
+                {
+                    var gameSelected = gameDictionary.GetValueOrDefault((false, overallDraftPosition));
+                    bool? skipped = null;
+                    if (gameSelected is not null)
+                    {
+                        skipped = false;
+                    }
+                    //TODO need to decide if turn WAS skipped, right now, we don't need to know if turn SHOULD BE skipped.
+
+                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelected, skipped);
+                    draftTurns.Add(draftTurn);
+
+                    if (!skipped.HasValue || !skipped.Value)
+                    {
+                        overallDraftPosition++;
+                    }
+                }
             }
         }
 
@@ -302,9 +330,32 @@ public static class DraftFunctions
         if (draft.CounterPicksToDraft > 0)
         {
             draftPhase = DraftPhase.CounterPicks;
-            for (int currentRound = 1; currentRound <= draft.CounterPicksToDraft; currentRound++)
+            int overallDraftPosition = 1;
+            for (int roundNumber = 1; roundNumber <= draft.CounterPicksToDraft; roundNumber++)
             {
+                bool roundNumberIsOdd = (roundNumber % 2 != 0);
+                var sortedPublishers = roundNumberIsOdd ?
+                    leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList() :
+                    leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
 
+                foreach (var publisher in sortedPublishers)
+                {
+                    var gameSelected = gameDictionary.GetValueOrDefault((true, overallDraftPosition));
+                    bool? skipped = null;
+                    if (gameSelected is not null)
+                    {
+                        skipped = false;
+                    }
+                    //TODO need to decide if turn WAS skipped, right now, we don't need to know if turn SHOULD BE skipped.
+
+                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelected, skipped);
+                    draftTurns.Add(draftTurn);
+
+                    if (!skipped.HasValue || !skipped.Value)
+                    {
+                        overallDraftPosition++;
+                    }
+                }
             }
         }
 
