@@ -1088,7 +1088,7 @@ public class LeagueManagerController : BaseLeagueController
 
         bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, request.CounterPick, masterGame, false);
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false,
-            masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+            masterGame, draftStatus.RoundNumber, draftStatus.OverallPickNumber);
 
         var draftResult = await _draftService.DraftGame(domainRequest, draftStatus.Draft, true, request.AllowIneligibleSlot);
         var viewModel = new ManagerClaimResultViewModel(draftResult.Result);

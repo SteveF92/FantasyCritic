@@ -26,18 +26,18 @@ public class GetDraftStatusTests
 
         if (expectedPreviousDraftPosition is null)
         {
-            Assert.That(actual.PreviousDraftPublisher, Is.Null);
+            Assert.That(actual.PreviousPublisherThatWasNotSkipped, Is.Null);
         }
         else
         {
-            Assert.That(actual.PreviousDraftPublisher, Is.Not.Null);
+            Assert.That(actual.PreviousPublisherThatWasNotSkipped, Is.Not.Null);
             Assert.That(
-                actual.PreviousDraftPublisher!.GetDraftPosition(expectedDraft.DraftID),
+                actual.PreviousPublisherThatWasNotSkipped!.GetDraftPosition(expectedDraft.DraftID),
                 Is.EqualTo(expectedPreviousDraftPosition));
         }
 
-        Assert.That(actual.DraftPosition, Is.EqualTo(expectedDraftPosition));
-        Assert.That(actual.OverallDraftPosition, Is.EqualTo(expectedOverallDraftPosition));
+        Assert.That(actual.RoundNumber, Is.EqualTo(expectedDraftPosition));
+        Assert.That(actual.OverallPickNumber, Is.EqualTo(expectedOverallDraftPosition));
     }
 
     [Test]

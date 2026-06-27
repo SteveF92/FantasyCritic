@@ -270,7 +270,7 @@ internal sealed class DraftScenarioBuilder
 
         _draft.PickSequence++;
         var timestamp = Instant.FromUtc(2025, 6, 1, 12, _draft.PickSequence);
-        _root.AddGame(_draft, status.NextDraftPublisher, counterPick, status.DraftPosition, status.OverallDraftPosition, timestamp);
+        _root.AddGame(_draft, status.NextDraftPublisher, counterPick, status.RoundNumber, status.OverallPickNumber, timestamp);
         return this;
     }
 }

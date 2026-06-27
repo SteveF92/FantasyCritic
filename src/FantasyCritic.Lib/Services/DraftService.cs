@@ -235,7 +235,7 @@ public class DraftService
                 bool addedAGame = false;
                 foreach (var possibleGame in gamesToTake)
                 {
-                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.RoundNumber, draftStatus.OverallPickNumber);
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, draftStatus.Draft.DraftID, false);
                     if (autoDraftResult.Success)
                     {
@@ -265,7 +265,7 @@ public class DraftService
                 foreach (var publisherGame in availableCounterPicks)
                 {
                     var masterGame = publisherGame.MasterGame!.MasterGame;
-                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, masterGame.GameName, true, false, false, true, masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, masterGame.GameName, true, false, false, true, masterGame, draftStatus.RoundNumber, draftStatus.OverallPickNumber);
                     var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, draftStatus.Draft.DraftID, false);
                     if (autoDraftResult.Success)
                     {
