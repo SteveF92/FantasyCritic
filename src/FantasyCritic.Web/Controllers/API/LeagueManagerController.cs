@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Results;

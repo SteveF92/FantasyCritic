@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 

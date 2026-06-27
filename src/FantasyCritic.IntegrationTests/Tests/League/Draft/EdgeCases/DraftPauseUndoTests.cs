@@ -61,14 +61,14 @@ public class DraftPauseUndoTests : IntegrationTestBase
     [Test]
     public void Pause_DraftIsNotActive()
     {
-        Assert.That(_pausedSnapshot.PlayStatus.DraftIsActive, Is.False,
+        Assert.That(_pausedSnapshot.ActiveDraft()?.DraftIsActive ?? false, Is.False,
             "DraftIsActive must be false while the draft is paused.");
     }
 
     [Test]
     public void Pause_DraftIsNotFinished()
     {
-        Assert.That(_pausedSnapshot.PlayStatus.DraftFinished, Is.False,
+        Assert.That(_pausedSnapshot.ActiveDraft()?.DraftFinished ?? false, Is.False,
             "DraftFinished must be false while the draft is paused mid-draft.");
     }
 
@@ -101,7 +101,7 @@ public class DraftPauseUndoTests : IntegrationTestBase
     [Test]
     public void Resume_DraftIsActive()
     {
-        Assert.That(_resumedSnapshot.PlayStatus.DraftIsActive, Is.True,
+        Assert.That(_resumedSnapshot.ActiveDraft()?.DraftIsActive ?? false, Is.True,
             "DraftIsActive must be true after resuming the draft.");
     }
 

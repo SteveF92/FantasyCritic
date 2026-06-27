@@ -41,14 +41,14 @@ public abstract class LeagueDraftTestBase : IntegrationTestBase
     [Test]
     public void Draft_Completed_PlayStatusShowsDraftFinished()
     {
-        Assert.That(LeagueYearSnapshot.PlayStatus.DraftFinished, Is.True,
+        Assert.That(LeagueYearSnapshot.FirstDraft()?.DraftFinished, Is.True,
             "Draft must be finished after simulation.");
     }
 
     [Test]
     public void Draft_Completed_DraftIsNoLongerActive()
     {
-        Assert.That(LeagueYearSnapshot.PlayStatus.DraftIsActive, Is.False);
+        Assert.That(LeagueYearSnapshot.ActiveDraft()?.DraftIsActive ?? false, Is.False);
     }
 
     [Test]

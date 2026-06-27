@@ -126,6 +126,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = false
     };
 
     /// <summary>
@@ -154,6 +155,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = Standard.CounterPicksBlockDrops,
         AllowMoveIntoIneligible = Standard.AllowMoveIntoIneligible,
         MinimumBidAmount = Standard.MinimumBidAmount,
+        EnableBids = true
     };
 
     /// <summary>
@@ -183,6 +185,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 
     /// <summary>
@@ -212,6 +215,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 
     /// <summary>
@@ -242,6 +246,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 
     /// <summary>
@@ -276,5 +281,6 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = false,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 }

@@ -113,7 +113,8 @@ internal static class LeagueTestHelpers
         IReadOnlyList<Guid> publisherIDsInOrder)
     {
         var snapshot = await managerSession.League.GetLeagueYearAsync(leagueID, year, null);
-        var pendingDraft = snapshot.Drafts.First(d => d.PlayStatus == "NotStartedDraft");
+        var pendingDraft = snapshot.PendingDraft()
+            ?? throw new InvalidOperationException("No pending draft found when setting draft order.");
         await managerSession.LeagueManager.SetDraftOrderAsync(new DraftOrderRequest
         {
             LeagueID = leagueID,
