@@ -307,15 +307,24 @@ public static class DraftFunctions
 
                 foreach (var publisher in sortedPublishers)
                 {
-                    var gameSelected = gameDictionary.GetValueOrDefault((false, overallDraftPosition));
-                    bool? skipped = null;
-                    if (gameSelected is not null)
+                    var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((false, overallDraftPosition));
+                    PublisherGame? gameSelectedOnThisPublisherTurn = null;
+                    bool? skipped;
+                    if (gameSelectedAtOverallDraftPosition is null)
                     {
-                        skipped = false;
+                        skipped = null;
                     }
-                    //TODO need to decide if turn WAS skipped, right now, we don't need to know if turn SHOULD BE skipped.
+                    else
+                    {
+                        var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
+                        skipped = !thisPublisherDraftedThisGame;
+                        if (thisPublisherDraftedThisGame)
+                        {
+                            gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
+                        }
+                    }
 
-                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelected, skipped);
+                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
                     draftTurns.Add(draftTurn);
 
                     if (!skipped.HasValue || !skipped.Value)
@@ -340,15 +349,24 @@ public static class DraftFunctions
 
                 foreach (var publisher in sortedPublishers)
                 {
-                    var gameSelected = gameDictionary.GetValueOrDefault((true, overallDraftPosition));
-                    bool? skipped = null;
-                    if (gameSelected is not null)
+                    var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((true, overallDraftPosition));
+                    PublisherGame? gameSelectedOnThisPublisherTurn = null;
+                    bool? skipped;
+                    if (gameSelectedAtOverallDraftPosition is null)
                     {
-                        skipped = false;
+                        skipped = null;
                     }
-                    //TODO need to decide if turn WAS skipped, right now, we don't need to know if turn SHOULD BE skipped.
+                    else
+                    {
+                        var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
+                        skipped = !thisPublisherDraftedThisGame;
+                        if (thisPublisherDraftedThisGame)
+                        {
+                            gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
+                        }
+                    }
 
-                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelected, skipped);
+                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
                     draftTurns.Add(draftTurn);
 
                     if (!skipped.HasValue || !skipped.Value)
