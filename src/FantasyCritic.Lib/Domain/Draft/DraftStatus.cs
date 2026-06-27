@@ -33,14 +33,18 @@ public class DraftStatus
     public Publisher NextDraftPublisher => NextPick.Publisher;
     public Publisher? PreviousPublisherThatWasNotSkipped => PreviousNonSkippedPick?.Publisher;
     public int RoundNumber => NextPick.RoundNumber;
-    public int OverallPickNumber => NextPick.OverallPickNumber;
+    public int OverallPickNumber => NextPick.OverallPickNumber ?? throw new InvalidOperationException($"NextPick for publisher {NextPick.Publisher.PublisherID} has no pick number. NextPick should never be a skipped pick.");
 }
 
-public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, int? OverallPickNumber, PublisherGame? GameSelected)
+public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, PublisherGame? GameSelected)
 {
     public bool Skipped => GameSelected is null;
+    public int? OverallPickNumber => GameSelected?.OverallDraftPosition;
 }
 
-public record FutureDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, int OverallPickNumber, bool WillBeSkipped);
+public record FutureDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, int? OverallPickNumber)
+{
+    public bool WillBeSkipped => OverallPickNumber is null;
+}
 
 public record PickProcessingResult(FutureDraftPick? NextPick, IReadOnlyList<FutureDraftPick> PicksToSkip);

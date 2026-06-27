@@ -224,7 +224,7 @@ public static class DraftFunctions
             {
                 if (skipLookup.Contains((publisher.PublisherID, false, roundNumber)))
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null, null));
+                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null));
                     // overallPickNumber does NOT advance — skip holds the position without consuming it
                     continue;
                 }
@@ -235,7 +235,7 @@ public static class DraftFunctions
                     return draftPicks;  // frontier reached, remaining turns are future
                 }
 
-                draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, overallPickNumber, pickedGame));
+                draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, pickedGame));
                 overallPickNumber++;
             }
         }
@@ -252,7 +252,7 @@ public static class DraftFunctions
             {
                 if (skipLookup.Contains((publisher.PublisherID, true, roundNumber)))
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null, null));
+                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null));
                     continue;
                 }
 
@@ -262,7 +262,7 @@ public static class DraftFunctions
                     return draftPicks;  // frontier reached, remaining turns are future
                 }
 
-                draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, overallPickNumber, pickedGame));
+                draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, pickedGame));
                 overallPickNumber++;
             }
         }
@@ -272,11 +272,74 @@ public static class DraftFunctions
 
     private static PickProcessingResult GetFutureDraftPicks(LeagueYear leagueYear, LeagueDraft activeDraft, IReadOnlyList<PastDraftPick> pastDraftPicks)
     {
-        FutureDraftPick? nextPick = null;
-        List<FutureDraftPick> picksToSkip = new List<FutureDraftPick>();
+        var resolvedTurns = pastDraftPicks
+            .Select(p => (p.CounterPick, p.RoundNumber, p.Publisher.PublisherID))
+            .ToHashSet();
 
-        //TODO Go through the turns, actually do the skipping logic based on slots, and determine what is to be skipped, and what is next.
+        var nextStandardPickNumber = pastDraftPicks.Count(p => !p.CounterPick && !p.Skipped) + 1;
+        var nextCounterPickNumber = pastDraftPicks.Count(p => p.CounterPick && !p.Skipped) + 1;
 
-        return new PickProcessingResult(nextPick, picksToSkip);
+        var picksToSkip = new List<FutureDraftPick>();
+
+        for (int roundNumber = 1; roundNumber <= activeDraft.GamesToDraft; roundNumber++)
+        {
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(activeDraft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(activeDraft.DraftID)).ToList();
+
+            foreach (var publisher in publishers)
+            {
+                if (resolvedTurns.Contains((false, roundNumber, publisher.PublisherID)))
+                {
+                    continue;
+                }
+
+                if (ShouldSkipPublisher(publisher, false, leagueYear))
+                {
+                    picksToSkip.Add(new FutureDraftPick(publisher, false, roundNumber, null));
+                }
+                else
+                {
+                    var nextPick = new FutureDraftPick(publisher, false, roundNumber, nextStandardPickNumber);
+                    return new PickProcessingResult(nextPick, picksToSkip);
+                }
+            }
+        }
+
+        for (int roundNumber = 1; roundNumber <= activeDraft.CounterPicksToDraft; roundNumber++)
+        {
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(activeDraft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(activeDraft.DraftID)).ToList();
+
+            foreach (var publisher in publishers)
+            {
+                if (resolvedTurns.Contains((true, roundNumber, publisher.PublisherID)))
+                {
+                    continue;
+                }
+
+                if (ShouldSkipPublisher(publisher, true, leagueYear))
+                {
+                    picksToSkip.Add(new FutureDraftPick(publisher, true, roundNumber, null));
+                }
+                else
+                {
+                    var nextPick = new FutureDraftPick(publisher, true, roundNumber, nextCounterPickNumber);
+                    return new PickProcessingResult(nextPick, picksToSkip);
+                }
+            }
+        }
+
+        return new PickProcessingResult(null, picksToSkip);
+    }
+
+    private static bool ShouldSkipPublisher(Publisher publisher, bool counterPick, LeagueYear leagueYear)
+    {
+        var publisherSlots = publisher.GetPublisherSlots(leagueYear);
+        bool hasOpenSlot = publisherSlots.Any(x => x.CounterPick == counterPick && x.PublisherGame is null);
+        return !hasOpenSlot;
     }
 }
