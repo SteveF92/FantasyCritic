@@ -181,26 +181,26 @@ public class DraftService
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
-            // Auto-skip publishers who have no open slots in the active draft (e.g. filled via bids between drafts).
-            var activeDraft = updatedLeagueYear.ActiveDraft;
-            if (activeDraft is null)
-            {
-                throw new Exception($"Draft is not active for league: {leagueYear.Key}");
-            }
+            //// Auto-skip publishers who have no open slots in the active draft (e.g. filled via bids between drafts).
+            //var activeDraft = updatedLeagueYear.ActiveDraft;
+            //if (activeDraft is null)
+            //{
+            //    throw new Exception($"Draft is not active for league: {leagueYear.Key}");
+            //}
 
-            bool isCounterPickPhase = draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks);
-            int gamesInActiveDraft = nextPublisher.PublisherGames.Count(g =>
-                g.DraftID == activeDraft.DraftID && g.CounterPick == isCounterPickPhase);
-            int slotsInActiveDraft = isCounterPickPhase ? activeDraft.CounterPicksToDraft : activeDraft.GamesToDraft;
-            if (gamesInActiveDraft >= slotsInActiveDraft)
-            {
-                string slotType = isCounterPickPhase ? "counter-pick" : "standard game";
-                string description = $"{nextPublisher.GetPublisherAndUserDisplayName()} was skipped (no open {slotType} slots in {activeDraft.Name}).";
-                var skipAction = new LeagueManagerAction(updatedLeagueYear.Key, _clock.GetCurrentInstant(), "SkippedDraftTurn", description);
-                await _fantasyCriticRepo.AddLeagueManagerAction(skipAction);
-                depth++;
-                continue;
-            }
+            //bool isCounterPickPhase = draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks);
+            //int gamesInActiveDraft = nextPublisher.PublisherGames.Count(g =>
+            //    g.DraftID == activeDraft.DraftID && g.CounterPick == isCounterPickPhase);
+            //int slotsInActiveDraft = isCounterPickPhase ? activeDraft.CounterPicksToDraft : activeDraft.GamesToDraft;
+            //if (gamesInActiveDraft >= slotsInActiveDraft)
+            //{
+            //    string slotType = isCounterPickPhase ? "counter-pick" : "standard game";
+            //    string description = $"{nextPublisher.GetPublisherAndUserDisplayName()} was skipped (no open {slotType} slots in {activeDraft.Name}).";
+            //    var skipAction = new LeagueManagerAction(updatedLeagueYear.Key, _clock.GetCurrentInstant(), "SkippedDraftTurn", description);
+            //    await _fantasyCriticRepo.AddLeagueManagerAction(skipAction);
+            //    depth++;
+            //    continue;
+            //}
 
             if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
             {
