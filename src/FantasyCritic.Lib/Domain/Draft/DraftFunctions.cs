@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain.Draft;
 public static class DraftFunctions
@@ -70,7 +69,7 @@ public static class DraftFunctions
             return null;
         }
 
-        var draftTurns = GetDraftTurns(leagueYear);
+        var draftTurns = GetDraftTurns(leagueYear, leagueYear.ActiveDraft);
         var draftPhase = GetDraftPhase(leagueYear);
         if (draftPhase.Equals(DraftPhase.Complete))
         {
@@ -281,9 +280,35 @@ public static class DraftFunctions
         throw new Exception($"Invalid draft state: {leagueYear.League.LeagueID}");
     }
 
-    private static IReadOnlyList<DraftTurn> GetDraftTurns(LeagueYear leagueYear)
+    private static IReadOnlyList<DraftTurn> GetDraftTurns(LeagueYear leagueYear, LeagueDraft draft)
     {
+        if (draft.GamesToDraft == 0 && draft.CounterPicksToDraft == 0)
+        {
+            return new List<DraftTurn>();
+        }
 
+        var draftTurns = new List<DraftTurn>();
+
+        var draftPhase = DraftPhase.StandardGames;
+        if (draft.GamesToDraft > 0)
+        {
+            for (int currentRound = 1; currentRound <= draft.GamesToDraft; currentRound++)
+            {
+
+            }
+        }
+
+
+        if (draft.CounterPicksToDraft > 0)
+        {
+            draftPhase = DraftPhase.CounterPicks;
+            for (int currentRound = 1; currentRound <= draft.CounterPicksToDraft; currentRound++)
+            {
+
+            }
+        }
+
+        return draftTurns;
     }
 
     private static DraftPositionStatus GetDraftPositionStatus(LeagueYear leagueYear, DraftPhase draftPhase, Publisher nextDraftPublisher)
