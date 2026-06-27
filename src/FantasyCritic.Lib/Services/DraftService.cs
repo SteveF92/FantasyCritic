@@ -370,7 +370,7 @@ public class DraftService
         foreach (var publisher in leagueYear.Publishers)
         {
             var startingDraftPosition = publisher.LastDraftInfo.DraftPosition;
-            var draftInfoForPublisher = new PublisherDraftInfo(Guid.NewGuid(), nextDraftNumber, publisher.PublisherID, startingDraftPosition);
+            var draftInfoForPublisher = new PublisherDraftInfo(Guid.NewGuid(), nextDraftNumber, publisher.PublisherID, startingDraftPosition, new List<PublisherDraftPickSkip>());
             newPublisherDraftInfo.Add(draftInfoForPublisher);
         }
 
