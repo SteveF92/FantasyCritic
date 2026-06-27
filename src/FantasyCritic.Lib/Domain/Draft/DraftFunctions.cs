@@ -188,32 +188,86 @@ public static class DraftFunctions
     {
         if (draft.GamesToDraft == 0 && draft.CounterPicksToDraft == 0)
         {
-            return new List<PastDraftPick>();
+            return [];
         }
 
-        //TODO explicit state checking. ALL drafted games MUST have DraftPosition and OverallDraftPosition
-        //If one doesn't, fail loudly. I am fine if the route being called returns 500, rather than doubling down on bad state.
+        var publisherDictionary = leagueYear.Publishers.ToDictionary(x => x.PublisherID);
 
-        IReadOnlyList<PastDraftPick> draftPicks = leagueYear.Publishers
+        var draftedGames = leagueYear.Publishers
             .SelectMany(x => x.PublisherGames)
             .Where(x => x.DraftID == draft.DraftID)
-            .OrderBy(x => x.CounterPick)
-            .ThenBy(x => x.OverallDraftPosition)
-            .Select(x => new PastDraftPick(leagueYear.Publishers.Single(y => y.PublisherID == x.PublisherID), x.CounterPick, x.DraftPosition!.Value, x.OverallDraftPosition!.Value, x))
             .ToList();
 
-        IReadOnlyList<PastDraftPick> draftSkips = draft.PublisherDraftInfo
-            .SelectMany(x => x.PickSkips)
-            .Select(x => new PastDraftPick(leagueYear.Publishers.Single(y => y.PublisherID == x.PublisherID), x.CounterPick, x.PickNumber, null, null))
-            .ToList();
+        var invalidGames = draftedGames.Where(g => !g.DraftPosition.HasValue || !g.OverallDraftPosition.HasValue).ToList();
+        if (invalidGames.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Draft {draft.DraftID} has {invalidGames.Count} game(s) with missing draft position data. " +
+                $"First bad game belongs to publisher {invalidGames[0].PublisherID}.");
+        }
 
-        var completePastPicks = draftPicks
-            .Concat(draftSkips)
-            .OrderBy(x => x.CounterPick)
-            .ThenBy(x => x.OverallPickNumber)
-            .ToList();
+        var gameDictionary = draftedGames.ToDictionary(x => (x.CounterPick, x.OverallDraftPosition!.Value));
 
-        return completePastPicks;
+        var skipLookup = draft.PublisherDraftInfo
+            .SelectMany(info => info.PickSkips, (info, skip) => (info.PublisherID, skip.CounterPick, skip.PickNumber))
+            .ToHashSet();
+
+        var draftPicks = new List<PastDraftPick>();
+
+        int overallPickNumber = 1;
+        for (int roundNumber = 1; roundNumber <= draft.GamesToDraft; roundNumber++)
+        {
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList();
+
+            foreach (var publisher in publishers)
+            {
+                if (skipLookup.Contains((publisher.PublisherID, false, roundNumber)))
+                {
+                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, overallPickNumber, null));
+                    // overallPickNumber does NOT advance — skip holds the position without consuming it
+                    continue;
+                }
+
+                if (!gameDictionary.TryGetValue((false, overallPickNumber), out var game))
+                {
+                    return draftPicks; // frontier reached, remaining turns are future
+                }
+
+                draftPicks.Add(new PastDraftPick(publisherDictionary[game.PublisherID], false, roundNumber, overallPickNumber, game));
+                overallPickNumber++;
+            }
+        }
+
+        overallPickNumber = 1;
+        for (int roundNumber = 1; roundNumber <= draft.CounterPicksToDraft; roundNumber++)
+        {
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
+
+            foreach (var publisher in publishers)
+            {
+                if (skipLookup.Contains((publisher.PublisherID, true, roundNumber)))
+                {
+                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, overallPickNumber, null));
+                    continue;
+                }
+
+                if (!gameDictionary.TryGetValue((true, overallPickNumber), out var game))
+                {
+                    return draftPicks;
+                }
+
+                draftPicks.Add(new PastDraftPick(publisherDictionary[game.PublisherID], true, roundNumber, overallPickNumber, game));
+                overallPickNumber++;
+            }
+        }
+
+        return draftPicks;
     }
 
     private static PickProcessingResult GetFutureDraftPicks(LeagueYear leagueYear, LeagueDraft activeDraft, IReadOnlyList<PastDraftPick> pastDraftPicks)
