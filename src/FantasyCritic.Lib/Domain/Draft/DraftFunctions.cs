@@ -209,88 +209,88 @@ public static class DraftFunctions
 
         //TODO this needs to be rewritten
 
-        //var draftPhase = DraftPhase.StandardGames;
-        //if (draft.GamesToDraft > 0)
-        //{
-        //    int overallDraftPosition = 1;
-        //    for (int roundNumber = 1; roundNumber <= draft.GamesToDraft; roundNumber++)
-        //    {
-        //        bool roundNumberIsOdd = (roundNumber % 2 != 0);
-        //        var sortedPublishers = roundNumberIsOdd ?
-        //            leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList() :
-        //            leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList();
+        var draftPhase = DraftPhase.StandardGames;
+        if (draft.GamesToDraft > 0)
+        {
+            int overallDraftPosition = 1;
+            for (int roundNumber = 1; roundNumber <= draft.GamesToDraft; roundNumber++)
+            {
+                bool roundNumberIsOdd = (roundNumber % 2 != 0);
+                var sortedPublishers = roundNumberIsOdd ?
+                    leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList() :
+                    leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList();
 
-        //        foreach (var publisher in sortedPublishers)
-        //        {
-        //            var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((false, overallDraftPosition));
-        //            PublisherGame? gameSelectedOnThisPublisherTurn = null;
-        //            bool? skipped;
-        //            if (gameSelectedAtOverallDraftPosition is null)
-        //            {
-        //                skipped = null;
-        //            }
-        //            else
-        //            {
-        //                var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
-        //                skipped = !thisPublisherDraftedThisGame;
-        //                if (thisPublisherDraftedThisGame)
-        //                {
-        //                    gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
-        //                }
-        //            }
+                foreach (var publisher in sortedPublishers)
+                {
+                    var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((false, overallDraftPosition));
+                    PublisherGame? gameSelectedOnThisPublisherTurn = null;
+                    bool? skipped;
+                    if (gameSelectedAtOverallDraftPosition is null)
+                    {
+                        skipped = null;
+                    }
+                    else
+                    {
+                        var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
+                        skipped = !thisPublisherDraftedThisGame;
+                        if (thisPublisherDraftedThisGame)
+                        {
+                            gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
+                        }
+                    }
 
-        //            var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
-        //            draftTurns.Add(draftTurn);
+                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
+                    draftTurns.Add(draftTurn);
 
-        //            if (!skipped.HasValue || !skipped.Value)
-        //            {
-        //                overallDraftPosition++;
-        //            }
-        //        }
-        //    }
-        //}
+                    if (!skipped.HasValue || !skipped.Value)
+                    {
+                        overallDraftPosition++;
+                    }
+                }
+            }
+        }
 
 
-        //if (draft.CounterPicksToDraft > 0)
-        //{
-        //    draftPhase = DraftPhase.CounterPicks;
-        //    int overallDraftPosition = 1;
-        //    for (int roundNumber = 1; roundNumber <= draft.CounterPicksToDraft; roundNumber++)
-        //    {
-        //        bool roundNumberIsOdd = (roundNumber % 2 != 0);
-        //        var sortedPublishers = roundNumberIsOdd ?
-        //            leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList() :
-        //            leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
+        if (draft.CounterPicksToDraft > 0)
+        {
+            draftPhase = DraftPhase.CounterPicks;
+            int overallDraftPosition = 1;
+            for (int roundNumber = 1; roundNumber <= draft.CounterPicksToDraft; roundNumber++)
+            {
+                bool roundNumberIsOdd = (roundNumber % 2 != 0);
+                var sortedPublishers = roundNumberIsOdd ?
+                    leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList() :
+                    leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
 
-        //        foreach (var publisher in sortedPublishers)
-        //        {
-        //            var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((true, overallDraftPosition));
-        //            PublisherGame? gameSelectedOnThisPublisherTurn = null;
-        //            bool? skipped;
-        //            if (gameSelectedAtOverallDraftPosition is null)
-        //            {
-        //                skipped = null;
-        //            }
-        //            else
-        //            {
-        //                var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
-        //                skipped = !thisPublisherDraftedThisGame;
-        //                if (thisPublisherDraftedThisGame)
-        //                {
-        //                    gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
-        //                }
-        //            }
+                foreach (var publisher in sortedPublishers)
+                {
+                    var gameSelectedAtOverallDraftPosition = gameDictionary.GetValueOrDefault((true, overallDraftPosition));
+                    PublisherGame? gameSelectedOnThisPublisherTurn = null;
+                    bool? skipped;
+                    if (gameSelectedAtOverallDraftPosition is null)
+                    {
+                        skipped = null;
+                    }
+                    else
+                    {
+                        var thisPublisherDraftedThisGame = publisher.PublisherID == gameSelectedAtOverallDraftPosition.PublisherID;
+                        skipped = !thisPublisherDraftedThisGame;
+                        if (thisPublisherDraftedThisGame)
+                        {
+                            gameSelectedOnThisPublisherTurn = gameSelectedAtOverallDraftPosition;
+                        }
+                    }
 
-        //            var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
-        //            draftTurns.Add(draftTurn);
+                    var draftTurn = new DraftTurn(draftPhase, publisher, roundNumber, overallDraftPosition, gameSelectedOnThisPublisherTurn, skipped);
+                    draftTurns.Add(draftTurn);
 
-        //            if (!skipped.HasValue || !skipped.Value)
-        //            {
-        //                overallDraftPosition++;
-        //            }
-        //        }
-        //    }
-        //}
+                    if (!skipped.HasValue || !skipped.Value)
+                    {
+                        overallDraftPosition++;
+                    }
+                }
+            }
+        }
 
         return draftPicks;
     }
