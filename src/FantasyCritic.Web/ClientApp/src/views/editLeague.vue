@@ -24,6 +24,16 @@
           :league-id="leagueid"></leagueYearSettings>
       </div>
 
+      <div v-if="!isMultiDraft && firstDraft" class="text-well mt-3">
+        <h3>Draft Settings</h3>
+        <DraftCreationSettings
+          v-model="firstDraftAsList"
+          :standard-games="leagueYearSettings ? leagueYearSettings.standardGames : 0"
+          game-mode="Standard"
+          edit-mode>
+        </DraftCreationSettings>
+      </div>
+
       <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
 
       <div class="form-group">
@@ -35,10 +45,12 @@
 <script>
 import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
+import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 
 export default {
   components: {
-    LeagueYearSettings
+    LeagueYearSettings,
+    DraftCreationSettings
   },
   props: {
     leagueid: { type: String, required: true },
@@ -50,22 +62,28 @@ export default {
       leagueYearSettings: null,
       leagueYearName: null,
       leagueYear: null,
+      firstDraft: null,
       freshSettings: false
     };
   },
   computed: {
     leagueYearIsValid() {
-      let valid =
-        this.leagueYearSettings &&
+      if (!this.leagueYearSettings) return false;
+      const settingsOk =
         this.leagueYearSettings.standardGames >= 1 &&
         this.leagueYearSettings.standardGames <= 50 &&
-        this.leagueYearSettings.gamesToDraft >= 1 &&
-        this.leagueYearSettings.gamesToDraft <= 50 &&
         this.leagueYearSettings.counterPicks >= 0 &&
-        this.leagueYearSettings.counterPicks <= 20 &&
-        this.leagueYearSettings.counterPicksToDraft >= 0 &&
-        this.leagueYearSettings.counterPicksToDraft <= 20;
-      return valid;
+        this.leagueYearSettings.counterPicks <= 20;
+      const draftOk = this.isMultiDraft || (
+        this.firstDraft &&
+        this.firstDraft.gamesToDraft >= 1 &&
+        this.firstDraft.counterPicksToDraft >= 0
+      );
+      return settingsOk && draftOk;
+    },
+    firstDraftAsList: {
+      get() { return this.firstDraft ? [this.firstDraft] : []; },
+      set(val) { this.firstDraft = val[0] ?? null; }
     },
     activePlayersInLeague() {
       if (!this.leagueYear || !this.leagueYear.players) {
@@ -91,6 +109,15 @@ export default {
         .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
         .then((response) => {
           this.leagueYear = response.data;
+          if (!this.isMultiDraft && response.data.drafts && response.data.drafts.length > 0) {
+            const d = response.data.drafts[0];
+            this.firstDraft = {
+              name: d.name,
+              scheduledDate: d.scheduledDate ?? null,
+              gamesToDraft: d.gamesToDraft,
+              counterPicksToDraft: d.counterPicksToDraft,
+            };
+          }
         })
         .catch((returnedError) => (this.error = returnedError));
     },
@@ -104,7 +131,13 @@ export default {
         .catch((returnedError) => (this.error = returnedError));
     },
     postRequest() {
-      const payload = { ...this.leagueYearSettings, leagueYearName: this.leagueYearName || null };
+      const payload = {
+        leagueID: this.leagueid,
+        year: this.year,
+        leagueYearName: this.leagueYearName || null,
+        leagueYearSettings: this.leagueYearSettings,
+        firstDraft: this.isMultiDraft ? null : this.firstDraft,
+      };
       axios.post('/api/leagueManager/EditLeagueYearSettings', payload).then(this.responseHandler).catch(this.catchHandler);
     },
     responseHandler() {
