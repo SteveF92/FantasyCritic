@@ -92,6 +92,12 @@
               <br />
               <span class="action-note">(Pause Draft First)</span>
             </li>
+            <li v-show="activeDraft?.draftIsPaused" v-b-modal="'skipCurrentDraftPickModal'" class="fake-link action">Skip Current Pick</li>
+            <li v-show="!activeDraft?.draftIsPaused">
+              Skip Current Pick
+              <br />
+              <span class="action-note">(Pause Draft First)</span>
+            </li>
           </ul>
         </div>
         <h4>Manage League</h4>
@@ -185,6 +191,7 @@
       <managerDraftGameForm></managerDraftGameForm>
       <managerDraftCounterPickForm></managerDraftCounterPickForm>
       <undoLastDraftActionModal></undoLastDraftActionModal>
+      <skipCurrentDraftPickModal></skipCurrentDraftPickModal>
       <setPauseModal></setPauseModal>
       <resetDraftModal></resetDraftModal>
       <managerClaimGameForm></managerClaimGameForm>
@@ -245,6 +252,7 @@ import EditDraftOrderForm from '@/components/modals/editDraftOrderForm.vue';
 import SetPauseModal from '@/components/modals/setPauseModal.vue';
 import ResetDraftModal from '@/components/modals/resetDraftModal.vue';
 import UndoLastDraftActionModal from '@/components/modals/undoLastDraftActionModal.vue';
+import SkipCurrentDraftPickModal from '@/components/modals/skipCurrentDraftPickModal.vue';
 import ManagerDraftCounterPickForm from '@/components/modals/managerDraftCounterPickForm.vue';
 import AddNewLeagueYearForm from '@/components/modals/addNewLeagueYearForm.vue';
 import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
@@ -294,6 +302,7 @@ export default {
     SetPauseModal,
     ResetDraftModal,
     UndoLastDraftActionModal,
+    SkipCurrentDraftPickModal,
     AddNewLeagueYearForm,
     LeagueOptionsModal,
     ManageEligibilityOverridesModal,
