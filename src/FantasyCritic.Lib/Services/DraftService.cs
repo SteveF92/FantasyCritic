@@ -140,6 +140,10 @@ public class DraftService
         var action = new LeagueAction(nextPick.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: true);
 
         await _fantasyCriticRepo.AddDraftPickSkip(leagueYear.ActiveDraft, nextPick.Publisher, nextPick.CounterPick, nextPick.RoundNumber, isManualSkip: true, action);
+
+        var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
+        var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
+        await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
         return Result.Success();
     }
 
