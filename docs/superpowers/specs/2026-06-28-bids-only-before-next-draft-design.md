@@ -161,17 +161,34 @@ ALTER TABLE tbl_leagueyear
 
 ## Testing
 
-New integration test cases in `BidProcessingTests.cs`:
+### Unit tests (`FantasyCritic.Test/EligibilityTests.cs`)
+
+These test `GameEligibilityFunctions.GetGenericSlotMasterGameErrors` directly, in isolation, without a running server. Because that function takes a `LeagueYear`, a minimal `LeagueYear` builder helper will be added to the test class (similar to the existing `CreateComplexMasterGame` helper) that accepts `bidsOnlyBeforeNextScheduledDraft` and an optional draft scheduled date.
+
+The existing `CreateComplexMasterGame` helper already accepts a `maximumReleaseDate` parameter, so no new game factory is needed.
 
 | # | Scenario | Expected result |
 |---|---|---|
-| 1 | Option on, `MaximumReleaseDate < scheduledDraftDate` | Bid placed and processes successfully |
-| 2 | Option on, `MaximumReleaseDate >= scheduledDraftDate` | Bid rejected at placement (hard fail) |
-| 3 | Option on, `MaximumReleaseDate` is `null` | Bid rejected at placement (hard fail) |
-| 4 | Option on, pending draft has no scheduled date | All bids rejected at placement (hard fail) |
-| 5 | Option on, no pending draft (all drafts done) | No restriction; bids process normally |
-| 6 | Option on, bid placed while valid, then game's release window shifts to overlap draft date by processing time | Bid fails at processing time |
-| 7 | Option off | No restriction; none of the above apply |
+| U1 | Option on, `MaximumReleaseDate < scheduledDraftDate` | 0 errors from the new check |
+| U2 | Option on, `MaximumReleaseDate == scheduledDraftDate` | 1 hard-fail error |
+| U3 | Option on, `MaximumReleaseDate > scheduledDraftDate` | 1 hard-fail error |
+| U4 | Option on, `MaximumReleaseDate` is `null` | 1 hard-fail error |
+| U5 | Option on, pending draft has no scheduled date | 1 hard-fail error |
+| U6 | Option on, no pending draft | 0 errors from the new check |
+| U7 | Option off, `MaximumReleaseDate >= scheduledDraftDate` | 0 errors (option inactive) |
+| U8 | Check skipped when `dropping = true` | 0 errors even with conflicting dates |
+| U9 | Check skipped when `drafting = true` | 0 errors even with conflicting dates |
+
+### Integration tests (`FantasyCritic.IntegrationTests/Tests/League/Actions/BidProcessingTests.cs`)
+
+These exercise the full HTTP stack to confirm the check is enforced at bid placement time and re-enforced at processing time.
+
+| # | Scenario | Expected result |
+|---|---|---|
+| I1 | Option on, valid game (`MaximumReleaseDate < draftDate`) | Bid placed and processes successfully |
+| I2 | Option on, invalid game (`MaximumReleaseDate >= draftDate`) | Bid rejected at placement (hard fail) |
+| I3 | Option on, bid placed while valid; game's release window expands past draft date by processing time | Bid fails at processing time |
+| I4 | Option off | No restriction; invalid-date bids process normally |
 
 ---
 
