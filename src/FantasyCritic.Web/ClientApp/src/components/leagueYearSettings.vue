@@ -5,35 +5,12 @@
         <h2>Game Settings</h2>
         <p>Settings in this section can be different from year to year for your league.</p>
       </div>
-
-      <div v-if="freshSettings">
-        <div class="form-group">
-          <label v-if="!conferenceMode" for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in this league?</label>
-          <label v-if="conferenceMode" for="intendedNumberOfPlayers" class="control-label">How many players do you think will be in each league in this conference?</label>
-          <ValidationProvider v-slot="{ errors }" rules="required|min_value:2|max_value:20|integer">
-            <input id="intendedNumberOfPlayers" v-model="intendedNumberOfPlayers" name="Intended Number of Players" type="text" class="form-control input" @input="fullAutoUpdate()" />
-            <span class="text-danger">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
-        </div>
-
-        <div class="form-group">
-          <label for="gameMode" class="control-label">Game Mode</label>
-          <p>If you've played Fantasy Critic before, consider using Advanced. If you're playing with people new to video games in general, consider using Beginner.</p>
-          <p>
-            If you're looking for less of a commitment, you can consider "one shot" mode. In this mode, the draft is final, there is no dropping or bidding for games. This can be a good option if you
-            aren't sure you want to keep up with your league all year long.
-          </p>
-          <b-form-select v-model="gameMode" :options="gameModeOptions" @input="fullAutoUpdate()"></b-form-select>
-          <p>These modes change the recommended number of games per player and a few other settings. This just provides a baseline, you are free to tweak anything you want.</p>
-        </div>
-      </div>
     </div>
 
-    <div v-if="internalValue && (intendedNumberOfPlayersEverValid || editMode)">
+    <div v-if="internalValue">
       <div v-if="freshSettings">
         <hr />
-        <label>Based on your number of players and selected game mode, we recommend the following settings. However, you are free to change this.</label>
+        <label>We've pre-filled recommended settings below. You are free to change them.</label>
       </div>
 
       <div class="form-group">
@@ -42,19 +19,6 @@
 
         <ValidationProvider v-slot="{ errors }" rules="required|min_value:1|max_value:50|integer">
           <input id="standardGames" v-model="internalValue.standardGames" name="Total Number of Games" type="text" class="form-control input" @input="autoUpdateSpecialSlotOptions()" />
-          <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
-      </div>
-
-      <div v-show="!oneShotMode && !isMultiDraft" class="form-group">
-        <label for="gamesToDraft" class="control-label">Number of Games to Draft</label>
-        <p>
-          This is the number of games that will be chosen by each player at the draft. If this number is lower than the "Total Number of Games", the remainder will be
-          <a href="/faq#bidding-system" target="_blank">Pickup Games.</a>
-        </p>
-
-        <ValidationProvider v-slot="{ errors }" rules="required|min_value:1|max_value:50|integer">
-          <input id="gamesToDraft" v-model="internalValue.gamesToDraft" name="Games to Draft" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationProvider>
       </div>
@@ -72,19 +36,6 @@
         </ValidationProvider>
       </div>
 
-      <div v-show="!oneShotMode && !isMultiDraft" class="form-group">
-        <label for="counterPicksToDraft" class="control-label">Number of Counter Picks to Draft</label>
-        <p>
-          This is the number of games that will be chosen by each player at the draft. If this number is lower than the "Total Number of Counter Picks", the remainder will be
-          <a href="/faq#bidding-system" target="_blank">Pickup Counter picks.</a>
-        </p>
-
-        <ValidationProvider v-slot="{ errors }" rules="required|max_value:50|integer">
-          <input id="counterPicksToDraft" v-model="internalValue.counterPicksToDraft" name="Counter picks to Draft" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
-      </div>
-
       <div v-if="isMultiDraft" class="alert alert-info">
         This league has multiple drafts.
         <router-link v-if="manageDraftsRoute" :to="manageDraftsRoute">Visit the Manage Drafts page</router-link>
@@ -92,7 +43,7 @@
         to configure draft settings (games to draft, counter picks, etc.).
       </div>
 
-      <div v-show="!oneShotMode" class="form-group">
+      <div v-show="gameMode !== 'One Shot'" class="form-group">
         <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
         <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:100|integer">
           <input id="minimumBidAmount" v-model="internalValue.minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
@@ -101,7 +52,7 @@
         <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
       </div>
 
-      <div v-show="!oneShotMode">
+      <div v-show="gameMode !== 'One Shot'">
         <hr />
         <h3>Bidding Settings</h3>
         <div class="alert alert-info">
@@ -115,14 +66,14 @@
         <b-form-select v-model="internalValue.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
       </div>
 
-      <div v-show="!oneShotMode">
+      <div v-show="gameMode !== 'One Shot'">
         <hr />
         <h3>Trade Settings</h3>
         <label for="tradingSystem" class="control-label">Trading System</label>
         <b-form-select v-model="internalValue.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
       </div>
 
-      <div v-show="!oneShotMode">
+      <div v-show="gameMode !== 'One Shot'">
         <hr />
         <h3>Game Dropping Settings</h3>
         <div class="alert alert-info">
@@ -336,21 +287,15 @@ export default {
     freshSettings: { type: Boolean, required: true },
     conferenceMode: { type: Boolean },
     isMultiDraft: { type: Boolean, default: false },
-    leagueId: { type: String, default: null }
+    leagueId: { type: String, default: null },
+    gameMode: { type: String, default: 'Standard' }
   },
   data() {
     return {
-      intendedNumberOfPlayers: null,
-      intendedNumberOfPlayersEverValid: false,
-      gameMode: 'Standard',
-      gameModeOptions: ['One Shot', 'Beginner', 'Standard', 'Advanced'],
       internalValue: null
     };
   },
   computed: {
-    oneShotMode() {
-      return this.gameMode === 'One Shot';
-    },
     manageDraftsRoute() {
       if (!this.leagueId) {
         return null;
@@ -359,30 +304,11 @@ export default {
     }
   },
   watch: {
-    intendedNumberOfPlayers: function () {
-      if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
-        this.intendedNumberOfPlayersEverValid = true;
-      }
-    },
-    'internalValue.standardGames': function () {
-      if (this.oneShotMode) {
-        this.internalValue.gamesToDraft = this.internalValue.standardGames;
-      }
-    },
-    'internalValue.counterPicks': function () {
-      if (this.oneShotMode) {
-        this.internalValue.counterPicksToDraft = this.internalValue.counterPicks;
-      }
-    },
     internalValue: function () {
       this.updateInternalValue();
     }
   },
   created() {
-    if (this.currentNumberOfPlayers && this.freshSettings) {
-      this.intendedNumberOfPlayers = this.currentNumberOfPlayers;
-    }
-
     this.internalValue = structuredClone(this.value);
   },
   methods: {
@@ -390,99 +316,7 @@ export default {
       this.$emit('input', this.internalValue);
     },
     fullAutoUpdate() {
-      this.autoUpdateOptions();
       this.autoUpdateSpecialSlotOptions();
-    },
-    autoUpdateOptions() {
-      if (!this.freshSettings) {
-        return;
-      }
-
-      this.internalValue.counterPickDeadline = `${this.year}-11-01`;
-      this.internalValue.mightReleaseDroppableDate = `${this.year}-11-01`;
-
-      if (!this.intendedNumberOfPlayers) {
-        return;
-      }
-
-      if (this.intendedNumberOfPlayers >= 2 && this.intendedNumberOfPlayers <= 20) {
-        this.intendedNumberOfPlayersEverValid = true;
-      }
-
-      let recommendedNumberOfGames = 72;
-      let draftGameRatio = 1 / 2;
-      if (this.oneShotMode) {
-        recommendedNumberOfGames = 50;
-        draftGameRatio = 1;
-      } else if (this.gameMode === 'Beginner') {
-        recommendedNumberOfGames = 42;
-        draftGameRatio = 4 / 7;
-      } else if (this.gameMode === 'Advanced') {
-        recommendedNumberOfGames = 108;
-        draftGameRatio = 4 / 9;
-      }
-
-      let averageSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / 6);
-      let averageSizeLeagueCounterPicks = Math.floor(averageSizeLeagueStandardGames / 6);
-      let averageSizeLeagueGamesToDraft = Math.floor(averageSizeLeagueStandardGames * draftGameRatio);
-      let averageSizeLeagueCounterPicksToDraft = Math.floor(averageSizeLeagueCounterPicks * draftGameRatio);
-
-      let thisSizeLeagueStandardGames = Math.floor(recommendedNumberOfGames / this.intendedNumberOfPlayers);
-      let thisSizeLeagueCounterPicks = Math.floor(thisSizeLeagueStandardGames / 6);
-      let thisSizeLeagueGamesToDraft = Math.floor(thisSizeLeagueStandardGames * draftGameRatio);
-      let thisSizeLeagueCounterPicksToDraft = Math.floor(thisSizeLeagueCounterPicks * draftGameRatio);
-
-      this.internalValue.standardGames = Math.floor((averageSizeLeagueStandardGames + thisSizeLeagueStandardGames) / 2);
-      this.internalValue.counterPicks = Math.floor((averageSizeLeagueCounterPicks + thisSizeLeagueCounterPicks) / 2);
-      this.internalValue.gamesToDraft = Math.floor((averageSizeLeagueGamesToDraft + thisSizeLeagueGamesToDraft) / 2);
-      this.internalValue.counterPicksToDraft = Math.floor((averageSizeLeagueCounterPicksToDraft + thisSizeLeagueCounterPicksToDraft) / 2);
-
-      if (this.internalValue.counterPicks === 0 || this.internalValue.counterPicksToDraft === 0) {
-        this.internalValue.counterPicks = 1;
-        this.internalValue.counterPicksToDraft = 1;
-      }
-
-      if (this.gameMode === 'Beginner') {
-        this.internalValue.counterPicks = 0;
-        this.internalValue.counterPicksToDraft = 0;
-        this.internalValue.tradingSystem = 'NoTrades';
-        this.internalValue.grantSuperDrops = true;
-      }
-
-      if (this.gameMode === 'Advanced') {
-        this.internalValue.pickupSystem = 'SecretBidding';
-        this.internalValue.counterPicksBlockDrops = true;
-      }
-
-      this.internalValue.minimumBidAmount = 0;
-      // TODO(Phase2-MultiDraft): Need to make this a real option.
-      this.internalValue.enableBids = !this.oneShotMode;
-      this.internalValue.unrestrictedReleaseStatusDroppableGames = 0;
-      this.internalValue.willNotReleaseDroppableGames = 0;
-      this.internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames = false;
-      this.internalValue.unlimitedWillReleaseDroppableGames = false;
-      if (this.oneShotMode) {
-        this.internalValue.willReleaseDroppableGames = 0;
-        this.internalValue.unlimitedWillNotReleaseDroppableGames = false;
-        this.internalValue.tradingSystem = 'NoTrades';
-        this.internalValue.grantSuperDrops = false;
-      } else {
-        this.internalValue.willReleaseDroppableGames = 1;
-        this.internalValue.unlimitedWillNotReleaseDroppableGames = true;
-      }
-
-      let alwaysBannedTags = ['Port', 'PlannedForEarlyAccess', 'CurrentlyInEarlyAccess', 'ReleasedInternationally'];
-      let standardBannedTags = ['YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster', 'ExpansionPack'];
-
-      let bannedTags = alwaysBannedTags;
-      if (this.gameMode !== 'Beginner') {
-        bannedTags = bannedTags.concat(standardBannedTags);
-      }
-
-      this.internalValue.tags = {
-        required: [],
-        banned: bannedTags
-      };
     },
     autoUpdateSpecialSlotOptions() {
       if (!this.freshSettings) {
