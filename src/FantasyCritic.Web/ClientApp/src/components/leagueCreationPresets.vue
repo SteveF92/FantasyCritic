@@ -65,7 +65,7 @@ export default {
     emitIfReady() {
       if (!this.playerCount || this.playerCount < 2 || this.playerCount > 20) return;
       const result = computePreset(this.gameMode, this.experienceLevel, this.playerCount, this.year);
-      this.$emit('preset-applied', { gameMode: this.gameMode, ...result });
+      this.$emit('preset-applied', { gameMode: this.gameMode, experienceLevel: this.experienceLevel, ...result });
     }
   }
 };

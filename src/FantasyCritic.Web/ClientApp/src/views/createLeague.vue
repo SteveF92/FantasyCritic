@@ -41,7 +41,7 @@
         </div>
 
         <div v-if="leagueYearSettings" class="text-well">
-          <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :game-mode="gameMode" fresh-settings>
+          <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :game-mode="gameMode" :experience-level="experienceLevel" fresh-settings>
             <template v-if="gameMode !== 'One Shot'" #draft-settings>
               <hr />
               <h3>Draft Settings</h3>
@@ -120,6 +120,7 @@ export default {
       leagueYearSettings: null,
       drafts: [],
       gameMode: 'Standard',
+      experienceLevel: 'Standard',
       publicLeague: true,
       testLeague: false,
       customRulesLeague: false,
@@ -162,8 +163,9 @@ export default {
       }
       this.drafts = [buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks)];
     },
-    onPresetApplied({ gameMode, settings, drafts }) {
+    onPresetApplied({ gameMode, experienceLevel, settings, drafts }) {
       this.gameMode = gameMode;
+      this.experienceLevel = experienceLevel;
       if (!this.leagueYearSettings) {
         this.leagueYearSettings = {
           year: this.initialYear,
