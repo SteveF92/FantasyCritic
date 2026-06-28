@@ -47,7 +47,35 @@
         <div v-if="readyToSetupLeagueYear">
           <hr />
           <div class="text-well">
-            <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" fresh-settings conference-mode></leagueYearSettings>
+            <leagueCreationPresets
+              :year="initialYear"
+              player-count-label="How many players do you think will be in each league in this conference?"
+              @preset-applied="onPresetApplied">
+            </leagueCreationPresets>
+          </div>
+        </div>
+
+        <div v-if="leagueYearSettings">
+          <div class="text-well">
+            <leagueYearSettings
+              v-model="leagueYearSettings"
+              :year="initialYear"
+              :game-mode="gameMode"
+              fresh-settings
+              conference-mode>
+            </leagueYearSettings>
+          </div>
+
+          <div class="text-well">
+            <h3>Draft Settings</h3>
+            <p v-if="gameMode === 'Multi Draft'" class="text-info">
+              This league will have multiple drafts. Configure each draft below.
+            </p>
+            <DraftCreationSettings
+              v-model="drafts"
+              :standard-games="leagueYearSettings.standardGames"
+              :game-mode="gameMode">
+            </DraftCreationSettings>
           </div>
         </div>
 
@@ -83,10 +111,14 @@
 <script>
 import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
+import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
+import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 
 export default {
   components: {
-    LeagueYearSettings
+    LeagueYearSettings,
+    LeagueCreationPresets,
+    DraftCreationSettings
   },
   data() {
     return {
@@ -95,6 +127,8 @@ export default {
       primaryLeagueName: '',
       initialYear: '',
       leagueYearSettings: null,
+      drafts: [],
+      gameMode: 'Standard',
       customRulesConference: false,
       leagueYearEverValid: false
     };
@@ -104,17 +138,16 @@ export default {
       return !!this.conferenceName && !!this.primaryLeagueName && !!this.initialYear;
     },
     leagueYearIsValid() {
-      let valid =
-        this.leagueYearSettings &&
+      if (!this.leagueYearSettings || !this.drafts.length) return false;
+      const settingsOk =
         this.leagueYearSettings.standardGames >= 1 &&
         this.leagueYearSettings.standardGames <= 50 &&
-        this.leagueYearSettings.gamesToDraft >= 1 &&
-        this.leagueYearSettings.gamesToDraft <= 50 &&
         this.leagueYearSettings.counterPicks >= 0 &&
         this.leagueYearSettings.counterPicks <= 20;
-
-      let allValid = this.readyToSetupLeagueYear && valid;
-      return allValid;
+      const draftsOk = this.gameMode === 'Multi Draft'
+        ? this.drafts.length >= 2
+        : this.drafts.length >= 1;
+      return this.readyToSetupLeagueYear && settingsOk && draftsOk;
     }
   },
   watch: {
@@ -125,35 +158,39 @@ export default {
       }
     }
   },
-  created() {
-    this.leagueYearSettings = {
-      standardGames: '',
-      gamesToDraft: '',
-      counterPicks: '',
-      counterPicksToDraft: '',
-      pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
-      tiebreakSystem: 'LowestProjectedPoints',
-      tradingSystem: 'Standard',
-      draftSystem: 'Flexible',
-      scoringSystem: 'LinearPositive',
-      releaseSystem: 'MustBeReleased',
-      ineligibleGameSystem: 'CaseByCase',
-      specialGameSlots: [],
-      tags: { banned: [], allowed: [], required: [] }
-    };
-  },
   methods: {
+    onPresetApplied({ gameMode, settings, drafts }) {
+      this.gameMode = gameMode;
+      if (!this.leagueYearSettings) {
+        this.leagueYearSettings = {
+          year: this.initialYear,
+          pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
+          tiebreakSystem: 'LowestProjectedPoints',
+          tradingSystem: 'Standard',
+          draftSystem: 'Flexible',
+          scoringSystem: 'LinearPositive',
+          releaseSystem: 'MustBeReleased',
+          ineligibleGameSystem: 'CaseByCase',
+          tags: { banned: [], allowed: [], required: [] },
+          specialGameSlots: [],
+        };
+      }
+      Object.assign(this.leagueYearSettings, settings);
+      this.leagueYearSettings.year = this.initialYear;
+      this.drafts = drafts.map(d => ({ ...d }));
+    },
     async postRequest() {
       this.leagueYearSettings.year = this.initialYear;
-      let selectedConferenceOptions = {
+      const payload = {
         conferenceName: this.conferenceName.trim(),
         primaryLeagueName: this.primaryLeagueName.trim(),
         customRulesConference: this.customRulesConference,
-        leagueYearSettings: this.leagueYearSettings
+        leagueYearSettings: this.leagueYearSettings,
+        drafts: this.drafts,
       };
 
       try {
-        const response = await axios.post('/api/conference/createConference', selectedConferenceOptions);
+        const response = await axios.post('/api/conference/createConference', payload);
         const newConferenceID = response.data;
         this.$router.push({ name: 'conference', params: { conferenceid: newConferenceID, year: this.initialYear } });
       } catch (error) {
