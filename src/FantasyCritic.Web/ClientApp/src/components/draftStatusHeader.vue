@@ -18,6 +18,7 @@
             Next to draft:
             <strong>{{ nextPublisherUp.publisherName }}</strong>
           </div>
+          <div v-if="skippedPicksMessage" class="text-muted small mt-1">{{ skippedPicksMessage }}</div>
           <div v-if="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
         </div>
       </div>
@@ -27,6 +28,7 @@
             <div v-show="!activeDraft?.draftingCounterPicks">The draft is currently in progress!</div>
             <div v-show="activeDraft?.draftingCounterPicks">It's time to draft counter picks!</div>
             <div><strong>It is your turn to draft!</strong></div>
+            <div v-if="skippedPicksMessage" class="text-muted small mt-1">{{ skippedPicksMessage }}</div>
           </div>
           <div v-if="!activeDraft?.draftingCounterPicks">
             <b-button v-b-modal="'playerDraftGameForm'" variant="primary">Draft Game</b-button>
@@ -44,7 +46,40 @@
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
-  mixins: [LeagueMixin]
+  mixins: [LeagueMixin],
+  computed: {
+    skippedPicksMessage() {
+      const skips = this.activeDraft?.skippedPicksSinceLastRealPick;
+      if (!skips || skips.length === 0) return null;
+
+      const counts = {};
+      for (const skip of skips) {
+        counts[skip.publisherName] = (counts[skip.publisherName] || 0) + 1;
+      }
+
+      const distinctNames = Object.keys(counts);
+
+      if (distinctNames.length === 1) {
+        const name = distinctNames[0];
+        const count = counts[name];
+        const hasManual = skips.some(s => s.publisherName === name && s.isManualSkip);
+
+        if (hasManual) {
+          return `${name}'s pick was skipped by the league manager.`;
+        }
+
+        if (count === 1) {
+          return `${name}'s pick was auto-skipped because they have no open slots.`;
+        }
+
+        const timesWord = count === 2 ? 'twice' : `${count} times`;
+        return `${name}'s pick was auto-skipped ${timesWord} because they have no open slots.`;
+      }
+
+      const nameList = distinctNames.join(', ');
+      return `The following players had their draft picks skipped: ${nameList}. See the History page for more information.`;
+    }
+  }
 };
 </script>
 
