@@ -104,11 +104,7 @@ public class FantasyCriticService
 
         IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager.ToMinimal(), null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
-        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(newLeague.LeagueID, parameters.LeagueYearParameters.Year), 1,
-            "Initial Draft", null, parameters.LeagueYearParameters.GamesToDraft, parameters.LeagueYearParameters.CounterPicksToDraft,
-            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
-        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options, initialDraft);
-        return Result.Success(newLeague);
+        throw new NotImplementedException("Draft creation will be updated in Task 6");
     }
 
     public async Task<Result> EditLeague(LeagueYear leagueYear, LeagueYearParameters parameters)
@@ -144,17 +140,20 @@ public class FantasyCriticService
             return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
         }
 
+        int gamesToDraft = 0;
+        int counterPicksToDraft = 0; // TODO: wired in Task 7
+
         // These are checks that only apply to single draft leagues. Multi drafts must go through the edit draft flow.
         if (leagueYear.Drafts.Count == 1)
         {
             if (leagueYear.FirstDraft.PlayStatus.DraftIsActive)
             {
-                if (leagueYear.FirstDraft.GamesToDraft > parameters.GamesToDraft)
+                if (leagueYear.FirstDraft.GamesToDraft > gamesToDraft)
                 {
                     return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
                 }
 
-                if (leagueYear.FirstDraft.CounterPicksToDraft > parameters.CounterPicksToDraft)
+                if (leagueYear.FirstDraft.CounterPicksToDraft > counterPicksToDraft)
                 {
                     return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
                 }
@@ -162,12 +161,12 @@ public class FantasyCriticService
 
             if (leagueYear.FirstDraft.PlayStatus.DraftFinished)
             {
-                if (leagueYear.FirstDraft.GamesToDraft != parameters.GamesToDraft)
+                if (leagueYear.FirstDraft.GamesToDraft != gamesToDraft)
                 {
                     return Result.Failure("Cannot change the number of drafted games after the draft.");
                 }
 
-                if (leagueYear.FirstDraft.CounterPicksToDraft != parameters.CounterPicksToDraft)
+                if (leagueYear.FirstDraft.CounterPicksToDraft != counterPicksToDraft)
                 {
                     return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
                 }
@@ -198,7 +197,7 @@ public class FantasyCriticService
 
         //TODO this needs to be adjusted once multi draft is actually possible
         List<LeagueDraft> leagueDrafts = leagueYear.Drafts.ToList();
-        var newFirstDraft = leagueYear.FirstDraft.UpdateDraft(parameters.GamesToDraft, parameters.CounterPicksToDraft);
+        var newFirstDraft = leagueYear.FirstDraft.UpdateDraft(gamesToDraft, counterPicksToDraft);
         leagueDrafts = [newFirstDraft];
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,

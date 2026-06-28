@@ -8,8 +8,8 @@ namespace FantasyCritic.Web.Models.RoundTrip;
 public class LeagueYearSettingsViewModel
 {
     [JsonConstructor]
-    public LeagueYearSettingsViewModel(Guid leagueID, int year, string? leagueYearName, int standardGames, int gamesToDraft, int counterPicks,
-        int counterPicksToDraft, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedUnrestrictedReleaseStatusDroppableGames,
+    public LeagueYearSettingsViewModel(Guid leagueID, int year, string? leagueYearName, int standardGames, int counterPicks,
+        int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedUnrestrictedReleaseStatusDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible,
         int minimumBidAmount, bool enableBids, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
         string ineligibleGameSystem,
@@ -20,9 +20,7 @@ public class LeagueYearSettingsViewModel
         LeagueYearName = leagueYearName;
 
         StandardGames = standardGames;
-        GamesToDraft = gamesToDraft;
         CounterPicks = counterPicks;
-        CounterPicksToDraft = counterPicksToDraft;
         UnrestrictedReleaseStatusDroppableGames = unrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
         WillReleaseDroppableGames = willReleaseDroppableGames;
@@ -56,9 +54,7 @@ public class LeagueYearSettingsViewModel
         LeagueYearName = leagueYear.LeagueYearName;
 
         StandardGames = leagueYear.Options.StandardGames;
-        GamesToDraft = leagueYear.FirstDraft.GamesToDraft;
         CounterPicks = leagueYear.Options.CounterPicks;
-        CounterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft;
 
         UnrestrictedReleaseStatusDroppableGames = leagueYear.Options.UnrestrictedReleaseStatusDroppableGames;
         if (leagueYear.Options.UnrestrictedReleaseStatusDroppableGames == -1)
@@ -116,12 +112,8 @@ public class LeagueYearSettingsViewModel
 
     [Range(1, 50)]
     public int StandardGames { get; }
-    [Range(1, 50)]
-    public int GamesToDraft { get; }
     [Range(0, 50)]
     public int CounterPicks { get; }
-    [Range(0, 50)]
-    public int CounterPicksToDraft { get; }
 
     [Range(0, 100)]
     public int UnrestrictedReleaseStatusDroppableGames { get; }
@@ -209,7 +201,7 @@ public class LeagueYearSettingsViewModel
         var leagueTags = Tags.ToDomain(tagDictionary);
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
-        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
+        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, CounterPicks,
             unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount, EnableBids,
             leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate);
         return parameters;

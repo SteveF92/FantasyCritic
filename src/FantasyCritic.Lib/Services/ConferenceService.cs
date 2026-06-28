@@ -50,11 +50,7 @@ public class ConferenceService
         //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
         League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, leagueYears, true, false, parameters.CustomRulesConference, false, 0);
         Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, conferenceYears, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
-        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(primaryLeague.LeagueID, parameters.LeagueYearParameters.Year), 1,
-            "Initial Draft", null, parameters.LeagueYearParameters.GamesToDraft, parameters.LeagueYearParameters.CounterPicksToDraft,
-            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
-        await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options, initialDraft);
-        return Result.Success(newConference);
+        throw new NotImplementedException("Draft creation will be updated in Task 6");
     }
 
     public async Task<Result> AddLeagueToConference(Conference conference, int year, string leagueName, FantasyCriticUser leagueManager)
