@@ -257,7 +257,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                                              cy.Year,
                                              sy.Finished AS SupportedYearIsFinished,
                                              CASE 
-                                                 WHEN SUM(CASE WHEN ly.PlayStatus <> 'NotStartedDraft' THEN 1 ELSE 0 END) > 0
+                                                 WHEN SUM(CASE WHEN ld.PlayStatus <> 'NotStartedDraft' THEN 1 ELSE 0 END) > 0
                                                      THEN 1
                                                      ELSE 0
                                              END AS AtLeastOneDraftStarted
@@ -266,9 +266,10 @@ public class MySQLConferenceRepo : IConferenceRepo
                                              ON sy.Year = cy.Year
                                          JOIN tbl_league l
                                              ON l.ConferenceID = cy.ConferenceID
-                                         LEFT JOIN tbl_league_year ly
-                                             ON ly.LeagueID = l.LeagueID
-                                             AND ly.Year = cy.Year
+                                         LEFT JOIN tbl_league_draft ld
+                                             ON ld.LeagueID = l.LeagueID
+                                             AND ld.Year = cy.Year
+                                             AND ld.DraftNumber = 1
                                          WHERE cy.ConferenceID = @conferenceID
                                          GROUP BY cy.Year, sy.Finished;
                                          """;
@@ -866,6 +867,20 @@ public class MySQLConferenceRepo : IConferenceRepo
     }
 
     private record ConferencePublisherInfo(Guid PublisherID, Guid LeagueID, int Year, Guid UserID);
-    private record ConferenceDraftInfo(Guid DraftID, Guid LeagueID, int Year, int DraftNumber);
-    private record ConferenceDraftPosition(Guid DraftID, Guid PublisherID, int DraftPosition);
+
+    // Classes (not records) so Dapper can map via property setters with TINYINT→int coercion.
+    private class ConferenceDraftInfo
+    {
+        public Guid DraftID { get; set; }
+        public Guid LeagueID { get; set; }
+        public int Year { get; set; }
+        public int DraftNumber { get; set; }
+    }
+
+    private class ConferenceDraftPosition
+    {
+        public Guid DraftID { get; set; }
+        public Guid PublisherID { get; set; }
+        public int DraftPosition { get; set; }
+    }
 }

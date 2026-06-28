@@ -50,6 +50,7 @@ public class ConferenceController : BaseLeagueController
 
     [HttpPost]
     [Authorize("PlusUser")]
+    [ProducesResponseType<Guid>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Guid>> CreateConference([FromBody] CreateConferenceRequest request)
     {

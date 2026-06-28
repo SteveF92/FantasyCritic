@@ -68,25 +68,21 @@ public class ConferenceCloneTests : IntegrationTestBase
 
     // -------------------------------------------------------------------------
     // Helper: create a conference with two drafts and return the conference ID.
-    // Uses PostJsonAndDeserializeAsync because CreateConferenceAsync is untyped
-    // in the generated client.
     // -------------------------------------------------------------------------
     private static async Task<Guid> CreateTwoDraftConferenceAsync(ApiSession managerSession, int year)
     {
-        return await managerSession.PostJsonAndDeserializeAsync<CreateConferenceRequest, Guid>(
-            "api/Conference/CreateConference",
-            new CreateConferenceRequest
+        return await managerSession.Conference.CreateConferenceAsync(new CreateConferenceRequest
+        {
+            ConferenceName = $"TestConf-{Guid.NewGuid():N}"[..30],
+            PrimaryLeagueName = $"Primary-{Guid.NewGuid():N}"[..20],
+            CustomRulesConference = false,
+            LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
+            Drafts = new List<DraftSettingsRequest>
             {
-                ConferenceName = $"TestConf-{Guid.NewGuid():N}"[..30],
-                PrimaryLeagueName = $"Primary-{Guid.NewGuid():N}"[..20],
-                CustomRulesConference = false,
-                LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
-                Drafts = new List<DraftSettingsRequest>
-                {
-                    new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
-                    new() { Name = "Draft 2", ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
-                },
-            });
+                new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
+                new() { Name = "Draft 2", ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
+            },
+        });
     }
 
     // -------------------------------------------------------------------------
@@ -238,34 +234,9 @@ public class ConferenceCloneTests : IntegrationTestBase
         await LeagueTestHelpers.CreatePublisherAsync(sessionA, primaryLeagueID, year, "PublisherA");
         await LeagueTestHelpers.CreatePublisherAsync(sessionB, secondLeagueID, year, "PublisherB");
 
-        // Set draft order (Random) for every draft in each league so position rows exist.
-        var primaryYear = await sessionA.League.GetLeagueYearAsync(primaryLeagueID, year, null);
-        foreach (var draft in primaryYear.Drafts)
-        {
-            await sessionA.LeagueManager.SetDraftOrderAsync(new DraftOrderRequest
-            {
-                LeagueID = primaryLeagueID,
-                Year = year,
-                DraftID = draft.DraftID,
-                DraftOrderType = "Random",
-                ManualPublisherDraftPositions = null,
-            });
-        }
-
-        var secondYear = await sessionB.League.GetLeagueYearAsync(secondLeagueID, year, null);
-        foreach (var draft in secondYear.Drafts)
-        {
-            await sessionB.LeagueManager.SetDraftOrderAsync(new DraftOrderRequest
-            {
-                LeagueID = secondLeagueID,
-                Year = year,
-                DraftID = draft.DraftID,
-                DraftOrderType = "Random",
-                ManualPublisherDraftPositions = null,
-            });
-        }
-
         // Swap assignment: B → primary, A → secondary.
+        // Note: we do not pre-set draft order; AssignLeaguePlayers is responsible for
+        // creating draft-position rows for ALL drafts (including draft 2) even when none existed.
         await sessionA.Conference.AssignLeaguePlayersAsync(new AssignLeaguePlayersRequest
         {
             ConferenceID = conferenceID,
