@@ -113,4 +113,14 @@ public class DraftPauseUndoTests : IntegrationTestBase
         Assert.That(p1.NextToDraft, Is.True,
             "P1 should be NextToDraft after resume: undo put them back at position 1 with 0 games.");
     }
+
+    [Test]
+    public async Task Undo_LogsDraftPickUndoneActionType()
+    {
+        var actions = await _league.Manager.League.GetLeagueActionsAsync(_league.LeagueID, _league.Year);
+        Assert.That(actions.Any(a => a.ActionType == "Draft Pick Undone"), Is.True,
+            "Undo should log 'Draft Pick Undone', not 'Publisher Game Removed'.");
+        Assert.That(actions.Any(a => a.ActionType == "Publisher Game Removed"), Is.False,
+            "Draft undo should not use the generic game removal action type.");
+    }
 }
