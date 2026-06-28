@@ -114,6 +114,20 @@ public class DraftSkipManagerActionTests : IntegrationTestBase
     }
 
     [Test]
+    public void Skip_SkippedPicksSinceLastRealPickReflectsManualSkip()
+    {
+        var skippedPublisherName = _beforeSkipSnapshot.ActiveDraft()?.NextPickPublisherName;
+        var skippedPicks = _afterSkipSnapshot.ActiveDraft()?.SkippedPicksSinceLastRealPick;
+
+        Assert.That(skippedPublisherName, Is.Not.Null);
+        Assert.That(skippedPicks, Is.Not.Null);
+        Assert.That(skippedPicks, Has.Count.EqualTo(1));
+        var skippedPick = skippedPicks!.Single();
+        Assert.That(skippedPick.PublisherName, Is.EqualTo(skippedPublisherName));
+        Assert.That(skippedPick.IsManualSkip, Is.True);
+    }
+
+    [Test]
     public async Task Skip_LeagueActionLoggedWithCorrectType()
     {
         var actions = await _skipLeague.Manager.League.GetLeagueActionsAsync(_skipLeague.LeagueID, _skipLeague.Year);
@@ -130,6 +144,13 @@ public class DraftSkipManagerActionTests : IntegrationTestBase
         var expectedPublisher = _beforeSkipUndoSnapshot.ActiveDraft()?.NextPickPublisherName;
         Assert.That(afterUndoPublisher, Is.EqualTo(expectedPublisher),
             "After undoing the skip the turn should revert to the publisher that was skipped.");
+    }
+
+    [Test]
+    public void SkipUndo_SkippedPicksSinceLastRealPickIsEmpty()
+    {
+        Assert.That(_afterSkipUndoSnapshot.ActiveDraft()?.SkippedPicksSinceLastRealPick, Is.Empty,
+            "Undoing the only skip should clear SkippedPicksSinceLastRealPick.");
     }
 
     [Test]

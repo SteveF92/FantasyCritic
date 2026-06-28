@@ -227,9 +227,10 @@ public static class DraftFunctions
 
             foreach (var publisher in publishers)
             {
-                if (skipLookup.TryGetValue((publisher.PublisherID, false, roundNumber), out var stdSkip))
+                var standardPickSkip = skipLookup.GetValueOrDefault((publisher.PublisherID, false, roundNumber));
+                if (standardPickSkip is not null)
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null, stdSkip.IsManualSkip));
+                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null, standardPickSkip.IsManualSkip));
                     // overallPickNumber does NOT advance — skip holds the position without consuming it
                     continue;
                 }
@@ -255,9 +256,10 @@ public static class DraftFunctions
 
             foreach (var publisher in publishers)
             {
-                if (skipLookup.TryGetValue((publisher.PublisherID, true, roundNumber), out var cpSkip))
+                var counterPickSkip = skipLookup.GetValueOrDefault((publisher.PublisherID, true, roundNumber));
+                if (counterPickSkip is not null)
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null, cpSkip.IsManualSkip));
+                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null, counterPickSkip.IsManualSkip));
                     continue;
                 }
 

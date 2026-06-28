@@ -9,7 +9,8 @@ public class SkippedPickViewModel
         PublisherName = domain.Publisher.GetPublisherAndUserDisplayName();
         RoundNumber = domain.RoundNumber;
         CounterPick = domain.CounterPick;
-        IsManualSkip = domain.IsManualSkip!.Value; // non-null guaranteed: only skipped picks are mapped here
+        IsManualSkip = domain.IsManualSkip
+            ?? throw new ArgumentException("Only skipped picks may be mapped to SkippedPickViewModel.", nameof(domain));
     }
 
     public string PublisherName { get; }

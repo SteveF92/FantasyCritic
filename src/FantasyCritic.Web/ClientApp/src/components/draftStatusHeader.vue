@@ -18,7 +18,7 @@
             Next to draft:
             <strong>{{ nextPublisherUp.publisherName }}</strong>
           </div>
-          <div v-if="skippedPicksMessage" class="text-muted small mt-1">{{ skippedPicksMessage }}</div>
+          <div v-if="skippedPicksMessage" class="mt-1">{{ skippedPicksMessage }}</div>
           <div v-if="league.isManager">To select the next player's game for them, Select 'Select Next Game' under 'Draft Management' in the sidebar!</div>
         </div>
       </div>
@@ -28,7 +28,7 @@
             <div v-show="!activeDraft?.draftingCounterPicks">The draft is currently in progress!</div>
             <div v-show="activeDraft?.draftingCounterPicks">It's time to draft counter picks!</div>
             <div><strong>It is your turn to draft!</strong></div>
-            <div v-if="skippedPicksMessage" class="text-muted small mt-1">{{ skippedPicksMessage }}</div>
+            <div v-if="skippedPicksMessage" class="mt-1">{{ skippedPicksMessage }}</div>
           </div>
           <div v-if="!activeDraft?.draftingCounterPicks">
             <b-button v-b-modal="'playerDraftGameForm'" variant="primary">Draft Game</b-button>

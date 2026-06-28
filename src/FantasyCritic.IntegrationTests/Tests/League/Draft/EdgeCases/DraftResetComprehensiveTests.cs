@@ -110,6 +110,18 @@ public class DraftResetComprehensiveTests : IntegrationTestBase
     }
 
     [Test]
+    public void FirstSkip_SkippedPicksSinceLastRealPickReflectsManualSkip()
+    {
+        var skippedPicks = _afterFirstSkipSnapshot.ActiveDraft()?.SkippedPicksSinceLastRealPick;
+
+        Assert.That(skippedPicks, Is.Not.Null);
+        Assert.That(skippedPicks, Has.Count.EqualTo(1));
+        var skippedPick = skippedPicks!.Single();
+        Assert.That(skippedPick.PublisherName, Is.EqualTo(_publisherSkippedBeforeReset));
+        Assert.That(skippedPick.IsManualSkip, Is.True);
+    }
+
+    [Test]
     public void Reset_ClearsAllPublisherGames()
     {
         Assert.That(_afterResetSnapshot.Publishers.All(p => p.Games.Count == 0), Is.True,

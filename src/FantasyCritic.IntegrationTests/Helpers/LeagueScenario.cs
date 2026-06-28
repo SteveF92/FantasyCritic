@@ -159,6 +159,36 @@ public static class LeagueScenarios
     };
 
     /// <summary>
+    /// A minimal 3-player league for auto-skip view-model tests. Standard picks only (no counter-pick
+    /// phase). Bids disabled so manager claims can pre-fill roster slots before the draft starts.
+    /// </summary>
+    public static readonly LeagueScenario ThreePlayerAutoSkip = new()
+    {
+        Name = "ThreePlayerAutoSkip",
+        PlayerCount = 3,
+        StandardGames = 2,
+        GamesToDraft = 2,
+        CounterPicks = 0,
+        CounterPicksToDraft = 0,
+        DraftSystem = "Flexible",
+        PickupSystem = "SemiPublicBiddingSecretCounterPicks",
+        ScoringSystem = "LinearPositive",
+        TradingSystem = "NoTrades",
+        TiebreakSystem = "LowestProjectedPoints",
+        ReleaseSystem = "MustBeReleased",
+        IneligibleGameSystem = "DroppableAsWillNotRelease",
+        UnrestrictedReleaseStatusDroppableGames = 0,
+        WillNotReleaseDroppableGames = 0,
+        WillReleaseDroppableGames = 0,
+        DropOnlyDraftGames = true,
+        GrantSuperDrops = false,
+        CounterPicksBlockDrops = true,
+        AllowMoveIntoIneligible = false,
+        MinimumBidAmount = 0,
+        EnableBids = false,
+    };
+
+    /// <summary>
     /// A minimal 2-player league used by error-case and edge-case test fixtures.
     /// 2 standard games + 1 counter-pick per publisher. Fast to set up and exhaust.
     /// </summary>
