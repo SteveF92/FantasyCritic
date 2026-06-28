@@ -41,6 +41,11 @@ public class ConferenceCloneTests : IntegrationTestBase
         public Guid UserID { get; set; }
     }
 
+    private sealed class SimpleConferenceInviteLinkVm
+    {
+        public Guid InviteCode { get; set; }
+    }
+
     // -------------------------------------------------------------------------
     // Helper: register a user then grant them PlusUser role (required for
     // conference creation) and re-login to refresh their auth cookie.
@@ -71,18 +76,20 @@ public class ConferenceCloneTests : IntegrationTestBase
     // -------------------------------------------------------------------------
     private static async Task<Guid> CreateTwoDraftConferenceAsync(ApiSession managerSession, int year)
     {
-        return await managerSession.Conference.CreateConferenceAsync(new CreateConferenceRequest
-        {
-            ConferenceName = $"TestConf-{Guid.NewGuid():N}"[..30],
-            PrimaryLeagueName = $"Primary-{Guid.NewGuid():N}"[..20],
-            CustomRulesConference = false,
-            LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
+        return await managerSession.PostJsonAndDeserializeAsync<CreateConferenceRequest, Guid>(
+            "api/Conference/CreateConference",
+            new CreateConferenceRequest
             {
-                new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
-                new() { Name = "Draft 2", ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
-            },
-        });
+                ConferenceName = $"TestConf-{Guid.NewGuid():N}"[..30],
+                PrimaryLeagueName = $"Primary-{Guid.NewGuid():N}"[..20],
+                CustomRulesConference = false,
+                LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
+                Drafts = new List<DraftSettingsRequest>
+                {
+                    new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
+                    new() { Name = "Draft 2", ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
+                },
+            });
     }
 
     // -------------------------------------------------------------------------
@@ -96,7 +103,8 @@ public class ConferenceCloneTests : IntegrationTestBase
         await managerSession.Conference.CreateInviteLinkAsync(
             new CreateConferenceInviteLinkRequest { ConferenceID = conferenceID });
 
-        var links = await managerSession.Conference.InviteLinksAsync(conferenceID);
+        var links = await managerSession.GetAndDeserializeAsync<List<SimpleConferenceInviteLinkVm>>(
+            $"api/Conference/InviteLinks/{conferenceID}");
 
         await joiningSession.Conference.JoinWithInviteLinkAsync(
             new JoinConferenceWithInviteLinkRequest
