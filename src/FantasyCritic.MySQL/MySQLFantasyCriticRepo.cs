@@ -1188,8 +1188,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction)
     {
-        // TODO(Phase2-MultiDraft): EditLeagueYear updates only the first draft's game counts. We should ONLY be updating in this manner if it is a single draft league.
-        // Doubling down on this todo because it is NOT done!
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.ConferenceLocked, leagueYear.UnderReview, leagueYear.LeagueYearName);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
 
@@ -1221,7 +1219,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(editLeagueYearSQL, leagueYearEntity, transaction);
-        await connection.ExecuteAsync(editFirstDraftSQL, new { draftID = leagueYear.FirstDraft.DraftID, gamesToDraft = leagueYear.FirstDraft.GamesToDraft, counterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft }, transaction);
+        if (leagueYear.Drafts.Count == 1)
+        {
+            await connection.ExecuteAsync(editFirstDraftSQL, new { draftID = leagueYear.FirstDraft.DraftID, gamesToDraft = leagueYear.FirstDraft.GamesToDraft, counterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft }, transaction);
+        }
         await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
         await connection.ExecuteAsync(deleteSpecialSlotsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
         await OrganizeSlots(leagueYear, slotAssignments, connection, transaction);
@@ -1831,14 +1832,17 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string updateProposerTradeSQL = "UPDATE tbl_league_trade SET ProposerPublisherID = null WHERE ProposerPublisherID = @publisherID;";
         const string updateCounterPartyTradeSQL = "UPDATE tbl_league_trade SET CounterPartyPublisherID = null WHERE CounterPartyPublisherID = @publisherID;";
         const string deleteDraftPublisherSQL = "DELETE FROM tbl_league_draftpublisher WHERE PublisherID = @publisherID;";
-        // TODO(Phase2-MultiDraft): Only renumbers draft order for the first draft.
-        const string deleteDraftPublisherFromFirstDraftSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID AND PublisherID != @deletedPublisherID;";
+        const string deleteDraftPublisherFromDraftSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID AND PublisherID != @deletedPublisherID;";
         const string reinsertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
 
-        var firstDraft = leagueYear.FirstDraft;
-        var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher)
-            .OrderBy(x => x.GetDraftPosition(firstDraft.DraftID)).ToList();
-        var reinsertRows = remainingOrderedPublishers.Select((publisher, index) => new LeagueDraftPublisherEntity(firstDraft.LeagueYearKey, firstDraft.DraftID, publisher.PublisherID, index + 1));
+        var reinsertRows = new List<LeagueDraftPublisherEntity>();
+        foreach (var draft in leagueYear.Drafts)
+        {
+            var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher)
+                .OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
+            reinsertRows.AddRange(remainingOrderedPublishers.Select((publisher, index) =>
+                new LeagueDraftPublisherEntity(draft.LeagueYearKey, draft.DraftID, publisher.PublisherID, index + 1)));
+        }
 
         var deleteObject = new { publisherID = deletePublisher.PublisherID };
 
@@ -1856,7 +1860,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(updateCounterPartyTradeSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deleteDraftPublisherSQL, deleteObject, transaction);
         await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deleteDraftPublisherFromFirstDraftSQL, new { draftID = firstDraft.DraftID, deletedPublisherID = deletePublisher.PublisherID }, transaction);
+        foreach (var draft in leagueYear.Drafts)
+        {
+            await connection.ExecuteAsync(deleteDraftPublisherFromDraftSQL, new { draftID = draft.DraftID, deletedPublisherID = deletePublisher.PublisherID }, transaction);
+        }
         await connection.ExecuteAsync(reinsertDraftPublisherSQL, reinsertRows, transaction);
         await transaction.CommitAsync();
     }
