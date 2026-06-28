@@ -50,33 +50,19 @@
             <leagueCreationPresets
               :year="initialYear"
               player-count-label="How many players do you think will be in each league in this conference?"
-              @preset-applied="onPresetApplied">
-            </leagueCreationPresets>
+              @preset-applied="onPresetApplied"></leagueCreationPresets>
           </div>
         </div>
 
-        <div v-if="leagueYearSettings">
-          <div class="text-well">
-            <leagueYearSettings
-              v-model="leagueYearSettings"
-              :year="initialYear"
-              :game-mode="gameMode"
-              fresh-settings
-              conference-mode>
-            </leagueYearSettings>
-          </div>
-
-          <div class="text-well">
-            <h3>Draft Settings</h3>
-            <p v-if="gameMode === 'Multi Draft'" class="text-info">
-              This league will have multiple drafts. Configure each draft below.
-            </p>
-            <DraftCreationSettings
-              v-model="drafts"
-              :standard-games="leagueYearSettings.standardGames"
-              :game-mode="gameMode">
-            </DraftCreationSettings>
-          </div>
+        <div v-if="leagueYearSettings" class="text-well">
+          <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :game-mode="gameMode" fresh-settings conference-mode>
+            <template #draft-settings>
+              <hr />
+              <h3>Draft Settings</h3>
+              <b-alert v-if="gameMode === 'Multi Draft'" variant="info" show>This league will have multiple drafts. You need to add a least two now, but you can add more later.</b-alert>
+              <DraftCreationSettings v-model="drafts" :standard-games="leagueYearSettings.standardGames" :game-mode="gameMode"></DraftCreationSettings>
+            </template>
+          </leagueYearSettings>
         </div>
 
         <div v-if="leagueYearIsValid || leagueYearEverValid">
@@ -140,13 +126,8 @@ export default {
     leagueYearIsValid() {
       if (!this.leagueYearSettings || !this.drafts.length) return false;
       const settingsOk =
-        this.leagueYearSettings.standardGames >= 1 &&
-        this.leagueYearSettings.standardGames <= 50 &&
-        this.leagueYearSettings.counterPicks >= 0 &&
-        this.leagueYearSettings.counterPicks <= 20;
-      const draftsOk = this.gameMode === 'Multi Draft'
-        ? this.drafts.length >= 2
-        : this.drafts.length >= 1;
+        this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 && this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
+      const draftsOk = this.gameMode === 'Multi Draft' ? this.drafts.length >= 2 : this.drafts.length >= 1;
       return this.readyToSetupLeagueYear && settingsOk && draftsOk;
     }
   },
@@ -171,13 +152,14 @@ export default {
           scoringSystem: 'LinearPositive',
           releaseSystem: 'MustBeReleased',
           ineligibleGameSystem: 'CaseByCase',
+          enableBids: true,
           tags: { banned: [], allowed: [], required: [] },
-          specialGameSlots: [],
+          specialGameSlots: []
         };
       }
       Object.assign(this.leagueYearSettings, settings);
       this.leagueYearSettings.year = this.initialYear;
-      this.drafts = drafts.map(d => ({ ...d }));
+      this.drafts = drafts.map((d) => ({ ...d }));
     },
     async postRequest() {
       this.leagueYearSettings.year = this.initialYear;
@@ -186,7 +168,7 @@ export default {
         primaryLeagueName: this.primaryLeagueName.trim(),
         customRulesConference: this.customRulesConference,
         leagueYearSettings: this.leagueYearSettings,
-        drafts: this.drafts,
+        drafts: this.drafts
       };
 
       try {

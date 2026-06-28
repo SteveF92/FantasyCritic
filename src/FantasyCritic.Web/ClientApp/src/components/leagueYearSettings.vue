@@ -36,20 +36,13 @@
         </ValidationProvider>
       </div>
 
+      <slot name="draft-settings"></slot>
+
       <div v-if="isMultiDraft" class="alert alert-info">
         This league has multiple drafts.
         <router-link v-if="manageDraftsRoute" :to="manageDraftsRoute">Visit the Manage Drafts page</router-link>
         <span v-else>Visit the Manage Drafts page</span>
         to configure draft settings (games to draft, counter picks, etc.).
-      </div>
-
-      <div v-show="gameMode !== 'One Shot'" class="form-group">
-        <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
-        <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:100|integer">
-          <input id="minimumBidAmount" v-model="internalValue.minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
-        <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
       </div>
 
       <div v-show="gameMode !== 'One Shot'">
@@ -62,8 +55,38 @@
           <br />
           If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
         </div>
+
+        <div>
+          <b-form-checkbox v-model="internalValue.enableBids">
+            <span class="checkbox-label">Enable Bids</span>
+            <p>
+              Allow players to bid on pickup games after the draft. If unchecked, rosters are filled only through the draft (plus trades and drops where applicable).
+            </p>
+          </b-form-checkbox>
+        </div>
+
         <label for="pickupSystem" class="control-label">Bidding System</label>
-        <b-form-select v-model="internalValue.pickupSystem" :options="possibleLeagueOptions.pickupSystems"></b-form-select>
+        <b-form-select
+          id="pickupSystem"
+          v-model="internalValue.pickupSystem"
+          :options="possibleLeagueOptions.pickupSystems"
+          :disabled="!internalValue.enableBids">
+        </b-form-select>
+
+        <div class="form-group">
+          <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
+          <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:100|integer">
+            <input
+              id="minimumBidAmount"
+              v-model="internalValue.minimumBidAmount"
+              name="Minimum Bid Amount"
+              type="text"
+              class="form-control input"
+              :disabled="!internalValue.enableBids" />
+            <span class="text-danger">{{ errors[0] }}</span>
+          </ValidationProvider>
+          <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
+        </div>
       </div>
 
       <div v-show="gameMode !== 'One Shot'">
@@ -306,6 +329,11 @@ export default {
   watch: {
     internalValue: function () {
       this.updateInternalValue();
+    },
+    gameMode(newMode) {
+      if (newMode === 'One Shot' && this.internalValue) {
+        this.internalValue.enableBids = false;
+      }
     }
   },
   created() {

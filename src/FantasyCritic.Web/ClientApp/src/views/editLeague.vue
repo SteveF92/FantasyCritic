@@ -21,17 +21,18 @@
           :current-number-of-players="activePlayersInLeague"
           :fresh-settings="freshSettings"
           :is-multi-draft="isMultiDraft"
-          :league-id="leagueid"></leagueYearSettings>
-      </div>
-
-      <div v-if="!isMultiDraft && firstDraft" class="text-well mt-3">
-        <h3>Draft Settings</h3>
-        <DraftCreationSettings
-          v-model="firstDraftAsList"
-          :standard-games="leagueYearSettings ? leagueYearSettings.standardGames : 0"
-          game-mode="Standard"
-          edit-mode>
-        </DraftCreationSettings>
+          :league-id="leagueid">
+          <template v-if="!isMultiDraft && firstDraft" #draft-settings>
+            <hr />
+            <h3>Draft Settings</h3>
+            <DraftCreationSettings
+              v-model="firstDraftAsList"
+              :standard-games="leagueYearSettings.standardGames"
+              game-mode="Standard"
+              edit-mode>
+            </DraftCreationSettings>
+          </template>
+        </leagueYearSettings>
       </div>
 
       <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
