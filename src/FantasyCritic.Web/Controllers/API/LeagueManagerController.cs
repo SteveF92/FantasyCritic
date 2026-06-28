@@ -1158,6 +1158,37 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> SkipCurrentDraftPick([FromBody] SkipCurrentDraftPickRequest request)
+    {
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.LeagueManager, RequiredYearStatus.DraftPaused);
+        if (leagueYearRecord.FailedResult is not null)
+        {
+            return leagueYearRecord.FailedResult;
+        }
+        var validResult = leagueYearRecord.ValidResult!;
+        var leagueYear = validResult.LeagueYear;
+
+        if (leagueYear.ActiveDraft is null || leagueYear.ActiveDraft.DraftID != request.DraftID)
+        {
+            return BadRequest("DraftID does not match the active draft.");
+        }
+
+        var result = await _draftService.SkipCurrentDraftPick(leagueYear);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> SetGameEligibilityOverride([FromBody] EligibilityOverrideRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
