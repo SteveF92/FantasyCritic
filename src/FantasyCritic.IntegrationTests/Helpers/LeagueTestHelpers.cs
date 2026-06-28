@@ -42,6 +42,7 @@ internal static class LeagueTestHelpers
                 TestLeague = true,
                 CustomRulesLeague = false,
                 LeagueYearSettings = scenario.BuildSettings(year),
+                Drafts = scenario.BuildDraftSettings().ToList(),
             });
 
         return leagueID;

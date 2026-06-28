@@ -89,6 +89,18 @@ public sealed class LeagueScenario
             SpecialGameSlots = SpecialGameSlots.ToList(),
         };
 
+    public IReadOnlyList<DraftSettingsRequest> BuildDraftSettings() =>
+        new List<DraftSettingsRequest>
+        {
+            new()
+            {
+                Name = null,
+                ScheduledDate = null,
+                GamesToDraft = GamesToDraft,
+                CounterPicksToDraft = CounterPicksToDraft,
+            }
+        };
+
     public override string ToString() => Name;
 }
 

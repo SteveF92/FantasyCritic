@@ -95,6 +95,7 @@ public class MultiDraftReadTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
+            Drafts = LeagueScenarios.Standard.BuildDraftSettings().ToList(),
         });
 
         var publicLeagues = await manager.League.PublicLeaguesAsync(year, null);
