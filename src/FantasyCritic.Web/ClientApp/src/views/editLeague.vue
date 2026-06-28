@@ -22,7 +22,7 @@
           :fresh-settings="freshSettings"
           :is-multi-draft="isMultiDraft"
           :league-id="leagueid">
-          <template v-if="!isMultiDraft && firstDraft" #draft-settings>
+          <template v-if="!isMultiDraft && firstDraft && !oneShotMode" #draft-settings>
             <hr />
             <h3>Draft Settings</h3>
             <DraftCreationSettings
@@ -47,6 +47,7 @@
 import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
+import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
 
 export default {
   components: {
@@ -75,12 +76,15 @@ export default {
         this.leagueYearSettings.standardGames <= 50 &&
         this.leagueYearSettings.counterPicks >= 0 &&
         this.leagueYearSettings.counterPicks <= 20;
-      const draftOk = this.isMultiDraft || (
+      const draftOk = this.isMultiDraft || this.oneShotMode || (
         this.firstDraft &&
         this.firstDraft.gamesToDraft >= 1 &&
         this.firstDraft.counterPicksToDraft >= 0
       );
       return settingsOk && draftOk;
+    },
+    oneShotMode() {
+      return this.leagueYear?.settings?.oneShotMode ?? false;
     },
     firstDraftAsList: {
       get() { return this.firstDraft ? [this.firstDraft] : []; },
@@ -96,6 +100,17 @@ export default {
       return (this.leagueYear?.drafts?.length ?? 0) >= 2;
     }
   },
+  watch: {
+    leagueYearSettings: {
+      deep: true,
+      handler() {
+        this.syncOneShotDraft();
+      }
+    },
+    oneShotMode() {
+      this.syncOneShotDraft();
+    }
+  },
   created() {
     this.freshSettings = false;
     if (this.$route.query.freshSettings) {
@@ -105,6 +120,12 @@ export default {
     this.fetchLeagueYear();
   },
   methods: {
+    syncOneShotDraft() {
+      if (!this.oneShotMode || !this.leagueYearSettings) {
+        return;
+      }
+      this.firstDraft = buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks, this.firstDraft ?? undefined);
+    },
     fetchLeagueYear() {
       axios
         .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
@@ -119,6 +140,7 @@ export default {
               counterPicksToDraft: d.counterPicksToDraft,
             };
           }
+          this.syncOneShotDraft();
         })
         .catch((returnedError) => (this.error = returnedError));
     },

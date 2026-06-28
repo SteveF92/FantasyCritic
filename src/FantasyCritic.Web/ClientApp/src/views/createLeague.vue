@@ -42,7 +42,7 @@
 
         <div v-if="leagueYearSettings" class="text-well">
           <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :game-mode="gameMode" fresh-settings>
-            <template #draft-settings>
+            <template v-if="gameMode !== 'One Shot'" #draft-settings>
               <hr />
               <h3>Draft Settings</h3>
               <b-alert v-if="gameMode === 'Multi Draft'" variant="info" show>This league will have multiple drafts. You need to add a least two now, but you can add more later.</b-alert>
@@ -104,6 +104,7 @@ import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
+import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
 
 export default {
   components: {
@@ -143,9 +144,24 @@ export default {
       if (allValid) {
         this.leagueYearEverValid = true;
       }
+    },
+    gameMode(mode) {
+      this.syncOneShotDrafts(mode);
+    },
+    leagueYearSettings: {
+      deep: true,
+      handler() {
+        this.syncOneShotDrafts(this.gameMode);
+      }
     }
   },
   methods: {
+    syncOneShotDrafts(gameMode) {
+      if (gameMode !== 'One Shot' || !this.leagueYearSettings) {
+        return;
+      }
+      this.drafts = [buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks)];
+    },
     onPresetApplied({ gameMode, settings, drafts }) {
       this.gameMode = gameMode;
       if (!this.leagueYearSettings) {

@@ -151,7 +151,7 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
       { name: getDefaultDraftName(1), scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0 }
     ];
   } else if (gameMode === 'One Shot') {
-    drafts = [{ name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft: standardGames, counterPicksToDraft: counterPicks }];
+    drafts = [buildOneShotDraft(standardGames, counterPicks)];
   } else {
     drafts = [{ name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft, counterPicksToDraft }];
   }
@@ -161,6 +161,15 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
 
 export function getDefaultDraftName(draftIndex: number): string {
   return draftIndex === 0 ? 'Initial Draft' : `Draft ${draftIndex + 1}`;
+}
+
+export function buildOneShotDraft(standardGames: number, counterPicks: number, existing?: Partial<DraftSettings>): DraftSettings {
+  return {
+    name: getDefaultDraftName(0),
+    scheduledDate: existing?.scheduledDate ?? null,
+    gamesToDraft: standardGames,
+    counterPicksToDraft: counterPicks
+  };
 }
 
 export function getDefaultDraft(draftIndex: number, standardGames: number, allocatedSoFar: number): DraftSettings {
