@@ -210,7 +210,7 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> EditLeagueYearSettings([FromBody] LeagueYearSettingsViewModel request)
+    public async Task<IActionResult> EditLeagueYearSettings([FromBody] EditLeagueYearRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.AnyYearNotFinished);
         if (leagueYearRecord.FailedResult is not null)
@@ -227,8 +227,8 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
-        LeagueYearParameters domainRequest = request.ToDomain(tagDictionary);
-        Result result = await _fantasyCriticService.EditLeague(leagueYear, domainRequest);
+        var (domainSettings, firstDraft) = request.ToDomain(tagDictionary);
+        Result result = await _fantasyCriticService.EditLeague(leagueYear, domainSettings, firstDraft);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

@@ -60,6 +60,12 @@ public class LeagueDraft
             DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
     }
 
+    public LeagueDraft UpdateDraft(string name, LocalDate? scheduledDate, int gamesToDraft, int counterPicksToDraft)
+    {
+        return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, name, scheduledDate, gamesToDraft, counterPicksToDraft,
+            DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
+    }
+
     public LeagueOptionsDifferences GetDifferences(LeagueDraft existingDraft)
     {
         List<string> differences = new List<string>();

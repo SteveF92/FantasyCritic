@@ -116,7 +116,7 @@ public class FantasyCriticService
         return Result.Success(newLeague);
     }
 
-    public async Task<Result> EditLeague(LeagueYear leagueYear, LeagueYearParameters parameters)
+    public async Task<Result> EditLeague(LeagueYear leagueYear, LeagueYearParameters parameters, DraftParameters? firstDraft = null)
     {
         if (leagueYear.SupportedYear.Finished)
         {
@@ -149,20 +149,16 @@ public class FantasyCriticService
             return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
         }
 
-        int gamesToDraft = 0;
-        int counterPicksToDraft = 0; // TODO: wired in Task 7
-
-        // These are checks that only apply to single draft leagues. Multi drafts must go through the edit draft flow.
-        if (leagueYear.Drafts.Count == 1)
+        if (leagueYear.Drafts.Count == 1 && firstDraft is not null)
         {
             if (leagueYear.FirstDraft.PlayStatus.DraftIsActive)
             {
-                if (leagueYear.FirstDraft.GamesToDraft > gamesToDraft)
+                if (leagueYear.FirstDraft.GamesToDraft > firstDraft.GamesToDraft)
                 {
                     return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
                 }
 
-                if (leagueYear.FirstDraft.CounterPicksToDraft > counterPicksToDraft)
+                if (leagueYear.FirstDraft.CounterPicksToDraft > firstDraft.CounterPicksToDraft)
                 {
                     return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
                 }
@@ -170,12 +166,12 @@ public class FantasyCriticService
 
             if (leagueYear.FirstDraft.PlayStatus.DraftFinished)
             {
-                if (leagueYear.FirstDraft.GamesToDraft != gamesToDraft)
+                if (leagueYear.FirstDraft.GamesToDraft != firstDraft.GamesToDraft)
                 {
                     return Result.Failure("Cannot change the number of drafted games after the draft.");
                 }
 
-                if (leagueYear.FirstDraft.CounterPicksToDraft != counterPicksToDraft)
+                if (leagueYear.FirstDraft.CounterPicksToDraft != firstDraft.CounterPicksToDraft)
                 {
                     return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
                 }
@@ -204,10 +200,13 @@ public class FantasyCriticService
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
-        //TODO this needs to be adjusted once multi draft is actually possible
         List<LeagueDraft> leagueDrafts = leagueYear.Drafts.ToList();
-        var newFirstDraft = leagueYear.FirstDraft.UpdateDraft(gamesToDraft, counterPicksToDraft);
-        leagueDrafts = [newFirstDraft];
+        if (leagueYear.Drafts.Count == 1 && firstDraft is not null)
+        {
+            string resolvedName = firstDraft.Name ?? leagueYear.FirstDraft.Name;
+            leagueDrafts = [leagueYear.FirstDraft.UpdateDraft(
+                resolvedName, firstDraft.ScheduledDate, firstDraft.GamesToDraft, firstDraft.CounterPicksToDraft)];
+        }
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
             leagueDrafts, eligibilityOverrides, tagOverrides,
@@ -215,8 +214,8 @@ public class FantasyCriticService
             leagueYear.UnderReview, parameters.LeagueYearName);
 
         var optionsDiff = options.GetDifferences(leagueYear.Options);
-        var draftDiff = leagueYear.Drafts.Count == 1
-            ? newFirstDraft.GetDifferences(leagueYear.FirstDraft)
+        var draftDiff = leagueYear.Drafts.Count == 1 && firstDraft is not null
+            ? leagueDrafts[0].GetDifferences(leagueYear.FirstDraft)
             : new LeagueOptionsDifferences([]);
         var combined = optionsDiff.Combine(draftDiff);
 
