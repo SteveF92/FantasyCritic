@@ -443,6 +443,7 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpGet("{conferenceID}")]
+    [ProducesResponseType<IReadOnlyList<ConferenceInviteLinkViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
