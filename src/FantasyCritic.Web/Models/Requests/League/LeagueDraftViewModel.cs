@@ -28,6 +28,12 @@ public class LeagueDraftViewModel
         {
             var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
             DraftingCounterPicks = DraftPhase.CounterPicks.Equals(draftStatus?.DraftPhase);
+            if (draftStatus is not null)
+            {
+                NextPickPublisherName = draftStatus.NextDraftPublisher.GetPublisherAndUserDisplayName();
+                NextPickRoundNumber = draftStatus.RoundNumber;
+                NextPickIsCounterPick = draftStatus.NextPick.CounterPick;
+            }
         }
 
         if (!domain.PlayStatus.PlayStarted)
@@ -57,6 +63,9 @@ public class LeagueDraftViewModel
     public bool DraftIsPaused { get; }
     public bool DraftFinished { get; }
     public bool DraftingCounterPicks { get; }
+    public string? NextPickPublisherName { get; }
+    public int? NextPickRoundNumber { get; }
+    public bool? NextPickIsCounterPick { get; }
     public bool ReadyToSetDraftOrder { get; }
     public IReadOnlyList<string> StartDraftErrors { get; }
     public bool ReadyToDraft { get; }
