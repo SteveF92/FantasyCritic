@@ -68,6 +68,16 @@ public class PublisherService
         await _discordPushService.SendLeagueManagerManualPublisherGameMessage(publisher, publisherGame.GameName, false, publisherGame.CounterPick);
     }
 
+    public async Task UndoDraftPick(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
+    {
+        var now = _clock.GetCurrentInstant();
+        var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager (draft undo)");
+        var gameName = publisherGame.GameName ?? "Unknown";
+        var leagueAction = new LeagueAction(publisher, now, "Draft Pick Undone",
+            $"Undid draft pick: '{gameName}'.", managerAction: true);
+        await _fantasyCriticRepo.ManagerRemovePublisherGame(leagueYear, publisher, publisherGame, formerPublisherGame, leagueAction);
+    }
+
     public async Task<Result> EditPublisher(EditPublisherRequest editValues)
     {
         if (!editValues.SomethingChanged())
