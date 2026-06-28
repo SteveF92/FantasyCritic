@@ -47,7 +47,7 @@ Used as elements of the `Drafts` array on `CreateLeagueRequest` and as `FirstDra
 
 ```csharp
 public record DraftSettingsRequest(
-    string? Name,          // nullable; client pre-fills "Draft 1" / "Draft 2"; server defaults if null
+    string? Name,          // nullable; client pre-fills "Initial Draft" / "Draft 2" / "Draft 3" etc.; server defaults if null
     LocalDate? ScheduledDate,
     int GamesToDraft,
     int CounterPicksToDraft);
@@ -158,7 +158,7 @@ export function computePreset(
 ): PresetResult;
 
 export function getDefaultDraft(
-  draftIndex: number,       // 0-based; used for default name ("Draft 1", "Draft 2", ...)
+  draftIndex: number,       // 0-based; index 0 → "Initial Draft", index 1 → "Draft 2", index N → "Draft N+1"
   standardGames: number,
   allocatedSoFar: number    // sum of gamesToDraft in preceding drafts
 ): DraftSettings;
@@ -251,7 +251,7 @@ The `isMultiDraft` info banner now reads: *"This league has multiple drafts. To 
 
 **Data:**
 - `leagueYearSettings` — unchanged shape but without draft fields
-- `drafts: DraftSettings[]` — new, starts as `[{ name: 'Draft 1', ... }]`, updated by `preset-applied`
+- `drafts: DraftSettings[]` — new, starts as `[{ name: 'Initial Draft', ... }]`, updated by `preset-applied`
 - `gameMode: GameMode` — stored to drive `DraftCreationSettings` behaviour
 
 **`preset-applied` handler:** applies `settings` to `leagueYearSettings` and replaces `drafts` with the preset's `drafts`.
@@ -267,7 +267,7 @@ The `isMultiDraft` info banner now reads: *"This league has multiple drafts. To 
   "customRulesLeague": false,
   "leagueYearSettings": { "standardGames": 10, "counterPicks": 2, ... },
   "drafts": [
-    { "name": "Draft 1", "scheduledDate": null, "gamesToDraft": 5, "counterPicksToDraft": 1 },
+    { "name": "Initial Draft", "scheduledDate": null, "gamesToDraft": 5, "counterPicksToDraft": 1 },
     { "name": "Draft 2", "scheduledDate": null, "gamesToDraft": 5, "counterPicksToDraft": 1 }
   ]
 }
@@ -280,7 +280,7 @@ The `isMultiDraft` info banner now reads: *"This league has multiple drafts. To 
 - When `!isMultiDraft`: renders `DraftCreationSettings.vue` with `edit-mode` (single draft, no add button)
 - When `isMultiDraft`: `leagueYearSettings.vue` shows the "Visit Manage Drafts" banner (no additional component needed)
 
-**Data:** `firstDraft` populated from `leagueYear.drafts[0]` after `fetchLeagueYear()` returns. Updated by `DraftCreationSettings`.
+**Data:** `firstDraft` populated from `leagueYear.drafts[0]` after `fetchLeagueYear()` returns. Updated by `DraftCreationSettings`. The name field will reflect whatever was set at creation (e.g. "Initial Draft").
 
 **Validity update:** `leagueYearIsValid` replaces references to `leagueYearSettings.gamesToDraft` / `leagueYearSettings.counterPicksToDraft` with `firstDraft.gamesToDraft` / `firstDraft.counterPicksToDraft` (guarded by `!isMultiDraft`).
 
@@ -338,3 +338,4 @@ No `conferenceMode` guard is added. Multi-draft conference creation is fully sup
 - `AddNewLeagueYear` multi-draft support (user explicitly deferred; it mirrors last year's settings, users add more drafts via Manage Drafts)
 - Conference `AssignLeaguePlayers` clone fix (Phase 2 Slice 5; unrelated to initial creation)
 - Changing the Experience Level labels (values stay as `Beginner` / `Standard` / `Advanced`; label in UI is "Experience Level")
+- Tuning the exact recommended-games numbers and ratios in `computePreset` (the values in this spec are a reasonable starting point; they can be adjusted independently without any structural changes)
