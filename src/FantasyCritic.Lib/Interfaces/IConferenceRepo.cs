@@ -6,7 +6,7 @@ public interface IConferenceRepo
 {
     Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser user);
     Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options, IReadOnlyList<LeagueDraft> drafts);
-    Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague, LeagueDraft initialDraft);
+    Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague, IReadOnlyList<LeagueDraft> drafts);
     Task<Result> AddNewConferenceYear(Conference conference, int year);
     Task SetPlayerActiveStatus(ConferenceYear conferenceYear, IReadOnlyDictionary<MinimalFantasyCriticUser, bool> usersToChange);
 

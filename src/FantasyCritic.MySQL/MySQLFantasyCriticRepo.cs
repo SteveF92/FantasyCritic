@@ -1172,7 +1172,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 Year = draft.LeagueYearKey.Year,
                 DraftNumber = draft.DraftNumber,
                 Name = draft.Name,
-                ScheduledDate = (DateTime?)null,
+                ScheduledDate = draft.ScheduledDate?.ToDateTimeUnspecified(),
                 GamesToDraft = draft.GamesToDraft,
                 CounterPicksToDraft = draft.CounterPicksToDraft,
                 DraftOrderSet = false,
@@ -1340,16 +1340,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, LeagueDraft initialDraft)
+    public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, IReadOnlyList<LeagueDraft> drafts)
     {
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await AddNewLeagueYearInTransaction(league, year, options, mostRecentActivePlayers, initialDraft, connection, transaction);
+        await AddNewLeagueYearInTransaction(league, year, options, mostRecentActivePlayers, drafts, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    public async Task AddNewLeagueYearInTransaction(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, LeagueDraft initialDraft, MySqlConnection connection, MySqlTransaction transaction)
+    public async Task AddNewLeagueYearInTransaction(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, IReadOnlyList<LeagueDraft> drafts, MySqlConnection connection, MySqlTransaction transaction)
     {
         bool? conferenceLocked = null;
         if (league.ConferenceID.HasValue)
@@ -1373,7 +1373,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             @ReleaseSystem,@IneligibleGameSystem,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0);
             """;
 
-        const string createInitialDraftSQL =
+        const string createDraftSQL =
             """
             INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
             VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@DraftOrderSet,@PlayStatus,@DraftStartedTimestamp);
@@ -1387,23 +1387,23 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             year
         });
 
-        var draftRow = new
+        var draftRows = drafts.Select(d => new
         {
-            DraftID = initialDraft.DraftID,
-            LeagueID = initialDraft.LeagueYearKey.LeagueID,
-            Year = initialDraft.LeagueYearKey.Year,
-            DraftNumber = initialDraft.DraftNumber,
-            Name = initialDraft.Name,
-            ScheduledDate = (DateTime?)null,
-            GamesToDraft = initialDraft.GamesToDraft,
-            CounterPicksToDraft = initialDraft.CounterPicksToDraft,
+            DraftID = d.DraftID,
+            LeagueID = d.LeagueYearKey.LeagueID,
+            Year = d.LeagueYearKey.Year,
+            DraftNumber = d.DraftNumber,
+            Name = d.Name,
+            ScheduledDate = d.ScheduledDate?.ToDateTimeUnspecified(),
+            GamesToDraft = d.GamesToDraft,
+            CounterPicksToDraft = d.CounterPicksToDraft,
             DraftOrderSet = false,
             PlayStatus = PlayStatus.NotStartedDraft.Value,
             DraftStartedTimestamp = (Instant?)null
-        };
+        }).ToList();
 
         await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
-        await connection.ExecuteAsync(createInitialDraftSQL, draftRow, transaction);
+        await connection.ExecuteAsync(createDraftSQL, draftRows, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
         await connection.ExecuteAsync(activePlayersSQL, activePlayersObjects, transaction: transaction);

@@ -288,11 +288,10 @@ public class FantasyCriticService
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, LeagueYear mostRecentLeagueYear)
     {
         var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, mostRecentLeagueYear.Year);
-        // TODO(Phase2-MultiDraft): New year always starts with a single initial draft using the options' draft counts.
         var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(league.LeagueID, year), 1,
             "Initial Draft", null, mostRecentLeagueYear.FirstDraft.GamesToDraft, mostRecentLeagueYear.FirstDraft.CounterPicksToDraft,
             false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
-        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers, initialDraft);
+        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers, [initialDraft]);
     }
 
     public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears, bool recalculateWinners)

@@ -12,7 +12,7 @@ public interface IFantasyCriticRepo
     Task<League?> GetLeague(Guid id);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
     Task CreateLeague(League league, int initialYear, LeagueOptions options, IReadOnlyList<LeagueDraft> drafts);
-    Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, LeagueDraft initialDraft);
+    Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, IReadOnlyList<LeagueDraft> drafts);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction);
 
     Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction, NewDraftLeagueSettingsChanges? settingsToChange);
