@@ -118,7 +118,7 @@ public interface IFantasyCriticRepo
     Task ResetDraft(LeagueYear leagueYear, LeagueDraft draftToReset, Instant timestamp);
     Task SetDraftPause(LeagueYear leagueYear, LeagueDraft draftToPause, bool pause);
     Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft pendingDraft, LeagueManagerAction draftSetAction);
-    Task AddDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, LeagueAction action);
+    Task AddDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, bool isManualSkip, LeagueAction action);
     Task RemoveDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, LeagueAction action);
 
     Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);

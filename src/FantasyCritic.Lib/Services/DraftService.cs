@@ -139,7 +139,7 @@ public class DraftService
         var description = $"{publisherName} was skipped for round {nextPick.RoundNumber} ({slotType}).";
         var action = new LeagueAction(nextPick.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: true);
 
-        await _fantasyCriticRepo.AddDraftPickSkip(leagueYear.ActiveDraft, nextPick.Publisher, nextPick.CounterPick, nextPick.RoundNumber, action);
+        await _fantasyCriticRepo.AddDraftPickSkip(leagueYear.ActiveDraft, nextPick.Publisher, nextPick.CounterPick, nextPick.RoundNumber, isManualSkip: true, action);
         return Result.Success();
     }
 
@@ -236,7 +236,7 @@ public class DraftService
                     var publisherName = pickToSkip.Publisher.GetPublisherAndUserDisplayName();
                     var description = $"{publisherName} was auto-skipped for round {pickToSkip.RoundNumber} ({slotType}) because they have no open slots.";
                     var action = new LeagueAction(pickToSkip.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: false);
-                    await _fantasyCriticRepo.AddDraftPickSkip(activeDraft, pickToSkip.Publisher, pickToSkip.CounterPick, pickToSkip.RoundNumber, action);
+                    await _fantasyCriticRepo.AddDraftPickSkip(activeDraft, pickToSkip.Publisher, pickToSkip.CounterPick, pickToSkip.RoundNumber, isManualSkip: false, action);
                 }
                 depth++;
                 continue;

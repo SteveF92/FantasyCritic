@@ -1055,15 +1055,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             new { draftID = draftToPause.DraftID });
     }
 
-    public async Task AddDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, LeagueAction action)
+    public async Task AddDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, bool isManualSkip, LeagueAction action)
     {
-        const string sql = "INSERT INTO tbl_league_draftpickskip (DraftID, PublisherID, CounterPick, PickNumber) " +
-                           "VALUES (@draftID, @publisherID, @counterPick, @pickNumber);";
+        const string sql = "INSERT INTO tbl_league_draftpickskip (DraftID, PublisherID, CounterPick, PickNumber, IsManualSkip) " +
+                           "VALUES (@draftID, @publisherID, @counterPick, @pickNumber, @isManualSkip);";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(sql,
-            new { draftID = draft.DraftID, publisherID = publisher.PublisherID, counterPick, pickNumber },
+            new { draftID = draft.DraftID, publisherID = publisher.PublisherID, counterPick, pickNumber, isManualSkip },
             transaction);
         await AddLeagueAction(action, connection, transaction);
         await transaction.CommitAsync();
@@ -2120,7 +2120,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """;
         const string draftPickSkipSql =
             """
-            SELECT DraftID, PublisherID, CounterPick, PickNumber
+            SELECT DraftID, PublisherID, CounterPick, PickNumber, IsManualSkip
             FROM tbl_league_draftpickskip
             WHERE PublisherID = @publisherID
             """;
