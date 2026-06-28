@@ -114,11 +114,11 @@ public class DraftSkipManagerActionTests : IntegrationTestBase
     }
 
     [Test]
-    public async Task Skip_ManagerActionLoggedWithCorrectType()
+    public async Task Skip_LeagueActionLoggedWithCorrectType()
     {
         var actions = await _skipLeague.Manager.League.GetLeagueActionsAsync(_skipLeague.LeagueID, _skipLeague.Year);
         Assert.That(actions.Any(a => a.ActionType == "Draft Pick Skipped"), Is.True,
-            "A 'Draft Pick Skipped' manager action should appear after SkipCurrentDraftPick.");
+            "A 'Draft Pick Skipped' league action should appear after SkipCurrentDraftPick.");
     }
 
     // ── Fixture B: skip then undo ─────────────────────────────────────────
@@ -133,11 +133,11 @@ public class DraftSkipManagerActionTests : IntegrationTestBase
     }
 
     [Test]
-    public async Task SkipUndo_ManagerActionLoggedWithCorrectType()
+    public async Task SkipUndo_LeagueActionLoggedWithCorrectType()
     {
         var actions = await _skipUndoLeague.Manager.League.GetLeagueActionsAsync(
             _skipUndoLeague.LeagueID, _skipUndoLeague.Year);
         Assert.That(actions.Any(a => a.ActionType == "Draft Skip Undone"), Is.True,
-            "'Draft Skip Undone' manager action should appear after undoing a skip.");
+            "'Draft Skip Undone' league action should appear after undoing a skip.");
     }
 }

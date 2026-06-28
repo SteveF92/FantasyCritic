@@ -86,7 +86,7 @@ public class DraftService
             var slotType = previousPick.CounterPick ? "counter-pick" : "standard game";
             var publisherName = previousPick.Publisher.GetPublisherAndUserDisplayName();
             var description = $"Undid skip for {publisherName}, round {previousPick.RoundNumber} ({slotType}).";
-            var action = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Draft Skip Undone", description);
+            var action = new LeagueAction(previousPick.Publisher, _clock.GetCurrentInstant(), "Draft Skip Undone", description, managerAction: true);
             await _fantasyCriticRepo.RemoveDraftPickSkip(leagueYear.ActiveDraft, previousPick.Publisher, previousPick.CounterPick, previousPick.RoundNumber, action);
             return Result.Success();
         }
@@ -137,7 +137,7 @@ public class DraftService
         var slotType = nextPick.CounterPick ? "counter-pick" : "standard game";
         var publisherName = nextPick.Publisher.GetPublisherAndUserDisplayName();
         var description = $"{publisherName} was skipped for round {nextPick.RoundNumber} ({slotType}).";
-        var action = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Draft Pick Skipped", description);
+        var action = new LeagueAction(nextPick.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: true);
 
         await _fantasyCriticRepo.AddDraftPickSkip(leagueYear.ActiveDraft, nextPick.Publisher, nextPick.CounterPick, nextPick.RoundNumber, action);
         return Result.Success();
