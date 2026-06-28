@@ -1,7 +1,7 @@
 namespace FantasyCritic.Lib.Domain.Conferences;
 public class ConferenceLeagueYear
 {
-    public ConferenceLeagueYear(ConferenceLeague league, int year, bool conferenceLocked, bool draftStarted, bool draftFinished)
+    public ConferenceLeagueYear(ConferenceLeague league, int year, bool conferenceLocked, bool draftStarted, bool draftFinished, int? activeDraftNumber)
     {
         League = league;
         Year = year;
@@ -9,6 +9,7 @@ public class ConferenceLeagueYear
         ConferenceLocked = conferenceLocked;
         DraftStarted = draftStarted;
         DraftFinished = draftFinished;
+        ActiveDraftNumber = activeDraftNumber;
     }
 
     public ConferenceLeague League { get; }
@@ -18,4 +19,5 @@ public class ConferenceLeagueYear
     public bool ConferenceLocked { get; }
     public bool DraftStarted { get; }
     public bool DraftFinished { get; }
+    public int? ActiveDraftNumber { get; }
 }

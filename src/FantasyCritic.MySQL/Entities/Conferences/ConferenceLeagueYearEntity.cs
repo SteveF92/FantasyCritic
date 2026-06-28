@@ -11,6 +11,7 @@ internal class ConferenceLeagueYearEntity
 
     public bool DraftStarted { get; set; }
     public bool DraftFinished { get; set; }
+    public int? ActiveDraftNumber { get; set; }
     public bool ConferenceLocked { get; set; }
 
     public string LeagueManagerDisplayName { get; set; } = null!;
@@ -20,6 +21,6 @@ internal class ConferenceLeagueYearEntity
     {
         var leagueManager = new MinimalFantasyCriticUser(LeagueManager, LeagueManagerDisplayName, LeagueManagerEmailAddress);
         var league = new ConferenceLeague(LeagueID, LeagueName, leagueManager);
-        return new ConferenceLeagueYear(league, Year, ConferenceLocked, DraftStarted, DraftFinished);
+        return new ConferenceLeagueYear(league, Year, ConferenceLocked, DraftStarted, DraftFinished, ActiveDraftNumber);
     }
 }

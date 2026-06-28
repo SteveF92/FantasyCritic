@@ -21,7 +21,21 @@ public class ConferenceLeagueYearViewModel
 
         ConferenceLocked = domain.ConferenceLocked.HasValue && domain.ConferenceLocked.Value;
         DraftStarted = domain.FirstDraft.PlayStatus.PlayStarted;
-        DraftFinished = domain.FirstDraft.PlayStatus.DraftFinished;
+        DraftFinished = domain.Drafts.All(d => d.PlayStatus.DraftFinished);
+        ActiveDraftNumber = domain.ActiveDraft?.DraftNumber;
+    }
+
+    public ConferenceLeagueYearViewModel(ConferenceLeagueYear domain)
+    {
+        LeagueID = domain.League.LeagueID;
+        LeagueName = domain.League.LeagueName;
+        Year = domain.Year;
+        LeagueManager = new PlayerViewModel(domain.League.LeagueID, domain.League.LeagueName, domain.League.LeagueManager, false);
+
+        ConferenceLocked = domain.ConferenceLocked;
+        DraftStarted = domain.DraftStarted;
+        DraftFinished = domain.DraftFinished;
+        ActiveDraftNumber = domain.ActiveDraftNumber;
     }
 
     public Guid LeagueID { get; }
@@ -34,4 +48,5 @@ public class ConferenceLeagueYearViewModel
     public bool ConferenceLocked { get; }
     public bool DraftStarted { get; }
     public bool DraftFinished { get; }
+    public int? ActiveDraftNumber { get; }
 }

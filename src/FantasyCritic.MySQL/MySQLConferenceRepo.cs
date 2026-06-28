@@ -427,19 +427,30 @@ public class MySQLConferenceRepo : IConferenceRepo
 
     public async Task<IReadOnlyList<ConferenceLeagueYear>> GetLeagueYearsInConferenceYear(ConferenceYear conferenceYear)
     {
-        // TODO(Phase2-MultiDraft): Uses only the first draft's PlayStatus.
         const string leagueYearSQL = """
-                                     SELECT 
-                                     tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager, 
-                                     tbl_user.DisplayName as ManagerDisplayName, tbl_user.EmailAddress as ManagerEmailAddress, 
+                                     SELECT
+                                     tbl_league.LeagueID, tbl_league.LeagueName, tbl_league.LeagueManager,
+                                     tbl_user.DisplayName AS LeagueManagerDisplayName, tbl_user.EmailAddress AS LeagueManagerEmailAddress,
                                      tbl_league_year.Year,
-                                     ld.PlayStatus <> "NotStartedDraft" AS DraftStarted,
-                                     ld.PlayStatus = "DraftFinal" AS DraftFinished,
+                                     ld1.PlayStatus <> 'NotStartedDraft' AS DraftStarted,
+                                     NOT EXISTS (
+                                         SELECT 1 FROM tbl_league_draft ld2
+                                         WHERE ld2.LeagueID = tbl_league_year.LeagueID
+                                           AND ld2.Year = tbl_league_year.Year
+                                           AND ld2.PlayStatus <> 'DraftFinal'
+                                     ) AS DraftFinished,
+                                     (SELECT ld3.DraftNumber FROM tbl_league_draft ld3
+                                      WHERE ld3.LeagueID = tbl_league_year.LeagueID
+                                        AND ld3.Year = tbl_league_year.Year
+                                        AND ld3.PlayStatus IN ('Drafting', 'DraftPaused')
+                                      ORDER BY ld3.DraftNumber
+                                      LIMIT 1) AS ActiveDraftNumber,
                                      ConferenceLocked
-                                     FROM tbl_league_year 
+                                     FROM tbl_league_year
                                      JOIN tbl_league ON tbl_league.LeagueID = tbl_league_year.LeagueID
                                      JOIN tbl_user ON tbl_league.LeagueManager = tbl_user.UserID
-                                     JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year AND ld.DraftNumber = 1
+                                     JOIN tbl_league_draft ld1 ON ld1.LeagueID = tbl_league_year.LeagueID
+                                         AND ld1.Year = tbl_league_year.Year AND ld1.DraftNumber = 1
                                      WHERE ConferenceID = @conferenceID AND Year = @year;
                                      """;
         var queryObject = new

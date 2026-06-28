@@ -492,7 +492,8 @@ const string leagueYearSQL = """
                              (SELECT ld3.DraftNumber FROM tbl_league_draft ld3
                               WHERE ld3.LeagueID = tbl_league_year.LeagueID
                                 AND ld3.Year = tbl_league_year.Year
-                                AND ld3.PlayStatus IN ('Draft', 'DraftPaused')
+                                AND ld3.PlayStatus IN ('Drafting', 'DraftPaused')
+                              ORDER BY ld3.DraftNumber
                               LIMIT 1) AS ActiveDraftNumber,
                              ConferenceLocked
                              FROM tbl_league_year
