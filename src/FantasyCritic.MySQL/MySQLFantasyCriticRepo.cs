@@ -1031,6 +1031,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task ResetDraft(LeagueYear leagueYear, LeagueDraft draftToReset, Instant timestamp)
     {
         const string gameDeleteSQL = "DELETE FROM tbl_league_publishergame WHERE PublisherID IN @publisherIDs AND DraftID = @draftID";
+        const string skipDeleteSQL = "DELETE FROM tbl_league_draftpickskip WHERE DraftID = @draftID";
         string draftResetSQL = $"UPDATE tbl_league_draft SET PlayStatus = '{PlayStatus.NotStartedDraft.Value}', DraftStartedTimestamp = NULL WHERE DraftID = @draftID";
 
         LeagueManagerAction resetDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Draft Reset", $"Draft '{draftToReset.Name}' was reset.");
@@ -1039,6 +1040,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(gameDeleteSQL, new { publisherIDs = leagueYear.Publishers.Select(x => x.PublisherID), draftID = draftToReset.DraftID }, transaction);
+        await connection.ExecuteAsync(skipDeleteSQL, new { draftID = draftToReset.DraftID }, transaction);
         await connection.ExecuteAsync(draftResetSQL, new { draftID = draftToReset.DraftID }, transaction);
         await AddLeagueManagerAction(resetDraftAction, connection, transaction);
         await transaction.CommitAsync();
