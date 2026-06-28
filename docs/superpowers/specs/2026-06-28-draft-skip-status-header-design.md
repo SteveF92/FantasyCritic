@@ -10,14 +10,14 @@ When draft picks are skipped — automatically (publisher has no open slots) or 
 
 ### Migration: `2026-06-28_000_draftPickSkipIsManual.sql`
 
-Add `IsManual` to `tbl_league_draftpickskip`:
+Add `IsManualSkip` to `tbl_league_draftpickskip`:
 
 ```sql
 ALTER TABLE tbl_league_draftpickskip
-    ADD COLUMN IsManual bit(1) NOT NULL DEFAULT 0;
+    ADD COLUMN IsManualSkip bit(1) NOT NULL DEFAULT 0;
 
 ALTER TABLE tbl_league_draftpickskip
-    ALTER COLUMN IsManual DROP DEFAULT;
+    ALTER COLUMN IsManualSkip DROP DEFAULT;
 ```
 
 The DEFAULT 0 is used only for the backfill of existing rows; it is immediately dropped so future inserts must always supply the value explicitly.
@@ -31,25 +31,25 @@ The DEFAULT 0 is used only for the backfill of existing rows; it is immediately 
 
 ### `PublisherDraftPickSkip`
 
-Add `IsManual`:
+Add `IsManualSkip`:
 
 ```csharp
-public record PublisherDraftPickSkip(bool CounterPick, int PickNumber, bool IsManual);
+public record PublisherDraftPickSkip(bool CounterPick, int PickNumber, bool IsManualSkip);
 ```
 
 ### `PastDraftPick`
 
-Add `bool? IsManual` — meaningful only when `Skipped` is true; null for real picks:
+Add `bool? IsManualSkip` — meaningful only when `Skipped` is true; null for real picks. No default value:
 
 ```csharp
-public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, PublisherGame? GameSelected, bool? IsManual = null)
+public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, PublisherGame? GameSelected, bool? IsManualSkip)
 {
     public bool Skipped => GameSelected is null;
     public int? OverallPickNumber => GameSelected?.OverallDraftPosition;
 }
 ```
 
-When `GetPastDraftPicks` creates a skipped `PastDraftPick`, it reads `IsManual` from the matching `PublisherDraftPickSkip` entry and passes it through.
+When `GetPastDraftPicks` creates a skipped `PastDraftPick`, it reads `IsManualSkip` from the matching `PublisherDraftPickSkip` entry and passes it through. Real picks pass `null`.
 
 ### `DraftStatus`
 
@@ -75,10 +75,24 @@ Pass this to the `DraftStatus` constructor as `IReadOnlyList<PastDraftPick>`.
 
 ### `SkippedPickViewModel`
 
-New small record in `FantasyCritic.Web.Models.Responses` (Web-only, no shared state):
+New class in `FantasyCritic.Web.Models.Responses` (Web-only, no shared state). Uses a real constructor to encapsulate the domain-to-view-model transformation:
 
 ```csharp
-public record SkippedPickViewModel(string PublisherName, int RoundNumber, bool CounterPick, bool IsManual);
+public class SkippedPickViewModel
+{
+    public SkippedPickViewModel(PastDraftPick domain)
+    {
+        PublisherName = domain.Publisher.GetPublisherAndUserDisplayName();
+        RoundNumber = domain.RoundNumber;
+        CounterPick = domain.CounterPick;
+        IsManualSkip = domain.IsManualSkip!.Value; // non-null guaranteed: only skipped picks are mapped here
+    }
+
+    public string PublisherName { get; }
+    public int RoundNumber { get; }
+    public bool CounterPick { get; }
+    public bool IsManualSkip { get; }
+}
 ```
 
 ### `LeagueDraftViewModel`
@@ -89,11 +103,7 @@ Populated in the constructor when `domain.PlayStatus.DraftIsActiveOrPaused` and 
 
 ```csharp
 SkippedPicksSinceLastRealPick = draftStatus.SkippedPicksSinceLastRealPick
-    .Select(x => new SkippedPickViewModel(
-        x.Publisher.GetPublisherAndUserDisplayName(),
-        x.RoundNumber,
-        x.CounterPick,
-        x.IsManual!.Value))  // IsManual is always set on skipped picks; non-null guaranteed by construction
+    .Select(x => new SkippedPickViewModel(x))
     .ToList();
 ```
 
@@ -101,11 +111,32 @@ SkippedPicksSinceLastRealPick = draftStatus.SkippedPicksSinceLastRealPick
 
 ## MySQL / Repo Changes
 
-The MySQL repo that loads `PublisherDraftInfo` must read the new `IsManual` column when building `PublisherDraftPickSkip` records.
+### `DraftPickSkipEntity`
 
-The service layer methods that insert skip rows must pass the correct `IsManual` value:
-- Auto-skip insertion (after a real pick) → `IsManual = false`
-- Manual skip insertion (manager action) → `IsManual = true`
+Add `IsManualSkip` and update `ToDomain()`:
+
+```csharp
+internal class DraftPickSkipEntity
+{
+    public Guid DraftID { get; set; }
+    public Guid PublisherID { get; set; }
+    public bool CounterPick { get; set; }
+    public int PickNumber { get; set; }
+    public bool IsManualSkip { get; set; }
+
+    public PublisherDraftPickSkip ToDomain() => new PublisherDraftPickSkip(CounterPick, PickNumber, IsManualSkip);
+}
+```
+
+### Stored Procedures
+
+Both `sp_getleagueyear.sql` and `sp_getleagueyearsforconferenceyear.sql` use `SELECT ps.*` from `tbl_league_draftpickskip`. The new `IsManualSkip` column will be returned automatically — no SP changes required.
+
+### Insert Sites
+
+The repo methods that insert skip rows must supply `IsManualSkip` explicitly:
+- Auto-skip insertion (after a real pick) → `IsManualSkip = false`
+- Manual skip insertion (manager action) → `IsManualSkip = true`
 
 ---
 
@@ -113,7 +144,7 @@ The service layer methods that insert skip rows must pass the correct `IsManual`
 
 ### Data
 
-`activeDraft.skippedPicksSinceLastRealPick` — array of `{ publisherName, roundNumber, counterPick, isManual }` objects.
+`activeDraft.skippedPicksSinceLastRealPick` — array of `{ publisherName, roundNumber, counterPick, isManualSkip }` objects.
 
 ### Computed property: `skippedPicksMessage`
 
@@ -123,11 +154,11 @@ Build the display string from the raw list:
 2. **Single distinct publisher:**
    - All auto-skipped, skipped once → *"[Name]'s pick was auto-skipped because they have no open slots."*
    - All auto-skipped, skipped N times → *"[Name]'s pick was auto-skipped [N times] because they have no open slots."*
-   - Any manual → *"[Name]'s pick was skipped by the league manager."*
+   - Any `isManualSkip = true` → *"[Name]'s pick was skipped by the league manager."*
 3. **Multiple distinct publishers:**
    - *"The following players had their draft picks skipped: [A], [B]. See the History page for more information."*
 
-The "any manual" rule means if a publisher was skipped both automatically and manually in the same streak, the manual label takes precedence — the edge case is too rare to warrant a combined message.
+The "any manual wins" rule: if a publisher was skipped both automatically and manually in the same streak, the manual label takes precedence — the edge case is too rare to warrant a combined message.
 
 ### Template
 
