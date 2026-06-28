@@ -69,32 +69,77 @@ public class DraftService
             throw new Exception($"No active draft found for league: {leagueYear.Key}");
         }
 
-        var publisherGamesForDraft = leagueYear.Publishers.SelectMany(x => x.PublisherGames.Where(x => x.DraftID == leagueYear.ActiveDraft.DraftID)).ToList();
         if (!leagueYear.ActiveDraft.PlayStatus.PlayStarted || leagueYear.ActiveDraft.PlayStatus.DraftFinished)
         {
-            return Result.Failure("Cannot undo a draft game when the draft is not active.");
+            return Result.Failure("Cannot undo a draft action when the draft is not active.");
         }
+
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus?.PreviousPick is null)
+        {
+            return Result.Failure("There is nothing to undo.");
+        }
+        var previousPick = draftStatus.PreviousPick;
+
+        if (previousPick.Skipped)
+        {
+            var slotType = previousPick.CounterPick ? "counter-pick" : "standard game";
+            var publisherName = previousPick.Publisher.GetPublisherAndUserDisplayName();
+            var description = $"Undid skip for {publisherName}, round {previousPick.RoundNumber} ({slotType}).";
+            var action = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Draft Skip Undone", description);
+            await _fantasyCriticRepo.RemoveDraftPickSkip(leagueYear.ActiveDraft, previousPick.Publisher, previousPick.CounterPick, previousPick.RoundNumber, action);
+            return Result.Success();
+        }
+
+        var publisherGamesForDraft = leagueYear.Publishers
+            .SelectMany(x => x.PublisherGames.Where(g => g.DraftID == leagueYear.ActiveDraft.DraftID))
+            .ToList();
 
         if (!publisherGamesForDraft.Any())
         {
-            return Result.Failure("Cannot undo a draft game when no games have been drafted yet.");
+            return Result.Failure("Cannot undo a draft pick when no games have been drafted yet.");
         }
 
         var counterPicks = publisherGamesForDraft.Where(x => x.CounterPick).ToList();
-
-        PublisherGame publisherGameToUndo;
-        if (!counterPicks.Any())
-        {
-            publisherGameToUndo = publisherGamesForDraft.MaxBy(x => x.OverallDraftPosition)!;
-        }
-        else
-        {
-            publisherGameToUndo = counterPicks.MaxBy(x => x.OverallDraftPosition)!;
-        }
+        PublisherGame publisherGameToUndo = counterPicks.Any()
+            ? counterPicks.MaxBy(x => x.OverallDraftPosition)!
+            : publisherGamesForDraft.MaxBy(x => x.OverallDraftPosition)!;
 
         var publisher = leagueYear.Publishers.Single(x => x.PublisherID == publisherGameToUndo.PublisherID);
-        await _publisherService.RemovePublisherGame(leagueYear, publisher, publisherGameToUndo);
+        await _publisherService.UndoDraftPick(leagueYear, publisher, publisherGameToUndo);
+        return Result.Success();
+    }
 
+    public async Task<Result> SkipCurrentDraftPick(LeagueYear leagueYear)
+    {
+        if (leagueYear.ActiveDraft is null)
+        {
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
+        }
+
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus is null)
+        {
+            return Result.Failure("Draft is already complete.");
+        }
+
+        var nextPick = draftStatus.NextPick;
+        bool alreadySkipped = nextPick.Publisher.DraftInfos
+            .Where(i => i.DraftID == leagueYear.ActiveDraft.DraftID)
+            .SelectMany(i => i.PickSkips)
+            .Any(s => s.CounterPick == nextPick.CounterPick && s.PickNumber == nextPick.RoundNumber);
+
+        if (alreadySkipped)
+        {
+            return Result.Failure("That turn has already been skipped.");
+        }
+
+        var slotType = nextPick.CounterPick ? "counter-pick" : "standard game";
+        var publisherName = nextPick.Publisher.GetPublisherAndUserDisplayName();
+        var description = $"{publisherName} was skipped for round {nextPick.RoundNumber} ({slotType}).";
+        var action = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Draft Pick Skipped", description);
+
+        await _fantasyCriticRepo.AddDraftPickSkip(leagueYear.ActiveDraft, nextPick.Publisher, nextPick.CounterPick, nextPick.RoundNumber, action);
         return Result.Success();
     }
 
