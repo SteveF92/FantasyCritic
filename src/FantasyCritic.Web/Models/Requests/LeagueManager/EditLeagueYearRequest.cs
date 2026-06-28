@@ -41,7 +41,7 @@ public class EditLeagueYearRequest
             parsed.DraftSystem, parsed.PickupSystem, parsed.ScoringSystem,
             parsed.TradingSystem, parsed.TiebreakSystem, parsed.ReleaseSystem,
             parsed.IneligibleGameSystem, parsed.CounterPickDeadline,
-            parsed.MightReleaseDroppableDate);
+            parsed.MightReleaseDroppableDate, parsed.BidsOnlyBeforeNextScheduledDraft);
         var firstDraftParams = FirstDraft?.ToDomain(0);
         return (settings, firstDraftParams);
     }

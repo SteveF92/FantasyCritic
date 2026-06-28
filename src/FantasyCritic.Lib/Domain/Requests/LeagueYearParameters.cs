@@ -9,7 +9,7 @@ public class LeagueYearParameters
         bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
         DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
-        AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
+        AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate, bool bidsOnlyBeforeNextScheduledDraft)
     {
         LeagueID = leagueID;
         Year = year;
@@ -36,6 +36,7 @@ public class LeagueYearParameters
         IneligibleGameSystem = ineligibleGameSystem;
         CounterPickDeadline = counterPickDeadline;
         MightReleaseDroppableDate = mightReleaseDroppableDate;
+        BidsOnlyBeforeNextScheduledDraft = bidsOnlyBeforeNextScheduledDraft;
     }
 
     public Guid LeagueID { get; }
@@ -63,4 +64,5 @@ public class LeagueYearParameters
     public IneligibleGameSystem IneligibleGameSystem { get; }
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
+    public bool BidsOnlyBeforeNextScheduledDraft { get; }
 }

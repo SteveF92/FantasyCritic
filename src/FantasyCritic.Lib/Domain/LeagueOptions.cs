@@ -14,7 +14,7 @@ public class LeagueOptions
         bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, DraftSystem draftSystem, PickupSystem pickupSystem,
         ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
-        AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
+        AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate, bool bidsOnlyBeforeNextScheduledDraft)
     {
         StandardGames = standardGames;
         CounterPicks = counterPicks;
@@ -38,6 +38,7 @@ public class LeagueOptions
         IneligibleGameSystem = ineligibleGameSystem;
         CounterPickDeadline = counterPickDeadline;
         MightReleaseDroppableDate = mightReleaseDroppableDate;
+        BidsOnlyBeforeNextScheduledDraft = bidsOnlyBeforeNextScheduledDraft;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -66,6 +67,7 @@ public class LeagueOptions
         IneligibleGameSystem = parameters.IneligibleGameSystem;
         CounterPickDeadline = parameters.CounterPickDeadline;
         MightReleaseDroppableDate = parameters.MightReleaseDroppableDate;
+        BidsOnlyBeforeNextScheduledDraft = parameters.BidsOnlyBeforeNextScheduledDraft;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -92,6 +94,7 @@ public class LeagueOptions
     public IneligibleGameSystem IneligibleGameSystem { get; }
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
+    public bool BidsOnlyBeforeNextScheduledDraft { get; }
     public bool HasSpecialSlots => SpecialGameSlots.Any();
 
     public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber) => _specialSlotDictionary.GetValueOrDefault(slotNumber);
@@ -160,6 +163,11 @@ public class LeagueOptions
         if (EnableBids != existingOptions.EnableBids)
         {
             differences.Add($"'Enable Bids' changed from '{existingOptions.EnableBids.ToYesNoString()}' to '{EnableBids.ToYesNoString()}'.");
+        }
+
+        if (BidsOnlyBeforeNextScheduledDraft != existingOptions.BidsOnlyBeforeNextScheduledDraft)
+        {
+            differences.Add($"'Bids Only Before Next Scheduled Draft' changed from '{existingOptions.BidsOnlyBeforeNextScheduledDraft.ToYesNoString()}' to '{BidsOnlyBeforeNextScheduledDraft.ToYesNoString()}'.");
         }
 
         if (UnrestrictedReleaseStatusDroppableGames != existingOptions.UnrestrictedReleaseStatusDroppableGames)
@@ -271,7 +279,7 @@ public class LeagueOptions
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
             AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, SpecialGameSlots, DraftSystem,
             PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
-            CounterPickDeadline, MightReleaseDroppableDate);
+            CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return options;
     }
 
@@ -293,7 +301,7 @@ public class LeagueOptions
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
             AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, totalSpecialGameSlots, DraftSystem,
             PickupSystem, ScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
-            CounterPickDeadline, MightReleaseDroppableDate);
+            CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
 
         var differences = newOptions.GetDifferences(this);
         if (!differences.HasChanges)

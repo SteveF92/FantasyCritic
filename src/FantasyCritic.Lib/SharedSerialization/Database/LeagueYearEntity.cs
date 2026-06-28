@@ -26,6 +26,7 @@ public class LeagueYearEntity
         AllowMoveIntoIneligible = options.AllowMoveIntoIneligible;
         MinimumBidAmount = options.MinimumBidAmount;
         EnableBids = options.EnableBids;
+        BidsOnlyBeforeNextScheduledDraft = options.BidsOnlyBeforeNextScheduledDraft;
         CounterPickDeadlineMonth = options.CounterPickDeadline.Month;
         CounterPickDeadlineDay = options.CounterPickDeadline.Day;
         MightReleaseDroppableMonth = options.MightReleaseDroppableDate?.Month;
@@ -58,6 +59,7 @@ public class LeagueYearEntity
     public bool AllowMoveIntoIneligible { get; set; }
     public int MinimumBidAmount { get; set; }
     public bool EnableBids { get; set; }
+    public bool BidsOnlyBeforeNextScheduledDraft { get; set; }
     public string DraftSystem { get; set; } = null!;
     public string PickupSystem { get; set; } = null!;
     public string TiebreakSystem { get; set; } = null!;
@@ -96,7 +98,7 @@ public class LeagueYearEntity
         LeagueOptions options = new LeagueOptions(StandardGames, CounterPicks, UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
             EnableBids, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem,
-            counterPickDeadline, mightReleaseDroppableDate);
+            counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
 
         return new LeagueYear(league, year, options, leagueDrafts, eligibilityOverrides, tagOverrides,
             winningUser, publishersInLeague, ConferenceLocked, UnderReview, LeagueYearName);
