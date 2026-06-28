@@ -104,7 +104,16 @@ public class FantasyCriticService
 
         IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager.ToMinimal(), null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
-        throw new NotImplementedException("Draft creation will be updated in Task 6");
+        var leagueYearKey = new LeagueYearKey(newLeague.LeagueID, parameters.LeagueYearParameters.Year);
+        var drafts = parameters.Drafts.Select((d, i) => new LeagueDraft(
+            Guid.NewGuid(), leagueYearKey, i + 1,
+            d.Name ?? (i == 0 ? "Initial Draft" : $"Draft {i + 1}"),
+            d.ScheduledDate, d.GamesToDraft, d.CounterPicksToDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
+            .ToList();
+
+        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options, drafts);
+        return Result.Success(newLeague);
     }
 
     public async Task<Result> EditLeague(LeagueYear leagueYear, LeagueYearParameters parameters)
