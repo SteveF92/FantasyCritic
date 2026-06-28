@@ -72,7 +72,10 @@ internal sealed class GetDraftStatusTestBuilder
                         draftSpec.DraftNumber,
                         publisherSpec.PublisherID,
                         publisherSpec.DraftPosition,
-                        new List<PublisherDraftPickSkip>()))
+                        publisherSpec.Skips
+                            .Where(s => s.DraftNumber == draftSpec.DraftNumber)
+                            .Select(s => new PublisherDraftPickSkip(s.CounterPick, s.PickNumber, s.IsManualSkip))
+                            .ToList()))
                     .ToList();
 
                 var games = publisherSpec.Games
@@ -161,6 +164,12 @@ internal sealed class GetDraftStatusTestBuilder
             timestamp));
     }
 
+    internal void AddSkip(DraftSpec draft, Publisher publisher, bool counterPick, int pickNumber, bool isManualSkip)
+    {
+        var publisherSpec = _publisherSpecs.Single(x => x.PublisherID == publisher.PublisherID);
+        publisherSpec.Skips.Add(new SkipSpec(draft.DraftNumber, counterPick, pickNumber, isManualSkip));
+    }
+
     private static LeagueDraft CreateLeagueDraft(
         LeagueYearKey leagueYearKey,
         GetDraftStatusTestBuilder.DraftSpec draftSpec,
@@ -175,7 +184,15 @@ internal sealed class GetDraftStatusTestBuilder
         }
 
         var publisherDraftInfo = publisherSpecs
-            .Select(publisher => new PublisherDraftInfo(draftID, draftSpec.DraftNumber, publisher.PublisherID, publisher.DraftPosition, new List<PublisherDraftPickSkip>()))
+            .Select(publisher => new PublisherDraftInfo(
+                draftID,
+                draftSpec.DraftNumber,
+                publisher.PublisherID,
+                publisher.DraftPosition,
+                publisher.Skips
+                    .Where(s => s.DraftNumber == draftSpec.DraftNumber)
+                    .Select(s => new PublisherDraftPickSkip(s.CounterPick, s.PickNumber, s.IsManualSkip))
+                    .ToList()))
             .ToList();
 
         return new LeagueDraft(
@@ -221,6 +238,7 @@ internal sealed class GetDraftStatusTestBuilder
         public string Name { get; } = name;
         public int DraftPosition { get; } = draftPosition;
         public List<GameSpec> Games { get; } = [];
+        public List<SkipSpec> Skips { get; } = [];
     }
 
     internal sealed class DraftSpec(int draftNumber, int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus, string name)
@@ -234,6 +252,7 @@ internal sealed class GetDraftStatusTestBuilder
     }
 
     internal sealed record GameSpec(int DraftNumber, bool CounterPick, int PublisherDraftPosition, int OverallDraftPosition, Instant Timestamp);
+    internal sealed record SkipSpec(int DraftNumber, bool CounterPick, int PickNumber, bool IsManualSkip);
 }
 
 internal sealed class DraftScenarioBuilder
@@ -250,6 +269,16 @@ internal sealed class DraftScenarioBuilder
     public DraftScenarioBuilder PickStandard() => Pick(counterPick: false, DraftPhase.StandardGames);
 
     public DraftScenarioBuilder PickCounterPick() => Pick(counterPick: true, DraftPhase.CounterPicks);
+
+    public DraftScenarioBuilder SkipPick(bool isManual = false)
+    {
+        var leagueYear = _root.BuildLeagueYear(forceActiveDraftNumber: _draft.DraftNumber);
+        var status = DraftFunctions.GetDraftStatus(leagueYear)
+            ?? throw new InvalidOperationException($"Cannot skip in draft {_draft.DraftNumber}: draft has no active turn.");
+
+        _root.AddSkip(_draft, status.NextDraftPublisher, status.NextPick.CounterPick, status.RoundNumber, isManual);
+        return this;
+    }
 
     public DraftScenarioBuilder WithDraft(int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus, string? name = null) =>
         _root.WithDraft(gamesToDraft, counterPicksToDraft, playStatus, name);

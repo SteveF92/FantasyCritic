@@ -2,13 +2,14 @@ namespace FantasyCritic.Lib.Domain.Draft;
 
 public class DraftStatus
 {
-    public DraftStatus(LeagueDraft draft, FutureDraftPick nextPick, PastDraftPick? previousPick, PastDraftPick? previousNonSkippedPick, IReadOnlyList<FutureDraftPick> picksToSkip)
+    public DraftStatus(LeagueDraft draft, FutureDraftPick nextPick, PastDraftPick? previousPick, PastDraftPick? previousNonSkippedPick, IReadOnlyList<FutureDraftPick> picksToSkip, IReadOnlyList<PastDraftPick> skippedPicksSinceLastRealPick)
     {
         Draft = draft;
         NextPick = nextPick;
         PreviousPick = previousPick;
         PreviousNonSkippedPick = previousNonSkippedPick;
         PicksToSkip = picksToSkip;
+        SkippedPicksSinceLastRealPick = skippedPicksSinceLastRealPick;
     }
 
     public LeagueDraft Draft { get; }
@@ -16,6 +17,7 @@ public class DraftStatus
     public PastDraftPick? PreviousPick { get; }
     public PastDraftPick? PreviousNonSkippedPick { get; }
     public IReadOnlyList<FutureDraftPick> PicksToSkip { get; }
+    public IReadOnlyList<PastDraftPick> SkippedPicksSinceLastRealPick { get; }
 
     public DraftPhase DraftPhase
     {
@@ -36,7 +38,7 @@ public class DraftStatus
     public int OverallPickNumber => NextPick.OverallPickNumber ?? throw new InvalidOperationException($"NextPick for publisher {NextPick.Publisher.PublisherID} has no pick number. NextPick should never be a skipped pick.");
 }
 
-public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, PublisherGame? GameSelected)
+public record PastDraftPick(Publisher Publisher, bool CounterPick, int RoundNumber, PublisherGame? GameSelected, bool? IsManualSkip)
 {
     public bool Skipped => GameSelected is null;
     public int? OverallPickNumber => GameSelected?.OverallDraftPosition;

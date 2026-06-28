@@ -18,4 +18,4 @@ public class PublisherDraftInfo
     public IReadOnlyList<PublisherDraftPickSkip> PickSkips { get; }
 }
 
-public record PublisherDraftPickSkip(bool CounterPick, int PickNumber);
+public record PublisherDraftPickSkip(bool CounterPick, int PickNumber, bool IsManualSkip);

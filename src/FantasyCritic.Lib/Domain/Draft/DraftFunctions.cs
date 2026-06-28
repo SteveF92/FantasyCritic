@@ -77,8 +77,13 @@ public static class DraftFunctions
 
         var previousDraftPick = previousDraftPicks.LastOrDefault();
         var previousNonSkippedPick = previousDraftPicks.LastOrDefault(x => !x.Skipped);
+        var skippedPicksSinceLastRealPick = previousDraftPicks
+            .Reverse()
+            .TakeWhile(x => x.Skipped)
+            .Reverse()
+            .ToList();
 
-        var draftStatus = new DraftStatus(leagueYear.ActiveDraft, processedPicks.NextPick, previousDraftPick, previousNonSkippedPick, processedPicks.PicksToSkip);
+        var draftStatus = new DraftStatus(leagueYear.ActiveDraft, processedPicks.NextPick, previousDraftPick, previousNonSkippedPick, processedPicks.PicksToSkip, skippedPicksSinceLastRealPick);
         return draftStatus;
     }
 
@@ -207,8 +212,8 @@ public static class DraftFunctions
         var gameDictionary = draftedGames.ToDictionary(x => (x.CounterPick, x.OverallDraftPosition!.Value));
 
         var skipLookup = draft.PublisherDraftInfo
-            .SelectMany(info => info.PickSkips, (info, skip) => (info.PublisherID, skip.CounterPick, skip.PickNumber))
-            .ToHashSet();
+            .SelectMany(info => info.PickSkips, (info, skip) => (Key: (info.PublisherID, skip.CounterPick, skip.PickNumber), Skip: skip))
+            .ToDictionary(x => x.Key, x => x.Skip);
 
         var draftPicks = new List<PastDraftPick>();
 
@@ -222,9 +227,9 @@ public static class DraftFunctions
 
             foreach (var publisher in publishers)
             {
-                if (skipLookup.Contains((publisher.PublisherID, false, roundNumber)))
+                if (skipLookup.TryGetValue((publisher.PublisherID, false, roundNumber), out var stdSkip))
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null));
+                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null, stdSkip.IsManualSkip));
                     // overallPickNumber does NOT advance — skip holds the position without consuming it
                     continue;
                 }
@@ -235,7 +240,7 @@ public static class DraftFunctions
                     return draftPicks;  // frontier reached, remaining turns are future
                 }
 
-                draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, pickedGame));
+                draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, pickedGame, null));
                 overallPickNumber++;
             }
         }
@@ -250,9 +255,9 @@ public static class DraftFunctions
 
             foreach (var publisher in publishers)
             {
-                if (skipLookup.Contains((publisher.PublisherID, true, roundNumber)))
+                if (skipLookup.TryGetValue((publisher.PublisherID, true, roundNumber), out var cpSkip))
                 {
-                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null));
+                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null, cpSkip.IsManualSkip));
                     continue;
                 }
 
@@ -262,7 +267,7 @@ public static class DraftFunctions
                     return draftPicks;  // frontier reached, remaining turns are future
                 }
 
-                draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, pickedGame));
+                draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, pickedGame, null));
                 overallPickNumber++;
             }
         }
