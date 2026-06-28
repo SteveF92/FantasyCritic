@@ -13,8 +13,8 @@ export interface DraftSettings {
 export interface LeagueYearSettingsPartial {
   standardGames: number;
   counterPicks: number;
-  gamesToDraft?: number;         // not used post-refactor; included for transitional compat
-  counterPicksToDraft?: number;  // same
+  gamesToDraft?: number; // not used post-refactor; included for transitional compat
+  counterPicksToDraft?: number; // same
   minimumBidAmount: number;
   enableBids: boolean;
   tradingSystem: string;
@@ -48,19 +48,19 @@ function computeGameCounts(
   playerCount: number
 ): { standardGames: number; counterPicks: number; gamesToDraft: number; counterPicksToDraft: number } {
   const avgStdGames = Math.floor(recommendedNumberOfGames / 6);
-  const avgCPs = Math.floor(avgStdGames / 6);
+  const avgCPKs = Math.floor(avgStdGames / 6);
   const avgGTD = Math.floor(avgStdGames * draftGameRatio);
-  const avgCPTD = Math.floor(avgCPs * draftGameRatio);
+  const avgCPKTD = Math.floor(avgCPKs * draftGameRatio);
 
   const thisStdGames = Math.floor(recommendedNumberOfGames / playerCount);
-  const thisCPs = Math.floor(thisStdGames / 6);
+  const thisCPKs = Math.floor(thisStdGames / 6);
   const thisGTD = Math.floor(thisStdGames * draftGameRatio);
-  const thisCPTD = Math.floor(thisCPs * draftGameRatio);
+  const thisCPKTD = Math.floor(thisCPKs * draftGameRatio);
 
   let standardGames = Math.floor((avgStdGames + thisStdGames) / 2);
-  let counterPicks = Math.floor((avgCPs + thisCPs) / 2);
+  let counterPicks = Math.floor((avgCPKs + thisCPKs) / 2);
   let gamesToDraft = Math.floor((avgGTD + thisGTD) / 2);
-  let counterPicksToDraft = Math.floor((avgCPTD + thisCPTD) / 2);
+  let counterPicksToDraft = Math.floor((avgCPKTD + thisCPKTD) / 2);
 
   if (counterPicks === 0 || counterPicksToDraft === 0) {
     counterPicks = 1;
@@ -97,12 +97,7 @@ function computeSpecialSlots(standardGames: number, experienceLevel: ExperienceL
 // Public API
 // ---------------------------------------------------------------------------
 
-export function computePreset(
-  gameMode: GameMode,
-  experienceLevel: ExperienceLevel,
-  playerCount: number,
-  year: number
-): PresetResult {
+export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLevel, playerCount: number, year: number): PresetResult {
   let recommendedNumberOfGames: number;
   let draftGameRatio: number;
 
@@ -120,8 +115,7 @@ export function computePreset(
     draftGameRatio = 1 / 2;
   }
 
-  const { standardGames, counterPicks, gamesToDraft, counterPicksToDraft } =
-    computeGameCounts(recommendedNumberOfGames, draftGameRatio, playerCount);
+  const { standardGames, counterPicks, gamesToDraft, counterPicksToDraft } = computeGameCounts(recommendedNumberOfGames, draftGameRatio, playerCount);
 
   const alwaysBanned = ['Port', 'PlannedForEarlyAccess', 'CurrentlyInEarlyAccess', 'ReleasedInternationally'];
   const standardBanned = ['YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster', 'ExpansionPack'];
@@ -145,7 +139,7 @@ export function computePreset(
     specialGameSlots: computeSpecialSlots(standardGames, experienceLevel),
     tags: { banned: bannedTags, required: [] },
     counterPickDeadline: `${year}-11-01`,
-    mightReleaseDroppableDate: `${year}-11-01`,
+    mightReleaseDroppableDate: `${year}-11-01`
   };
 
   let drafts: DraftSettings[];
@@ -154,7 +148,7 @@ export function computePreset(
     const draft2Games = gamesToDraft - draft1Games;
     drafts = [
       { name: null, scheduledDate: null, gamesToDraft: draft1Games, counterPicksToDraft },
-      { name: null, scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0 },
+      { name: null, scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0 }
     ];
   } else if (gameMode === 'One Shot') {
     drafts = [{ name: null, scheduledDate: null, gamesToDraft: standardGames, counterPicksToDraft: counterPicks }];
@@ -165,11 +159,7 @@ export function computePreset(
   return { settings, drafts };
 }
 
-export function getDefaultDraft(
-  draftIndex: number,
-  standardGames: number,
-  allocatedSoFar: number
-): DraftSettings {
+export function getDefaultDraft(draftIndex: number, standardGames: number, allocatedSoFar: number): DraftSettings {
   const remaining = Math.max(1, standardGames - allocatedSoFar);
   const name = draftIndex === 0 ? null : null; // null = server resolves; caller can override
   return { name, scheduledDate: null, gamesToDraft: remaining, counterPicksToDraft: 0 };
