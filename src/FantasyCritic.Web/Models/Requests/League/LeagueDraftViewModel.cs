@@ -24,6 +24,8 @@ public class LeagueDraftViewModel
         DraftIsPaused = domain.PlayStatus.DraftIsPaused;
         DraftFinished = domain.PlayStatus.DraftFinished;
 
+        IReadOnlyList<SkippedPickViewModel> skippedPicks = [];
+
         if (domain.PlayStatus.DraftIsActiveOrPaused)
         {
             var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
@@ -33,8 +35,13 @@ public class LeagueDraftViewModel
                 NextPickPublisherName = draftStatus.NextDraftPublisher.GetPublisherAndUserDisplayName();
                 NextPickRoundNumber = draftStatus.RoundNumber;
                 NextPickIsCounterPick = draftStatus.NextPick.CounterPick;
+                skippedPicks = draftStatus.SkippedPicksSinceLastRealPick
+                    .Select(x => new SkippedPickViewModel(x))
+                    .ToList();
             }
         }
+
+        SkippedPicksSinceLastRealPick = skippedPicks;
 
         if (!domain.PlayStatus.PlayStarted)
         {
@@ -66,6 +73,7 @@ public class LeagueDraftViewModel
     public string? NextPickPublisherName { get; }
     public int? NextPickRoundNumber { get; }
     public bool? NextPickIsCounterPick { get; }
+    public IReadOnlyList<SkippedPickViewModel> SkippedPicksSinceLastRealPick { get; }
     public bool ReadyToSetDraftOrder { get; }
     public IReadOnlyList<string> StartDraftErrors { get; }
     public bool ReadyToDraft { get; }
