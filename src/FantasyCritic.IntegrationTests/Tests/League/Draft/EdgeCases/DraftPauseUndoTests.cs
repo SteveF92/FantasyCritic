@@ -74,12 +74,13 @@ public class DraftPauseUndoTests : IntegrationTestBase
     }
 
     [Test]
-    public void Pause_NoPublisherIsNextToDraft()
+    public void Pause_P2IsNextToDraft()
     {
-        Assert.That(
-            _pausedSnapshot.Publishers.Any(p => p.NextToDraft),
-            Is.False,
-            "No publisher should be marked NextToDraft while the draft is paused.");
+        Assert.That(_pausedSnapshot.ActiveDraft()?.DraftIsPaused ?? false, Is.True,
+            "Draft should still be paused in this snapshot.");
+        var p2 = _pausedSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[1].PublisherID);
+        Assert.That(p2.NextToDraft, Is.True,
+            "P2 should still be NextToDraft while paused: P1 made pick 1 and the turn does not clear on pause.");
     }
 
     [Test]
@@ -91,12 +92,13 @@ public class DraftPauseUndoTests : IntegrationTestBase
     }
 
     [Test]
-    public void Undo_NoPublisherIsNextToDraft()
+    public void Undo_P1IsNextToDraftWhilePaused()
     {
-        Assert.That(
-            _afterUndoSnapshot.Publishers.Any(p => p.NextToDraft),
-            Is.False,
-            "No publisher should be NextToDraft while the draft is still paused after undo.");
+        Assert.That(_afterUndoSnapshot.ActiveDraft()?.DraftIsPaused ?? false, Is.True,
+            "Draft should still be paused after undo.");
+        var p1 = _afterUndoSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID);
+        Assert.That(p1.NextToDraft, Is.True,
+            "P1 should be NextToDraft while still paused: undo removed their pick and they are back on the clock.");
     }
 
     [Test]
