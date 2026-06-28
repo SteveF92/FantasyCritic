@@ -87,6 +87,17 @@
           </ValidationProvider>
           <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
         </div>
+
+        <div v-if="isMultiDraft && internalValue.enableBids" class="form-group">
+          <b-form-checkbox v-model="internalValue.bidsOnlyBeforeNextScheduledDraft">
+            <span class="checkbox-label">Only allow bids for games that release before the next scheduled draft</span>
+            <p>
+              When enabled, bids can only be placed on games whose maximum known release date falls before your
+              next draft's scheduled date. This ensures the bidding system is used only for games that no one
+              will have a chance to draft.
+            </p>
+          </b-form-checkbox>
+        </div>
       </div>
 
       <div v-show="gameMode !== 'One Shot'">

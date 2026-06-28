@@ -37,6 +37,7 @@ public sealed class LeagueScenario
     // Bid rules
     public int MinimumBidAmount { get; init; } = 0;
     public bool EnableBids { get; init; } = false;
+    public bool BidsOnlyBeforeNextScheduledDraft { get; init; } = false;
 
     // System strings — must match the enum names used by the server
     public string DraftSystem { get; init; } = "Flexible";
@@ -74,6 +75,7 @@ public sealed class LeagueScenario
             AllowMoveIntoIneligible = AllowMoveIntoIneligible,
             MinimumBidAmount = MinimumBidAmount,
             EnableBids = EnableBids,
+            BidsOnlyBeforeNextScheduledDraft = BidsOnlyBeforeNextScheduledDraft,
             DraftSystem = DraftSystem,
             PickupSystem = PickupSystem,
             ScoringSystem = ScoringSystem,
