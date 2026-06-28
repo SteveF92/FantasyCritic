@@ -147,20 +147,23 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
     const draft1Games = Math.ceil(gamesToDraft / 2);
     const draft2Games = gamesToDraft - draft1Games;
     drafts = [
-      { name: null, scheduledDate: null, gamesToDraft: draft1Games, counterPicksToDraft },
-      { name: null, scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0 }
+      { name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft: draft1Games, counterPicksToDraft },
+      { name: getDefaultDraftName(1), scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0 }
     ];
   } else if (gameMode === 'One Shot') {
-    drafts = [{ name: null, scheduledDate: null, gamesToDraft: standardGames, counterPicksToDraft: counterPicks }];
+    drafts = [{ name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft: standardGames, counterPicksToDraft: counterPicks }];
   } else {
-    drafts = [{ name: null, scheduledDate: null, gamesToDraft, counterPicksToDraft }];
+    drafts = [{ name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft, counterPicksToDraft }];
   }
 
   return { settings, drafts };
 }
 
+export function getDefaultDraftName(draftIndex: number): string {
+  return draftIndex === 0 ? 'Initial Draft' : `Draft ${draftIndex + 1}`;
+}
+
 export function getDefaultDraft(draftIndex: number, standardGames: number, allocatedSoFar: number): DraftSettings {
   const remaining = Math.max(1, standardGames - allocatedSoFar);
-  const name = draftIndex === 0 ? null : null; // null = server resolves; caller can override
-  return { name, scheduledDate: null, gamesToDraft: remaining, counterPicksToDraft: 0 };
+  return { name: getDefaultDraftName(draftIndex), scheduledDate: null, gamesToDraft: remaining, counterPicksToDraft: 0 };
 }
