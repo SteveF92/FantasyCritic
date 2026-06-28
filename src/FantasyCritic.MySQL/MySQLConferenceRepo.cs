@@ -86,7 +86,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         return domainObjects;
     }
 
-    public async Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options, LeagueDraft initialDraft)
+    public async Task CreateConference(Conference conference, League primaryLeague, int year, LeagueOptions options, IReadOnlyList<LeagueDraft> drafts)
     {
         ConferenceEntity conferenceEntity = new ConferenceEntity(conference);
         ConferenceYearEntity conferenceYearEntity = new ConferenceYearEntity(conference, year);
@@ -111,7 +111,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await _fantasyCriticRepo.CreateLeagueInTransaction(primaryLeague, year, options, initialDraft, true, connection, transaction);
+        await _fantasyCriticRepo.CreateLeagueInTransaction(primaryLeague, year, options, drafts, true, connection, transaction);
         await connection.ExecuteAsync(createConferenceSQL, conferenceEntity, transaction);
         await connection.ExecuteAsync(setConferenceIDSQL, setConferenceIDParameters, transaction);
         await connection.ExecuteAsync(createConferenceYearSQL, conferenceYearEntity, transaction);
@@ -124,7 +124,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await _fantasyCriticRepo.CreateLeagueInTransaction(newLeague, primaryLeagueYear.Year, primaryLeagueYear.Options, initialDraft, true, connection, transaction);
+        await _fantasyCriticRepo.CreateLeagueInTransaction(newLeague, primaryLeagueYear.Year, primaryLeagueYear.Options, [initialDraft], true, connection, transaction);
         await transaction.CommitAsync();
     }
 

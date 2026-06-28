@@ -1115,16 +1115,16 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domain;
     }
 
-    public async Task CreateLeague(League league, int initialYear, LeagueOptions options, LeagueDraft initialDraft)
+    public async Task CreateLeague(League league, int initialYear, LeagueOptions options, IReadOnlyList<LeagueDraft> drafts)
     {
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await CreateLeagueInTransaction(league, initialYear, options, initialDraft, false, connection, transaction);
+        await CreateLeagueInTransaction(league, initialYear, options, drafts, false, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    public async Task CreateLeagueInTransaction(League league, int initialYear, LeagueOptions options, LeagueDraft initialDraft, bool partOfConference, MySqlConnection connection, MySqlTransaction transaction)
+    public async Task CreateLeagueInTransaction(League league, int initialYear, LeagueOptions options, IReadOnlyList<LeagueDraft> drafts, bool partOfConference, MySqlConnection connection, MySqlTransaction transaction)
     {
         bool? conferenceLocked = null;
         if (partOfConference)
@@ -1161,24 +1161,26 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@DraftOrderSet,@PlayStatus,@DraftStartedTimestamp);
             """;
 
-        var draftRow = new
-        {
-            DraftID = initialDraft.DraftID,
-            LeagueID = initialDraft.LeagueYearKey.LeagueID,
-            Year = initialDraft.LeagueYearKey.Year,
-            DraftNumber = initialDraft.DraftNumber,
-            Name = initialDraft.Name,
-            ScheduledDate = (DateTime?)null,
-            GamesToDraft = initialDraft.GamesToDraft,
-            CounterPicksToDraft = initialDraft.CounterPicksToDraft,
-            DraftOrderSet = false,
-            PlayStatus = PlayStatus.NotStartedDraft.Value,
-            DraftStartedTimestamp = (Instant?)null
-        };
-
         await connection.ExecuteAsync(createLeagueSQL, entity, transaction);
         await connection.ExecuteAsync(createLeagueYearSQL, leagueYearEntity, transaction);
-        await connection.ExecuteAsync(createInitialDraftSQL, draftRow, transaction);
+        foreach (var draft in drafts)
+        {
+            var draftRow = new
+            {
+                DraftID = draft.DraftID,
+                LeagueID = draft.LeagueYearKey.LeagueID,
+                Year = draft.LeagueYearKey.Year,
+                DraftNumber = draft.DraftNumber,
+                Name = draft.Name,
+                ScheduledDate = (DateTime?)null,
+                GamesToDraft = draft.GamesToDraft,
+                CounterPicksToDraft = draft.CounterPicksToDraft,
+                DraftOrderSet = false,
+                PlayStatus = PlayStatus.NotStartedDraft.Value,
+                DraftStartedTimestamp = (Instant?)null
+            };
+            await connection.ExecuteAsync(createInitialDraftSQL, draftRow, transaction);
+        }
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
         await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
         await AddPlayerToLeagueInternal(league, league.LeagueManager.UserID, initialYear, true, connection, transaction);
