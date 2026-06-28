@@ -296,6 +296,7 @@
 <script>
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
+import { computeSpecialSlots } from '@/utilities/leagueCreationPresets';
 
 export default {
   components: {
@@ -311,7 +312,8 @@ export default {
     conferenceMode: { type: Boolean },
     isMultiDraft: { type: Boolean, default: false },
     leagueId: { type: String, default: null },
-    gameMode: { type: String, default: 'Standard' }
+    gameMode: { type: String, default: 'Standard' },
+    experienceLevel: { type: String, default: 'Standard' }
   },
   data() {
     return {
@@ -350,59 +352,10 @@ export default {
       if (!this.freshSettings) {
         return;
       }
-
       if (!this.internalValue.standardGames || this.internalValue.standardGames > 50) {
         return;
       }
-
-      this.internalValue.specialGameSlots = [];
-      if (this.gameMode === 'Beginner') {
-        return;
-      }
-
-      let numberOfSpecialSlots = Math.floor(this.internalValue.standardGames / 2);
-      if (numberOfSpecialSlots < 1) {
-        return;
-      }
-
-      let includeExpansionPackSlot = numberOfSpecialSlots >= 2;
-      let includeRemakeSlot = numberOfSpecialSlots >= 2;
-      let numberNonNGFSlots = 0;
-      if (includeExpansionPackSlot) {
-        numberNonNGFSlots++;
-      }
-      if (includeRemakeSlot) {
-        numberNonNGFSlots++;
-      }
-
-      let numberNGFSlots = numberOfSpecialSlots - numberNonNGFSlots;
-      if (numberNGFSlots < 0) {
-        numberNGFSlots = 0;
-      }
-
-      let slotIndex = 0;
-      for (slotIndex = 0; slotIndex < numberNGFSlots; slotIndex++) {
-        this.internalValue.specialGameSlots.push({
-          specialSlotPosition: slotIndex,
-          requiredTags: ['NewGamingFranchise']
-        });
-      }
-
-      if (includeExpansionPackSlot) {
-        this.internalValue.specialGameSlots.push({
-          specialSlotPosition: slotIndex,
-          requiredTags: ['ExpansionPack']
-        });
-        slotIndex++;
-      }
-
-      if (includeRemakeSlot) {
-        this.internalValue.specialGameSlots.push({
-          specialSlotPosition: slotIndex,
-          requiredTags: ['Reimagining', 'Remake', 'PartialRemake', 'DirectorsCut']
-        });
-        slotIndex++;
-      }
+      this.internalValue.specialGameSlots = computeSpecialSlots(this.internalValue.standardGames, this.experienceLevel);
     }
   }
 };
