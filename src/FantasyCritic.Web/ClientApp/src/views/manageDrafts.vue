@@ -1,6 +1,7 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
+    <b-alert v-if="successMessage" variant="success" show dismissible @dismissed="successMessage = null">{{ successMessage }}</b-alert>
 
     <div v-if="leagueYear">
       <h1>Manage Drafts — {{ leagueYear.settings.leagueYearName || leagueYear.league.leagueName }} {{ year }}</h1>
@@ -170,7 +171,8 @@ export default {
         additionalCounterPicks: 0,
         newSpecialGameSlots: []
       },
-      newDraftError: null
+      newDraftError: null,
+      successMessage: null
     };
   },
   computed: {
@@ -287,10 +289,13 @@ export default {
       this.newDraftError = null;
     },
     async submitNewDraft() {
+      this.newDraftError = null;
+      this.successMessage = null;
+      const draftName = this.newDraft.name;
       const model = {
         leagueID: this.leagueid,
         year: this.year,
-        name: this.newDraft.name,
+        name: draftName,
         scheduledDate: this.newDraft.scheduledDate || null,
         gamesToDraft: this.newDraft.gamesToDraft,
         counterPicksToDraft: this.newDraft.counterPicksToDraft,
@@ -302,6 +307,10 @@ export default {
         await axios.post('/api/leagueManager/CreateLeagueDraft', model);
         this.resetNewDraftForm();
         await this.fetchLeagueYear();
+        this.successMessage = `Draft "${draftName}" was added.`;
+        this.$nextTick(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
       } catch (error) {
         this.newDraftError = error.response?.data || 'An error occurred adding the draft.';
       }
