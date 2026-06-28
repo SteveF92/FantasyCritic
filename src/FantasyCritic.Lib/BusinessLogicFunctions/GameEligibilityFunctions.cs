@@ -439,13 +439,7 @@ public static class GameEligibilityFunctions
                 {
                     var scheduledDate = pendingDraft.ScheduledDate.Value;
                     var maxRelease = masterGame.MaximumReleaseDate;
-                    if (maxRelease is null)
-                    {
-                        claimErrors.Add(new ClaimError(
-                            $"Your league only allows bids for games that release before the next scheduled draft ({scheduledDate.ToLongDate()}), but this game has no known maximum release date.",
-                            false));
-                    }
-                    else if (maxRelease.Value >= scheduledDate)
+                    if (!maxRelease.HasValue || maxRelease.Value >= scheduledDate)
                     {
                         claimErrors.Add(new ClaimError(
                             $"Your league only allows bids for games that release before the next scheduled draft ({scheduledDate.ToLongDate()}).",
