@@ -541,7 +541,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ConsolidatedLeagueYearViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -1920,6 +1920,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType<List<TradeViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
