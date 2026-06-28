@@ -113,7 +113,7 @@
               <li v-if="!leagueYear.supportedYear.finished" class="fake-link action">
                 <router-link :to="{ name: 'manageDrafts', params: { leagueid: league.leagueID, year: leagueYear.year } }">Manage Drafts</router-link>
               </li>
-              <li v-if="readyToSetDraftOrder && !playStarted" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
+              <li v-if="readyToSetDraftOrder" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
               <li v-if="postDraftPlayable" v-b-modal="'specialAuctionsModal'" class="fake-link action">Special Auctions</li>
               <li v-b-modal="'transferManagerForm'" class="fake-link action">Promote new League Manager</li>
               <li v-if="firstDraftFinished && leagueYear.supportedYear.finished" v-b-modal="'toggleUnderReview'" class="fake-link action">

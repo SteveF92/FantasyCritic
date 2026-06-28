@@ -26,9 +26,10 @@ public class LeagueYearViewModel
             UserIsActive = activeUsers.Any(x => x.UserID == accessingUser.Id);
         }
 
+        var displayOrderDraftID = leagueYear.DraftForPublisherDisplayOrder.DraftID;
         var activeDraftNextPublisher = DraftFunctions.GetDraftStatus(leagueYear)?.NextDraftPublisher;
         Publishers = leagueYear.Publishers
-            .OrderBy(x => x.FirstDraftInfo.DraftPosition)
+            .OrderBy(x => x.GetDraftPosition(displayOrderDraftID))
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, activeDraftNextPublisher, userIsInLeague, userIsInvitedToLeague, supplementalData.SystemWideValues, counterPickedByDictionary))
             .ToList();
 
