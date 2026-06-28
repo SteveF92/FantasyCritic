@@ -93,6 +93,8 @@ Server behaviour: if `FirstDraft` is provided and the league has exactly 1 draft
 
 This is a breaking change to the read side (`GetLeagueYearOptions` returns this type). The edit form now reads draft counts from `leagueYear.drafts[0]` (already available via `GetLeagueYear`), not from the options endpoint.
 
+`LeagueYearName` is **kept** in `LeagueYearSettingsViewModel` for the read path — `GetLeagueYearOptions` still returns it and `editLeague.vue` reads it from there to pre-populate the name field. On the write side, `EditLeagueYearRequest` has `LeagueYearName` at the top level; the controller uses that value and ignores any `LeagueYearName` that might appear inside the nested `LeagueYearSettings` object.
+
 ### Domain: New `DraftParameters` record (Lib/Domain/Requests)
 
 ```csharp
@@ -127,7 +129,7 @@ If `FirstDraft` is provided and the league has exactly 1 draft, updates that dra
 
 ## Frontend
 
-### New: `leagueCreationPresets.ts` (ClientApp/src/utils or similar)
+### New: `leagueCreationPresets.ts` (ClientApp/src/utilities/leagueCreationPresets.ts)
 
 TypeScript module. Contains all auto-update logic currently living in `leagueYearSettings.vue`'s `autoUpdateOptions()` method.
 
@@ -166,13 +168,17 @@ export function getDefaultDraft(
 
 | Game Mode | Experience Level | `recommendedGames` | `draftGameRatio` | `enableBids` |
 |---|---|---|---|---|
-| Standard / Multi Draft | Beginner | 42 | 4/7 | true |
-| Standard / Multi Draft | Standard | 72 | 1/2 | true |
-| Standard / Multi Draft | Advanced | 108 | 4/9 | true |
+| Standard | Beginner | 42 | 4/7 | true |
+| Standard | Standard | 72 | 1/2 | true |
+| Standard | Advanced | 108 | 4/9 | true |
 | One Shot | any | 50 | 1 (all) | false |
-| Multi Draft | any | same as Standard/Advanced/Beginner above | split evenly across 2 drafts | false |
+| Multi Draft | Beginner | 42 | 4/7 | false |
+| Multi Draft | Standard | 72 | 1/2 | false |
+| Multi Draft | Advanced | 108 | 4/9 | false |
 
-For Multi Draft: `enableBids = false`; `totalGamesToDraft` split roughly evenly between Draft 1 and Draft 2 (`ceil(total/2)` for Draft 1, remainder for Draft 2). The settings object (standard games, counter picks, drop rules, etc.) uses the same formulas as Standard mode for the same experience level.
+Multi Draft always sets `enableBids = false`. The standard-games, counter-picks, drop, and other settings formulas are identical to the Standard game mode for the same experience level — only `enableBids` and the draft split differ.
+
+For Multi Draft: `totalGamesToDraft` is split roughly evenly between Draft 1 and Draft 2 (`ceil(total/2)` for Draft 1, remainder for Draft 2). Additional drafts added by the user via "Add another draft" use `getDefaultDraft()` which allocates whatever games remain (`standardGames - allocatedSoFar`, min 1).
 
 For One Shot: `gamesToDraft = standardGames`, `counterPicksToDraft = counterPicks`, `tradingSystem = 'NoTrades'`, `grantSuperDrops = false`, `enableBids = false`, drops all zero.
 
@@ -205,7 +211,7 @@ Manages the `drafts` array for create/edit contexts.
 - `modelValue: DraftSettings[]`
 - `standardGames: number`
 - `gameMode: GameMode`
-- `editMode?: boolean` — if true, hides the "Add another draft" button and disables Name editing for standard-named drafts (for the `editLeague` single-draft case; the name is still editable but the add button is absent)
+- `editMode?: boolean` — if true, hides the "Add another draft" button (for the `editLeague` single-draft case)
 
 **Behaviour:**
 - Always renders at least 1 draft section (Draft 1)
