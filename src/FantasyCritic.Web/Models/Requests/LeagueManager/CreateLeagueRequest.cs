@@ -40,7 +40,7 @@ public class CreateLeagueRequest
     public LeagueCreationParameters ToDomain(FantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
         LeagueYearParameters leagueYearParameters = LeagueYearSettings.ToDomain(tagDictionary);
-        LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, PublicLeague, TestLeague, CustomRulesLeague, leagueYearParameters);
+        LeagueCreationParameters parameters = new LeagueCreationParameters(manager, LeagueName, PublicLeague, TestLeague, CustomRulesLeague, leagueYearParameters, Array.Empty<DraftParameters>()); // TODO: replaced in Task 4
         return parameters;
     }
 }

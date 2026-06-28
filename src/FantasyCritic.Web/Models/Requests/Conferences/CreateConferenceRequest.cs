@@ -44,7 +44,7 @@ public class CreateConferenceRequest
     public ConferenceCreationParameters ToDomain(MinimalFantasyCriticUser manager, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
         LeagueYearParameters leagueYearParameters = LeagueYearSettings.ToDomain(tagDictionary);
-        ConferenceCreationParameters parameters = new ConferenceCreationParameters(manager, ConferenceName, PrimaryLeagueName, CustomRulesConference, leagueYearParameters);
+        ConferenceCreationParameters parameters = new ConferenceCreationParameters(manager, ConferenceName, PrimaryLeagueName, CustomRulesConference, leagueYearParameters, Array.Empty<DraftParameters>()); // TODO: replaced in Task 4
         return parameters;
     }
 }
