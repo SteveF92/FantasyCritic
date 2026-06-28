@@ -1053,6 +1053,39 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             new { draftID = draftToPause.DraftID });
     }
 
+    public async Task AddDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, LeagueManagerAction action)
+    {
+        const string sql = "INSERT INTO tbl_league_draftpickskip (DraftID, PublisherID, CounterPick, PickNumber) " +
+                           "VALUES (@draftID, @publisherID, @counterPick, @pickNumber);";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(sql,
+            new { draftID = draft.DraftID, publisherID = publisher.PublisherID, counterPick, pickNumber },
+            transaction);
+        await AddLeagueManagerAction(action, connection, transaction);
+        await transaction.CommitAsync();
+    }
+
+    public async Task RemoveDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, LeagueManagerAction action)
+    {
+        const string sql = "DELETE FROM tbl_league_draftpickskip " +
+                           "WHERE DraftID = @draftID AND PublisherID = @publisherID AND CounterPick = @counterPick AND PickNumber = @pickNumber;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        var deleted = await connection.ExecuteAsync(sql,
+            new { draftID = draft.DraftID, publisherID = publisher.PublisherID, counterPick, pickNumber },
+            transaction);
+        if (deleted != 1)
+        {
+            await transaction.RollbackAsync();
+            throw new Exception($"RemoveDraftPickSkip failed: row not found for DraftID={draft.DraftID}, PublisherID={publisher.PublisherID}");
+        }
+        await AddLeagueManagerAction(action, connection, transaction);
+        await transaction.CommitAsync();
+    }
+
     public async Task<PickupBid?> GetPickupBid(Guid bidID)
     {
         await using var connection = new MySqlConnection(_connectionString);
