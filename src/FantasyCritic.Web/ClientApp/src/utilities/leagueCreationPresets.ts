@@ -70,7 +70,7 @@ function computeGameCounts(
   return { standardGames, counterPicks, gamesToDraft, counterPicksToDraft };
 }
 
-function computeSpecialSlots(standardGames: number, experienceLevel: ExperienceLevel): object[] {
+export function computeSpecialSlots(standardGames: number, experienceLevel: ExperienceLevel): object[] {
   if (experienceLevel === 'Beginner') return [];
   const numberOfSpecialSlots = Math.floor(standardGames / 2);
   if (numberOfSpecialSlots < 1) return [];
@@ -85,10 +85,10 @@ function computeSpecialSlots(standardGames: number, experienceLevel: ExperienceL
     slots.push({ specialSlotPosition: slots.length, requiredTags: ['NewGamingFranchise'] });
   }
   if (includeExpansion) {
-    slots.push({ specialSlotPosition: slots.length, requiredTags: ['NewGamingFranchise', 'ExpansionPack'] });
+    slots.push({ specialSlotPosition: slots.length, requiredTags: ['ExpansionPack'] });
   }
   if (includeRemake) {
-    slots.push({ specialSlotPosition: slots.length, requiredTags: ['NewGamingFranchise', 'PartialRemake', 'Remake', 'Reimagining'] });
+    slots.push({ specialSlotPosition: slots.length, requiredTags: ['PartialRemake', 'Remake', 'Reimagining', 'DirectorsCut'] });
   }
   return slots;
 }
@@ -101,10 +101,7 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
   let recommendedNumberOfGames: number;
   let draftGameRatio: number;
 
-  if (gameMode === 'One Shot') {
-    recommendedNumberOfGames = 50;
-    draftGameRatio = 1;
-  } else if (experienceLevel === 'Beginner') {
+  if (experienceLevel === 'Beginner') {
     recommendedNumberOfGames = 42;
     draftGameRatio = 4 / 7;
   } else if (experienceLevel === 'Advanced') {
@@ -113,6 +110,11 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
   } else {
     recommendedNumberOfGames = 72;
     draftGameRatio = 1 / 2;
+  }
+
+  if (gameMode === 'One Shot') {
+    recommendedNumberOfGames = Math.floor(recommendedNumberOfGames * 0.75);
+    draftGameRatio = 1;
   }
 
   const { standardGames, counterPicks, gamesToDraft, counterPicksToDraft } = computeGameCounts(recommendedNumberOfGames, draftGameRatio, playerCount);
