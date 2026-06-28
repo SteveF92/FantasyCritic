@@ -178,14 +178,6 @@ public class MultiDraftPositionResetTests : IntegrationTestBase
 /// Concerns 2 &amp; 3: the auto-skip mechanic and draft completion when publishers have an unequal
 /// number of open slots in a draft (one slot pre-filled by a manager claim between drafts, standing
 /// in for a between-draft bid win).
-///
-/// Both tests are currently <c>[Ignore]</c>d because they are expected to fail against the current
-/// implementation — they document the suspected bugs so we can un-ignore them as we fix the logic:
-///   - The auto-skip check compares draft-specific game count against <c>GamesToDraft</c> rather than
-///     against the publisher's open roster slots, so a publisher with a pre-filled slot is asked to
-///     draft more games than they have room for.
-///   - <c>CompleteDraft</c> expects exactly <c>GamesToDraft * PublisherCount</c> games, so a draft in
-///     which any publisher legitimately drafts fewer games never registers as complete.
 /// </summary>
 [TestFixture]
 public class MultiDraftSkipExecutionTests : IntegrationTestBase
@@ -208,7 +200,6 @@ public class MultiDraftSkipExecutionTests : IntegrationTestBase
     }
 
     [Test]
-    [Ignore("Exposes suspected bug (concerns 2 & 3): auto-skip uses the GamesToDraft quota rather than open roster slots, and CompleteDraft expects GamesToDraft*PublisherCount games. A draft where one publisher has a pre-filled slot never completes. Confirmed failing (draft never reaches DraftFinal). Un-ignore once the skip/complete logic is fixed.")]
     public async Task AutoDraft_WithUnequalSlots_SkipsFullPublisherAndCompletes()
     {
         var league = await BuildLeagueWithUnequalDraft2SlotsAsync();
@@ -242,7 +233,6 @@ public class MultiDraftSkipExecutionTests : IntegrationTestBase
     }
 
     [Test]
-    [Ignore("Exposes suspected bug (concern 2, manual path): there is no skip handling in the live/manual draft path, so a publisher with no open slots stays 'next to draft' and cannot complete their turn. Confirmed failing (draft simulator throws because the full publisher has no draftable candidate). Un-ignore once the manual skip logic is implemented.")]
     public async Task ManualDraft_WithUnequalSlots_SkipsFullPublisherAndCompletes()
     {
         var league = await BuildLeagueWithUnequalDraft2SlotsAsync();

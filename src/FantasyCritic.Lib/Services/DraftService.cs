@@ -44,7 +44,7 @@ public class DraftService
         await _fantasyCriticRepo.StartDraft(leagueYear, leagueYear.PendingDraft);
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
-        var draftComplete = await CompleteDraft(updatedLeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
         return new StartDraftResult(autoDraftResult, draftComplete);
     }
 
@@ -189,7 +189,7 @@ public class DraftService
         }
 
         var autoDraftResult = await AutoDraftForLeague(request.LeagueYear, standardGamesAdded, counterPicksAdded);
-        var draftComplete = await CompleteDraft(request.LeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
         return new DraftResult(result, autoDraftResult, draftComplete);
     }
 
@@ -201,7 +201,7 @@ public class DraftService
         }
 
         var autoDraftResult = await AutoDraftForLeague(leagueYear, 0, 0);
-        var draftComplete = await CompleteDraft(leagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
         return draftComplete;
     }
 
@@ -226,26 +226,21 @@ public class DraftService
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
-            //// Auto-skip publishers who have no open slots in the active draft (e.g. filled via bids between drafts).
-            //var activeDraft = updatedLeagueYear.ActiveDraft;
-            //if (activeDraft is null)
-            //{
-            //    throw new Exception($"Draft is not active for league: {leagueYear.Key}");
-            //}
-
-            //bool isCounterPickPhase = draftStatus.DraftPhase.Equals(DraftPhase.CounterPicks);
-            //int gamesInActiveDraft = nextPublisher.PublisherGames.Count(g =>
-            //    g.DraftID == activeDraft.DraftID && g.CounterPick == isCounterPickPhase);
-            //int slotsInActiveDraft = isCounterPickPhase ? activeDraft.CounterPicksToDraft : activeDraft.GamesToDraft;
-            //if (gamesInActiveDraft >= slotsInActiveDraft)
-            //{
-            //    string slotType = isCounterPickPhase ? "counter-pick" : "standard game";
-            //    string description = $"{nextPublisher.GetPublisherAndUserDisplayName()} was skipped (no open {slotType} slots in {activeDraft.Name}).";
-            //    var skipAction = new LeagueManagerAction(updatedLeagueYear.Key, _clock.GetCurrentInstant(), "SkippedDraftTurn", description);
-            //    await _fantasyCriticRepo.AddLeagueManagerAction(skipAction);
-            //    depth++;
-            //    continue;
-            //}
+            // Auto-skip publishers who have no open slots (e.g. filled via bids between drafts).
+            if (draftStatus.PicksToSkip.Any())
+            {
+                var activeDraft = updatedLeagueYear.ActiveDraft!;
+                foreach (var pickToSkip in draftStatus.PicksToSkip)
+                {
+                    var slotType = pickToSkip.CounterPick ? "counter-pick" : "standard game";
+                    var publisherName = pickToSkip.Publisher.GetPublisherAndUserDisplayName();
+                    var description = $"{publisherName} was auto-skipped for round {pickToSkip.RoundNumber} ({slotType}) because they have no open slots.";
+                    var action = new LeagueAction(pickToSkip.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: false);
+                    await _fantasyCriticRepo.AddDraftPickSkip(activeDraft, pickToSkip.Publisher, pickToSkip.CounterPick, pickToSkip.RoundNumber, action);
+                }
+                depth++;
+                continue;
+            }
 
             if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
             {
@@ -357,34 +352,20 @@ public class DraftService
         return availableCounterPicks;
     }
 
-    private async Task<bool> CompleteDraft(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
+    private async Task<bool> CompleteDraft(LeagueYear leagueYear)
     {
-        var activeDraft = leagueYear.ActiveDraft;
-        if (activeDraft is null)
+        if (leagueYear.ActiveDraft is null)
         {
             return false;
         }
 
-        var publishers = leagueYear.Publishers;
-        int numberOfStandardGamesToDraft = activeDraft.GamesToDraft * publishers.Count;
-        int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick && x.DraftID == activeDraft.DraftID);
-        standardGamesDrafted += standardGamesAdded;
-
-        if (standardGamesDrafted < numberOfStandardGamesToDraft)
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus is not null)
         {
             return false;
         }
 
-        int numberOfCounterPicksToDraft = activeDraft.CounterPicksToDraft * publishers.Count;
-        int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick && x.DraftID == activeDraft.DraftID);
-        counterPicksDrafted += counterPicksAdded;
-
-        if (counterPicksDrafted < numberOfCounterPicksToDraft)
-        {
-            return false;
-        }
-
-        await _fantasyCriticRepo.CompleteDraft(leagueYear, activeDraft);
+        await _fantasyCriticRepo.CompleteDraft(leagueYear, leagueYear.ActiveDraft);
         return true;
     }
 
