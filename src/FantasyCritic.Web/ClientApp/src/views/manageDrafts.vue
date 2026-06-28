@@ -21,8 +21,13 @@
             <!-- Read view -->
             <div v-if="editingDraftId !== draft.draftID" class="mt-2">
               <div>
-                <strong>Scheduled Date:</strong>
-                {{ draft.scheduledDate || '—' }}
+                <strong>{{ draftDateLabel(draft) }}:</strong>
+                <template v-if="draft.playStarted">
+                  {{ (draft.draftStartedTimestamp | longDate) || '—' }}
+                </template>
+                <template v-else>
+                  {{ draft.scheduledDate || '—' }}
+                </template>
               </div>
               <div>
                 <strong>Games to Draft:</strong>
@@ -200,6 +205,9 @@ export default {
       } catch {
         this.errorInfo = 'Failed to load league data.';
       }
+    },
+    draftDateLabel(draft) {
+      return draft.playStarted ? 'Date Held' : 'Scheduled Date';
     },
     statusLabel(draft) {
       const map = {
