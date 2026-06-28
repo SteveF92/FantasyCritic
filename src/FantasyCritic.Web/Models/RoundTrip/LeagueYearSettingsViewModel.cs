@@ -13,7 +13,7 @@ public class LeagueYearSettingsViewModel
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible,
         int minimumBidAmount, bool enableBids, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
         string ineligibleGameSystem,
-        LocalDate counterPickDeadline, LocalDate? mightReleaseDroppableDate, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
+        LocalDate counterPickDeadline, LocalDate? mightReleaseDroppableDate, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots, bool bidsOnlyBeforeNextScheduledDraft)
     {
         LeagueID = leagueID;
         Year = year;
@@ -45,6 +45,7 @@ public class LeagueYearSettingsViewModel
 
         Tags = tags;
         SpecialGameSlots = specialGameSlots;
+        BidsOnlyBeforeNextScheduledDraft = bidsOnlyBeforeNextScheduledDraft;
     }
 
     public LeagueYearSettingsViewModel(LeagueYear leagueYear)
@@ -80,6 +81,7 @@ public class LeagueYearSettingsViewModel
         AllowMoveIntoIneligible = leagueYear.Options.AllowMoveIntoIneligible;
         MinimumBidAmount = leagueYear.Options.MinimumBidAmount;
         EnableBids = leagueYear.Options.EnableBids;
+        BidsOnlyBeforeNextScheduledDraft = leagueYear.Options.BidsOnlyBeforeNextScheduledDraft;
 
         DraftSystem = leagueYear.Options.DraftSystem.Value;
         PickupSystem = leagueYear.Options.PickupSystem.Value;
@@ -131,6 +133,7 @@ public class LeagueYearSettingsViewModel
 
     public int MinimumBidAmount { get; }
     public bool EnableBids { get; }
+    public bool BidsOnlyBeforeNextScheduledDraft { get; }
     public string DraftSystem { get; }
     public string PickupSystem { get; }
     public string ScoringSystem { get; }
@@ -203,7 +206,7 @@ public class LeagueYearSettingsViewModel
 
         LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, CounterPicks,
             unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount, EnableBids,
-            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate);
+            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return parameters;
     }
 }

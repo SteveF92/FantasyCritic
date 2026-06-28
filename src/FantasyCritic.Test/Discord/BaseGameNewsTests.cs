@@ -61,7 +61,7 @@ internal abstract class BaseGameNewsTests
             DraftSystem.Flexible, PickupSystem.SemiPublicBiddingSecretCounterPicks, ScoringSystem.GetDefaultScoringSystem(2025),
             TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, ReleaseSystem.MustBeReleased,
             IneligibleGameSystem.CaseByCase,
-            new AnnualDate(10, 1), new AnnualDate(10, 1));
+            new AnnualDate(10, 1), new AnnualDate(10, 1), false);
 
         var leagueYearKey = new LeagueYearKey(Guid.Empty, 2025);
         var draftID = TestLeagueDraftIds.For(leagueYearKey);

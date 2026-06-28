@@ -137,7 +137,8 @@ internal sealed class GetDraftStatusTestBuilder
             ReleaseSystem.MustBeReleased,
             IneligibleGameSystem.CaseByCase,
             new AnnualDate(10, 1),
-            new AnnualDate(10, 1));
+            new AnnualDate(10, 1),
+            false);
 
         return new LeagueYear(
             league,

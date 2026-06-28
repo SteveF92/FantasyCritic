@@ -424,6 +424,31 @@ public static class GameEligibilityFunctions
             }
         }
 
+        if (!dropping && !drafting && leagueYear.Options.BidsOnlyBeforeNextScheduledDraft)
+        {
+            var pendingDraft = leagueYear.PendingDraft;
+            if (pendingDraft is not null)
+            {
+                if (pendingDraft.ScheduledDate is null)
+                {
+                    claimErrors.Add(new ClaimError(
+                        "Your league only allows bids for games that release before the next scheduled draft, but your next draft does not have a scheduled date.",
+                        false));
+                }
+                else
+                {
+                    var scheduledDate = pendingDraft.ScheduledDate.Value;
+                    var maxRelease = masterGame.MaximumReleaseDate;
+                    if (!maxRelease.HasValue || maxRelease.Value >= scheduledDate)
+                    {
+                        claimErrors.Add(new ClaimError(
+                            $"Your league only allows bids for games that release before the next scheduled draft ({scheduledDate.ToLongDate()}).",
+                            false));
+                    }
+                }
+            }
+        }
+
         return claimErrors;
     }
 }

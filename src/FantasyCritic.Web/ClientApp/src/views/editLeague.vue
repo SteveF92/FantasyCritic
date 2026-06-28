@@ -35,7 +35,8 @@
         </leagueYearSettings>
       </div>
 
-      <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
+      <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+      <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
 
       <div class="form-group">
         <b-button class="col-10 offset-1" variant="primary" :disabled="!leagueYearIsValid" @click="postRequest">Confirm Settings</b-button>
@@ -69,6 +70,16 @@ export default {
     };
   },
   computed: {
+    bidsOnlyBeforeNextDraftScheduleError() {
+      if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
+      if (!this.isMultiDraft) return null;
+      const drafts = this.leagueYear?.drafts ?? [];
+      const draftsMissingDate = drafts.slice(1).some((d) => !d.scheduledDate);
+      if (draftsMissingDate) {
+        return "'Only allow bids before next scheduled draft' is enabled — all drafts after the first must have a scheduled date.";
+      }
+      return null;
+    },
     leagueYearIsValid() {
       if (!this.leagueYearSettings) return false;
       const settingsOk =
@@ -81,7 +92,7 @@ export default {
         this.firstDraft.gamesToDraft >= 1 &&
         this.firstDraft.counterPicksToDraft >= 0
       );
-      return settingsOk && draftOk;
+      return settingsOk && draftOk && !this.bidsOnlyBeforeNextDraftScheduleError;
     },
     oneShotMode() {
       return this.leagueYear?.settings?.oneShotMode ?? false;
