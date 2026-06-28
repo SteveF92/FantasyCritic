@@ -55,17 +55,17 @@ When `GetPastDraftPicks` creates a skipped `PastDraftPick`, it reads `IsManual` 
 
 Add `IReadOnlyList<PastDraftPick> SkippedPicksSinceLastRealPick`.
 
-In `GetDraftStatus`, after `GetPastDraftPicks` returns `previousDraftPicks`, compute the trailing skipped entries:
+In `GetDraftStatus`, after `GetPastDraftPicks` returns `previousDraftPicks`, compute the trailing skipped entries by reading backwards from the end of the list:
 
 ```csharp
-var skippedPicksSinceLastRealPick = previousNonSkippedPick is null
-    ? previousDraftPicks.Where(x => x.Skipped).ToList()
-    : previousDraftPicks
-        .SkipWhile(x => !x.Equals(previousNonSkippedPick))
-        .Skip(1)
-        .Where(x => x.Skipped)
-        .ToList();
+var skippedPicksSinceLastRealPick = previousDraftPicks
+    .Reverse()
+    .TakeWhile(x => x.Skipped)
+    .Reverse()
+    .ToList();
 ```
+
+This avoids any object-identity comparison against `previousNonSkippedPick` and correctly handles the case where no real picks have been made yet (all trailing picks are skips).
 
 Pass this to the `DraftStatus` constructor as `IReadOnlyList<PastDraftPick>`.
 
@@ -93,7 +93,7 @@ SkippedPicksSinceLastRealPick = draftStatus.SkippedPicksSinceLastRealPick
         x.Publisher.GetPublisherAndUserDisplayName(),
         x.RoundNumber,
         x.CounterPick,
-        x.IsManual!.Value))
+        x.IsManual!.Value))  // IsManual is always set on skipped picks; non-null guaranteed by construction
     .ToList();
 ```
 
