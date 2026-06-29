@@ -23,7 +23,7 @@
               <div>
                 <strong>{{ draftDateLabel(draft) }}:</strong>
                 <template v-if="draft.playStarted">
-                  {{ draft.draftStartedTimestamp | longDate || '—' }}
+                  {{ draftStartedDisplay(draft) }}
                 </template>
                 <template v-else>
                   {{ draft.scheduledDate || '—' }}
@@ -143,6 +143,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { DateTime } from 'luxon';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
 
 export default {
@@ -208,6 +209,12 @@ export default {
     },
     draftDateLabel(draft) {
       return draft.playStarted ? 'Date Held' : 'Scheduled Date';
+    },
+    draftStartedDisplay(draft) {
+      if (!draft.draftStartedTimestamp) {
+        return '—';
+      }
+      return DateTime.fromISO(draft.draftStartedTimestamp).toFormat('MMMM dd, yyyy');
     },
     statusLabel(draft) {
       const map = {
