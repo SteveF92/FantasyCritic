@@ -39,11 +39,26 @@
       </template>
 
       <!-- Imminent / scheduled line — shown inside the banner regardless of ready/not-ready -->
-      <div v-if="isImminent" class="mt-2">
-        <em v-if="pendingDraft.draftOrderSet && scheduledDateDisplay">Scheduled for {{ scheduledDateDisplay }} — draft order is set.</em>
+      <div v-if="showImminentLine" class="mt-2">
+        <em v-if="pendingDraft.draftOrderSet && scheduledDateDisplay && !isOverdue">Scheduled for {{ scheduledDateDisplay }} — draft order is set.</em>
         <em v-else-if="pendingDraft.draftOrderSet">Draft order is set.</em>
-        <em v-else-if="scheduledDateDisplay">Scheduled for {{ scheduledDateDisplay }}.</em>
+        <em v-else-if="scheduledDateDisplay && !isOverdue">Scheduled for {{ scheduledDateDisplay }}.</em>
       </div>
+    </div>
+
+    <!-- Soft reminder: scheduled date has passed without starting -->
+    <div v-if="isOverdue" class="alert alert-secondary" role="alert">
+      <span v-if="isFirstDraft">This draft was scheduled for {{ scheduledDateDisplay }} but hasn't started yet.</span>
+      <span v-else>
+        <strong>{{ pendingDraft.name }}</strong>
+        was scheduled for {{ scheduledDateDisplay }} but hasn't started yet.
+      </span>
+      <span v-if="isManager">
+         You can start it above or
+        <router-link :to="manageDraftsRoute">reschedule it on the Manage Drafts page</router-link>
+        whenever you're ready — there's no hard deadline.
+      </span>
+      <span v-else> Your league manager can start or reschedule whenever they're ready.</span>
     </div>
 
     <!-- Soft nudge: no scheduled date and not yet imminent -->
@@ -77,6 +92,16 @@ export default {
       const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
       const today = DateTime.local().startOf('day');
       return scheduled.diff(today, 'days').days <= 7;
+    },
+    isOverdue() {
+      if (!this.pendingDraft?.scheduledDate) return false;
+      const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
+      const today = DateTime.local().startOf('day');
+      return scheduled < today;
+    },
+    showImminentLine() {
+      if (!this.isImminent) return false;
+      return this.pendingDraft.draftOrderSet || (this.scheduledDateDisplay && !this.isOverdue);
     },
     scheduledDateDisplay() {
       if (!this.pendingDraft?.scheduledDate) return null;
