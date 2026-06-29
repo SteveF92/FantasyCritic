@@ -1172,7 +1172,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 Year = draft.LeagueYearKey.Year,
                 DraftNumber = draft.DraftNumber,
                 Name = draft.Name,
-                ScheduledDate = draft.ScheduledDate?.ToDateTimeUnspecified(),
+                ScheduledDate = draft.ScheduledDate,
                 GamesToDraft = draft.GamesToDraft,
                 CounterPicksToDraft = draft.CounterPicksToDraft,
                 DraftOrderSet = false,
@@ -1316,7 +1316,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(updateDraftSQL, new
         {
             name = updatedDraft.Name,
-            scheduledDate = updatedDraft.ScheduledDate?.ToDateTimeUnspecified(),
+            scheduledDate = updatedDraft.ScheduledDate,
             gamesToDraft = updatedDraft.GamesToDraft,
             counterPicksToDraft = updatedDraft.CounterPicksToDraft,
             draftID = updatedDraft.DraftID,
@@ -1395,7 +1395,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             Year = d.LeagueYearKey.Year,
             DraftNumber = d.DraftNumber,
             Name = d.Name,
-            ScheduledDate = d.ScheduledDate?.ToDateTimeUnspecified(),
+            ScheduledDate = d.ScheduledDate,
             GamesToDraft = d.GamesToDraft,
             CounterPicksToDraft = d.CounterPicksToDraft,
             DraftOrderSet = false,

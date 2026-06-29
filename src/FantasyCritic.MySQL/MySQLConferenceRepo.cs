@@ -659,10 +659,10 @@ public class MySQLConferenceRepo : IConferenceRepo
         try
         {
             var currentLeagueUsers = (await connection.QueryAsync<LeagueHasUserEntity>(currentLeagueUserSQL, conferenceParam, transaction)).ToList();
-            var currentPublisherEntities = (await connection.QueryAsync<ConferencePublisherInfo>(publisherEntitiesSQL, conferenceParam, transaction)).ToList();
+            var currentPublisherEntities = (await connection.QueryAsync<ConferencePublisherInfoEntity>(publisherEntitiesSQL, conferenceParam, transaction)).ToList();
             var currentActivePlayerEntities = (await connection.QueryAsync<LeagueActivePlayerEntity>(activePlayersSQL, conferenceParam, transaction)).ToList();
-            var conferenceDrafts = (await connection.QueryAsync<ConferenceDraftInfo>(conferenceDraftsSQL, conferenceParam, transaction)).ToList();
-            var conferenceDraftPositions = (await connection.QueryAsync<ConferenceDraftPosition>(conferenceDraftPositionsSQL, conferenceParam, transaction)).ToList();
+            var conferenceDrafts = (await connection.QueryAsync<ConferenceDraftInfoEntity>(conferenceDraftsSQL, conferenceParam, transaction)).ToList();
+            var conferenceDraftPositions = (await connection.QueryAsync<ConferenceDraftPositionEntity>(conferenceDraftPositionsSQL, conferenceParam, transaction)).ToList();
 
             var leagueUserLookup = currentLeagueUsers.ToLookup(x => x.LeagueID);
 
@@ -716,7 +716,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             }
 
             List<LeagueYearKey> leagueYearsToFixDraftOrders = new List<LeagueYearKey>();
-            List<ConferencePublisherInfo> publishersToUpdate = new List<ConferencePublisherInfo>();
+            List<ConferencePublisherInfoEntity> publishersToUpdate = new List<ConferencePublisherInfoEntity>();
             foreach (var publisher in currentPublisherEntities)
             {
                 var userNewLeague = newActivePlayersToAdd.FirstOrDefault(x => x.UserID == publisher.UserID);
@@ -864,23 +864,5 @@ public class MySQLConferenceRepo : IConferenceRepo
         }
 
         return Result.Success();
-    }
-
-    private record ConferencePublisherInfo(Guid PublisherID, Guid LeagueID, int Year, Guid UserID);
-
-    // Classes (not records) so Dapper can map via property setters with TINYINT→int coercion.
-    private class ConferenceDraftInfo
-    {
-        public Guid DraftID { get; set; }
-        public Guid LeagueID { get; set; }
-        public int Year { get; set; }
-        public int DraftNumber { get; set; }
-    }
-
-    private class ConferenceDraftPosition
-    {
-        public Guid DraftID { get; set; }
-        public Guid PublisherID { get; set; }
-        public int DraftPosition { get; set; }
     }
 }
