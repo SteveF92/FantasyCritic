@@ -35,7 +35,7 @@ let leagueMixin = {
     },
     firstDraft() {
       if (!this.leagueYear?.drafts || this.leagueYear.drafts.length === 0) {
-        throw new Error('Could not load drafts for this league.');
+        return null;
       }
       return this.leagueYear.drafts[0];
     },
@@ -103,13 +103,13 @@ let leagueMixin = {
       return this.leagueYear.settings.oneShotMode;
     },
     playStarted() {
-      return this.firstDraft.playStarted ?? false;
+      return this.firstDraft?.playStarted ?? false;
     },
     readyToSetDraftOrder() {
       return this.pendingDraft?.readyToSetDraftOrder ?? false;
     },
     firstDraftFinished() {
-      return this.firstDraft.draftFinished;
+      return this.firstDraft?.draftFinished ?? false;
     },
     hasPendingOrActiveDraft() {
       return this.pendingDraft !== null || this.activeDraft !== null;

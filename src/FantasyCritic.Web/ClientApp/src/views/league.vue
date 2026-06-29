@@ -66,7 +66,7 @@
       <draftCompleteModal ref="draftCompleteModalRef"></draftCompleteModal>
       <startDraftModal @draftStarted="startDraft"></startDraftModal>
 
-      <div v-if="inviteCode && !league.userIsInLeague && !firstDraft.playStarted" class="alert alert-secondary">
+      <div v-if="inviteCode && !league.userIsInLeague && !playStarted" class="alert alert-secondary">
         You have been invited to join this league.
         <b-button v-if="isAuth" variant="primary" class="mx-2" @click="joinWithInviteLink()">Join League</b-button>
         <template v-else>
@@ -100,7 +100,7 @@
         <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
       </b-alert>
       <specialAuctionInfo v-for="activeSpecialAuction in leagueYear.activeSpecialAuctions" :key="activeSpecialAuction.masterGameID" :special-auction="activeSpecialAuction"></specialAuctionInfo>
-      <div v-if="firstDraft.playStarted && leagueYear.supportedYear.finished">
+      <div v-if="playStarted && leagueYear.supportedYear.finished">
         <div v-if="leagueYear.underReview" class="alert alert-danger" role="alert">
           This league has been set to "under review", which allows the league manager to make changes after the year is over.
         </div>
@@ -127,7 +127,7 @@
         Alternatively, if you want to manage this league without playing in it, you will need to set yourself as "inactive" by going to "Manager Active Players" in the Manage League menu.
       </div>
 
-      <div v-if="league.isManager && !firstDraft.playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
+      <div v-if="league.isManager && !playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
 
       <draftStatusHeader></draftStatusHeader>
 
