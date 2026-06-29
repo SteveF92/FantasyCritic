@@ -1328,6 +1328,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task DeleteLeagueDraft(LeagueDraft draft, LeagueManagerAction managerAction)
     {
+        const string deleteDraftPickSkipsSQL = "DELETE FROM tbl_league_draftpickskip WHERE DraftID = @draftID;";
         const string deleteDraftPublishersSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID;";
         const string deleteDraftSQL = "DELETE FROM tbl_league_draft WHERE DraftID = @draftID;";
 
@@ -1335,6 +1336,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
+        await connection.ExecuteAsync(deleteDraftPickSkipsSQL, new { draftID = draft.DraftID }, transaction);
         await connection.ExecuteAsync(deleteDraftPublishersSQL, new { draftID = draft.DraftID }, transaction);
         await connection.ExecuteAsync(deleteDraftSQL, new { draftID = draft.DraftID }, transaction);
         await AddLeagueManagerAction(managerAction, connection, transaction);
