@@ -54,16 +54,16 @@
         was scheduled for {{ scheduledDateDisplay }} but hasn't started yet.
       </span>
       <span v-if="isManager">
-         You can start it above or
+        You can start it above or
         <router-link :to="manageDraftsRoute">reschedule it on the Manage Drafts page</router-link>
         whenever you're ready — there's no hard deadline.
       </span>
-      <span v-else> Your league manager can start or reschedule whenever they're ready.</span>
+      <span v-else>Your league manager can start or reschedule whenever they're ready.</span>
     </div>
 
     <!-- Soft nudge: no scheduled date and not yet imminent -->
     <div v-if="!pendingDraft.scheduledDate && !isImminent" class="alert alert-secondary">
-      No scheduled date set —
+      There is no scheduled date set for your draft —
       <router-link :to="manageDraftsRoute">set one on the Manage Drafts page</router-link>
       to help your players plan ahead.
     </div>
