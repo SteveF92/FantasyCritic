@@ -53,6 +53,31 @@ public static class DraftFunctions
             errors.Add(isManager ? "You must set the draft order." : "Your league manager must set the draft order.");
         }
 
+        if (leagueDraft.GamesToDraft == 0 && leagueDraft.CounterPicksToDraft == 0)
+        {
+            errors.Add("This draft has no games or counter picks configured. Please edit the draft settings to add games to draft.");
+        }
+
+        if (leagueDraft.GamesToDraft > 0)
+        {
+            bool anyPublisherHasOpenStandardSlot = leagueYear.Publishers.Any(p =>
+                p.PublisherGames.Count(g => !g.CounterPick) < leagueYear.Options.StandardGames);
+            if (!anyPublisherHasOpenStandardSlot)
+            {
+                errors.Add("No player has any open standard game slots. All slots are already filled. More standard slots will need to be added in order to start this draft.");
+            }
+        }
+
+        if (leagueDraft.CounterPicksToDraft > 0)
+        {
+            bool anyPublisherHasOpenCounterPickSlot = leagueYear.Publishers.Any(p =>
+                p.PublisherGames.Count(g => g.CounterPick) < leagueYear.Options.CounterPicks);
+            if (!anyPublisherHasOpenCounterPickSlot)
+            {
+                errors.Add("No player has any open counter pick slots. All slots are already filled. More counter pick slots will need to be added in order to start this draft.");
+            }
+        }
+
         if (conferenceDraftsNotEnabled)
         {
             errors.Add("The conference manager has not enabled drafting yet.");
