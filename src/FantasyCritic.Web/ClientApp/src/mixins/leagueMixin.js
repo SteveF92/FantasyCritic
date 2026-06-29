@@ -1,4 +1,5 @@
 import { mapState } from 'vuex';
+import { DateTime } from 'luxon';
 import { maxBy } from '@/globalFunctions';
 
 let leagueMixin = {
@@ -113,6 +114,33 @@ let leagueMixin = {
     },
     hasPendingOrActiveDraft() {
       return this.pendingDraft !== null || this.activeDraft !== null;
+    },
+    pendingDraftIsFirst() {
+      return this.pendingDraft?.draftNumber === 1;
+    },
+    pendingDraftIsWithinSevenDays() {
+      if (!this.pendingDraft?.scheduledDate) return false;
+      const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
+      const today = DateTime.local().startOf('day');
+      return scheduled.diff(today, 'days').days <= 7;
+    },
+    pendingDraftIsOverdue() {
+      if (!this.pendingDraft?.scheduledDate) return false;
+      const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
+      const today = DateTime.local().startOf('day');
+      return scheduled < today;
+    },
+    pendingDraftIsImminent() {
+      if (!this.pendingDraft) return false;
+      if (this.pendingDraftIsFirst) return true;
+      if (this.pendingDraft.draftOrderSet && !this.pendingDraft.scheduledDate) return true;
+      return this.pendingDraftIsWithinSevenDays;
+    },
+    pendingDraftCalloutVisible() {
+      if (!this.pendingDraft || this.activeDraft) return false;
+      if (this.pendingDraftIsFirst) return true;
+      if (this.pendingDraftIsOverdue) return true;
+      return this.pendingDraftIsWithinSevenDays;
     },
     draftIsActiveOrPaused() {
       return this.activeDraft !== null;

@@ -2,10 +2,8 @@
   <div>
     <div v-if="userHasAutoDraft" class="alert alert-info">
       <span v-if="userPublisher.autoDraftMode === 'All'">You have Auto Draft enabled. The site will select your games and counter picks when it is your turn.</span>
-      <span v-else>You have Auto Draft enabled for standard games. The site will select standard games for you; you will need to draft counter picks yourself.</span>
-      <span v-if="userPublisher.onlyAutoDraftFromWatchlist" class="d-block mt-1">
-        Only games on your watchlist will be considered. If none are available, you will need to pick manually.
-      </span>
+      <span v-else>You have Auto Draft enabled for standard games. The site will select standard games for you, but you will need to draft counter picks yourself.</span>
+      <span v-if="userPublisher.onlyAutoDraftFromWatchlist" class="d-block mt-1">Only games on your watchlist will be considered. If none are available, you will need to pick manually.</span>
     </div>
     <div v-if="activeDraft?.draftIsPaused">
       <div class="alert alert-danger">
@@ -56,7 +54,9 @@ export default {
   mixins: [LeagueMixin],
   computed: {
     userHasAutoDraft() {
-      return this.hasPendingOrActiveDraft && this.userPublisher?.autoDraftMode !== 'Off';
+      if (this.userPublisher?.autoDraftMode === 'Off') return false;
+      if (this.activeDraft) return true;
+      return this.pendingDraftCalloutVisible;
     },
     skippedPicksMessage() {
       const skips = this.activeDraft?.skippedPicksSinceLastRealPick;
@@ -72,7 +72,7 @@ export default {
       if (distinctNames.length === 1) {
         const name = distinctNames[0];
         const count = counts[name];
-        const hasManual = skips.some(s => s.publisherName === name && s.isManualSkip);
+        const hasManual = skips.some((s) => s.publisherName === name && s.isManualSkip);
 
         if (hasManual) {
           return `${name}'s pick was skipped by the league manager.`;
