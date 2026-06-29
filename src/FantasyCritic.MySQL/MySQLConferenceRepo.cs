@@ -269,7 +269,6 @@ public class MySQLConferenceRepo : IConferenceRepo
                                          LEFT JOIN tbl_league_draft ld
                                              ON ld.LeagueID = l.LeagueID
                                              AND ld.Year = cy.Year
-                                             AND ld.DraftNumber = 1
                                          WHERE cy.ConferenceID = @conferenceID
                                          GROUP BY cy.Year, sy.Finished;
                                          """;
