@@ -1,8 +1,9 @@
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.RoundTrip;
 
-namespace FantasyCritic.Web.Models.Responses;
+namespace FantasyCritic.Web.Models.Requests.League;
 
 public class LeagueDraftViewModel
 {
