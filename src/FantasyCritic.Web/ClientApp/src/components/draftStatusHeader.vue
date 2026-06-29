@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div v-if="userHasAutoDraft" class="alert alert-info">
+      <span v-if="userPublisher.autoDraftMode === 'All'">You have Auto Draft enabled. The site will select your games and counter picks when it is your turn.</span>
+      <span v-else>You have Auto Draft enabled for standard games. The site will select standard games for you; you will need to draft counter picks yourself.</span>
+      <span v-if="userPublisher.onlyAutoDraftFromWatchlist" class="d-block mt-1">
+        Only games on your watchlist will be considered. If none are available, you will need to pick manually.
+      </span>
+    </div>
     <div v-if="activeDraft?.draftIsPaused">
       <div class="alert alert-danger">
         <div v-if="!league.isManager">The draft has been paused. Speak to your league manager for details.</div>
@@ -48,6 +55,9 @@ import LeagueMixin from '@/mixins/leagueMixin.js';
 export default {
   mixins: [LeagueMixin],
   computed: {
+    userHasAutoDraft() {
+      return this.hasPendingOrActiveDraft && this.userPublisher?.autoDraftMode !== 'Off';
+    },
     skippedPicksMessage() {
       const skips = this.activeDraft?.skippedPicksSinceLastRealPick;
       if (!skips || skips.length === 0) return null;
