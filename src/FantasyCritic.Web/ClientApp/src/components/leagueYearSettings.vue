@@ -56,33 +56,20 @@
           If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
         </div>
 
-        <div>
+        <div v-if="!isStandardLeague">
           <b-form-checkbox v-model="internalValue.enableBids">
             <span class="checkbox-label">Enable Bids</span>
-            <p>
-              Allow players to bid on pickup games after the draft. If unchecked, rosters are filled only through the draft (plus trades and drops where applicable).
-            </p>
+            <p>Allow players to bid on pickup games after the draft.</p>
           </b-form-checkbox>
         </div>
 
         <label for="pickupSystem" class="control-label">Bidding System</label>
-        <b-form-select
-          id="pickupSystem"
-          v-model="internalValue.pickupSystem"
-          :options="possibleLeagueOptions.pickupSystems"
-          :disabled="!internalValue.enableBids">
-        </b-form-select>
+        <b-form-select id="pickupSystem" v-model="internalValue.pickupSystem" :options="possibleLeagueOptions.pickupSystems" :disabled="!internalValue.enableBids"></b-form-select>
 
         <div class="form-group">
           <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
           <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:100|integer">
-            <input
-              id="minimumBidAmount"
-              v-model="internalValue.minimumBidAmount"
-              name="Minimum Bid Amount"
-              type="text"
-              class="form-control input"
-              :disabled="!internalValue.enableBids" />
+            <input id="minimumBidAmount" v-model="internalValue.minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" :disabled="!internalValue.enableBids" />
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationProvider>
           <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
@@ -92,9 +79,8 @@
           <b-form-checkbox v-model="internalValue.bidsOnlyBeforeNextScheduledDraft">
             <span class="checkbox-label">Only allow bids for games that release before the next scheduled draft</span>
             <p>
-              When enabled, bids can only be placed on games whose maximum known release date falls before your
-              next draft's scheduled date. This ensures the bidding system is used only for games that no one
-              will have a chance to draft.
+              When enabled, bids can only be placed on games whose maximum known release date falls before your next draft's scheduled date. This ensures the bidding system is used only for games that
+              no one will have a chance to draft.
             </p>
           </b-form-checkbox>
         </div>
@@ -332,6 +318,9 @@ export default {
     };
   },
   computed: {
+    isStandardLeague() {
+      return this.gameMode === 'Standard' && !this.isMultiDraft;
+    },
     manageDraftsRoute() {
       if (!this.leagueId) {
         return null;
@@ -344,13 +333,29 @@ export default {
       this.updateInternalValue();
     },
     gameMode(newMode) {
-      if (newMode === 'One Shot' && this.internalValue) {
+      if (!this.internalValue) {
+        return;
+      }
+      if (newMode === 'One Shot') {
         this.internalValue.enableBids = false;
+      } else if (newMode === 'Standard' && !this.isMultiDraft) {
+        this.internalValue.enableBids = true;
+      }
+    },
+    isMultiDraft(isMultiDraft) {
+      if (!this.internalValue || isMultiDraft) {
+        return;
+      }
+      if (this.gameMode === 'Standard') {
+        this.internalValue.enableBids = true;
       }
     }
   },
   created() {
     this.internalValue = structuredClone(this.value);
+    if (this.isStandardLeague) {
+      this.internalValue.enableBids = true;
+    }
   },
   methods: {
     updateInternalValue() {
