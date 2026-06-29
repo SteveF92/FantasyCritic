@@ -76,7 +76,8 @@ public class LeagueYear : IEquatable<LeagueYear>
         }
     }
 
-    public bool OneShotMode => !Options.EnableBids
+    public bool OneShotMode => Drafts.Count <= 1
+                               && !Options.EnableBids
                                && Options.StandardGames == Drafts.Sum(d => d.GamesToDraft)
                                && Options.CounterPicks == Drafts.Sum(d => d.CounterPicksToDraft)
                                && Options.UnrestrictedReleaseStatusDroppableGames == 0

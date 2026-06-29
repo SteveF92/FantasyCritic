@@ -927,11 +927,6 @@ public class LeagueController : BaseLeagueController
             return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
         }
 
-        if (leagueYear.OneShotMode)
-        {
-            return BadRequest("This league is in 'one shot mode', which doesn't support bids.");
-        }
-
         var gameIsSpecialAuctionGame = activeSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.MasterGameID == request.MasterGameID);
         if (!leagueYear.Options.EnableBids && !gameIsSpecialAuctionGame)
         {
@@ -1382,9 +1377,12 @@ public class LeagueController : BaseLeagueController
         var publisher = validResult.Publisher;
         var publisherGame = validResult.PublisherGame;
 
-        if (leagueYear.OneShotMode)
+        if (leagueYear.Options.UnrestrictedReleaseStatusDroppableGames == 0
+            && leagueYear.Options.WillNotReleaseDroppableGames == 0
+            && leagueYear.Options.WillReleaseDroppableGames == 0
+            && !leagueYear.Options.GrantSuperDrops)
         {
-            return BadRequest("This league is in 'one shot mode', which doesn't support drops.");
+            return BadRequest("This league does not support drops.");
         }
 
         DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(leagueYear, publisher, publisherGame, false);
