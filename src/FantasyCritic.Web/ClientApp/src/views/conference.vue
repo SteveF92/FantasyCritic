@@ -164,7 +164,7 @@ export default {
       return this.conferenceYear.leagueYears.filter((x) => !x.draftStarted).length;
     },
     numberOfLeaguesStartedDrafting() {
-      return this.conferenceYear.leagueYears.filter((x) => x.draftStarted & !x.draftFinished).length;
+      return this.conferenceYear.leagueYears.filter((x) => x.draftStarted && !x.draftFinished).length;
     },
     numberOfLeaguesFinishedDrafting() {
       return this.conferenceYear.leagueYears.filter((x) => x.draftFinished).length;
