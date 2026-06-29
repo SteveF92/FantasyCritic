@@ -62,7 +62,7 @@ public class DraftService
         }
     }
 
-    public async Task<Result> UndoLastDraftAction(LeagueYear leagueYear)
+    public async Task<Result<StartDraftResult>> UndoLastDraftAction(LeagueYear leagueYear)
     {
         if (leagueYear.ActiveDraft is null)
         {
@@ -71,13 +71,13 @@ public class DraftService
 
         if (!leagueYear.ActiveDraft.PlayStatus.PlayStarted || leagueYear.ActiveDraft.PlayStatus.DraftFinished)
         {
-            return Result.Failure("Cannot undo a draft action when the draft is not active.");
+            return Result.Failure<StartDraftResult>("Cannot undo a draft action when the draft is not active.");
         }
 
         var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
         if (draftStatus?.PreviousPick is null)
         {
-            return Result.Failure("There is nothing to undo.");
+            return Result.Failure<StartDraftResult>("There is nothing to undo.");
         }
         var previousPick = draftStatus.PreviousPick;
 
@@ -88,29 +88,32 @@ public class DraftService
             var description = $"Undid skip for {publisherName}, round {previousPick.RoundNumber} ({slotType}).";
             var action = new LeagueAction(previousPick.Publisher, _clock.GetCurrentInstant(), "Draft Skip Undone", description, managerAction: true);
             await _fantasyCriticRepo.RemoveDraftPickSkip(leagueYear.ActiveDraft, previousPick.Publisher, previousPick.CounterPick, previousPick.RoundNumber, action);
-            return Result.Success();
         }
-
-        var publisherGamesForDraft = leagueYear.Publishers
-            .SelectMany(x => x.PublisherGames.Where(g => g.DraftID == leagueYear.ActiveDraft.DraftID))
-            .ToList();
-
-        if (!publisherGamesForDraft.Any())
+        else
         {
-            return Result.Failure("Cannot undo a draft pick when no games have been drafted yet.");
+            var publisherGamesForDraft = leagueYear.Publishers
+                .SelectMany(x => x.PublisherGames.Where(g => g.DraftID == leagueYear.ActiveDraft.DraftID))
+                .ToList();
+
+            if (!publisherGamesForDraft.Any())
+            {
+                return Result.Failure<StartDraftResult>("Cannot undo a draft pick when no games have been drafted yet.");
+            }
+
+            var counterPicks = publisherGamesForDraft.Where(x => x.CounterPick).ToList();
+            PublisherGame publisherGameToUndo = counterPicks.Any()
+                ? counterPicks.MaxBy(x => x.OverallDraftPosition)!
+                : publisherGamesForDraft.MaxBy(x => x.OverallDraftPosition)!;
+
+            var publisher = leagueYear.Publishers.Single(x => x.PublisherID == publisherGameToUndo.PublisherID);
+            await _publisherService.UndoDraftPick(leagueYear, publisher, publisherGameToUndo);
         }
 
-        var counterPicks = publisherGamesForDraft.Where(x => x.CounterPick).ToList();
-        PublisherGame publisherGameToUndo = counterPicks.Any()
-            ? counterPicks.MaxBy(x => x.OverallDraftPosition)!
-            : publisherGamesForDraft.MaxBy(x => x.OverallDraftPosition)!;
-
-        var publisher = leagueYear.Publishers.Single(x => x.PublisherID == publisherGameToUndo.PublisherID);
-        await _publisherService.UndoDraftPick(leagueYear, publisher, publisherGameToUndo);
-        return Result.Success();
+        var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
+        return Result.Success(new StartDraftResult(new AutoDraftResult(updatedLeagueYear, 0, 0), false));
     }
 
-    public async Task<Result> SkipCurrentDraftPick(LeagueYear leagueYear)
+    public async Task<Result<StartDraftResult>> SkipCurrentDraftPick(LeagueYear leagueYear)
     {
         if (leagueYear.ActiveDraft is null)
         {
@@ -120,7 +123,7 @@ public class DraftService
         var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
         if (draftStatus is null)
         {
-            return Result.Failure("Draft is already complete.");
+            return Result.Failure<StartDraftResult>("Draft is already complete.");
         }
 
         var nextPick = draftStatus.NextPick;
@@ -131,7 +134,7 @@ public class DraftService
 
         if (alreadySkipped)
         {
-            return Result.Failure("That turn has already been skipped.");
+            return Result.Failure<StartDraftResult>("That turn has already been skipped.");
         }
 
         var slotType = nextPick.CounterPick ? "counter-pick" : "standard game";
@@ -143,8 +146,8 @@ public class DraftService
 
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
-        await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
-        return Result.Success();
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
+        return Result.Success(new StartDraftResult(autoDraftResult, draftComplete));
     }
 
     public async Task<Result> SetDraftOrder(LeagueYear leagueYear, Guid draftID, DraftOrderType draftOrderType, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)

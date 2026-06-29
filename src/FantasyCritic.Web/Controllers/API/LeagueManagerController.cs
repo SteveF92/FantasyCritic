@@ -1154,7 +1154,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest(result.Error);
         }
 
-        await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
+        await PushDraftMessages(result.Value.AutoDraftResult.UpdatedLeagueYear, result.Value.DraftComplete);
 
         return Ok();
     }
@@ -1185,7 +1185,7 @@ public class LeagueManagerController : BaseLeagueController
             return BadRequest(result.Error);
         }
 
-        await _hubContext.Clients.Group(leagueYear.GetGroupName).SendAsync("RefreshLeagueYear");
+        await PushDraftMessages(result.Value.AutoDraftResult.UpdatedLeagueYear, result.Value.DraftComplete);
 
         return Ok();
     }
