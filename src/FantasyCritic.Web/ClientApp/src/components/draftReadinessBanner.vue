@@ -1,5 +1,5 @@
 <template>
-  <div v-if="pendingDraft">
+  <div v-if="pendingDraft && !activeDraft">
     <!-- Main status banner: warning if not ready, success if ready -->
     <div :class="bannerClass" role="alert">
       <!-- Not ready -->
