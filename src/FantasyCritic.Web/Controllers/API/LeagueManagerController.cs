@@ -974,6 +974,12 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
+        var requestValid = request.IsValid();
+        if (requestValid.IsFailure)
+        {
+            return BadRequest(requestValid.Error);
+        }
+
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
         var domainRequest = request.ToDomain(tagDictionary);
 

@@ -14,6 +14,22 @@ public record CreateLeagueDraftRequest(
     int AdditionalCounterPicks,
     List<SpecialGameSlotViewModel> NewSpecialGameSlots)
 {
+    public Result IsValid()
+    {
+        if (AdditionalStandardGames < 0)
+        {
+            return Result.Failure("Additional standard games cannot be negative.");
+        }
+
+        if (NewSpecialGameSlots.Count > AdditionalStandardGames)
+        {
+            return Result.Failure("You must add at least as many 'Additional Standard Games' as new special slots. " +
+                                  "Otherwise the new special slots would convert existing standard slots into special slots.");
+        }
+
+        return Result.Success();
+    }
+
     public CreateLeagueDraftParameters ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
         var specialGameSlots = NewSpecialGameSlots.Select(x => x.ToDomain(tagDictionary)).ToList();
