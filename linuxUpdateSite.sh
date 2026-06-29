@@ -1,6 +1,11 @@
 echo Stopping service
 sudo systemctl stop fantasy-critic.service
 
+# Read the environment from the service unit so this script works on both beta and prod.
+ASPNETCORE_ENVIRONMENT=$(systemctl show fantasy-critic.service -p Environment --value | tr ' ' '\n' | grep '^ASPNETCORE_ENVIRONMENT=' | cut -d= -f2)
+ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+echo "Using ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT"
+
 echo Building and running database updater
 DBUP_AREA=../DbUpArea
 rm -rf folderName "$DBUP_AREA"
@@ -10,7 +15,7 @@ if [ $DBUP_PUBLISH_EXIT_CODE -ne 0 ]; then
   echo "Database updater publish failed (exit code: $DBUP_PUBLISH_EXIT_CODE). Not restarting site."
   exit $DBUP_PUBLISH_EXIT_CODE
 fi
-(cd "$DBUP_AREA" && dotnet FantasyCritic.DatabaseUpdater.dll)
+(cd "$DBUP_AREA" && ASPNETCORE_ENVIRONMENT="$ASPNETCORE_ENVIRONMENT" dotnet FantasyCritic.DatabaseUpdater.dll)
 DBUP_EXIT_CODE=$?
 if [ $DBUP_EXIT_CODE -ne 0 ]; then
   echo "Database migration failed (exit code: $DBUP_EXIT_CODE). Not restarting site."
