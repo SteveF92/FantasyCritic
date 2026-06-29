@@ -23,7 +23,7 @@
               <div>
                 <strong>{{ draftDateLabel(draft) }}:</strong>
                 <template v-if="draft.playStarted">
-                  {{ (draft.draftStartedTimestamp | longDate) || '—' }}
+                  {{ draft.draftStartedTimestamp | longDate || '—' }}
                 </template>
                 <template v-else>
                   {{ draft.scheduledDate || '—' }}
@@ -112,7 +112,7 @@
             <div class="form-group">
               <label>Additional Standard Games</label>
               <b-alert show variant="info">
-                If you want, you can expand the total roster size to make room for this draft's picks. If you already all the slots you want set up, you can leave this at 0.
+                If you want, you can expand the total roster size to make room for this draft's picks. If you already have all the slots you want set up, you can leave this at 0.
               </b-alert>
               <input v-model.number="newDraft.additionalStandardGames" type="number" min="0" class="form-control" />
             </div>
