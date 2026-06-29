@@ -6,21 +6,21 @@
           <th class="bg-primary">Total Standard Games</th>
           <td>{{ leagueYearOptions.standardGames }}</td>
         </tr>
-        <tr>
+        <tr v-if="isSingleDraft">
           <th class="bg-primary">Games to Draft</th>
-          <td>{{ leagueYearOptions.gamesToDraft }}</td>
+          <td>{{ firstDraft.gamesToDraft }}</td>
         </tr>
-        <tr>
+        <tr v-if="isSingleDraft">
           <th class="bg-primary">Pickup Games</th>
-          <td>{{ leagueYearOptions.standardGames - leagueYearOptions.gamesToDraft }}</td>
+          <td>{{ leagueYearOptions.standardGames - firstDraft.gamesToDraft }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Total Counter Picks</th>
           <td>{{ leagueYearOptions.counterPicks }}</td>
         </tr>
-        <tr>
+        <tr v-if="isSingleDraft">
           <th class="bg-primary">Counter Picks to Draft</th>
-          <td>{{ leagueYearOptions.counterPicksToDraft }}</td>
+          <td>{{ firstDraft.counterPicksToDraft }}</td>
         </tr>
         <tr v-if="leagueYearOptions.counterPickDeadline !== `${supportedYear.year}-12-31`">
           <th class="bg-primary">Counter Pick Deadline</th>
@@ -137,8 +137,17 @@ export default {
   props: {
     leagueYearOptions: { type: Object, required: true },
     league: { type: Object, required: false },
+    drafts: { type: Array, required: false, default: () => [] },
     supportedYear: { type: Object, required: true },
     superDropPointCutoff: { type: Number, required: false }
+  },
+  computed: {
+    isSingleDraft() {
+      return this.drafts.length > 0 && this.drafts.length < 2;
+    },
+    firstDraft() {
+      return this.drafts[0];
+    }
   }
 };
 </script>

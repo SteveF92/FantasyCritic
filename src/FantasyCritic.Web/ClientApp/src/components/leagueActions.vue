@@ -154,6 +154,7 @@
       <leagueOptionsModal
         :league="league"
         :league-year-options="leagueYear.settings"
+        :drafts="leagueYear.drafts"
         :super-drop-point-cutoff="leagueYear.superDropPointCutoff"
         :possible-league-options="possibleLeagueOptions"
         :supported-year="supportedYear"></leagueOptionsModal>
