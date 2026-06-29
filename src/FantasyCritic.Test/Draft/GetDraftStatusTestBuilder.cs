@@ -82,6 +82,11 @@ internal sealed class GetDraftStatusTestBuilder
                     .Select(gameSpec => CreatePublisherGame(publisherSpec.PublisherID, gameSpec))
                     .ToList();
 
+                foreach (var slotNumber in publisherSpec.PrefilledStandardSlots)
+                {
+                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, slotNumber));
+                }
+
                 return new Publisher(
                     publisherSpec.PublisherID,
                     leagueYearKey,
@@ -171,6 +176,20 @@ internal sealed class GetDraftStatusTestBuilder
         publisherSpec.Skips.Add(new SkipSpec(draft.DraftNumber, counterPick, pickNumber, isManualSkip));
     }
 
+    internal void PrefillStandardSlot(int draftPosition, int slotNumber = 0)
+    {
+        var publisherSpec = _publisherSpecs.Single(x => x.DraftPosition == draftPosition);
+        publisherSpec.PrefilledStandardSlots.Add(slotNumber);
+    }
+
+    internal void PrefillAllStandardSlots(int draftPosition, int slotCount = 10)
+    {
+        for (var slotNumber = 0; slotNumber < slotCount; slotNumber++)
+        {
+            PrefillStandardSlot(draftPosition, slotNumber);
+        }
+    }
+
     private static LeagueDraft CreateLeagueDraft(
         LeagueYearKey leagueYearKey,
         GetDraftStatusTestBuilder.DraftSpec draftSpec,
@@ -212,6 +231,25 @@ internal sealed class GetDraftStatusTestBuilder
 
     internal static Guid DraftIDFor(int draftNumber) => Guid.Parse($"{draftNumber:D8}-0000-0000-0000-{draftNumber:D012}");
 
+    private static PublisherGame CreatePrefilledStandardGame(Guid publisherID, int slotNumber)
+    {
+        return new PublisherGame(
+            publisherID,
+            Guid.NewGuid(),
+            $"Prefilled standard slot {slotNumber}",
+            Instant.FromUtc(2025, 1, 1, 0, 0),
+            false,
+            null,
+            false,
+            null,
+            null,
+            slotNumber,
+            null,
+            null,
+            null,
+            null);
+    }
+
     private static PublisherGame CreatePublisherGame(Guid publisherID, GameSpec gameSpec)
     {
         var draftID = DraftIDFor(gameSpec.DraftNumber);
@@ -240,6 +278,7 @@ internal sealed class GetDraftStatusTestBuilder
         public int DraftPosition { get; } = draftPosition;
         public List<GameSpec> Games { get; } = [];
         public List<SkipSpec> Skips { get; } = [];
+        public HashSet<int> PrefilledStandardSlots { get; } = [];
     }
 
     internal sealed class DraftSpec(int draftNumber, int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus, string name)
@@ -278,6 +317,18 @@ internal sealed class DraftScenarioBuilder
             ?? throw new InvalidOperationException($"Cannot skip in draft {_draft.DraftNumber}: draft has no active turn.");
 
         _root.AddSkip(_draft, status.NextDraftPublisher, status.NextPick.CounterPick, status.RoundNumber, isManual);
+        return this;
+    }
+
+    public DraftScenarioBuilder PrefillStandardSlot(int draftPosition, int slotNumber = 0)
+    {
+        _root.PrefillStandardSlot(draftPosition, slotNumber);
+        return this;
+    }
+
+    public DraftScenarioBuilder PrefillAllStandardSlots(int draftPosition, int slotCount = 10)
+    {
+        _root.PrefillAllStandardSlots(draftPosition, slotCount);
         return this;
     }
 

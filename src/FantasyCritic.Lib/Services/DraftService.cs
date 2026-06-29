@@ -220,6 +220,14 @@ public class DraftService
             var draftStatus = DraftFunctions.GetDraftStatus(updatedLeagueYear);
             if (draftStatus is null)
             {
+                var trailingSkips = DraftFunctions.GetTrailingPicksToSkip(updatedLeagueYear);
+                if (trailingSkips.Any())
+                {
+                    await PersistAutoSkips(updatedLeagueYear.ActiveDraft!, trailingSkips);
+                    depth++;
+                    continue;
+                }
+
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
@@ -233,15 +241,7 @@ public class DraftService
             // Auto-skip publishers who have no open slots (e.g. filled via bids between drafts).
             if (draftStatus.PicksToSkip.Any())
             {
-                var activeDraft = updatedLeagueYear.ActiveDraft!;
-                foreach (var pickToSkip in draftStatus.PicksToSkip)
-                {
-                    var slotType = pickToSkip.CounterPick ? "counter-pick" : "standard game";
-                    var publisherName = pickToSkip.Publisher.GetPublisherAndUserDisplayName();
-                    var description = $"{publisherName} was auto-skipped for round {pickToSkip.RoundNumber} ({slotType}) because they have no open slots.";
-                    var action = new LeagueAction(pickToSkip.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: false);
-                    await _fantasyCriticRepo.AddDraftPickSkip(activeDraft, pickToSkip.Publisher, pickToSkip.CounterPick, pickToSkip.RoundNumber, isManualSkip: false, action);
-                }
+                await PersistAutoSkips(updatedLeagueYear.ActiveDraft!, draftStatus.PicksToSkip);
                 depth++;
                 continue;
             }
@@ -354,6 +354,18 @@ public class DraftService
         }
 
         return availableCounterPicks;
+    }
+
+    private async Task PersistAutoSkips(LeagueDraft activeDraft, IReadOnlyList<FutureDraftPick> picksToSkip)
+    {
+        foreach (var pickToSkip in picksToSkip)
+        {
+            var slotType = pickToSkip.CounterPick ? "counter-pick" : "standard game";
+            var publisherName = pickToSkip.Publisher.GetPublisherAndUserDisplayName();
+            var description = $"{publisherName} was auto-skipped for round {pickToSkip.RoundNumber} ({slotType}) because they have no open slots.";
+            var action = new LeagueAction(pickToSkip.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: false);
+            await _fantasyCriticRepo.AddDraftPickSkip(activeDraft, pickToSkip.Publisher, pickToSkip.CounterPick, pickToSkip.RoundNumber, isManualSkip: false, action);
+        }
     }
 
     private async Task<bool> CompleteDraft(LeagueYear leagueYear)

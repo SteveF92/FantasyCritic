@@ -87,6 +87,26 @@ public static class DraftFunctions
         return draftStatus;
     }
 
+    /// <summary>
+    /// Returns auto-skips that remain when the draft has no next real pick (including the case where
+    /// <see cref="GetDraftStatus"/> returns null because every remaining turn would be skipped).
+    /// </summary>
+    public static IReadOnlyList<FutureDraftPick> GetTrailingPicksToSkip(LeagueYear leagueYear)
+    {
+        if (leagueYear.ActiveDraft is null)
+        {
+            return [];
+        }
+
+        var previousDraftPicks = GetPastDraftPicks(leagueYear, leagueYear.ActiveDraft);
+        var processedPicks = GetFutureDraftPicks(leagueYear, leagueYear.ActiveDraft, previousDraftPicks);
+        if (processedPicks.NextPick is not null)
+        {
+            return [];
+        }
+
+        return processedPicks.PicksToSkip;
+    }
 
     public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType,
         IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear, SystemWideValues? systemWideValues, int targetDraftNumber)

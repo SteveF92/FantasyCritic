@@ -208,6 +208,16 @@ internal static class DraftSkipBoundaryScenario
             "No draft should remain active after completion.");
     }
 
+    public static async Task AssertTrailingAutoSkipPersistedAsync(LeagueFixture league, string slotTypePhrase)
+    {
+        var actions = await league.Manager.League.GetLeagueActionsAsync(league.LeagueID, league.Year);
+        Assert.That(actions.Any(a =>
+            a.ActionType == "Draft Pick Skipped"
+            && a.Description.Contains("auto-skipped", StringComparison.OrdinalIgnoreCase)
+            && a.Description.Contains(slotTypePhrase, StringComparison.OrdinalIgnoreCase)), Is.True,
+            $"Expected a persisted auto-skip for the trailing {slotTypePhrase} turn.");
+    }
+
     public static void AssertInCounterPickPhase(LeagueYearViewModel snapshot)
     {
         var draft = snapshot.ActiveDraft();
@@ -273,6 +283,7 @@ public class DraftSkipBoundaryTests : IntegrationTestBase
             await league.DraftStandardPicksAsync(1);
             var snapshot = await league.GetLeagueYearAsync();
             DraftSkipBoundaryScenario.AssertDraftFinal(snapshot);
+            await DraftSkipBoundaryScenario.AssertTrailingAutoSkipPersistedAsync(league, "standard game");
         }
         finally
         {
@@ -311,6 +322,7 @@ public class DraftSkipBoundaryTests : IntegrationTestBase
 
             var snapshot = await league.GetLeagueYearAsync();
             DraftSkipBoundaryScenario.AssertDraftFinal(snapshot);
+            await DraftSkipBoundaryScenario.AssertTrailingAutoSkipPersistedAsync(league, "counter-pick");
         }
         finally
         {
