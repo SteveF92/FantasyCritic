@@ -25,14 +25,16 @@ public class ManagerDraftTests : LeagueDraftTestBase
         {
             var leagueYear = await League.GetLeagueYearAsync();
 
-            if (leagueYear.PlayStatus.DraftFinished)
+            bool anyDraftActive = leagueYear.Drafts.Any(d =>
+                d.PlayStatus == "Drafting" || d.PlayStatus == "DraftPaused");
+            if (!anyDraftActive)
                 return;
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
                 ?? throw new InvalidOperationException(
                     "Draft is active and not finished, but no publisher has NextToDraft = true.");
 
-            if (leagueYear.PlayStatus.DraftingCounterPicks)
+            if (leagueYear.ActiveDraft()?.DraftingCounterPicks == true)
             {
                 var options = await League.Manager.League.PossibleCounterPicksAsync(
                     nextPublisher.PublisherID);

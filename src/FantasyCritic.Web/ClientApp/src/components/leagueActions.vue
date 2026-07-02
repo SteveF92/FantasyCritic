@@ -22,6 +22,7 @@
           <li v-b-modal="`leagueOptionsModal_${league.leagueID}-${leagueYear.year}`" class="fake-link action">See League Options</li>
           <li v-b-modal="'eligibilityOverridesModal'" class="fake-link action">See Eligibility Overrides</li>
           <li v-b-modal="'tagOverridesModal'" class="fake-link action">See Tag Overrides</li>
+          <li v-if="leagueYear.drafts.length >= 2" v-b-modal="'draftScheduleModal'" class="fake-link action">See Draft Schedule</li>
         </ul>
       </div>
       <div v-if="userPublisher">
@@ -42,32 +43,30 @@
             </ul>
           </li>
           <template v-if="!leagueYear.supportedYear.finished">
-            <li v-if="!draftFinished">
+            <li v-if="hasPendingOrActiveDraft">
               <strong>Draft Actions</strong>
               <ul class="actions-list">
-                <li v-show="leagueYear.playStatus.draftIsActive && !leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">
+                <li v-show="activeDraft?.draftIsActive && !activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">
                   Draft Game
                 </li>
-                <li v-show="leagueYear.playStatus.draftIsActive && leagueYear.playStatus.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftCounterPickForm'" class="fake-link action">
+                <li v-show="activeDraft?.draftIsActive && activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftCounterPickForm'" class="fake-link action">
                   Draft Counter Pick
                 </li>
-                <li v-if="!oneShotMode && !draftFinished" v-b-modal="'editAutoDraftForm'" class="fake-link action">Set Auto Draft</li>
+                <li v-b-modal="'editAutoDraftForm'" class="fake-link action">Set Auto Draft</li>
               </ul>
             </li>
             <li>
               <strong>Game Actions</strong>
               <ul class="actions-list">
                 <li v-b-modal="'gameQueueForm'" class="fake-link action">Watchlist</li>
-                <template v-if="!oneShotMode">
-                  <li v-if="draftFinished" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
-                  <li v-if="draftFinished" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
-                  <li v-if="draftFinished" v-b-modal="'currentBidsForm'" class="fake-link action">My Current Bids</li>
-                  <li v-if="draftFinished && leagueYear.settings.tradingSystem !== 'NoTrades'" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
-                  <li v-if="draftFinished && leagueYear.settings.tradingSystem !== 'NoTrades'" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
-                  <li v-if="draftFinished" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
-                  <li v-if="draftFinished && userPublisher.superDropsAvailable > 0" v-b-modal="'superDropGameForm'" class="fake-link action">Use a Super Drop</li>
-                  <li v-if="draftFinished" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>
-                </template>
+                <li v-if="biddingAllowed" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
+                <li v-if="biddingAllowed" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
+                <li v-if="biddingAllowed" v-b-modal="'currentBidsForm'" class="fake-link action">My Current Bids</li>
+                <li v-if="tradesAllowed" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
+                <li v-if="tradesAllowed" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
+                <li v-if="dropsAllowed" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
+                <li v-if="dropsAllowed && userPublisher.superDropsAvailable > 0" v-b-modal="'superDropGameForm'" class="fake-link action">Use a Super Drop</li>
+                <li v-if="dropsAllowed" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>
               </ul>
             </li>
           </template>
@@ -75,21 +74,27 @@
       </div>
 
       <div v-if="league.isManager">
-        <div v-if="leagueYear.playStatus.draftIsActive || leagueYear.playStatus.draftIsPaused">
+        <div v-if="activeDraft?.draftIsActive || activeDraft?.draftIsPaused">
           <h4>Draft Management</h4>
           <ul class="actions-list">
-            <li v-show="!leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive" v-b-modal="'managerDraftGameForm'" class="fake-link action">Draft Game for Next Player</li>
-            <li v-show="leagueYear.playStatus.draftingCounterPicks && leagueYear.playStatus.draftIsActive" v-b-modal="'managerDraftCounterPickForm'" class="fake-link action">
+            <li v-show="!activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'managerDraftGameForm'" class="fake-link action">Draft Game for Next Player</li>
+            <li v-show="activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'managerDraftCounterPickForm'" class="fake-link action">
               Draft Game for Next Player
             </li>
             <li v-b-modal="'setPauseModal'" class="fake-link action">
-              <span v-show="leagueYear.playStatus.draftIsActive">Pause Draft</span>
-              <span v-show="leagueYear.playStatus.draftIsPaused">Resume Draft</span>
+              <span v-show="activeDraft?.draftIsActive">Pause Draft</span>
+              <span v-show="activeDraft?.draftIsPaused">Resume Draft</span>
             </li>
             <li v-b-modal="'resetDraftModal'" class="fake-link action">Reset Draft</li>
-            <li v-show="leagueYear.playStatus.draftIsPaused" v-b-modal="'undoLastDraftActionModal'" class="fake-link action">Undo Last Drafted Game</li>
-            <li v-show="!leagueYear.playStatus.draftIsPaused">
+            <li v-show="activeDraft?.draftIsPaused" v-b-modal="'undoLastDraftActionModal'" class="fake-link action">Undo Last Drafted Game</li>
+            <li v-show="!activeDraft?.draftIsPaused">
               Undo Last Drafted Game
+              <br />
+              <span class="action-note">(Pause Draft First)</span>
+            </li>
+            <li v-show="activeDraft?.draftIsPaused" v-b-modal="'skipCurrentDraftPickModal'" class="fake-link action">Skip Current Pick</li>
+            <li v-show="!activeDraft?.draftIsPaused">
+              Skip Current Pick
               <br />
               <span class="action-note">(Pause Draft First)</span>
             </li>
@@ -105,10 +110,13 @@
               <li v-if="!leagueYear.supportedYear.finished" class="fake-link action">
                 <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year } }">Change Year-Specific Options</router-link>
               </li>
-              <li v-if="readyToSetDraftOrder && !playStarted" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
+              <li v-if="!leagueYear.supportedYear.finished" class="fake-link action">
+                <router-link :to="{ name: 'manageDrafts', params: { leagueid: league.leagueID, year: leagueYear.year } }">Manage Drafts</router-link>
+              </li>
+              <li v-if="readyToSetDraftOrder" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
               <li v-if="postDraftPlayable" v-b-modal="'specialAuctionsModal'" class="fake-link action">Special Auctions</li>
               <li v-b-modal="'transferManagerForm'" class="fake-link action">Promote new League Manager</li>
-              <li v-if="draftFinished && leagueYear.supportedYear.finished" v-b-modal="'toggleUnderReview'" class="fake-link action">
+              <li v-if="firstDraftFinished && leagueYear.supportedYear.finished" v-b-modal="'toggleUnderReview'" class="fake-link action">
                 {{ leagueYear.underReview ? 'Disable Editing Finished Year' : 'Enable Editing Finished Year' }}
               </li>
               <li v-b-modal="'addNewLeagueYear'" class="fake-link action">Start New Year</li>
@@ -121,7 +129,7 @@
               <li v-if="!playStarted" v-b-modal="'manageActivePlayers'" class="fake-link action">Manage Active Players</li>
               <li v-if="!playStarted" v-b-modal="'createPublisherForUserForm'" class="fake-link action">Create Publisher For User</li>
               <li v-if="!playStarted" v-b-modal="'removePublisherForm'" class="fake-link action">Delete A User's Publisher</li>
-              <li v-if="!draftFinished" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
+              <li v-if="hasPendingOrActiveDraft" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
               <li v-if="postDraftPlayable" v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
               <li v-if="postDraftEditable" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
               <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
@@ -146,11 +154,13 @@
       <leagueOptionsModal
         :league="league"
         :league-year-options="leagueYear.settings"
+        :drafts="leagueYear.drafts"
         :super-drop-point-cutoff="leagueYear.superDropPointCutoff"
         :possible-league-options="possibleLeagueOptions"
         :supported-year="supportedYear"></leagueOptionsModal>
       <eligibilityOverridesModal></eligibilityOverridesModal>
       <tagOverridesModal></tagOverridesModal>
+      <draftScheduleModal></draftScheduleModal>
 
       <template v-if="userPublisher">
         <playerDraftGameForm></playerDraftGameForm>
@@ -182,6 +192,7 @@
       <managerDraftGameForm></managerDraftGameForm>
       <managerDraftCounterPickForm></managerDraftCounterPickForm>
       <undoLastDraftActionModal></undoLastDraftActionModal>
+      <skipCurrentDraftPickModal></skipCurrentDraftPickModal>
       <setPauseModal></setPauseModal>
       <resetDraftModal></resetDraftModal>
       <managerClaimGameForm></managerClaimGameForm>
@@ -242,6 +253,7 @@ import EditDraftOrderForm from '@/components/modals/editDraftOrderForm.vue';
 import SetPauseModal from '@/components/modals/setPauseModal.vue';
 import ResetDraftModal from '@/components/modals/resetDraftModal.vue';
 import UndoLastDraftActionModal from '@/components/modals/undoLastDraftActionModal.vue';
+import SkipCurrentDraftPickModal from '@/components/modals/skipCurrentDraftPickModal.vue';
 import ManagerDraftCounterPickForm from '@/components/modals/managerDraftCounterPickForm.vue';
 import AddNewLeagueYearForm from '@/components/modals/addNewLeagueYearForm.vue';
 import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
@@ -254,6 +266,7 @@ import ManagerMessageModal from '@/components/modals/managerMessageModal.vue';
 import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal.vue';
 import UnderReviewModal from '@/components/modals/underReviewModal.vue';
+import DraftScheduleModal from '@/components/modals/draftScheduleModal.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
 
@@ -290,6 +303,7 @@ export default {
     SetPauseModal,
     ResetDraftModal,
     UndoLastDraftActionModal,
+    SkipCurrentDraftPickModal,
     AddNewLeagueYearForm,
     LeagueOptionsModal,
     ManageEligibilityOverridesModal,
@@ -303,7 +317,8 @@ export default {
     ProposeTradeForm,
     ActiveTradesModal,
     SpecialAuctionsModal,
-    UnderReviewModal
+    UnderReviewModal,
+    DraftScheduleModal
   },
   mixins: [LeagueMixin],
   computed: {

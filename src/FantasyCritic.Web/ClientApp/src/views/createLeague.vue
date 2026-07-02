@@ -36,8 +36,24 @@
         <div v-if="readyToSetupLeagueYear">
           <hr />
           <div class="text-well">
-            <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" fresh-settings></leagueYearSettings>
+            <leagueCreationPresets :year="initialYear" @preset-applied="onPresetApplied"></leagueCreationPresets>
           </div>
+        </div>
+
+        <div v-if="leagueYearSettings" class="text-well">
+          <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :game-mode="gameMode" :experience-level="experienceLevel" :is-multi-draft="gameMode === 'Multi Draft'" fresh-settings>
+            <template v-if="gameMode !== 'One Shot'" #draft-settings>
+              <hr />
+              <h3>Draft Settings</h3>
+              <b-alert v-if="gameMode === 'Multi Draft'" variant="info" show>This league will have multiple drafts. You need to add a least two now, but you can add more later.</b-alert>
+              <DraftCreationSettings
+                v-model="drafts"
+                :standard-games="leagueYearSettings.standardGames"
+                :game-mode="gameMode"
+                :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft"></DraftCreationSettings>
+              <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+            </template>
+          </leagueYearSettings>
         </div>
 
         <div v-if="leagueYearIsValid || leagueYearEverValid">
@@ -78,7 +94,8 @@
           <hr />
           <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
 
-          <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
+          <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+          <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
 
           <div class="form-group">
             <b-button class="col-10 offset-1" variant="primary" :disabled="!leagueYearIsValid" @click="postRequest">Create League</b-button>
@@ -91,10 +108,15 @@
 <script>
 import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
+import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
+import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
+import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
 
 export default {
   components: {
-    LeagueYearSettings
+    LeagueYearSettings,
+    LeagueCreationPresets,
+    DraftCreationSettings
   },
   data() {
     return {
@@ -102,6 +124,9 @@ export default {
       leagueName: '',
       initialYear: '',
       leagueYearSettings: null,
+      drafts: [],
+      gameMode: 'Standard',
+      experienceLevel: 'Standard',
       publicLeague: true,
       testLeague: false,
       customRulesLeague: false,
@@ -112,18 +137,21 @@ export default {
     readyToSetupLeagueYear() {
       return !!this.leagueName && !!this.initialYear;
     },
+    bidsOnlyBeforeNextDraftScheduleError() {
+      if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
+      if (this.gameMode !== 'Multi Draft') return null;
+      const draftsMissingDate = this.drafts.slice(1).some((d) => !d.scheduledDate);
+      if (draftsMissingDate) {
+        return "'Only allow bids before next scheduled draft' is enabled — all drafts after the first must have a scheduled date.";
+      }
+      return null;
+    },
     leagueYearIsValid() {
-      let valid =
-        this.leagueYearSettings &&
-        this.leagueYearSettings.standardGames >= 1 &&
-        this.leagueYearSettings.standardGames <= 50 &&
-        this.leagueYearSettings.gamesToDraft >= 1 &&
-        this.leagueYearSettings.gamesToDraft <= 50 &&
-        this.leagueYearSettings.counterPicks >= 0 &&
-        this.leagueYearSettings.counterPicks <= 20;
-
-      let allValid = this.readyToSetupLeagueYear && valid;
-      return allValid;
+      if (!this.leagueYearSettings || !this.drafts.length) return false;
+      const settingsOk =
+        this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 && this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
+      const draftsOk = this.gameMode === 'Multi Draft' ? this.drafts.length >= 2 : this.drafts.length >= 1;
+      return this.readyToSetupLeagueYear && settingsOk && draftsOk && !this.bidsOnlyBeforeNextDraftScheduleError;
     }
   },
   watch: {
@@ -132,38 +160,59 @@ export default {
       if (allValid) {
         this.leagueYearEverValid = true;
       }
+    },
+    gameMode(mode) {
+      this.syncOneShotDrafts(mode);
+    },
+    leagueYearSettings: {
+      deep: true,
+      handler() {
+        this.syncOneShotDrafts(this.gameMode);
+      }
     }
   },
-  created() {
-    this.leagueYearSettings = {
-      standardGames: '',
-      gamesToDraft: '',
-      counterPicks: '',
-      counterPicksToDraft: '',
-      pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
-      tiebreakSystem: 'LowestProjectedPoints',
-      tradingSystem: 'Standard',
-      draftSystem: 'Flexible',
-      scoringSystem: 'LinearPositive',
-      releaseSystem: 'MustBeReleased',
-      ineligibleGameSystem: 'CaseByCase',
-      specialGameSlots: [],
-      tags: { banned: [], allowed: [], required: [] }
-    };
-  },
   methods: {
+    syncOneShotDrafts(gameMode) {
+      if (gameMode !== 'One Shot' || !this.leagueYearSettings) {
+        return;
+      }
+      this.drafts = [buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks)];
+    },
+    onPresetApplied({ gameMode, experienceLevel, settings, drafts }) {
+      this.gameMode = gameMode;
+      this.experienceLevel = experienceLevel;
+      if (!this.leagueYearSettings) {
+        this.leagueYearSettings = {
+          year: this.initialYear,
+          pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
+          tiebreakSystem: 'LowestProjectedPoints',
+          tradingSystem: 'Standard',
+          draftSystem: 'Flexible',
+          scoringSystem: 'LinearPositive',
+          releaseSystem: 'MustBeReleased',
+          ineligibleGameSystem: 'CaseByCase',
+          enableBids: true,
+          tags: { banned: [], allowed: [], required: [] },
+          specialGameSlots: []
+        };
+      }
+      Object.assign(this.leagueYearSettings, settings);
+      this.leagueYearSettings.year = this.initialYear;
+      this.drafts = drafts.map((d) => ({ ...d }));
+    },
     async postRequest() {
       this.leagueYearSettings.year = this.initialYear;
-      let selectedLeagueOptions = {
+      const payload = {
         leagueName: this.leagueName.trim(),
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
         customRulesLeague: this.customRulesLeague,
-        leagueYearSettings: this.leagueYearSettings
+        leagueYearSettings: this.leagueYearSettings,
+        drafts: this.drafts
       };
 
       try {
-        const response = await axios.post('/api/leagueManager/createLeague', selectedLeagueOptions);
+        const response = await axios.post('/api/leagueManager/createLeague', payload);
         const newLeagueID = response.data;
         this.$router.push({ name: 'league', params: { leagueid: newLeagueID, year: this.initialYear } });
       } catch (error) {

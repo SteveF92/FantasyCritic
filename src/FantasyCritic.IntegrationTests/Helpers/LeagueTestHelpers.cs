@@ -42,6 +42,7 @@ internal static class LeagueTestHelpers
                 TestLeague = true,
                 CustomRulesLeague = false,
                 LeagueYearSettings = scenario.BuildSettings(year),
+                Drafts = scenario.BuildDraftSettings().ToList(),
             });
 
         return leagueID;
@@ -104,20 +105,36 @@ internal static class LeagueTestHelpers
 
     /// <summary>
     /// Sets the draft order to the supplied publisher order using the "Manual" type.
+    /// Fetches the current pending draft to obtain its DraftID automatically.
+    /// </summary>
+    public static Task SetDraftOrderAsync(
+        ApiSession managerSession,
+        Guid leagueID,
+        int year,
+        IReadOnlyList<Guid> publisherIDsInOrder) =>
+        SetDraftOrderAsync(managerSession, leagueID, year, draftID: null, publisherIDsInOrder);
+
+    /// <summary>
+    /// Sets manual draft order for the given draft, or the pending draft when <paramref name="draftID"/> is null.
     /// </summary>
     public static async Task SetDraftOrderAsync(
         ApiSession managerSession,
         Guid leagueID,
         int year,
+        Guid? draftID,
         IReadOnlyList<Guid> publisherIDsInOrder)
     {
+        var snapshot = await managerSession.League.GetLeagueYearAsync(leagueID, year, null);
+        var targetDraftID = draftID ?? snapshot.PendingDraft()?.DraftID
+            ?? throw new InvalidOperationException("No pending draft found when setting draft order.");
+
         await managerSession.LeagueManager.SetDraftOrderAsync(new DraftOrderRequest
         {
             LeagueID = leagueID,
             Year = year,
+            DraftID = targetDraftID,
             DraftOrderType = "Manual",
             ManualPublisherDraftPositions = publisherIDsInOrder.ToList(),
         });
     }
-
 }

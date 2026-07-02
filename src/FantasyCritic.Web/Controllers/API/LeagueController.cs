@@ -201,14 +201,13 @@ public class LeagueController : BaseLeagueController
         var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false, 50)).ToList();
         var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true, 50)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
         var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, supplementalData.UserIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
-            activeUsers, completePlayStatus, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
+            activeUsers, conferenceDraftsNotEnabled, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, supplementalData, counterPickedByDictionary, gameNewsViewModel);
         return leagueYearViewModel;
     }
@@ -295,14 +294,13 @@ public class LeagueController : BaseLeagueController
         var upcomingGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, false, 50)).ToList();
         var recentGames = BuildLeagueGameNewsViewModel(leagueYear, currentDate, GameNewsFunctions.GetGameNews(publishers, currentDate, true, 50)).ToList();
         var gameNewsViewModel = new GameNewsViewModel(upcomingGames, recentGames);
-        var completePlayStatus = new CompletePlayStatus(leagueYear, validResult.ActiveUsers, relationship.LeagueManager, conferenceDraftsNotEnabled);
         var activeUsers = validResult.ActiveUsers.Select(x => x.ToMinimal()).ToList();
 
         var leagueViewModel = new LeagueViewModel(league, relationship.LeagueManager, validResult.PlayersInLeague,
             relationship.LeagueInvite, currentUser, relationship.InLeague, supplementalData.UserIsFollowingLeague);
 
         var leagueYearViewModel = new LeagueYearViewModel(leagueViewModel, leagueYear, currentInstant,
-            activeUsers, completePlayStatus, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
+            activeUsers, conferenceDraftsNotEnabled, validResult.InvitedPlayers, relationship.InLeague, relationship.InvitedToLeague, relationship.LeagueManager,
             currentUser, supplementalData, counterPickedByDictionary, gameNewsViewModel);
         return leagueYearViewModel;
     }
@@ -342,6 +340,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType<List<LeagueActionViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -496,7 +495,7 @@ public class LeagueController : BaseLeagueController
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
-        MinimalLeagueYearInfo? latestDraftStartedYearInfo = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        MinimalLeagueYearInfo? latestDraftStartedYearInfo = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         MinimalLeagueYearInfo? highestNonFinishedYearInfo = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         List<int> leagueYearNumbers = league.Years.Select(x => x.Year).ToList();
         if (leagueYearNumbers.Count == 0)
@@ -542,7 +541,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ConsolidatedLeagueYearViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -725,7 +724,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        bool mostRecentYearIsStarted = mostRecentYear.PlayStatus.PlayStarted;
+        bool mostRecentYearIsStarted = mostRecentYear.IsAnyDraftStarted;
         if (mostRecentYearIsStarted)
         {
             return BadRequest();
@@ -747,7 +746,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreatePublisher([FromBody] CreatePublisherRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftNotStarted);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedNoDraftsStarted);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -761,7 +761,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest("You cannot have a blank name.");
         }
 
-        if (leagueYear.PlayStatus.PlayStarted)
+        if (leagueYear.IsAnyDraftStarted)
         {
             return BadRequest();
         }
@@ -845,7 +845,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> SetAutoDraft([FromBody] SetAutoDraftRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftNotFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.BePublisher, RequiredYearStatus.AnyYearNotFinished);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -902,7 +903,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PickupBidResultViewModel>> MakePickupBid([FromBody] PickupBidRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -925,9 +927,10 @@ public class LeagueController : BaseLeagueController
             return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
         }
 
-        if (leagueYear.Options.OneShotMode)
+        var gameIsSpecialAuctionGame = activeSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.MasterGameID == request.MasterGameID);
+        if (!leagueYear.Options.EnableBids && !gameIsSpecialAuctionGame)
         {
-            return BadRequest("This league is in 'one shot mode', which doesn't support bids.");
+            return BadRequest("This league does not have bids enabled.");
         }
 
         PublisherGame? conditionalDropPublisherGame = null;
@@ -963,7 +966,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PickupBidResultViewModel>> EditPickupBid([FromBody] PickupBidEditRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -1016,7 +1020,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeletePickupBid([FromBody] PickupBidDeleteRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -1063,7 +1068,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> SetBidPriorities([FromBody] BidPriorityOrderRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -1150,9 +1156,9 @@ public class LeagueController : BaseLeagueController
         }
 
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, false, false, false, masterGame,
-            draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
+            draftStatus.RoundNumber, draftStatus.OverallPickNumber);
 
-        var draftResult = await _draftService.DraftGame(domainRequest, false, request.AllowIneligibleSlot);
+        var draftResult = await _draftService.DraftGame(domainRequest, draftStatus.Draft, false, request.AllowIneligibleSlot);
         var viewModel = new PlayerClaimResultViewModel(draftResult.Result);
 
         if (draftResult.Result.Success)
@@ -1339,7 +1345,7 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher);
+        var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher, leagueYear.ActiveDraft);
         var currentDate = _clock.GetToday();
         var viewModels = availableCounterPicks
             .Select(x =>
@@ -1360,7 +1366,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<DropGameResultViewModel>> MakeDropRequest([FromBody] DropGameRequestRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -1370,9 +1377,12 @@ public class LeagueController : BaseLeagueController
         var publisher = validResult.Publisher;
         var publisherGame = validResult.PublisherGame;
 
-        if (leagueYear.Options.OneShotMode)
+        if (leagueYear.Options.UnrestrictedReleaseStatusDroppableGames == 0
+            && leagueYear.Options.WillNotReleaseDroppableGames == 0
+            && leagueYear.Options.WillReleaseDroppableGames == 0
+            && !leagueYear.Options.GrantSuperDrops)
         {
-            return BadRequest("This league is in 'one shot mode', which doesn't support drops.");
+            return BadRequest("This league does not support drops.");
         }
 
         DropResult dropResult = await _gameAcquisitionService.MakeDropRequest(leagueYear, publisher, publisherGame, false);
@@ -1399,7 +1409,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<DropGameResultViewModel>> UseSuperDrop([FromBody] DropGameRequestRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisherGame(request.PublisherID, request.PublisherGameID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -1428,7 +1439,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteDropRequest([FromBody] DropGameRequestDeleteRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -1683,7 +1695,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ProposeTrade([FromBody] ProposeTradeRequest request)
     {
-        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.ProposerPublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.ProposerPublisherID, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.BePublisher, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (publisherRecord.FailedResult is not null)
         {
             return publisherRecord.FailedResult;
@@ -1709,7 +1722,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RescindTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1745,7 +1759,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AcceptTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1781,7 +1796,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RejectTrade([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1817,7 +1833,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> VoteOnTrade([FromBody] TradeVoteRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1861,7 +1878,8 @@ public class LeagueController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteTradeVote([FromBody] BasicTradeRequest request)
     {
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow, RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedDraftFinished);
+        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
+            RequiredRelationship.ActiveInYear, RequiredYearStatus.YearNotFinishedNoDraftsActive);
         if (leagueYearRecord.FailedResult is not null)
         {
             return leagueYearRecord.FailedResult;
@@ -1900,6 +1918,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType<List<TradeViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

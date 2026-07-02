@@ -29,13 +29,17 @@ BEGIN
   WHERE ConferenceID = P_ConferenceID
     AND IsDeleted = 0;
   
-  
   SELECT tbl_league.LeagueID, 
   tbl_league_year.`YEAR`,
   tbl_meta_supportedyear.Finished AS "SupportedYearIsFinished",
-  tbl_league_year.PlayStatus
+  EXISTS (
+    SELECT 1 FROM tbl_league_draft ld
+    WHERE ld.LeagueID = tbl_league_year.LeagueID
+      AND ld.Year = tbl_league_year.Year
+      AND ld.PlayStatus <> 'NotStartedDraft'
+  ) AS AnyDraftStarted
   FROM tbl_league_year
-  JOIN tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID
+  JOIN tbl_league ON tbl_league.LeagueID = tbl_league_year.LeagueID
   JOIN tbl_meta_supportedyear ON tbl_meta_supportedyear.`Year` = tbl_league_year.`Year`
   WHERE ConferenceID = P_ConferenceID;
   
@@ -46,6 +50,29 @@ BEGIN
   JOIN tbl_league on tbl_league.LeagueID = tbl_league_year.LeagueID
   WHERE ConferenceID = P_ConferenceID
     AND YEAR = P_Year;
+  
+  -- Drafts
+  
+  SELECT d.*
+  FROM tbl_league_draft d
+  JOIN tbl_league ON tbl_league.LeagueID = d.LeagueID
+  WHERE tbl_league.ConferenceID = P_ConferenceID
+    AND d.Year = P_Year
+  ORDER BY d.DraftNumber;
+  
+  SELECT dp.*
+  FROM tbl_league_draftpublisher dp
+  JOIN tbl_league_draft d ON dp.DraftID = d.DraftID
+  JOIN tbl_league ON tbl_league.LeagueID = d.LeagueID
+  WHERE tbl_league.ConferenceID = P_ConferenceID
+    AND d.Year = P_Year;
+  
+  SELECT ps.*
+  FROM tbl_league_draftpickskip ps
+  JOIN tbl_league_draft d ON ps.DraftID = d.DraftID
+  JOIN tbl_league ON tbl_league.LeagueID = d.LeagueID
+  WHERE tbl_league.ConferenceID = P_ConferenceID
+    AND d.Year = P_Year;
   
   
   SELECT *

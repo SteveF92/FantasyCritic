@@ -6,6 +6,7 @@ public class DraftOrderType : TypeSafeEnum<DraftOrderType>
     public static readonly DraftOrderType Manual = new DraftOrderType("Manual", "Manually set draft order to:");
     public static readonly DraftOrderType Random = new DraftOrderType("Random", "Randomly set draft order to:");
     public static readonly DraftOrderType InverseStandings = new DraftOrderType("InverseStandings", "Set draft order to inverse of last year's standings:");
+    public static readonly DraftOrderType InverseProjectedPoints = new DraftOrderType("InverseProjectedPoints", "Set draft order to inverse of current projected points:");
 
     // Constructor is private: values are defined within this class only!
     private DraftOrderType(string value, string actionDescription)

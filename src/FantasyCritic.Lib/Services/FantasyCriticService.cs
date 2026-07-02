@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -102,13 +103,21 @@ public class FantasyCriticService
             return Result.Failure<League>("That scoring mode is no longer supported.");
         }
 
-        IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, PlayStatus.NotStartedDraft) };
+        IEnumerable<MinimalLeagueYearInfo> years = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         League newLeague = new League(Guid.NewGuid(), parameters.LeagueName, parameters.Manager.ToMinimal(), null, null, years, parameters.PublicLeague, parameters.TestLeague, parameters.CustomRulesLeague, false, 0);
-        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options);
+        var leagueYearKey = new LeagueYearKey(newLeague.LeagueID, parameters.LeagueYearParameters.Year);
+        var drafts = parameters.Drafts.Select((d, i) => new LeagueDraft(
+            Guid.NewGuid(), leagueYearKey, i + 1,
+            d.Name ?? (i == 0 ? "Initial Draft" : $"Draft {i + 1}"),
+            d.ScheduledDate, d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
+            .ToList();
+
+        await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options, drafts);
         return Result.Success(newLeague);
     }
 
-    public async Task<Result> EditLeague(LeagueYear leagueYear, LeagueYearParameters parameters)
+    public async Task<Result> EditLeague(LeagueYear leagueYear, LeagueYearParameters parameters, DraftParameters? firstDraft = null)
     {
         if (leagueYear.SupportedYear.Finished)
         {
@@ -141,29 +150,32 @@ public class FantasyCriticService
             return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
         }
 
-        if (leagueYear.PlayStatus.DraftIsActive)
+        if (leagueYear.Drafts.Count == 1 && firstDraft is not null)
         {
-            if (leagueYear.Options.GamesToDraft > parameters.GamesToDraft)
+            if (leagueYear.FirstDraft.PlayStatus.DraftIsActive)
             {
-                return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
+                if (leagueYear.FirstDraft.GamesToDraft > firstDraft.GamesToDraft)
+                {
+                    return Result.Failure("Cannot decrease the number of drafted games during the draft. Reset the draft if you need to do this.");
+                }
+
+                if (leagueYear.FirstDraft.CounterPicksToDraft > firstDraft.CounterPicksToDraft)
+                {
+                    return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
+                }
             }
 
-            if (leagueYear.Options.CounterPicksToDraft > parameters.CounterPicksToDraft)
+            if (leagueYear.FirstDraft.PlayStatus.DraftFinished)
             {
-                return Result.Failure("Cannot decrease the number of drafted counter picks during the draft. Reset the draft if you need to do this.");
-            }
-        }
+                if (leagueYear.FirstDraft.GamesToDraft != firstDraft.GamesToDraft)
+                {
+                    return Result.Failure("Cannot change the number of drafted games after the draft.");
+                }
 
-        if (leagueYear.PlayStatus.DraftFinished)
-        {
-            if (leagueYear.Options.GamesToDraft != parameters.GamesToDraft)
-            {
-                return Result.Failure("Cannot change the number of drafted games after the draft.");
-            }
-
-            if (leagueYear.Options.CounterPicksToDraft != parameters.CounterPicksToDraft)
-            {
-                return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
+                if (leagueYear.FirstDraft.CounterPicksToDraft != firstDraft.CounterPicksToDraft)
+                {
+                    return Result.Failure("Cannot change the number of drafted counter picks after the draft.");
+                }
             }
         }
 
@@ -184,20 +196,34 @@ public class FantasyCriticService
             return Result.Failure($"Cannot reduce number of 'will release' droppable games to {options.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
         }
 
-        var slotAssignments = GetNewSlotAssignments(parameters, leagueYear, publishers);
+        var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(parameters.StandardGames, leagueYear, publishers);
         var eligibilityOverrides = leagueYear.EligibilityOverrides;
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
 
+        List<LeagueDraft> leagueDrafts = leagueYear.Drafts.ToList();
+        if (leagueYear.Drafts.Count == 1 && firstDraft is not null)
+        {
+            string resolvedName = firstDraft.Name ?? leagueYear.FirstDraft.Name;
+            leagueDrafts = [leagueYear.FirstDraft.UpdateDraft(
+                resolvedName, firstDraft.ScheduledDate, firstDraft.GamesToDraft, firstDraft.CounterPicksToDraft,
+                firstDraft.CounterPicksMustBeFromThisDraft)];
+        }
+
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
-            leagueYear.PlayStatus, leagueYear.DraftOrderSet, eligibilityOverrides,
-            tagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
+            leagueDrafts, eligibilityOverrides, tagOverrides,
+            leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
             leagueYear.UnderReview, parameters.LeagueYearName);
 
-        var differenceString = options.GetDifferenceString(leagueYear.Options);
-        if (differenceString is not null)
+        var optionsDiff = options.GetDifferences(leagueYear.Options);
+        var draftDiff = leagueYear.Drafts.Count == 1 && firstDraft is not null
+            ? leagueDrafts[0].GetDifferences(leagueYear.FirstDraft)
+            : new LeagueOptionsDifferences([]);
+        var combined = optionsDiff.Combine(draftDiff);
+
+        if (combined.HasChanges)
         {
-            LeagueManagerAction settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed", differenceString);
+            LeagueManagerAction settingsChangeAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "League Year Settings Changed", combined.ToString());
             await _fantasyCriticRepo.EditLeagueYear(newLeagueYear, slotAssignments, settingsChangeAction);
             await _discordPushService.SendLeagueActionMessage(settingsChangeAction);
         }
@@ -209,62 +235,14 @@ public class FantasyCriticService
         return Result.Success();
     }
 
-    private static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(LeagueYearParameters parameters, LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
-    {
-        var slotCountShift = parameters.StandardGames - leagueYear.Options.StandardGames;
-        Dictionary<Guid, int> finalSlotAssignments = new Dictionary<Guid, int>();
-        if (slotCountShift == 0)
-        {
-            return finalSlotAssignments;
-        }
-
-        foreach (var publisher in publishers)
-        {
-            Dictionary<Guid, int> slotAssignmentsForPublisher = new Dictionary<Guid, int>();
-            var slots = publisher.GetPublisherSlots(leagueYear);
-            var filledNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is not null).ToList();
-
-            int normalSlotNumber = 0;
-            var normalSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot is null);
-            foreach (var normalSlot in normalSlots)
-            {
-                slotAssignmentsForPublisher[normalSlot.PublisherGame!.PublisherGameID] = normalSlotNumber;
-                normalSlotNumber++;
-            }
-
-            var specialSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot is not null);
-            foreach (var specialSlot in specialSlots)
-            {
-                slotAssignmentsForPublisher[specialSlot.PublisherGame!.PublisherGameID] =
-                    specialSlot.SlotNumber + slotCountShift;
-            }
-
-            bool invalidSlotsMade = slotAssignmentsForPublisher.GroupBy(x => x.Value).Any(x => x.Count() > 1);
-            if (invalidSlotsMade)
-            {
-                //If we cannot do the more advance way to preserve slots, then just do the very basic thing, and line the games up.
-                slotAssignmentsForPublisher = new Dictionary<Guid, int>();
-                int allSlotNumber = 0;
-                foreach (var slot in filledNonCounterPickSlots)
-                {
-                    slotAssignmentsForPublisher[slot.PublisherGame!.PublisherGameID] = allSlotNumber;
-                    allSlotNumber++;
-                }
-            }
-
-            foreach (var slot in slotAssignmentsForPublisher)
-            {
-                finalSlotAssignments[slot.Key] = slot.Value;
-            }
-        }
-
-        return finalSlotAssignments;
-    }
-
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, LeagueYear mostRecentLeagueYear)
     {
         var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, mostRecentLeagueYear.Year);
-        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers);
+        var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(league.LeagueID, year), 1,
+            "Initial Draft", null, mostRecentLeagueYear.FirstDraft.GamesToDraft, mostRecentLeagueYear.FirstDraft.CounterPicksToDraft,
+            mostRecentLeagueYear.FirstDraft.CounterPicksMustBeFromThisDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
+        await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers, [initialDraft]);
     }
 
     public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears, bool recalculateWinners)
@@ -278,7 +256,7 @@ public class FantasyCriticService
         var publishersByLeagueYear = allPublishersForYear.GroupBy(x => x.LeagueYearKey);
         foreach (var publishersForLeagueYear in publishersByLeagueYear)
         {
-            var sortedLeagueYearPublishers = publishersForLeagueYear.OrderBy(x => x.DraftPosition).ToList();
+            var sortedLeagueYearPublishers = publishersForLeagueYear.OrderBy(x => x.FirstDraftInfo.DraftPosition).ToList();
             decimal highestPoints = 0m;
             var leagueYear = leagueYearDictionary[publishersForLeagueYear.Key];
             foreach (var publisher in sortedLeagueYearPublishers)
@@ -307,9 +285,7 @@ public class FantasyCriticService
 
         return new YearCalculatedStatsSet(publisherGameCalculatedStats, winningUsers);
     }
-
-
-
+    
     public async Task UpdatePublisherGameCalculatedStats(LeagueYear leagueYear)
     {
         Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();

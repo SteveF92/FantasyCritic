@@ -31,7 +31,7 @@ public class HypeFactorService : IHypeFactorService
             }
 
             var masterGamesForYear = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
-            var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear.Year, false));
+            var relevantGames = masterGamesForYear.Where(x => x.IsRelevantInYear(supportedYear.Year)).ToList();
             allMasterGameYears.AddRange(relevantGames);
         }
 
@@ -44,8 +44,10 @@ public class HypeFactorService : IHypeFactorService
     private static HypeConstants RunRegression(IReadOnlyList<MasterGameYear> allMasterGameYears)
     {
         var models = allMasterGameYears.Select(x => new MasterGameYearScriptInput(x)).Where(x => x.CriticScore.HasValue).ToList();
-        if (!models.Any())
+        const int parameterCount = 4; // intercept + 3 features
+        if (models.Count < parameterCount)
         {
+            _logger.Warning("Insufficient data for hype constant regression ({SampleCount} samples). Using default values.", models.Count);
             return HypeConstants.DefaultValues;
         }
 
@@ -58,8 +60,15 @@ public class HypeFactorService : IHypeFactorService
 
         var yData = models.Select(d => d.CriticScore!.Value).ToArray();
 
-        var coefficients = MultipleRegression.NormalEquations(xData, yData, intercept: true);
-
-        return new HypeConstants(coefficients[0], coefficients[1], coefficients[2], coefficients[3]);
+        try
+        {
+            var coefficients = MultipleRegression.NormalEquations(xData, yData, intercept: true);
+            return new HypeConstants(coefficients[0], coefficients[1], coefficients[2], coefficients[3]);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.Warning(ex, "Hype constant regression failed (likely insufficient or collinear local data). Using default values.");
+            return HypeConstants.DefaultValues;
+        }
     }
 }

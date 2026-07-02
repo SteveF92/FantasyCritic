@@ -23,8 +23,8 @@ public class PublisherStateSet
     {
         var updatedPublishersInLeague = _leagueLookup[leagueYear.Key].ToList();
         return new LeagueYear(leagueYear.League, leagueYear.SupportedYear, leagueYear.Options,
-            leagueYear.PlayStatus, leagueYear.DraftOrderSet, leagueYear.EligibilityOverrides,
-            leagueYear.TagOverrides, leagueYear.DraftStartedTimestamp, leagueYear.WinningUser,
+            leagueYear.Drafts, leagueYear.EligibilityOverrides,
+            leagueYear.TagOverrides, leagueYear.WinningUser,
             updatedPublishersInLeague, leagueYear.ConferenceLocked, leagueYear.UnderReview, leagueYear.LeagueYearName);
     }
 
@@ -173,7 +173,7 @@ public class PublisherStateSet
         }
 
         return new Publisher(publisherToEdit.PublisherID, publisherToEdit.LeagueYearKey, publisherToEdit.User, publisherToEdit.PublisherName, publisherToEdit.PublisherIcon, publisherToEdit.PublisherSlogan,
-            publisherToEdit.DraftPosition, newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, unrestrictedReleaseStatusGamesDropped, willNotReleaseGamesDropped,
+            publisherToEdit.DraftInfos, newPublisherGames, publisherToEdit.FormerPublisherGames, newBudget, unrestrictedReleaseStatusGamesDropped, willNotReleaseGamesDropped,
             willReleaseGamesDropped, superDropsAvailable, publisherToEdit.AutoDraftSettings);
     }
 

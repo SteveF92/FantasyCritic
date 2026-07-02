@@ -26,10 +26,7 @@ BEGIN
          tbl_league_hasuser.Archived,
          tbl_user.DisplayName AS ManagerDisplayName,
          tbl_user.EmailAddress AS ManagerEmailAddress,
-         CASE
-             WHEN most_recent_ly.OneShotMode = 1 THEN 1
-             ELSE 0
-         END AS MostRecentYearOneShot,
+         most_recent_ly.MostRecentYearType,
          CASE
              WHEN tbl_league_hasuser.UserID IS NOT NULL THEN 1
              ELSE 0
@@ -69,18 +66,26 @@ BEGIN
   LEFT JOIN
     (SELECT tbl_league_year.LeagueID,
             CASE
-                WHEN tbl_league_year.StandardGames = tbl_league_year.GamesToDraft
-                     AND tbl_league_year.CounterPicks = tbl_league_year.CounterPicksToDraft
+                WHEN COUNT(ld.DraftID) > 1 THEN 'MultiDraft'
+                WHEN tbl_league_year.EnableBids = 0
+                     AND tbl_league_year.StandardGames = COALESCE(SUM(ld.GamesToDraft), 0)
+                     AND tbl_league_year.CounterPicks = COALESCE(SUM(ld.CounterPicksToDraft), 0)
                      AND tbl_league_year.UnrestrictedReleaseStatusDroppableGames = 0
                      AND tbl_league_year.WillNotReleaseDroppableGames = 0
                      AND tbl_league_year.WillReleaseDroppableGames = 0
                      AND tbl_league_year.GrantSuperDrops = 0
-                     AND tbl_league_year.TradingSystem = 'NoTrades' THEN 1
-                ELSE 0
-            END AS OneShotMode,
+                     AND tbl_league_year.TradingSystem = 'NoTrades'
+                     AND COUNT(ld.DraftID) = 1 THEN 'OneShot'
+                ELSE 'Standard'
+            END AS MostRecentYearType,
             ROW_NUMBER() OVER (PARTITION BY tbl_league_year.LeagueID
                                ORDER BY tbl_league_year.Year DESC) AS rn
-     FROM tbl_league_year) AS most_recent_ly ON vw_league.LeagueID = most_recent_ly.LeagueID
+     FROM tbl_league_year
+     LEFT JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year
+     GROUP BY tbl_league_year.LeagueID, tbl_league_year.Year, tbl_league_year.EnableBids, tbl_league_year.StandardGames,
+              tbl_league_year.CounterPicks, tbl_league_year.UnrestrictedReleaseStatusDroppableGames,
+              tbl_league_year.WillNotReleaseDroppableGames, tbl_league_year.WillReleaseDroppableGames,
+              tbl_league_year.GrantSuperDrops, tbl_league_year.TradingSystem) AS most_recent_ly ON vw_league.LeagueID = most_recent_ly.LeagueID
   AND most_recent_ly.rn = 1
   LEFT JOIN tbl_royale_group rg ON rg.LeagueID = vw_league.LeagueID
   JOIN tbl_user ON tbl_user.UserID = vw_league.LeagueManager
@@ -92,7 +97,12 @@ BEGIN
     SELECT tbl_league_year.LeagueID,
          tbl_league_year.Year,
          tbl_meta_supportedyear.Finished AS 'SupportedYearIsFinished',
-         tbl_league_year.PlayStatus,
+         EXISTS (
+           SELECT 1 FROM tbl_league_draft ld
+           WHERE ld.LeagueID = tbl_league_year.LeagueID
+             AND ld.Year = tbl_league_year.Year
+             AND ld.PlayStatus <> 'NotStartedDraft'
+         ) AS AnyDraftStarted,
          tbl_league_year.LeagueYearName
   FROM tbl_league_year
   JOIN tbl_league_hasuser ON tbl_league_year.LeagueID = tbl_league_hasuser.LeagueID
@@ -102,7 +112,12 @@ BEGIN
   SELECT tbl_league_year.LeagueID,
          tbl_league_year.Year,
          tbl_meta_supportedyear.Finished AS 'SupportedYearIsFinished',
-         tbl_league_year.PlayStatus,
+         EXISTS (
+           SELECT 1 FROM tbl_league_draft ld
+           WHERE ld.LeagueID = tbl_league_year.LeagueID
+             AND ld.Year = tbl_league_year.Year
+             AND ld.PlayStatus <> 'NotStartedDraft'
+         ) AS AnyDraftStarted,
          tbl_league_year.LeagueYearName
   FROM tbl_league_year
   JOIN tbl_user_followingleague ON tbl_league_year.LeagueID = tbl_user_followingleague.LeagueID

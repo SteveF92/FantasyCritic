@@ -21,6 +21,7 @@ public class PublisherGameEntity
         SlotNumber = publisherGame.SlotNumber;
         DraftPosition = publisherGame.DraftPosition;
         OverallDraftPosition = publisherGame.OverallDraftPosition;
+        DraftID = publisherGame.DraftID;
         if (publisherGame.MasterGame is not null)
         {
             MasterGameID = publisherGame.MasterGame.MasterGame.MasterGameID;
@@ -42,13 +43,14 @@ public class PublisherGameEntity
     public int SlotNumber { get; set; }
     public int? DraftPosition { get; set; }
     public int? OverallDraftPosition { get; set; }
+    public Guid? DraftID { get; set; }
     public uint? BidAmount { get; set; }
     public Guid? AcquiredInTradeID { get; set; }
 
     public PublisherGame ToDomain(MasterGameYear? masterGame)
     {
         PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
-            ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID);
+            ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID, DraftID);
         return domain;
     }
 }

@@ -37,16 +37,24 @@ public class DraftService
 
     public async Task<StartDraftResult> StartDraft(LeagueYear leagueYear)
     {
-        await _fantasyCriticRepo.StartDraft(leagueYear);
+        if (leagueYear.PendingDraft is null)
+        {
+            throw new Exception($"No pending draft found for league: {leagueYear.Key}");
+        }
+        await _fantasyCriticRepo.StartDraft(leagueYear, leagueYear.PendingDraft);
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
-        var draftComplete = await CompleteDraft(updatedLeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
         return new StartDraftResult(autoDraftResult, draftComplete);
     }
 
     public async Task SetDraftPause(LeagueYear leagueYear, bool pause)
     {
-        await _fantasyCriticRepo.SetDraftPause(leagueYear, pause);
+        if (leagueYear.ActiveDraft is null)
+        {
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
+        }
+        await _fantasyCriticRepo.SetDraftPause(leagueYear, leagueYear.ActiveDraft, pause);
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         if (!pause)
         {
@@ -54,39 +62,102 @@ public class DraftService
         }
     }
 
-    public async Task<Result> UndoLastDraftAction(LeagueYear leagueYear)
+    public async Task<Result<StartDraftResult>> UndoLastDraftAction(LeagueYear leagueYear)
     {
-        var publisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
-        if (!leagueYear.PlayStatus.PlayStarted || leagueYear.PlayStatus.DraftFinished)
+        if (leagueYear.ActiveDraft is null)
         {
-            return Result.Failure("Cannot undo a draft game when the draft is not active.");
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
         }
 
-        if (!publisherGames.Any())
+        if (!leagueYear.ActiveDraft.PlayStatus.PlayStarted || leagueYear.ActiveDraft.PlayStatus.DraftFinished)
         {
-            return Result.Failure("Cannot undo a draft game when no games have been drafted yet.");
+            return Result.Failure<StartDraftResult>("Cannot undo a draft action when the draft is not active.");
         }
 
-        var counterPicks = publisherGames.Where(x => x.CounterPick).ToList();
-
-        PublisherGame publisherGameToUndo;
-        if (!counterPicks.Any())
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus?.PreviousPick is null)
         {
-            publisherGameToUndo = publisherGames.MaxBy(x => x.OverallDraftPosition)!;
+            return Result.Failure<StartDraftResult>("There is nothing to undo.");
+        }
+        var previousPick = draftStatus.PreviousPick;
+
+        if (previousPick.Skipped)
+        {
+            var slotType = previousPick.CounterPick ? "counter-pick" : "standard game";
+            var publisherName = previousPick.Publisher.GetPublisherAndUserDisplayName();
+            var description = $"Undid skip for {publisherName}, round {previousPick.RoundNumber} ({slotType}).";
+            var action = new LeagueAction(previousPick.Publisher, _clock.GetCurrentInstant(), "Draft Skip Undone", description, managerAction: true);
+            await _fantasyCriticRepo.RemoveDraftPickSkip(leagueYear.ActiveDraft, previousPick.Publisher, previousPick.CounterPick, previousPick.RoundNumber, action);
         }
         else
         {
-            publisherGameToUndo = counterPicks.MaxBy(x => x.OverallDraftPosition)!;
+            var publisherGamesForDraft = leagueYear.Publishers
+                .SelectMany(x => x.PublisherGames.Where(g => g.DraftID == leagueYear.ActiveDraft.DraftID))
+                .ToList();
+
+            if (!publisherGamesForDraft.Any())
+            {
+                return Result.Failure<StartDraftResult>("Cannot undo a draft pick when no games have been drafted yet.");
+            }
+
+            var counterPicks = publisherGamesForDraft.Where(x => x.CounterPick).ToList();
+            PublisherGame publisherGameToUndo = counterPicks.Any()
+                ? counterPicks.MaxBy(x => x.OverallDraftPosition)!
+                : publisherGamesForDraft.MaxBy(x => x.OverallDraftPosition)!;
+
+            var publisher = leagueYear.Publishers.Single(x => x.PublisherID == publisherGameToUndo.PublisherID);
+            await _publisherService.UndoDraftPick(leagueYear, publisher, publisherGameToUndo);
         }
 
-        var publisher = leagueYear.Publishers.Single(x => x.PublisherID == publisherGameToUndo.PublisherID);
-        await _publisherService.RemovePublisherGame(leagueYear, publisher, publisherGameToUndo);
-
-        return Result.Success();
+        var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
+        return Result.Success(new StartDraftResult(new AutoDraftResult(updatedLeagueYear, 0, 0), false));
     }
 
-    public async Task<Result> SetDraftOrder(LeagueYear leagueYear, DraftOrderType draftOrderType, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
+    public async Task<Result<StartDraftResult>> SkipCurrentDraftPick(LeagueYear leagueYear)
     {
+        if (leagueYear.ActiveDraft is null)
+        {
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
+        }
+
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus is null)
+        {
+            return Result.Failure<StartDraftResult>("Draft is already complete.");
+        }
+
+        var nextPick = draftStatus.NextPick;
+        bool alreadySkipped = nextPick.Publisher.DraftInfos
+            .Where(i => i.DraftID == leagueYear.ActiveDraft.DraftID)
+            .SelectMany(i => i.PickSkips)
+            .Any(s => s.CounterPick == nextPick.CounterPick && s.PickNumber == nextPick.RoundNumber);
+
+        if (alreadySkipped)
+        {
+            return Result.Failure<StartDraftResult>("That turn has already been skipped.");
+        }
+
+        var slotType = nextPick.CounterPick ? "counter-pick" : "standard game";
+        var publisherName = nextPick.Publisher.GetPublisherAndUserDisplayName();
+        var description = $"{publisherName} was skipped for round {nextPick.RoundNumber} ({slotType}).";
+        var action = new LeagueAction(nextPick.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: true);
+
+        await _fantasyCriticRepo.AddDraftPickSkip(leagueYear.ActiveDraft, nextPick.Publisher, nextPick.CounterPick, nextPick.RoundNumber, isManualSkip: true, action);
+
+        var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
+        var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
+        return Result.Success(new StartDraftResult(autoDraftResult, draftComplete));
+    }
+
+    public async Task<Result> SetDraftOrder(LeagueYear leagueYear, Guid draftID, DraftOrderType draftOrderType, IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions)
+    {
+        var draft = leagueYear.Drafts.SingleOrDefault(d => d.DraftID == draftID);
+        if (draft is null)
+        {
+            return Result.Failure("Draft not found.");
+        }
+
         int publishersCount = leagueYear.Publishers.Count;
         if (publishersCount != draftPositions.Count)
         {
@@ -106,13 +177,13 @@ public class DraftService
         LeagueManagerAction draftSetAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Set Draft Order", actionDescription);
         await _discordPushService.SendLeagueActionMessage(draftSetAction);
 
-        await _fantasyCriticRepo.SetDraftOrder(draftPositions, draftSetAction);
+        await _fantasyCriticRepo.SetDraftOrder(draftPositions, draft, draftSetAction);
         return Result.Success();
     }
 
-    public async Task<DraftResult> DraftGame(ClaimGameDomainRequest request, bool managerAction, bool allowIneligibleSlot)
+    public async Task<DraftResult> DraftGame(ClaimGameDomainRequest request, LeagueDraft draft, bool managerAction, bool allowIneligibleSlot)
     {
-        var result = await _gameAcquisitionService.ClaimGame(request, managerAction, true, true, allowIneligibleSlot);
+        var result = await _gameAcquisitionService.ClaimGame(request, managerAction, draft.DraftID, allowIneligibleSlot);
         int standardGamesAdded = 0;
         if (result.Success && !request.CounterPick)
         {
@@ -125,19 +196,19 @@ public class DraftService
         }
 
         var autoDraftResult = await AutoDraftForLeague(request.LeagueYear, standardGamesAdded, counterPicksAdded);
-        var draftComplete = await CompleteDraft(request.LeagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
         return new DraftResult(result, autoDraftResult, draftComplete);
     }
 
     public async Task<bool> RunAutoDraftAndCheckIfComplete(LeagueYear leagueYear)
     {
-        if (!leagueYear.PlayStatus.DraftIsActive)
+        if (leagueYear.ActiveDraft is null)
         {
             return false;
         }
 
         var autoDraftResult = await AutoDraftForLeague(leagueYear, 0, 0);
-        var draftComplete = await CompleteDraft(leagueYear, autoDraftResult.StandardGamesAdded, autoDraftResult.CounterPicksAdded);
+        var draftComplete = await CompleteDraft(autoDraftResult.UpdatedLeagueYear);
         return draftComplete;
     }
 
@@ -152,16 +223,33 @@ public class DraftService
             var draftStatus = DraftFunctions.GetDraftStatus(updatedLeagueYear);
             if (draftStatus is null)
             {
+                var trailingSkips = DraftFunctions.GetTrailingPicksToSkip(updatedLeagueYear);
+                if (trailingSkips.Any())
+                {
+                    await PersistAutoSkips(updatedLeagueYear.ActiveDraft!, trailingSkips);
+                    depth++;
+                    continue;
+                }
+
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
             var nextPublisher = draftStatus.NextDraftPublisher;
-            if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
+
+            if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
             {
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
 
-            if (draftStatus.DraftPhase.Equals(DraftPhase.Complete))
+            // Auto-skip publishers who have no open slots (e.g. filled via bids between drafts).
+            if (draftStatus.PicksToSkip.Any())
+            {
+                await PersistAutoSkips(updatedLeagueYear.ActiveDraft!, draftStatus.PicksToSkip);
+                depth++;
+                continue;
+            }
+
+            if (nextPublisher.AutoDraftMode.Equals(AutoDraftMode.Off))
             {
                 return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
             }
@@ -194,8 +282,8 @@ public class DraftService
                 bool addedAGame = false;
                 foreach (var possibleGame in gamesToTake)
                 {
-                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true, false);
+                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, possibleGame.GameName, false, false, false, true, possibleGame, draftStatus.RoundNumber, draftStatus.OverallPickNumber);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, draftStatus.Draft.DraftID, false);
                     if (autoDraftResult.Success)
                     {
                         standardGamesAdded++;
@@ -216,7 +304,7 @@ public class DraftService
                     return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
                 }
 
-                var availableCounterPicks = GetAvailableCounterPicks(updatedLeagueYear, nextPublisher)
+                var availableCounterPicks = GetAvailableCounterPicks(updatedLeagueYear, nextPublisher, updatedLeagueYear.ActiveDraft)
                     .Where(x => x.MasterGame is not null)
                     .OrderByDescending(x => x.MasterGame!.AdjustedPercentCounterPick ?? 0);
 
@@ -224,8 +312,8 @@ public class DraftService
                 foreach (var publisherGame in availableCounterPicks)
                 {
                     var masterGame = publisherGame.MasterGame!.MasterGame;
-                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, masterGame.GameName, true, false, false, true, masterGame, draftStatus.DraftPosition, draftStatus.OverallDraftPosition);
-                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, true, true, false);
+                    var request = new ClaimGameDomainRequest(updatedLeagueYear, nextPublisher, masterGame.GameName, true, false, false, true, masterGame, draftStatus.RoundNumber, draftStatus.OverallPickNumber);
+                    var autoDraftResult = await _gameAcquisitionService.ClaimGame(request, false, draftStatus.Draft.DraftID, false);
                     if (autoDraftResult.Success)
                     {
                         counterPicksAdded++;
@@ -249,11 +337,16 @@ public class DraftService
         }
     }
 
-    public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher publisherMakingCounterPick)
+    public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher publisherMakingCounterPick, LeagueDraft? activeDraft)
     {
         IReadOnlyList<Publisher> otherPublishers = leagueYear.GetAllPublishersExcept(publisherMakingCounterPick);
         IReadOnlyList<PublisherGame> gamesForYear = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
         IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick).ToList();
+
+        if (activeDraft?.CounterPicksMustBeFromThisDraft == true)
+        {
+            otherPlayersGames = otherPlayersGames.Where(x => x.DraftID == activeDraft.DraftID).ToList();
+        }
 
         var alreadyCounterPicked = gamesForYear.Where(x => x.CounterPick).ToList();
         List<PublisherGame> availableCounterPicks = new List<PublisherGame>();
@@ -271,33 +364,149 @@ public class DraftService
         return availableCounterPicks;
     }
 
-    private async Task<bool> CompleteDraft(LeagueYear leagueYear, int standardGamesAdded, int counterPicksAdded)
+    private async Task PersistAutoSkips(LeagueDraft activeDraft, IReadOnlyList<FutureDraftPick> picksToSkip)
     {
-        var publishers = leagueYear.Publishers;
-        int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * publishers.Count;
-        int standardGamesDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
-        standardGamesDrafted += standardGamesAdded;
+        foreach (var pickToSkip in picksToSkip)
+        {
+            var slotType = pickToSkip.CounterPick ? "counter-pick" : "standard game";
+            var publisherName = pickToSkip.Publisher.GetPublisherAndUserDisplayName();
+            var description = $"{publisherName} was auto-skipped for round {pickToSkip.RoundNumber} ({slotType}) because they have no open slots.";
+            var action = new LeagueAction(pickToSkip.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: false);
+            await _fantasyCriticRepo.AddDraftPickSkip(activeDraft, pickToSkip.Publisher, pickToSkip.CounterPick, pickToSkip.RoundNumber, isManualSkip: false, action);
+        }
+    }
 
-        if (standardGamesDrafted < numberOfStandardGamesToDraft)
+    private async Task<bool> CompleteDraft(LeagueYear leagueYear)
+    {
+        if (leagueYear.ActiveDraft is null)
         {
             return false;
         }
 
-        int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicksToDraft * publishers.Count;
-        int counterPicksDrafted = publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick);
-        counterPicksDrafted += counterPicksAdded;
-
-        if (counterPicksDrafted < numberOfCounterPicksToDraft)
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+        if (draftStatus is not null)
         {
             return false;
         }
 
-        await _fantasyCriticRepo.CompleteDraft(leagueYear);
+        await _fantasyCriticRepo.CompleteDraft(leagueYear, leagueYear.ActiveDraft);
         return true;
     }
 
     public Task ResetDraft(LeagueYear leagueYear)
     {
-        return _fantasyCriticRepo.ResetDraft(leagueYear, _clock.GetCurrentInstant());
+        if (leagueYear.ActiveDraft is null)
+        {
+            throw new Exception($"No active draft found for league: {leagueYear.Key}");
+        }
+        return _fantasyCriticRepo.ResetDraft(leagueYear, leagueYear.ActiveDraft, _clock.GetCurrentInstant());
+    }
+
+    public async Task<Result> CreateDraft(LeagueYear leagueYear, CreateLeagueDraftParameters domainRequest)
+    {
+        if (leagueYear.IsAnyDraftInProgress)
+        {
+            return Result.Failure("Cannot create a draft while one is in progress.");
+        }
+
+        if (domainRequest.NewSpecialGameSlots.Count > domainRequest.AdditionalStandardGames)
+        {
+            return Result.Failure("You must add at least as many 'Additional Standard Games' as new special slots. " +
+                                  "Otherwise the new special slots would convert existing standard slots into special slots.");
+        }
+
+        int nextDraftNumber = leagueYear.Drafts.Max(d => d.DraftNumber) + 1;
+        var newPublisherDraftInfo = new List<PublisherDraftInfo>();
+        foreach (var publisher in leagueYear.Publishers)
+        {
+            var startingDraftPosition = publisher.LastDraftInfo.DraftPosition;
+            var draftInfoForPublisher = new PublisherDraftInfo(Guid.NewGuid(), nextDraftNumber, publisher.PublisherID, startingDraftPosition, new List<PublisherDraftPickSkip>());
+            newPublisherDraftInfo.Add(draftInfoForPublisher);
+        }
+
+        var draft = new LeagueDraft(Guid.NewGuid(), leagueYear.Key, nextDraftNumber, domainRequest.Name, domainRequest.ScheduledDate,
+            domainRequest.GamesToDraft, domainRequest.CounterPicksToDraft, domainRequest.CounterPicksMustBeFromThisDraft,
+            false, PlayStatus.NotStartedDraft, newPublisherDraftInfo, null);
+
+        var timestamp = _clock.GetCurrentInstant();
+        string description = $"Scheduled new draft: {domainRequest.Name}";
+        var newDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Create Draft", description);
+
+        NewDraftLeagueSettingsChanges? settingsToChange = leagueYear.Options.WithNewDraftOptions(domainRequest, timestamp);
+        if (settingsToChange is not null && settingsToChange.StandardGames != leagueYear.Options.StandardGames)
+        {
+            var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(
+                settingsToChange.StandardGames, leagueYear, leagueYear.Publishers);
+            settingsToChange = settingsToChange with { SlotAssignments = slotAssignments };
+        }
+
+        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, settingsToChange);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> EditDraft(LeagueYear leagueYear, Guid draftID, EditLeagueDraftParameters domainRequest)
+    {
+        var draft = leagueYear.Drafts.SingleOrDefault(d => d.DraftID == draftID);
+        if (draft is null)
+        {
+            return Result.Failure("Draft not found.");
+        }
+
+        bool isStarted = draft.PlayStatus.PlayStarted;
+
+        // Name is always editable; other fields only if not started
+        if (isStarted && (
+                (domainRequest.ScheduledDate != draft.ScheduledDate) ||
+                (domainRequest.GamesToDraft != draft.GamesToDraft) ||
+                (domainRequest.CounterPicksToDraft != draft.CounterPicksToDraft) ||
+                (domainRequest.CounterPicksMustBeFromThisDraft != draft.CounterPicksMustBeFromThisDraft)
+            ))
+        {
+            return Result.Failure("Cannot edit draft settings once a draft has started. Reset the draft first.");
+        }
+
+        var updatedDraft = new LeagueDraft(draft.DraftID, draft.LeagueYearKey, draft.DraftNumber, domainRequest.Name,
+            domainRequest.ScheduledDate,
+            domainRequest.GamesToDraft,
+            domainRequest.CounterPicksToDraft,
+            domainRequest.CounterPicksMustBeFromThisDraft,
+            draft.DraftOrderSet, draft.PlayStatus, draft.PublisherDraftInfo, draft.DraftStartedTimestamp);
+
+        var differences = updatedDraft.GetDifferences(draft);
+        if (!differences.HasChanges)
+        {
+            return Result.Success();
+        }
+
+        var timestamp = _clock.GetCurrentInstant();
+        var managerAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Edit Draft", differences.ToString());
+        await _fantasyCriticRepo.EditLeagueDraft(updatedDraft, managerAction);
+        return Result.Success();
+    }
+
+    public async Task<Result> DeleteDraft(LeagueYear leagueYear, Guid draftID)
+    {
+        var draft = leagueYear.Drafts.SingleOrDefault(d => d.DraftID == draftID);
+        if (draft is null)
+        {
+            return Result.Failure("Draft not found.");
+        }
+
+        if (draft.DraftNumber == 1)
+        {
+            return Result.Failure("Cannot delete the first draft. Every league must have at least one draft.");
+        }
+
+        if (!draft.PlayStatus.Equals(PlayStatus.NotStartedDraft))
+        {
+            return Result.Failure("Cannot delete a draft that has already started. Reset the draft first.");
+        }
+
+        var timestamp = _clock.GetCurrentInstant();
+        string description = $"Deleted draft: {draft.Name}";
+        var managerAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Delete Draft", description);
+        await _fantasyCriticRepo.DeleteLeagueDraft(draft, managerAction);
+        return Result.Success();
     }
 }

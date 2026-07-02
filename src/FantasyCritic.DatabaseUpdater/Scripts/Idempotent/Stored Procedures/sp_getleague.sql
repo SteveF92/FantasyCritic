@@ -32,10 +32,15 @@ BEGIN
   SELECT 
   tbl_league_year.`Year`,
   tbl_meta_supportedyear.Finished AS "SupportedYearIsFinished",
-  tbl_league_year.PlayStatus
+  EXISTS (
+    SELECT 1 FROM tbl_league_draft ld
+    WHERE ld.LeagueID = tbl_league_year.LeagueID
+      AND ld.Year = tbl_league_year.Year
+      AND ld.PlayStatus <> 'NotStartedDraft'
+  ) AS AnyDraftStarted
   FROM tbl_league_year
   JOIN tbl_meta_supportedyear ON tbl_meta_supportedyear.`Year` = tbl_league_year.`Year`
-  WHERE LeagueID = P_LeagueID;
+  WHERE tbl_league_year.LeagueID = P_LeagueID;
 END//
 DELIMITER ;
 

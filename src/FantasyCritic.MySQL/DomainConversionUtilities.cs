@@ -47,7 +47,8 @@ internal static class DomainConversionUtilities
     }
 
     public static IReadOnlyList<Publisher> ConvertPublisherEntities(IReadOnlyDictionary<Guid, FantasyCriticUser> usersInLeague, IEnumerable<PublisherEntity> publisherEntities,
-        IEnumerable<PublisherGameEntity> publisherGameEntities, IEnumerable<FormerPublisherGameEntity> formerPublisherGameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
+        IEnumerable<PublisherGameEntity> publisherGameEntities, IEnumerable<FormerPublisherGameEntity> formerPublisherGameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary,
+        ILookup<Guid, PublisherDraftInfo> draftInfosByPublisherID)
     {
         IReadOnlyList<PublisherGame> domainGames = ConvertPublisherGameEntities(publisherGameEntities, masterGameYearDictionary);
         IReadOnlyList<FormerPublisherGame> domainFormerGames = ConvertFormerPublisherGameEntities(formerPublisherGameEntities, masterGameYearDictionary);
@@ -61,7 +62,8 @@ internal static class DomainConversionUtilities
             var gamesForPublisher = domainGameLookup[entity.PublisherID];
             var formerGamesForPublisher = domainFormerGameLookup[entity.PublisherID];
             var user = usersInLeague[entity.UserID];
-            var domainPublisher = entity.ToDomain(user, gamesForPublisher, formerGamesForPublisher);
+            var draftInfos = draftInfosByPublisherID[entity.PublisherID];
+            var domainPublisher = entity.ToDomain(user, draftInfos, gamesForPublisher, formerGamesForPublisher);
             domainPublishers.Add(domainPublisher);
         }
 
@@ -306,7 +308,7 @@ internal static class DomainConversionUtilities
         }
 
         var startedYears = playStatuses
-            .Where(x => x.PlayStatus != PlayStatus.NotStartedDraft.Value)
+            .Where(x => x.AnyDraftStarted)
             .Select(x => x.Year)
             .ToList();
 

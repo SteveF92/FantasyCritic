@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.IntegrationTests.Helpers;
 using NUnit.Framework;
@@ -70,10 +71,14 @@ public class LeagueSetupTests : IntegrationTestBase
         var leagueID = await LeagueTestHelpers.CreateLeagueAsync(session, LeagueScenarios.Standard, year);
 
         var settings = await session.League.GetLeagueYearOptionsAsync(leagueID, year);
+        var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
 
         Assert.That(settings, Is.Not.Null);
         Assert.That(settings.StandardGames, Is.EqualTo(LeagueScenarios.Standard.StandardGames));
-        Assert.That(settings.GamesToDraft, Is.EqualTo(LeagueScenarios.Standard.GamesToDraft));
+        Assert.That(leagueYear.Drafts, Has.Count.EqualTo(1));
+        var firstDraft = leagueYear.Drafts.Single();
+        Assert.That(firstDraft.GamesToDraft, Is.EqualTo(LeagueScenarios.Standard.GamesToDraft));
+        Assert.That(firstDraft.CounterPicksToDraft, Is.EqualTo(LeagueScenarios.Standard.CounterPicksToDraft));
         Assert.That(settings.CounterPicks, Is.EqualTo(LeagueScenarios.Standard.CounterPicks));
         Assert.That(settings.DraftSystem, Is.EqualTo(LeagueScenarios.Standard.DraftSystem));
         Assert.That(settings.ScoringSystem, Is.EqualTo(LeagueScenarios.Standard.ScoringSystem));

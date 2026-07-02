@@ -30,12 +30,11 @@ BEGIN
   WHERE ConferenceID = P_ConferenceID
     AND tbl_conference.IsDeleted = 0;
   
-  
   SELECT 
     cy.Year,
     sy.Finished AS SupportedYearIsFinished,
     CASE 
-        WHEN SUM(CASE WHEN ly.PlayStatus <> 'NotStartedDraft' THEN 1 ELSE 0 END) > 0
+        WHEN SUM(CASE WHEN ld.PlayStatus <> 'NotStartedDraft' THEN 1 ELSE 0 END) > 0
             THEN 1
             ELSE 0
     END AS AtLeastOneDraftStarted
@@ -47,6 +46,9 @@ BEGIN
   LEFT JOIN tbl_league_year ly
       ON ly.LeagueID = l.LeagueID
       AND ly.Year = cy.Year
+  LEFT JOIN tbl_league_draft ld
+      ON ld.LeagueID = l.LeagueID
+      AND ld.Year = cy.Year
   WHERE cy.ConferenceID = P_ConferenceID
   GROUP BY cy.Year, sy.Finished;
   

@@ -11,21 +11,24 @@ public class LeagueYear : IEquatable<LeagueYear>
     private readonly IReadOnlyDictionary<MasterGame, TagOverride> _tagOverridesDictionary;
     private readonly IReadOnlyDictionary<Guid, Publisher> _publisherDictionary;
 
-    public LeagueYear(League league, SupportedYear year, LeagueOptions options, PlayStatus playStatus,
-        bool draftOrderSet, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
-        Instant? draftStartedTimestamp, FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers,
+    public LeagueYear(League league, SupportedYear year, LeagueOptions options,
+        IEnumerable<LeagueDraft> drafts, IEnumerable<EligibilityOverride> eligibilityOverrides, IEnumerable<TagOverride> tagOverrides,
+        FantasyCriticUser? winningUser, IEnumerable<Publisher> publishers,
         bool? conferenceLocked, bool underReview, string? leagueYearName)
     {
+        if (!drafts.Any())
+        {
+            throw new Exception("All leagues must have at least one draft.");
+        }
+
         League = league;
         SupportedYear = year;
         Options = options;
-        PlayStatus = playStatus;
-        DraftOrderSet = draftOrderSet;
+        Drafts = drafts.OrderBy(x => x.DraftNumber).ToList();
         EligibilityOverrides = eligibilityOverrides.ToList();
         _eligibilityOverridesDictionary = EligibilityOverrides.ToDictionary(x => x.MasterGame);
         TagOverrides = tagOverrides.ToList();
         _tagOverridesDictionary = TagOverrides.ToDictionary(x => x.MasterGame);
-        DraftStartedTimestamp = draftStartedTimestamp;
         WinningUser = winningUser;
         ConferenceLocked = conferenceLocked;
         UnderReview = underReview;
@@ -40,11 +43,50 @@ public class LeagueYear : IEquatable<LeagueYear>
     public SupportedYear SupportedYear { get; }
     public int Year => SupportedYear.Year;
     public LeagueOptions Options { get; }
-    public PlayStatus PlayStatus { get; }
-    public bool DraftOrderSet { get; }
+    public IReadOnlyList<LeagueDraft> Drafts { get; }
+
+    public LeagueDraft FirstDraft => Drafts.First();
+
+    public LeagueDraft? ActiveDraft => Drafts.FirstOrDefault(x => x.PlayStatus.DraftIsActiveOrPaused);
+    public LeagueDraft? PendingDraft => Drafts.FirstOrDefault(d => d.PlayStatus.Equals(PlayStatus.NotStartedDraft));
+    public bool IsAnyDraftStarted => Drafts.Any(d => d.PlayStatus.PlayStarted);
+    public bool IsFirstDraftFinished => FirstDraft.PlayStatus.DraftFinished;
+    public bool IsAnyDraftInProgress => Drafts.Any(d => d.PlayStatus.DraftIsActiveOrPaused);
+
+    public LeagueDraft DraftForPublisherDisplayOrder
+    {
+        get
+        {
+            var lastCompletedDraft = Drafts.LastOrDefault(x => x.PlayStatus.DraftFinished);
+            if (lastCompletedDraft is null)
+            {
+                //If you haven't completed a single draft, just use first draft for order
+                return Drafts.First();
+            }
+
+            var nextUncompletedDraftWithOrderSet = Drafts.FirstOrDefault(x => x.DraftOrderSet && !x.PlayStatus.DraftFinished);
+            if (nextUncompletedDraftWithOrderSet is not null)
+            {
+                //Use the next draft if we have one
+                return nextUncompletedDraftWithOrderSet;
+            }
+
+            //Otherwise use the most recent complete draft
+            return lastCompletedDraft;
+        }
+    }
+
+    public bool OneShotMode => Drafts.Count <= 1
+                               && !Options.EnableBids
+                               && Options.StandardGames == Drafts.Sum(d => d.GamesToDraft)
+                               && Options.CounterPicks == Drafts.Sum(d => d.CounterPicksToDraft)
+                               && Options.UnrestrictedReleaseStatusDroppableGames == 0
+                               && Options.WillNotReleaseDroppableGames == 0
+                               && Options.WillReleaseDroppableGames == 0
+                               && !Options.GrantSuperDrops
+                               && Options.TradingSystem.Equals(TradingSystem.NoTrades);
     public IReadOnlyList<EligibilityOverride> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverride> TagOverrides { get; }
-    public Instant? DraftStartedTimestamp { get; }
     public FantasyCriticUser? WinningUser { get; }
     public bool? ConferenceLocked { get; }
     public bool UnderReview { get; }
@@ -56,6 +98,34 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public LocalDate CounterPickDeadline => Options.CounterPickDeadline.InYear(Year);
     public LocalDate? MightReleaseDroppableDate => Options.MightReleaseDroppableDate?.InYear(Year);
+
+    public bool IsPublicBiddingValid
+    {
+        get
+        {
+            if (!FirstDraft.PlayStatus.DraftFinished)
+            {
+                return false;
+            }
+
+            if (IsAnyDraftInProgress)
+            {
+                return false;
+            }
+
+            if (!Options.EnableBids)
+            {
+                return false;
+            }
+
+            if (!Options.PickupSystem.HasPublicBiddingWindow)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
 
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
@@ -137,11 +207,11 @@ public class LeagueYear : IEquatable<LeagueYear>
     {
         if (publisherID is null)
         {
-            return Publisher.GetFakePublisher(Key);
+            return Publisher.GetFakePublisher(this);
         }
 
         var publisher = _publisherDictionary.GetValueOrDefault(publisherID.Value);
-        return publisher ?? Publisher.GetFakePublisher(Key);
+        return publisher ?? Publisher.GetFakePublisher(this);
     }
 
     public Publisher? FindPublisherWithGame(MasterGameYear game, bool lookingForCounterPick)
@@ -155,7 +225,7 @@ public class LeagueYear : IEquatable<LeagueYear>
     public LeagueYear GetUpdatedLeagueYearWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         var newPublishers = Publishers.Select(x => x.GetUpdatedPublisherWithNewScores(calculatedStats)).ToList();
-        return new LeagueYear(League, SupportedYear, Options, PlayStatus, DraftOrderSet, EligibilityOverrides, TagOverrides, DraftStartedTimestamp, WinningUser, newPublishers, ConferenceLocked, UnderReview, LeagueYearName);
+        return new LeagueYear(League, SupportedYear, Options, Drafts, EligibilityOverrides, TagOverrides, WinningUser, newPublishers, ConferenceLocked, UnderReview, LeagueYearName);
     }
 
     public override string ToString() => $"{League}|{Year}";
@@ -188,7 +258,7 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public decimal? GetSuperDropPointCuttoff(SystemWideValues systemWideValues)
     {
-        if (!PlayStatus.DraftFinished)
+        if (!FirstDraft.PlayStatus.DraftFinished)
         {
             return null;
         }

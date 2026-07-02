@@ -50,7 +50,7 @@ public class MySQLDailyStatsRepo : IDailyStatsRepo
         var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
 
         var statistics = leagueYears
-            .Where(x => x.PlayStatus.DraftFinished)
+            .Where(x => x.IsFirstDraftFinished)
             .SelectMany(ly => ly.Publishers.Select(p => new { LeagueYear = ly, Publisher = p }))
             .Select(item => item.Publisher.GetPublisherStatistics(currentDate, item.LeagueYear, systemWideValues))
             .ToList();

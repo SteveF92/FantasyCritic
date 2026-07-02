@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace FantasyCritic.IntegrationTests.Tests.League.Actions;
@@ -223,17 +222,14 @@ public class TradePrivacyTests : IntegrationTestBase
 
     private static async Task<IReadOnlyList<Guid>> GetTradeHistoryIDsAsync(ApiSession session, LeagueFixture league)
     {
-        var history = await session.GetAndDeserializeAsync<JArray>($"/api/League/TradeHistory?leagueID={league.LeagueID}&year={league.Year}");
-        return history.Select(x => Guid.Parse(x.Value<string>("tradeID")!)).ToList();
+        var history = await session.League.TradeHistoryAsync(league.LeagueID, league.Year);
+        return history.Select(x => x.TradeID).ToList();
     }
 
     private static async Task<IReadOnlyList<Guid>> GetConsolidatedExportTradeIDsAsync(ApiSession session, LeagueFixture league)
     {
-        using var response = await session.GetAsync($"/api/League/DownloadConsolidatedLeagueYearData?leagueID={league.LeagueID}&year={league.Year}");
-        response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var trades = (JArray?)JObject.Parse(body)["trades"] ?? new JArray();
-        return trades.Select(x => Guid.Parse(x.Value<string>("tradeID")!)).ToList();
+        var export = await session.League.DownloadConsolidatedLeagueYearDataAsync(league.LeagueID, league.Year);
+        return export.Trades.Select(x => x.TradeID).ToList();
     }
 
     private static BasicTradeRequest BuildBasicTradeRequest(LeagueFixture league, Guid tradeID) =>

@@ -14,7 +14,7 @@ public class LeagueViewModel
         IsManager = isManager;
         Archived = league.Archived;
 
-        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var latestDraftStartedYear = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         Years = league.Years.Select(x => x.Year).ToList();
         ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
@@ -37,7 +37,7 @@ public class LeagueViewModel
         IsManager = isManager;
         Archived = league.Archived;
 
-        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var latestDraftStartedYear = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         Years = league.Years.Select(x => x.Year).ToList();
         ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();

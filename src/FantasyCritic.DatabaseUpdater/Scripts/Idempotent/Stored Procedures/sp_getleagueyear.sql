@@ -39,10 +39,15 @@ BEGIN
   SELECT 
   tbl_league_year.`Year`,
   tbl_meta_supportedyear.Finished AS "SupportedYearIsFinished",
-  tbl_league_year.PlayStatus
+  EXISTS (
+    SELECT 1 FROM tbl_league_draft ld
+    WHERE ld.LeagueID = tbl_league_year.LeagueID
+      AND ld.Year = tbl_league_year.Year
+      AND ld.PlayStatus <> 'NotStartedDraft'
+  ) AS AnyDraftStarted
   FROM tbl_league_year
   JOIN tbl_meta_supportedyear ON tbl_meta_supportedyear.`Year` = tbl_league_year.`Year`
-  WHERE LeagueID = P_LeagueID;
+  WHERE tbl_league_year.LeagueID = P_LeagueID;
   
   -- League Year
   
@@ -50,6 +55,26 @@ BEGIN
   FROM tbl_league_year
   WHERE LeagueID = P_LeagueID
     AND YEAR = P_Year;
+  
+  -- Drafts
+  
+  SELECT *
+  FROM tbl_league_draft
+  WHERE LeagueID = P_LeagueID
+    AND Year = P_Year
+  ORDER BY DraftNumber;
+  
+  SELECT dp.*
+  FROM tbl_league_draftpublisher dp
+  JOIN tbl_league_draft d ON dp.DraftID = d.DraftID
+  WHERE d.LeagueID = P_LeagueID
+    AND d.Year = P_Year;
+  
+  SELECT ps.*
+  FROM tbl_league_draftpickskip ps
+  JOIN tbl_league_draft d ON ps.DraftID = d.DraftID
+  WHERE d.LeagueID = P_LeagueID
+    AND d.Year = P_Year;
   
   
   SELECT *

@@ -10,7 +10,7 @@ public class AllTimeStatsPublisherViewModel
         LeagueName = leagueYear.League.LeagueName;
         PlayerName = publisher.User.UserName;
         Year = publisher.LeagueYearKey.Year;
-        DraftPosition = publisher.DraftPosition;
+        DraftPosition = publisher.FirstDraftInfo.DraftPosition;
 
         AverageCriticScore = publisher.AverageCriticScore;
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);

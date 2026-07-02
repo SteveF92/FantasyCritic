@@ -8,8 +8,21 @@
             <template v-else>
               <font-awesome-icon v-if="data.item.conferenceID" icon="globe" size="2x" transform="left-1" />
               <font-awesome-icon v-if="!data.item.conferenceID && data.item.customRulesLeague" icon="book" size="2x" />
-              <font-awesome-icon v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.oneShotMode" icon="1" size="2x" transform="right-3" />
-              <font-awesome-icon v-if="!data.item.conferenceID && !data.item.customRulesLeague && !data.item.oneShotMode" icon="user" size="2x" />
+              <font-awesome-icon
+                v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.mostRecentYearType === 'OneShot'"
+                v-b-popover.hover.top="'One Shot League'"
+                icon="1"
+                size="2x"
+                transform="right-3" />
+              <font-awesome-icon
+                v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.mostRecentYearType === 'MultiDraft'"
+                v-b-popover.hover.top="'Multi Draft League'"
+                icon="list-ol"
+                size="2x" />
+              <font-awesome-icon
+                v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.mostRecentYearType === 'Standard'"
+                icon="user"
+                size="2x" />
             </template>
           </router-link>
         </div>

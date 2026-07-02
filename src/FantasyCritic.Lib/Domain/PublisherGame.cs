@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain;
 public class PublisherGame : IEquatable<PublisherGame>
 {
     public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
-        decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID)
+        decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID = null)
     {
         PublisherID = publisherID;
         PublisherGameID = publisherGameID;
@@ -23,6 +23,7 @@ public class PublisherGame : IEquatable<PublisherGame>
         OverallDraftPosition = overallDraftPosition;
         BidAmount = bidAmount;
         AcquiredInTradeID = acquiredInTradeID;
+        DraftID = draftID;
     }
 
     public Guid PublisherID { get; }
@@ -37,6 +38,7 @@ public class PublisherGame : IEquatable<PublisherGame>
     public int SlotNumber { get; }
     public int? DraftPosition { get; }
     public int? OverallDraftPosition { get; }
+    public Guid? DraftID { get; }
     public uint? BidAmount { get; }
     public Guid? AcquiredInTradeID { get; }
 

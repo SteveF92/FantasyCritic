@@ -23,7 +23,15 @@ CREATE PROCEDURE `sp_getusersinleague`(
 BEGIN
   SELECT tbl_user.* from tbl_user join tbl_league_hasuser on (tbl_user.UserID = tbl_league_hasuser.UserID) where tbl_league_hasuser.LeagueID = P_LeagueID;
   
-  SELECT YEAR, PlayStatus FROM tbl_league_year where LeagueID = P_LeagueID;
+  SELECT tbl_league_year.YEAR,
+         EXISTS (
+           SELECT 1 FROM tbl_league_draft ld
+           WHERE ld.LeagueID = tbl_league_year.LeagueID
+             AND ld.Year = tbl_league_year.Year
+             AND ld.PlayStatus <> 'NotStartedDraft'
+         ) AS AnyDraftStarted
+  FROM tbl_league_year
+  WHERE tbl_league_year.LeagueID = P_LeagueID;
   
   SELECT UserID, Year from tbl_league_publisher where LeagueID = P_LeagueID;
 END//

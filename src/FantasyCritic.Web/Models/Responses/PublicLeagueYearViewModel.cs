@@ -7,11 +7,11 @@ public class PublicLeagueYearViewModel
         LeagueID = leagueYear.LeagueID;
         LeagueName = leagueYear.LeagueName;
         NumberOfFollowers = leagueYear.NumberOfFollowers;
-        PlayStatus = leagueYear.PlayStatus.Value;
+        AnyDraftStarted = leagueYear.AnyDraftStarted;
     }
 
     public Guid LeagueID { get; }
     public string LeagueName { get; }
     public int NumberOfFollowers { get; }
-    public string PlayStatus { get; }
+    public bool AnyDraftStarted { get; }
 }

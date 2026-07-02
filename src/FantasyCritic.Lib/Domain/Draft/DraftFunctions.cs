@@ -1,10 +1,9 @@
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Draft;
 public static class DraftFunctions
 {
-    public static bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<FantasyCriticUser> activeUsers)
+    public static bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<IMinimalFantasyCriticUser> activeUsers)
     {
         if (publishersInLeague.Count() != activeUsers.Count())
         {
@@ -19,11 +18,11 @@ public static class DraftFunctions
         return true;
     }
 
-    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, IEnumerable<FantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
+    public static IReadOnlyList<string> GetStartDraftResult(LeagueYear leagueYear, LeagueDraft leagueDraft, IEnumerable<IMinimalFantasyCriticUser> activeUsers, bool isManager, bool conferenceDraftsNotEnabled)
     {
-        if (leagueYear.PlayStatus.PlayStarted)
+        if (leagueDraft.PlayStatus.PlayStarted)
         {
-            return new List<string>();
+            return ["Draft is already started."];
         }
 
         var supportedYear = leagueYear.SupportedYear;
@@ -49,9 +48,34 @@ public static class DraftFunctions
             errors.Add($"This year is not yet open for play. It will become available on {supportedYear.StartDate}.");
         }
 
-        if (!leagueYear.DraftOrderSet)
+        if (!leagueDraft.DraftOrderSet)
         {
             errors.Add(isManager ? "You must set the draft order." : "Your league manager must set the draft order.");
+        }
+
+        if (leagueDraft.GamesToDraft == 0 && leagueDraft.CounterPicksToDraft == 0)
+        {
+            errors.Add("This draft has no games or counter picks configured. Please edit the draft settings to add games to draft.");
+        }
+
+        if (leagueDraft.GamesToDraft > 0)
+        {
+            bool anyPublisherHasOpenStandardSlot = leagueYear.Publishers.Any(p =>
+                p.PublisherGames.Count(g => !g.CounterPick) < leagueYear.Options.StandardGames);
+            if (!anyPublisherHasOpenStandardSlot)
+            {
+                errors.Add("No player has any open standard game slots. All slots are already filled. More standard slots will need to be added in order to start this draft.");
+            }
+        }
+
+        if (leagueDraft.CounterPicksToDraft > 0)
+        {
+            bool anyPublisherHasOpenCounterPickSlot = leagueYear.Publishers.Any(p =>
+                p.PublisherGames.Count(g => g.CounterPick) < leagueYear.Options.CounterPicks);
+            if (!anyPublisherHasOpenCounterPickSlot)
+            {
+                errors.Add("No player has any open counter pick slots. All slots are already filled. More counter pick slots will need to be added in order to start this draft.");
+            }
         }
 
         if (conferenceDraftsNotEnabled)
@@ -64,35 +88,53 @@ public static class DraftFunctions
 
     public static DraftStatus? GetDraftStatus(LeagueYear leagueYear)
     {
-        if (!leagueYear.PlayStatus.DraftIsActive)
+        if (leagueYear.ActiveDraft is null)
         {
             return null;
         }
 
-        var draftPhase = GetDraftPhase(leagueYear);
-        if (draftPhase.Equals(DraftPhase.Complete))
+        var previousDraftPicks = GetPastDraftPicks(leagueYear, leagueYear.ActiveDraft);
+        var processedPicks = GetFutureDraftPicks(leagueYear, leagueYear.ActiveDraft, previousDraftPicks);
+        if (processedPicks.NextPick is null)
         {
             return null;
         }
 
-        var nextDraftPublisher = GetNextDraftPublisher(leagueYear);
-        Publisher? previousDraftPublisher = null;
-        if (leagueYear.Publishers.Any(x => x.PublisherGames.Any()))
-        {
-            var mostRecentGame = leagueYear.Publishers.SelectMany(x => x.PublisherGames).MaxBy(x => x.Timestamp);
-            if (mostRecentGame is not null)
-            {
-                previousDraftPublisher = leagueYear.Publishers.Single(x => x.PublisherID == mostRecentGame.PublisherID);
-            }
-        }
+        var previousDraftPick = previousDraftPicks.LastOrDefault();
+        var previousNonSkippedPick = previousDraftPicks.LastOrDefault(x => !x.Skipped);
+        var skippedPicksSinceLastRealPick = previousDraftPicks
+            .Reverse()
+            .TakeWhile(x => x.Skipped)
+            .Reverse()
+            .ToList();
 
-        var draftPositionStatus = GetDraftPositionStatus(leagueYear, draftPhase, nextDraftPublisher);
-
-        DraftStatus draftStatus = new DraftStatus(draftPhase, nextDraftPublisher, previousDraftPublisher, draftPositionStatus.DraftPosition, draftPositionStatus.OverallDraftPosition);
+        var draftStatus = new DraftStatus(leagueYear.ActiveDraft, processedPicks.NextPick, previousDraftPick, previousNonSkippedPick, processedPicks.PicksToSkip, skippedPicksSinceLastRealPick);
         return draftStatus;
     }
 
-    public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType, IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear)
+    /// <summary>
+    /// Returns auto-skips that remain when the draft has no next real pick (including the case where
+    /// <see cref="GetDraftStatus"/> returns null because every remaining turn would be skipped).
+    /// </summary>
+    public static IReadOnlyList<FutureDraftPick> GetTrailingPicksToSkip(LeagueYear leagueYear)
+    {
+        if (leagueYear.ActiveDraft is null)
+        {
+            return [];
+        }
+
+        var previousDraftPicks = GetPastDraftPicks(leagueYear, leagueYear.ActiveDraft);
+        var processedPicks = GetFutureDraftPicks(leagueYear, leagueYear.ActiveDraft, previousDraftPicks);
+        if (processedPicks.NextPick is not null)
+        {
+            return [];
+        }
+
+        return processedPicks.PicksToSkip;
+    }
+
+    public static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositions(LeagueYear leagueYear, DraftOrderType draftOrderType,
+        IReadOnlyList<Guid>? manualPublisherDraftPositions, LeagueYear? previousLeagueYear, SystemWideValues? systemWideValues, int targetDraftNumber)
     {
         if (draftOrderType.Equals(DraftOrderType.Manual))
         {
@@ -116,7 +158,7 @@ public static class DraftFunctions
                 return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("There is no previous year to use for standings.");
             }
 
-            if (!previousLeagueYear.PlayStatus.DraftFinished)
+            if (!previousLeagueYear.IsFirstDraftFinished)
             {
                 return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("The previous league year was not completed.");
             }
@@ -143,6 +185,35 @@ public static class DraftFunctions
             return GetDraftPositionsInternal(leagueYear, currentYearPublishersInOrder.Select(x => x.PublisherID).ToList());
         }
 
+        if (draftOrderType.Equals(DraftOrderType.InverseProjectedPoints))
+        {
+            if (targetDraftNumber <= 1)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Inverse projected points is only available for drafts after the first.");
+            }
+
+            if (systemWideValues is null)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+            }
+
+            var previousDraft = leagueYear.Drafts.SingleOrDefault(x => x.DraftNumber == targetDraftNumber - 1);
+            if (previousDraft is null)
+            {
+                return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
+            }
+
+            var previousDraftID = previousDraft.DraftID;
+            var orderedPublishers = leagueYear.Publishers
+                .OrderBy(x => x.GetProjectedFantasyPoints(leagueYear, systemWideValues))
+                .ThenBy(x => x.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options))
+                .ThenByDescending(x => x.GetDraftPosition(previousDraftID))
+                .ThenBy(x => x.PublisherID)
+                .ToList();
+
+            return GetDraftPositionsInternal(leagueYear, orderedPublishers.Select(x => x.PublisherID).ToList());
+        }
+
         return Result.Failure<IReadOnlyList<KeyValuePair<Publisher, int>>>("Draft Order Setting failed.");
     }
 
@@ -163,97 +234,164 @@ public static class DraftFunctions
         return draftPositions;
     }
 
-    private static DraftPhase GetDraftPhase(LeagueYear leagueYear)
+    private static IReadOnlyList<PastDraftPick> GetPastDraftPicks(LeagueYear leagueYear, LeagueDraft draft)
     {
-        int numberOfStandardGamesToDraft = leagueYear.Options.GamesToDraft * leagueYear.Publishers.Count;
-        var allPublisherGames = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
-        int standardGamesDrafted = allPublisherGames.Count(x => !x.CounterPick);
-        if (standardGamesDrafted < numberOfStandardGamesToDraft)
+        if (draft.GamesToDraft == 0 && draft.CounterPicksToDraft == 0)
         {
-            return DraftPhase.StandardGames;
+            return [];
         }
 
-        int numberOfCounterPicksToDraft = leagueYear.Options.CounterPicksToDraft * leagueYear.Publishers.Count;
-        int counterPicksDrafted = allPublisherGames.Count(x => x.CounterPick);
-        if (counterPicksDrafted < numberOfCounterPicksToDraft)
+        var draftedGames = leagueYear.Publishers
+            .SelectMany(x => x.PublisherGames)
+            .Where(x => x.DraftID == draft.DraftID)
+            .ToList();
+
+        var invalidGames = draftedGames.Where(g => !g.DraftPosition.HasValue || !g.OverallDraftPosition.HasValue).ToList();
+        if (invalidGames.Count > 0)
         {
-            return DraftPhase.CounterPicks;
+            throw new InvalidOperationException(
+                $"Draft {draft.DraftID} has {invalidGames.Count} game(s) with missing draft position data. " +
+                $"First bad game belongs to publisher {invalidGames[0].PublisherID}.");
         }
 
-        return DraftPhase.Complete;
+        var gameDictionary = draftedGames.ToDictionary(x => (x.CounterPick, x.OverallDraftPosition!.Value));
+
+        var skipLookup = draft.PublisherDraftInfo
+            .SelectMany(info => info.PickSkips, (info, skip) => (Key: (info.PublisherID, skip.CounterPick, skip.PickNumber), Skip: skip))
+            .ToDictionary(x => x.Key, x => x.Skip);
+
+        var draftPicks = new List<PastDraftPick>();
+
+        int overallPickNumber = 1;
+        for (int roundNumber = 1; roundNumber <= draft.GamesToDraft; roundNumber++)
+        {
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList();
+
+            foreach (var publisher in publishers)
+            {
+                var standardPickSkip = skipLookup.GetValueOrDefault((publisher.PublisherID, false, roundNumber));
+                if (standardPickSkip is not null)
+                {
+                    draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, null, standardPickSkip.IsManualSkip));
+                    // overallPickNumber does NOT advance — skip holds the position without consuming it
+                    continue;
+                }
+
+                var pickedGame = gameDictionary.GetValueOrDefault((false, overallPickNumber));
+                if (pickedGame is null)
+                {
+                    return draftPicks;  // frontier reached, remaining turns are future
+                }
+
+                draftPicks.Add(new PastDraftPick(publisher, false, roundNumber, pickedGame, null));
+                overallPickNumber++;
+            }
+        }
+
+        overallPickNumber = 1;
+        for (int roundNumber = 1; roundNumber <= draft.CounterPicksToDraft; roundNumber++)
+        {
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(draft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
+
+            foreach (var publisher in publishers)
+            {
+                var counterPickSkip = skipLookup.GetValueOrDefault((publisher.PublisherID, true, roundNumber));
+                if (counterPickSkip is not null)
+                {
+                    draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, null, counterPickSkip.IsManualSkip));
+                    continue;
+                }
+
+                var pickedGame = gameDictionary.GetValueOrDefault((true, overallPickNumber));
+                if (pickedGame is null)
+                {
+                    return draftPicks;  // frontier reached, remaining turns are future
+                }
+
+                draftPicks.Add(new PastDraftPick(publisher, true, roundNumber, pickedGame, null));
+                overallPickNumber++;
+            }
+        }
+
+        return draftPicks;
     }
 
-    private static Publisher GetNextDraftPublisher(LeagueYear leagueYear)
+    private static PickProcessingResult GetFutureDraftPicks(LeagueYear leagueYear, LeagueDraft activeDraft, IReadOnlyList<PastDraftPick> pastDraftPicks)
     {
-        var phase = GetDraftPhase(leagueYear);
-        if (phase.Equals(DraftPhase.StandardGames))
+        var resolvedTurns = pastDraftPicks
+            .Select(p => (p.CounterPick, p.RoundNumber, p.Publisher.PublisherID))
+            .ToHashSet();
+
+        var nextStandardPickNumber = pastDraftPicks.Count(p => !p.CounterPick && !p.Skipped) + 1;
+        var nextCounterPickNumber = pastDraftPicks.Count(p => p.CounterPick && !p.Skipped) + 1;
+
+        var picksToSkip = new List<FutureDraftPick>();
+
+        for (int roundNumber = 1; roundNumber <= activeDraft.GamesToDraft; roundNumber++)
         {
-            var publishersWithLowestNumberOfGames = leagueYear.Publishers.WhereMin(x => x.PublisherGames.Count(y => !y.CounterPick));
-            var allPlayersHaveSameNumberOfGames = leagueYear.Publishers.Select(x => x.PublisherGames.Count(y => !y.CounterPick)).Distinct().Count() == 1;
-            var maxNumberOfGames = leagueYear.Publishers.Max(x => x.PublisherGames.Count(y => !y.CounterPick));
-            var roundNumber = maxNumberOfGames;
-            if (allPlayersHaveSameNumberOfGames)
-            {
-                roundNumber++;
-            }
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(activeDraft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(activeDraft.DraftID)).ToList();
 
-            bool roundNumberIsOdd = (roundNumber % 2 != 0);
-            if (roundNumberIsOdd)
+            foreach (var publisher in publishers)
             {
-                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
-                var firstPublisherOdd = sortedPublishersOdd.First();
-                return firstPublisherOdd;
-            }
-            //Else round is even
-            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
-            var firstPublisherEven = sortedPublishersEven.First();
-            return firstPublisherEven;
-        }
-        if (phase.Equals(DraftPhase.CounterPicks))
-        {
-            var publishersWithLowestNumberOfGames = leagueYear.Publishers.WhereMin(x => x.PublisherGames.Count(y => y.CounterPick));
-            var allPlayersHaveSameNumberOfGames = leagueYear.Publishers.Select(x => x.PublisherGames.Count(y => y.CounterPick)).Distinct().Count() == 1;
-            var maxNumberOfGames = leagueYear.Publishers.Max(x => x.PublisherGames.Count(y => y.CounterPick));
+                if (resolvedTurns.Contains((false, roundNumber, publisher.PublisherID)))
+                {
+                    continue;
+                }
 
-            var roundNumber = maxNumberOfGames;
-            if (allPlayersHaveSameNumberOfGames)
-            {
-                roundNumber++;
+                if (ShouldSkipPublisher(publisher, false, leagueYear))
+                {
+                    picksToSkip.Add(new FutureDraftPick(publisher, false, roundNumber, null));
+                }
+                else
+                {
+                    var nextPick = new FutureDraftPick(publisher, false, roundNumber, nextStandardPickNumber);
+                    return new PickProcessingResult(nextPick, picksToSkip);
+                }
             }
-
-            bool roundNumberIsOdd = (roundNumber % 2 != 0);
-            if (roundNumberIsOdd)
-            {
-                var sortedPublishersOdd = publishersWithLowestNumberOfGames.OrderByDescending(x => x.DraftPosition);
-                var firstPublisherOdd = sortedPublishersOdd.First();
-                return firstPublisherOdd;
-            }
-            //Else round is even
-            var sortedPublishersEven = publishersWithLowestNumberOfGames.OrderBy(x => x.DraftPosition);
-            var firstPublisherEven = sortedPublishersEven.First();
-            return firstPublisherEven;
         }
 
-        throw new Exception($"Invalid draft state: {leagueYear.League.LeagueID}");
+        for (int roundNumber = 1; roundNumber <= activeDraft.CounterPicksToDraft; roundNumber++)
+        {
+            bool roundIsOdd = roundNumber % 2 != 0;
+            var publishers = roundIsOdd
+                ? leagueYear.Publishers.OrderByDescending(x => x.GetDraftPosition(activeDraft.DraftID)).ToList()
+                : leagueYear.Publishers.OrderBy(x => x.GetDraftPosition(activeDraft.DraftID)).ToList();
+
+            foreach (var publisher in publishers)
+            {
+                if (resolvedTurns.Contains((true, roundNumber, publisher.PublisherID)))
+                {
+                    continue;
+                }
+
+                if (ShouldSkipPublisher(publisher, true, leagueYear))
+                {
+                    picksToSkip.Add(new FutureDraftPick(publisher, true, roundNumber, null));
+                }
+                else
+                {
+                    var nextPick = new FutureDraftPick(publisher, true, roundNumber, nextCounterPickNumber);
+                    return new PickProcessingResult(nextPick, picksToSkip);
+                }
+            }
+        }
+
+        return new PickProcessingResult(null, picksToSkip);
     }
 
-    private static DraftPositionStatus GetDraftPositionStatus(LeagueYear leagueYear, DraftPhase draftPhase, Publisher nextDraftPublisher)
+    private static bool ShouldSkipPublisher(Publisher publisher, bool counterPick, LeagueYear leagueYear)
     {
-        if (draftPhase.Equals(DraftPhase.StandardGames))
-        {
-            var publisherPosition = nextDraftPublisher.PublisherGames.Count(x => !x.CounterPick) + 1;
-            var overallPosition = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick) + 1;
-            return new DraftPositionStatus(publisherPosition, overallPosition);
-        }
-        if (draftPhase.Equals(DraftPhase.CounterPicks))
-        {
-            var publisherPosition = nextDraftPublisher.PublisherGames.Count(x => x.CounterPick) + 1;
-            var overallPosition = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Count(x => x.CounterPick) + 1;
-            return new DraftPositionStatus(publisherPosition, overallPosition);
-        }
-
-        throw new Exception($"Invalid draft state: {leagueYear.League.LeagueID}");
+        var publisherSlots = publisher.GetPublisherSlots(leagueYear);
+        bool hasOpenSlot = publisherSlots.Any(x => x.CounterPick == counterPick && x.PublisherGame is null);
+        return !hasOpenSlot;
     }
-
-    private record DraftPositionStatus(int DraftPosition, int OverallDraftPosition);
 }

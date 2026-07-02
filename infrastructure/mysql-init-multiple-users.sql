@@ -21,10 +21,13 @@ GRANT EXECUTE, SELECT, SHOW VIEW, DELETE, INSERT, UPDATE
 GRANT EXECUTE, SELECT, SHOW VIEW, DELETE, INSERT, UPDATE
   ON `fantasycritic-fromsnapshot`.* TO 'fantasycritic'@'%';
 
+GRANT CREATE TEMPORARY TABLES
+  ON `fantasycritic-fromsnapshot`.* TO 'fantasycritic'@'%';
+
 -- fantasycritic-admin: full access on both local databases + minimal global read for tooling
 -- WITH GRANT OPTION lets fantasycritic-admin run GRANT statements (e.g. in DbUp migrations).
 GRANT ALL PRIVILEGES ON fantasycritic.* TO 'fantasycritic-admin'@'%' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON `fantasycritic-fromsnapshot`.* TO 'fantasycritic-admin'@'%' WITH GRANT OPTION;
-GRANT SELECT, SHOW DATABASES, SHOW VIEW ON *.* TO 'fantasycritic-admin'@'%';
+GRANT SELECT, SHOW DATABASES, SHOW VIEW, CREATE ON *.* TO 'fantasycritic-admin'@'%';
 
 FLUSH PRIVILEGES;

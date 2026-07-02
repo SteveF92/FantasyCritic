@@ -1,4 +1,5 @@
 import { mapState } from 'vuex';
+import { DateTime } from 'luxon';
 import { maxBy } from '@/globalFunctions';
 
 let leagueMixin = {
@@ -33,6 +34,18 @@ let leagueMixin = {
     supportedYear() {
       return this.leagueYear.supportedYear;
     },
+    firstDraft() {
+      if (!this.leagueYear?.drafts || this.leagueYear.drafts.length === 0) {
+        return null;
+      }
+      return this.leagueYear.drafts[0];
+    },
+    pendingDraft() {
+      return this.leagueYear.drafts.find((d) => d.playStatus === 'NotStartedDraft') ?? null;
+    },
+    activeDraft() {
+      return this.leagueYear.drafts.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
+    },
     nextPublisherUp() {
       if (!this.leagueYear || !this.leagueYear.publishers) {
         return null;
@@ -48,7 +61,7 @@ let leagueMixin = {
       return false;
     },
     draftIsPaused() {
-      return this.leagueYear.playStatus.draftIsPaused;
+      return this.activeDraft?.draftIsPaused ?? false;
     },
     isManager() {
       return this.league && this.league.isManager;
@@ -91,19 +104,61 @@ let leagueMixin = {
       return this.leagueYear.settings.oneShotMode;
     },
     playStarted() {
-      return this.leagueYear.playStatus.playStarted;
+      return this.firstDraft?.playStarted ?? false;
     },
     readyToSetDraftOrder() {
-      return this.leagueYear.playStatus.readyToSetDraftOrder;
+      return this.pendingDraft?.readyToSetDraftOrder ?? false;
     },
-    draftFinished() {
-      return this.leagueYear.playStatus.draftFinished;
+    firstDraftFinished() {
+      return this.firstDraft?.draftFinished ?? false;
+    },
+    hasPendingOrActiveDraft() {
+      return this.pendingDraft !== null || this.activeDraft !== null;
+    },
+    pendingDraftIsFirst() {
+      return this.pendingDraft?.draftNumber === 1;
+    },
+    pendingDraftIsWithinSevenDays() {
+      if (!this.pendingDraft?.scheduledDate) return false;
+      const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
+      const today = DateTime.local().startOf('day');
+      return scheduled.diff(today, 'days').days <= 7;
+    },
+    pendingDraftIsOverdue() {
+      if (!this.pendingDraft?.scheduledDate) return false;
+      const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
+      const today = DateTime.local().startOf('day');
+      return scheduled < today;
+    },
+    pendingDraftIsImminent() {
+      if (!this.pendingDraft) return false;
+      if (this.pendingDraftIsFirst) return true;
+      if (this.pendingDraft.draftOrderSet && !this.pendingDraft.scheduledDate) return true;
+      return this.pendingDraftIsWithinSevenDays;
+    },
+    pendingDraftCalloutVisible() {
+      if (!this.pendingDraft || this.activeDraft) return false;
+      if (this.pendingDraftIsFirst) return true;
+      if (this.pendingDraftIsOverdue) return true;
+      return this.pendingDraftIsWithinSevenDays;
+    },
+    draftIsActiveOrPaused() {
+      return this.activeDraft !== null;
+    },
+    biddingAllowed() {
+      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.enableBids;
+    },
+    tradesAllowed() {
+      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.settings.tradingSystem !== 'NoTrades';
+    },
+    dropsAllowed() {
+      return this.firstDraftFinished && !this.activeDraft && !this.oneShotMode;
     },
     postDraftPlayable() {
-      return this.leagueYear.playStatus.draftFinished && !this.leagueYear.supportedYear.finished;
+      return this.firstDraftFinished && !this.leagueYear.supportedYear.finished;
     },
     postDraftEditable() {
-      return this.leagueYear.playStatus.draftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
+      return this.firstDraftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
     },
     decimalsToShow() {
       if (this.userInfo?.showDecimalPoints) {

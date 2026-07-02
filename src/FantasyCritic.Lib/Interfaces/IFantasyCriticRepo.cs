@@ -11,9 +11,13 @@ public interface IFantasyCriticRepo
 {
     Task<League?> GetLeague(Guid id);
     Task<LeagueYearKey?> GetLeagueYearKeyForPublisherID(Guid publisherID);
-    Task CreateLeague(League league, int initialYear, LeagueOptions options);
-    Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers);
+    Task CreateLeague(League league, int initialYear, LeagueOptions options, IReadOnlyList<LeagueDraft> drafts);
+    Task AddNewLeagueYear(League league, int year, LeagueOptions options, IReadOnlyList<FantasyCriticUser> mostRecentActivePlayers, IReadOnlyList<LeagueDraft> drafts);
     Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction);
+
+    Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction, NewDraftLeagueSettingsChanges? settingsToChange);
+    Task EditLeagueDraft(LeagueDraft updatedDraft, LeagueManagerAction managerAction);
+    Task DeleteLeagueDraft(LeagueDraft draft, LeagueManagerAction managerAction);
 
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
     Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league);
@@ -108,12 +112,15 @@ public interface IFantasyCriticRepo
     Task ChangePublisherIcon(Publisher publisher, string? publisherIcon);
     Task ChangePublisherSlogan(Publisher publisher, string? publisherSlogan);
     Task ChangeLeagueOptions(League league, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague);
-    Task StartDraft(LeagueYear leagueYear);
-    Task CompleteDraft(LeagueYear leagueYear);
-    Task ResetDraft(LeagueYear leagueYear, Instant timestamp);
 
-    Task SetDraftPause(LeagueYear leagueYear, bool pause);
-    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueManagerAction draftSetAction);
+    Task StartDraft(LeagueYear leagueYear, LeagueDraft draftToStart);
+    Task CompleteDraft(LeagueYear leagueYear, LeagueDraft draftToComplete);
+    Task ResetDraft(LeagueYear leagueYear, LeagueDraft draftToReset, Instant timestamp);
+    Task SetDraftPause(LeagueYear leagueYear, LeagueDraft draftToPause, bool pause);
+    Task SetDraftOrder(IReadOnlyList<KeyValuePair<Publisher, int>> draftPositions, LeagueDraft pendingDraft, LeagueManagerAction draftSetAction);
+    Task AddDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, bool isManualSkip, LeagueAction action);
+    Task RemoveDraftPickSkip(LeagueDraft draft, Publisher publisher, bool counterPick, int pickNumber, LeagueAction action);
+
     Task DeleteEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame);
     Task SetEligibilityOverride(LeagueYear leagueYear, MasterGame masterGame, bool eligible);
     Task SetTagOverride(LeagueYear leagueYear, MasterGame masterGame, IEnumerable<MasterGameTag> requestedTags);

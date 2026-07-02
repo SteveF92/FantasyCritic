@@ -60,10 +60,11 @@ public class LeagueMemberTests : IntegrationTestBase
     public async Task LeagueYear_AfterSetup_PlayStatusIsReadyToDraft()
     {
         var leagueYear = await _league.GetLeagueYearAsync();
-        Assert.That(leagueYear.PlayStatus.ReadyToDraft, Is.True,
+        var pendingDraft = leagueYear.PendingDraft();
+        Assert.That(pendingDraft?.ReadyToDraft, Is.True,
             "All publishers have been created and draft order set — league should be ready to draft.");
-        Assert.That(leagueYear.PlayStatus.StartDraftErrors, Is.Empty,
-            $"No start-draft errors expected. Got: {string.Join("; ", leagueYear.PlayStatus.StartDraftErrors)}");
+        Assert.That(pendingDraft?.StartDraftErrors, Is.Empty,
+            $"No start-draft errors expected. Got: {string.Join("; ", pendingDraft?.StartDraftErrors ?? [])}");
     }
 
     [Test, Order(5)]

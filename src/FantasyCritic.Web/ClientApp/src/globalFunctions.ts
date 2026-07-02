@@ -1,5 +1,6 @@
 import GraphemeBreaker from 'grapheme-breaker-mjs';
 import { DateTime } from 'luxon';
+import type { LeagueDraftViewModel, PublisherGameViewModel } from '@/api/clients';
 
 export function publisherIconIsValid(publisherIcon: string): boolean {
   if (!publisherIcon) {
@@ -47,10 +48,16 @@ export function formatMasterGameReleaseDate(masterGame, shorten: boolean): strin
   return masterGame.estimatedReleaseDate + ' (Estimated)';
 }
 
-export function formatPublisherGameAcquiredDate(publisherGame): string {
+export function formatPublisherGameAcquiredDate(publisherGame: PublisherGameViewModel, drafts: LeagueDraftViewModel[]): string {
   let type = '';
   if (publisherGame.overallDraftPosition) {
-    type = `Drafted ${ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
+    if (drafts.length >= 2 && publisherGame.draftID) {
+      const draft = drafts.find((d) => d.draftID === publisherGame.draftID);
+      const draftLabel = draft ? ` in ${draft.name}` : '';
+      type = `Drafted ${ordinal_suffix_of(publisherGame.overallDraftPosition)}${draftLabel}`;
+    } else {
+      type = `Drafted ${ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
+    }
   } else if (publisherGame.bidAmount || publisherGame.bidAmount === 0) {
     type = 'Picked up for $' + publisherGame.bidAmount;
   } else if (publisherGame.acquiredInTradeID) {

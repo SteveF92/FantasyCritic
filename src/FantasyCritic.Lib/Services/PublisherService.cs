@@ -23,14 +23,15 @@ public class PublisherService
 
     public async Task<Publisher> CreatePublisher(LeagueYear leagueYear, FantasyCriticUser user, string publisherName)
     {
-        int draftPosition = 1;
-        var existingPublishers = leagueYear.Publishers;
-        if (existingPublishers.Any())
+        var publisherID = Guid.NewGuid();
+        var draftInfos = new List<PublisherDraftInfo>();
+        foreach (var draft in leagueYear.Drafts)
         {
-            draftPosition = existingPublishers.Max(x => x.DraftPosition) + 1;
+            var nextDraftPosition = draft.PublisherDraftInfo.Any() ? draft.PublisherDraftInfo.Max(x => x.DraftPosition) + 1 : 1;
+            draftInfos.Add(new PublisherDraftInfo(draft.DraftID, draft.DraftNumber, publisherID, nextDraftPosition, new List<PublisherDraftPickSkip>()));
         }
 
-        Publisher publisher = new Publisher(Guid.NewGuid(), leagueYear.Key, user, publisherName, null, null, draftPosition, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
+        Publisher publisher = new Publisher(publisherID, leagueYear.Key, user, publisherName, null, null, draftInfos, new List<PublisherGame>(), new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
         await _fantasyCriticRepo.CreatePublisher(publisher);
         await _discordPushService.SendNewPublisherMessage(publisher);
         return publisher;
@@ -65,6 +66,16 @@ public class PublisherService
         LeagueAction leagueAction = new LeagueAction(removeGameRequest, now);
         await _fantasyCriticRepo.ManagerRemovePublisherGame(leagueYear, publisher, publisherGame, formerPublisherGame, leagueAction);
         await _discordPushService.SendLeagueManagerManualPublisherGameMessage(publisher, publisherGame.GameName, false, publisherGame.CounterPick);
+    }
+
+    public async Task UndoDraftPick(LeagueYear leagueYear, Publisher publisher, PublisherGame publisherGame)
+    {
+        var now = _clock.GetCurrentInstant();
+        var formerPublisherGame = publisherGame.GetFormerPublisherGame(now, "Removed by league manager (draft undo)");
+        var gameName = publisherGame.GameName ?? "Unknown";
+        var leagueAction = new LeagueAction(publisher, now, "Draft Pick Undone",
+            $"Undid draft pick: '{gameName}'.", managerAction: true);
+        await _fantasyCriticRepo.ManagerRemovePublisherGame(leagueYear, publisher, publisherGame, formerPublisherGame, leagueAction);
     }
 
     public async Task<Result> EditPublisher(EditPublisherRequest editValues)

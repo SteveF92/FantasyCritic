@@ -11,8 +11,8 @@
       <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
           <router-link :to="{ hash: `#${data.item.publisher.publisherID}` }">{{ data.item.publisher.publisherName }}</router-link>
-          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraftMode === 'All'" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
-          <span v-show="!leagueYear.playStatus.draftFinished && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge badge-pill badge-primary badge-info">
+          <span v-show="hasPendingOrActiveDraft && data.item.publisher.autoDraftMode === 'All'" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
+          <span v-show="hasPendingOrActiveDraft && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge badge-pill badge-primary badge-info">
             Auto Draft (No CPKs)
           </span>
         </span>
@@ -53,56 +53,50 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      draftNotFinishedStandingsFields: [
+      leadingFields: [
         { key: 'userName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' }
+      ],
+      preDraftFields: [
         { key: 'draftPosition', label: 'Draft Position', thClass: 'bg-primary', sortable: true },
         { key: 'gamesWillRelease', label: 'Games Drafted', thClass: 'bg-primary', sortable: true }
       ],
-      midYearStandingsFields: [
-        { key: 'userName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+      nextDraftOrderField: { key: 'draftPosition', label: 'Next Draft Order', thClass: 'bg-primary', sortable: true },
+      midYearFields: [
         { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
         { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
         { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
-        { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' },
-        { key: 'budget', label: 'Budget', thClass: 'bg-primary' }
+        { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' }
       ],
-      yearFinishedStandingsFields: [
-        { key: 'userName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' },
+      yearFinishedFields: [
         { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
-        { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
-        { key: 'budget', label: 'Budget', thClass: 'bg-primary' }
+        { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' }
       ],
+      budgetField: { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
       sortBy: 'totalFantasyPoints',
       sortDesc: true
     };
   },
   created() {
-    if (!this.leagueYear.playStatus.draftFinished) {
+    if (!this.firstDraftFinished) {
       this.sortBy = 'draftPosition';
       this.sortDesc = false;
     }
   },
   computed: {
     standingFields() {
-      if (!this.leagueYear.playStatus.draftFinished) {
-        return this.draftNotFinishedStandingsFields;
+      if (!this.firstDraftFinished) {
+        return [...this.leadingFields, ...this.preDraftFields];
       }
 
-      if (!this.leagueYear.supportedYear.finished) {
-        if (this.oneShotMode) {
-          return this.midYearStandingsFields.slice(0, -1);
-        }
-        return this.midYearStandingsFields;
+      const nextDraftOrder = this.pendingDraft?.draftOrderSet ? [this.nextDraftOrderField] : [];
+      const budget = this.oneShotMode ? [] : [this.budgetField];
+
+      if (this.leagueYear.supportedYear.finished) {
+        return [...this.leadingFields, ...nextDraftOrder, ...this.yearFinishedFields, ...budget];
       }
 
-      if (this.oneShotMode) {
-        return this.yearFinishedStandingsFields.slice(0, -1);
-      }
-
-      return this.yearFinishedStandingsFields;
+      return [...this.leadingFields, ...nextDraftOrder, ...this.midYearFields, ...budget];
     },
     standings() {
       let standings = this.leagueYear.players;

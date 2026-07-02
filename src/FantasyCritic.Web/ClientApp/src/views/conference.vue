@@ -113,7 +113,10 @@
           </router-link>
           <font-awesome-icon v-if="data.item.isPrimaryLeague" icon="chess-king" v-b-popover.hover="'This is the primary league, from which all other leagues share settings.'" />
           <font-awesome-icon v-if="data.item.userIsInLeague" icon="user" v-b-popover.hover="'You are in this league.'" />
-          <font-awesome-icon v-if="data.item.draftStarted && !data.item.draftFinished" icon="list-ol" v-b-popover.hover="'This league is currently drafting.'" />
+          <font-awesome-icon
+            v-if="data.item.activeDraftNumber !== null && data.item.activeDraftNumber !== undefined"
+            icon="list-ol"
+            v-b-popover.hover="data.item.activeDraftNumber > 1 ? `This league is currently drafting (Draft ${data.item.activeDraftNumber}).` : 'This league is currently drafting.'" />
         </template>
         <template #cell(leagueManager)="data">{{ data.item.leagueManager.displayName }}</template>
       </b-table>
@@ -161,7 +164,7 @@ export default {
       return this.conferenceYear.leagueYears.filter((x) => !x.draftStarted).length;
     },
     numberOfLeaguesStartedDrafting() {
-      return this.conferenceYear.leagueYears.filter((x) => x.draftStarted & !x.draftFinished).length;
+      return this.conferenceYear.leagueYears.filter((x) => x.draftStarted && !x.draftFinished).length;
     },
     numberOfLeaguesFinishedDrafting() {
       return this.conferenceYear.leagueYears.filter((x) => x.draftFinished).length;

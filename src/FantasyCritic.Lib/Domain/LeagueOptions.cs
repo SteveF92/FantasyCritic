@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Extensions;
@@ -8,17 +9,15 @@ public class LeagueOptions
 {
     private readonly Dictionary<int, SpecialGameSlot> _specialSlotDictionary;
 
-    public LeagueOptions(int standardGames, int gamesToDraft, int counterPicks, int counterPicksToDraft, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames,
+    public LeagueOptions(int standardGames, int counterPicks, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames,
         int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount,
-        IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, DraftSystem draftSystem, PickupSystem pickupSystem,
+        bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, DraftSystem draftSystem, PickupSystem pickupSystem,
         ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
-        AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate)
+        AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate, bool bidsOnlyBeforeNextScheduledDraft)
     {
         StandardGames = standardGames;
-        GamesToDraft = gamesToDraft;
         CounterPicks = counterPicks;
-        CounterPicksToDraft = counterPicksToDraft;
         UnrestrictedReleaseStatusDroppableGames = unrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
         WillReleaseDroppableGames = willReleaseDroppableGames;
@@ -27,6 +26,7 @@ public class LeagueOptions
         CounterPicksBlockDrops = counterPicksBlockDrops;
         AllowMoveIntoIneligible = allowMoveIntoIneligible;
         MinimumBidAmount = minimumBidAmount;
+        EnableBids = enableBids;
         LeagueTags = leagueTags.ToList();
         SpecialGameSlots = specialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
         DraftSystem = draftSystem;
@@ -38,6 +38,7 @@ public class LeagueOptions
         IneligibleGameSystem = ineligibleGameSystem;
         CounterPickDeadline = counterPickDeadline;
         MightReleaseDroppableDate = mightReleaseDroppableDate;
+        BidsOnlyBeforeNextScheduledDraft = bidsOnlyBeforeNextScheduledDraft;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
@@ -45,9 +46,7 @@ public class LeagueOptions
     public LeagueOptions(LeagueYearParameters parameters)
     {
         StandardGames = parameters.StandardGames;
-        GamesToDraft = parameters.GamesToDraft;
         CounterPicks = parameters.CounterPicks;
-        CounterPicksToDraft = parameters.CounterPicksToDraft;
         UnrestrictedReleaseStatusDroppableGames = parameters.UnrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
@@ -56,6 +55,7 @@ public class LeagueOptions
         CounterPicksBlockDrops = parameters.CounterPicksBlockDrops;
         AllowMoveIntoIneligible = parameters.AllowMoveIntoIneligible;
         MinimumBidAmount = parameters.MinimumBidAmount;
+        EnableBids = parameters.EnableBids;
         LeagueTags = parameters.LeagueTags;
         SpecialGameSlots = parameters.SpecialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
         DraftSystem = parameters.DraftSystem;
@@ -67,14 +67,13 @@ public class LeagueOptions
         IneligibleGameSystem = parameters.IneligibleGameSystem;
         CounterPickDeadline = parameters.CounterPickDeadline;
         MightReleaseDroppableDate = parameters.MightReleaseDroppableDate;
+        BidsOnlyBeforeNextScheduledDraft = parameters.BidsOnlyBeforeNextScheduledDraft;
 
         _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
 
     public int StandardGames { get; }
-    public int GamesToDraft { get; }
     public int CounterPicks { get; }
-    public int CounterPicksToDraft { get; }
     public int UnrestrictedReleaseStatusDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
@@ -83,6 +82,7 @@ public class LeagueOptions
     public bool CounterPicksBlockDrops { get; }
     public bool AllowMoveIntoIneligible { get; }
     public int MinimumBidAmount { get; }
+    public bool EnableBids { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
     public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }
     public DraftSystem DraftSystem { get; }
@@ -94,31 +94,13 @@ public class LeagueOptions
     public IneligibleGameSystem IneligibleGameSystem { get; }
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
+    public bool BidsOnlyBeforeNextScheduledDraft { get; }
     public bool HasSpecialSlots => SpecialGameSlots.Any();
-
-    public bool OneShotMode => StandardGames == GamesToDraft && CounterPicks == CounterPicksToDraft &&
-                               UnrestrictedReleaseStatusDroppableGames == 0 && WillNotReleaseDroppableGames == 0 &&
-                               WillReleaseDroppableGames == 0 && !GrantSuperDrops && TradingSystem.Equals(TradingSystem.NoTrades);
 
     public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber) => _specialSlotDictionary.GetValueOrDefault(slotNumber);
 
     public Result Validate()
     {
-        if (GamesToDraft > StandardGames)
-        {
-            return Result.Failure("Can't draft more than the total number of standard games.");
-        }
-
-        if (CounterPicksToDraft > CounterPicks)
-        {
-            return Result.Failure("Can't draft more counter picks than the total number of counter picks.");
-        }
-
-        if (CounterPicksToDraft > GamesToDraft)
-        {
-            return Result.Failure("Can't have more drafted counter picks than drafted games.");
-        }
-
         var bannedTags = LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).ToList();
         var bannedTagNames = bannedTags.Select(x => x.Tag.Name).ToHashSet();
         if (bannedTagNames.Contains("PlannedForEarlyAccess") && !bannedTagNames.Contains("CurrentlyInEarlyAccess"))
@@ -164,7 +146,7 @@ public class LeagueOptions
         return Result.Success();
     }
 
-    public string? GetDifferenceString(LeagueOptions existingOptions)
+    public LeagueOptionsDifferences GetDifferences(LeagueOptions existingOptions)
     {
         List<string> differences = new List<string>();
 
@@ -173,19 +155,19 @@ public class LeagueOptions
             differences.Add($"Number of standard games per publisher changed from {existingOptions.StandardGames} to {StandardGames}.");
         }
 
-        if (GamesToDraft != existingOptions.GamesToDraft)
-        {
-            differences.Add($"Number of games to draft per publisher changed from {existingOptions.GamesToDraft} to {GamesToDraft}.");
-        }
-
         if (CounterPicks != existingOptions.CounterPicks)
         {
             differences.Add($"Number of counter picks per publisher changed from {existingOptions.CounterPicks} to {CounterPicks}.");
         }
 
-        if (CounterPicksToDraft != existingOptions.CounterPicksToDraft)
+        if (EnableBids != existingOptions.EnableBids)
         {
-            differences.Add($"Number of counter picks to draft per publisher changed from {existingOptions.CounterPicksToDraft} to {CounterPicksToDraft}.");
+            differences.Add($"'Enable Bids' changed from '{existingOptions.EnableBids.ToYesNoString()}' to '{EnableBids.ToYesNoString()}'.");
+        }
+
+        if (BidsOnlyBeforeNextScheduledDraft != existingOptions.BidsOnlyBeforeNextScheduledDraft)
+        {
+            differences.Add($"'Bids Only Before Next Scheduled Draft' changed from '{existingOptions.BidsOnlyBeforeNextScheduledDraft.ToYesNoString()}' to '{BidsOnlyBeforeNextScheduledDraft.ToYesNoString()}'.");
         }
 
         if (UnrestrictedReleaseStatusDroppableGames != existingOptions.UnrestrictedReleaseStatusDroppableGames)
@@ -281,34 +263,54 @@ public class LeagueOptions
         }
 
         var orderedExistingSpecialSlots = existingOptions.SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
-        var orderedNewSpecialSlots = SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
-        if (!orderedNewSpecialSlots.SequenceEqual(orderedExistingSpecialSlots))
+        var orderedNewSpecialGameSlots = SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
+        if (!orderedNewSpecialGameSlots.SequenceEqual(orderedExistingSpecialSlots))
         {
-            differences.Add($"Special slots changed from \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", orderedNewSpecialSlots.Select(x => x.ToString()))}");
+            differences.Add($"Special slots changed from \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", orderedNewSpecialGameSlots.Select(x => x.ToString()))}");
         }
 
-        if (!differences.Any())
-        {
-            return null;
-        }
-
-        if (differences.Count == 1)
-        {
-            return differences.Single();
-        }
-
-        string finalString = string.Join("\n", differences.Select(x => $"• {x}"));
-        return finalString;
+        return new LeagueOptionsDifferences(differences);
     }
 
     public LeagueOptions UpdateOptionsForYear(int requestYear)
     {
         var newScoringSystem = ScoringSystem.SupportedInYear(requestYear) ? ScoringSystem : ScoringSystem.GetDefaultScoringSystem(requestYear);
-        LeagueOptions options = new LeagueOptions(StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft, UnrestrictedReleaseStatusDroppableGames,
+        LeagueOptions options = new LeagueOptions(StandardGames, CounterPicks, UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
-            AllowMoveIntoIneligible, MinimumBidAmount, LeagueTags, SpecialGameSlots, DraftSystem,
+            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, SpecialGameSlots, DraftSystem,
             PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
-            CounterPickDeadline, MightReleaseDroppableDate);
+            CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return options;
+    }
+
+    public NewDraftLeagueSettingsChanges? WithNewDraftOptions(CreateLeagueDraftParameters newParameters, Instant currentTimestamp)
+    {
+        var totalStandardGames = StandardGames + newParameters.AdditionalStandardGames;
+        var totalCounterPicks = CounterPicks + newParameters.AdditionalCounterPicks;
+
+        // The incoming NewSpecialGameSlots carry positions relative to their own sub-list (0-based within
+        // the selector component). Re-number them so they follow the existing slots.
+        var existingSlotCount = SpecialGameSlots.Count;
+        var renumberedNewSlots = newParameters.NewSpecialGameSlots
+            .OrderBy(s => s.SpecialSlotPosition)
+            .Select((s, i) => new SpecialGameSlot(existingSlotCount + i, s.Tags))
+            .ToList();
+        var totalSpecialGameSlots = SpecialGameSlots.Concat(renumberedNewSlots).ToList();
+
+        LeagueOptions newOptions = new LeagueOptions(totalStandardGames, totalCounterPicks, UnrestrictedReleaseStatusDroppableGames,
+            WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
+            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, totalSpecialGameSlots, DraftSystem,
+            PickupSystem, ScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
+            CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
+
+        var differences = newOptions.GetDifferences(this);
+        if (!differences.HasChanges)
+        {
+            return null;
+        }
+
+        var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differences.ToString());
+        var settingsChanges = new NewDraftLeagueSettingsChanges(totalStandardGames, totalCounterPicks, renumberedNewSlots, new Dictionary<Guid, int>(), settingsChangeAction);
+        return settingsChanges;
     }
 }
