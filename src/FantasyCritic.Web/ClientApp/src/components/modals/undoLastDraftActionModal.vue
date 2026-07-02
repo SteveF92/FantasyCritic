@@ -3,7 +3,7 @@
     <p>
       Do you wish to undo the last draft action?
       <br />
-      This will remove the game that was added most recently from it's publisher. If the last publisher's turn was skipped, this will revert the draft to their turn.
+      This will remove the game that was added most recently from its publisher. If the last publisher's turn was skipped, this will revert the draft to their turn.
       <br />
       Only do this if there was a mistake.
     </p>
