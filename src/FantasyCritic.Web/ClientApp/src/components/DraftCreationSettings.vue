@@ -37,8 +37,11 @@
 
       <div v-if="gameMode === 'Multi Draft' && draft.counterPicksToDraft > 0" class="form-group">
         <b-form-checkbox v-model="draft.counterPicksMustBeFromThisDraft" @input="emitUpdate">
-          <span class="checkbox-label">Lorem ipsum dolor sit amet</span>
-          <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+          <span class="checkbox-label">Require counter picks to be made on games taken during this draft.</span>
+          <p>
+            If checked, all of the counter picks included in this draft must be of the standard games taken in this draft. If you don't enable this, players will be able to counter pick a game that
+            was drafted in a previous draft. It's recommended that you keep this enabled.
+          </p>
         </b-form-checkbox>
       </div>
 
