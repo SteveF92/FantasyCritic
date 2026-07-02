@@ -12,7 +12,10 @@
       </div>
 
       <div class="form-group">
-        <label :for="`scheduledDate-${index}`" class="control-label">Scheduled Date (Optional)</label>
+        <label :for="`scheduledDate-${index}`" class="control-label">
+          Scheduled Date
+          <span v-show="isScheduledDateOptional(index)">(Optional)</span>
+        </label>
         <input :id="`scheduledDate-${index}`" v-model="draft.scheduledDate" type="date" class="form-control input" @input="emitUpdate" />
       </div>
 
@@ -52,7 +55,8 @@ export default {
     value: { type: Array, required: true },
     standardGames: { type: Number, default: 0 },
     gameMode: { type: String, default: 'Standard' },
-    editMode: { type: Boolean, default: false }
+    editMode: { type: Boolean, default: false },
+    bidsOnlyBeforeNextScheduledDraft: { type: Boolean, default: false }
   },
   data() {
     return {
@@ -89,6 +93,12 @@ export default {
         'input',
         this.internalDrafts.map((d) => ({ ...d }))
       );
+    },
+    isScheduledDateOptional(index) {
+      if (this.gameMode !== 'Multi Draft' || !this.bidsOnlyBeforeNextScheduledDraft) {
+        return true;
+      }
+      return index === 0;
     },
     canRemoveDraft(index) {
       // Only drafts beyond the first can be removed, and only if at least 2 remain (minimum for multi-draft)

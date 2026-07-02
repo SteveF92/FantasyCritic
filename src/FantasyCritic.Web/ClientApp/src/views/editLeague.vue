@@ -29,7 +29,8 @@
               v-model="firstDraftAsList"
               :standard-games="leagueYearSettings.standardGames"
               game-mode="Standard"
-              edit-mode>
+              edit-mode
+              :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft">
             </DraftCreationSettings>
           </template>
         </leagueYearSettings>

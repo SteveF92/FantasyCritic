@@ -46,7 +46,11 @@
               <hr />
               <h3>Draft Settings</h3>
               <b-alert v-if="gameMode === 'Multi Draft'" variant="info" show>This league will have multiple drafts. You need to add a least two now, but you can add more later.</b-alert>
-              <DraftCreationSettings v-model="drafts" :standard-games="leagueYearSettings.standardGames" :game-mode="gameMode"></DraftCreationSettings>
+              <DraftCreationSettings
+                v-model="drafts"
+                :standard-games="leagueYearSettings.standardGames"
+                :game-mode="gameMode"
+                :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft"></DraftCreationSettings>
               <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
             </template>
           </leagueYearSettings>
