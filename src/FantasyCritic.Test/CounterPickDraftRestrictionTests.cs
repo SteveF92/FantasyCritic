@@ -60,9 +60,8 @@ public class CounterPickDraftRestrictionTests
         var request = new ClaimGameDomainRequest(leagueYear, picker, masterGameA.GameName, true, false, false, false, masterGameA, null, null);
 
         var result = GameEligibilityFunctions.CanClaimGame(
-            request, null, null, true, true, false, false,
-            new LocalDate(2026, 1, 15), false, [],
-            activeDraftID: draftID2);
+            request, null, null, true, draftID2, false, false,
+            new LocalDate(2026, 1, 15), false, []);
 
         Assert.That(result.Success, Is.False);
         Assert.That(result.Errors.Any(e => e.Error.Contains("not drafted in this draft", StringComparison.OrdinalIgnoreCase)), Is.True);
@@ -78,9 +77,8 @@ public class CounterPickDraftRestrictionTests
         var request = new ClaimGameDomainRequest(leagueYear, picker, masterGameA.GameName, true, false, false, false, masterGameA, null, null);
 
         var result = GameEligibilityFunctions.CanClaimGame(
-            request, null, null, true, true, false, false,
-            new LocalDate(2026, 1, 15), false, [],
-            activeDraftID: draftID2);
+            request, null, null, true, draftID2, false, false,
+            new LocalDate(2026, 1, 15), false, []);
 
         Assert.That(result.Errors.Any(e => e.Error.Contains("not drafted in this draft", StringComparison.OrdinalIgnoreCase)), Is.False);
     }

@@ -6,9 +6,8 @@ using FantasyCritic.Lib.Extensions;
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
 public static class GameEligibilityFunctions
 {
-    public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting,
-        bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags,
-        Guid? activeDraftID = null)
+    public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, Guid? draftID,
+        bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags)
     {
         var dateOfPotentialAcquisition = currentDate;
         if (nextBidTime.HasValue)
@@ -26,7 +25,7 @@ public static class GameEligibilityFunctions
         if (request.MasterGame is not null)
         {
             var masterGameErrors = GetGenericSlotMasterGameErrors(leagueYear, request.MasterGame, false, currentDate,
-                dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease, drafting, partOfSpecialAuction);
+                dateOfPotentialAcquisition, request.CounterPick, request.CounterPickedGameIsManualWillNotRelease, draftID.HasValue, partOfSpecialAuction);
             claimErrors.AddRange(masterGameErrors);
         }
 
@@ -76,10 +75,10 @@ public static class GameEligibilityFunctions
                 claimErrors.Add(new ClaimError("You do not have any available counter pick slots.", false));
             }
 
-            if (drafting && activeDraftID.HasValue && request.MasterGame is not null)
+            if (draftID.HasValue && request.MasterGame is not null)
             {
-                var activeDraft = request.LeagueYear.Drafts.SingleOrDefault(d => d.DraftID == activeDraftID.Value);
-                if (activeDraft?.CounterPicksMustBeFromThisDraft == true)
+                var activeDraft = request.LeagueYear.Drafts.Single(d => d.DraftID == draftID.Value);
+                if (activeDraft.CounterPicksMustBeFromThisDraft)
                 {
                     bool otherPlayerHasGameFromThisDraft = gameSet.OtherPlayerStandardGames
                         .Any(pg => pg.MasterGame is not null

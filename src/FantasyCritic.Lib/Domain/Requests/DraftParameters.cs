@@ -1,5 +1,3 @@
-using NodaTime;
-
 namespace FantasyCritic.Lib.Domain.Requests;
 
 public record DraftParameters(
@@ -7,4 +5,4 @@ public record DraftParameters(
     LocalDate? ScheduledDate,
     int GamesToDraft,
     int CounterPicksToDraft,
-    bool CounterPicksMustBeFromThisDraft = true);
+    bool CounterPicksMustBeFromThisDraft);

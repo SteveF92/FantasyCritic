@@ -33,7 +33,7 @@ public class GameAcquisitionService
         }
 
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, draftID.HasValue, false, false, _clock.GetToday(), allowIneligibleSlot, allTags, draftID);
+        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, draftID, false, false, _clock.GetToday(), allowIneligibleSlot, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -133,7 +133,7 @@ public class GameAcquisitionService
         }
 
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday(), allowIneligibleSlot, allTags);
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, null, partOfSpecialAuction, false, _clock.GetToday(), allowIneligibleSlot, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -158,7 +158,7 @@ public class GameAcquisitionService
 
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, false, false, false, _clock.GetToday(), true, allTags);
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, null, false, false, _clock.GetToday(), true, allTags);
         if (!claimResult.Success)
         {
             return claimResult;

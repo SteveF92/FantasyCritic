@@ -258,7 +258,7 @@ public class ActionProcessor
             }
 
             bool counterPickWillBeConditionallyDropped = activeBid.CounterPick && conditionalDropsThatHaveSucceeded.ContainsGame(activeBid.MasterGame);
-            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped,
+            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, null, specialAuctions, counterPickWillBeConditionallyDropped,
                 _currentDate, activeBid.AllowIneligibleSlot, _allTags);
             if (claimResult.NoSpaceError)
             {
