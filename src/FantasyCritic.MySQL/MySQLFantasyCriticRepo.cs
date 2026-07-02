@@ -1295,6 +1295,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
             }
 
+            if (settingsToChange.SlotAssignments.Count > 0)
+            {
+                await OrganizeSlots(settingsToChange.SlotAssignments, connection, transaction);
+            }
+
             await AddLeagueManagerAction(settingsToChange.LeagueManagerAction, connection, transaction);
         }
 
@@ -2701,6 +2706,28 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGame.PublisherGameID, newSlotNumber));
                 tempSlotNumber++;
             }
+        }
+
+        const string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
+        await connection.ExecuteAsync(sql, preRunUpdates, transaction);
+        await connection.ExecuteAsync(sql, finalUpdates, transaction);
+    }
+
+    private static async Task OrganizeSlots(IReadOnlyDictionary<Guid, int> slotAssignments, MySqlConnection connection, MySqlTransaction transaction)
+    {
+        if (!slotAssignments.Any())
+        {
+            return;
+        }
+
+        int tempSlotNumber = 1000;
+        List<PublisherGameSlotNumberUpdateEntity> preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
+        List<PublisherGameSlotNumberUpdateEntity> finalUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
+        foreach (var (publisherGameID, newSlotNumber) in slotAssignments)
+        {
+            preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGameID, tempSlotNumber));
+            finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGameID, newSlotNumber));
+            tempSlotNumber++;
         }
 
         const string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";

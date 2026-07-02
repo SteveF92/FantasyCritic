@@ -433,6 +433,13 @@ public class DraftService
         var newDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Create Draft", description);
 
         NewDraftLeagueSettingsChanges? settingsToChange = leagueYear.Options.WithNewDraftOptions(domainRequest, timestamp);
+        if (settingsToChange is not null && settingsToChange.StandardGames != leagueYear.Options.StandardGames)
+        {
+            var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(
+                settingsToChange.StandardGames, leagueYear, leagueYear.Publishers);
+            settingsToChange = settingsToChange with { SlotAssignments = slotAssignments };
+        }
+
         await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, settingsToChange);
 
         return Result.Success();

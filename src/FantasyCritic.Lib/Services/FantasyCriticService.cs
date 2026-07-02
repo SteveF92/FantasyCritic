@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -195,7 +196,7 @@ public class FantasyCriticService
             return Result.Failure($"Cannot reduce number of 'will release' droppable games to {options.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
         }
 
-        var slotAssignments = GetNewSlotAssignments(parameters, leagueYear, publishers);
+        var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(parameters.StandardGames, leagueYear, publishers);
         var eligibilityOverrides = leagueYear.EligibilityOverrides;
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
@@ -232,58 +233,6 @@ public class FantasyCriticService
         }
 
         return Result.Success();
-    }
-
-    private static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(LeagueYearParameters parameters, LeagueYear leagueYear, IReadOnlyList<Publisher> publishers)
-    {
-        var slotCountShift = parameters.StandardGames - leagueYear.Options.StandardGames;
-        Dictionary<Guid, int> finalSlotAssignments = new Dictionary<Guid, int>();
-        if (slotCountShift == 0)
-        {
-            return finalSlotAssignments;
-        }
-
-        foreach (var publisher in publishers)
-        {
-            Dictionary<Guid, int> slotAssignmentsForPublisher = new Dictionary<Guid, int>();
-            var slots = publisher.GetPublisherSlots(leagueYear);
-            var filledNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is not null).ToList();
-
-            int normalSlotNumber = 0;
-            var normalSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot is null);
-            foreach (var normalSlot in normalSlots)
-            {
-                slotAssignmentsForPublisher[normalSlot.PublisherGame!.PublisherGameID] = normalSlotNumber;
-                normalSlotNumber++;
-            }
-
-            var specialSlots = filledNonCounterPickSlots.Where(x => x.SpecialGameSlot is not null);
-            foreach (var specialSlot in specialSlots)
-            {
-                slotAssignmentsForPublisher[specialSlot.PublisherGame!.PublisherGameID] =
-                    specialSlot.SlotNumber + slotCountShift;
-            }
-
-            bool invalidSlotsMade = slotAssignmentsForPublisher.GroupBy(x => x.Value).Any(x => x.Count() > 1);
-            if (invalidSlotsMade)
-            {
-                //If we cannot do the more advance way to preserve slots, then just do the very basic thing, and line the games up.
-                slotAssignmentsForPublisher = new Dictionary<Guid, int>();
-                int allSlotNumber = 0;
-                foreach (var slot in filledNonCounterPickSlots)
-                {
-                    slotAssignmentsForPublisher[slot.PublisherGame!.PublisherGameID] = allSlotNumber;
-                    allSlotNumber++;
-                }
-            }
-
-            foreach (var slot in slotAssignmentsForPublisher)
-            {
-                finalSlotAssignments[slot.Key] = slot.Value;
-            }
-        }
-
-        return finalSlotAssignments;
     }
 
     public async Task AddNewLeagueYear(League league, int year, LeagueOptions options, LeagueYear mostRecentLeagueYear)

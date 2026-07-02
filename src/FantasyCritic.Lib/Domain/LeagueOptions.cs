@@ -310,7 +310,7 @@ public class LeagueOptions
         }
 
         var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differences.ToString());
-        var settingsChanges = new NewDraftLeagueSettingsChanges(totalStandardGames, totalCounterPicks, renumberedNewSlots, settingsChangeAction);
+        var settingsChanges = new NewDraftLeagueSettingsChanges(totalStandardGames, totalCounterPicks, renumberedNewSlots, new Dictionary<Guid, int>(), settingsChangeAction);
         return settingsChanges;
     }
 }
