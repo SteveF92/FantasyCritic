@@ -116,22 +116,23 @@ internal static class DraftSkipBoundaryScenario
     }
 
     /// <summary>
-    /// Pre-fills both standard slots (so the standard phase auto-skips) and one publisher's counter slot
-    /// before the draft starts. Manager claims require no active draft.
+    /// Pre-fills one publisher's standard slot (that player auto-skips their standard turn), one
+    /// publisher's counter slot, and starts the draft. At least one open standard slot must remain
+    /// league-wide so <c>StartDraft</c> is allowed when <c>GamesToDraft &gt; 0</c>. Manager claims
+    /// require no active draft.
     /// </summary>
     public static async Task<LeagueFixture> CreateLeagueWithPrefilledCounterSlotAsync(
         FantasyCriticWebApplicationFactory factory,
         LeagueScenario scenario,
         Func<(string email, string password, string displayName)> newUser,
-        int draftPositionToPrefillCounter)
+        int draftPositionToPrefillCounter,
+        int draftPositionToPrefillStandard = 1)
     {
         var league = await LeagueFixtureBuilder.CreateLeagueWithMembersAsync(factory, scenario, newUser);
         var snapshot = await league.GetLeagueYearAsync();
-        var firstPublisherID = PublisherAtDraftPosition(snapshot, 1);
-        var secondPublisherID = PublisherAtDraftPosition(snapshot, 2);
+        var standardPublisherID = PublisherAtDraftPosition(snapshot, draftPositionToPrefillStandard);
 
-        await MultiDraftTestScenario.ManagerFillOneStandardSlotAsync(league, firstPublisherID);
-        await MultiDraftTestScenario.ManagerFillOneStandardSlotAsync(league, secondPublisherID);
+        await MultiDraftTestScenario.ManagerFillOneStandardSlotAsync(league, standardPublisherID);
 
         var counterPublisherID = PublisherAtDraftPosition(snapshot, draftPositionToPrefillCounter);
         await ManagerFillOneCounterPickSlotAsync(league, counterPublisherID);
@@ -313,11 +314,14 @@ public class DraftSkipBoundaryTests : IntegrationTestBase
     [Test]
     public async Task LastCounterPick_AutoSkipped_DraftCompleted()
     {
-        // P2's counter slot is pre-filled before the draft; P1's counter pick triggers P2's auto-skip.
+        // P1's standard slot is pre-filled (auto-skip); P2 drafts the lone standard game; P2's counter
+        // slot is pre-filled before the draft; P1's counter pick completes the draft while P2 auto-skips.
         var league = await DraftSkipBoundaryScenario.CreateLeagueWithPrefilledCounterSlotAsync(
-            Factory, DraftSkipBoundaryScenario.TwoPlayerOneStandardOneCounter, NewUser, draftPositionToPrefillCounter: 2);
+            Factory, DraftSkipBoundaryScenario.TwoPlayerOneStandardOneCounter, NewUser,
+            draftPositionToPrefillCounter: 2, draftPositionToPrefillStandard: 1);
         try
         {
+            await league.DraftUntilCounterPickPhaseAsync();
             await DraftSkipBoundaryScenario.DraftCounterPicksAsync(league, 1);
 
             var snapshot = await league.GetLeagueYearAsync();
