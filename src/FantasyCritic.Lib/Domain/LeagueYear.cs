@@ -207,11 +207,11 @@ public class LeagueYear : IEquatable<LeagueYear>
     {
         if (publisherID is null)
         {
-            return Publisher.GetFakePublisher(Key);
+            return Publisher.GetFakePublisher(this);
         }
 
         var publisher = _publisherDictionary.GetValueOrDefault(publisherID.Value);
-        return publisher ?? Publisher.GetFakePublisher(Key);
+        return publisher ?? Publisher.GetFakePublisher(this);
     }
 
     public Publisher? FindPublisherWithGame(MasterGameYear game, bool lookingForCounterPick)

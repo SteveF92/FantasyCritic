@@ -301,10 +301,12 @@ public class Publisher : IEquatable<Publisher>
         return Result.Failure("Publisher cannot drop any more 'Will Not Release' games");
     }
 
-    public static Publisher GetFakePublisher(LeagueYearKey leagueYearKey)
+    public static Publisher GetFakePublisher(LeagueYear leagueYear)
     {
-        return new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
-            null, null, new List<PublisherDraftInfo>(), new List<PublisherGame>(),
+        var firstDraft = leagueYear.FirstDraft;
+        var fakeDraftInfo = new PublisherDraftInfo(firstDraft.DraftID, firstDraft.DraftNumber, Guid.Empty, 1, []);
+        return new Publisher(Guid.Empty, leagueYear.Key, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
+            null, null, [fakeDraftInfo], new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
     }
 
