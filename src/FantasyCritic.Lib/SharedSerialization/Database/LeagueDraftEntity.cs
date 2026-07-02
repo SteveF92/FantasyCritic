@@ -10,6 +10,7 @@ public class LeagueDraftEntity
     public LocalDate? ScheduledDate { get; set; }
     public int GamesToDraft { get; set; }
     public int CounterPicksToDraft { get; set; }
+    public bool CounterPicksMustBeFromThisDraft { get; set; }
     public bool DraftOrderSet { get; set; }
     public string PlayStatus { get; set; } = null!;
     public Instant? DraftStartedTimestamp { get; set; }
@@ -17,7 +18,7 @@ public class LeagueDraftEntity
     public LeagueDraft ToDomain(IEnumerable<PublisherDraftInfo> publisherDraftInfos)
     {
         return new LeagueDraft(DraftID, new LeagueYearKey(LeagueID, Year), DraftNumber, Name, ScheduledDate,
-            GamesToDraft, CounterPicksToDraft, DraftOrderSet, Lib.Enums.PlayStatus.FromValue(PlayStatus),
+            GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft, DraftOrderSet, Lib.Enums.PlayStatus.FromValue(PlayStatus),
             publisherDraftInfos, DraftStartedTimestamp);
     }
 }

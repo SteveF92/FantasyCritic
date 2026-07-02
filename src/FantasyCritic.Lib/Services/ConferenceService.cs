@@ -54,7 +54,7 @@ public class ConferenceService
         var drafts = parameters.Drafts.Select((d, i) => new LeagueDraft(
             Guid.NewGuid(), leagueYearKey, i + 1,
             d.Name ?? (i == 0 ? "Initial Draft" : $"Draft {i + 1}"),
-            d.ScheduledDate, d.GamesToDraft, d.CounterPicksToDraft,
+            d.ScheduledDate, d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
             false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
 
@@ -88,7 +88,7 @@ public class ConferenceService
         var clonedDrafts = primaryLeagueYear.Drafts
             .Select(d => new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(newLeague.LeagueID, year),
                 d.DraftNumber, d.Name, d.ScheduledDate,
-                d.GamesToDraft, d.CounterPicksToDraft,
+                d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
                 false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
         await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague, clonedDrafts);
@@ -118,7 +118,7 @@ public class ConferenceService
         var clonedDrafts = primaryLeagueYear.Drafts
             .Select(d => new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(leagueToRenew.LeagueID, year),
                 d.DraftNumber, d.Name, d.ScheduledDate,
-                d.GamesToDraft, d.CounterPicksToDraft,
+                d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
                 false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
         await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options, mostRecentActivePlayers, clonedDrafts);

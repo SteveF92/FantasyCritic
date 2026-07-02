@@ -1157,8 +1157,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string createInitialDraftSQL =
             """
-            INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
-            VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@DraftOrderSet,@PlayStatus,@DraftStartedTimestamp);
+            INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,CounterPicksMustBeFromThisDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
+            VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@CounterPicksMustBeFromThisDraft,@DraftOrderSet,@PlayStatus,@DraftStartedTimestamp);
             """;
 
         await connection.ExecuteAsync(createLeagueSQL, entity, transaction);
@@ -1175,6 +1175,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                 ScheduledDate = draft.ScheduledDate,
                 GamesToDraft = draft.GamesToDraft,
                 CounterPicksToDraft = draft.CounterPicksToDraft,
+                CounterPicksMustBeFromThisDraft = draft.CounterPicksMustBeFromThisDraft,
                 DraftOrderSet = false,
                 PlayStatus = PlayStatus.NotStartedDraft.Value,
                 DraftStartedTimestamp = (Instant?)null
@@ -1208,7 +1209,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string editFirstDraftSQL =
             """
-            UPDATE tbl_league_draft SET GamesToDraft = @gamesToDraft, CounterPicksToDraft = @counterPicksToDraft
+            UPDATE tbl_league_draft SET GamesToDraft = @gamesToDraft, CounterPicksToDraft = @counterPicksToDraft, CounterPicksMustBeFromThisDraft = @counterPicksMustBeFromThisDraft
             WHERE DraftID = @draftID;
             """;
 
@@ -1221,7 +1222,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(editLeagueYearSQL, leagueYearEntity, transaction);
         if (leagueYear.Drafts.Count == 1)
         {
-            await connection.ExecuteAsync(editFirstDraftSQL, new { draftID = leagueYear.FirstDraft.DraftID, gamesToDraft = leagueYear.FirstDraft.GamesToDraft, counterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft }, transaction);
+            await connection.ExecuteAsync(editFirstDraftSQL, new { draftID = leagueYear.FirstDraft.DraftID, gamesToDraft = leagueYear.FirstDraft.GamesToDraft, counterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft, counterPicksMustBeFromThisDraft = leagueYear.FirstDraft.CounterPicksMustBeFromThisDraft }, transaction);
         }
         await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
         await connection.ExecuteAsync(deleteSpecialSlotsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
@@ -1237,8 +1238,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         const string insertDraftSQL =
             """
-            INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
-            VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@DraftOrderSet,@PlayStatus,NULL);
+            INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,CounterPicksMustBeFromThisDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
+            VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@CounterPicksMustBeFromThisDraft,@DraftOrderSet,@PlayStatus,NULL);
             """;
         const string insertDraftPublisherSQL =
             "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
@@ -1255,6 +1256,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             ScheduledDate = draft.ScheduledDate,
             GamesToDraft = draft.GamesToDraft,
             CounterPicksToDraft = draft.CounterPicksToDraft,
+            CounterPicksMustBeFromThisDraft = draft.CounterPicksMustBeFromThisDraft,
             DraftOrderSet = false,
             PlayStatus = PlayStatus.NotStartedDraft.Value,
         };
@@ -1305,7 +1307,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string updateDraftSQL =
             """
             UPDATE tbl_league_draft
-            SET Name = @name, ScheduledDate = @scheduledDate, GamesToDraft = @gamesToDraft, CounterPicksToDraft = @counterPicksToDraft
+            SET Name = @name, ScheduledDate = @scheduledDate, GamesToDraft = @gamesToDraft, CounterPicksToDraft = @counterPicksToDraft, CounterPicksMustBeFromThisDraft = @counterPicksMustBeFromThisDraft
             WHERE DraftID = @draftID;
             """;
 
@@ -1319,6 +1321,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             scheduledDate = updatedDraft.ScheduledDate,
             gamesToDraft = updatedDraft.GamesToDraft,
             counterPicksToDraft = updatedDraft.CounterPicksToDraft,
+            counterPicksMustBeFromThisDraft = updatedDraft.CounterPicksMustBeFromThisDraft,
             draftID = updatedDraft.DraftID,
         }, transaction);
 
@@ -1378,8 +1381,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string createDraftSQL =
             """
-            INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
-            VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@DraftOrderSet,@PlayStatus,@DraftStartedTimestamp);
+            INSERT INTO tbl_league_draft (DraftID,LeagueID,Year,DraftNumber,Name,ScheduledDate,GamesToDraft,CounterPicksToDraft,CounterPicksMustBeFromThisDraft,DraftOrderSet,PlayStatus,DraftStartedTimestamp)
+            VALUES (@DraftID,@LeagueID,@Year,@DraftNumber,@Name,@ScheduledDate,@GamesToDraft,@CounterPicksToDraft,@CounterPicksMustBeFromThisDraft,@DraftOrderSet,@PlayStatus,@DraftStartedTimestamp);
             """;
 
         const string activePlayersSQL = "INSERT INTO tbl_league_activeplayer(LeagueID,Year,UserID) VALUES (@leagueID,@year,@userID);";
@@ -1400,6 +1403,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             ScheduledDate = d.ScheduledDate,
             GamesToDraft = d.GamesToDraft,
             CounterPicksToDraft = d.CounterPicksToDraft,
+            CounterPicksMustBeFromThisDraft = d.CounterPicksMustBeFromThisDraft,
             DraftOrderSet = false,
             PlayStatus = PlayStatus.NotStartedDraft.Value,
             DraftStartedTimestamp = (Instant?)null

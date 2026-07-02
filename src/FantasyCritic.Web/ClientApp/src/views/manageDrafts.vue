@@ -37,6 +37,10 @@
                 <strong>Counter Picks to Draft:</strong>
                 {{ draft.counterPicksToDraft }}
               </div>
+              <div v-if="leagueYear.drafts.length > 1 && draft.counterPicksToDraft > 0">
+                <strong>Counter Picks From This Draft Only:</strong>
+                {{ draft.counterPicksMustBeFromThisDraft ? 'Yes' : 'No' }}
+              </div>
               <div class="mt-2">
                 <b-button v-if="editingDraftId === null" size="sm" variant="info" @click="startEdit(draft)">Edit</b-button>
                 <b-button
@@ -81,6 +85,12 @@
                 <label>Counter Picks to Draft</label>
                 <input v-model.number="editForm.counterPicksToDraft" type="number" class="form-control" :disabled="draft.playStatus !== 'NotStartedDraft'" />
               </div>
+              <div v-if="leagueYear.drafts.length > 1 && editForm.counterPicksToDraft > 0" class="form-group">
+                <b-form-checkbox v-model="editForm.counterPicksMustBeFromThisDraft" :disabled="draft.playStatus !== 'NotStartedDraft'">
+                  <span class="checkbox-label">Lorem ipsum dolor sit amet</span>
+                  <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+                </b-form-checkbox>
+              </div>
               <b-button size="sm" variant="primary" @click="submitEdit(draft)">Save</b-button>
               <b-button size="sm" variant="secondary" class="ml-2" @click="cancelEdit()">Cancel</b-button>
             </div>
@@ -108,6 +118,12 @@
             <div class="form-group">
               <label>Counter Picks to Draft</label>
               <input v-model.number="newDraft.counterPicksToDraft" type="number" min="0" class="form-control" />
+            </div>
+            <div v-if="newDraft.counterPicksToDraft > 0" class="form-group">
+              <b-form-checkbox v-model="newDraft.counterPicksMustBeFromThisDraft">
+                <span class="checkbox-label">Lorem ipsum dolor sit amet</span>
+                <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+              </b-form-checkbox>
             </div>
             <div class="form-group">
               <label>Additional Standard Games</label>
@@ -163,7 +179,8 @@ export default {
         name: '',
         scheduledDate: null,
         gamesToDraft: 1,
-        counterPicksToDraft: 0
+        counterPicksToDraft: 0,
+        counterPicksMustBeFromThisDraft: true
       },
       editError: null,
       deletingDraftId: null,
@@ -173,6 +190,7 @@ export default {
         scheduledDate: null,
         gamesToDraft: 1,
         counterPicksToDraft: 0,
+        counterPicksMustBeFromThisDraft: true,
         additionalStandardGames: 0,
         additionalCounterPicks: 0,
         newSpecialGameSlots: []
@@ -240,7 +258,8 @@ export default {
         name: draft.name,
         scheduledDate: draft.scheduledDate,
         gamesToDraft: draft.gamesToDraft,
-        counterPicksToDraft: draft.counterPicksToDraft
+        counterPicksToDraft: draft.counterPicksToDraft,
+        counterPicksMustBeFromThisDraft: draft.counterPicksMustBeFromThisDraft ?? true
       };
       this.deletingDraftId = null;
       this.editError = null;
@@ -257,7 +276,8 @@ export default {
         name: this.editForm.name,
         scheduledDate: this.editForm.scheduledDate || null,
         gamesToDraft: this.editForm.gamesToDraft,
-        counterPicksToDraft: this.editForm.counterPicksToDraft
+        counterPicksToDraft: this.editForm.counterPicksToDraft,
+        counterPicksMustBeFromThisDraft: this.editForm.counterPicksMustBeFromThisDraft
       };
       try {
         await axios.post('/api/leagueManager/EditLeagueDraft', model);
@@ -297,6 +317,7 @@ export default {
         scheduledDate: null,
         gamesToDraft: 1,
         counterPicksToDraft: 0,
+        counterPicksMustBeFromThisDraft: true,
         additionalStandardGames: 0,
         additionalCounterPicks: 0,
         newSpecialGameSlots: []
@@ -318,6 +339,9 @@ export default {
         additionalCounterPicks: this.newDraft.additionalCounterPicks,
         newSpecialGameSlots: this.newDraft.newSpecialGameSlots
       };
+      if (this.newDraft.counterPicksToDraft > 0) {
+        model.counterPicksMustBeFromThisDraft = this.newDraft.counterPicksMustBeFromThisDraft;
+      }
       try {
         await axios.post('/api/leagueManager/CreateLeagueDraft', model);
         this.resetNewDraftForm();

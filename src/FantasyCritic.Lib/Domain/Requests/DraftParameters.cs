@@ -6,4 +6,5 @@ public record DraftParameters(
     string? Name,
     LocalDate? ScheduledDate,
     int GamesToDraft,
-    int CounterPicksToDraft);
+    int CounterPicksToDraft,
+    bool CounterPicksMustBeFromThisDraft = true);

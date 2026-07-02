@@ -108,7 +108,7 @@ public class FantasyCriticService
         var drafts = parameters.Drafts.Select((d, i) => new LeagueDraft(
             Guid.NewGuid(), leagueYearKey, i + 1,
             d.Name ?? (i == 0 ? "Initial Draft" : $"Draft {i + 1}"),
-            d.ScheduledDate, d.GamesToDraft, d.CounterPicksToDraft,
+            d.ScheduledDate, d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
             false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
 
@@ -205,7 +205,8 @@ public class FantasyCriticService
         {
             string resolvedName = firstDraft.Name ?? leagueYear.FirstDraft.Name;
             leagueDrafts = [leagueYear.FirstDraft.UpdateDraft(
-                resolvedName, firstDraft.ScheduledDate, firstDraft.GamesToDraft, firstDraft.CounterPicksToDraft)];
+                resolvedName, firstDraft.ScheduledDate, firstDraft.GamesToDraft, firstDraft.CounterPicksToDraft,
+                firstDraft.CounterPicksMustBeFromThisDraft)];
         }
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
@@ -290,6 +291,7 @@ public class FantasyCriticService
         var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, mostRecentLeagueYear.Year);
         var initialDraft = new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(league.LeagueID, year), 1,
             "Initial Draft", null, mostRecentLeagueYear.FirstDraft.GamesToDraft, mostRecentLeagueYear.FirstDraft.CounterPicksToDraft,
+            mostRecentLeagueYear.FirstDraft.CounterPicksMustBeFromThisDraft,
             false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null);
         await _fantasyCriticRepo.AddNewLeagueYear(league, year, options, mostRecentActivePlayers, [initialDraft]);
     }

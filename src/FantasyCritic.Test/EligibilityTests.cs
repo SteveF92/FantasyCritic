@@ -66,11 +66,11 @@ public class EligibilityTests
 
         var draftID1 = Guid.NewGuid();
         var draft1 = new LeagueDraft(draftID1, leagueYearKey, 1, "Initial Draft",
-            null, 5, 1, true, PlayStatus.DraftFinal, [], null);
+            null, 5, 1, true, true, PlayStatus.DraftFinal, [], null);
 
         var draftID2 = Guid.NewGuid();
         var draft2 = new LeagueDraft(draftID2, leagueYearKey, 2, "Draft 2",
-            pendingDraftScheduledDate, 5, 1, false, PlayStatus.NotStartedDraft, [], null);
+            pendingDraftScheduledDate, 5, 1, true, false, PlayStatus.NotStartedDraft, [], null);
 
         return new LeagueYear(league, supportedYear, options, [draft1, draft2],
             [], [], null, [], null, false, null);
@@ -109,7 +109,7 @@ public class EligibilityTests
 
         var draftID = Guid.NewGuid();
         var draft = new LeagueDraft(draftID, leagueYearKey, 1, "Initial Draft",
-            null, 10, 2, true, PlayStatus.DraftFinal, [], null);
+            null, 10, 2, true, true, PlayStatus.DraftFinal, [], null);
 
         return new LeagueYear(league, supportedYear, options, [draft],
             [], [], null, [], null, false, null);

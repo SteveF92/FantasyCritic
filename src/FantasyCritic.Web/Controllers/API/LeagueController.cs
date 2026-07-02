@@ -1345,7 +1345,7 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher);
+        var availableCounterPicks = _draftService.GetAvailableCounterPicks(leagueYear, publisher, leagueYear.ActiveDraft);
         var currentDate = _clock.GetToday();
         var viewModels = availableCounterPicks
             .Select(x =>

@@ -7,7 +7,8 @@ namespace FantasyCritic.Lib.BusinessLogicFunctions;
 public static class GameEligibilityFunctions
 {
     public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, bool drafting,
-        bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags)
+        bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags,
+        Guid? activeDraftID = null)
     {
         var dateOfPotentialAcquisition = currentDate;
         if (nextBidTime.HasValue)
@@ -73,6 +74,22 @@ public static class GameEligibilityFunctions
             if (gameSet.ThisPlayerCounterPicks.Count == request.LeagueYear.Options.CounterPicks)
             {
                 claimErrors.Add(new ClaimError("You do not have any available counter pick slots.", false));
+            }
+
+            if (drafting && activeDraftID.HasValue && request.MasterGame is not null)
+            {
+                var activeDraft = request.LeagueYear.Drafts.SingleOrDefault(d => d.DraftID == activeDraftID.Value);
+                if (activeDraft?.CounterPicksMustBeFromThisDraft == true)
+                {
+                    bool otherPlayerHasGameFromThisDraft = gameSet.OtherPlayerStandardGames
+                        .Any(pg => pg.MasterGame is not null
+                            && pg.MasterGame.MasterGame.MasterGameID == request.MasterGame.MasterGameID
+                            && pg.DraftID == activeDraft.DraftID);
+                    if (!otherPlayerHasGameFromThisDraft)
+                    {
+                        claimErrors.Add(new ClaimError("That game was not drafted in this draft.", false));
+                    }
+                }
             }
         }
 

@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Domain;
 public class LeagueDraft
 {
     public LeagueDraft(Guid draftID, LeagueYearKey leagueYearKey, int draftNumber, string name, LocalDate? scheduledDate,
-        int gamesToDraft, int counterPicksToDraft, bool draftOrderSet, PlayStatus playStatus,
+        int gamesToDraft, int counterPicksToDraft, bool counterPicksMustBeFromThisDraft, bool draftOrderSet, PlayStatus playStatus,
         IEnumerable<PublisherDraftInfo> publisherDraftInfo, Instant? draftStartedTimestamp)
     {
         DraftID = draftID;
@@ -16,6 +16,7 @@ public class LeagueDraft
         ScheduledDate = scheduledDate;
         GamesToDraft = gamesToDraft;
         CounterPicksToDraft = counterPicksToDraft;
+        CounterPicksMustBeFromThisDraft = counterPicksMustBeFromThisDraft;
         DraftOrderSet = draftOrderSet;
         PlayStatus = playStatus;
         PublisherDraftInfo = publisherDraftInfo.ToList();
@@ -29,6 +30,7 @@ public class LeagueDraft
     public LocalDate? ScheduledDate { get; }
     public int GamesToDraft { get; }
     public int CounterPicksToDraft { get; }
+    public bool CounterPicksMustBeFromThisDraft { get; }
     public bool DraftOrderSet { get; }
     public PlayStatus PlayStatus { get; }
     public IReadOnlyList<PublisherDraftInfo> PublisherDraftInfo { get; }
@@ -57,13 +59,20 @@ public class LeagueDraft
     public LeagueDraft UpdateDraft(int gamesToDraft, int counterPicksToDraft)
     {
         return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, Name, ScheduledDate, gamesToDraft, counterPicksToDraft,
-            DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
+            CounterPicksMustBeFromThisDraft, DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
     }
 
     public LeagueDraft UpdateDraft(string name, LocalDate? scheduledDate, int gamesToDraft, int counterPicksToDraft)
     {
         return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, name, scheduledDate, gamesToDraft, counterPicksToDraft,
-            DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
+            CounterPicksMustBeFromThisDraft, DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
+    }
+
+    public LeagueDraft UpdateDraft(string name, LocalDate? scheduledDate, int gamesToDraft, int counterPicksToDraft,
+        bool counterPicksMustBeFromThisDraft)
+    {
+        return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, name, scheduledDate, gamesToDraft, counterPicksToDraft,
+            counterPicksMustBeFromThisDraft, DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
     }
 
     public LeagueOptionsDifferences GetDifferences(LeagueDraft existingDraft)
@@ -78,6 +87,11 @@ public class LeagueDraft
         if (CounterPicksToDraft != existingDraft.CounterPicksToDraft)
         {
             differences.Add($"Counter picks to draft changed from {existingDraft.CounterPicksToDraft} to {CounterPicksToDraft}.");
+        }
+
+        if (CounterPicksMustBeFromThisDraft != existingDraft.CounterPicksMustBeFromThisDraft)
+        {
+            differences.Add($"Counter picks must be from this draft changed from {existingDraft.CounterPicksMustBeFromThisDraft} to {CounterPicksMustBeFromThisDraft}.");
         }
 
         if (Name != existingDraft.Name)

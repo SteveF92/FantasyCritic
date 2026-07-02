@@ -175,7 +175,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         var clonedDrafts = primaryLeaguePreviousLeagueYear.Drafts
             .Select(d => new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(primaryLeaguePreviousLeagueYear.League.LeagueID, year),
                 d.DraftNumber, d.Name, null,
-                d.GamesToDraft, d.CounterPicksToDraft,
+                d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
                 false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
         await _fantasyCriticRepo.AddNewLeagueYearInTransaction(primaryLeaguePreviousLeagueYear.League, year, primaryLeaguePreviousLeagueYear.Options, mostRecentActivePrimaryLeaguePlayers, clonedDrafts, connection, transaction);

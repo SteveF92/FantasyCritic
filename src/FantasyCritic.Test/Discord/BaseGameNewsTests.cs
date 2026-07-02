@@ -77,7 +77,7 @@ internal abstract class BaseGameNewsTests
         {
             new Publisher(Guid.Empty, leagueYearKey, FantasyCriticUser.GetFakeUser(), "Publisher", null, null, draftInfos, games, new List<FormerPublisherGame>(), 100, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false))
         };
-        var leagueDraft = new LeagueDraft(draftID, leagueYearKey, 1, "Initial Draft", null, 10, 5, true, PlayStatus.DraftFinal, draftInfos, null);
+        var leagueDraft = new LeagueDraft(draftID, leagueYearKey, 1, "Initial Draft", null, 10, 5, true, true, PlayStatus.DraftFinal, draftInfos, null);
         return new LeagueYear(league, supportedYear, leagueOptions, new[] { leagueDraft },
             new List<EligibilityOverride>(), new List<TagOverride>(), null, publishers, null, false, null);
     }

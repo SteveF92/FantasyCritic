@@ -12,7 +12,8 @@ public record CreateLeagueDraftRequest(
     int CounterPicksToDraft,
     int AdditionalStandardGames,
     int AdditionalCounterPicks,
-    List<SpecialGameSlotViewModel> NewSpecialGameSlots)
+    List<SpecialGameSlotViewModel> NewSpecialGameSlots,
+    bool CounterPicksMustBeFromThisDraft = true)
 {
     public Result IsValid()
     {
@@ -35,7 +36,7 @@ public record CreateLeagueDraftRequest(
         var specialGameSlots = NewSpecialGameSlots.Select(x => x.ToDomain(tagDictionary)).ToList();
         
         return new CreateLeagueDraftParameters(new LeagueYearKey(LeagueID, Year), Name, ScheduledDate,
-            GamesToDraft, CounterPicksToDraft, AdditionalStandardGames, AdditionalCounterPicks, 
+            GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft, AdditionalStandardGames, AdditionalCounterPicks, 
             specialGameSlots);
     }
 }

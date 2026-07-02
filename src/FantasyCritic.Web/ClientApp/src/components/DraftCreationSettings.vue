@@ -35,6 +35,13 @@
         </ValidationProvider>
       </div>
 
+      <div v-if="gameMode === 'Multi Draft' && draft.counterPicksToDraft > 0" class="form-group">
+        <b-form-checkbox v-model="draft.counterPicksMustBeFromThisDraft" @input="emitUpdate">
+          <span class="checkbox-label">Lorem ipsum dolor sit amet</span>
+          <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+        </b-form-checkbox>
+      </div>
+
       <div v-if="canRemoveDraft(index)">
         <b-button size="sm" variant="outline-danger" @click="removeDraft(index)">Remove Draft {{ index + 1 }}</b-button>
       </div>
@@ -77,7 +84,8 @@ export default {
       handler(newVal) {
         const normalized = newVal.map((d, index) => ({
           ...d,
-          name: d.name?.trim() ? d.name : getDefaultDraftName(index)
+          name: d.name?.trim() ? d.name : getDefaultDraftName(index),
+          counterPicksMustBeFromThisDraft: d.counterPicksMustBeFromThisDraft ?? true
         }));
         const needsEmit = normalized.some((d, index) => d.name !== newVal[index]?.name);
         this.internalDrafts = normalized;

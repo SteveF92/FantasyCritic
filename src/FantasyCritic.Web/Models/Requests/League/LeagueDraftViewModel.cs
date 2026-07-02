@@ -15,6 +15,7 @@ public class LeagueDraftViewModel
         ScheduledDate = domain.ScheduledDate;
         GamesToDraft = domain.GamesToDraft;
         CounterPicksToDraft = domain.CounterPicksToDraft;
+        CounterPicksMustBeFromThisDraft = domain.CounterPicksMustBeFromThisDraft;
         PlayStatus = domain.PlayStatus.Value;
         DraftStartedTimestamp = domain.DraftStartedTimestamp;
         DraftOrderSet = domain.DraftOrderSet;
@@ -62,6 +63,7 @@ public class LeagueDraftViewModel
     public LocalDate? ScheduledDate { get; }
     public int GamesToDraft { get; }
     public int CounterPicksToDraft { get; }
+    public bool CounterPicksMustBeFromThisDraft { get; }
     public string PlayStatus { get; }
     public Instant? DraftStartedTimestamp { get; }
     public bool DraftOrderSet { get; }

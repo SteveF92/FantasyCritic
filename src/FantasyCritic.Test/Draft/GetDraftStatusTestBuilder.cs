@@ -224,6 +224,7 @@ internal sealed class GetDraftStatusTestBuilder
             draftSpec.GamesToDraft,
             draftSpec.CounterPicksToDraft,
             true,
+            true,
             playStatus,
             publisherDraftInfo,
             playStatus.PlayStarted ? Instant.FromUtc(2025, 6, 1, 12, 0) : null);

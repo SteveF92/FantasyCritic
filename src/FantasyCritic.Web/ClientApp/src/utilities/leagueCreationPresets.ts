@@ -8,6 +8,7 @@ export interface DraftSettings {
   scheduledDate: string | null;
   gamesToDraft: number;
   counterPicksToDraft: number;
+  counterPicksMustBeFromThisDraft: boolean;
 }
 
 export interface LeagueYearSettingsPartial {
@@ -149,13 +150,13 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
     const draft1Games = Math.ceil(gamesToDraft / 2);
     const draft2Games = gamesToDraft - draft1Games;
     drafts = [
-      { name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft: draft1Games, counterPicksToDraft },
-      { name: getDefaultDraftName(1), scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0 }
+      { name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft: draft1Games, counterPicksToDraft, counterPicksMustBeFromThisDraft: true },
+      { name: getDefaultDraftName(1), scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0, counterPicksMustBeFromThisDraft: true }
     ];
   } else if (gameMode === 'One Shot') {
     drafts = [buildOneShotDraft(standardGames, counterPicks)];
   } else {
-    drafts = [{ name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft, counterPicksToDraft }];
+    drafts = [{ name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft, counterPicksToDraft, counterPicksMustBeFromThisDraft: true }];
   }
 
   return { settings, drafts };
@@ -170,11 +171,12 @@ export function buildOneShotDraft(standardGames: number, counterPicks: number, e
     name: getDefaultDraftName(0),
     scheduledDate: existing?.scheduledDate ?? null,
     gamesToDraft: standardGames,
-    counterPicksToDraft: counterPicks
+    counterPicksToDraft: counterPicks,
+    counterPicksMustBeFromThisDraft: true
   };
 }
 
 export function getDefaultDraft(draftIndex: number, standardGames: number, allocatedSoFar: number): DraftSettings {
   const remaining = Math.max(1, standardGames - allocatedSoFar);
-  return { name: getDefaultDraftName(draftIndex), scheduledDate: null, gamesToDraft: remaining, counterPicksToDraft: 0 };
+  return { name: getDefaultDraftName(draftIndex), scheduledDate: null, gamesToDraft: remaining, counterPicksToDraft: 0, counterPicksMustBeFromThisDraft: true };
 }

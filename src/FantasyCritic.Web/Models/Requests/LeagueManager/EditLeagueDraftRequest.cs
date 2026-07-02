@@ -9,10 +9,11 @@ public record EditLeagueDraftRequest(
     string Name,
     LocalDate? ScheduledDate,
     int GamesToDraft,
-    int CounterPicksToDraft)
+    int CounterPicksToDraft,
+    bool CounterPicksMustBeFromThisDraft = true)
 {
     public EditLeagueDraftParameters ToDomain()
     {
-        return new EditLeagueDraftParameters(new LeagueYearKey(LeagueID, Year), Name, ScheduledDate, GamesToDraft, CounterPicksToDraft);
+        return new EditLeagueDraftParameters(new LeagueYearKey(LeagueID, Year), Name, ScheduledDate, GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft);
     }
 }

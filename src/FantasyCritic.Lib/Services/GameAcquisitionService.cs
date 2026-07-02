@@ -33,7 +33,7 @@ public class GameAcquisitionService
         }
 
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, draftID.HasValue, false, false, _clock.GetToday(), allowIneligibleSlot, allTags);
+        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, draftID.HasValue, false, false, _clock.GetToday(), allowIneligibleSlot, allTags, draftID);
         if (!claimResult.Success)
         {
             return claimResult;

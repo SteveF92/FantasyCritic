@@ -304,7 +304,7 @@ public class DraftService
                     return new AutoDraftResult(updatedLeagueYear, standardGamesAdded, counterPicksAdded);
                 }
 
-                var availableCounterPicks = GetAvailableCounterPicks(updatedLeagueYear, nextPublisher)
+                var availableCounterPicks = GetAvailableCounterPicks(updatedLeagueYear, nextPublisher, updatedLeagueYear.ActiveDraft)
                     .Where(x => x.MasterGame is not null)
                     .OrderByDescending(x => x.MasterGame!.AdjustedPercentCounterPick ?? 0);
 
@@ -337,11 +337,16 @@ public class DraftService
         }
     }
 
-    public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher publisherMakingCounterPick)
+    public IReadOnlyList<PublisherGame> GetAvailableCounterPicks(LeagueYear leagueYear, Publisher publisherMakingCounterPick, LeagueDraft? activeDraft)
     {
         IReadOnlyList<Publisher> otherPublishers = leagueYear.GetAllPublishersExcept(publisherMakingCounterPick);
         IReadOnlyList<PublisherGame> gamesForYear = leagueYear.Publishers.SelectMany(x => x.PublisherGames).ToList();
         IReadOnlyList<PublisherGame> otherPlayersGames = otherPublishers.SelectMany(x => x.PublisherGames).Where(x => !x.CounterPick).ToList();
+
+        if (activeDraft?.CounterPicksMustBeFromThisDraft == true)
+        {
+            otherPlayersGames = otherPlayersGames.Where(x => x.DraftID == activeDraft.DraftID).ToList();
+        }
 
         var alreadyCounterPicked = gamesForYear.Where(x => x.CounterPick).ToList();
         List<PublisherGame> availableCounterPicks = new List<PublisherGame>();
@@ -420,7 +425,8 @@ public class DraftService
         }
 
         var draft = new LeagueDraft(Guid.NewGuid(), leagueYear.Key, nextDraftNumber, domainRequest.Name, domainRequest.ScheduledDate,
-            domainRequest.GamesToDraft, domainRequest.CounterPicksToDraft, false, PlayStatus.NotStartedDraft, newPublisherDraftInfo, null);
+            domainRequest.GamesToDraft, domainRequest.CounterPicksToDraft, domainRequest.CounterPicksMustBeFromThisDraft,
+            false, PlayStatus.NotStartedDraft, newPublisherDraftInfo, null);
 
         var timestamp = _clock.GetCurrentInstant();
         string description = $"Scheduled new draft: {domainRequest.Name}";
@@ -446,7 +452,8 @@ public class DraftService
         if (isStarted && (
                 (domainRequest.ScheduledDate != draft.ScheduledDate) ||
                 (domainRequest.GamesToDraft != draft.GamesToDraft) ||
-                (domainRequest.CounterPicksToDraft != draft.CounterPicksToDraft)
+                (domainRequest.CounterPicksToDraft != draft.CounterPicksToDraft) ||
+                (domainRequest.CounterPicksMustBeFromThisDraft != draft.CounterPicksMustBeFromThisDraft)
             ))
         {
             return Result.Failure("Cannot edit draft settings once a draft has started. Reset the draft first.");
@@ -456,6 +463,7 @@ public class DraftService
             domainRequest.ScheduledDate,
             domainRequest.GamesToDraft,
             domainRequest.CounterPicksToDraft,
+            domainRequest.CounterPicksMustBeFromThisDraft,
             draft.DraftOrderSet, draft.PlayStatus, draft.PublisherDraftInfo, draft.DraftStartedTimestamp);
 
         var differences = updatedDraft.GetDifferences(draft);
