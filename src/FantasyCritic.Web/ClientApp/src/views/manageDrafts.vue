@@ -87,8 +87,11 @@
               </div>
               <div v-if="leagueYear.drafts.length > 1 && editForm.counterPicksToDraft > 0" class="form-group">
                 <b-form-checkbox v-model="editForm.counterPicksMustBeFromThisDraft" :disabled="draft.playStatus !== 'NotStartedDraft'">
-                  <span class="checkbox-label">Lorem ipsum dolor sit amet</span>
-                  <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+                  <span class="checkbox-label">Require counter picks to be made on games taken during this draft.</span>
+                  <p>
+                    If checked, all of the counter picks included in this draft must be of the standard games taken in this draft. If you don't enable this, players will be able to counter pick a game
+                    that was drafted in a previous draft. It's recommended that you keep this enabled.
+                  </p>
                 </b-form-checkbox>
               </div>
               <b-button size="sm" variant="primary" @click="submitEdit(draft)">Save</b-button>
@@ -121,8 +124,11 @@
             </div>
             <div v-if="newDraft.counterPicksToDraft > 0" class="form-group">
               <b-form-checkbox v-model="newDraft.counterPicksMustBeFromThisDraft">
-                <span class="checkbox-label">Lorem ipsum dolor sit amet</span>
-                <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+                <span class="checkbox-label">Require counter picks to be made on games taken during this draft.</span>
+                <p>
+                  If checked, all of the counter picks included in this draft must be of the standard games taken in this draft. If you don't enable this, players will be able to counter pick a game
+                  that was drafted in a previous draft. It's recommended that you keep this enabled.
+                </p>
               </b-form-checkbox>
             </div>
             <div class="form-group">
