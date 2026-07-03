@@ -409,22 +409,40 @@ public class DraftService
             return Result.Failure("Cannot create a draft while one is in progress.");
         }
 
+        if (domainRequest.AdditionalStandardGames < 0 || domainRequest.AdditionalCounterPicks < 0)
+        {
+            return Result.Failure("Additional standard games / counter picks cannot be negative.");
+        }
+        if (domainRequest.GamesToDraft < 0)
+        {
+            return Result.Failure("Standard games to draft cannot be negative.");
+        }
+        if (domainRequest.CounterPicksToDraft < 0)
+        {
+            return Result.Failure("Counter picks to draft cannot be negative.");
+        }
+        if (domainRequest.CounterPicksMustBeFromThisDraft && domainRequest.CounterPicksToDraft > domainRequest.GamesToDraft)
+        {
+            return Result.Failure("Can't have more drafted counter picks than drafted games if they must come from this draft.");
+        }
+
         if (domainRequest.NewSpecialGameSlots.Count > domainRequest.AdditionalStandardGames)
         {
             return Result.Failure("You must add at least as many 'Additional Standard Games' as new special slots. " +
                                   "Otherwise the new special slots would convert existing standard slots into special slots.");
         }
 
+        var draftID = Guid.NewGuid();
         int nextDraftNumber = leagueYear.Drafts.Max(d => d.DraftNumber) + 1;
         var newPublisherDraftInfo = new List<PublisherDraftInfo>();
         foreach (var publisher in leagueYear.Publishers)
         {
             var startingDraftPosition = publisher.LastDraftInfo.DraftPosition;
-            var draftInfoForPublisher = new PublisherDraftInfo(Guid.NewGuid(), nextDraftNumber, publisher.PublisherID, startingDraftPosition, new List<PublisherDraftPickSkip>());
+            var draftInfoForPublisher = new PublisherDraftInfo(draftID, nextDraftNumber, publisher.PublisherID, startingDraftPosition, new List<PublisherDraftPickSkip>());
             newPublisherDraftInfo.Add(draftInfoForPublisher);
         }
 
-        var draft = new LeagueDraft(Guid.NewGuid(), leagueYear.Key, nextDraftNumber, domainRequest.Name, domainRequest.ScheduledDate,
+        var draft = new LeagueDraft(draftID, leagueYear.Key, nextDraftNumber, domainRequest.Name, domainRequest.ScheduledDate,
             domainRequest.GamesToDraft, domainRequest.CounterPicksToDraft, domainRequest.CounterPicksMustBeFromThisDraft,
             false, PlayStatus.NotStartedDraft, newPublisherDraftInfo, null);
 
