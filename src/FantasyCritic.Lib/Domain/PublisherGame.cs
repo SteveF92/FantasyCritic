@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Domain.ScoringSystems;
 
 namespace FantasyCritic.Lib.Domain;
 
-public class PublisherGame : IEquatable<PublisherGame>
+public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
 {
     public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
         decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID)
@@ -41,6 +41,7 @@ public class PublisherGame : IEquatable<PublisherGame>
     public Guid? DraftID { get; }
     public uint? BidAmount { get; }
     public Guid? AcquiredInTradeID { get; }
+    public bool IsFormerPublisherGame => false;
 
     public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
@@ -92,6 +93,35 @@ public class PublisherGame : IEquatable<PublisherGame>
         }
 
         return new MasterGameYearWithCounterPick(MasterGame, CounterPick);
+    }
+
+    public int? GetCrossDraftPosition(LeagueYear leagueYear)
+    {
+        if (!DraftID.HasValue)
+        {
+            return null;
+        }
+
+        if (!OverallDraftPosition.HasValue)
+        {
+            throw new InvalidOperationException(
+                $"PublisherGame {PublisherGameID} (publisher {PublisherID}) has DraftID {DraftID} but no OverallDraftPosition.");
+        }
+
+        var draftedIn = leagueYear.Drafts.Single(x => x.DraftID == DraftID);
+        var startingDraftPosition = draftedIn.GetStartingOverallDraftPosition(leagueYear);
+        if (startingDraftPosition.IsFailure)
+        {
+            throw new InvalidOperationException(
+                $"PublisherGame {PublisherGameID} (publisher {PublisherID}) is assigned to draft {DraftID} (draft number {draftedIn.DraftNumber}, league {leagueYear.Key}), " +
+                $"but that draft has not started. {startingDraftPosition.Error}");
+        }
+        if (CounterPick)
+        {
+            return startingDraftPosition.Value.CounterPickStartingPoint + OverallDraftPosition.Value;
+        }
+
+        return startingDraftPosition.Value.StandardGameStartingPoint + OverallDraftPosition.Value;
     }
 
     public double GetSleeperFactor(ScoringSystem scoringSystem)

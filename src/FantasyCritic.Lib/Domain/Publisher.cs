@@ -66,6 +66,14 @@ public class Publisher : IEquatable<Publisher>
     public AutoDraftSettings AutoDraftSettings { get; }
     public AutoDraftMode AutoDraftMode => AutoDraftSettings.Mode;
 
+    public IReadOnlyList<IPublisherGame> GetCurrentAndFormerPublisherGames()
+    {
+        return PublisherGames.Cast<IPublisherGame>()
+            .Concat(FormerPublisherGames)
+            .OrderBy(x => x.Timestamp)
+            .ToList();
+    }
+
     public decimal? AverageCriticScore
     {
         get

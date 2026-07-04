@@ -897,6 +897,7 @@ public class AdminService
             publishersInCompleteLeagues.Add(publisher);
         }
 
+        var leagueYearDictionaryByPublisherID = publishersInCompleteLeagues.ToDictionary(x => x.PublisherID, y => leagueYearDictionary[y.LeagueYearKey]);
         var leagueYearsToCount = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
         IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame is not null).ToList();
         var bidsToCount = processedBids.Where(x => leagueYearsToCount.Contains(x.LeagueYear.Key)).ToList();
@@ -991,7 +992,7 @@ public class AdminService
             var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
             double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double)cleanMasterGames.Count;
             double bidPercentile = 100 - (percentageGamesWithHigherBidTotal * 100);
-            double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.OverallDraftPosition);
+            double? averageDraftPosition = publisherGamesForMasterGame.Average(x => x.GetCrossDraftPosition(leagueYearDictionaryByPublisherID[x.PublisherID]));
             double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double)x.BidAmount).DefaultIfEmpty(0.0).Average();
 
             double notNullAverageDraftPosition = averageDraftPosition ?? 0;
