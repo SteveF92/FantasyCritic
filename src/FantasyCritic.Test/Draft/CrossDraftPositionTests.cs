@@ -29,7 +29,8 @@ public class CrossDraftPositionTests
             PlayStatus.DraftFinal,
             [CreateSingleDraftPublisher(draftID, games: [pick])]);
 
-        Assert.That(pick.GetCrossDraftPosition(leagueYear), Is.EqualTo(7));
+        var cache = CrossDraftPositionCache.Build([leagueYear]);
+        Assert.That(cache.GetPosition(pick), Is.EqualTo(7));
     }
 
     [Test]
@@ -90,7 +91,8 @@ public class CrossDraftPositionTests
 
         Assert.That(startingPoint.IsSuccess, Is.True);
         Assert.That(startingPoint.Value.StandardGameStartingPoint, Is.EqualTo(14));
-        Assert.That(draft2FirstPick.GetCrossDraftPosition(leagueYear), Is.EqualTo(15));
+        var cache = CrossDraftPositionCache.Build([leagueYear]);
+        Assert.That(cache.GetPosition(draft2FirstPick), Is.EqualTo(15));
     }
 
     [Test]
@@ -105,7 +107,8 @@ public class CrossDraftPositionTests
 
         var bidGame = leagueYear.Publishers.Single().PublisherGames.Single();
 
-        Assert.That(bidGame.GetCrossDraftPosition(leagueYear), Is.Null);
+        var cache = CrossDraftPositionCache.Build([leagueYear]);
+        Assert.That(cache.GetPosition(bidGame), Is.Null);
     }
 
     [Test]
@@ -196,7 +199,8 @@ public class CrossDraftPositionTests
             PlayStatus.Drafting,
             [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, games: [draft1CounterPick, draft2CounterPick])]);
 
-        Assert.That(draft2CounterPick.GetCrossDraftPosition(leagueYear), Is.EqualTo(2));
+        var cache = CrossDraftPositionCache.Build([leagueYear]);
+        Assert.That(cache.GetPosition(draft2CounterPick), Is.EqualTo(2));
     }
 
     [Test]
@@ -258,7 +262,7 @@ public class CrossDraftPositionTests
             PlayStatus.NotStartedDraft,
             [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, games: [draft2Pick])]);
 
-        Assert.That(() => draft2Pick.GetCrossDraftPosition(leagueYear), Throws.InvalidOperationException);
+        Assert.That(() => CrossDraftPositionCache.Build([leagueYear]), Throws.InvalidOperationException);
     }
 
     [Test]
@@ -288,7 +292,7 @@ public class CrossDraftPositionTests
             PlayStatus.DraftFinal,
             [CreateSingleDraftPublisher(draftID, games: [invalidPick])]);
 
-        Assert.That(() => invalidPick.GetCrossDraftPosition(leagueYear), Throws.InvalidOperationException);
+        Assert.That(() => CrossDraftPositionCache.Build([leagueYear]), Throws.InvalidOperationException);
     }
 
     private static PublisherGame CreateDraftPick(
